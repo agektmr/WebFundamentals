@@ -189,7 +189,9 @@ We  are investigating how to best do this. For now, you can manually ask for co
 
 ### Does this work with iframes?
 
-Currently not allowed. But planned to be allowed in the future.
+Yes, [iframes are allowed](https://www.w3.org/TR/payment-request/#paymentrequest-and-iframe-elements) from M56 by giving one an `allowpaymentrequest` attribute.
+
+    <iframe src="url-to-a-page-that-has-payment-request" allowpaymentrequest>
 
 ### Are there any polyfills available to support incompatible browsers for this API?
 

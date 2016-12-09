@@ -197,7 +197,10 @@ Payment Method Identifier は分散型拡張性をサポートしています。
 クーポンコードをサポートする最良の方法を検討しています。今のところは、 Payment Request API を呼び出したあとに、ユーザにクーポンコードの入力を求めるコードを独自で追加すれば実現できます。
 
 ### この API は、 iframe でも使えますか ?
-現在のところ iframe での Payment Request API の使用は許可されていませんが、将来できるようになる予定です。
+はい、Chrome ではバージョン 56 から `allowpaymentrequest` を属性として追加することで[利用可能になりました](https://www.w3.org/TR/payment-request/#paymentrequest-and-iframe-elements)。
+
+    <iframe src="url-to-a-page-that-has-payment-request" allowpaymentrequest>
+
 
 ### Payment Request API に対応していないブラウザ向けの polyfill はありますか ?
 現在のところ、ありません。
