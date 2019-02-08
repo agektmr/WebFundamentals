@@ -1,144 +1,112 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description:在 Chrome DevTools 中設置永久製作，以便立即查看更改和將這些更改保存到磁盤中。
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Set up persistent authoring in Chrome DevTools so you can both see your changes immediately and save those changes to disk.
 
-{# wf_updated_on:2015-07-30 #}
-{# wf_published_on:2015-07-08 #}
+{# wf_updated_on: 2018-04-20 #} {# wf_published_on: 2015-07-08 #} {# wf_blink_components: Platform>DevTools #}
 
-# 使用 DevTools 的工作區設置持久化 {: .page-title }
+# Set Up Persistence with DevTools Workspaces {: .page-title }
 
-{% include "web/_shared/contributors/dgash.html" %}
-{% include "web/_shared/contributors/kaycebasques.html" %}
-{% include "web/_shared/contributors/megginkearney.html" %}
+Warning: This version of Workspaces is only available in Chrome 62 or lower. Check what version of Chrome you're running at `chrome://version`. See [Save Changes To Disk With Workspaces](/web/tools/chrome-devtools/workspaces/) to learn how to use the version of Workspaces that's available in Chrome 63 and later.
 
-在 Chrome DevTools 中設置永久製作，以便立即查看更改和將這些更改保存到磁盤中。
+{% include "web/_shared/contributors/dgash.html" %} {% include "web/_shared/contributors/kaycebasques.html" %} {% include "web/_shared/contributors/megginkearney.html" %}
 
-利用 Chrome DevTools，您可以更改網頁上的元素和樣式並立即查看更改。默認情況下，刷新瀏覽器後更改消失，除非您將其手動複製並粘貼到外部編輯器中。
+Set up persistent authoring in Chrome DevTools so you can both see your changes immediately and save those changes to disk.
 
+Chrome DevTools lets you change elements and styles on a web page and see your changes immediately. By default, refresh the browser and the changes go away unless you've manually copied and pasted them to an external editor.
 
-
-
-通過工作區，您可以將這些更改保存到磁盤中，而不用離開 Chrome DevTools。將本地網絡服務器提供的資源映射到磁盤上的文件中，並實時查看對這些文件的更改。
-
-
-
-
+Workspaces lets you persist those changes to disk without having to leave Chrome DevTools. Map resources served from a local web server to files on a disk and view changes made to those files as if they were being served.
 
 ### TL;DR {: .hide-from-toc }
-- 請勿將這些更改手動複製到本地文件中。使用工作區將在 DevTools 中進行的更改保存到您的本地資源中。
-- 將您的本地文件暫存到瀏覽器中。將文件映射到網址。
-- 設置好永久工作區後，在 Elements 面板中進行的樣式更改將自動保留；DOM 更改則不會。在 Sources 元素面板中保留元素更改。
 
+* Don't manually copy changes to local files. Use workspaces to persist changes made in DevTools to your local resources.
+* Stage your local files to your browser. Map files to URLs.
+* Once persistent workspaces are set-up, style changes made in the Elements panel are persisted automatically; DOM changes aren't. Persist element changes in the Sources panel instead.
 
-## 將本地源文件添加到工作區
+## Add local source files to workspace
 
-要將本地文件夾的源文件設置爲可以在 Sources 面板中修改，請執行以下操作：
+To make a local folder's source files editable in the Sources panel:
 
-1. 右鍵點擊左側面板。
-2. 選擇 **Add Folder to Workspace**。
-3. 選擇您想要映射的本地文件夾的位置。
-4. 點擊 **Allow**，授予 Chrome 訪問該文件夾的權限。 
+1. Right-click in the left-side panel.
+2. Select **Add Folder to Workspace**.
+3. Choose location of local folder that you want to map.
+4. Click **Allow** to give Chrome access to the folder. 
 
-![將文件夾添加到工作區](imgs/addfolder.png)
+![Add Folder to Workspace](imgs/addfolder.png)
 
-通常，本地文件夾包含網站的原始源文件，用於在服務器上填充網站。如果您不希望通過工作區更改這些原始文件，請複製文件夾並將其指定爲工作區文件夾。
+Typically, the local folder contains the site's original source files that were used to populate the site on the server. If you do not want to change those original files via the workspace, make a copy of the folder and specify it as the workspace folder instead.
 
-## 暫存保留的更改
+## Stage persisted changes
 
-您已將本地文件夾映射到工作區中，但瀏覽器仍在提供網絡文件夾內容。要將永久更改自動暫存到瀏覽器中，請將文件夾中的本地文件映射到網址：
+You've already mapped your local folder to your workspace, but the browser is still serving the network folder contents. To automatically stage persistent changes in the browser, map local files in the folder to a URL:
 
+1. Right-click or Control+click on a file in the Sources left-side panel.
+2. Choose **Map to File System Resource**.
+3. Select the local file in the persistent workspace.
+4. Reload the page in Chrome.
 
+![Map file to URL](imgs/maptoresource.png)
 
+Thereafter, Chrome loads the mapped URL, displaying the workspace contents instead of the network contents. Work directly in the local files without having to repeatedly switch between Chrome and an external editor.
 
-1. 右鍵點擊或者在按住 Ctrl 的同時點擊 Sources 左側面板中的文件。
-2. 選擇 **Map to File System Resource**。
-3. 選擇永久工作區中的本地文件。
-4. 在 Chrome 中重新加載頁面。
+## Limitations
 
-![將文件映射到網址](imgs/maptoresource.png)
+As powerful as Workspaces are, there are some limitations you should be aware of.
 
-之後，Chrome 會加載映射的網址，同時顯示工作區內容，而不是網絡內容。這樣，您可以直接在本地文件中操作，而不必在 Chrome 與外部編輯器之間重複切換。
+* Only style changes in the Elements panel are persisted; changes to the DOM are not persisted.
 
+* Only styles defined in an external CSS file can be saved. Changes to `element.style` or to inline styles are not persisted. (If you have inline styles, they can be changed on the Sources panel.)
 
+* Style changes in the Elements panel are persisted immediately without an explicit save -- 
+<kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">S</kbd> or <kbd class="kbd">Cmd</kbd> + <kbd class="kbd">S</kbd> (Mac) -- if you have the CSS resource mapped to a local file.
 
+* If you are mapping files from a remote server instead of a local server, when you refresh the page, Chrome reloads the page from the remote server. Your changes still persist to disk and are reapplied if you continue editing in Workspaces.
 
+* You must use the full path to a mapped file in the browser. Even your index files must include .html in the URL, in order to see the staged version.
 
+## Local file management
 
-## 限制
+In addition to editing existing files, you can also add and delete files in the local mapped directory you’re using for Workspaces.
 
-儘管工作區功能強大，您仍應當注意一些限制。
+### Add file
 
-* 只有 Elements 面板中的樣式更改會保留；對 DOM 的更改不會保留。
+To add a file:
 
-* 僅可以保存在外部 CSS 文件中定義的樣式。對 `element.style` 或內嵌樣式的更改不會保留。（如果您有內嵌樣式，可以在 Sources 面板中對它們進行更改。）
+1. Right-click a folder in the left Sources pane.
+2. Select **New File**.
+3. Type a name for the new file including its extension (e.g., `newscripts.js`) and press **Enter**; the file is added to the local folder.
 
-* 如果您有映射到本地文件的 CSS 資源，在 Elements 面板中進行的樣式更改無需顯式保存即會立即保留 - <kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">S</kbd> 或者 <kbd class="kbd">Cmd</kbd> + <kbd class="kbd">S</kbd> (Mac)。
+### Delete file
 
+To delete a file:
 
-* 如果您正在從遠程服務器（而不是本地服務器）映射文件，Chrome 會從遠程服務器重新加載頁面。您的更改仍將保存到磁盤，並且如果您在工作區中繼續編輯，這些更改將被重新應用。
+1. Right-click on the file in the left Sources pane.
+2. Choose **Delete** and click **Yes** to confirm.
 
-* 您必須在瀏覽器中使用映射文件的完整路徑。要查看暫存版本，您的索引文件在網址中必須包含 .html。
+### Back up a file
 
-## 本地文件管理
+Before making substantial changes to a file, it's useful to duplicate the original for back-up purposes.
 
-除了修改現有文件外，您還可以在爲工作區使用的本地映射目錄中添加和刪除文件。
+To duplicate a file:
 
+1. Right-click on the file in the left Sources pane.
+2. Choose **Make a Copy...**.
+3. Type a name for the file including its extension (e.g., `mystyles-org.css`) and press **Enter**.
 
+### Refresh
 
-### 添加文件
+When you create or delete files directly in Workspaces, the Sources directory automatically refreshes to show the file changes. To force a refresh at any time, right-click a folder and choose **Refresh**.
 
-要添加文件，請執行以下操作：
+This is also useful if you change files that are concurrently open in an external editor and want the changes to show up in DevTools. Usually DevTools catches such changes automatically, but if you want to be certain, just refresh the folder as described above.
 
-1. 右鍵點擊 Sources 左側窗格中的文件夾。
-2. 選擇 **New File**。
-3. 爲新文件鍵入一個包含擴展名的名稱（例如 `newscripts.js`）並按 **Enter**；文件將添加到本地文件夾中。
+### Search for files or text
 
-### 刪除文件
+To search for a loaded file in DevTools, press <kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">O</kbd> or <kbd class="kbd">Cmd</kbd> + <kbd class="kbd">O</kbd> (Mac) to open a search dialog. You can still do this in Workspaces, but the search is expanded to both the remote loaded files and the local files in your Workspace folder.
 
-要刪除文件，請執行以下操作：
+To search for a string across files:
 
-1. 右鍵點擊 Sources 左側窗格中的文件。
-2. 選擇 **Delete** 並點擊 **Yes** 確認。
+1. Open the search window: click the **Show Drawer** button ![Show drawer](imgs/show_drawer_button.png){:.inline} and then click the **Search**; or press
+<kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">Shift</kbd> + <kbd class="kbd">F</kbd> or <kbd class="kbd">Cmd</kbd> + <kbd class="kbd">Opt</kbd> + <kbd class="kbd">F</kbd> (Mac).
+2. Type a string into the search field and press **Enter**.
+3. If the string is a regular expression or needs to be case-insensitive, click the appropriate box.
 
-### 備份文件
+![Search for string across files](imgs/searchacross.png)
 
-對文件進行重大更改前，複製原始文件進行備份非常有用。
-
-
-要複製文件，請進行以下操作：
-
-1. 右鍵點擊 Sources 左側窗格中的文件。
-2. 選擇 **Make a Copy...**。
-3. 爲文件鍵入一個包含擴展名的名稱（例如 `mystyles-org.css`）並按 **Enter**。
-
-### 刷新
-
-直接在工作區中創建或刪除文件時，Sources 目錄將自動刷新以顯示文件更改。要隨時強制刷新，請右鍵點擊文件夾並選擇 **Refresh**。
-
-
-
-如果您在外部編輯器中更改當前正在打開的文件，並且希望更改顯示在 DevTools 中，刷新操作也非常有用。DevTools 通常可以自動捕捉此類更改，但是如果您希望確保萬無一失，只需按上文所述刷新文件夾。
-
-### 搜索文件或文本
-
-要在 DevTools 中搜索已加載的文件，請按 <kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">O</kbd> 或者 <kbd class="kbd">Cmd</kbd> + <kbd class="kbd">O</kbd> (Mac) 打開搜索對話框。您仍然可以在工作區中進行此操作，不過，搜索範圍將擴展到 Workspace 文件夾中的遠程已加載文件和本地文件。
-
-
-
-
-
-
-要在多個文件中搜索某個字符串，請執行以下操作：
-
-1. 打開搜索窗口：點擊 **Show Drawer** 按鈕 ![Show Drawer](imgs/show_drawer_button.png){:.inline} ，然後點擊 **Search**；或者按 <kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">Shift</kbd> + <kbd class="kbd">F</kbd> 或 <kbd class="kbd">Cmd</kbd> + <kbd class="kbd">Opt</kbd> + <kbd class="kbd">F</kbd> (Mac)。
-2. 將字符串鍵入搜索字段並按 **Enter**。
-3. 如果字符串是一個正則表達式或者需要不區分大小寫，請點擊相應的框。
-
-
-![跨文件搜索字符串](imgs/searchacross.png)
-
-搜索結果將顯示在 Console 抽屜中並按文件名列示，同時指示匹配數量。使用**展開** ![展開](imgs/expand_button.png){:.inline}和**摺疊** ![摺疊](imgs/collapse_button.png){:.inline}箭頭可以展開或摺疊給定文件的結果。
-
-
-
-{# wf_devsite_translation #}
+The search results are shown in the Console drawer, listed by file name, with the number of matches in each file indicated. Use the **Expand** ![Expand](imgs/expand_button.png){:.inline} and **Collapse** ![Collapse](imgs/collapse_button.png){:.inline} arrows to expand or collapse the results for a given file.
