@@ -1,101 +1,77 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: ページ上のアイテムの状態は、DevTools コンソールから調べます。
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Explore the state of any item on your page from the DevTools console.
 
-{# wf_updated_on:2015-05-11 #}
-{# wf_published_on:2015-04-13 #}
+{# wf_updated_on: 2018-07-27 #} {# wf_published_on: 2015-04-13 #} {# wf_blink_components: Platform>DevTools #}
 
-#  式の評価 {: .page-title }
+# Evaluate Expressions {: .page-title }
 
-{% include "web/_shared/contributors/megginkearney.html" %}
-{% include "web/_shared/contributors/josephmedley.html" %}
-ページ上のアイテムの状態は、DevTools コンソールでいずれかの評価機能を使用して調べます。
+{% include "web/_shared/contributors/megginkearney.html" %} {% include "web/_shared/contributors/josephmedley.html" %} Explore the state of any item on your page from the DevTools console using one of its evaluation capabilities.
 
-DevTools コンソールでは、ページ内のアイテムの状態をその都度把握できます。式は、JavaScript の知識とそれをサポートする機能を組み合わせて入力し、評価します。
-
-
-
-
+The DevTools console allows you to learn the state of items in your page in an ad-hoc manner. Evaluate any expression you can type using a combination of your knowledge of JavaScript and several features that support it.
 
 ### TL;DR {: .hide-from-toc }
-- 式は、入力するだけで評価できます。
-- 要素はショートカットを使用して選択します。
-- DOM 要素と JavaScript ヒープ オブジェクトを調査するには  <code>inspect()</code> を使用します。
-- 最近選択した要素とオブジェクトにアクセスするには、$0～4 を使用します。
 
+- Evaluate an expression just by typing it.
+- Select elements using one of the shortcuts.
+- Inspect DOM elements and JavaScript heap objects using `inspect()`.
+- Access recently selected elements and objects using $0 - 4.
 
-##  式のナビゲーション
+## Navigate expressions
 
-コンソールでは、JavaScript 式を入力して <kbd class="kbd">Enter</kbd> キーを押すと評価が行われます。また、式を入力したときにプロパティ名の候補が表示されます。コンソールには、オートコンプリートとタブコンプリートの機能も備わっています。
+The console evaluates any JavaScript expression you provide when pressing <kbd class="kbd">Enter</kbd>. As you type an expression, property name suggestions appear; the console also provides auto-completion and tab-completion.
 
+If there are multiple matches,
+<kbd class="kbd">↑</kbd> and <kbd class="kbd">↓</kbd> cycles through them. Pressing <kbd class="kbd">→</kbd> selects the current suggestion. If there's a single suggestion,
+<kbd class="kbd">Tab</kbd> selects it.
 
+![Simple expressions in the console.](images/evaluate-expressions.png)
 
+## Select elements
 
-
-一致するものが複数存在する場合は、<kbd class="kbd">↑</kbd> と <kbd class="kbd">↓</kbd> キーで循環します。
-<kbd class="kbd">→</kbd> キーを押すと、現在の候補が選択されます。候補が 1 つの場合は、<kbd class="kbd">Tab</kbd> キーを押すと選択されます。
-
-
-
-![コンソール内の単純な式](images/evaluate-expressions.png)
-
-##  要素の選択
-
-要素を選択するには、次のショートカットを使用します。
+Use the following shortcuts to select elements:
 
 <table class="responsive">
   <thead>
     <tr>
-      <th colspan="2">ショートカット &amp; 説明</th>
+      <th colspan="2">Shortcut &amp; Description</th>
     </tr>
   </thead>
   <tbody>
     <tr>
       <td data-th="Shortcut">$()</td>
-      <td data-th="Description">指定された CSS セレクターに一致する最初の要素を返します。 <code>document.querySelector()</code> のショートカットです。</td>
+      <td data-th="Description">Returns the first element that matches the specified CSS selector. Shortcut for <code>document.querySelector()</code>.</td>
     </tr>
     <tr>
       <td data-th="Shortcut">$$()</td>
-      <td data-th="Description">指定された CSS セレクターに一致するすべての要素の配列を返します。 <code>document.querySelectorAll()</code> のエイリアスです。</td>
+      <td data-th="Description">Returns an array of all the elements that match the specified CSS selector. Alias for <code>document.querySelectorAll()</code>.</td>
     </tr>
     <tr>
       <td data-th="Shortcut">$x()</td>
-      <td data-th="Description">指定された XPath に一致する要素の配列を返します。</td>
+      <td data-th="Description">Returns an array of elements that match the specified XPath.</td>
     </tr>
   </tbody>
 </table>
 
-ターゲット選択の例:
+Examples of target selection:
 
     $('code') // Returns the first code element in the document.
     $$('figure') // Returns an array of all figure elements in the document.
     $x('html/body/p') // Returns an array of all paragraphs in the document body.
+    
 
-##  DOM 要素と JavaScript ヒープ オブジェクトの調査
+## Inspect DOM elements and JavaScript heap objects
 
-`inspect()` 関数では、パラメータとして DOM 要素または JavaScript 参照を使用します。DOM 要素を指定した場合は、DevTools で [Elements] パネルが開き、その要素が表示されます。JavaScript 参照を指定した場合は、[Profile] パネルが開きます。
+The `inspect()` function takes a DOM element or JavaScript reference as a parameter. If you provide a DOM element, the DevTools goes to the Elements panel and displays that element. If you provide a JavaScript reference, then it goes to the Profile panel.
 
-
-
-
-
-
-このページでコンソールからこのコードを実行すると、この figure が取得され、[Elements] パネルに表示されます。ここでは `$_` プロパティを利用して最後に評価された式の出力を取得しています。
-
-
-
+When this code executes in your console on this page, it grabs this figure and displays it on the Elements panel. This takes advantage of the `$_` property to get the output of the last evaluated expression.
 
     $('[data-target="inspecting-dom-elements-example"]')
     inspect($_)
+    
 
-##  最近選択した要素とオブジェクトへのアクセス
+## Access recently selected elements and objects
 
-最後に使用した 5 つの要素とオブジェクトは、簡単にアクセスできるように変数に格納されます。コンソール内からこれらの要素にアクセスするには、$0～4 を使用します。コンピュータでは、カウントが 0 から開始されます。つまり、最新のアイテムは $0、最も古いアイテムは $4 です。
+The console stores the last five used elements and objects in variables for easy access. Use $0 - 4, to access these elements from within the console. Remember computers begin counting from 0; this means the latest item is $0 and the oldest item is $4.
 
+## Feedback {: #feedback }
 
-
-
-
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
