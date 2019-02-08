@@ -1,29 +1,21 @@
-project_path: /web/fundamentals/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description:以用户为中心的性能指标
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: User-centric Performance Metrics
 
-{# wf_updated_on: 2019-02-06 #}
-{# wf_published_on: 2017-06-01 #}
-{# wf_tags: performance #}
-{# wf_blink_components: Blink>PerformanceAPIs #}
+{# wf_updated_on: 2018-08-17 #} {# wf_published_on: 2017-06-01 #} {# wf_tags: performance #} {# wf_blink_components: Blink>PerformanceAPIs #}
 
 {% include "web/tools/chrome-devtools/_shared/styles.html" %}
 
-# 以用户为中心的性能指标 {: .page-title }
+# User-centric Performance Metrics {: .page-title }
 
 {% include "web/_shared/contributors/philipwalton.html" %}
 
-您可能已无数次听人提及性能的重要性，以及网页应用的运行速度十分关键。
+You've probably heard time and time again that performance matters, and that it's critical your web apps are fast.
 
-
-但是，当您尝试回答“我的应用有多快？”这个问题时，您就会意识到，“快”是一个很模糊的概念。
- 我们所谓的“快”究竟是指什么？其情境为何？
-为谁提供高速度？
+But as you try to answer the question: *how fast is my app?*, you'll realize that fast is a vague term. What exactly do we mean when we say fast? In what context? And fast for whom?
 
 <aside>
-  <strong>注：</strong>如果您喜欢观看视频而不是阅读文章，不妨观看我与同事 <a href="https://twitter.com/shubhie">Shubhie Panicker</a> 在 Google I/O 2017 上就此主题发表的演讲。
-
-
+  <strong>Note:</strong> If you'd rather watch a video than read an article,
+  I spoke on this topic at Google I/O 2017 with my colleague
+  <a href="https://twitter.com/shubhie">Shubhie Panicker</a>.
 </aside>
 
 <div class="video-wrapper-full-width">
@@ -32,505 +24,360 @@ description:以用户为中心的性能指标
   </iframe>
 </div>
 
-讨论性能时务求精确，以免产生误解或散布谬见，从而导致出于善意的开发者朝着错误的方向优化，最终影响而非改善用户体验。
+When talking about performance it's important to be precise so we don't create misconceptions or spread myths that can sometimes lead to well-intentioned developers optimizing for the wrong things&mdash;ultimately harming the user experience rather than improving it.
 
+To offer a specific example, it's common today to hear people say something like: ***I tested my app, and it loads in X.XX seconds***.
 
+The problem with this statement is *not* that it's false, it's that it misrepresents reality. Load times vary dramatically from user to user, depending on their device capabilities and network conditions. Presenting load times as a single number ignores the users who experienced much longer loads.
 
-
-例如，我们现在常常听到人们这样说：__*我已经测试我的应用，加载时间为 X.XX 秒*__。
-
-
-这种陈述的问题*并不*在于不真实，而在于扭曲事实。
- 加载时间会因为用户不同而有很大的变化，具体取决于用户的设备功能以及网络状况。
- 以单个数字的形式呈现加载时间忽略了遭遇过长加载时间的用户。
-
-
-实际上，您应用的加载时间是每个用户所有加载时间的汇总，而全面表示加载时间的唯一方法是使用以下直方图所示的分布方法：
-
-
+In reality, your app's load time is the collection of all load times from every individual user, and the only way to fully represent that is with a distribution like in the histogram below:
 
 <figure>
   <img src="/web/fundamentals/performance/images/perf-metrics-histogram.png"
-       alt="网站访问者的加载时间直方图"/>
+       alt="A histogram of load times for website visitors"/>
 </figure>
 
-X 轴上的数字显示加载时间，而
-Y 轴上条的高度显示体验到特定时间段中加载时间的用户相对数量。
- 正如此图表所示，虽然最大的用户群体验到的加载时间不到 1 或 2 秒，但仍有很多用户体验到相当长的加载时间。
+The numbers along the X-axis show load times, and the height of the bars on the y-axis show the relative number of users who experienced a load time in that particular time bucket. As this chart shows, while the largest segment of users experienced loads of less than one or two seconds, many of them still saw much longer load times.
 
+The other reason "my site loads in X.XX seconds" is a myth is that load is not a single moment in time&mdash;it's an experience that no one metric can fully capture. There are multiple moments during the load experience that can affect whether a user perceives it as "fast", and if you just focus on one you might miss bad experiences that happen during the rest of the time.
 
+For example, consider an app that optimizes for a fast initial render, delivering content to the user right away. If that app then loads a large JavaScript bundle that takes several seconds to parse and execute, the content on the page will not be interactive until after that JavaScript runs. If a user can see a link on the page but can't click on it, or if they can see a text box but can't type in it, they probably won't care how fast the page rendered.
 
-之所以说“我网站的加载时间为 X.XX 秒”是谬见的另一个原因是，加载并非单一的时刻，而是一种任何单一指标都无法全面衡量的体验。
- 在加载过程中，有多个时刻都会影响到用户对速度的感知，如果只关注其中某个时刻，就可能会遗漏其余时间内用户感受到的不良体验。
+So rather than measuring load with just one metric, we should be measuring the times of every moment throughout the experience that can have an affect on the user's load *perception*.
 
+A second example of a performance myth is that ***performance is only a concern at load time***.
 
+We as a team have been guilty of making this mistake, and it can be magnified by the fact that most performance tools *only* measure load performance.
 
-例如，假定某应用针对快速初始渲染进行优化，以便立刻将内容传递给用户。
- 然后，如果该应用加载一个需要花费数秒来解析和执行的大型 JavaScript 软件包，那么只有在 JavaScript 运行之后，页面上的内容才可供交互。
+But the reality is poor performance can happen at any time, not just during load. Apps that don't respond quickly to taps or clicks and apps that don't scroll or animate smoothly can be just as bad as apps that load slowly. Users care about the entire experience, and we developers should too.
 
- 如果用户可以看到页面上的链接但无法点击，或者可以看到文本框但无法在其中输入内容，他们可能就不会关心页面渲染的速度有多快。
+A common theme in all of these performance misconceptions is they focus on things that have little or nothing to do with the user experience. Likewise, traditional performance metrics like [load](https://developer.mozilla.org/en-US/docs/Web/Events/load) time or [DOMContentLoaded](https://developer.mozilla.org/en-US/docs/Web/Events/DOMContentLoaded) time are extremely unreliable since when they occur may or may not correspond to when the user thinks the app is loaded.
 
+So to ensure we don't repeat this mistake, we have to answer these questions:
 
+1. What metrics most accurately measure performance as perceived by a human?
+2. How do we measure these metrics on our actual users?
+3. How do we interpret our measurements to determine whether an app is "fast"?
+4. Once we understand our app's real-user performance, what do we do to prevent regressions and hopefully improve performance in the future?
 
-因此，我们不应该只使用一个指标来衡量加载，而应该衡量整个体验过程中可能影响用户对加载的*感知*的每个时刻。
+## User-centric performance metrics
 
-
-
-性能谬见的另一个示例是__*性能只是加载时间的问题*__。
-
-
-作为一个团队，我们对曾经犯过这个错感到内疚，而大部分性能工具*仅*衡量加载性能也会将这个错误放大。
-
-
-但事实是，随时都有可能发生性能不佳的情况，不只限于加载期间。
- 应用无法迅速响应点按或点击操作，以及无法平滑滚动或产生动画效果的问题与加载缓慢一样，都会导致糟糕的用户体验。
- 用户关心的是总体体验，我们开发者也应如此。
-
-
-所有这些性能误解有一个共同的主题，即开发者都将注意力集中在对于用户体验帮助不大甚至全无帮助的事情上。
- 同样地，[加载](https://developer.mozilla.org/en-US/docs/Web/Events/load)时间或
-[DOMContentLoaded](https://developer.mozilla.org/en-US/docs/Web/Events/DOMContentLoaded) 时间等传统性能指标极不可靠，因为加载发生的时间可能与用户认为的应用加载时间对应，也可能不对应。
-
-
-
-
-
-因此，为确保不重复这个错误，我们必须回答下列问题：
-
-
-1. 哪些指标能够最准确地衡量人所感受到的性能？
-2. 如何针对实际用户来衡量这些指标？
-3. 如何解读衡量结果以确定应用是否“速度快”？
-4. 了解应用的实际用户性能之后，如何避免性能下降并在未来提高性能？
-
-
-## 以用户为中心的性能指标
-
-当用户导航到网页时，通常会寻找视觉反馈，以确信一切符合预期。
-
+When a user navigates to a web page, they're typically looking for visual feedback to reassure them that everything is going to work as expected.
 
 <table>
   <tr>
-   <td><strong>是否发生？</strong></td>
-   <td>导航是否成功启动？服务器是否有响应？</td>
+   <td><strong>Is it happening?</strong></td>
+   <td>Did the navigation start successfully? Has the server responded?</td>
   </tr>
   <tr>
-   <td><strong>是否有用？</strong></td>
-   <td>是否已渲染可以与用户互动的足够内容？</td>
+   <td><strong>Is it useful?</strong></td>
+   <td>Has enough content rendered that users can engage with it?</td>
   </tr>
   <tr>
-   <td><strong>是否可用？</strong></td>
-   <td>用户可以与页面交互，还是页面仍在忙于加载？</td>
+   <td><strong>Is it usable?</strong></td>
+   <td>Can users interact with the page, or is it still busy loading?</td>
   </tr>
   <tr>
-   <td><strong>是否令人愉快？</strong></td>
-   <td>交互是否顺畅而自然，没有滞后和卡顿？</td>
+   <td><strong>Is it delightful?</strong></td>
+   <td>Are the interactions smooth and natural, free of lag and jank?</td>
   </tr>
 </table>
 
-为了解页面何时为用户提供这样的反馈，我们定义了多个新指标：
+To understand when a page delivers this feedback to its users, we've defined several new metrics:
 
+### First paint and first contentful paint
 
-### 首次绘制与首次内容绘制
+The [Paint Timing](https://github.com/WICG/paint-timing) API defines two metrics: *first paint* (FP) and *first contentful paint* (FCP). These metrics mark the points, immediately after navigation, when the browser renders pixels to the screen. This is important to the user because it answers the question: *is it happening?*
 
-[Paint Timing](https://github.com/WICG/paint-timing) API 定义两个指标：*首次绘制* (FP) 和 *首次内容绘制* (FCP)。
- 这些指标用于标记导航之后浏览器在屏幕上渲染像素的时间点。
- 这对于用户来说十分重要，因为它回答了以下问题：
-*是否发生？*
+The primary difference between the two metrics is FP marks the point when the browser renders *anything* that is visually different from what was on the screen prior to navigation. By contrast, FCP is the point when the browser renders the first bit of content from the DOM, which may be text, an image, SVG, or even a `<canvas>` element.
 
-这两个指标之间的主要差别在于，FP 标记浏览器渲染*任何*在视觉上不同于导航前屏幕内容之内容的时间点。
- 相比而言，FCP 标记的是浏览器渲染来自 DOM 第一位内容的时间点，该内容可能是文本、图像、SVG 甚至 `<canvas>` 元素。
+### First meaningful paint and hero element timing
 
-
-
-### 首次有效绘制和主角元素计时
-
-首次有效绘制 (FMP) 指标能够回答“是否有用？”这一问题。
- 虽然“有用”这一概念很难以通用于所有网页的方式规范化（因此尚不存在任何规范），但是网页开发者自己很清楚其页面的哪些部分对用户最为有用。
-
-
-
+First meaningful paint (FMP) is the metric that answers the question: "is it useful?". While the concept of "useful" is very hard to spec in a way that applies generically to all web pages (and thus no spec exists, yet), it's quite easy for web developers themselves to know what parts of their pages are going to be most useful to their users.
 
 <figure>
   <img src="/web/fundamentals/performance/images/perf-metrics-hero-elements.png"
-       alt="各种网站上主角元素的示例"/>
+       alt="Examples of hero elements on various websites"/>
 </figure>
 
-网页的这些“最重要部分”通常称为*主角元素*。
- 例如，在 YouTube 观看页面上，主视频就是主角元素。
- 在 Twitter 上，主角元素可能是通知标志和第一篇推文。
- 在天气应用上，主角元素是指定地点的天气预测。 在新闻网站上，主角元素可能是重大新闻和置顶大图。
+These "most important parts" of a web page are often referred to as *hero elements*. For example, on the YouTube watch page, the hero element is the primary video. On Twitter it's probably the notification badges and the first tweet. On a weather app it's the forecast for the specified location. And on a news site it's likely the primary story and featured image.
 
+Web pages almost always have parts that are more important than others. If the most important parts of a page load quickly, the user may not even notice if the rest of the page doesn't.
 
-在网页上，几乎总有一部分内容比其他部分更重要。 如果页面最重要的部分能迅速加载，用户可能不会注意到其余部分是否加载。
+### Long tasks
 
+Browsers respond to user input by adding tasks to a queue on the main thread to be executed one by one. This is also where the browser executes your application's JavaScript, so in that sense the browser is single-threaded.
 
-
-### 耗时较长的任务
-
-浏览器通过将任务添加到主线程上的队列等待逐个执行来响应用户输入。
- 浏览器执行应用的 JavaScript 时也会这样做，因此从这个角度看，浏览器为单线程。
-
-
-在某些情况下，运行这些任务可能要花费较长时间，如果确实如此，主线程就会遭到阻止，而队列中的所有其他任务都必须等待。
-
+In some cases, these tasks can take a long time to run, and if that happens, the main thread is blocked and all other tasks in the queue have to wait.
 
 <figure>
   <img src="/web/fundamentals/performance/images/perf-metrics-long-tasks.png"
-       alt="Chrome 开发者工具中显示的耗时较长的任务"/>
+       alt="Long tasks as seen in the Chrome developer tools"/>
 </figure>
 
-对于用户而言，任务耗时较长表现为滞后或卡顿，而这也是目前网页不良体验的主要根源。
+To the user this appears as lag or jank, and it's a major source of bad experiences on the web today.
 
+The [long tasks API](https://w3c.github.io/longtasks/) identifies any task longer than 50 milliseconds as potentially problematic, and it exposes those tasks to the app developer. The 50 millisecond time was chosen so applications could meet the [RAIL guidelines](/web/fundamentals/performance/rail) of responding to user input within 100 ms.
 
-[Long Tasks API](https://w3c.github.io/longtasks/) 可以将任何耗时超过 50 毫秒的任务标示为可能存在问题，并向应用开发者显示这些任务。
- 选择 50 毫秒的时间是为了让应用满足在 100 毫秒内响应用户输入的 [RAIL 指导原则](/web/fundamentals/performance/rail)。
+### Time to interactive
 
+The metric *Time to interactive* (TTI) marks the point at which your application is both visually rendered and capable of reliably responding to user input. An application could be unable to respond to user input for a couple of reasons:
 
+* The JavaScript needed to make the components on the page work hasn't yet loaded.
+* There are long tasks blocking the main thread (as described in the last section).
 
-### 可交互时间
+The TTI metric identifies the point at which the page's initial JavaScript is loaded and the main thread is idle (free of long tasks).
 
-*可交互时间* (TTI) 指标用于标记应用已进行视觉渲染并能可靠响应用户输入的时间点。
- 应用可能会因为多种原因而无法响应用户输入：
+### Mapping metrics to user experience
 
-
-* 页面组件运行所需的 JavaScript 尚未加载。
-* 耗时较长的任务阻塞主线程（如上一节所述）。
-
-
-TTI 指标可识别页面初始 JavaScript 已加载且主线程处于空闲状态（没有耗时较长的任务）的时间点。
-
-
-### 将指标对应到用户体验
-
-回顾上文确定的对用户体验最重要的问题，下表概述刚刚列出的各个指标如何对应到我们希望优化的体验：
-
-
+Getting back to the questions we previously identified as being the most important to the user experience, this table outlines how each of the metrics we just listed maps to the experience we hope to optimize:
 
 <table>
   <tr>
-    <th>体验</th>
-    <th>指标</th>
+    <th>The Experience</th>
+    <th>The Metric</th>
   </tr>
   <tr>
-    <td>是否发生？</td>
-    <td>首次绘制 (FP)/首次内容绘制 (FCP)</td>
+    <td>Is it happening?</td>
+    <td>First Paint (FP) / First Contentful Paint (FCP)</td>
   </tr>
   <tr>
-    <td>是否有用？</td>
-    <td>首次有效绘制 (FMP)/主角元素计时</td>
+    <td>Is it useful?</td>
+    <td>First Meaningful Paint (FMP) / Hero Element Timing</td>
   </tr>
   <tr>
-    <td>是否可用？</td>
-    <td>可交互时间 (TTI)</td>
+    <td>Is it usable?</td>
+    <td>Time to Interactive (TTI)</td>
   </tr>
   <tr>
-    <td>是否令人愉快？</td>
-    <td>耗时较长的任务（在技术上不存在耗时较长的任务）</td>
+    <td>Is it delightful?</td>
+    <td>Long Tasks (technically the absence of long tasks)</td>
   </tr>
 </table>
 
-下列加载时间线屏幕截图有助于您更直观地了解加载指标对应的加载体验：
-
+And these screenshots of a load timeline should help you better visualize where the load metrics fit in the load experience:
 
 <figure>
   <img src="/web/fundamentals/performance/images/perf-metrics-load-timeline.png"
-       alt="这些指标对应到相应加载体验阶段的屏幕截图"/>
+       alt="Screenshots of where these metrics occur in the load experience"/>
 </figure>
 
-下一节详细说明如何在实际用户的设备上衡量这些指标。
+The next section details how to measure these metrics on real users' devices.
 
-## 在实际用户的设备上衡量这些指标
+## Measuring these metrics on real users' devices
 
-过去，我们针对加载和
-`DOMContentLoaded` 等指标进行优化的一个主要原因是，这些指标在浏览器中显示为事件，而且容易针对实际用户进行衡量。
+One of the main reasons we've historically optimized for metrics like load and `DOMContentLoaded` is because they're exposed as events in the browser and easy to measure on real users.
 
+By contrast, a lot of other metrics have been historically very hard to measure. For example, this code is a hack we often see developers use to detect long tasks:
 
-相比而言，许多其他指标在过去很难加以衡量。
- 例如，以下代码是开发者经常用来检测耗时较长任务的黑客手段：
+    (function detectLongFrame() {
+      var lastFrameTime = Date.now();
+      requestAnimationFrame(function() {
+        var currentFrameTime = Date.now();
+    
+        if (currentFrameTime - lastFrameTime > 50) {
+          // Report long frame here...
+        }
+    
+        detectLongFrame(currentFrameTime);
+      });
+    }());
+    
 
+This code starts an infinite `requestAnimationFrame` loop and records the time on each iteration. If the current time is more than 50 milliseconds after the previous time, it assumes it was the result of a long task. While this code mostly works, it has a lot of downsides:
 
-```
-(function detectLongFrame() {
-  var lastFrameTime = Date.now();
-  requestAnimationFrame(function() {
-    var currentFrameTime = Date.now();
+* It adds overhead to every frame.
+* It prevents idle blocks.
+* It's terrible for battery life.
 
-    if (currentFrameTime - lastFrameTime > 50) {
-      // Report long frame here...
-    }
+The most important rule of performance measurement code is that it shouldn't make performance worse.
 
-    detectLongFrame(currentFrameTime);
-  });
-}());
-```
+Services like [Lighthouse](/web/tools/lighthouse/) and [Web Page Test](https://www.webpagetest.org/) have offered some of these new metrics for a while now (and in general they're great tools for testing performance on features prior to releasing them), but these tools don't run on your user's devices, so they don't reflect the actual performance experience of your users.
 
-此代码以无限循环的 `requestAnimationFrame` 开头，并记录每次迭代所花费的时间。
- 如果当前时间距离前次时间超过 50 毫秒，则会认为原因在于存在耗时较长的任务。
- 虽然大部分情况下此代码都行得通，但其也有不少缺点：
+Luckily, with the addition of a few new browser APIs, measuring these metrics on real devices is finally possible without a lot of hacks or workarounds that can make performance worse.
 
+These new APIs are [`PerformanceObserver`](https://developer.mozilla.org/en-US/docs/Web/API/PerformanceObserver), [`PerformanceEntry`](https://developer.mozilla.org/en-US/docs/Web/API/PerformanceEntry), and [`DOMHighResTimeStamp`](https://developer.mozilla.org/en-US/docs/Web/API/DOMHighResTimeStamp). To show some code with these new APIs in action, the following code example creates a new `PerformanceObserver` instance and subscribes to be notified about paint entries (e.g. FP and FCP) as well as any long tasks that occur:
 
-* 此代码会给每个帧增加开销。
-* 此代码会阻止空闲块。
-* 此代码会严重消耗电池续航时间。
+    const observer = new PerformanceObserver((list) => {
+      for (const entry of list.getEntries()) {
+        // `entry` is a PerformanceEntry instance.
+        console.log(entry.entryType);
+        console.log(entry.startTime); // DOMHighResTimeStamp
+        console.log(entry.duration); // DOMHighResTimeStamp
+      }
+    });
+    
+    // Start observing the entry types you care about.
+    observer.observe({entryTypes: ['resource', 'paint']});
+    
 
-性能测量代码最重要的规则是不应降低性能。
+What `PerformanceObserver` gives us that we've never had before is the ability to subscribe to performance events as they happen and respond to them in an asynchronous fashion. This replaces the older [PerformanceTiming](https://www.w3.org/TR/navigation-timing/#sec-navigation-timing-interface) interface, which often required polling to see when the data was available.
 
+### Tracking FP/FCP
 
-[Lighthouse](/web/tools/lighthouse/) 和 [Web Page
-Test](https://www.webpagetest.org/) 等服务已经提供部分新指标一段时间（一般而言，这些工具非常适合用于在功能发布前测试其性能），但这些工具并未在用户设备上运行，因此未反映出用户的实际性能体验。
+Once you have the data for a particular performance event, you can send it to whatever analytics service you use to capture the metric for the current user. For example, using Google Analytics you might track first paint times as follows:
 
+    <head>
+      <!-- Add the async Google Analytics snippet first. -->
+      <script>
+      window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+      ga('create', 'UA-XXXXX-Y', 'auto');
+      ga('send', 'pageview');
+      </script>
+      <script async src='https://www.google-analytics.com/analytics.js'></script>
+    
+      <!-- Register the PerformanceObserver to track paint timing. -->
+      <script>
+      const observer = new PerformanceObserver((list) => {
+        for (const entry of list.getEntries()) {
+          // `name` will be either 'first-paint' or 'first-contentful-paint'.
+          const metricName = entry.name;
+          const time = Math.round(entry.startTime + entry.duration);
+    
+          ga('send', 'event', {
+            eventCategory: 'Performance Metrics',
+            eventAction: metricName,
+            eventValue: time,
+            nonInteraction: true,
+          });
+        }
+      });
+      observer.observe({entryTypes: ['paint']});
+      </script>
+    
+      <!-- Include any stylesheets after creating the PerformanceObserver. -->
+      <link rel="stylesheet" href="...">
+    </head>
+    
 
+<aside>
+  <p><strong>Important:</strong> you must ensure your <code>PerformanceObserver
+  </code> is registered in the <code>&lt;head&gt;</code> of your document
+  before any stylesheets, so it runs before FP/FCP happens.<p>
+  <p>This will no longer be necessary once Level 2 of the <a
+  href="https://w3c.github.io/performance-timeline/">Performance Observer spec
+  </a> is implemented, as it introduces a <a
+  href="https://w3c.github.io/performance-timeline/#dom-performanceobserverinit-
+  buffered"><code>buffered</code></a> flag that allows you to access performance
+  entries queued prior to the <code>PerformanceObserver</code>
+  being created.</p>
+</aside>
 
+### Tracking FMP using hero elements
 
-幸运的是，得益于新增的几个浏览器 API，我们终于可以在实际设备上衡量这些指标，而无需使用大量可能降低性能的黑客手段或变通方法。
+Once you've identified what elements on the page are the hero elements, you'll want to track the point at which they're visible to your users.
 
+We don't yet have a standardized definition for FMP (and thus no performance entry type either). This is in part because of how difficult it is to determine, in a generic way, what "meaningful" means for all pages.
 
+However, in the context of a single page or a single application, it's generally best to consider FMP to be the moment when your hero elements are visible on the screen.
 
-这些新增的 API 是
-[`PerformanceObserver`](https://developer.mozilla.org/en-US/docs/Web/API/PerformanceObserver)、[`PerformanceEntry`](https://developer.mozilla.org/en-US/docs/Web/API/PerformanceEntry)
-和
-[`DOMHighResTimeStamp`](https://developer.mozilla.org/en-US/docs/Web/API/DOMHighResTimeStamp)。
-为显示实际运行这些新 API 的一些代码，以下代码示例创建新的 `PerformanceObserver` 实例，并通过订阅接收有关绘制输入（例如，
- FP 和 FCP）以及发生任何耗时较长任务的通知：
+Steve Souders has a great article called [User Timing and Custom Metrics](https://speedcurve.com/blog/user-timing-and-custom-metrics/) that details many of the techniques for using browser's performance APIs to determine in code when various types of media are visible.
 
-```
-const observer = new PerformanceObserver((list) => {
-  for (const entry of list.getEntries()) {
-    // `entry` is a PerformanceEntry instance.
-    console.log(entry.entryType);
-    console.log(entry.startTime); // DOMHighResTimeStamp
-    console.log(entry.duration); // DOMHighResTimeStamp
-  }
-});
+### Tracking TTI
 
-// Start observing the entry types you care about.
-observer.observe({entryTypes: ['resource', 'paint']});
-```
+In the long term, we hope to have a TTI metric standardized and exposed in the browser via PerformanceObserver. In the meantime, we've developed a polyfill that can be used to detect TTI today and works in any browser that supports the [Long Tasks API](https://w3c.github.io/longtasks/).
 
-`PerformanceObserver` 为我们提供的新功能是，能够在性能事件发生时订阅这些事件，并以异步方式响应事件。
- 此 API 取代旧的
-[PerformanceTiming](https://www.w3.org/TR/navigation-timing/#sec-navigation-timing-interface)
-界面，后者通常需要执行轮询才能查看数据可用的时间。
+The polyfill exposes a `getFirstConsistentlyInteractive()` method, which returns a promise that resolves with the TTI value. You can track TTI using Google Analytics as follows:
 
-
-### 跟踪 FP/FCP
-
-获得特定性能事件的数据之后，您可将其发送给您用来为当前用户捕捉指标的任何分析服务。
-例如，通过使用 Google Analytics，您可跟踪首次绘制时间，如下所示：
-
-
-```
-<head>
-  <!-- Add the async Google Analytics snippet first. -->
-  <script>
-  window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
-  ga('create', 'UA-XXXXX-Y', 'auto');
-  ga('send', 'pageview');
-  </script>
-  <script async src='https://www.google-analytics.com/analytics.js'></script>
-
-  <!-- Register the PerformanceObserver to track paint timing. -->
-  <script>
-  const observer = new PerformanceObserver((list) => {
-    for (const entry of list.getEntries()) {
-      // `name` will be either 'first-paint' or 'first-contentful-paint'.
-      const metricName = entry.name;
-      const time = Math.round(entry.startTime + entry.duration);
-
+    import ttiPolyfill from './path/to/tti-polyfill.js';
+    
+    ttiPolyfill.getFirstConsistentlyInteractive().then((tti) => {
       ga('send', 'event', {
-        eventCategory:'Performance Metrics',
-        eventAction: metricName,
-        eventValue: time,
+        eventCategory: 'Performance Metrics',
+        eventAction: 'TTI',
+        eventValue: tti,
         nonInteraction: true,
       });
-    }
-  });
-  observer.observe({entryTypes: ['paint']});
-  </script>
+    });
+    
 
-  <!-- Include any stylesheets after creating the PerformanceObserver. -->
-  <link rel="stylesheet" href="...">
-</head>
-```
+The `getFirstConsistentlyInteractive()` method accepts an optional `startTime` configuration option, allowing you to specify a lower bound for which you know your app cannot be interactive before. By default the polyfill uses DOMContentLoaded as the start time, but it's often more accurate to use something like the moment your hero elements are visible or the point when you know all your event listeners have been added.
+
+Refer to the [TTI polyfill documentation](https://github.com/GoogleChrome/tti-polyfill) for complete installation and usage instructions.
 
 <aside>
-  <p><strong>重要说明：</strong>您必须确保 <code>PerformanceObserver</code> 在任何样式表之前于文档的 <code>&lt;head&gt;</code> 中注册，以使其在 FP/FCP 发生前运行。<p>
-
-
-  <p>实现第 2 级 <a
-  href="https://w3c.github.io/performance-timeline/">Performance Observer 规范</a>后就不必再执行这项注册，因为该级别引入 <a
-  href="https://w3c.github.io/performance-timeline/#dom-performanceobserverinit-
-  buffered"><code>buffered</code></a> 标记，可用于访问在创建 <code>PerformanceObserver</code> 之前排队的
-  性能条目。</p>
+  <strong>Note:</strong> As with FMP, it's quite hard to spec a TTI metric
+  definition that works perfectly for all web pages. The version we've
+  implemented in the polyfill will work for most apps, but it's possible it
+  won't work for your particular app. It's important that you test it before
+  relying on it. If you want more details on the specifics of the TTI
+  definition and implementation you can read the
+  <a href="https://goo.gl/OSmrPk">TTI metric definition doc</a>.
 </aside>
 
-### 使用主角元素跟踪 FMP
+### Tracking long tasks
 
-确定页面上的主角元素之后，您可以跟踪为用户呈现这些元素的时间点。
+I mentioned above that long tasks will often cause some sort of negative user experience (e.g. a sluggish event handler or a dropped frame). It's good to be aware of how often this is happening, so you can make efforts to minimize it.
 
+To detect long tasks in JavaScript you create a new `PerformanceObserver` and observe entries of type `longtask`. One nice feature of long task entries is they contain an [attribution property](https://w3c.github.io/longtasks/#sec-TaskAttributionTiming), so you can more easily track down which code caused the long task:
 
-目前尚无标准化的 FMP 定义，因此也没有性能条目类型。
- 部分原因在于很难以通用的方式确定“有效”对于所有页面意味着什么。
-
-
-但是，一般来说，在单个页面或单个应用中，最好是将 FMP 视为主角元素呈现在屏幕上的时刻。
-
-
-
-Steve Souders 撰写了一篇精彩的文章，名为[用户计时与自定义指标](https://speedcurve.com/blog/user-timing-and-custom-metrics/)，其中详细说明使用浏览器性能 API 来确定代码中各类媒体呈现时间的技术。
-
-
-
-
-### 跟踪 TTI
-
-从长远来看，我们希望将 TTI 指标标准化，并通过 PerformanceObserver 在浏览器中公开。
- 同时，我们已开发出一个 polyfill，它可用于检测目前的 TTI，并适用于所有支持
-[Long Tasks API](https://w3c.github.io/longtasks/) 的浏览器。
-
-
-该 polyfill 公开 `getFirstConsistentlyInteractive()` 方法，后者返回使用 TTI 值进行解析的 promise。
- 您可使用 Google
-Analytics 来跟踪 TTI，如下所示：
-
-```
-import ttiPolyfill from './path/to/tti-polyfill.js';
-
-ttiPolyfill.getFirstConsistentlyInteractive().then((tti) => {
-  ga('send', 'event', {
-    eventCategory:'Performance Metrics',
-    eventAction:'TTI',
-    eventValue: tti,
-    nonInteraction: true,
-  });
-});
-```
-
-`getFirstConsistentlyInteractive()` 方法接受可选的 `startTime`
-配置选项，让您可以指定下限值（您知道您的应用在此之前无法进行交互）。
- 默认情况下，该 polyfill 使用
-DOMContentLoaded 作为开始时间，但通常情况下，使用主角元素呈现的时刻或您知道所有事件侦听器都已添加的时间点这类时间会更准确。
-
-
-
-请参阅 [TTI polyfill
-文档](https://github.com/GoogleChrome/tti-polyfill)，以获取完整的安装和使用说明。
-
-
-<aside>
-  <strong>注：</strong>与 FMP 相同，很难规范化适用于所有网页的 TTI 指标定义。
- 我们在 polyfill 中实施的版本适用于大部分应用，但可能不适用于您的特定应用。
- 因此，您最好在使用前，先进行测试。
- 如需有关 TTI 定义及实施细节的详情，请阅读
-<a href="https://goo.gl/OSmrPk">TTI 指标定义文档</a>。
-
-</aside>
-
-### 跟踪耗时较长的任务
-
-上文提到，耗时较长的任务通常会带来某种负面的用户体验（例如，
- 事件处理程序运行缓慢，或者掉帧）。 您最好了解发生这种情况的频率，以设法尽量减少这种情况。
-
-
-要在 JavaScript 中检测耗时较长的任务，请创建新的 `PerformanceObserver`，并观察类型为 `longtask` 的条目。
- 耗时较长的任务条目的一个有点是包含[提供方属性](https://w3c.github.io/longtasks/#sec-TaskAttributionTiming)，有助于您更轻松地追查导致出现耗时较长任务的代码：
-
-
-
-
-```
-const observer = new PerformanceObserver((list) => {
-  for (const entry of list.getEntries()) {
-    ga('send', 'event', {
-      eventCategory:'Performance Metrics',
-      eventAction: 'longtask',
-      eventValue:Math.round(entry.startTime + entry.duration),
-      eventLabel:JSON.stringify(entry.attribution),
+    const observer = new PerformanceObserver((list) => {
+      for (const entry of list.getEntries()) {
+        ga('send', 'event', {
+          eventCategory: 'Performance Metrics',
+          eventAction: 'longtask',
+          eventValue: Math.round(entry.startTime + entry.duration),
+          eventLabel: JSON.stringify(entry.attribution),
+        });
+      }
     });
-  }
-});
+    
+    observer.observe({entryTypes: ['longtask']});
+    
 
-observer.observe({entryTypes: ['longtask']});
-```
+The attribution property will tell you what frame context was responsible for the long task, which is helpful in determining if third party iframe scripts are causing issues. Future versions of the spec are planning to add more granularity and expose script URL, line, and column number, which will be very helpful in determining if your own scripts are causing slowness.
 
-提供方属性会指出导致耗时较长任务的帧上下文，这有助于您确定问题是否由第三方 iframe 脚本所致。
- 未来版本的规范计划添加更多详细信息并公开脚本网址、行号和列号，这有助于确定速度缓慢问题是否由您自己的脚本所致。
+### Tracking input latency
 
+Long tasks that block the main thread can prevent your event listeners from executing in a timely manner. The [RAIL performance model](/web/fundamentals/performance/rail) teaches us that in order for a user interface to feel smooth, it should respond within 100 ms of user input, and if this isn't happening, it's important to know about it.
 
+To detect input latency in code you can compare the event's time stamp to the current time, and if the difference is larger than 100 ms, you can (and should) report it.
 
-### 跟踪输入延迟
-
-阻塞主线程的耗时较长任务可能会导致事件侦听器无法及时执行。
- [RAIL 性能模型](/web/fundamentals/performance/rail)指出，为提供流畅的界面体验，界面应在用户执行输入后的 100 毫秒内作出响应，若非如此，请务必探查原因。
-
-
-
-
-若要在代码中检测输入延迟，您可将事件时间戳与当前时间作比较，如果两者相差超过 100 毫秒，您可以并应该进行报告。
-
-
-
-```
-const subscribeBtn = document.querySelector('#subscribe');
-
-subscribeBtn.addEventListener('click', (event) => {
-  // Event listener logic goes here...
-
-  const lag = performance.now() - event.timeStamp;
-  if (lag > 100) {
-    ga('send', 'event', {
-      eventCategory:'Performance Metric'
-      eventAction: 'input-latency',
-      eventLabel: '#subscribe:click',
-      eventValue:Math.round(lag),
-      nonInteraction: true,
+    const subscribeBtn = document.querySelector('#subscribe');
+    
+    subscribeBtn.addEventListener('click', (event) => {
+      // Event listener logic goes here...
+    
+      const lag = performance.now() - event.timeStamp;
+      if (lag > 100) {
+        ga('send', 'event', {
+          eventCategory: 'Performance Metric'
+          eventAction: 'input-latency',
+          eventLabel: '#subscribe:click',
+          eventValue: Math.round(lag),
+          nonInteraction: true,
+        });
+      }
     });
-  }
-});
-```
+    
 
-由于事件延迟通常是由耗时较长的任务所致，因此您可将事件延迟检测逻辑与耗时较长任务检测逻辑相结合：如果某个耗时较长的任务在 `event.timeStamp` 所示的时间阻塞主线程，您也可以报告该耗时较长任务的提供方值。
- 如此，您即可在负面性能体验与导致该体验的代码之间建立明确的联系。
+Since event latency is usually the result of a long task, you can combine your event latency detection logic with your long task detection logic: if a long task was blocking the main thread at the same time as `event.timeStamp` you could report that long task's attribution value as well. This would allow you to draw a very clear line between negative performance experiences and the code that caused it.
 
+While this technique isn't perfect (it doesn't handle long event listeners later in the propagation phase, and it doesn't work for scrolling or composited animations that don't run on the main thread), it's a good first step into better understanding how often long running JavaScript code affects user experience.
 
+## Interpreting the data
 
-虽然这种方法并不完美（不会处理之后在传播阶段耗时较长的事件侦听器，也不适用于不在主线程中运行的滚动或合成动画），但确实是良好的开端，让您能更好地了解运行时间较长的 JavaScript 代码对用户体验产生影响的频率。
+Once you've started collecting performance metrics for real users, you need to put that data into action. Real-user performance data is useful for a few primary reasons:
 
+* Validating that your app performs as expected.
+* Identifying places where poor performance is negatively affecting conversions (whatever that means for your app).
+* Finding opportunities to improve the user experience and delight your users.
 
-
-
-
-## 解读数据
-
-开始收集针对实际用户的性能指标后，就需要将该数据付诸实践。
- 实际用户性能数据十分有用，主要原因在于以下几个方面：
-
-
-* 验证您的应用性能符合预期。
-* 识别不良性能对转化（根据您具体的应用而定）造成负面影响的地方。
-* 寻找改善用户体验和取悦用户的机会。
-
-绝对有必要将应用在移动设备和桌面设备上的性能进行比较。
- 下图显示桌面设备（蓝色）和移动设备（橙色）上的 TTI 分布情况。
- 正如此示例所示，移动设备上的 TTI 值明显大于桌面设备：
-
+One thing definitely worth comparing is how your app performs on mobile devices vs desktop. The following chart shows the distribution of TTI across desktop (blue) and mobile (orange). As you can see from this example, the TTI value on mobile was quite a bit longer than on desktop:
 
 <figure>
   <img src="/web/fundamentals/performance/images/perf-metrics-tti-mobile-v-desktop.png"
-       alt="桌面设备和移动设备上的 TTI 分布"/>
+       alt="TTI distribution across desktop and mobile"/>
 </figure>
 
-虽然这里的数据是来自特定的应用（您不应假定这些数据与您的数据相符，而应自己进行测试），但却给出了报告使用指标的方法示例：
+While the numbers here are app-specific (and you shouldn't assume they'd match your numbers, you should test for yourself), this gives you an example of how you might approach reporting on your usage metrics:
 
-
-
-#### 桌面设备
+#### Desktop
 
 <table>
   <tr>
-   <td><strong>百分位</strong></td>
-   <td align="right"><strong>TTI（秒）</strong></td>
+   <td><strong>Percentile</strong></td>
+   <td align="right"><strong>TTI (seconds)</strong></td>
    </td>
   </tr>
   <tr>
@@ -547,12 +394,12 @@ subscribeBtn.addEventListener('click', (event) => {
   </tr>
 </table>
 
-#### 移动设备
+#### Mobile
 
 <table>
   <tr>
-   <td><strong>百分位</strong></td>
-   <td align="right"><strong>TTI（秒）</strong></td>
+   <td><strong>Percentile</strong></td>
+   <td align="right"><strong>TTI (seconds)</strong></td>
    </td>
   </tr>
   <tr>
@@ -569,203 +416,136 @@ subscribeBtn.addEventListener('click', (event) => {
   </tr>
 </table>
 
-按移动设备与桌面设备划分结果，并以分布图的方式分析数据，可让您迅速了解实际用户的体验。
-例如，通过上表，我很容易便可发现，对于此应用，**10% 的移动用户需等待 12 秒以上才能进行交互！**
+Breaking your results down across mobile and desktop and analyzing the data as a distribution allows you to get quick insight into the experiences of real users. For example, looking at the above table, I can easily see that, for this app, **10% of mobile users took longer than 12 seconds to become interactive!**
 
+### How performance affects business
 
-### 性能对业务的影响
+One huge advantage of tracking performance in your analytics tools is you can then use that data to analyze how performance affects business.
 
-在分析工具中跟踪性能有一项巨大优势，即您之后可以利用该数据来分析性能对业务的影响。
+If you're tracking goal completions or ecommerce conversions in analytics, you could create reports that explore any correlations between these and the app's performance metrics. For example:
 
+* Do users with faster interactive times buy more stuff?
+* Do users who experience more long tasks during the checkout flow drop off at higher rates?
 
-如果您在分析工具中跟踪目标达成情况或电子商务转化情况，则可通过创建报告来探查两者与应用性能指标之间的关联。
- 例如：
+If correlations are found, it'll be substantially easier to make the business case that performance is important and should be prioritized.
 
-* 体验到更快交互速度的用户是否会购买更多商品？
-* 如果用户在结账流程中遇到较多耗时较长的任务，其离开率是否较高？
+### Load abandonment
 
-如果发现存在关联，即可轻松建立性能至关重要且应该优先考虑的商业案例。
+We know that users will often leave if a page takes too long to load. Unfortunately, this means that all of our performance metrics share the problem of [survivorship bias](https://en.wikipedia.org/wiki/Survivorship_bias), where the data doesn't include load metrics from people who didn't wait for the page to finish loading (which likely means the numbers are too low).
 
+While you can't track what the numbers would have been if those users had stuck around, you can track how often this happens as well as how long each user stayed for.
 
-### 加载放弃
+This is a bit tricky to do with Google Analytics since the analytics.js library is typically loaded asynchronously, and it may not be available when the user decides to leave. However, you don't need to wait for analytics.js to load before sending data to Google Analytics. You can send it directly via the [Measurement Protocol](/analytics/devguides/collection/protocol/v1/).
 
-我们知道，用户经常会因为页面加载时间过长而选择离开。
-不幸的是，这意味着我们的所有性能指标都存在[幸存者偏差](https://en.wikipedia.org/wiki/Survivorship_bias)，即数据不包括未等待页面加载完成的用户的加载指标（这很可能意味着数量过低）。
+This code adds a listener to the [`visibilitychange`](https://developer.mozilla.org/en-US/docs/Web/Events/visibilitychange) event (which fires if the page is being unloaded or goes into the background) and it sends the value of `performance.now()` at that point.
 
+    <script>
+    window.__trackAbandons = () => {
+      // Remove the listener so it only runs once.
+      document.removeEventListener('visibilitychange', window.__trackAbandons);
+      const ANALYTICS_URL = 'https://www.google-analytics.com/collect';
+      const GA_COOKIE = document.cookie.replace(
+        /(?:(?:^|.*;)\s*_ga\s*\=\s*(?:\w+\.\d\.)([^;]*).*$)|^.*$/, '$1');
+      const TRACKING_ID = 'UA-XXXXX-Y';
+      const CLIENT_ID =  GA_COOKIE || (Math.random() * Math.pow(2, 52));
+    
+      // Send the data to Google Analytics via the Measurement Protocol.
+      navigator.sendBeacon && navigator.sendBeacon(ANALYTICS_URL, [
+        'v=1', 't=event', 'ec=Load', 'ea=abandon', 'ni=1',
+        'dl=' + encodeURIComponent(location.href),
+        'dt=' + encodeURIComponent(document.title),
+        'tid=' + TRACKING_ID,
+        'cid=' + CLIENT_ID,
+        'ev=' + Math.round(performance.now()),
+      ].join('&'));
+    };
+    document.addEventListener('visibilitychange', window.__trackAbandons);
+    </script>
+    
 
+You can use this code by copying it into `<head>` of your document and replacing the `UA-XXXXX-Y` placeholder with your [tracking ID](https://support.google.com/analytics/answer/1008080).
 
+You'll also want to make sure you remove this listener once the page becomes interactive or you'll be reporting abandonment for loads where you were also reporting TTI.
 
-虽然您无法获悉如果这类用户逗留所产生的指标，但可以跟踪发生这种情况的频率以及每位用户逗留的时长。
+    document.removeEventListener('visibilitychange', window.__trackAbandons);
+    
 
+## Optimizing performance and preventing regression
 
+The great thing about defining user-centric metrics is when you optimize for them, you inevitably improve user experience as well.
 
-使用 Google Analytics 完成此任务比较棘手，因为 analytics.js 库通常是以异步方式加载，而且可能在用户决定离开前尚不可用。
- 但是，您无需等待 analytics.js 加载完成再将数据发送到 Google Analytics。
- 您可以直接通过
-[Measurement Protocol](/analytics/devguides/collection/protocol/v1/) 发送数据。
+One of the simplest ways to improve performance is to just ship less JavaScript code to the client, but in cases where reducing code size is not an option, it's critical that you think about *how* you deliver your JavaScript.
 
-以下代码为
-[`visibilitychange`](https://developer.mozilla.org/en-US/docs/Web/Events/visibilitychange) 事件添加侦听器（该事件在页面卸载或进入后台时触发），并在该事件触发时发送 `performance.now()` 值。
+### Optimizing FP/FCP
 
+You can lower the time to first paint and first contentful paint by removing any render blocking scripts or stylesheets from the `<head>` of your document.
 
+By taking the time to identify the minimal set of styles needed to show the user that "it's happening" and inlining them in the `<head>` (or using [HTTP/2 server push](/web/fundamentals/performance/http2/#server_push)), you can get incredibly fast first paint times.
 
-```
-<script>
-window.__trackAbandons = () => {
-  // Remove the listener so it only runs once.
-  document.removeEventListener('visibilitychange', window.__trackAbandons);
-  const ANALYTICS_URL = 'https://www.google-analytics.com/collect';
-  const GA_COOKIE = document.cookie.replace(
-    /(?:(?:^|.*;)\s*_ga\s*\=\s*(?:\w+\.\d\.)([^;]*).*$)|^.*$/, '$1');
-  const TRACKING_ID = 'UA-XXXXX-Y';
-  const CLIENT_ID =  GA_COOKIE || (Math.random() * Math.pow(2, 52));
+The [app shell pattern](/web/updates/2015/11/app-shell) is a great example of how to do this for [Progressive Web Apps](/web/progressive-web-apps/).
 
-  // Send the data to Google Analytics via the Measurement Protocol.
-  navigator.sendBeacon && navigator.sendBeacon(ANALYTICS_URL, [
-    'v=1', 't=event', 'ec=Load', 'ea=abandon', 'ni=1',
-    'dl=' + encodeURIComponent(location.href),
-    'dt=' + encodeURIComponent(document.title),
-    'tid=' + TRACKING_ID,
-    'cid=' + CLIENT_ID,
-    'ev=' + Math.round(performance.now()),
-  ].join('&'));
-};
-document.addEventListener('visibilitychange', window.__trackAbandons);
-</script>
-```
+### Optimizing FMP/TTI
 
-要使用此代码，请将其复制到文档的 `<head>` 中，并将
-`UA-XXXXX-Y` 占位符替换为您的[跟踪 ID](https://support.google.com/analytics/answer/1008080)。
+Once you've identified the most critical UI elements on your page (the hero elements), you should ensure that your initial script load contains just the code needed to get those elements rendered and make them interactive.
 
+Any code unrelated to your hero elements that is included in your initial JavaScript bundle will slow down your time to interactivity. There's no reason to force your user's devices to download and parse JavaScript code they don't need right away.
 
-此外，您还应确保在页面可进行交互时移除此侦听器，否则您在报告 TTI 时还需报告放弃加载。
+As a general rule, you should try as hard as possible to minimize the time between FMP and TTI. In cases where it's not possible to minimize this time, it's absolutely critical that your interfaces make it clear that the page isn't yet interactive.
 
+One of the most frustrating experiences for a user is tapping on an element and then having nothing happen.
 
+### Preventing long tasks
 
-```
-document.removeEventListener('visibilitychange', window.__trackAbandons);
-```
+By splitting up your code and prioritizing the order in which it's loaded, not only can you get your pages interactive faster, but you can reduce long tasks and then hopefully have less input latency and fewer slow frames.
 
-## 优化性能以及避免性能下降
+In addition to splitting up code into separate files, you can also split up large chunks of synchronous code into smaller chunks that can execute asynchronously or be [deferred to the next idlepoint](/web/updates/2015/08/using-requestidlecallback). By executing this logic asynchronously in smaller chunks, you leave room on the main thread for the browser to respond to user input.
 
-定义以用户为中心的指标的好处在于，您优化这些指标时，用户体验必然也会同时改善。
+Lastly, you should make sure you're testing your third party code and holding any slow running code accountable. Third party ads or tracking scripts that cause lots of long tasks may end up hurting your business more than they're helping it.
 
+## Preventing regressions
 
-改善性能最简单的一种方法是，直接减少发送到客户端的 JavaScript
-代码，但如果无法缩减代码长度，则务必要思考*如何*提供 JavaScript。
+This article has focused heavily on performance measurement on real users, and while it's true that RUM data is the performance data that ultimately matters, lab data is still critical in ensuring your app performs well (and doesn't regress) prior to releasing new features. Lab tests are ideal for regression detection, as they run in a controlled environment and are far less prone to the random variability of RUM tests.
 
+Tools like [Lighthouse](/web/tools/lighthouse/) and [Web Page Test](https://www.webpagetest.org/) can be integrated into your continuous integration server, and you can write tests that fail a build if key metrics regress or drop below a certain threshold.
 
-### 优化 FP/FCP
+And for code already released, you can add [custom alerts](https://support.google.com/analytics/answer/1033021) to inform you if there are unexpected spikes in the occurrence of negative performance events. This could happen, for example, if a third party releases a new version of one of their services and suddenly your users start seeing significantly more long tasks.
 
-从文档的 `<head>` 中移除任何阻塞渲染的脚本或样式表，可以减少首次绘制和首次内容绘制前的等待时间。
-
-
-花时间确定向用户指出“正在发生”所需的最小样式集，并将其内联到 `<head>` 中（或者使用 [HTTP/2 服务器推送](/web/fundamentals/performance/http2/#server_push))），即可实现极短的首次绘制时间。
-
-
-
-
-[应用 shell 模式](/web/updates/2015/11/app-shell)可以很好地说明如何针对[渐进式网页应用](/web/progressive-web-apps/)实现这一点。
-
-
-### 优化 FMP/TTI
-
-确定页面上最关键的界面元素（主角元素）之后，您应确保初始脚本加载仅包含渲染这些元素并使其可交互所需的代码。
-
-
-
-初始
-JavaScript 软件包中所包含的任何与主角元素无关的代码都会延长可交互时间。 没有理由强迫用户设备下载并解析当前不需要的 JavaScript 代码。
-
-
-
-一般来说，您应该尽可能缩短 FMP 与 TTI 之间的时间。
- 如果无法最大限度缩短此时间，界面绝对有必要明确指出页面尚不可交互。
-
-
-
-对于用户来说，其中一种最令人失望的体验就是点按元素后毫无反应。
-
-
-### 避免出现耗时较长的任务
-
-拆分代码并按照优先顺序排列要加载的代码，不仅可以缩短页面可交互时间，还可以减少耗时较长的任务，然后即有希望减少输入延迟及慢速帧。
-
-
-
-除了将代码拆分为多个单独的文件之外，您还可将大型同步代码块拆分为较小的块，以便以异步方式执行，或者[推迟到下一空闲点](/web/updates/2015/08/using-requestidlecallback)。
-以异步方式在较小的块中执行此逻辑，可在主线程中留出空间，供浏览器响应用户输入。
-
-
-最后，您应确保测试第三方代码，并对任何低速运行的代码追责。
- 产生大量耗时较长任务的第三方广告或跟踪脚本对您业务的伤害大于帮助。
-
-
-
-## 避免性能下降
-
-本文重点强调的是针对实际用户的性能测量，虽然 RUM 数据确实是十分重要的性能数据，但实验室数据对于在发布新功能前确保应用性能良好（而且不会下降）而言仍然十分关键。
- 实验室测试非常适合用于检测性能是否下降，因为这些测试是在受控环境中运行，出现随机变化的可能性远低于 RUM 测试。
-
-
-
-[Lighthouse](/web/tools/lighthouse/) 和 [Web Page
-Test](https://www.webpagetest.org/) 等工具可以集成到持续集成服务器中，而且您可以编写相应的测试，以在关键指标退化或下降到低于特定阈值时将构件判定为失败。
-
-
-
-对于已发布的代码，您可以添加[自定义提醒](https://support.google.com/analytics/answer/1033021)，以通知您负面性能事件的发生率是否意外突增。
-例如，如果第三方发布其某个服务的新版本，而您的用户突然开始看到大量新增的耗时较长任务，就代表出现这种情况。
-
-
-
-为成功避免性能下降，您必须在实验室和实际运行环境中针对发行的每个新功能进行性能测试。
-
+To successfully prevent regressions you need to be testing performance in both the lab and the wild with every new feature releases.
 
 <figure>
   <img src="/web/fundamentals/performance/images/perf-metrics-test-cycle.png"
-       alt="发布过程中 RUM 和实验室测试的流程图"/>
+       alt="A flow chart RUM and lab testing in the release process"/>
 </figure>
 
-## 总结与前景展望
+## Wrapping up and looking forward
 
-在过去的一年中，我们已在于浏览器中向开发者公开以用户为中心的指标方面取得巨大进步，但工作还没有结束，还有许多计划尚待完成。
+We've made significant strides in the last year in exposing user-centric metrics to developers in the browser, but we're not done yet, and we have a lot more planned.
 
+We'd really like to standardize time to interactive and hero element metrics, so developers won't have to measure these themselves or depend on polyfills. We'd also like to make it easier for developers to attribute dropped frames and input latency to particular long tasks and the code that caused them.
 
+While we have more work to do, we're excited about the progress we've made. With new APIs like `PerformanceObserver` and long tasks supported natively in the browser, developers finally have the primitives they need to measure performance on real users without degrading their experience.
 
-我们真的希望将可交互时间和主角元素指标标准化，让开发者不必自己测量这些指标或依赖于 polyfill。
- 我们还希望帮助开发者更轻松地找到导致掉帧和输入延迟的特定耗时较长任务，以及产生这些任务的代码。
+The metrics that matter the most are the ones that represent real user experiences, and we want to make it as easy as possible for developers to delight their users and create great applications.
 
-
-
-虽然还有很多工作要做，但我们对已经取得的进展感到兴奋。 凭借 `PerformanceObserver` 等新 API，以及浏览器对耗时较长任务的原生支持，开发者终于拥有所需的原语，能够针对实际用户测量性能而不会影响用户体验。
-
-
-
-
-能够代表实际用户体验的指标就是最重要的指标，我们希望尽可能地为开发者提供便利，助其取悦用户并创建出色的应用。
-
-
-
-## 保持联系
+## Staying connected
 
 {% include "web/_shared/helpful.html" %}
 
-文件规范问题：
+File spec issues:
 
-* [https://github.com/w3c/longtasks/issues](https://github.com/w3c/longtasks/issues)
-* [https://github.com/WICG/paint-timing/issues](https://github.com/WICG/paint-timing/issues)
-* [https://github.com/w3c/performance-timeline/issues](https://github.com/w3c/performance-timeline/issues)
+* <https://github.com/w3c/longtasks/issues>
+* <https://github.com/WICG/paint-timing/issues>
+* <https://github.com/w3c/performance-timeline/issues>
 
-文件 polyfill 问题：
+File polyfill issues:
 
-* [https://github.com/GoogleChrome/tti-polyfill/issues](https://github.com/GoogleChrome/tti-polyfill/issues)
+* <https://github.com/GoogleChrome/tti-polyfill/issues>
 
-我要提问：
+Ask questions:
 
-* [progressive-web-metrics@chromium.org](mailto:progressive-web-metrics@chromium.org)
-* [public-web-perf@w3.org](mailto:public-web-perf@w3.org)
+* <progressive-web-metrics@chromium.org>
+* <public-web-perf@w3.org>
 
-对新 API 建议问题表示支持：
+Voice your support on concerns on new API proposals:
 
-* [https://github.com/w3c/charter-webperf/issues](https://github.com/w3c/charter-webperf/issues)
+* <https://github.com/w3c/charter-webperf/issues>
