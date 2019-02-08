@@ -1,316 +1,304 @@
-project_path: /web/_project.yaml
-book_path: /web/updates/_book.yaml
-description: Generic Sensor API从Chrome 63开始作为原始试用版（Origin Trials）.
+project_path: /web/_project.yaml book_path: /web/updates/_book.yaml description: Generic Sensor API is enabled by default in Chrome 67 or later.
 
-{# wf_updated_on: 2018-03-21 #}
-{# wf_published_on: 2017-09-18 #}
-{# wf_tags: sensors,origintrials,chrome63,news #}
-{# wf_blink_components: Blink>Sensor #}
-{# wf_featured_image: /web/updates/images/generic/screen-rotation.png #}
-{# wf_featured_snippet: 许多原生应用程序使用传感器来支持高级功能。如果能有一个Web传感器API去缩小原生和Web应用程序之间的差距是不是很棒？现在，你可以使用Generic Sensor API, 目前已经在Chrome63中作为原始试验版（Origin Trials）. #}
+{# wf_updated_on: 2018-04-11 #} {# wf_published_on: 2017-09-18 #} {# wf_tags: sensors,chrome63,chrome67,news #} {# wf_blink_components: Blink>Sensor #} {# wf_featured_image: /web/updates/images/generic/screen-rotation.png #} {# wf_featured_snippet: Sensors are used in many native applications to enable advanced features. Wouldn't it be nice to bridge the gap between native and the web? You can do it with Generic Sensor API, which is enabled by default in Chrome 67 or later. #}
 
-# Web传感器! {: .page-title }
+# Sensors For The Web! {: .page-title }
 
-{% include "web/_shared/contributors/alexshalamov.html" %}
-{% include "web/_shared/contributors/pozdnyakov.html" %}
+{% include "web/_shared/contributors/alexshalamov.html" %} {% include "web/_shared/contributors/pozdnyakov.html" %}
 
-今天，传感器数据被用于许多原生应用程序，以实现诸如沉浸式游戏，健身追踪，AR，VR等用例。如果能有一个Web传感器API去缩小原生和Web应用程序之间的差距是不是很酷？[Generic Sensor API](https://www.w3.org/TR/generic-sensor/)，就是为Web而诞生的！
+Today, sensor data is used in many native applications to enable use cases such as immersive gaming, fitness tracking, and augmented or virtual reality. Wouldn't it be cool to bridge the gap between native and web applications? The [Generic Sensor API](https://www.w3.org/TR/generic-sensor/), For The Web!
 
-## 什么是Generic Sensor API? {: #what-is-generic-sensor-api }
+## What is Generic Sensor API? {: #what-is-generic-sensor-api }
 
-[Generic Sensor API](https://www.w3.org/TR/generic-sensor/)提供了一套接口把传感器设备暴露到Web平台。该API由基础[Sensor](https://w3c.github.io/sensors/#the-sensor-interface)接口和一组构建于上方的具体传感器类组成。拥有基础接口可以简化具体传感器类的实现和规范流程。比如你可以看一下[Gyroscope](https://w3c.github.io/gyroscope/#gyroscope-interface)类，它非常的简短！核心功能由基础Sensor接口提供，Gyroscope类仅用了三个代表角速度的属性扩展它。
+The [Generic Sensor API](https://www.w3.org/TR/generic-sensor/) is a set of interfaces which expose sensor devices to the web platform. The API consists of the base [Sensor](https://w3c.github.io/sensors/#the-sensor-interface) interface and a set of concrete sensor classes built on top. Having a base interface simplifies the implementation and specification process for the concrete sensor classes. For instance, take a look at the [Gyroscope](https://w3c.github.io/gyroscope/#gyroscope-interface) class, it is super tiny! The core functionality is specified by the base interface, and Gyroscope merely extends it with three attributes representing angular velocity.
 
-通常，具体的传感器类代表平台上的实际传感器，例如加速计或陀螺仪。但是，在某些情况下，传感器类的实现会[融合](https://w3c.github.io/sensors/#sensor-fusion)来自多个平台传感器的数据，并以便捷的方式向用户展示结果。例如，[AbsoluteOrientation](https://www.w3.org/TR/orientation-sensor/#absoluteorientationsensor)传感器基于从加速度计，陀螺仪和磁力计获得的数据提供即用型4x4旋转矩阵。
+Typically a concrete sensor class represents an actual sensor on the platform e.g., accelerometer or gyroscope. However, in some cases, implementation of a sensor class [fuses](https://w3c.github.io/sensors/#sensor-fusion) data from several platform sensors and exposes the result in a convenient way to the user. For example, the [AbsoluteOrientation](https://www.w3.org/TR/orientation-sensor/#absoluteorientationsensor) sensor provides a ready-to-use 4x4 rotation matrix based on the data obtained from the accelerometer, gyroscope and magnetometer.
 
-您可能认为Web平台已经提供了一些传感器数据接口，例如，[DeviceMotion](/web/fundamentals/native-hardware/device-orientation/)和[DeviceOrientation](/web/fundamentals/native-hardware/device-orientation/)事件暴露运动传感器数据，还有一些其他实验性API提供来自环境传感器的数据。那么，为什么我们还需要这个新的API呢？
+You might think that the web platform already provides sensor data and you are absolutely right! For instance, [DeviceMotion](/web/fundamentals/native-hardware/device-orientation/) and [DeviceOrientation](/web/fundamentals/native-hardware/device-orientation/) events expose motion sensor data, while other experimental APIs provide data from an environmental sensors. So why do we need new API?
 
-与现有传感器接口相比，Generic Sensor API有许多优势：
+Comparing to the existing interfaces, Generic Sensor API provides great number of advantages:
 
-- Generic Sensor API是一个传感器框架，可以使用新的传感器类轻松扩展，并且每个类都将保留通用接口。为一种传感器类型编写的客户端代码可以重新用于另一种，只需很少的修改！
-- 您可以配置传感器，例如，设置适合您应用需求的采样频率。
-- 您可以检测平台上是否有对应传感器。
-- 传感器读数具有高精度时间戳，可以更好地与应用程序中的其他活动同步。
-- 传感器数据模型和坐标系统明确定义，允许浏览器供应商实现可互操作的解决方案。
-- Generic Sensor 的基础接口没有绑定到DOM（Navigator和Window对象），为将来在Service Workers中使用相同的API或在Headless JS运行时实现Generic Sensor API（例如在嵌入式设备上）开辟了的机会。
-- 与传统的传感器API相比，[安全性和隐私](#privacy-and-security)方面是Generic Sensor API的首要任务，并且提供了更好的安全级别。目前已经集成了Permissions API。
-- 自动的[屏幕坐标同步](#synchronization-with-screen-coordinates)目前可于Accelerometer，Gyroscope，LinearAccelerationSensor，AbsoluteOrientationSensor，RelativeOrientationSensor和Magnetometer。
+- Generic Sensor API is a sensor framework that can be easily extended with new sensor classes and each of these classes will keep the generic interface. The client code written for one sensor type can be reused for another one with very few modifications!
+- You can configure sensor, for example, set the sampling frequency suitable for your application needs.
+- You can detect whether a sensor is available on the platform.
+- Sensor readings have high precision timestamps, enabling better synchronization with other activities in your application.
+- Sensor data models and coordinate systems are clearly defined, allowing browser vendors to implement interoperable solutions.
+- The Generic Sensor based interfaces are not bound to the DOM (neither Navigator nor Window objects), and it opens up future opportunities of using the same API within service workers or implementing Generic Sensor API in headless JS runtimes, for instance, on embedded devices.
+- [Security and privacy](#privacy-and-security) aspects are the top priority for the Generic Sensor API and provide much better security level compared to older sensor APIs. There is integration with Permissions API.
+- Automatic [synchronization with screen coordinates](#synchronization-with-screen-coordinates) is available for Accelerometer, Gyroscope, LinearAccelerationSensor, AbsoluteOrientationSensor, RelativeOrientationSensor and Magnetometer.
 
-## Chrome中的Generic Sensor API {: #generic-sensor-api-in-chrome }
+## Generic Sensor APIs in Chrome {: #generic-sensor-api-in-chrome }
 
-在撰写本文时，Chrome支持以下几种传感器。
+At the time of writing, Chrome supports several sensors that you can experiment with.
 
-**运动传感器（Motion sensors）：**
+**Motion sensors:**
 
-- 加速度计（Accelerometer）
-- 陀螺仪（Gyroscope）
-- 线性加速度传感器（LinearAccelerationSensor）
-- 绝对方向传感器（AbsoluteOrientationSensor）
-- 相对方向传感器（RelativeOrientationSensor）
+- Accelerometer
+- Gyroscope
+- LinearAccelerationSensor
+- AbsoluteOrientationSensor
+- RelativeOrientationSensor
 
-**环境传感器（Environmental sensors）：**
+**Environmental sensors:**
 
-- 环境光传感器（AmbientLightSensor）
-- 磁力计（Magnetometer）
+- AmbientLightSensor
+- Magnetometer
 
-您可以通过打开功能标志来启用通用传感器API以用于开发目的。访问 [chrome://flags/#enable-generic-sensor](chrome://flags/#enable-generic-sensor)启用运动传感器或访问[chrome://flags/#enable-generic-sensor-extra-classes](chrome://flags/#enable-generic-sensor-extra-classes)启用环境传感器。重新启动Chrome，您就可以开始体验Generic Sensor API。
+The Generic Sensor-based motion sensor classes are enabled by default in Chrome starting from Chrome 67. Use the <chrome://flags/#enable-generic-sensor> feature flag to enable motion sensors on the previous Chrome versions.
 
-<iframe width="100%" height="320" src="https://www.chromestatus.com/feature/5698781827825664?embed" style="border: 1px solid #CCC" allowfullscreen>
-</iframe>
+You can enable environmental sensors for development purposes by turning on a feature flag. Go to <chrome://flags/#enable-generic-sensor-extra-classes> to enable environmental sensors. Restart Chrome and you should be good to go. <iframe width="100%" height="320"
+  src="https://www.chromestatus.com/feature/5698781827825664?embed"
+  style="border: 1px solid #CCC" allowfullscreen mark="crwd-mark">
+</iframe> 
 
-如需了解浏览器实现状态的更多信息，请访问[chromestatus.com](https://www.chromestatus.com/features/5698781827825664?embed)。
+More information on browser implementation status can be found on [chromestatus.com](https://www.chromestatus.com/features/5698781827825664?embed)
 
-## 运动传感器原始试验版（Origin Trials） {: #motion-sensors-origin-trials }
+## What are all these sensors? How can I use them? {: #what-are-sensors-how-to-use-them }
 
-为了获得宝贵的反馈意见，Generic Sensor API从Chrome 63开始作为[原始试用版](https://bit.ly/OriginTrials)。您需要[请求令牌](http://bit.ly/OriginTrialSignup)，以便该功能可以自动启用在您的Chrome上，而无需启用Chrome标志。
+Sensors is a quite specific area which might need a brief introduction. If you are familiar with sensors, you can jump right to the [hands-on coding section](#lets-code). Otherwise, let’s look at each supported sensor in detail.
 
-## 这些传感器是什么？我们如何使用它们？{: #what-are-sensors-how-to-use-them }
-
-传感器是一个相当特殊的领域，可能需要简单介绍。如果您熟悉传感器，则可以直接跳到[开始编码章节](#lets-code)。否则，我们来详细了解每个支持的传感器。
-
-### 加速度和线性加速度 {: #acceleration-and-linear-accelerometer-sensor }
+### Accelerometer and linear acceleration sensor {: #acceleration-and-linear-accelerometer-sensor }
 
 <div class="attempt-right">
   <figure>
-    <img src="/web/updates/images/2017/09/sensors/accelerometer.gif" alt="Accelerometer sensor measurements">
-    <figcaption><b>图1</b>: 测量加速度传感器</figcaption>
+    <img src="/web/updates/images/2017/09/sensors/accelerometer.gif"
+         alt="Accelerometer sensor measurements">
+    <figcaption><b>Figure 1</b>: Accelerometer sensor measurements</figcaption>
   </figure>
 </div>
 
-[加速度](https://www.w3.org/TR/accelerometer/#intro)传感器测量三个轴（X，Y和Z）上承载传感器的设备的加速度。这个传感器是一个惯性传感器，这意味着当设备处于线性自由落体时，总测得的加速度为0m/s<sup>2</sup>，当一个设备平躺在桌子上时，向上方向（Z轴）的加速度将会等于地球的重力，即g≈+9.8m/s<sup>2</sup>，因为它测量的是桌子向上推动设备的力。如果将设备推向右侧，则X轴上的加速度为正，如果设备从右侧加速至左侧，则加速度为负。
+The [Accelerometer](https://www.w3.org/TR/accelerometer/#intro) sensor measures acceleration of a device hosting the sensor on three axes (X, Y and Z). This sensor is an inertial sensor, meaning that when the device is in linear free fall, the total measured acceleration would be 0 m/s<sup>2</sup>, and when a device lying flat on a table, the acceleration in upwards direction (Z axis) will be equal to the Earth’s gravity, i.e. g ≈ +9.8 m/s<sup>2</sup> as it is measuring the force of the table pushing the device upwards. If you push device to the right, acceleration on X axis would be positive, or negative if device is accelerated from right toward the left.
 
 <div class="clearfix"></div>
 
-加速度计可用于如下步骤：步数计算，动作感应或简单的设备定向。通常情况下，加速度计测量结合其他来源的数据，以创建融合传感器，如方向传感器。
+Accelerometers can be used for things like: step counting, motion sensing or simple device orientation. Quite often, accelerometer measurements are combined with data from other sources in order to create fusion sensors, such as, orientation sensors.
 
-[线性加速度传感器](https://w3c.github.io/accelerometer/#linearaccelerationsensor-interface)测量装置传感器的设备的加速度，不包括的重力的作用。例如，当设备处于静止状态时，传感器在三个轴上测量的加速度≈0m/<sup>2</sup>。
+The [LinearAccelerationSensor](https://w3c.github.io/accelerometer/#linearaccelerationsensor-interface) measures acceleration that is applied to the device hosting the sensor, excluding the contribution of a gravity force. When a device is at rest, for instance, lying flat on the table, the sensor would measure ≈ 0 m/s<sup>2</sup> acceleration on three axes.
 
-### 陀螺仪 {: #gyroscope-sensor }
+### Gyroscope {: #gyroscope-sensor }
 
 <div class="attempt-right">
   <figure>
-    <img src="/web/updates/images/2017/09/sensors/gyroscope.gif" alt="Gyroscope sensor measurements">
-    <figcaption><b>图2</b>: 测量陀螺仪传感器</figcaption>
+    <img src="/web/updates/images/2017/09/sensors/gyroscope.gif"
+        alt="Gyroscope sensor measurements">
+    <figcaption><b>Figure 2</b>: Gyroscope sensor measurements</figcaption>
   </figure>
 </div>
 
-[陀螺仪](https://w3c.github.io/gyroscope/#intro)传感器测量设备在偏转，倾斜时相对于X，Y和Z轴的角速度（rad/s）。大多数消费类设备都有机械（[MEMS](https://en.wikipedia.org/wiki/Microelectromechanical_systems)）陀螺仪，它们是基于[惯性科里奥利力](https://en.wikipedia.org/wiki/Coriolis_force)来测量旋转速率的惯性传感器。MEMS陀螺仪容易产生漂移，这是由传感器的重力灵敏度引起的，这会使传感器的内部机械系统变形。陀螺仪以相对高的频率振荡，例如10kHz，因此与其他传感器相比可能消耗更多的功率。
+The [Gyroscope](https://w3c.github.io/gyroscope/#intro) sensor measures angular velocity in rad/s around the device’s local X, Y and Z axis. Most of the consumer devices have mechanical ([MEMS](https://en.wikipedia.org/wiki/Microelectromechanical_systems)) gyroscopes, which are inertial sensors that measure rotation rate based on [inertial Coriolis force](https://en.wikipedia.org/wiki/Coriolis_force). A MEMS gyroscopes are prone to drift that is caused by sensor’s gravitational sensitivity which deforms the sensor’s internal mechanical system. Gyroscopes oscillate at relative high frequencies, e.g., 10’s of kHz, and therefore, might consume more power compared to other sensors.
 
 <div class="clearfix"></div>
 
-### 方向传感器 {: #orientation-sensors }
+### Orientation sensors {: #orientation-sensors }
 
 <div class="attempt-right">
   <figure>
-    <img src="/web/updates/images/2017/09/sensors/orientation.gif" alt="AbsoluteOrientation sensor measurements">
-    <figcaption><b>图3</b>: 测量绝对方向传感器</figcaption>
+    <img src="/web/updates/images/2017/09/sensors/orientation.gif"
+         alt="AbsoluteOrientation sensor measurements">
+    <figcaption><b>Figure 3</b>: AbsoluteOrientation sensor measurements</figcaption>
   </figure>
 </div>
 
-[绝对方向传感器](https://w3c.github.io/orientation-sensor/#orientationsensor-interface)是一种的融合传感器，测量设备相对于地球坐标系的旋转，而[相对方向传感器](https://w3c.github.io/orientation-sensor/#relativeorientationsensor-interface)则提供设备相对于固定的参考坐标系统的旋转数据。
+The [AbsoluteOrientationSensor](https://w3c.github.io/orientation-sensor/#orientationsensor-interface) is a fusion sensor that measures rotation of a device in relation to the Earth’s coordinate system, while the [RelativeOrientationSensor](https://w3c.github.io/orientation-sensor/#relativeorientationsensor-interface) provides data representing rotation of a device hosting motion sensors in relation to a stationary reference coordinate system.
 
-所有现代3D JavaScript框架均支持四元数和旋转矩阵来表示旋转。但是，如果你直接使用WebGL，[方向传感器](https://w3c.github.io/orientation-sensor/#orientationsensor-populatematrix)接口提供了便捷的方法用于WebGL兼容的旋转矩阵。这里有几个代码示例：
+All modern 3D JavaScript frameworks support quaternions and rotation matrices to represent rotation; however, if you use WebGL directly, the [OrientationSensor](https://w3c.github.io/orientation-sensor/#orientationsensor-populatematrix) interface has convenient methods for WebGL compatible rotation matrices. Here are few snippets:
 
 <div class="clearfix"></div>
 
 **[three.js](https://threejs.org/docs/index.html#api/core/Object3D.quaternion)**
 
-```
-let torusGeometry = new THREE.TorusGeometry(7, 1.6, 4, 3, 6.3);
-let material = new THREE.MeshBasicMaterial({ color: 0x0071C5 });
-let torus = new THREE.Mesh(torusGeometry, material);
-scene.add(torus);
-
-// 使用四元数更新网格旋转。
-const sensorAbs = new AbsoluteOrientationSensor();
-sensorAbs.onreading = () => torus.quaternion.fromArray(sensorAbs.quaternion);
-sensorAbs.start();
-
-//使用旋转矩阵更新网格旋转。
-const sensorRel = new RelativeOrientationSensor();
-let rotationMatrix = new Float32Array(16);
-sensor_rel.onreading = () => {
-    sensorRel.populateMatrix(rotationMatrix);
-    torus.matrix.fromArray(rotationMatrix);
-}
-sensorRel.start();
-```
+    let torusGeometry = new THREE.TorusGeometry(7, 1.6, 4, 3, 6.3);
+    let material = new THREE.MeshBasicMaterial({ color: 0x0071C5 });
+    let torus = new THREE.Mesh(torusGeometry, material);
+    scene.add(torus);
+    
+    // Update mesh rotation using quaternion.
+    const sensorAbs = new AbsoluteOrientationSensor();
+    sensorAbs.onreading = () => torus.quaternion.fromArray(sensorAbs.quaternion);
+    sensorAbs.start();
+    
+    // Update mesh rotation using rotation matrix.
+    const sensorRel = new RelativeOrientationSensor();
+    let rotationMatrix = new Float32Array(16);
+    sensor_rel.onreading = () => {
+        sensorRel.populateMatrix(rotationMatrix);
+        torus.matrix.fromArray(rotationMatrix);
+    }
+    sensorRel.start();
+    
 
 **[BABYLON](http://doc.babylonjs.com/classes/3.0/abstractmesh#rotationquaternion-quaternion-classes-3-0-quaternion-)**
 
-```
-const mesh = new BABYLON.Mesh.CreateCylinder("mesh", 0.9, 0.3, 0.6, 9, 1, scene);
-const sensorRel = new RelativeOrientationSensor({frequency: 30});
-sensorRel.onreading = () => mesh.rotationQuaternion.FromArray(sensorRel.quaternion);
-sensorRel.start();
-```
+    const mesh = new BABYLON.Mesh.CreateCylinder("mesh", 0.9, 0.3, 0.6, 9, 1, scene);
+    const sensorRel = new RelativeOrientationSensor({frequency: 30});
+    sensorRel.onreading = () => mesh.rotationQuaternion.FromArray(sensorRel.quaternion);
+    sensorRel.start();
+    
 
 **[WebGL](https://www.khronos.org/registry/webgl/specs/latest/2.0/)**
 
-```
-// 当有新的读数时，初始化传感器和更新模型矩阵。
-let modMatrix = new Float32Array([1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1]);
-const sensorAbs = new AbsoluteOrientationSensor({frequency: 60});
-sensorAbs.onreading = () => sensorAbs.populateMatrix(modMatrix);
-sensorAbs.start();
+    // Initialize sensor and update model matrix when new reading is available.
+    let modMatrix = new Float32Array([1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1]);
+    const sensorAbs = new AbsoluteOrientationSensor({frequency: 60});
+    sensorAbs.onreading = () => sensorAbs.populateMatrix(modMatrix);
+    sensorAbs.start();
+    
+    // Somewhere in rendering code, update vertex shader attribute for the model
+    gl.uniformMatrix4fv(modMatrixAttr, false, modMatrix);
+    
 
-// Somewhere in rendering code, update vertex shader attribute for the model
-gl.uniformMatrix4fv(modMatrixAttr, false, modMatrix);
-```
+Orientation sensors enable various use cases, such as immersive gaming, augmented and virtual reality.
 
-方向传感器支持各种用例，如沉浸式游戏，AR和VR。
+For more information about motion sensors, advanced use cases, and requirements, please check [motion sensors explainer](https://www.w3.org/TR/motion-sensors/) document.
 
-如果你想了解运动传感器的更多信息，比如高级用例和需求说明等，请参考[运动传感器解释](https://www.w3.org/TR/motion-sensors/)文档。
+## Synchronization with screen coordinates {: #synchronization-with-screen-coordinates }
 
-## 屏幕坐标系同步 {: #synchronization-with-screen-coordinates }
-
-默认情况下，[空间传感器](https://w3c.github.io/sensors/#spatial-sensor)的读数将在绑定到设备的本地坐标系中解析，并且不考虑屏幕方向。
-
-<figure>
-  <img src="/web/updates/images/2017/09/sensors/device_coordinate_system.png" alt="Device coordinate system">
-  <figcaption><b>图4</b>: 设备坐标系</figcaption>
-</figure>
-
-但是，许多使用案例（如游戏，AR和VR）都需要传感器读数在绑定于屏幕方向的坐标系中解析。
+By default, [spatial sensors'](https://w3c.github.io/sensors/#spatial-sensor) readings are resolved in a local coordinate system that is bound to the device and does not take screen orientation into account.
 
 <figure>
-  <img src="/web/updates/images/2017/09/sensors/screen_coordinate_system.png" alt="Screen coordinate system">
-  <figcaption><b>图5</b>: 屏幕坐标系</figcaption>
+  <img src="/web/updates/images/2017/09/sensors/device_coordinate_system.png"
+       alt="Device coordinate system">
+  <figcaption><b>Figure 4</b>: Device coordinate system</figcaption>
 </figure>
 
-以前，传感器读数重新映射到屏幕坐标必须在JavaScript中实现。这种方法效率低下，并且也极大地增加了Web应用程序代码的复杂性：Web应用程序必须监视屏幕方向更改并执行传感器读数的坐标转换，这对欧拉角或四元数来说并不是简单的事情。
+However, many use cases like games or augmented and virtual reality require sensor readings to be resolved in a coordinate system that is instead bound to the screen orientation.
 
-Generic Sensor API提供了更简单可靠的解决方案！本地坐标系对于所有定义的空间传感器类都是可配置的：Accelerometer、Gyroscope、LinearAccelerationSensor、AbsoluteOrientationSensor、RelativeOrientationSensor和Magnetometer。通过将`referenceFrame`选项传递给传感器对象构造函数，用户可以定义返回的读数是否将在[设备](https://w3c.github.io/accelerometer/#device-coordinate-system)或[屏幕](https://w3c.github.io/accelerometer/#screen-coordinate-system)坐标中解析。
+<figure>
+  <img src="/web/updates/images/2017/09/sensors/screen_coordinate_system.png"
+       alt="Screen coordinate system">
+  <figcaption><b>Figure 5</b>: Screen coordinate system</figcaption>
+</figure>
 
-```
-// 当有新的读数时，初始化传感器和更新模型矩阵。
-// 或者,可以写成 RelativeOrientationSensor({referenceFrame: "device"}).
-const sensorRelDevice = new RelativeOrientationSensor();
+Previously, remapping of sensor readings to screen coordinates had to be implemented in JavaScript. This approach is inefficient and it also quite significantly increases the complexity of the web application code: the web application must watch screen orientation changes and perform coordinates transformations for sensor readings, which is not a trivial thing to do for Euler angles or quaternions.
 
-// 传感器读数在屏幕坐标系统中得到解析。不需要手动重新映射！
-const sensorRelScreen = new RelativeOrientationSensor({referenceFrame: "screen"});
-```
+The Generic Sensor API provides much simpler and reliable solution! The local coordinate system is configurable for all defined spatial sensor classes: Accelerometer, Gyroscope, LinearAccelerationSensor, AbsoluteOrientationSensor, RelativeOrientationSensor and Magnetometer. By passing the `referenceFrame` option to the sensor object constructor the user defines whether the returned readings will be resolved in [device](https://w3c.github.io/accelerometer/#device-coordinate-system) or [screen](https://w3c.github.io/accelerometer/#screen-coordinate-system) coordinates.
 
-Note: 该`referenceFrame`选项支持在Chrome 66或更高版本。
+    // Sensor readings are resolved in the Device coordinate system by default.
+    // Alternatively, could be RelativeOrientationSensor({referenceFrame: "device"}).
+    const sensorRelDevice = new RelativeOrientationSensor();
+    
+    // Sensor readings are resolved in the Screen coordinate system. No manual remapping is required!
+    const sensorRelScreen = new RelativeOrientationSensor({referenceFrame: "screen"});
+    
 
-## 开始编码! {: #lets-code }
+Note: The `referenceFrame` sensor option is supported in Chrome 66 or later.
 
-Generic Sensor API非常容易上手！Sensor接口提供了[`start()`](https://w3c.github.io/sensors/#sensor-start)和[`stop()`](https://w3c.github.io/sensors/#sensor-stop)方法来控制传感器状态和事件处理用于接收传感器状态，错误和新的可用的读数的通知。具体的传感器类通常将其特定的读取属性添加到基类里。
+## Let’s code! {: #lets-code }
 
-### 开发环境
+The Generic Sensor API is very simple and easy-to-use! The Sensor interface has [`start()`](https://w3c.github.io/sensors/#sensor-start) and [`stop()`](https://w3c.github.io/sensors/#sensor-stop) methods to control sensor state and several event handlers for receiving notifications about sensor activation, errors and newly available readings. The concrete sensor classes usually add their specific reading attributes to the base class.
 
-在开发过程中，您可以通过`localhost`去使用Sensor接口，最简单的方法是使用[Web Server for Chrome](https://chrome.google.com/webstore/detail/web-server-for-chrome/ofhbbkphhbklhfoeikjpcbhemlocgigb)来为您的Web应用程序提供服务。如果您是在移动设备上开发，需要为本地服务器设置[端口转发](/web/tools/chrome-devtools/remote-debugging/local-server)，然后你就可以开始编码了！
+### Development environment
 
-当您的代码准备好后，将其部署在支持HTTPS的服务器上。[GitHub Pages](https://pages.github.com/)可以提供HTTPS服务，将是您分享Demo的好地方。
+During development you'll be able to use sensors through `localhost`. The simplest way is to serve your web application using [Web Server for Chrome](https://chrome.google.com/webstore/detail/web-server-for-chrome/ofhbbkphhbklhfoeikjpcbhemlocgigb). If you are developing for mobile devices, set up [port forwarding](/web/tools/chrome-devtools/remote-debugging/local-server) for your local server, and you are ready to rock!
 
-Note: 不要忘记在Chrome中启用[Generic Sensor API](#generic-sensor-api-in-chrome)。
+When your code is ready, deploy it on a server that supports HTTPS. [GitHub Pages](https://pages.github.com/) are served over HTTPS, making it a great place to share your demos.
 
-### 3D模型旋转
+Note: Don't forget to enable [Generic Sensor API](#generic-sensor-api-in-chrome) in Chrome versions prior to Chrome 67.
 
-在下列简单的例子中，我们使用绝对方向传感器的数据来修改3D模型的旋转四元数。代码中的`model`是three.js的[`Object3D`](https://threejs.org/docs/index.html#api/core/Object3D)类的一个实例，具有[`quaternion`](https://threejs.org/docs/index.html#api/core/Object3D.quaternion)属性。[手机定向](https://github.com/intel/generic-sensor-demos/tree/master/orientation-phone)demo中的以下代码片段解释了绝对定位传感器如何用于旋转3D模型。
+### 3D model rotation
 
-```
-function initSensor() {
-    sensor = new AbsoluteOrientationSensor({frequency: 60});
-    sensor.onreading = () => model.quaternion.fromArray(sensor.quaternion);
-    sensor.onerror = event => {
-        if (event.error.name == 'NotReadableError') {
-            console.log("Sensor is not available.");
+In this simple example, we use the data from an absolute orientation sensor to modify the rotation quaternion of a 3D model. The `model` is a three.js [`Object3D`](https://threejs.org/docs/index.html#api/core/Object3D) class instance that has a [`quaternion`](https://threejs.org/docs/index.html#api/core/Object3D.quaternion) property. The following code snippet from the [orientation phone](https://github.com/intel/generic-sensor-demos/tree/master/orientation-phone) demo, illustrates how the absolute orientation sensor can be used to rotate a 3D model.
+
+    function initSensor() {
+        sensor = new AbsoluteOrientationSensor({frequency: 60});
+        sensor.onreading = () => model.quaternion.fromArray(sensor.quaternion);
+        sensor.onerror = event => {
+            if (event.error.name == 'NotReadableError') {
+                console.log("Sensor is not available.");
+            }
         }
+        sensor.start();
     }
-    sensor.start();
-}
-```
+    
 
-设备的方向将反映在`model`的3D旋转的WebGL场景内。
+The device's orientation will be reflected in 3D `model` rotation within the WebGL scene.
 
 <figure align="center">
-  <img src="/web/updates/images/2017/09/sensors/orientation_phone.png" alt="Sensor updates 3D model's orientation">
-  <figcaption><b>图6</b>: 传感器更新3D模型的方向</figcaption>
+  <img src="/web/updates/images/2017/09/sensors/orientation_phone.png"
+    alt="Sensor updates 3D model's orientation">
+  <figcaption><b>Figure 6</b>: Sensor updates orientation of a 3D model</figcaption>
 </figure>
 
 ### Punchmeter
 
-下面的代码片段是从[punchmeter demo](https://github.com/intel/generic-sensor-demos/tree/master/punchmeter)提取出来的，解释了如何使用线性加速度传感器来计算设备在初始化为静止状态的最大速度。
+The following code snippet is extracted from the [punchmeter demo](https://github.com/intel/generic-sensor-demos/tree/master/punchmeter), illustrating how the linear acceleration sensor can be used to calculate the maximum velocity of a device under the assumption that it is initially laying still.
 
-```
-this.maxSpeed = 0;
-this.vx = 0;
-this.ax = 0;
-this.t = 0;
-
-function onreading() {
-    let dt = (this.accel.timestamp - this.t) * 0.001; // In seconds.
-    this.vx += (this.accel.x + this.ax) / 2 * dt;
-
-    let speed = Math.abs(this.vx);
-
-    if (this.maxSpeed < speed) {
-        this.maxSpeed = speed;
+    this.maxSpeed = 0;
+    this.vx = 0;
+    this.ax = 0;
+    this.t = 0;
+    
+    function onreading() {
+        let dt = (this.accel.timestamp - this.t) * 0.001; // In seconds.
+        this.vx += (this.accel.x + this.ax) / 2 * dt;
+    
+        let speed = Math.abs(this.vx);
+    
+        if (this.maxSpeed < speed) {
+            this.maxSpeed = speed;
+        }
+    
+        this.t = this.accel.timestamp;
+        this.ax = this.accel.x;
     }
+    
+    ....
+    
+    this.accel.addEventListener('reading', onreading);
+    
 
-    this.t = this.accel.timestamp;
-    this.ax = this.accel.x;
-}
-
-....
-
-this.accel.addEventListener('reading', onreading);
-```
-
-当前速度计算为近似加速度函数的积分。
+The current velocity is calculated as an approximation to the integral of the acceleration function.
 
 <figure align="center">
-  <img src="/web/updates/images/2017/09/sensors/punchmeter.png" alt="Demo web application for punch speed measurement">
-  <figcaption><b>图7</b>: 测量冲压速度</figcaption>
+  <img src="/web/updates/images/2017/09/sensors/punchmeter.png"
+    alt="Demo web application for punch speed measurement">
+  <figcaption><b>Figure 7</b>: Measurement of a punch speed</figcaption>
 </figure>
 
-## 隐私和安全 {: #privacy-and-security }
+## Privacy and security {: #privacy-and-security }
 
-传感器读数是敏感数据，可能受到来自恶意网页的各种攻击。Chrome对Generic Sensor API的实现做了一些限制，以减轻潜在的安全和隐私风险。打算使用Generic Sensor API​的开发人员必须考虑到这些限制，下面让我们简单地列出它们。
+Sensor readings are sensitive data which can be subject to various attacks from malicious web pages. Chrome's implementation of Generic Sensor APIs enforces few limitations to mitigate the possible security and privacy risks. These limitations must be taken into account by developers who intend to use the API, so let’s briefly list them.
 
-### 只允许运行在HTTPS
+### Only HTTPS
 
-由于Generic Sensor API是一项强大的功能，因此Chrome只允许在安全的情况下使用。实际上，这意味着要使用Generic Sensor API，您需要通过HTTPS访问您的页面。在开发过程中，您可以通过http://localhost进行此操作，但对于最终产品，您需要在服务器上部署HTTPS，可以参考这个[HTTPS文章](/web/fundamentals/security/)。
+Because Generic Sensor API is a powerful feature, Chrome only allows it on secure contexts. In practice it means that to use Generic Sensor API you'll need to access your page through HTTPS. During development you can do so via http://localhost but for production you'll need to have HTTPS on your server. See Security with [HTTPS article](/web/fundamentals/security/) for best practices and guidelines there.
 
-### Feature Policy集成
+### Feature Policy integration
 
-Generic Sensor API集成了[Feature Policy](https://w3c.github.io/sensors/#feature-policy-api)用于控制在frame上访问传感器数据。
+The [Feature Policy integration](https://w3c.github.io/sensors/#feature-policy-api) in Generic Sensor API is used to control access to sensors data for a frame.
 
-默认情况下，`Sensor`对象只允许在主frame或同一个域的子frame内创建，从而防止未经授权的跨域iframe读取传感器数据。您还可以通过明确地启用或禁用相应的[策略控制功能](https://wicg.github.io/feature-policy/#policy-controlled-feature)来修改此默认行为。
+By default the `Sensor` objects can be created only within a main frame or same-origin subframes, thus preventing cross-origin iframes from unsanctioned reading of sensor data. This default behavior can be modified by explicitly enabling or disabling of the corresponding [policy-controlled features](https://wicg.github.io/feature-policy/#policy-controlled-feature).
 
-下面的代码片段说明了如何授予加速度计数据访问跨域iframe的权限，这意味着`Accelerometer`或`LinearAccelerationSensor`对象可以在跨域iframe里创建。
+The snippet below illustrates granting accelerometer data access to a cross-origin iframe, meaning that now `Accelerometer` or `LinearAccelerationSensor` objects can be created there.
 
 `<iframe src="https://third-party.com" allow="accelerometer"/>`
 
-Note: Feature Policy集成在Chrome 65或更高版本中。在早期版本的Chrome中，`Sensor`对象只能在主frame内创建。
+Note: The Feature Policy integration for sensors is available in Chrome 65 or later. In the earlier versions of Chrome the `Sensor` objects can be created only within a main frame.
 
-### 传感器读数传送可以被暂停
+### Sensor readings delivery can be suspended
 
-传感器读数只能通过可见网页访问，即用户实际上正在与之交互时。而且，如果用户聚焦到跨域子frame传感器读数传送将会在父页面上被暂停，以防止在跨域子frame中的第三方软件窃取到用户信息。
+Sensor readings are only accessible by a visible web page, i.e., when the user is actually interacting with it. Moreover, sensor data would not be provided to the parent frame if the user focuses to a cross-origin subframe in order to disallow the parent frame infer user input.
 
-## 下一步是什么？ {: #whats-next }
+## What’s next? {: #whats-next }
 
-在近期将有一些已有的Sensor类被实现，例如[距离传感器（Proximity）](https://w3c.github.io/proximity/)和[重力传感器（GravitySensor）](https://w3c.github.io/accelerometer/#gravitysensor-interface)。而且，由于Generic Sensor框架具有很强的可扩展性，我们可以预见更多代表各种传感器类型的新类的出现。
+There is a set of already specified sensor classes to be implemented in the near future such as [Proximity sensor](https://w3c.github.io/proximity/) and [Gravity sensor](https://w3c.github.io/accelerometer/#gravitysensor-interface); however thanks to the great extensibility of Generic Sensor framework we can anticipate appearance of even more new classes representing various sensor types.
 
-未来工作的另一个重要领域是改进Generic Sensor API本身，Generic Sensor API规范目前是一个草案，意味着还有时间进行修复并为开发人员提供所需的新功能。
+Another important area for future work is improving of the Generic Sensor API itself, the Generic Sensor specification is currently a draft which means that there is still time to make fixes and bring new functionality that developers need.
 
-## 您可以帮忙！
+## You can help!
 
-传感器规范文档正在积极开发中，我们需要您的反馈以确保项目朝着正确的方向发展。您可以尝试这个API通过在Chrome中启用运行时[标志](#generic-sensor-api-in-chrome)或在启动时参与[原始试验（origin trial）](#motion-sensors-origin-trials)并分享您的体验。让我们知道还有哪些好的功能可以加进来，或者现有的API还有哪些可以改进的地方。
+The sensor specifications reached [Candidate Recommendation](https://www.w3.org/Consortium/Process/Process-19991111/tr.html#RecsCR) maturity level, hence, the feedback from web and browser developers is highly appreciated. Let us know what features would be great to add or if there is something you would like to modify in the current API.
 
-请填写[调查表](https://docs.google.com/forms/d/e/1FAIpQLSdGKPzubbOaDSgjpre9Pxw6Hr1xwYIwgZEsuUOmbs6JPwvcBQ/viewform)。也可随时提交[规范问题](https://github.com/w3c/sensors/issues/new)和Chrome实现的[bugs](https://bugs.chromium.org/p/chromium/issues/entry)。
+Please fill the [survey](https://docs.google.com/forms/d/e/1FAIpQLSdGKPzubbOaDSgjpre9Pxw6Hr1xwYIwgZEsuUOmbs6JPwvcBQ/viewform). Also feel free to file [specification issues](https://github.com/w3c/sensors/issues/new) as well as [bugs](https://bugs.chromium.org/p/chromium/issues/entry) for the Chrome implementation.
 
-## 资源
+## Resources
 
-- Demo项目: [https://intel.github.io/generic-sensor-demos/](https://intel.github.io/generic-sensor-demos/)
-- Generic Sensor API规范文档: [https://w3c.github.io/sensors/](https://w3c.github.io/sensors/)
-- 规范问题: [https://github.com/w3c/sensors/issues](https://github.com/w3c/sensors/issues)
-- W3C工作组邮件列表: [public-device-apis@w3.org](mailto:public-device-apis@w3.org)
-- Chrome功能状态: [https://www.chromestatus.com/feature/5698781827825664](https://www.chromestatus.com/feature/5698781827825664)
-- 实现Bugs: [http://crbug.com?q=component:Blink>Sensor](http://crbug.com?q=component:Blink%3ESensor)
-- Google Sensors-dev小组: [https://groups.google.com/a/chromium.org/forum/#!forum/sensors-dev](https://groups.google.com/a/chromium.org/forum/#!forum/sensors-dev)
-
-Translated by {% include "web/_shared/contributors/wmlin.html" %}
+- Demo projects: <https://intel.github.io/generic-sensor-demos/>
+- Generic Sensor API specification: <https://w3c.github.io/sensors/>
+- Specification issues: <https://github.com/w3c/sensors/issues>
+- W3C working group mailing list: <public-device-apis@w3.org>
+- Chrome Feature Status: <https://www.chromestatus.com/feature/5698781827825664>
+- Implementation Bugs: <http://crbug.com?q=component:Blink>Sensor>
+- Sensors-dev Google group: <https://groups.google.com/a/chromium.org/forum/#!forum/sensors-dev>
 
 {% include "web/_shared/rss-widget-updates.html" %}
-
