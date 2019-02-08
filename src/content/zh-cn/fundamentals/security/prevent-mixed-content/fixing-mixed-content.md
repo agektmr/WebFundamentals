@@ -1,291 +1,232 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description:查找和修正混合内容是一项重要任务，但可能非常耗时。本指南将介绍可为此过程提供帮助的一些工具。
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Finding and fixing mixed content is an important task, but it can be time-consuming. This guide discusses some tools that are available to help with the process.
 
-{# wf_published_on:2015-09-28 #}
-{# wf_updated_on:2016-08-24 #}
+{# wf_published_on: 2015-09-28 #} {# wf_updated_on: 2018-09-20 #} {# wf_blink_components: Blink>SecurityFeature #}
 
-# 防止混合内容 {: .page-title }
+# Preventing Mixed Content {: .page-title }
 
 {% include "web/_shared/contributors/johyphenel.html" %}
 
-Success: 让您的网站支持 HTTPS 是保护您的网站和用户免受攻击的重要一步，但混合内容会使这种保护失效。为保护您的网站和用户，查找和修正混合内容非常重要。
+Success: Supporting HTTPS for your website is an important step to protecting your site and your users from attack, but mixed content can render that protection useless. To protect your site and your users, it is very important to find and fix mixed content issues.
 
-查找和修正混合内容是一项重要任务，但可能非常耗时。本指南将介绍可为此过程提供帮助的一些工具和技术。如需了解混合内容本身的更多信息，请参阅[什么是混合内容](./what-is-mixed-content)。
+Finding and fixing mixed content is an important task, but it can be time-consuming. This guide discusses some tools and techniques that are available to help with the process. For more information on mixed content itself, see [What is Mixed Content](./what-is-mixed-content).
 
 ### TL;DR {: .hide-from-toc }
 
-* 在您的页面上加载资源时，请始终使用 https:// 网址。
-* 使用 `Content-Security-Policy-Report-Only` 标头监控网站上的混合内容错误。
-* 使用 `upgrade-insecure-requests` CSP 指令防止访问者访问不安全的内容。
+* Always use https:// URLs when loading resources on your page.
+* Use the `Content-Security-Policy-Report-Only` header to monitor mixed content errors on your site.
+* Use the `upgrade-insecure-requests` CSP directive to protect your visitors from insecure content.
 
-## 查找和修正混合内容
+## Find and fix mixed content
 
-手动查找混合内容可能很耗时，具体取决于存在的问题数量。本文档中介绍的流程使用 Chrome 浏览器；但是大多数现代浏览器都提供相似的工具来帮助您处理此过程。
+Manually finding mixed content can be time consuming, depending on the number of issues you have. The process described in this document uses the Chrome browser; however most modern browsers provide similar tools to help with this process.
 
-### 通过访问网站查找混合内容
+### Finding mixed content by visiting your site
 
-在 Google Chrome 中访问 HTTPS 网页时，浏览器会在 JavaScript 控制台中以错误和警告的形式提醒您存在混合内容。
+When visiting an HTTPS page in Google Chrome, the browser alerts you to mixed content as errors and warnings in the JavaScript console.
 
+To view these alerts, go to our passive mixed content or active mixed content sample page and open the Chrome JavaScript console. You can open the console either from the View menu: *View* -&gt; *Developer* -&gt; *JavaScript Console*, or by right-clicking the page, selecting *Inspect Element*, and then selecting *Console*.
 
-如需查看这些提醒，请转到我们的被动混合内容或主动混合内容示例页面，并打开 Chrome JavaScript 控制台。您可以从“View”菜单（View -&gt; Developer -&gt; JavaScript Console）打开此控制台或通过右键点击此页面，选择“Inspect Element”，然后选择“Console”打开。
-
-[什么是混合内容](what-is-mixed-content#passive-mixed-content){: .external}页面中的[被动混合内容示例](https://googlesamples.github.io/web-fundamentals/fundamentals/security/prevent-mixed-content/passive-mixed-content.html){: .external}将导致系统显示混合内容警告，如下所示：
-
-<figure>
-  <img src="imgs/passive-mixed-content-warnings.png" alt="混合内容：页面已通过 HTTPS 加载，但请求了不安全的视频。此内容也应通过 HTTPS 提供。">
-</figure>
-
-[试一下](https://googlesamples.github.io/web-fundamentals/fundamentals/security/prevent-mixed-content/passive-mixed-content.html){: target="_blank" .external }
-
-主动混合内容示例将导致系统显示混合内容错误：
-
+The [passive mixed content example](https://googlesamples.github.io/web-fundamentals/fundamentals/security/prevent-mixed-content/passive-mixed-content.html){: .external} on the [What Is Mixed Content](what-is-mixed-content#passive-mixed-content){: .external} page causes mixed content warnings to be displayed, like the ones below:
 
 <figure>
-  <img src="imgs/active-mixed-content-errors.png" alt="混合内容：页面已通过 HTTPS 加载，但请求了不安全的资源。此请求已被阻止，内容必须通过 HTTPS 提供。">
+  <img src="imgs/passive-mixed-content-warnings.png" alt="Mixed Content: The page was loaded over HTTPS, but requested an insecure video. This content should also be served over HTTPS.">
 </figure>
 
-[试一下](https://googlesamples.github.io/web-fundamentals/fundamentals/security/prevent-mixed-content/active-mixed-content.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/security/prevent-mixed-content/passive-mixed-content.html){: target="_blank" .external }
 
-
-您需要在网站的源代码中修正这些错误和警告中列出的 http:// 网址。列出这些网址及其所在页面有助于您稍后修正它们。
-
-Note: 系统仅针对您当前正在查看的页面显示混合内容错误和警告，在每次您导航到一个新页面时将清理 JavaScript 控制台。这意味着您必须单独查看网站的每一个页面来查找这些错误。有些错误可能仅在您与页面的一部分进行交互后才出现，请参考我们之前的指南中提供的图像库混合内容示例。
-
-### 在源代码中查找混合内容
-
-您可以在源代码中直接搜索混合内容。在源代码中搜索 `http://` 并查找包含 HTTP 网址属性的标记。
-
-具体而言，您要查找之前指南中的[混合内容类型与相关安全威胁](what-is-mixed-content#mixed-content-types--security-threats-associated){: .external}部分列出的标记。
-请注意，在定位标记 (`<a>`) 的 href 属性中有 `http://` 通常不属于混合内容问题，后面会介绍一些值得注意的例外情况。
-
-
-如果您有一个来自 Chrome 混合内容错误和警告的 HTTP 网址列表，您也可以在源代码中搜索这些完整的网址，以找出它们在网站中的位置。
-
-
-
-### 修正混合内容
-
-在找出混合内容在网站源代码中的位置后，按照下面的步骤进行修正。
-
-
-将 Chrome 中的以下混合内容错误用作示例：
+While the active mixed content example causes mixed content errors to be displayed:
 
 <figure>
-  <img src="imgs/image-gallery-warning.png" alt="混合内容：页面已通过 HTTPS 加载，但请求了不安全的图像。此内容也应通过 HTTPS 提供。">
+  <img src="imgs/active-mixed-content-errors.png" alt="Mixed Content: The page was loaded over HTTPS, but requested an insecure resource. This request has been blocked; the content must be served over HTTPS.">
 </figure>
 
-下面是您在源代码中找到的内容：
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/security/prevent-mixed-content/active-mixed-content.html){: target="_blank" .external }
+
+You need to fix the http:// URLs listed in these errors and warnings, in your site's source. It's helpful to make a list of these URLs, along with the page you found them on, for use when you fix them.
+
+Note: Mixed content errors and warnings are only shown for the page your are currently viewing, and the JavaScript console is cleared every time you navigate to a new page. This means you will have to view every page of your site individually to find these errors. Some errors may only show up after you interact with part of the page, see the image gallery mixed content example from our previous guide.
+
+### Finding mixed content in your source code
+
+You can search for mixed content directly in your source code. Search for `http://` in your source and look for tags that include HTTP URL attributes. Specifically, look for tags listed in the [mixed content types & security threats associated](what-is-mixed-content#mixed-content-types--security-threats-associated){: .external} section of our previous guide. Note that having `http://` in the href attribute of anchor tags (`<a>`) is often not a mixed content issue, with some notable exceptions discussed later.
+
+If you have a list of HTTP URLs from Chrome mixed content errors and warnings, you can also search for these complete URLs in your source to find where they are included in your site.
+
+### Fixing mixed content
+
+Once you've found where the mixed content is included in your site's source, follow these steps to fix it.
+
+Using the following mixed content error in Chrome as an example:
+
+<figure>
+  <img src="imgs/image-gallery-warning.png" alt="Mixed Content: The page was loaded over HTTPS, but requested an insecure image. This content should also be served over HTTPS.">
+</figure>
+
+Which you found in source here:
 
     <img src="http://googlesamples.github.io/web-fundamentals/.../puppy.jpg">
+    
 
-#### 第 1 步
+#### Step 1
 
-通过在您的浏览器中打开一个新标签，在地址栏中输入网址，然后将 `http://` 更改为 `https://`，检查该网址是否可通过 HTTPS 提供。
+Check that the URL is available over HTTPS by opening a new tab in your browser, entering the URL in the address bar, and changing `http://` to `https://`
 
-
-如果通过 **HTTP** 和 **HTTPS** 显示的资源相同，则一切正常。
-继续执行[第 2 步](#step-2)。
+If the resource displayed is the same over **HTTP** and **HTTPS**, everything is OK. Proceed to [Step 2](#step-2).
 
 <div class="attempt-left">
   <figure>
     <img src="imgs/puppy-http.png">
     <figcaption class="success">
-      HTTP 图像加载没有任何错误。
-</figcaption>
+      HTTP image loads without error.
+     </figcaption>
   </figure>
 </div>
+
 <div class="attempt-right">
   <figure>
     <img src="imgs/puppy-https.png">
     <figcaption class="success">
-      HTTPS 图像加载没有任何错误，且图像与 HTTP 加载的相同。转到<a href="#step-2">第 2 步</a>！
-</figcaption>
+      HTTPS image loads without error, and image is the same as HTTP. Go to <a href="#step-2">step 2</a>!
+     </figcaption>
   </figure>
 </div>
 
 <div style="clear:both;"></div>
 
-如果您看到证书警告，或内容无法通过 **HTTPS** 显示，则意味着无法安全地获取资源。
-
+If you see a certificate warning, or if the content can't be displayed over **HTTPS**, it means the resource is not available securely.
 
 <div class="attempt-left">
   <figure>
     <img src="imgs/https-not-available.png">
     <figcaption class="warning">
-      资源无法通过 HTTPS 获取。
-</figcaption>
+      Resource not available over HTTPS
+     </figcaption>
   </figure>
 </div>
+
 <div class="attempt-right">
   <figure>
     <img src="imgs/https-cert-warning.png">
     <figcaption class="warning">
-      尝试通过 HTTPS 查看资源时系统发出的证书警告。
-</figcaption>
+      Certificate warning when attempting to view resource over HTTPS.
+     </figcaption>
   </figure>
 </div>
 
 <div style="clear:both;"></div>
 
-在此情况下，您应考虑以下某个方案：
+In this case, you should consider one of the following options:
 
-* 从一个不同的主机添加资源（如可用）。
-* 如果法律允许，请在您的网站上直接下载和托管内容。
-* 将此资源从您的网站完全排除。
+* Include the resource from a different host, if one is available.
+* Download and host the content on your site directly, if you are legally allowed to do so.
+* Exclude the resource from your site altogether.
 
-#### 第 2 步
+#### Step 2
 
-将网址从 `http://` 更改为 `https://`，保存源文件，并在必要时重新部署更新文件。
+Change the URL from `http://` to `https://`, save the source file, and redeploy the updated file if necessary.
 
-#### 第 3 步
+#### Step 3
 
-查看您最初发现错误的页面，验证并确保该错误不再出现。
+View the page where you found the error originally and verify that the error no longer appears.
 
-### 请注意非标准标记的使用
+### Beware of non-standard tag usage
 
-请注意您网站上非标准标记的使用。例如，定位 (`<a>`) 标记网址自身不会产生混合内容，因为它们使浏览器导航到新页面。
-这意味着它们通常不需要修正。然而，有些图像库脚本替换了 `<a>` 标记的功能，并将 `href` 属性指定的 HTTP 资源加载到页面上的灯箱展示，从而引发混合内容问题。
-
-
-
+Beware of non-standard tag usage on your site. For instance, anchor (`<a>`) tag URLs don't cause mixed content by themselves, as they cause the browser to navigate to a new page. This means they usually don't need to be fixed. However some image gallery scripts override the functionality of the `<a>` tag and load the HTTP resource specified by the `href` attribute into a lightbox display on the page, causing a mixed content problem.
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/security/prevent-mixed-content/_code/image-gallery-example.html" region_tag="snippet1" adjust_indentation="auto" %}
 </pre>
 
-[试一下](https://googlesamples.github.io/web-fundamentals/fundamentals/security/prevent-mixed-content/image-gallery-example.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/security/prevent-mixed-content/image-gallery-example.html){: target="_blank" .external }
 
-在上面的代码中，将 `<a>` 标记 href 保留为 `http://` 可能看上去是安全的；但是，如果您查看示例并点击图像，您会发现其加载一个混合内容资源并在页面上显示它。
+In the code above, it may seem safe to leave the `<a>` tags href as `http://`; however if you view the sample and click the image, you'll see that it loads a mixed content resource and displays it on the page.
 
+## Handle mixed content at scale
 
+The manual steps above work well for smaller websites; but for large websites or sites with many separate development teams, it can be tough to keep track of all the content being loaded. To help with this task, you can use content security policy to instruct the browser to notify you about mixed content and ensure that your pages never unexpectedly load insecure resources.
 
-## 处理大批量的混合内容
+### Content security policy
 
-上面的手动步骤在较小网站上的效果很好，但对于大网站，或具有许多独立开发团队的网站而言，它很难跟踪记录所有加载的内容。为帮助处理此任务，您可以使用内容安全政策指示浏览器就混合内容通知您，并确保您的页面绝不会意外加载不安全的资源。
+[**Content security policy**](/web/fundamentals/security/csp/) (CSP) is a multi-purpose browser feature that you can use to manage mixed content at scale. The CSP reporting mechanism can be used to track the mixed content on your site; and the enforcement policy, to protect users by upgrading or blocking mixed content.
 
+You can enable these features for a page by including the `Content-Security-Policy` or `Content-Security-Policy-Report-Only` header in the response sent from your server. Additionally you can set `Content-Security-Policy` (but **not** `Content-Security-Policy-Report-Only`) using a `<meta>` tag in the `<head>` section of your page. See examples in the following sections.
 
+CSP is useful for many things outside of its mixed content uses. Information about other CSP directives is available at the following resources:
 
-### 内容安全政策
-
-[**内容安全政策**](/web/fundamentals/security/csp/) (CSP) 是一个多用途浏览器功能，您可以用它管理大批量的混合内容。CSP 报告机制可用于跟踪网站上的混合内容；强制政策可通过升级或阻止混合内容保护用户。
-
-
-
-您可以通过在服务器发送的响应中添加 `Content-Security-Policy` 或 `Content-Security-Policy-Report-Only` 标头为页面启用这些功能。此外，在页面的 `<head>` 部分中，可以使用一个 `<meta>` 标记设置 `Content-Security-Policy`（**而非** `Content-Security-Policy-Report-Only`）。请参阅下文中的示例。
-
-除了用于混合内容外，CSP 还有许多其他用途。可在以下资源中找到有关其他 CSP 指令的信息：
-
-* [Mozilla 的 CSP 简介](https://developer.mozilla.org/en-US/docs/Web/Security/CSP/Introducing_Content_Security_Policy){: .external}
-* [HTML5 Rock 的 CSP 简介](//www.html5rocks.com/en/tutorials/security/content-security-policy/){: .external}
+* [Mozilla's intro to CSP](https://developer.mozilla.org/en-US/docs/Web/Security/CSP/Introducing_Content_Security_Policy){: .external}
+* [HTML5 Rocks' intro to CSP](//www.html5rocks.com/en/tutorials/security/content-security-policy/){: .external}
 * [CSP playground](http://www.cspplayground.com/){: .external }
-* [CSP 规范](//www.w3.org/TR/CSP/){: .external }
+* [CSP spec](//www.w3.org/TR/CSP/){: .external }
 
-Note: 浏览器强制执行它们收到的<b>所有</b>内容安全政策。浏览器在响应标头或 <code>&lt;meta&gt;</code> 元素中收到的多个 CSP 标头值被合并，强制作为一个政策；报告政策也以同样的方式进行合并。通过采用政策的交集合并政策；也就是说，第一个政策之后的每个政策都只能进一步限制允许的内容，而不是扩宽它。
+Note: Browsers enforce **all** content security policies that they receive. Multiple CSP header values received by the browser in the response header or
+<code>&lt;meta&gt;</code> elements are combined and enforced as a single policy; reporting policies are likewise combined. Policies are combined by taking the intersection of the policies; that is to say, each policy after the first can only further restrict the allowed content, not broaden it.
 
+### Finding mixed content with content security policy
 
+You can use content security policy to collect reports of mixed content on your site. To enable this feature, set the `Content-Security-Policy-Report-Only` directive by adding it as a response header for your site.
 
-### 使用内容安全政策查找混合内容
-
-您可以使用内容安全政策收集网站上的混合内容报告。
-如需启用此功能，请设置 `Content-Security-Policy-Report-Only` 指令，方法是将其添加为网站的响应标头。
-
-
-响应标头：
+Response header:
 
     Content-Security-Policy-Report-Only: default-src https: 'unsafe-inline' 'unsafe-eval'; report-uri https://example.com/reportingEndpoint
+    
 
+Whenever a user visits a page on your site, their browser sends JSON-formatted reports regarding anything that violates the content security policy to `https://example.com/reportingEndpoint`. In this case, anytime a subresource is loaded over HTTP, a report is sent. These reports include the page URL where the policy violation occurred and the subresource URL that violated the policy. If you configure your reporting endpoint to log these reports, you can track the mixed content on your site without visiting each page yourself.
 
-无论用户在何时访问网站上的页面，他们的浏览器都会向 `https://example.com/reportingEndpoint` 发送有关任何违背内容安全政策的内容的 JSON 格式报告。
+The two caveats to this are:
 
-在此情况下，任何时候通过 HTTP 加载子资源，浏览器都会发送报告。
-这些报告包括发生政策违规行为的页面网址和违背该政策的子资源网址。如果您配置报告端点以记录这些报告，您可以跟踪您网站上的混合内容，无需亲自访问每个页面。
+* Users have to visit your page in a browser that understands the CSP header. This is true for most modern browsers.
+* You only get reports for pages visited by your users. So if you have pages that don't get much traffic, it might be some time before you get reports for your entire site.
 
+For more information on CSP header format, see the [Content Security Policy specification](https://w3c.github.io/webappsec/specs/content-security-policy/#violation-reports){: .external}.
 
+If you don't want to configure a reporting endpoint yourself, <https://report-uri.io/>{: .external} is a reasonable alternative.
 
-对此，需要注意两个方面：
+### Upgrading insecure requests
 
-* 用户必须在可识别 CSP 标头的浏览器中访问您的页面。
-  这对于大多数现代浏览器都适用。
-* 您只能获得用户已访问的页面的报告。因此，如果您有流量不太大的页面，则这些页面的报告可在您获得整个网站的报告之前获得。
+One of the newest and best tools to automatically fix mixed content is the [**`upgrade-insecure-requests`**](//www.w3.org/TR/upgrade-insecure-requests/){: .external} CSP directive. This directive instructs the browser to upgrade insecure URLs before making network requests.
 
-
-
-如需了解 CSP 标头格式的详细信息，请参阅[内容安全政策规范](https://w3c.github.io/webappsec/specs/content-security-policy/#violation-reports){: .external}。
-
-如果您不想亲自配置报告端点，[https://report-uri.io/](https://report-uri.io/){: .external} 是一个合理的替代做法。
-
-
-
-### 升级不安全的请求
-
-对于自动修正混合内容，其中一个最新最好的工具是 [**`upgrade-insecure-requests`**](//www.w3.org/TR/upgrade-insecure-requests/){: .external} CSP 指令。该指令指示浏览器在进行网络请求之前升级不安全的网址。
-
-
-例如，如果某个页面包含一个带有 HTTP 网址的图像标记：
-
+As an example, if a page contains an image tag with an HTTP URL:
 
     <img src="http://example.com/image.jpg">
+    
 
+The browser instead makes a secure request for
+<code><b>https:</b>//example.com/image.jpg</code>, thus saving the user from mixed content.
 
-此浏览器改而对 <code><b>https:</b>//example.com/image.jpg</code> 进行安全请求，从而使用户不会看到混合内容。
-
-
-
-您可以通过发送一个带此指令的 `Content-Security-Policy` 标头启用此功能：
-
-
+You can enable this behavior either by sending a `Content-Security-Policy` header with this directive:
 
     Content-Security-Policy: upgrade-insecure-requests
+    
 
-
-或使用一个 `<meta>` 元素在文档的 `<head>` 部分中嵌入相同的指令内联：
-
-
+Or by embedding that same directive inline in the document's `<head>` section using a `<meta>` element:
 
     <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+    
 
+It is worth noting, that if the resource is not available over HTTPS, the upgraded request fails and the resource is not loaded. This maintains the security of your page.
 
-值得注意的是，如果资源不能通过 HTTPS 获得，则升级的请求失败，并且无法加载该资源。
-这可保证您的页面的安全性。
+The `upgrade-insecure-requests` directive cascades into `<iframe>` documents, ensuring the entire page is protected.
 
+### Blocking all mixed content
 
-`upgrade-insecure-requests` 指令级联到 `<iframe>` 文档中，从而确保整个页面受到保护。
+Not all browsers support the upgrade-insecure-requests directive, so an alternative for protecting users is the [**`block-all-mixed-content`**](http://www.w3.org/TR/mixed-content/#strict-checking){: .external} CSP directive. This directive instructs the browser to never load mixed content; all mixed content resource requests are blocked, including both active and passive mixed content. This option also cascades into `<iframe>` documents, ensuring the entire page is mixed content free.
 
-
-### 阻止所有混合内容
-
-并非所有浏览器均支持 upgrade-insecure-requests 指令，因此，可使用替代指令 [**`block-all-mixed-content`**](http://www.w3.org/TR/mixed-content/#strict-checking){: .external} CSP 指令来保护用户。此指令指示浏览器从不加载混合内容；所有混合内容资源请求均被阻止，包括主动混合内容和被动混合内容。此选项还级联到 `<iframe>` 文档中，确保整个页面没有混合内容。
-
-
-页面可以选择执行此行为，方法是发送一个带有该指令的 `Content-Security-Policy` 标头：
-
-
+A page can opt itself into this behavior either by sending a `Content-Security-Policy` header with this directive:
 
     Content-Security-Policy: block-all-mixed-content
+    
 
-
-或使用一个 `<meta>` 元素在文档的 `<head>` 部分中嵌入相同的指令内联：
-
-
+Or by embedding that same directive inline in the document's `<head>` section using a `<meta>` element:
 
     <meta http-equiv="Content-Security-Policy" content="block-all-mixed-content">
+    
 
+The downside of using `block-all-mixed-content` is, perhaps obviously, that all content is blocked. This is a security improvement, but it means that these resources are no longer available on the page. This might break features and content that your users expect to be available.
 
-使用 `block-all-mixed-content` 的弊端可能很明显，即所有混合内容均被阻止。
-这可提升安全性，但它意味着页面上不再提供这些资源。
-这可能会中断用户期望获得的功能和内容。
+### Alternatives to CSP
 
+If your site is hosted for you by a platform such as Blogger, you may not have access to modify headers & add a CSP. Instead a viable alternative could be to use a website crawler to find issues across your site for you, such as [HTTPSChecker](https://httpschecker.net/how-it-works#httpsChecker){: .external } or [Mixed Content Scan](https://github.com/bramus/mixed-content-scan){: .external }
 
-### CSP 替代方案
+## Feedback {: #feedback }
 
-如果您的网站由某个平台（如 Blogger）代为托管，那么，您可能没有相应权限来修改标头和添加 CSP。一个可行的替代方案是使用 [HTTPSChecker](https://httpschecker.net/how-it-works#httpsChecker){: .external } 或[混合内容扫描](https://github.com/bramus/mixed-content-scan){: .external } 等网站抓取工具代您查找您的网站中的问题。
-
-
-
-
-
-
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
