@@ -1,10 +1,6 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description:分析网络性能入门。
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Get started analyzing network performance.
 
-{# wf_updated_on: 2019-02-06 #}
-{# wf_published_on: 2017-01-17 #}
-{# wf_blink_components: Platform>DevTools #}
+{# wf_updated_on: 2018-07-27 #} {# wf_published_on: 2017-01-17 #} {# wf_blink_components: Platform>DevTools #} 
 
 <style>
 .devtools-inline {
@@ -16,230 +12,149 @@ figcaption {
 }
 </style>
 
-# 使用 Chrome DevTools 分析网络性能入门 {: .page-title }
+ 
+
+# Get Started with Analyzing Network Performance in Chrome DevTools {: .page-title }
 
 {% include "web/_shared/contributors/kaycebasques.html" %}
 
-注：如需了解提高加载速度的综合方法，请参阅[优化网站速度](/web/tools/chrome-devtools/speed/get-started)。
- 本教程包含用于分析加载性能的推荐工作流程。
+Note: See [Optimize Website Speed](/web/tools/chrome-devtools/speed/get-started) for a comprehensive approach to improving load speed. That tutorial contains the recommended workflow for analyzing load performance.
 
+Learn how to use the Chrome DevTools Network panel to understand why a page loads slowly in this step-by-step, interactive tutorial.
 
-在本交互式分步教程中，您将学习如何使用 Chrome DevTools 的 Network 面板，了解页面加载缓慢的原因。
+## Step 1: Set up DevTools {: #set-up }
 
+Suppose that you're receiving reports from mobile users that a particular page on your site is slow. Your job is to make the page fast.
 
-## 第 1 步：设置 DevTools {: #set-up }
+1. Click **Open Slow Page**. The page opens in a new tab.
+    
+    <a href="https://googlechrome.github.io/devtools-samples/network/gs/v1.html"
+   target="devtools" class="gc-analytics-event" rel="noopener noreferrer"
+   data-category="DevTools / Network / Get Started"
+   data-label="Slow Page Opened"> <button>Open Slow Page</button> </a>
 
-假设移动设备用户向您举报您网站上的特定页面加载缓慢，
- 那么您就需要提高页面加载速度。
+2. While the page is in focus, press <kbd>Command</kbd>+<kbd>Option</kbd>+<kbd>I</kbd> (Mac) or <kbd>Control</kbd>+<kbd>Shift</kbd>+<kbd>I</kbd> (Windows, Linux) to open DevTools on the page.
 
-1. 点击 **Open Slow Page**。 此页面会在新标签中打开。
+3. In DevTools, click the **Network** tab.
+    
+    <figure> 
+    
+    ![The Chrome DevTools Network panel, opened on the slow
+          page that you're going to diagnose.](imgs/get-started-network-panel.png) <figcaption> **Figure 1**. The Chrome DevTools Network panel, opened next to the slow page that you're going to diagnose. </figcaption> </figure> 
+    <aside class="note"> 
+    
+    **Note:** For the rest of the screenshots, DevTools is <a
+   href="/web/tools/chrome-devtools/ui#placement" target="_blank"> undocked to a separate window</a>, so that you can see its contents better. </aside>
+4. Enable **Capture Screenshots** ![Capture
+Screenshots](imgs/capture-screenshots.png){:.devtools-inline}, which turns blue when enabled. DevTools captures screenshots during the page load.
 
-     <a href="https://googlechrome.github.io/devtools-samples/network/gs/v1.html"
-       target="devtools" class="gc-analytics-event" rel="noopener noreferrer"
-       data-category="DevTools / Network / Get Started"
-       data-label="Slow Page Opened">
-       <button>Open Slow Page</button>
-     </a>
+## Step 2: Emulate a mobile user's experience {: #emulate }
 
-1. 在页面处于焦点状态时，按
-   <kbd>Command</kbd>+<kbd>Option</kbd>+<kbd>I</kbd> (Mac) 或
-   <kbd>Control</kbd>+<kbd>Shift</kbd>+<kbd>I</kbd>（Windows、Linux）以在此页上打开 DevTools。
+Testing network performance on a laptop or desktop can be deceiving. Your internet connection is much faster than a mobile user's, and your browser caches resources from previous visits.
 
+1. Check the **Disable Cache** checkbox. When this checkbox is enabled, DevTools doesn't serve any resources from the cache. This more accurately emulates what first-time users experience when they view your page.
 
-1. 在 DevTools 中，点击 **Network** 标签。
-
-     <figure>
-       <img src="imgs/get-started-network-panel.png"
-         alt="在要诊断的加载缓慢的页面上打开的 Chrome DevTools Network 面板。">
-
-       <figcaption>
-         <b>图 1</b>. 在要诊断的加载缓慢的页面旁打开的 Chrome DevTools Network 面板。
-
-       </figcaption>
-     </figure>
-
-     <aside class="note">
-       <b>注：</b>在其余的屏幕截图中，DevTools 已<a       href="/web/tools/chrome-devtools/ui#placement" target="_blank">
-
-       移除到单独的窗口</a>中，以便您更好地查看其内容。
-
-     </aside>
-
-1. 启用 **Capture Screenshots** ![捕获屏幕截图][screenshots]
-{:.devtools-inline}，此图标启用后变为蓝色。
-   DevTools 会在页面加载期间捕获屏幕截图。
-
-## 第 2 步：模拟移动设备用户的体验 {: #emulate }
-
-在笔记本电脑或桌面设备上测试网络性能可能无法模拟移动设备用户的体验。 您的互联网连接速度比移动设备用户快得多，并且您的浏览器在之前访问时曾缓存资源。
-
-
-
-1. 勾选 **Disable Cache** 复选框。 启用此复选框后，DevTools 不会传送任何缓存资源。
-   如此可以更准确地模拟新用户查看您页面时的体验。
-
-
-1. 在当前显示 **No Throttling** 的下拉菜单中，选择 **Regular 2G**。
- DevTools 会限制网络连接速度，以模拟普通 2G 体验。
- 这才是移动设备用户在网络连接不佳的环境下获得的网站体验。
-
+2. From the dropdown menu that currently says **No Throttling**, select **Regular 2G**. DevTools throttles the network connection to simulate a regular 2G experience. This is how mobile users experience your site in places with poor connections.
 
 <figure>
   <img src="imgs/get-started-setup.svg"
-    alt="设置屏幕截图、停用缓存和限制后的 Chrome DevTools Network 面板。">
-
+    alt="The Chrome DevTools Network panel, after setting up screenshots,
+         cache disabling, and throttling.">
   <figcaption>
-    <b>图 2</b>. 经设置可模拟移动设备用户体验的 Chrome DevTools Network 面板。
- 屏幕截图、停用缓存和限制按从左到右的顺序分别添加了蓝色边框。
-
-
+    <b>Figure 2</b>. The Chrome DevTools Network panel, set up to emulate
+    a mobile user's experience. Screenshots, cache
+    disabling, and throttling are outlined in blue, from left to right,
+    respectively.
   </figcaption>
 </figure>
 
-这是最差的设置。 如果您可以在这样的设置环境下提高页面加载速度，您所有用户的页面加载速度都会提高！
+This is a worst-case setup. If you can get your page loading fast on this setup, it'll be fast for all your users!
 
+## Step 3: Analyze requests {: #analyze }
 
-[screenshots]: imgs/capture-screenshots.png
+Figure out what's making the page slow by reloading the page and analyzing the requests that come in.
 
-## 第 3 步：分析请求 {: #analyze }
+### Part A: Find render-blocking scripts
 
-通过重新加载页面并分析传入的请求，确定导致页面加载缓慢的因素。
+When the browser encounters a `<script>` tag, it must pause rendering and execute the script immediately. Find scripts that aren't needed for page load and mark them asynchronous or defer their execution to speed up load time.
 
+1. Press <kbd>Command</kbd>+<kbd>R</kbd> (Mac) or <kbd>Control</kbd>+<kbd>R</kbd> (Windows, Linux) to reload the page. On a good Wi-Fi connection, the page takes more than 10 seconds to load completely.
+    
+    <figure> 
+    
+    ![The Chrome DevTools Network panel, after reloading the page.](imgs/get-started-post-load.png) <figcaption> **Figure 3**. The Chrome DevTools Network panel, after reloading the page. </figcaption> </figure>
+2. Note the value for [`DOMContentLoaded`](https://developer.mozilla.org/en-US/docs/Web/Events/DOMContentLoaded) in the [Summary pane](reference#summary), on the bottom of the Network panel. You should see a value of at least 4 seconds. When you see this event firing late like this, be on the lookout for scripts that are delaying the main document's load and parse.
 
-### A 部分：查找阻塞渲染的脚本
+3. Click **main.js** to investigate that request further. DevTools shows a set of new tabs that provide more information about this request.
 
-当浏览器遇到 `<script>` 标记时，必须立即暂停渲染，并执行脚本。
- 查找页面加载不需要的脚本，并将其标记为异步或延迟其执行时间，以缩短页面加载时间。
+4. Click the **Preview** tab to view the request's source code. You can see that the script just hangs for 4000ms. By marking this script with the `async` attribute and moving it to the bottom of the document's `<body>`, the page can load without waiting for the script.
+    
+    <figure> 
+    
+    ![Viewing the source code for main.js in the Preview pane.](imgs/get-started-preview.png) <figcaption> **Figure 4**. Viewing the source code for `main.js` in the Preview pane. </figcaption> </figure>
 
+See [Parser-blocking versus asynchronous JavaScript](/web/fundamentals/performance/critical-rendering-path/adding-interactivity-with-javascript#parser_blocking_versus_asynchronous_javascript) to learn more about render-blocking scripts.
 
-1. 按 <kbd>Command</kbd>+<kbd>R</kbd> (Mac) 或
-   <kbd>Control</kbd>+<kbd>R</kbd>（Windows、Linux）以重新加载页面。
-   在正常的 Wi-Fi 连接环境下，页面需要 10 多秒才能完整加载。
+### Part B: Find large requests
 
+When the page loaded, did you notice that the DevTools logo took a long time to load? It's not blocking the load, but it's making the page *appear* slow. Users like it when pages *appear* fast.
 
-     <figure>
-       <img src="imgs/get-started-post-load.png"
-         alt="重新加载页面后的 Chrome DevTools Network 面板。">
-       <figcaption>
-         <b>图 3</b>. 重新加载页面后的 Chrome DevTools Network 面板。
+1. Click **Close** ![Close](imgs/close.png){:.devtools-inline} so that you can see the [**Requests pane**](reference#requests) again.
 
-       </figcaption>
-     </figure>
+2. Double-click on the top-left screenshot.
 
-1. 注意 Network 面板底部 [Summary
-窗格](reference#summary)中的 [`DOMContentLoaded`][DOMContentLoaded] 值。
-   您看到的值至少应该是 4 秒。 当您看到此事件像这样延迟触发时，需注意查找延迟主文档加载和解析的脚本。
+3. Press your right-arrow key to scan through the set of screenshots. The time below the screenshot indicates when the screenshot was taken. The screenshot takes multiple seconds to load. That means it's probably too large of a file.
 
+4. Click anywhere outside of the screenshot to minimize it.
 
+5. Hover over the [Waterfall](reference#waterfall) for the `logo-1024px.png` request. The request spends most of its time downloading the image. This confirms that the image is too large.
+    
+    <figure> 
+    
+    ![The waterfall for logo-1024px.png.](imgs/get-started-waterfall.png) <figcaption> **Figure 5**. The waterfall for `logo-1024px.png`. </figcaption> </figure>
 
-1. 点击 **main.js** 以进一步调查该请求。 DevTools 会显示一组新标签，提供有关此请求的更多信息。
+## Step 4: Verify fixes on updated page {: #verify }
 
+You're just about done. Suppose now that you've already made two changes to the page:
 
-1. 点击 **Preview** 标签以查看此请求的源代码。 您会看到此脚本挂起 4000 毫秒。
-   通过使用 `async` 属性标记此脚本，并将其移到文档的 `<body>` 底部，让页面无需等待此脚本即可进行加载。
+* You moved the script to the bottom of the `<body>` and marked it `async` to prevent it from blocking the page load.
+* You converted the logo to SVG to reduce its size.
 
+All that's left to do is to test out the updated page to verify that your fixes do indeed make the page load faster.
 
+1. Click **Open Fast Page**. The fixed page opens in a new tab.
+    
+    <a href="https://googlechrome.github.io/devtools-samples/network/gs/v2.html"
+   target="devtools" class="gc-analytics-event" rel="noopener noreferrer"
+   data-category="DevTools / Network / Get Started"
+   data-label="Fast Page Opened"> <button>Open Fast Page</button> </a>
 
-     <figure>
-       <img src="imgs/get-started-preview.png"
-         alt="在 Preview 窗格中查看 main.js 的源代码。">
-       <figcaption>
-         <b>图 4</b>. 在 Preview 窗格中查看 <code>main.js</code> 的源代码。
+2. Set up DevTools the same as before. Screenshots and cache disabling should be on, and network throttling should be set to **Regular 2G**.
 
-       </figcaption>
-     </figure>
-
-如需了解有关阻塞渲染的脚本的更多信息，请参阅[解析器阻止 JavaScript 与异步 JavaScript][async]。
-
-
-### B 部分：查找较大的请求
-
-加载页面时，您是否发现 DevTools 徽标需要较长的加载时间？
-徽标加载不会阻塞加载，但会使页面*显示*迟缓。
- 用户喜欢快速*显示*的页面。
-
-1. 点击 **Close** ![关闭][close]，{:.devtools-inline} 以便再次查看
-[**Requests 窗格**](reference#requests)。
-
-1. 双击左上方的屏幕截图。
-
-1. 按右箭头键以浏览整组屏幕截图。 屏幕截图下面的时间表示截取屏幕截图的时间。
- 加载屏幕截图需要几秒钟。
- 这意味着文件可能很大。
-
-
-1. 点击屏幕截图外部的任意位置以使其最小化。
-
-1. 将鼠标指针悬停在 `logo-1024px.png` 请求的[瀑布图](reference#waterfall)上。
- 此请求的大部分时间都用在下载图像上。
- 这表明图像过大。
-
-     <figure>
-       <img src="imgs/get-started-waterfall.png"
-         alt="logo-1024px.png 的瀑布图。">
-       <figcaption>
-         <b>图 5</b>. <code>logo-1024px.png</code> 的瀑布图。
-       </figcaption>
-     </figure>
-
-[DOMContentLoaded]: https://developer.mozilla.org/en-US/docs/Web/Events/DOMContentLoaded
-
-[async]: /web/fundamentals/performance/critical-rendering-path/adding-interactivity-with-javascript#parser_blocking_versus_asynchronous_javascript
-
-[close]: imgs/close.png 
-
-## 第 4 步：在更新页面上验证修正方法 {: #verify }
-
-您即将完成工作。 现在假定您已在页面上完成以下两项更改操作：
-
-
-* 您已将脚本移到 `<body>` 底部，并将其标记为 `async`，以防脚本阻塞页面加载。
-* 您已将徽标转换为 SVG 以缩小其大小。
-
-接下来就是测试更新页面，以验证您的修正方法是否真的可以加快页面加载速度。
-
-
-1. 点击 **Open Fast Page**。 修复的页面将在新标签中打开。
-
-     <a href="https://googlechrome.github.io/devtools-samples/network/gs/v2.html"
-       target="devtools" class="gc-analytics-event" rel="noopener noreferrer"
-       data-category="DevTools / Network / Get Started"
-       data-label="Fast Page Opened">
-       <button>Open Fast Page</button>
-     </a>
-
-1. 采用与之前相同的方式设置 DevTools。 应启用屏幕截图和停用缓存这两项功能，并且应将网络节流值设置为 **Regular 2G**。
-
-1. 重新加载页面。 此时，页面加载速度要快得多。
-
-     <figure>
-       <img src="imgs/get-started-post-fix.png"
-         alt="应用修正方法后的页面加载记录。">
-       <figcaption>
-         <b>图 6</b>. 应用修正方法后的页面加载记录。
- 此页面过去需要 10 秒左右才能完整显示，
- 而现在只需 1 秒左右。
-       </figcaption>
-     </figure>
+3. Reload the page. The page loads much faster.
+    
+    <figure> 
+    
+    ![A recording of the page's load, after applying the fixes.](imgs/get-started-post-fix.png) <figcaption> **Figure 6**. A recording of the page's load, after applying the fixes. The page used to take about 10 seconds to appear visually complete. Now it only takes about 1 second. </figcaption> </figure>
 
 <aside class="note">
-  <b>注</b>：尽管此页面加载速度提高，但在 5 秒内仍不可使用。
- 这是因为该页面仍要运行挂起页面主线程的脚本。
-
+  <b>Note</b>: Although the page loads much faster, it's still unusable for
+  about 5 seconds. This is because it still runs the script that hangs
+  the main thread of the page.
 </aside>
 
-## 后续步骤 {: #next-steps }
+## Next Steps {: #next-steps }
 
-做得好！ 现在您是真正的 Chrome DevTools Network 面板专家了。
- 或许 还不是专家， 但您的确拥有扎实的知识和技能基础。
+Good job. You are now a bona fide expert in the Chrome DevTools Network panel. Well... maybe not an expert. You do have an excellent foundation of skills and knowledge, though.
 
+* See <a class="gc-analytics-event" data-category="DevTools / Network /
+Get Started" data-label="Next Steps / CRP"
+href="/web/fundamentals/performance/critical-rendering-path">Critical Rendering Path</a> to learn more about the theory of lightning-fast page loading.
+* See <a class="gc-analytics-event" data-category="DevTools / Network /
+Get Started" data-label="Next Steps / Issues Guide" href="issues">Network Issues Guide</a> to learn how to spot more network issues.
+* See <a class="gc-analytics-event" data-category="DevTools / Network /
+Get Started" data-label="Next Steps / Reference" href="reference">Network Panel Reference</a> for a comprehensive list of Network panel features.
 
-* 如需了解有关超快页面加载理论的更多信息，请参阅<a class="gc-analytics-event" data-category="DevTools / Network /  Get Started" data-label="Next Steps / CRP"  href="/web/fundamentals/performance/critical-rendering-path">关键渲染路径</a>。
-* 如需了解如何找出更多网络问题，请参阅<a class="gc-analytics-event" data-category="DevTools / Network /  Get Started" data-label="Next Steps / Issues Guide" href="issues">网络问题指南</a>。
-* 如需获取 Network 面板功能的完整列表，请参阅<a class="gc-analytics-event" data-category="DevTools / Network /
-  Get Started" data-label="Next Steps / Reference" href="reference">Network
-面板参考</a>。
-
-## 反馈 {: #feedback }
+## Feedback {: #feedback }
 
 {% include "web/_shared/helpful.html" %}
