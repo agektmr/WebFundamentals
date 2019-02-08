@@ -1,46 +1,32 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description:“缓存包含来自清单的 start_url”Lighthouse 审查的参考文档。
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Reference documentation for the "Cache contains start_url from manifest" Lighthouse audit.
 
-{# wf_updated_on: 2016-09-15 #}
-{# wf_published_on: 2016-09-15 #}
+{# wf_updated_on: 2018-07-23 #} {# wf_published_on: 2016-09-15 #} {# wf_blink_components: N/A #}
 
-# 缓存包含来自清单的 start_url {: .page-title }
+# Cache Contains start_url From Manifest {: .page-title }
 
-## 为什么说此审查非常重要{: #why }
+## Overview {: #overview }
 
-可确保在离线状态下从移动设备主屏幕正确启动 Progressive Web App。
+Ensures that a progressive web app properly launches from a mobile device homescreen while offline.
 
+## Recommendations {: #recommendations }
 
-## 如何通过此审查{: #how }
+1. Define a `start_url` property in your `manifest.json` file.
+2. Ensure that your service worker properly caches a resource that matches the value of `start_url`.
 
-1. 在您的 `manifest.json` 文件中定义一个 `start_url` 属性。
-2. 确保您的服务工作线程正确缓存与 `start_url` 的值匹配的资源。
+To learn the basics of adding apps to homescreens, see [Add Your Web App to a User's Home Screen](https://codelabs.developers.google.com/codelabs/add-to-home-screen). This is a step-by-step, hands-on codelab in which you add "add to homescreen" functionality into an existing app. Use what you learn in this codelab to integrate "add to homescreen" functionality in your own app.
 
+For more help on how to cache files with service workers for offline use, see the "How to pass the audit" section of the following Lighthouse doc: [URL responds with a 200 when offline](http-200-when-offline#recommendations)
 
-如需了解将应用添加到主屏幕的基础知识，请参阅[将网络应用添加到用户的主屏幕](https://codelabs.developers.google.com/codelabs/add-to-home-screen)。这是一个实用的分步操作的代码实验室，在其中可将“添加到主屏幕”功能添加到现有应用中。运用您在此代码实验室中学到的知识将“添加到主屏幕”功能集成到您自己的应用中。
+## More information {: #more-info }
 
+When a progressive web app is launched from the homescreen of a mobile device, the app opens on a specific URL. That URL is defined in the app's `manifest.json` file as the `start_url` property.
 
-如需有关如何使用服务工作线程缓存文件以供离线使用的更多帮助，请参阅以下 Lighthouse 文档：[处于离线状态时访问网址返回 200](http-200-when-offline#how) 中的“如何通过此审查”部分
+This audit parses the value of `start_url` from `manifest.json` and then ensures that a matching resource is cached in the service worker's cache.
 
+**If your service worker redirects** `start_url` **requests, this audit may produce inaccurate results**.
 
+One shortcoming of this audit is that it inspects the cache contents directly, rather than asking the service worker to resolve the `start_url` request. This can produce a false negative result if your cache is missing a resource that matches the exact value of `start_url`, even though in real scenarios the request resolves successfully because the service worker redirects to another resource in the cache. Conversely, the audit can produce a false positive result if your cache contains a resource that matches `start_url`, but your service worker redirects the request to a non-existent resource.
 
-{% include "web/tools/lighthouse/audits/implementation-heading.html" %}
+## Feedback {: #feedback }
 
-从移动设备的主屏幕启动一个 Progressive Web App 时，此应用将在特定网址上打开。
-该网址在应用的 `manifest.json` 文件中被定义为 `start_url` 属性。
-
-
-此审查解析来自 `manifest.json` 的 `start_url` 的值，然后确保将匹配的资源缓存在服务工作线程的缓存中。
-
-
-**如果您的服务工作线程重定向** `start_url` **请求，则此审查可能会生成不准确的结果**。
-
-
-此审查的一个缺点是它直接检查缓存内容，而不是要求服务工作线程解析 `start_url` 请求。如果您的缓存缺少与 `start_url` 的精确值匹配的资源，这会生成一个假阴性结果，即使在实际场景中由于服务工作线程将请求重定向到缓存中的另一个资源从而能够成功解析请求。反过来，如果您的缓存包含一个与 `start_url` 匹配的资源，则此审查会生成一个假阳性结果，但是您的服务工作线程将请求重定向到一个不存在的资源。
-
-
-
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
