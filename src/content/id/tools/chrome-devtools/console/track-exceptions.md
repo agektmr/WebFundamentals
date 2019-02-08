@@ -1,132 +1,96 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Chrome DevTools menyediakan berbagai alat untuk membantu Anda memperbaiki laman web yang melontarkan pengecualian dan men-debug kesalahan di JavaScript Anda.
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Chrome DevTools provides tools to help you fix web pages throwing exceptions and debug errors in your JavaScript.
 
-{# wf_updated_on: 2015-05-12 #}
-{# wf_published_on: 2015-04-13 #}
+{# wf_updated_on: 2018-07-27 #} {# wf_published_on: 2015-04-13 #} {# wf_blink_components: Platform>DevTools #}
 
-# Penanganan Kesalahan dan Pengecualian {: .page-title }
+# Exception and Error Handling {: .page-title }
 
-{% include "web/_shared/contributors/megginkearney.html" %}
-{% include "web/_shared/contributors/flaviocopes.html" %}
-Chrome DevTools menyediakan berbagai alat untuk membantu Anda memperbaiki laman web yang melontarkan pengecualian dan men-debug kesalahan di JavaScript Anda.
+{% include "web/_shared/contributors/megginkearney.html" %} {% include "web/_shared/contributors/flaviocopes.html" %} Chrome DevTools provides tools to help you fix web pages throwing exceptions and debug errors in your JavaScript.
 
-Pengecualian laman dan kesalahan JavaScript sebenarnya sangat berguna - jika Anda bisa mendapatkan detailnya. Bila sebuah laman melontarkan pengecualian atau skrip menghasilkan suatu kesalahan, Console akan memberikan informasi spesifik yang bisa diandalkan untuk membantu Anda menemukan dan mengoreksi masalah tersebut. 
+Page exceptions and JavaScript errors are actually quite useful - if you can get to the details behind them. When a page throws an exception or a script produces an error, the Console provides specific, reliable information to help you locate and correct the problem.
 
-Di Console Anda bisa melacak pengecualian dan mengusut jalur eksekusi yang mengarahkan ke sana, secara eksplisit atau implisit menangkapnya (atau mengabaikannya), dan bahkan menyetel penangan kesalahan untuk mengumpulkan dan memproses data pengecualian secara otomatis.
-
+In the Console you can track exceptions and trace the execution path that led to them, explicitly or implicitly catch them (or ignore them), and even set error handlers to automatically collect and process exception data.
 
 ### TL;DR {: .hide-from-toc }
-- Aktifkan Pause on Exceptions untuk men-debug konteks kode bila pengecualian terpicu.
-- Cetak tumpukan panggilan JavaScript saat ini menggunakan <code>console.trace</code>.
-- Letakkan pernyataan dalam kode Anda dan lontarkan pengecualian menggunakan <code>console.assert()</code>.
-- Masukkan ke log kesalahan yang terjadi di browser menggunakan <code>window.onerror</code>.
 
+- Turn on Pause on Exceptions to debug the code context when the exception triggered.
+- Print current JavaScript call stack using `console.trace`.
+- Place assertions in your code and throw exceptions using `console.assert()`.
+- Log errors happening in the browser using `window.onerror`.
 
-## Melacak pengecualian
+## Track exceptions
 
-Bila terjadi suatu kesalahan, buka konsol DevTools (`Ctrl+Shift+J` / `Cmd+Option+J`) untuk menampilkan pesan kesalahan JavaScript.
-Setiap pesan memiliki tautan ke nama file dengan nomor baris yang bisa Anda masuki.
+When something goes wrong, open the DevTools console (`Ctrl+Shift+J` / `Cmd+Option+J`) to view the JavaScript error messages. Each message has a link to the file name with the line number you can navigate to.
 
-Contoh pengecualian:
-![Contoh pengecualian](images/track-exceptions-tracking-exceptions.jpg)
+An example of an exception: ![Exception example](images/track-exceptions-tracking-exceptions.jpg)
 
-### Menampilkan pelacakan tumpukan pengecualian
+### View exception stack trace
 
-Jalur eksekusi mana yang menyebabkan kesalahan tidaklah selalu jelas.
-Lengkapi tumpukan panggilan JavaScript yang menyertai pengecualian di konsol.
-Luaskan pesan konsol ini untuk melihat bingkai tumpukan dan menuju lokasinya dalam kode:
+It's not always obvious which execution path lead to an error. Complete JavaScript call stacks accompany exceptions in the console. Expand these console messages to see the stack frames and navigate to the corresponding locations in the code:
 
-![Pelacakan tumpukan pengecualian](images/track-exceptions-exception-stack-trace.jpg)
+![Exception stack trace](images/track-exceptions-exception-stack-trace.jpg)
 
-### Berhenti sebentar di pengecualian JavaScript
+### Pause on JavaScript exceptions
 
-Saat berikutnya pengecualian dilontarkan,
-hentikan sebentar eksekusi JavaScript dan periksa tumpukan panggilan,
-variabel scope, dan status aplikasi Anda.
-Sebuah tombol perhentian tiga-status di bagian bawah panel Scripts memungkinkan Anda beralih di antara berbagai macam mode penanganan pengecualian: ![Tombol berhenti sebentar](images/track-exceptions-pause-gray.png){:.inline}
+The next time an exception is thrown, pause JavaScript execution and inspect its call stack, scope variables, and state of your app. A tri-state stop button at the bottom of the Scripts panel enables you to switch among different exception handling modes: ![Pause button](images/track-exceptions-pause-gray.png){:.inline}
 
-Pilih untuk menghentikan sementara semua pengecualian atau hanya pada pengecualian yang tak tertangkap, atau Anda bisa mengabaikan pengecualian sama sekali.
+Choose to either pause on all exceptions or only on the uncaught ones or you can ignore exceptions altogether.
 
-![Menghentikan eksekusi sementara](images/track-exceptions-pause-execution.jpg)
+![Pause execution](images/track-exceptions-pause-execution.jpg)
 
-## Mencetak pelacakan tumpukan
+## Print stack traces
 
-Pahami lebih baik perilaku laman web Anda
-dengan mencetak pesan log ke konsol.
-Buatlah entri log jadi lebih informatif dengan menyertakan pelacakan tumpukan yang berkaitan. Ada beberapa cara untuk melakukannya:
+Better understand how your web page behaves by printing log messages to the console. Make the log entries more informative by including associated stack traces. There are several ways of doing that.
 
 ### Error.stack
-Setiap objek Error memiliki properti string yang disebut tumpukan (stack) dan berisi pelacakan tumpukan:
 
-![Contoh Error.stack](images/track-exceptions-error-stack.jpg)
+Each Error object has a string property named stack that contains the stack trace:
+
+![Error.stack example](images/track-exceptions-error-stack.jpg)
 
 ### console.trace()
 
-Melengkapi kode Anda dengan panggilan [`console.trace()`](./console-reference#consoletraceobject) yang mencetak tumpukan panggilan JavaScript saat ini:
+Instrument your code with [`console.trace()`](./console-reference#consoletraceobject) calls that print current JavaScript call stacks:
 
-![Contoh console.trace()](images/track-exceptions-console-trace.jpg)
+![console.trace() example](images/track-exceptions-console-trace.jpg)
 
 ### console.assert()
 
-Masukkan pernyataan dalam kode JavaScript dengan memanggil [`console.assert()`](./console-reference#consoleassertexpression-object)
-bersama syarat kesalahan sebagai parameter pertama.
-Bila hasil evaluasi ekspresi ini adalah false,
-Anda akan melihat rekaman konsolnya:
+Place assertions in your JavaScript code by calling [`console.assert()`](./console-reference#consoleassertexpression-object) with the error condition as the first parameter. When this expression evaluates to false, you will see a corresponding console record:
 
-![contoh console.assert()](images/track-exceptions-console-assert.jpg)
+![console.assert() example](images/track-exceptions-console-assert.jpg)
 
-## Cara memeriksa pelacakan tumpukan untuk menemukan pemicu
+## How to examine stack trace to find triggers
 
-Mari kita lihat cara menggunakan berbagai alat yang baru saja Anda pelajari,
-dan temukan penyebab sesungguhnya dari kesalahan.
-Inilah laman HTML sederhana yang berisi dua skrip:
+Let's see how to use the tools you've just learned about, and find the real cause of an error. Here's a simple HTML page that includes two scripts:
 
-![Kode contoh](images/track-exceptions-example-code.png)
+![Example code](images/track-exceptions-example-code.png)
 
-Bila pengguna mengeklik di laman,
-paragraf akan mengubah teks di dalamnya,
-dan fungsi `callLibMethod()` yang disediakan oleh `lib.js` akan dipanggil.
+When the user clicks on the page, the paragraph changes its inner text, and the `callLibMethod()` function provided by `lib.js` is called.
 
-Fungsi ini akan mencetak `console.log`,
-kemudian memanggil `console.slog`,
-yakni metode yang tidak disediakan oleh Console API.
-Ini akan memicu suatu kesalahan.
+This function prints a `console.log`, and then calls `console.slog`, a method not provided by the Console API. This should trigger an error.
 
-Bila laman dijalankan dan mengekliknya,
-kesalahan ini akan terpicu:
+When the page is run and you click on it, this error is triggered:
 
-![Kesalahan yang dipicu](images/track-exceptions-example-error-triggered.png)
+![Error triggered](images/track-exceptions-example-error-triggered.png)
 
-Klik panah untuk meluaskan pesan kesalahan:
+Click the arrow to can expand the error message:
 
-![Pesan kesalahan diluaskan](images/track-exceptions-example-error-message-expanded.png)
+![Error message expanded](images/track-exceptions-example-error-message-expanded.png)
 
-Console memberi tahu Anda kesalahan telah dipicu di `lib.js`, baris 4,
-yang dipanggil oleh `script.js` dalam callback `addEventListener`,
-sebuah fungsi anonim, di baris 3.
+The Console tells you the error was triggered in `lib.js`, line 4, which was called by `script.js` in the `addEventListener` callback, an anonymous function, in line 3.
 
-Ini adalah contoh yang sangat sederhana,
-namun men-debug jejak log paling rumit sekali pun mengikuti proses yang sama.
+This is a very simple example, but even the most complicated log trace debugging follows the same process.
 
-## Tangani pengecualian waktu proses dengan window.onerror
+## Handle runtime exceptions using window.onerror
 
-Chrome akan mengekspos fungsi penangan `window.onerror`,
-yang dipanggil bila terjadi kesalahan dalam eksekusi kode JavaScript.
-Bila dilontarkan pengecualian JavaScript dalam konteks jendela dan
-tidak ditangkap oleh blok try/catch,
-fungsi akan dipanggil bersama pesan pengecualian,
-URL file yang melontarkan pengecualian,
-dan nomor baris di file itu,
-yang diteruskan berupa tiga argumen dalam urutan itu.
+Chrome exposes the `window.onerror` handler function, called whenever an error happens in the JavaScript code execution. Whenever a JavaScript exception is thrown in the window context and is not caught by a try/catch block, the function is invoked with the exception's message, the URL of the file where the exception was thrown, and the line number in that file, passed as three arguments in that order.
 
-Ini akan berguna saat Anda menyetel penangan kesalahan yang akan mengumpulkan informasi tentang pengecualian tak tertangkap dan melaporkannya kembali ke server Anda menggunakan panggilan AJAX POST, misalnya. Dengan cara ini, Anda bisa mencatat log semua kesalahan yang terjadi dalam browser pengguna, dan agar diberi tahu tentang hal itu.
+You may find it useful to set an error handler that would collect information about uncaught exceptions and report it back to your server using an AJAX POST call, for example. In this way, you can log all the errors happening in the user's browser, and be notified about them.
 
-Contoh penggunaan `window.onerror`:
+Example of using `window.onerror`:
 
-![Contoh penangan window.onerror](images/runtime-exceptions-window-onerror.jpg)
+![Example of window.onerror handler](images/runtime-exceptions-window-onerror.jpg)
 
+## Feedback {: #feedback }
 
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
