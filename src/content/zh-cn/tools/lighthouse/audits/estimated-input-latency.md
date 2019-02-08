@@ -1,59 +1,33 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description:“预计输入延迟时间”Lighthouse 审查的参考文档。
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Reference documentation for the "Estimated Input Latency" Lighthouse audit.
 
-{# wf_updated_on:2016-10-05 #}
-{# wf_published_on:2016-10-05 #}
+{# wf_updated_on: 2018-12-17 #} {# wf_published_on: 2016-10-05 #} {# wf_blink_components: N/A #}
 
-# 预计输入延迟时间 {: .page-title }
+# Estimated Input Latency {: .page-title }
 
-## 为什么说此审查非常重要{: #why }
+## Overview {: #overview }
 
-输入响应能力对用户如何看待您应用的性能起着关键作用。
-应用有 100 毫秒的时间响应用户输入。如果超过此时间，用户就会认为应用反应迟缓。
-如需了解详细信息，请参阅[使用 RAIL 模型测量性能](/web/fundamentals/performance/rail)。
+Input responsiveness is a key factor in how users perceive the performance of your app. Apps have 100ms to respond to user input. Any longer than that, and the user perceives the app as laggy. See [Measure Performance with the RAIL Model](/web/fundamentals/performance/rail) for more information.
 
+See [More information](#more-info) for an explanation of why this audit tests for a target score of 50ms (rather than 100ms, which is what the RAIL model recommends).
 
-有关为什么此审查测试的目标得分是 50 毫秒（而不是 RAIL 模型建议的 100 毫秒）的解释，请参阅本文档的[此审查测试的目的](#what)部分。
+## Recommendations {: #recommendations }
 
+To make your app respond to user input faster, you need to optimize how your code runs in the browser. Check out the series of techniques outlined in the [Rendering Performance](/web/fundamentals/performance/rendering/) docs. These tips range from offloading computation to web workers in order to free up the main thread, to refactoring your CSS selectors to perform less calculations, to using CSS properties that minimize the amount of browser-intensive operations.
 
+One important caveat of this audit is that it's not a complete measurement of input latency. As explained in the [More information](#more-info) section of this doc, this audit does not measure how long your app truly takes to respond to a user input. In other words, it does not measure that your app's response to the user's input is visually complete.
 
-## 如何通过此审查{: #how }
+To measure this manually, make a recording with the Chrome DevTools Timeline. See [Do less main thread work](/web/tools/chrome-devtools/speed/get-started#main) for an example of the workflow. The basic idea is to start a recording, perform the user input that you want to measure, stop the recording, and then analyze the flame chart to ensure that all stages of [the pixel pipeline](/web/fundamentals/performance/rendering/#the_pixel_pipeline) are complete within 50ms.
 
-要使您的应用更快地响应用户输入，您需要优化您的代码在浏览器中的运行方式。
-请查看[渲染性能](/web/fundamentals/performance/rendering/)文档中列出的一系列技巧。这些技巧包括将计算转移到网络工作线程以腾出主线程、重构 CSS 选择器以执行较少的计算，以及使用 CSS 属性，其可将浏览器密集型的操作数降至最低。
+## More information {: #more-info }
 
+The RAIL performance model recommends that apps respond to user input within 100ms, whereas Lighthouse's target score is 50ms. Why?
 
+The reason is that Lighthouse uses a proxy metric to measure how well your app responds to user input: availability of the main thread. Lighthouse assumes that your app needs 50ms to completely respond to the user's input (from performing any JavaScript executions to physically painting the new pixels to the screen). If your main thread is unavailable for 50ms or more, that does not leave enough time for your app to complete the response.
 
+There is a 90% probability a user would encounter input latency of the amount that Lighthouse reports, or less. 10% of users can expect additional latency.
 
-对于此审查，需要特别注意的一点是它不能完整测量输入延迟时间。
-正如本文档的[此审查测试的目的](#what)部分所述，此审查不会测量您的应用真正花了多少时间来响应用户输入。换句话说，它不会测量您的应用对用户输入的响应在视觉上是否完整。
+The timing of this audit is from First Meaningful Paint to the end of the [trace](https://www.chromium.org/developers/how-tos/trace-event-profiling-tool), which is roughly 5 seconds after the time to [Consistently Interactive](/web/tools/lighthouse/audits/consistently-interactive).
 
+## Feedback {: #feedback }
 
-要手动对此进行测量，请使用 Chrome DevTools Timeline 进行录音。
-请参阅[如何使用 Timeline 工具](/web/tools/chrome-devtools/evaluate-performance/timeline-tool)以获取更多帮助。
-
-基本思路是启动一个录制、执行您要测量的用户输入、停止录制，然后分析火焰图以确保[像素管道](/web/fundamentals/performance/rendering/#the_pixel_pipeline)的所有阶段都在 50 毫秒内完成。
-
-
-
-
-
-{% include "web/tools/lighthouse/audits/implementation-heading.html" %}
-
-RAIL 性能模型建议应用在 100 毫秒内响应用户输入，而 Lighthouse 的目标得分是 50 毫秒。
-为什么呢？
-
-原因是 Lighthouse 使用一个代理指标来测量您的应用在响应用户输入方面的表现：主线程的可用性。
-Lighthouse 假定您的应用需要 50 毫秒的时间来完全响应用户的输入（从实现任意 JavaScript 执行到以物理方式将新像素绘制到屏幕）。
-
-
-如果主线程的不可用时间达 50 毫秒或更长，那么，您的应用将没有足够的时间完成响应。
-
-
-用户遇到 Lighthouse 报告的输入延迟时间的可能性为 90% 或以下。
-10% 的用户会出现额外的延迟。
-
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
