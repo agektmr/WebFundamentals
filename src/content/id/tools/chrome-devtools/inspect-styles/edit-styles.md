@@ -1,290 +1,227 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Gunakan panel Styles di Chrome DevTools untuk memeriksa dan mengubah gaya CSS yang terkait dengan sebuah elemen.
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Use the Styles pane in Chrome DevTools to inspect and modify the CSS styles associated to an element.
 
-{# wf_updated_on: 2017-07-12 #}
-{# wf_published_on: 2015-04-13 #}
+{# wf_updated_on: 2018-07-27 #} {# wf_published_on: 2015-04-13 #} {# wf_blink_components: Platform>DevTools #}
 
-# Mengedit Gaya {: .page-title }
+# Edit Styles {: .page-title }
 
-{% include "web/_shared/contributors/kaycebasques.html" %}
-{% include "web/_shared/contributors/megginkearney.html" %}
+{% include "web/_shared/contributors/kaycebasques.html" %} {% include "web/_shared/contributors/megginkearney.html" %}
 
-Gunakan panel <strong>Styles</strong> untuk mengubah gaya CSS
-yang terkait dengan sebuah elemen.
+Warning: This page is deprecated. See [CSS Reference](/web/tools/chrome-devtools/css/reference).
 
-![Panel Styles](imgs/styles-pane.png)
+Use the **Styles** pane to modify the CSS styles associated to an element.
 
+![Styles pane](imgs/styles-pane.png)
 
 ### TL;DR {: .hide-from-toc }
-- Panel styles dapat digunakan untuk mengubah CSS secara lokal dengan berbagai cara, termasuk mengedit gaya yang ada, menambahkan gaya baru, atau menambahkan aturan untuk gaya.
-- Jika Anda ingin gaya tetap ada (tidak hilang saat pemuatan ulang), Anda harus menetapkannya di workspace development Anda.
 
+- The styles pane lets you change your CSS in as many ways as possible, locally, including editing existing styles, adding new styles, adding rules for styles.
+- If you want styles to persist (so they don't go away on a reload), you need to persist them to your development workspace.
 
-## Memeriksa gaya yang diterapkan pada sebuah elemen
+## Inspect styles applied to an element
 
-[Pilih elemen](edit-dom#inspect-an-element) untuk memeriksa gayanya. 
-Panel **Styles** menampilkan aturan CSS yang berlaku pada elemen yang dipilih, 
-dari prioritas tertinggi hingga terendah:
+[Select an element](edit-dom#inspect-an-element) to inspect its styles. The **Styles** pane shows the CSS rules that apply to the selected element, from highest priority to lowest:
 
-* Di bagian atas adalah `element.style`. Gaya ini diterapkan secara langsung pada 
-  elemen menggunakan properti gaya (misalnya, 
-  `<p style="color:green">`), atau diterapkan di DevTools.
+- At the top is `element.style`. These are styles either applied directly to the element using the style property (for example, `<p style="color:green">`), or applied in DevTools.
 
-* Berikut ini semua aturan CSS yang cocok dengan elemen. Misalnya, di
-  tangkapan layar di bawah elemen yang dipilih menerima `line-height:24px` dari
-  sebuah aturan yang didefinisikan di `tools.css`.
+- Below that are any CSS rules that match the element. For example, in the screenshot below the selected element receives `line-height:24px` from a rule defined in `tools.css`.
 
-* Berikut adalah gaya yang diwarisi, yang termasuk aturan gaya apa pun
-  yang dapat diwarisi yang cocok dengan pendahulu elemen yang dipilih. Misalnya, di
-  tangkapan layar berikut, elemen yang dipilih mewarisi `display:list-item` dari
-  `user agent stylesheet`.
+- Below that are inherited styles, which include any inheritable style rules that match the selected element's ancestors. For example, in the screenshot below the selected element inherits `display:list-item` from `user agent stylesheet`.
 
-Setiap label pada gambar berikut ini dijelaskan di bawah gambar, sesuai dengan nomornya.
+The labels on the image below correspond with the numbered items below it.
 
-![Panel Styles beranotasi](/web/tools/chrome-devtools/inspect-styles/imgs/styles-annotated.png)
+![Annotated Styles pane](/web/tools/chrome-devtools/inspect-styles/imgs/styles-annotated.png)
 
-1. Gaya yang terkait dengan pemilih yang cocok dengan elemen.
-2. [Stylesheet agen-pengguna](http://meiert.com/en/blog/20070922/user-agent-style-sheets/)
-   diberi label yang jelas dan sering kali ditimpa oleh CSS di laman web Anda.
-3. Aturan yang telah ditimpa oleh **aturan berjenjang** ditampilkan sebagai
-   teks yang dicoret.
-4. Gaya yang **Diwarisi** ditampilkan berkelompok di bawah header "Inherited
-   from `<NODE>`". Klik simpul DOM di header untuk masuk ke
-   posisinya di tampilan pohon DOM. ([Tabel properti CSS 2.1
-](http://www.w3.org/TR/CSS21/propidx.html) menampilkan properti mana
-   yang bisa diwarisi.)
-5. Entri yang berwarna abu-abu adalah aturan yang tidak didefinisikan tetapi
-   **dihitung pada waktu proses**.
+1. Styles associated with a selector that matches the element.
+2. [User agent stylesheets](http://meiert.com/en/blog/20070922/user-agent-style-sheets/) are clearly labelled, and are often overridden by the CSS on your web page.
+3. Rules that have been overridden by **cascading rules** are shown with strikethrough text.
+4. **Inherited** styles are displayed as a group under the "Inherited from `<NODE>`" header. Click the DOM node in the header to navigate to its position in the DOM tree view. (The [CSS 2.1 properties table](http://www.w3.org/TR/CSS21/propidx.html) shows which properties are inheritable.)
+5. Grey colored entries are rules that are not defined but instead **computed at runtime**.
 
-Memahami cara kerja jenjang dan warisan sangat penting untuk
-melakukan debug pada gaya Anda. Jenjang berkaitan dengan cara pemberian bobot pada deklarasi CSS
-untuk menentukan aturan mana yang harus didahulukan saat tumpang tindih dengan aturan lain. Pewarisan berkaitan dengan bagaimana elemen HTML
-mewarisi properti CSS dari elemen yang mengandungnya (pendahulu). Untuk informasi selengkapnya,
-lihat [dokumentasi W3C tentang jenjang](http://www.w3.org/TR/CSS2/cascade.html).
+Understanding how cascading and inheritance works is essential to debugging your styles. The cascade relates to how CSS declarations are given weights to determine which rules should take precedence when they overlap with another rule. Inheritance relates to how HTML elements inherit CSS properties from their containing elements (ancestors). For more, see [W3C documentation on cascading](http://www.w3.org/TR/CSS2/cascade.html).
 
-## Memeriksa elemen yang dipengaruhi oleh pemilih
+## Inspect elements affected by a selector
 
-Arahkan kursor ke atas pemilih CSS di panel **Styles** untuk menampilkan semua
-elemen yang dipengaruhi oleh pemilih. Misalnya, di tangkapan layar 
-berikut, kursor diarahkan ke atas pemilih 
-`.wf-tools-guide__section-link a`. Di laman yang aktif, Anda bisa melihat semua elemen 
-`<a>` yang dipengaruhi oleh pemilih. 
+Hover your mouse over a CSS selector in the **Styles** pane to view all elements that are affected by the selector. For example, in the screenshot below the mouse is hovering over the selector `.wf-tools-guide__section-link a`. In the live page you can see all of the `<a>` elements that are affected by the selector.
 
-![menampilkan elemen yang terpengaruh oleh pemilih](imgs/selector-hover.png)
+![viewing elements affected by selector](imgs/selector-hover.png)
 
-**Catatan**: fitur ini hanya menyoroti elemen di tampilan yang terlihat; bisa saja 
-ada elemen lain di luar tampilan yang terlihat yang juga dipengaruhi oleh pemilih. 
+**Note**: this feature only highlights elements in the viewport; it's possible that other elements outside of the viewport are also affected by the selector.
 
-## Menambahkan, mengaktifkan, dan menonaktifkan kelas CSS {:#classes}
+## Add, enable, and disable CSS classes {:#classes}
 
-Klik tombol **.cls** untuk menampilkan semua kelas CSS yang terkait dengan
-elemen yang saat ini dipilih. Dari sana, Anda bisa:
+Warning: This page is deprecated. See [Toggle a class](/web/tools/chrome-devtools/css/reference#toggle-class).
 
-* Mengaktifkan atau menonaktifkan kelas yang saat ini terkait dengan elemen.
-* Menambahkan kelas baru ke elemen. 
+Click on the **.cls** button to view all of the CSS classes associated to the currently selected element. From there, you can:
 
-![panel classes](imgs/classes.png)
+- Enable or disable the classes currently associated to the element.
+- Add new classes to the element. 
 
-## Mengedit nama atau nilai properti yang sudah ada
+![classes pane](imgs/classes.png)
 
-Klik nama atau nilai properti CSS untuk mengeditnya. Saat nama atau nilai 
-disorot, tekan <kbd>Tab</kbd> untuk berpindah ke depan ke properti, nama,
-atau pemilih berikutnya. Tahan <kbd>Shift</kbd> dan tekan <kbd>Tab</kbd> untuk berpindah ke belakang.
+## Edit an existing property name or value
 
-Saat mengedit nilai properti CSS numerik, tambah dan kurangi nilai dengan 
-pintasan keyboard berikut:
+Warning: This page is deprecated. See [Change a declaration name or value](/web/tools/chrome-devtools/css/reference#change-declaration).
 
-* <kbd>Up</kbd> dan <kbd>Down</kbd> untuk menambah dan mengurangi nilai sebanyak 1,
-  atau sebanyak .1 jika nilai saat ini antara -1 dan 1.
-* <kbd>Alt</kbd>+<kbd>Up</kbd> dan <kbd>Alt</kbd>+<kbd>Down</kbd> untuk 
-  menambah dan mengurangi nilai sebanyak 0,1.
-* <kbd>Shift</kbd>+<kbd>Up</kbd> untuk menambah sebanyak 10 dan 
-  <kbd>Shift</kbd>+<kbd>Down</kbd> untuk mengurangi sebanyak 10.
-* <kbd>Shift</kbd>+<kbd>Page Up</kbd> (Windows, Linux) atau 
-  <kbd>Shift</kbd>+<kbd>Function</kbd>+<kbd>Up</kbd> (Mac) untuk menambah 
-  nilai sebanyak 100. <kbd>Shift</kbd>+<kbd>Page Down</kbd> (Windows, Linux) atau 
-  <kbd>Shift</kbd>+<kbd>Function</kbd>+<kbd>Down</kbd> (Mac) untuk mengurangi 
-  nilai sebanyak 100. 
+Click on a CSS property name or value to edit it. While a name or value is highlighted, press <kbd>Tab</kbd> to move forward to the next property, name, or selector. Hold <kbd>Shift</kbd> and press <kbd>Tab</kbd> to move backwards.
 
-## Menambahkan deklarasi properti baru
+When editing a numeric CSS property value, increment and decrement with the following keyboard shortcuts:
 
-Klik ruang kosong di dalam aturan CSS yang bisa diedit untuk membuat deklarasi baru. 
-Ketikkan atau tempel CSS ke dalam panel **Styles**. Properti dan nilainya 
-di-parse dan dimasukkan ke dalam bidang yang sesuai.
+- <kbd>Up</kbd> and <kbd>Down</kbd> to increment and decrement the value by 1, or by .1 if the current value is between -1 and 1.
+- <kbd>Alt</kbd>+<kbd>Up</kbd> and <kbd>Alt</kbd>+<kbd>Down</kbd> to increment and decrement the value by 0.1.
+- <kbd>Shift</kbd>+<kbd>Up</kbd> to increment by 10 and <kbd>Shift</kbd>+<kbd>Down</kbd> to decrement by 10.
+- <kbd>Shift</kbd>+<kbd>Page Up</kbd> (Windows, Linux) or <kbd>Shift</kbd>+<kbd>Function</kbd>+<kbd>Up</kbd> (Mac) to increment the value by 100. <kbd>Shift</kbd>+<kbd>Page Down</kbd> (Windows, Linux) or <kbd>Shift</kbd>+<kbd>Function</kbd>+<kbd>Down</kbd> (Mac) to decrement the value by 100. 
 
-Note: Untuk mengaktifkan atau menonaktifkan deklarasi gaya, centang atau hapus centang di kotak centang di sebelahnya.
+## Add a new property declaration
 
-## Menambahkan aturan gaya
+Warning: This page is deprecated. See [Add a declaration to an element](/web/tools/chrome-devtools/css/reference#add-declaration).
 
-Klik tombol **New Style Rule** 
-(![tombol new style rule](imgs/new-style-rule.png){:.inline}) untuk menambahkan 
-aturan CSS baru. 
+Click an empty space within an editable CSS rule to create a new declaration. Type it out, or paste the CSS into the **Styles** pane. Properties and their values are parsed and entered into the correct fields.
 
-Klik dan tahan tombol untuk memilih pada stylesheet mana aturan akan ditambahkan. 
+Note: To enable or disable a style declaration, check or uncheck the checkbox next to it.
 
-## Menambahkan atau menghapus gaya dinamis (kelas semu) {:#pseudo-classes}
+## Add a style rule
 
-Anda bisa secara manual menyetel pemilih kelas semu dinamis (seperti `:active`, 
-`:focus`, `:hover`, dan `:visited`) pada elemen. 
+Warning: This page is deprecated. See [Add a style rule](/web/tools/chrome-devtools/css/reference#style-rule).
 
-Ada dua cara untuk menetapkan status dinamis ini pada elemen:
+Click the **New Style Rule** (![new style rule button](imgs/new-style-rule.png){:.inline}) button to add a new CSS rule.
 
-* Klik kanan elemen di dalam panel **Elements**, lalu pilih
-  kelas semu target dari menu untuk mengaktifkan atau menonaktifkannya.
-  
-  ![klik kanan elemen 
-  untuk mengaktifkan pemilih kelas semu](imgs/pseudoclass-rightclick.png)
+Click and hold the button to choose which stylesheet the rule is added to.
 
-* Pilih elemen di panel **Elements**, klik tombol **:hov**
-  di panel **Styles**, dan gunakan kotak centang untuk mengaktifkan atau menonaktifkan 
-  pemilih untuk elemen yang saat ini dipilih.
+## Add or remove dynamic styles (pseudo-classes) {:#pseudo-classes}
 
-  ![panel :hov](imgs/hov.png)
+Warning: This page is deprecated. See [Toggle a pseudo-class](/web/tools/chrome-devtools/css/reference#pseudo-class).
 
-## Menambahkan background-color atau color pada aturan gaya
+You can manually set dynamic pseudo-class selectors (such as `:active`, `:focus`, `:hover`, and `:visited`) on elements.
 
-Panel **Styles** menyediakan pintasan untuk menambahkan deklarasi `color` dan
-`background-color` pada aturan gaya.
+There are two ways to set these dynamic states on an element:
 
-Di bagian kanan bawah aturan gaya, terdapat ikon tiga titik. Anda perlu 
-mengarahkan kursor ke atas aturan gaya untuk melihatnya.
+- Right-click on an element within the **Elements** panel and then select the target pseudo-class from the menu to enable or disable it.
+    
+    ![right-click on element 
+to enable pseudoclass selector](imgs/pseudoclass-rightclick.png)
 
-![ikon tiga titik dalam kumpulan aturan](imgs/rule-set-three-dots-icon.png)
+- Select an element in the **Elements** panel, click the **:hov** button in the **Styles** pane, and use the checkboxes to enable or disable the selectors for the currently selected element.
+    
+    ![:hov pane](imgs/hov.png)
 
-Arahkan kursor ke atas ikon ini untuk menampilkan tombol untuk menambahkan deklarasi `color` 
-(![menambahkan deklarasi add color](imgs/add-color.png){:.inline})
-atau deklarasi `background-color` (![menambahkan deklarasi 
-background-color](imgs/add-background-color.png){:.inline}). Klik salah satu
-tombol ini untuk menambahkan deklarasi ke aturan gaya. 
+## Add background-color or color to a style rule
 
-## Mengubah warna dengan Color Picker {:#color-picker}
+Warning: This page is deprecated. See [Add a background-color declaration](/web/tools/chrome-devtools/css/reference#background-color) and [Add a color declaration](/web/tools/chrome-devtools/css/reference#color).
 
-Untuk membuka **Color Picker**, temukan deklarasi CSS di panel **Styles** 
-yang mendefinisikan warna (misalnya `color: blue`). Di sebelah kiri nilai 
-deklarasi, terdapat kotak kecil berwarna. Warna kotak tersebut cocok dengan 
-nilai deklarasi. Klik kotak kecil ini untuk membuka **Color Picker**.
+The **Styles** pane provides a shortcut for adding `color` and `background-color` declarations to a style rule.
 
-![membuka color picker](imgs/open-color-picker.jpg)
+In the bottom-right of the style rule, there is a three-dot icon. You need to hover over the style rule in order to see it.
 
-Anda bisa berinteraksi dengan **Color Picker** dalam beberapa cara:
+![three-dots icon in rule set](imgs/rule-set-three-dots-icon.png)
 
-1. **Eyedropper**. Lihat [Eyedropper](#eyedropper) untuk informasi selengkapnya.
-2. **Current color**. Representasi visual **current value**.
-3. **Current value**. Representasi heksadesimal, RGBA, atau HSL 
-   **current color**.
-4. **Color palette**. Lihat [Palet warna](#color-palettes) untuk informasi
-   selengkapnya. 
-5. **Tint and shade selector**.
-6. **Hue selector**.
+Hover over this icon to reveal buttons for adding a `color` declaration (![add color declaration](imgs/add-color.png){:.inline}) or a `background-color` declaration (![add background-color 
+declaration](imgs/add-background-color.png){:.inline}). Click on one of these buttons to add the declaration to the style rule.
+
+## Modify colors with the Color Picker {:#color-picker}
+
+Warning: This page is deprecated. See [Change colors with the Color Picker](/web/tools/chrome-devtools/css/reference#color-picker).
+
+To open the **Color Picker**, find a CSS declaration in the **Styles** pane that defines a color (such as `color: blue`). To the left of the declaration value there is a small, colored square. The color of the square matches the declaration value. Click on this little square to open the **Color Picker**.
+
+![opening the color picker](imgs/open-color-picker.jpg)
+
+You can interact with the **Color Picker** in multiple ways:
+
+1. **Eyedropper**. See [Eyedropper](#eyedropper) for more information.
+2. **Current color**. A visual representation of the **current value**. 
+3. **Current value**. The hexadecimal, RGBA, or HSL representation of the **current color**. 
+4. **Color palette**. See [Color palettes](#color-palettes) for more information. 
+5. **Tint and shade selector**. 
+6. **Hue selector**. 
 7. **Opacity selector**.
-8. **Color value selector**. Klik untuk beralih antara RGBA, HSL, dan
-   heksadesimal. 
-9. **Color palette selector**. Klik untuk memilih template lain.
+8. **Color value selector**. Click to toggle between RGBA, HSL, and hexadecimal. 
+9. **Color palette selector**. Click to select different templates.
 
-![color picker beranotasi](imgs/annotated-color-picker.jpg)
-
-[md]: https://www.google.com/design/spec/style/color.html
+![annotated color picker](imgs/annotated-color-picker.jpg)
 
 ### Eyedropper {:#eyedropper}
 
-Klik tombol **eyedropper** untuk mengaktifkannya
-(![eyedropper diaktifkan](imgs/eyedropper-enabled.png){:.inline}), arahkan kursor ke atas suatu
-warna pada laman yang aktif, lalu klik untuk menyetel nilai deklarasi
-yang saat ini dipilih menjadi warna yang sedang ditunjuk kursor.
+Click on the **eyedropper** button so that it is enabled (![enabled eyedropper](imgs/eyedropper-enabled.png){:.inline}), hover over a color on the live page, and then click to set the currently selected declaration value to the color that you're hovering over.
 
-![eyedropper sedang bekerja](imgs/eyedropper.jpg)
+![the eyedropper in action](imgs/eyedropper.jpg)
 
-### Palet warna {:#color-palettes}
+### Color palettes {:#color-palettes}
 
-**Color Picker** menyediakan palet warna berikut:
+The **Color Picker** provides the following color palettes:
 
-* **Page Colors**. Serangkaian warna otomatis dihasilkan dari CSS 
-  laman.
-* **Material Design**. Koleksi warna yang konsisten dengan 
-  [spesifikasi Material Design][md]. 
-* **Custom**. Serangkaian warna apa pun yang Anda pilih. DevTools menyimpan palet 
-  khusus Anda, bahkan di semua laman, sampai Anda menghapusnya. 
+- **Page Colors**. A set of colors automatically generated from the page's CSS.
+- **Material Design**. A collection of colors consistent with the [Material Design spec](https://www.google.com/design/spec/style/color.html). 
+- **Custom**. A set of any colors you choose. DevTools saves your custom palette, even across pages, until you delete it. 
 
-#### Mengubah palet warna khusus {:#custom-color-palette}
+#### Modifying a custom color palette {:#custom-color-palette}
 
-Tekan tombol **tanda plus** untuk menambahkan warna saat ini ke palet. 
-Klik dan tahan sebuah warna untuk menyeretnya ke posisi yang berbeda, atau seret 
-ke ikon **kotak sampah** untuk menghapusnya. Klik kanan warna dan pilih
-**Remove color** untuk menghapusnya. Pilih **Remove all to the right** untuk menghapus
-semua warna di sebelah kanan warna yang saat ini dipilih. Klik kanan
-di mana saja dalam area palet warna dan pilih **Clear template** untuk 
-menghapus semua warna template itu.
+Press the **plus sign** button to add the current color to the palette. Click and hold on a color to drag it to a different position, or drag it to the **trash can** icon to delete it. Right-click on a color and select **Remove color** to delete it. Select **Remove all to the right** to delete all of the colors to the right of the currently selected color. Right-click anywhere within the color palette region and select **Clear template** to delete all of the template's colors.
 
-## Melihat dan mengedit properti khusus CSS (variabel CSS) {:#custom-properties}
+## View and edit CSS custom properties (CSS variables) {:#custom-properties}
 
-Anda bisa melihat dan mengedit deklarasi yang mendefinisikan atau menggunakan [properti 
-khusus CSS][intro] (yang secara informal dikenal sebagai variabel CSS) sama seperti 
-deklarasi yang lainnya. 
+You can view and edit declarations that define or use [CSS custom properties](/web/updates/2016/02/css-variables-why-should-you-care) (informally known as CSS variables) just like any other declaration.
 
-Properti khusus biasanya [didefinisikan][def] di pemilih `:root`.
- Untuk melihat properti khusus yang didefinisikan di `:root`, periksa elemen `html`.
+Custom properties are usually [defined](https://drafts.csswg.org/css-variables/#defining-variables) in the `:root` selector. To view a custom property defined in `:root`, inspect the `html` element.
 
+![custom property defined on :root](imgs/css-var-defined-on-root.png)
 
-![properti khusus didefinisikan di :root](imgs/css-var-defined-on-root.png)
+Custom properties do not have to be defined on the `:root` selector, however. If you defined it elsewhere, inspect the element on which it was defined to view the definition.
 
-Akan tetapi, properti khusus tidak harus didefinisikan di pemilih `:root`.
-Jika Anda mendefinisikannya di tempat lain, periksa elemen tempat properti didefinisikan untuk
-melihat definisinya.
+You can view and edit declaration values that use custom properties just like any other declaration value.
 
-Anda bisa melihat dan mengedit nilai deklarasi yang menggunakan properti khusus, sama
-seperti nilai deklarasi lainnya. 
+If you see a declaration value like `var(--main-color)` as in the screenshot below, it means that the declaration is using custom properties. These values can be edited like any other declaration value. Currently there is no way to jump to the custom property definition.
 
-Jika Anda memilih nilai deklarasi seperti `var(--main-color)` seperti di tangkapan layar
-di bawah, artinya deklarasi menggunakan properti khusus. Nilai
-ini bisa diedit layaknya nilai deklarasi lainnya. Saat ini, tidak ada cara
-untuk langsung masuk ke definisi properti khusus.
+![using a custom property](imgs/css-var-in-use.png)
 
-![menggunakan properti khusus](imgs/css-var-in-use.png)
+## Edit Sass, Less or Stylus
 
-[pengantar]: /web/updates/2016/02/css-variables-why-should-you-care
-[def]: https://drafts.csswg.org/css-variables/#defining-variables
+If you are using Sass, Less, Stylus or any other CSS preprocessor, editing the generated CSS output files in the Styles editor won't help as they don't map to your original source.
 
-## Mengedit Sass, Less, atau Stylus
+With CSS source maps, DevTools can automatically map the generated files to the original source files, which lets you live-edit these in the Sources panel and view the results without having to leave DevTools or refresh the page.
 
-Jika Anda menggunakan Sass, Less, Stylus, atau praprosesor CSS lainnya, mengedit file keluaran CSS yang dihasilkan di editor Styles tidak akan membantu karena file ini tidak dipetakan ke sumber aslinya.
+### The preprocessor workflow
 
-Dengan CSS source maps, DevTools bisa otomatis memetakan file yang dihasilkan ke file sumber aslinya, sehingga Anda dapat mengedit ini secara langsung di panel Sources dan melihat hasilnya tanpa harus meninggalkan DevTools atau menyegarkan laman. 
+When you inspect an element whose styles are provided by a generated CSS file, the Elements panel displays a link to the original source file, not the generated CSS file.
 
-### Alur kerja praprosesor
+![Elements panel showing .scss stylesheet](imgs/sass-debugging.png)
 
-Bila Anda memeriksa elemen yang gayanya disediakan oleh file CSS yang dihasilkan, panel Elements akan menampilkan tautan ke file sumber aslinya, bukan file CSS yang dihasilkan.
+To jump to the source file:
 
-![Panel Elements menampilkan .scss stylesheet](imgs/sass-debugging.png)
+1. Click the link to open the (editable) source file in the Sources panel.
+2. <kbd class="kbd">Ctrl</kbd> + **Click** (or <kbd class="kbd">Cmd</kbd> + **click**) on any CSS property name or value to open the source file and jump to the appropriate line.
 
-Untuk langsung masuk ke file sumber:
+![Sources panel showing .scss file](imgs/sass-sources.png)
 
-1. Klik tautan untuk membuka file sumber (yang bisa diedit) di panel Sources.
-2. <kbd class="kbd">Ctrl</kbd> + **Klik** (atau <kbd class="kbd">Cmd</kbd> + **klik**) pada nama atau nilai properti CSS mana saja untuk membuka file sumber dan langsung masuk ke baris yang sesuai.
+When you save changes to a CSS preprocessor file in DevTools, the CSS preprocessor should re-generate the CSS files. Then DevTools then reloads the newly-generated CSS file.
 
-![Panel Sources menampilkan file .scss](imgs/sass-sources.png)
+### Enable/Disable CSS source maps & auto-reloading
 
-Saat Anda menyimpan perubahan file sumber praprosesor CSS di DevTools, praprosesor CSS harus membuat ulang file CSS. Kemudian, DevTools akan memuat ulang file CSS yang baru saja dihasilkan.
+**CSS source maps are enabled by default**. You can choose to enable automatic reloading of generated CSS files. To enable CSS source maps and CSS reload:
 
-### Mengaktifkan/Menonaktifkan CSS source maps & pemuatan ulang otomatis
+1. Open DevTools Settings and click **General**.
+2. Turn on **Enable CSS source maps** and **Auto-reload generated CSS**.
 
-**CSS source maps diaktifkan secara default**. Anda bisa memilih untuk mengaktifkan pemuatan ulang otomatis file CSS yang dihasilkan. Untuk mengaktifkan CSS source maps dan pemuatan ulang CSS:
+### Requirements & Gotchas
 
-1. Buka Settings DevTools dan klik **General**.
-2. Aktifkan **Enable CSS source maps** dan **Auto-reload generated CSS**.
+- **Changes made in an external editor** are not detected by DevTools until the Sources tab containing the associated source file regains focus.
+- **Manual editing of a CSS file** generated by the Sass/LESS/other compiler will break the source map association until the page is reloaded.
+- **Using [Workspaces](/web/tools/setup/setup-workflow)?** Make sure the generated CSS file is also mapped into the workspace. You can verify this by looking in Sources panel right-side tree, and seeing the CSS is served from your local folder.
+- **For DevTools to automatically reload styles** when you change the source file, your preprocessor must be set up to regenerate CSS files whenever a source file changes. Otherwise, you must regenerate CSS files manually and reload the page to see your changes.
+- **You must be accessing your site or app from a web server** (not a **file://** URL), and the server must serve the CSS files as well as the source maps (.css.map) and source files (.scss, etc.).
+- If you are *not* using the Workspaces feature, the web server must also supply the `Last-Modified` header.
 
-### Persyaratan dan Gotcha
+Learn how to setup source maps in [Setup CSS & JS Preprocessors](/web/tools/setup/setup-preprocessors).
 
-- **Perubahan yang dibuat di edit eksternal** tidak terdeteksi oleh DevTools sampai tab Sources yang berisi file sumber yang terkait kembali mendapatkan fokus.
-- **Pengeditan secara manual file CSS** yang dihasilkan oleh Sass/LESS/atau compiler lain akan merusak hubungan source maps sampai lama dimuat ulang.
-- **Menggunakan <a href="/web/tools/setup/setup-workflow">Workspace</a>?** Pastikan file CSS yang dihasilkan juga dipetakan ke dalam workspace. Anda bisa memverifikasinya dengan melihat pohon sebelah kanan panel Sources dan melihat CSS disajikan dari folder lokal Anda.
-- **Agar DevTools otomatis memuat ulang gaya** saat Anda mengubah file sumber, praprosesor Anda harus disiapkan untuk menghasilkan file CSS kapan saja terjadi perubahan file sumber. Jika tidak, Anda harus menghasilkan kembali file CSS secara manual dan memuat ulang laman untuk melihat perubahan.
-- **Anda harus mengakses situs atau aplikasi Anda dari server web** (bukan URL **file://**) dan server harus menyajikan file CSS serta source maps (.css.map) dan file sumber (.scss, dsb.).
-- Jika Anda _tidak_ menggunakan fitur Workspace, server web juga harus menyediakan header `Last-Modified`.
+## Emulate print media {:#emulate-print-media}
 
-Pelajari cara menyiapkan source maps di [Menyiapkan Praprosesor CSS & JS](/web/tools/setup/setup-preprocessors)
+Warning: This page is deprecated. See [View a page in print mode](/web/tools/chrome-devtools/css/reference#print-mode).
 
+To view a page in print mode:
 
+1. Open the **Main Menu**.
+2. Select **More Tools** > **Rendering Settings**. The Rendering Settings tab opens at the bottom of your DevTools window.
+3. Set **Emulate media** to **Print**.
 
+## Feedback {: #feedback }
 
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
