@@ -1,41 +1,30 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description:了解关键渲染路径优化中的关键因素。
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Learn the key factors in optimizing the critical rendering path.
 
-{# wf_updated_on:2015-10-05 #}
-{# wf_published_on:2014-03-31 #}
+{# wf_updated_on: 2018-08-17 #} {# wf_published_on: 2014-03-31 #} {# wf_blink_components: N/A #}
 
-# 优化关键渲染路径 {: .page-title }
+# Optimizing the Critical Rendering Path {: .page-title }
 
 {% include "web/_shared/contributors/ilyagrigorik.html" %}
 
+To deliver the fastest possible time to first render, we need to minimize three variables:
 
-  为尽快完成首次渲染，我们需要最大限度减小以下三种可变因素：
+- The number of critical resources.
+- The critical path length.
+- The number of critical bytes.
 
+A critical resource is a resource that could block initial rendering of the page. The fewer of these resources, the less work for the browser, the CPU, and other resources.
 
-  <ul>
-    <li>关键资源的数量。</li>
-    <li>关键路径长度。</li>
-    <li>关键字节的数量。</li>
-  </ul>
+Similarly, the critical path length is a function of the dependency graph between the critical resources and their bytesize: some resource downloads can only be initiated after a previous resource has been processed, and the larger the resource the more roundtrips it takes to download.
 
-关键资源是可能阻止网页首次渲染的资源。这些资源越少，浏览器的工作量就越小，对 CPU 以及其他资源的占用也就越少。
+Finally, the fewer critical bytes the browser has to download, the faster it can process content and render it visible on the screen. To reduce the number of bytes, we can reduce the number of resources (eliminate them or make them non-critical) and ensure that we minimize the transfer size by compressing and optimizing each resource.
 
-同样，关键路径长度受所有关键资源与其字节大小之间依赖关系图的影响：某些资源只能在上一资源处理完毕之后才能开始下载，并且资源越大，下载所需的往返次数就越多。
+**The general sequence of steps to optimize the critical rendering path is:**
 
-最后，浏览器需要下载的关键字节越少，处理内容并让其出现在屏幕上的速度就越快。要减少字节数，我们可以减少资源数（将它们删除或设为非关键资源），此外还要压缩和优化各项资源，确保最大限度减小传送大小。
+1. Analyze and characterize your critical path: number of resources, bytes, length.
+2. Minimize number of critical resources: eliminate them, defer their download, mark them as async, and so on.
+3. Optimize the number of critical bytes to reduce the download time (number of roundtrips).
+4. Optimize the order in which the remaining critical resources are loaded: download all critical assets as early as possible to shorten the critical path length.
 
-**优化关键渲染路径的常规步骤如下：**
+## Feedback {: #feedback }
 
-1. 对关键路径进行分析和特性描述：资源数、字节数、长度。
-1. 最大限度减少关键资源的数量：删除它们，延迟它们的下载，将它们标记为异步等。
-1. 优化关键字节数以缩短下载时间（往返次数）。
-1. 优化其余关键资源的加载顺序：您需要尽早下载所有关键资产，以缩短关键路径长度。
-
-<a href="page-speed-rules-and-recommendations" class="gc-analytics-event"
-    data-category="CRP" data-label="Next / PageSpeed">
-  <button>下一课：PageSpeed 规则和建议</button>
-</a>
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
