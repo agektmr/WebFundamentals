@@ -1,146 +1,141 @@
-project_path: /web/fundamentals/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Meng-cache dan menggunakan kembali sumber daya yang sebelumnya diambil merupakan aspek penting dalam mengoptimalkan kinerja.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Caching and reusing previously fetched resources is a critical aspect of optimizing for performance.
 
-{# wf_updated_on: 2019-02-06 #}
-{# wf_published_on: 2013-12-31 #}
-{# wf_blink_components: Blink>Network #}
+{# wf_updated_on: 2018-08-17 #} {# wf_published_on: 2013-12-31 #} {# wf_blink_components: Blink>Network #}
 
-# Meng-cache HTTP {: .page-title }
+# HTTP Caching {: .page-title }
 
 {% include "web/_shared/contributors/ilyagrigorik.html" %}
 
-Mengambil sesuatu melalui jaringan sama-sama lambat dan mahal. Respons besar mengharuskan sering bolak-balik antara klien dan server, yang mengakibatkan penundaan saat tersedia dan bisa diproses oleh browser, dan juga menimbulkan biaya data kepada pengunjung. Akibatnya, kemampuan untuk meng-cache dan menggunakan kembali sumber daya yang diambil sebelumnya merupakan aspek penting untuk mengoptimalkan kinerja.
+Fetching something over the network is both slow and expensive. Large responses require many roundtrips between the client and server, which delays when they are available and when the browser can process them, and also incurs data costs for the visitor. As a result, the ability to cache and reuse previously fetched resources is a critical aspect of optimizing for performance.
 
+The good news is that every browser ships with an implementation of an HTTP cache. All you need to do is ensure that each server response provides the correct HTTP header directives to instruct the browser on when and for how long the browser can cache the response.
 
-Kabar baiknya adalah setiap browser dibekali implementasi cache HTTP. Yang perlu Anda lakukan adalah memastikan bahwa setiap respons server menyediakan direktif header HTTP yang benar untuk menginstruksikan browser mengenai kapan dan berapa lama browser bisa meng-cache respons.
+Note: If you are using a WebView to fetch and display web content in your application, you might need to provide additional configuration flags to ensure that the HTTP cache is enabled, its size is set to a reasonable number to match your use case, and the cache is persisted. Check the platform documentation and confirm your settings.
 
-Note: Jika menggunakan WebView untuk mengambil dan menampilkan konten web di aplikasi, Anda mungkin harus menyediakan flag konfigurasi tambahan untuk memastikan cache HTTP diaktifkan, ukurannya disetel ke jumlah yang wajar agar sesuai dengan kasus penggunaan Anda, dan agar cache tetap ada. Periksa dokumentasi platform dan konfirmasikan setelan Anda.
+<img src="images/http-request.png"  alt="HTTP request" />
 
-<img src="images/http-request.png"  alt="Permintaan HTTP">
+When the server returns a response, it also emits a collection of HTTP headers, describing its content-type, length, caching directives, validation token, and more. For example, in the above exchange, the server returns a 1024-byte response, instructs the client to cache it for up to 120 seconds, and provides a validation token ("x234dff") that can be used after the response has expired to check if the resource has been modified.
 
-Bila server mengembalikan respons, server juga memancarkan sekumpulan header HTTP, yang menjelaskan tipe-kontennya, panjang, direktif caching, token validasi, dan lainnya. Misalnya, dalam pertukaran di atas, server mengembalikan respons 1024 byte, memerintahkan klien untuk meng-cache-nya hingga 120 detik, dan menyediakan token validasi (“x234dff”) yang bisa digunakan setelah respons berakhir untuk memeriksa apakah sumber daya telah dimodifikasi.
-
-
-## Memvalidasi respons ter-cache dengan ETag
+## Validating cached responses with ETags
 
 ### TL;DR {: .hide-from-toc }
-* Server menggunakan header HTTP ETag untuk mengomunikasikan token validasi.
-* Token validasi memungkinkan pemeriksaan pembaruan sumber daya yang efisien: tidak ada data yang ditransfer jika sumber daya belum berubah.
 
+* The server uses the ETag HTTP header to communicate a validation token.
+* The validation token enables efficient resource update checks: no data is transferred if the resource has not changed.
 
-Anggaplah 120 detik telah berlalu sejak pengambilan awal dan browser telah memulai sebuah permintaan baru untuk sumber daya yang sama. Pertama-tama, browser akan memeriksa cache lokal dan menemukan respons sebelumnya. Sayangnya, browser tidak bisa menggunakan respons sebelumnya karena respons tersebut telah kedaluwarsa. Di tahap ini, browser bisa mengirimkan permintaan baru dan mengambil respons lengkap yang baru. Akan tetapi, ini tidak cukup karena jika sumber daya tidak berubah, maka tidak ada respons untuk mendownload informasi yang sama yang sudah ada di cache!
+Assume that 120 seconds have passed since the initial fetch and the browser has initiated a new request for the same resource. First, the browser checks the local cache and finds the previous response. Unfortunately, the browser can't use the previous response because the response has now expired. At this point, the browser could dispatch a new request and fetch the new full response. However, that’s inefficient because if the resource hasn't changed, then there's no reason to download the same information that's already in cache!
 
-Untuk mengatasi masalah itulah token validasi didesain, sebagaimana yang ditetapkan dalam header ETag. Server menghasilkan dan mengembalikan token acak yang biasanya berupa hash atau beberapa sidik jari lain dari konten file. Klien tidak perlu mengetahui cara menghasilkan sidik jari; klien hanya perlu mengirimkannya ke server pada permintaan berikutnya. Jika sidik jari masih sama, berarti sumber daya belum berubah dan Anda bisa melewati download.
+That’s the problem that validation tokens, as specified in the ETag header, are designed to solve. The server generates and returns an arbitrary token, which is typically a hash or some other fingerprint of the contents of the file. The client doesn't need to know how the fingerprint is generated; it only needs to send it to the server on the next request. If the fingerprint is still the same, then the resource hasn't changed and you can skip the download.
 
-<img src="images/http-cache-control.png"  alt="Contoh Cache-Control HTTP">
+<img src="images/http-cache-control.png"  alt="HTTP Cache-Control example" />
 
-Dalam contoh terdahulu, klien secara otomatis menyediakan token Etag di header permintaan HTTP "If-None-Match". Server akan memeriksa token dengan sumber daya saat ini. Jika token belum berubah, server akan mengembalikan respons "304 Not Modified", yang memberi tahu browser bahwa respons yang dimilikinya di cache belum berubah dan bisa diperpanjang selama 120 detik lagi. Perhatikan, Anda tidak perlu mendownload respons lagi, yang akan menghemat waktu dan bandwidth.
+In the preceding example, the client automatically provides the ETag token in the "If-None-Match" HTTP request header. The server checks the token against the current resource. If the token hasn't changed, the server returns a "304 Not Modified" response, which tells the browser that the response it has in cache hasn't changed and can be renewed for another 120 seconds. Note that you don't have to download the response again, which saves time and bandwidth.
 
-Sebagai developer web, bagaimana Anda memanfaatkan validasi ulang yang efisien ini? Browser melakukan semua pekerjaan mewakili kita. Browser secara otomatis mendeteksi apakah token validasi telah ditetapkan sebelumnya, menambahkan token validasi ke permintaan keluar, dan akan memperbarui stempel waktu cache jika perlu berdasarkan respons yang diterima dari server. **Satu-satunya yang perlu dilakukan adalah memastikan server menyediakan token Etag yang diperlukan. Periksa dokumentasi server untuk flag konfigurasi yang diperlukan.**
+As a web developer, how do you take advantage of efficient revalidation? The browser does all the work on our behalf. The browser automatically detects if a validation token has been previously specified, it appends the validation token to an outgoing request, and it updates the cache timestamps as necessary based on the received response from the server. **The only thing left to do is to ensure that the server is providing the necessary ETag tokens. Check your server documentation for the necessary configuration flags.**
 
-Note: Tips: Proyek Boilerplate HTML5 berisi <a href='https://github.com/h5bp/server-configs'>file konfigurasi contoh</a> untuk semua server paling populer bersama komentar detail untuk setiap setelan dan flag konfigurasi. Temukan server favorit Anda dalam daftar, cari setelan yang sesuai, dan salin/pastikan server Anda telah dikonfigurasi dengan setelan yang disarankan.
+Note: Tip: The HTML5 Boilerplate project contains [sample configuration files](https://github.com/h5bp/server-configs) for all the most popular servers with detailed comments for each configuration flag and setting. Find your favorite server in the list, look for the appropriate settings, and copy/confirm that your server is configured with the recommended settings.
 
 ## Cache-Control
 
 ### TL;DR {: .hide-from-toc }
-* Setiap sumber daya bisa mendefinisikan kebijakan caching-nya lewat header HTTP Cache-Control.
-* Direktif Cache-Control mengontrol siapa yang bisa meng-cache respons, dalam kondisi apa, dan sampai berapa lama.
 
+* Each resource can define its caching policy via the Cache-Control HTTP header.
+* Cache-Control directives control who can cache the response, under which conditions, and for how long.
 
-Dari sudut pandang optimalisasi kinerja, permintaan terbaik adalah permintaan yang tidak perlu dikomunikasikan dengan server: salinan lokal dari respons memungkinkan Anda meniadakan semua latensi jaringan dan menghindari biaya data untuk transfer data. Untuk mencapainya, spesifikasi HTTP memungkinkan server mengembalikan [direktif Cache-Control](http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.9) yang mengontrol bagaimana, dan berapa lama browser dan cache perantara lainnya bisa meng-cache respons individual.
+From a performance optimization perspective, the best request is a request that doesn't need to communicate with the server: a local copy of the response allows you to eliminate all network latency and avoid data charges for the data transfer. To achieve this, the HTTP specification allows the server to return [Cache-Control directives](http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.9) that control how, and for how long, the browser and other intermediate caches can cache the individual response.
 
-Note: Header Cache-Control didefinisikan sebagai bagian dari spesifikasi HTTP/1.1 dan menggantikan header sebelumnya (misalnya, Expires) yang digunakan untuk mendefinisikan kebijakan meng-cache respons. Semua browser modern mendukung Cache-Control, jadi itulah yang Anda perlukan.
+Note: The Cache-Control header was defined as part of the HTTP/1.1 specification and supersedes previous headers (for example, Expires) used to define response caching policies. All modern browsers support Cache-Control, so that's all you need.
 
-<img src="images/http-cache-control-highlight.png"  alt="Contoh Cache-Control HTTP">
+<img src="images/http-cache-control-highlight.png"  alt="HTTP Cache-Control example" />
 
-### "no-cache" dan "no-store"
+### "no-cache" and "no-store"
 
-“no-cache” menunjukkan bahwa respons yang dikembalikan tidak bisa digunakan untuk memenuhi permintaan berikutnya ke URL yang sama tanpa terlebih dahulu memeriksa server apakah respons telah berubah. Hasilnya, jika ada token validasi yang sesuai (ETag), no-cache akan mengakibatkan bolak-balik untuk memvalidasi respons yang di-cache, namun bisa meniadakan download jika sumber daya belum berubah.
+"no-cache" indicates that the returned response can't be used to satisfy a subsequent request to the same URL without first checking with the server if the response has changed. As a result, if a proper validation token (ETag) is present, no-cache incurs a roundtrip to validate the cached response, but can eliminate the download if the resource has not changed.
 
-Sebaliknya, "no-store" jauh lebih sederhana. "no-store" hanya melarang browser dan semua cache perantara menyimpan setiap versi respons yang dikembalikan&mdash;misalnya, yang berisi data pribadi atau data perbankan pribadi. Setiap kali pengguna meminta aset ini, permintaan dikirim ke server, dan respons lengkap akan didownload.
+By contrast, "no-store" is much simpler. It simply disallows the browser and all intermediate caches from storing any version of the returned response&mdash;for example, one containing private personal or banking data. Every time the user requests this asset, a request is sent to the server and a full response is downloaded.
 
-### "publik" vs. "pribadi"
+### "public" vs. "private"
 
-Jika respons ditandai sebagai "publik", maka respons bisa di-cache, sekalipun memiliki autentikasi HTTP yang terkait dengannya, dan bahkan bila kode status respons tidak biasanya bisa di-cache. Sering kali, "publik" tidak diperlukan, karena informasi caching eksplisit (seperti "max-age") menunjukkan respons bisa tetap di-cache.
+If the response is marked as "public", then it can be cached, even if it has HTTP authentication associated with it, and even when the response status code isn't normally cacheable. Most of the time, "public" isn't necessary, because explicit caching information (like "max-age") indicates that the response is cacheable anyway.
 
-Sebaliknya, browser bisa meng-cache respons "pribadi". Akan tetapi, respons ini biasanya ditujukan untuk pengguna tunggal, sehingga cache perantara tidak dimungkinkan untuk meng-cache-nya. Misalnya, browser pengguna bisa meng-cache halaman HTML berisi informasi pengguna pribadi, namun CDN tidak bisa meng-cache laman tersebut.
+By contrast, the browser can cache "private" responses. However, these responses are typically intended for a single user, so an intermediate cache is not allowed to cache them. For example, a user's browser can cache an HTML page with private user information, but a CDN can't cache the page.
 
 ### "max-age"
 
-Direktif ini menetapkan waktu maksimum dalam detik dari respons yang boleh diambil untuk digunakan kembali dari waktu permintaan ini. Misalnya, "max-age=60" menunjukkan bahwa respons bisa di-cache dan digunakan kembali selama 60 detik berikutnya.
+This directive specifies the maximum time in seconds that the fetched response is allowed to be reused from the time of the request. For example, "max-age=60" indicates that the response can be cached and reused for the next 60 seconds.
 
-## Mendefinisikan kebijakan Cache-Control yang optimal
+## Defining optimal Cache-Control policy
 
-<img src="images/http-cache-decision-tree.png"  alt="Meng-cache pohon keputusan">
+<img src="images/http-cache-decision-tree.png"  alt="Cache decision tree" />
 
-Ikuti pohon keputusan di atas untuk menentukan kebijakan caching yang optimal bagi sumber daya tertentu, atau serangkaian sumber daya yang digunakan oleh aplikasi Anda. Idealnya, Anda harus berusaha meng-cache sebanyak mungkin respons pada klien selama mungkin, dan menyediakan token validasi untuk setiap respons untuk mengaktifkan validasi ulang yang efisien.
+Follow the decision tree above to determine the optimal caching policy for a particular resource, or a set of resources, that your application uses. Ideally, you should aim to cache as many responses as possible on the client for the longest possible period, and provide validation tokens for each response to enable efficient revalidation.
 
 <table class="responsive">
+  
 <thead>
   <tr>
-    <th colspan="2">Direktif Cache-Control &amp; Penjelasan</th>
+    <th colspan="2">Cache-Control directives &amp; Explanation</th>
   </tr>
 </thead>
 <tr>
   <td data-th="cache-control">max-age=86400</td>
-  <td data-th="explanation">Respons bisa di-cache oleh browser dan cache perantara (yaitu, "publik"-nya) hingga 1 day (60 detik x 60 menit x 24 jam).</td>
+  <td data-th="explanation">Response can be cached by browser and any intermediary caches (that is, it's "public") for up to 1 day (60 seconds x 60 minutes x 24 hours).</td>
 </tr>
 <tr>
   <td data-th="cache-control">private, max-age=600</td>
-  <td data-th="explanation">Respons bisa di-cache oleh browser klien hanya selama 10 menit (60 detik x 10 menit).</td>
+  <td data-th="explanation">Response can be cached by the client’s browser only for up to 10 minutes (60 seconds x 10 minutes).</td>
 </tr>
 <tr>
   <td data-th="cache-control">no-store</td>
-  <td data-th="explanation">Respons tidak diizinkan untuk di-cache dan harus diambil dalam secara penuh pada setiap permintaan.</td>
+  <td data-th="explanation">Response is not allowed to be cached and must be fetched in full on every request.</td>
 </tr>
 </table>
 
-Sesuai dengan Arsip HTTP, di antara 300.000 situs teratas (menurut peringkat Alexa), browser bisa meng-cache [hampir setengah dari semua respons yang telah didownload](http://httparchive.org/trends.php#maxage0), yang merupakan penghematan besar untuk kunjungan halaman dan kunjungan berulang. Tentu saja, itu tidak berarti bahwa aplikasi khusus Anda bisa meng-cache 50% dari sumber daya. Beberapa situs bisa meng-cache lebih dari 90% sumber dayanya, sementara situs lain mungkin memiliki banyak data pribadi atau sesuai-waktu yang tidak bisa di-cache sama sekali.
+According to HTTP Archive, among the top 300,000 sites (by Alexa rank), the browser can cache [nearly half of all the downloaded responses](http://httparchive.org/trends.php#maxage0), which is a huge savings for repeat pageviews and visits. Of course, that doesn’t mean that your particular application can cache 50% of the resources. Some sites can cache more than 90% of their resources, while other sites might have a lot of private or time-sensitive data that can’t be cached at all.
 
-**Audit halaman Anda untuk mengidentifikasi sumber daya mana yang bisa di-cache serta pastikan sumber daya mengembalikan header Cache-Control dan header ETag yang sesuai.**
+**Audit your pages to identify which resources can be cached and ensure that they return appropriate Cache-Control and ETag headers.**
 
-## Tidak memvalidkan dan memperbarui respons yang di-cache
+## Invalidating and updating cached responses
 
 ### TL;DR {: .hide-from-toc }
-* Respons yang di-cache secara lokal digunakan hingga sumber daya "kedaluwarsa".
-* Penyematan sidik jari konten file dalam URL memungkinkan Anda memaksa klien untuk memperbarui ke versi respons yang baru.
-* Setiap aplikasi perlu mendefinisikan hierarki cache-nya sendiri agar kinerjanya optimal.
 
+* Locally cached responses are used until the resource "expires."
+* Embedding a file content fingerprint in the URL enables you to force the client to update to a new version of the response.
+* Each application needs to define its own cache hierarchy for optimal performance.
 
-Semua permintaan HTTP yang dibuat oleh browser akan dirutekan terlebih dahulu ke cache browser untuk memeriksa apakah ada respons cache valid yang bisa digunakan untuk memenuhi permintaan. Jika ada kecocokan, respons akan dibaca dari cache sehingga meniadakan latensi jaringan dan biaya data yang ditimbulkan oleh transfer.
+All HTTP requests that the browser makes are first routed to the browser cache to check whether there is a valid cached response that can be used to fulfill the request. If there's a match, the response is read from the cache, which eliminates both the network latency and the data costs that the transfer incurs.
 
-**Namun, bagaimana jika Anda ingin memperbarui atau tidak memvalidkan respons yang di-cache?** Misalnya, anggaplah Anda telah memberi tahu pengunjung untuk meng-cache stylesheet CSS hingga 24 jam (max-age=86400), namun desainer baru saja menerapkan pembaruan yang Anda ingin sediakan bagi semua pengguna. Bagaimana Anda memberi tahu semua pengunjung yang memiliki apa yang kini adalah salinan CSS di-cache yang telah "usang" agar memperbarui cache-nya? Anda tidak bisa melakukannya, setidaknya tanpa mengubah URL sumber daya.
+**However, what if you want to update or invalidate a cached response?** For example, suppose you've told your visitors to cache a CSS stylesheet for up to 24 hours (max-age=86400), but your designer has just committed an update that you'd like to make available to all users. How do you notify all the visitors who have what is now a "stale" cached copy of your CSS to update their caches? You can't, at least not without changing the URL of the resource.
 
-Setelah browser meng-cache respons, versi yang di-cache akan digunakan hingga tidak lagi baru, sebagaimana ditentukan oleh max-age atau expires, atau hingga dikeluarkan dari cache karena alasan lain&mdash; misalnya, pengguna menghapus cache browsernya. Akibatnya, pengguna berbeda mungkin akhirnya menggunakan versi berbeda dari file saat laman dikonstruksikan; pengguna yang baru menarik sumber daya akan menggunakan versi baru, sementara pengguna yang meng-cache salinan lebih awal (namun masih valid) akan menggunakan respons versi lebih lama.
+After the browser caches the response, the cached version is used until it's no longer fresh, as determined by max-age or expires, or until it is evicted from cache for some other reason&mdash; for example, the user clearing their browser cache. As a result, different users might end up using different versions of the file when the page is constructed: users who just fetched the resource use the new version, while users who cached an earlier (but still valid) copy use an older version of its response.
 
-**Bagaimana cara mendapatkan yang terbaik dari kedua dunia: caching sisi klien dan pembaruan cepat?** Anda bisa mengubah URL sumber daya dan memaksa pengguna mengunduh respons baru kapan saja materinya berubah. Biasanya, Anda melakukannya dengan menyematkan sidik jari file, atau nomor versi, dalam nama file&mdash;misalnya, style.**x234dff**.css.
+**How do you get the best of both worlds: client-side caching and quick updates?** You change the URL of the resource and force the user to download the new response whenever its content changes. Typically, you do this by embedding a fingerprint of the file, or a version number, in its filename&mdash;for example, style.**x234dff**.css.
 
-<img src="images/http-cache-hierarchy.png"  alt="Hierarki cache">
+<img src="images/http-cache-hierarchy.png"  alt="Cache hierarchy" />
 
-Kemampuan mendefinisikan kebijakan caching per-sumber daya memungkinkan Anda mendefinisikan "hierarki cache" yang memungkinkan Anda mengontrol tidak hanya berapa lama masing-masing di-cache, namun juga seberapa cepat pengunjung melihat versi baru. Untuk mengilustrasikannya, analisis contoh di atas:
+The ability to define per-resource caching policies allows you to define "cache hierarchies" that allow you to control not only how long each is cached for, but also how quickly visitors see new versions. To illustrate this, analyze the above example:
 
-* HTML ditandai sebagai "no-cache", yang berarti browser akan selalu memvalidasi ulang dokumen pada setiap permintaan dan mengambil versi terbaru jika konten berubah. Selain itu, di dalam markup HTML, Anda menyematkan sidik jari dalam URL untuk aset CSS dan JavaScript: jika konten file tersebut berubah, maka HTML halaman juga berubah, dan salinan baru respons HTML akan didownload.
-* CSS boleh di-cache oleh browser dan cache perantara (misalnya, CDN), dan disetel agar kedaluwarsa dalam waktu 1 tahun. Perhatikan, Anda bisa menggunakan "kedaluwarsa yang jauh lebih lama" dari 1 tahun dengan aman karena Anda menyematkan sidik jari file dalam nama file-nya: jika CSS diperbarui, URL juga akan berubah.
-* JavaScript juga diatur untuk berakhir dalam 1 tahun, namun ditandai sebagai pribadi, mungkin karena JavaScript mengandung beberapa data pribadi pengguna yang tidak boleh di-cache oleh CDN.
-* Gambar di-cache tanpa versi atau sidik jari unik dan diatur untuk berakhir dalam 1 hari.
+* The HTML is marked with "no-cache", which means that the browser always revalidates the document on each request and fetches the latest version if the contents change. Also, within the HTML markup, you embed fingerprints in the URLs for CSS and JavaScript assets: if the contents of those files change, then the HTML of the page changes as well and a new copy of the HTML response is downloaded.
+* The CSS is allowed to be cached by browsers and intermediate caches (for example, a CDN), and is set to expire in 1 year. Note that you can use the "far future expires" of 1 year safely because you embed the file fingerprint in its filename: if the CSS is updated, the URL changes as well.
+* The JavaScript is also set to expire in 1 year, but is marked as private, perhaps because it contains some private user data that the CDN shouldn’t cache.
+* The image is cached without a version or unique fingerprint and is set to expire in 1 day.
 
-Kombinasi ETag, Cache-Control, dan URL unik memungkinkan Anda memberikan yang terbaik dari kedua sisi: waktu kedaluwarsa yang lama, kontrol atas tempat meng-cache respons, dan pembaruan sesuai permintaan.
+The combination of ETag, Cache-Control, and unique URLs allows you to deliver the best of all worlds: long-lived expiration times, control over where the response can be cached, and on-demand updates.
 
-## Checklist caching
+## Caching checklist
 
-Tidak ada satu kebijakan cache yang terbaik. Bergantung pada pola traffic Anda, tipe data yang disajikan, dan persyaratan khusus aplikasi untuk kesegaran data, Anda harus mendefinisikan dan mengonfigurasi setelan per sumber daya yang sesuai, serta keseluruhan "hierarki caching".
+There's no one best cache policy. Depending on your traffic patterns, type of data served, and application-specific requirements for data freshness, you must define and configure the appropriate per-resource settings, as well as the overall "caching hierarchy."
 
-Beberapa tips dan teknik untuk diingat saat Anda mengerjakan strategi caching:
+Some tips and techniques to keep in mind as you work on caching strategy:
 
-* **Gunakan URL yang konsisten:** jika Anda menyajikan materi yang sama pada URL berbeda, maka materi itu bisa diambil dan disimpan berulang kali. Tips: perhatikan, [URL sensitif huruf besar dan kecil](http://www.w3.org/TR/WD-html40-970708/htmlweb.html).
-* **Pastikan server menyediakan token validasi (ETag):** token validasi meniadakan kebutuhan untuk mentransfer byte yang sama bila sumber daya belum berubah di server.
-* **Identifikasilah sumber daya yang bisa di-cache oleh perantara:** yang memiliki respons identik bagi semua pengguna adalah calon paling cocok untuk di-cache oleh CDN dan perantara lainnya.
-* **Tentukan masa pakai cache optimal untuk setiap sumber daya:** sumber daya berbeda mungkin memiliki persyaratan penyegaran yang berbeda. Audit dan tentukan max-age masing-masing.
-* **Tentukan hierarki cache terbaik untuk situs Anda:** kombinasi URL sumber daya dengan sidik jari konten dan masa pakai singkat atau masa pakai tanpa-cache untuk dokumen HTML memungkinkan Anda mengontrol seberapa cepat klien mengambil pembaruan.
-* **Minimalkan churn:** sebagian sumber daya diperbarui lebih sering daripada yang lainnya. Jika ada bagian tertentu dari sumber daya (misalnya, fungsi JavaScript, atau serangkaian gaya CSS) yang sering diperbarui, pertimbangkan untuk menyediakan kode itu sebagai sebuah file terpisah. Melakukan hal tersebut memungkinkan konten yang tersisa (misalnya, kode library yang tidak sering berubah), untuk diambil dari cache dan meminimalkan jumlah materi yang telah didownload setiap kali pembaruan diambil.
+* **Use consistent URLs:** if you serve the same content on different URLs, then that content will be fetched and stored multiple times. Tip: note that [URLs are case sensitive](http://www.w3.org/TR/WD-html40-970708/htmlweb.html).
+* **Ensure that the server provides a validation token (ETag):** validation tokens eliminate the need to transfer the same bytes when a resource has not changed on the server.
+* **Identify which resources can be cached by intermediaries:** those with responses that are identical for all users are great candidates to be cached by a CDN and other intermediaries.
+* **Determine the optimal cache lifetime for each resource:** different resources may have different freshness requirements. Audit and determine the appropriate max-age for each one.
+* **Determine the best cache hierarchy for your site:** the combination of resource URLs with content fingerprints and short or no-cache lifetimes for HTML documents allows you to control how quickly the client picks up updates.
+* **Minimize churn:** some resources are updated more frequently than others. If there is a particular part of a resource (for example, a JavaScript function or a set of CSS styles) that is often updated, consider delivering that code as a separate file. Doing so allows the remainder of the content (for example, library code that doesn't change very often), to be fetched from cache and minimizes the amount of downloaded content whenever an update is fetched.
 
-## Masukan {: .hide-from-toc }
+## Feedback {: .hide-from-toc }
 
 {% include "web/_shared/helpful.html" %}
 
