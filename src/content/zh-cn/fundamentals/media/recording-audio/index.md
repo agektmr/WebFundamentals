@@ -1,157 +1,135 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description:大多数浏览器都可访问用户的麦克风。
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Most browsers can get access to the user's microphone.
 
-{# wf_updated_on:2016-08-22 #}
-{# wf_published_on:2016-08-23 #}
+{# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2016-08-23 #} {# wf_blink_components: Blink>GetUserMedia #}
 
-# 录制用户的音频 {: .page-title }
+# Recording Audio from the User {: .page-title }
 
 {% include "web/_shared/contributors/paulkinlan.html" %}
 
-许多浏览器现在都能访问用户的视频和音频输入。
-不过，根据浏览器的不同，这一功能可能体现为一种全动态的内置体验，也可能通过授权给用户设备上的其他应用来实现。
+Many browsers now have the ability to access video and audio input from the user. However, depending on the browser it might be a full dynamic and inline experience, or it could be delegated to another app on the user's device.
 
+## Start simple and progressively
 
-## 从简单做起，循序渐进
+The easiest thing to do is simply ask the user for a pre-recorded file. Do this by creating a simple file input element and adding an `accept` filter that indicates we can only accept audio files, and a `capture` attribute that indicates we want to get it direct from the microphone.
 
-最简易的做法是直接要求用户提供预先录制的文件。
-其实现步骤是：创建一个简单的文件输入元素，然后添加一个表示我们只能接受音频文件的 `accept` 过滤器，在理想的情况下，我们可以直接从麦克风获取这些文件。
+    <input type="file" accept="audio/*" capture>
+    
 
+This method works on all platforms. On desktop it will prompt the user to upload a file from the file system (ignoring the `capture` attribute). In Safari on iOS it will open up the microphone app, allowing you to record audio and then send it back to the web page; on Android it will give the user the choice of which app to use record the audio in before sending it back to the web page.
 
+Once the user has finished recording and they are back in the website, you need to somehow get ahold of the file data. You can get quick access by attaching an `onchange` event to the input element and then reading the `files` property of the event object.
 
-    <input type="file" accept="audio/*" capture="microphone">
+<pre class="prettyprint">&lt;input type="file" accept="audio/*" capture id="recorder">
+&lt;audio id="player" controls>&lt;/audio>
+&lt;script>
+  var recorder = document.getElementById('recorder');
+  var player = document.getElementById('player');
 
-此方法在所有平台上都有效。在桌面平台上，它会提示用户通过文件系统上传文件（忽略 `capture="microphone"`）。
-在 iOS 上的 Safari 中，它会打开麦克风应用以便您录制音频，然后将其传回网页；在 Android 上，它允许用户选择使用哪一个应用来录制音频，录制完毕后将其传回网页。
+  recorder.addEventListener('change', function(e) {
+    var file = e.target.files[0];
+    // Do something with the audio file.
+    player.src =  URL.createObjectURL(file);
+  });
+&lt;/script>
+</pre>
 
+Once you have access to the file you can do anything you want with it. For example, you can:
 
+* Attach it directly to an `<audio>` element so that you can play it
+* Download it to the user's device
+* Upload it to a server by attaching to an `XMLHttpRequest`
+* Pass it through the Web Audio API and apply filters on to it
 
+Whilst using the input element method of getting access to audio data is ubiquitous, it is the least appealing option. We really want to get access to the microphone and provide a nice experience directly in the page.
 
+## Access the microphone interactively
 
-用户完成录制并返回网站后，您需要以某种方式掌握文件数据。
-为 input 元素附加一个 `onchange` 事件，然后读取事件对象的 `files` 属性，便可快速获得文件访问权。
+Modern browsers can have a direct line to the microphone allowing us to build experiences that are fully integrated with the web page and the user will never leave the browser.
 
+### Acquire access to the microphone
 
+We can directly access the Microphone by using an API in the WebRTC specification called `getUserMedia()`. `getUserMedia()` will prompt the user for access to their connected microphones and cameras.
 
-    <input type="file" accept="audio/*" capture="microphone" id="recorder">
-    <audio id="player" controls></audio>
-    <script>
-      var recorder = document.getElementById('recorder');
-      var player = document.getElementById('player')'
+If successful the API will return a `Stream` that will contain the data from either the camera or the microphone, and we can then either attach it to an `<audio>` element, attach it to a WebRTC stream, attach it to a Web Audio `AudioContext`, or save it using the `MediaRecorder` API.
 
-      recorder.addEventListener('change', function(e) {
-        var file = e.target.files[0]; 
-        // Do something with the audio file.
-        player.src =  URL.createObjectURL(file);
-      });
-    </script>
+To get data from the microphone we just set `audio: true` in the constraints object that is passed to the `getUserMedia()` API
 
-获得对文件的访问权后，便可随意对其执行任何操作。例如，可以执行以下操作：
+<pre class="prettyprint">&lt;audio id="player" controls>&lt;/audio>
+&lt;script>
+  var player = document.getElementById('player');
 
+  var handleSuccess = function(stream) {
+    if (window.URL) {
+      player.src = window.URL.createObjectURL(stream);
+    } else {
+      player.src = stream;
+    }
+  };
 
-* 将其直接附加到一个 `<audio>` 元素，这样便能播放文件
-* 将其下载至用户的设备
-* 通过将其附加到一个 `XMLHttpRequest`，上传至服务器
-* 通过 Web Audio API 传递文件并对其应用过滤器  
+  navigator.mediaDevices.getUserMedia({ audio: true, video: false })
+      .then(handleSuccess);
+&lt;/script>
+</pre>
 
-尽管使用 input 元素方法获得对音频数据访问权的情况普遍存在，却是最没有吸引力的方案。
-因为我们真正需要的是获得对麦克风的访问权，直接在页面内提供良好的体验。
+If you want to choose a particular microphone you can first enumerate the available microphones.
 
+    navigator.mediaDevices.enumerateDevices().then((devices) => {
+      devices = devices.filter((d) => d.kind === 'audioinput');
+    });
+    
 
-## 以交互方式访问麦克风
+You can then pass the deviceId that you wish to use when you call `getUserMedia`.
 
-现代浏览器可直连麦克风，我们可以借此打造与网页完全集成的体验，让用户永远都不需要离开浏览器。
+    navigator.mediaDevices.getUserMedia({
+      audio: {
+        deviceId: devices[0].deviceId
+      }
+    });
+    
 
+By itself, this isn't that useful. All we can do is take the audio data and play it back.
 
+### Access the raw data from the microphone
 
-### 获得对麦克风的访问权
+To access the raw data from the microphone we have to take the stream created by `getUserMedia()` and then use the Web Audio API to process the data. The Web Audio API is a simple API that takes input sources and connects those sources to nodes which can process the audio data (adjust Gain etc) and ultimately to a speaker so that the user can hear it.
 
-我们可以利用 WebRTC 规范中名为 `getUserMedia()` 的 API 直接访问麦克风。`getUserMedia()` 将提示用户授予对其相连麦克风和摄像头的访问权。
+One of the nodes that you can connect is a `ScriptProcessorNode`. This node will emit an `onaudioprocess` event every time the audio buffer is filled and you need to process it. At this point you could save the data into your own buffer and save it for later use.
 
-
-
-如果授权成功，该 API 将返回一个 `Stream`，其中包含来自摄像头或麦克风的数据，然后我们可以将数据附加到一个 `<audio>` 元素、将其附加到一个网络音频 `AudioContext` 或使用 `MediaRecorder` API 对其进行保存。
-
-
-
-
-要从麦克风获取数据，我们只需在传递给 `getUserMedia()` API 的约束对象中设置 `audio: true`
-
-
-
-    <audio id="player" controls></audio>
-    <script>  
-      var player = document.getElementById('player');
-
-      var handleSuccess = function(stream) {
-        if (window.URL) {
-          player.src = window.URL.createObjectURL(stream);
-        } else {
-          player.src = stream;
-        }
-      };
-
-      navigator.mediaDevices.getUserMedia({ audio: true, video: false })
-          .then(handleSuccess)
-    </script>
-
-这段代码本身的用处并不大。我们所能做的就是获取音频数据并进行播放。
-
-
-### 从麦克风获取原始数据
-
-要从麦克风获取原始数据，我们需要获取 `getUserMedia()` 创建的卡片信息流，然后利用 Web Audio API 处理数据。
-Web Audio API 是一个简单的 API，用于获取输入源并将这些输入源连接到可以处理音频数据（调节增益等）的节点，最终目的是连接到扬声器以便用户能够听到声音。
-
-
-
-
-可以连接的其中一个节点是 `ScriptProcessorNode`。每次音频缓冲区已满，需要您进行处理时，该节点都会发出一个 `onaudioprocess` 事件。此时，您可以将数据保存到自己的缓冲区内，留供以后使用。
-
-
-<pre class="prettyprint">
-&lt;script>  
+<pre class="prettyprint">&lt;script>
   var handleSuccess = function(stream) {
     <strong>var context = new AudioContext();
-    var input = context.createMediaStreamSource(stream)
-    var processor = context.createScriptProcessor(1024,1,1);
+    var source = context.createMediaStreamSource(stream);
+    var processor = context.createScriptProcessor(1024, 1, 1);
 
     source.connect(processor);
     processor.connect(context.destination);
 
-    processor.onaudioprocess = function(e){
+    processor.onaudioprocess = function(e) {
       // Do something with the data, i.e Convert this to WAV
       console.log(e.inputBuffer);
     };</strong>
   };
 
   navigator.mediaDevices.getUserMedia({ audio: true, video: false })
-      .then(handleSuccess)
+      .then(handleSuccess);
 &lt;/script>
 </pre>
 
-保留在缓冲区内的数据是来自麦克风的原始数据，在这些数据的处理上有以下这几种选择：
+The data that is held in the buffers is the raw data from the microphone and you have a number of options with what you can do with the data:
 
+* Upload it straight to the server
+* Store it locally
+* Convert to a dedicated file format, such as WAV, and then save it to your servers or locally
 
-* 将其直接上传至服务器
-* 将其存储在本地
-* 将其转换为专用文件格式（例如 WAV），然后保存至服务器或本地
+### Save the data from the microphone
 
+The easiest way to save the data from the microphone is to use the `MediaRecorder` API.
 
-### 保存来自麦克风的数据
+The `MediaRecorder` API will take the stream created by `getUserMedia` and then progressively save the data that is on the stream in to you preferred destination.
 
-要想保存来自麦克风的数据，最简便的方法是使用 `MediaRecorder` API。
-
-
-`MediaRecorder` API 将获取 `getUserMedia` 创建的卡片信息流，然后渐进式地将卡片信息流中的数据保存到首选目的地。
-
-
-
-<pre class="prettyprint">
-&lt;a id="download">Download</a>
-&lt;button id="stop">Stop</button>
-&lt;script> 
+<pre class="prettyprint">&lt;a id="download">Download&lt;/a>
+&lt;button id="stop">Stop&lt;/button>
+<script>
   let shouldStop = false;
   let stopped = false;
   const downloadLink = document.getElementById('download');
@@ -159,12 +137,12 @@ Web Audio API 是一个简单的 API，用于获取输入源并将这些输入�
 
   stopButton.addEventListener('click', function() {
     shouldStop = true;
-  })
+  });
 
-  var handleSuccess = function(stream) {  
-    const options = {mimeType: 'video/webm;codecs=vp9'};
+  var handleSuccess = function(stream) {
+    const options = {mimeType: 'audio/webm'};
     const recordedChunks = [];
-    <strong>const mediaRecorder = new MediaRecorder(stream, options);  
+    <strong>const mediaRecorder = new MediaRecorder(stream, options);
 
     mediaRecorder.addEventListener('dataavailable', function(e) {
       if (e.data.size > 0) {
@@ -191,57 +169,128 @@ Web Audio API 是一个简单的 API，用于获取输入源并将这些输入�
 &lt;/script>
 </pre>
 
-在我们这种情况下，我们要将数据直接保存到一个数组中，然后在稍后转换成 `Blob` 后再将其保存到网络服务器，或直接保存在用户设备的存储内。
 
- 
 
-## 以负责任的方式请求麦克风使用权限
-
-如果用户之前未授予网站对麦克风的访问权，则调用 `getUserMedia` 时浏览器会立即提示用户授予网站对麦克风的访问权。
-
- 
-
-用户讨厌在其机器上收到索要功能强大设备访问权的提示，他们常常会屏蔽权限请求，而如果他们不了解提示的产生环境，也会将其忽略。最好的做法是在首次需要权限时只请求访问麦克风。
-一旦用户授予了访问权，就不会再次收到提示，但如果他们拒绝授权，您就无法再次获得访问权以向用户请求权限。
+<p>
+  In our case we are saving the data directly into an array that we can later turn
+  in to a <code>Blob</code> which can be then used to save to our Web Server or directly in
+  storage on the user's device.
+</p>
 
 
 
-Warning: 在页面加载时请求获得对麦克风的访问权将导致大多数用户拒绝您访问麦克风。
-
-### 利用 Permission API 确认是否已获得访问权
-
-`getUserMedia` API 并不能让您了解自己是否已获得对麦克风的访问权。
-这就带来了一个问题：为了提供友善的 UI，让用户愿意授予对麦克风的访问权，您就必须请求获得对麦克风的访问权。
+<h2>
+  Ask permission to use microphone responsibly
+</h2>
 
 
 
-在某些浏览器中，可以利用 Permission API 来解决这个问题。`navigator.permission` API 让您不必再次提示用户便可查询到访问特定 API 能力的状态。
+<p>
+  If the user has not previously granted your site access to the microphone then
+  the instant that you call <code>getUserMedia</code> the browser will prompt the user to
+  grant your site permission to the microphone.
+</p>
 
 
 
-要想查询是否有权访问用户的麦克风，可以将 `{name: 'microphone'}` 传入 query 方法，后者将返回：
+<p>
+  Users hate getting prompted for access to powerful devices on their machine and
+  they will frequently block the request, or they will ignore it if they don't
+  understand the context of which the prompt has been created. It is best practice
+  to only ask to access the microphone when first needed. Once the user has
+  granted access they won't be asked again, however, if they reject access,
+  you can't get access again to ask the user for permission.
+</p>
 
 
-*  `granted` &mdash; 用户之前已授予对麦克风的访问权； 
-*  `prompt` &mdash; 用户尚未授予访问权，调用 `getUserMedia` 时将会收到提示；
-*  `denied` &mdash; 系统或用户已显式屏蔽对麦克风的访问权，您将无法获得对其的访问权。
+
+<p>
+  Warning: Asking for access to the microphone on page load will result in most of your users
+  rejecting access to the mic.
+</p>
 
 
-现在您就可以进行快速检查，以确认是否需要改动用户界面来适应用户需要执行的操作。
+
+<h3>
+  Use the permissions API to check if you already have access
+</h3>
 
 
-    navigator.permissions.query({name:'microphone'}).then(function(result) {
-      if (result.state == 'granted') {
 
-      } else if (result.state == 'prompt') {
-
-      } else if (result.state == 'denied') {
-
-      }
-      result.onchange = function() {
-
-      };
-    });
+<p>
+  The <code>getUserMedia</code> API provides you with no knowledge of if you already have
+  access to the microphone. This presents you with a problem, to provide a nice UI
+  to get the user to grant you access to the microphone, you have to ask for
+  access to microphone.
+</p>
 
 
-{# wf_devsite_translation #}
+
+<p>
+  This can be solved in some browsers by using the Permission API. The
+  <code>navigator.permission</code> API allows you to query the state of the ability to
+  access specific API's without having to prompt again.
+</p>
+
+
+
+<p>
+  To query if you have access to the user's microphone you can pass in
+  <code>{name: 'microphone'}</code> into the query method and it will return either:
+</p>
+
+
+
+<ul>
+  <li>
+    <code>granted</code> &mdash; the user has previously given you access to the microphone;
+  </li>
+  
+  
+  <li>
+    <code>prompt</code> &mdash; the user has not given you access and will be prompted when
+    you call <code>getUserMedia</code>;
+  </li>
+  
+  
+  <li>
+    <code>denied</code> &mdash; the system or the user has explicitly blocked access to the
+    microphone and you won't be able to get access to it.
+  </li>
+  
+</ul>
+
+
+
+<p>
+  And you can now check quickly check to see if you need to alter your user
+  interface to accommodate the actions that the user needs to take.
+</p>
+
+
+
+<pre><code>navigator.permissions.query({name:'microphone'}).then(function(result) {
+  if (result.state == 'granted') {
+
+  } else if (result.state == 'prompt') {
+
+  } else if (result.state == 'denied') {
+
+  }
+  result.onchange = function() {
+
+  };
+});
+</code></pre>
+
+
+
+<h2>
+  Feedback {: #feedback }
+</h2>
+
+
+
+<p>
+  {% include "web/_shared/helpful.html" %}
+</p>
