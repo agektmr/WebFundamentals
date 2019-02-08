@@ -1,109 +1,70 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description:瞭解如何使用 Chrome 和 DevTools 查找影響頁面性能的內存問題，包括內存泄漏、內存膨脹和頻繁的垃圾回收。
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Learn how to use Chrome and DevTools to find memory issues that affect page performance, including memory leaks, memory bloat, and frequent garbage collections.
 
-{# wf_updated_on:2015-08-03 #}
-{# wf_published_on:2015-04-13 #}
+{# wf_updated_on: 2018-07-27 #} {# wf_published_on: 2015-04-13 #} {# wf_blink_components: Blink>MemoryAllocator,Platform>DevTools #}
 
-# 解決內存問題 {: .page-title }
+# Fix Memory Problems {: .page-title }
 
 {% include "web/_shared/contributors/kaycebasques.html" %}
 
-瞭解如何使用 Chrome 和 DevTools 查找影響頁面性能的內存問題，包括內存泄漏、內存膨脹和頻繁的垃圾回收。
-
-
-
+Learn how to use Chrome and DevTools to find memory issues that affect page performance, including memory leaks, memory bloat, and frequent garbage collections.
 
 ### TL;DR {: .hide-from-toc }
-- 使用 Chrome 的任務管理器瞭解您的頁面當前正在使用的內存量。
-- 使用 Timeline 記錄可視化一段時間內的內存使用。
-- 使用堆快照確定已分離的 DOM 樹（內存泄漏的常見原因）。
-- 使用分配時間線記錄瞭解新內存在 JS 堆中的分配時間。
 
+* Find out how much memory your page is currently using with the Chrome Task Manager.
+* Visualize memory usage over time with Timeline recordings.
+* Identify detached DOM trees (a common cause of memory leaks) with Heap Snapshots.
+* Find out when new memory is being allocated in your JS heap with Allocation Timeline recordings.
 
-## 概覽
+## Overview
 
-在 [RAIL][RAIL] 性能模型的精髓中，您的性能工作的焦點應是用戶。
+In the spirit of the [RAIL](/web/tools/chrome-devtools/profile/evaluate-performance/rail) performance model, the focus of your performance efforts should be your users.
 
+Memory issues are important because they are often perceivable by users. Users can perceive memory issues in the following ways:
 
-內存問題至關重要，因爲這些問題經常會被用戶察覺。
-用戶可通過以下方式察覺內存問題：
+* **A page's performance gets progressively worse over time.** This is possibly a symptom of a memory leak. A memory leak is when a bug in the page causes the page to progressively use more and more memory over time. 
+* **A page's performance is consistently bad.** This is possibly a symptom of memory bloat. Memory bloat is when a page uses more memory than is necessary for optimal page speed.
+* **A page's performance is delayed or appears to pause frequently.** This is possibly a symptom of frequent garbage collections. Garbage collection is when the browser reclaims memory. The browser decides when this happens. During collections, all script execution is paused. So if the browser is garbage collecting a lot, script execution is going to get paused a lot.
 
+### Memory bloat: how much is "too much"?
 
-* **頁面的性能隨着時間的延長越來越差。** 這可能是內存泄漏的症狀。
-內存泄漏是指，頁面中的錯誤導致頁面隨着時間的延長使用的內存越來越多。
-* **頁面的性能一直很糟糕。** 這可能是內存膨脹的症狀。
-內存膨脹是指，頁面爲達到最佳速度而使用的內存比本應使用的內存多。
-* **頁面出現延遲或者經常暫停。** 這可能是頻繁垃圾回收的症狀。
-垃圾回收是指瀏覽器收回內存。
-瀏覽器決定何時進行垃圾回收。
-  回收期間，所有腳本執行都將暫停。因此，如果瀏覽器經常進行垃圾回收，腳本執行就會被頻繁暫停。
+A memory leak is easy to define. If a site is progressively using more and more memory, then you've got a leak. But memory bloat is a bit harder to pin down. What qualifies as "using too much memory"?
 
+There are no hard numbers here, because different devices and browsers have different capabilities. The same page that runs smoothly on a high-end smartphone might crash on a low-end smartphone.
 
-### 內存膨脹：如何界定“過多”？
+The key here is to use the RAIL model and focus on your users. Find out what devices are popular with your users, and then test out your page on those devices. If the experience is consistently bad, the page may be exceeding the memory capabilities of those devices.
 
-內存泄漏很容易確定。如果網站使用的內存越來越多，則說明發生內存泄漏。
-但內存膨脹比較難以界定。
-什麼情況纔算是“使用過多的內存”？
+## Monitor memory use in realtime with the Chrome Task Manager
 
-這裏不存在硬性數字，因爲不同的設備和瀏覽器具有不同的能力。
-在高端智能手機上流暢運行的相同頁面在低端智能手機上則可能崩潰。
+Use the Chrome Task Manager as a starting point to your memory issue investigation. The Task Manager is a realtime monitor that tells you how much memory a page is currently using.
 
+1. Press <kbd>Shift</kbd>+<kbd>Esc</kbd> or go to the Chrome main menu and select **More tools** > **Task manager** to open the Task Manager.
+    
+    ![opening the task
+manager](imgs/task-manager.png)
 
+2. Right-click on the table header of the Task Manager and enable **JavaScript memory**.
+    
+    ![enable javascript
+memory](imgs/js-memory.png)
 
-界定的關鍵是使用 RAIL 模型並以用戶爲中心。瞭解什麼設備在您的用戶中深受歡迎，然後在這些設備上測試您的頁面。如果體驗一直糟糕，則頁面可能超出這些設備的內存能力。
+These two columns tell you different things about how your page is using memory:
 
-
-[RAIL]: /web/tools/chrome-devtools/profile/evaluate-performance/rail
-
-## 使用 Chrome 任務管理器實時監視內存使用
-
-使用 Chrome 任務管理器作爲內存問題調查的起點。
-任務管理器是一個實時監視器，可以告訴您頁面當前正在使用的內存量。
-
-
-1. 按 <kbd>Shift</kbd>+<kbd>Esc</kbd> 或者轉到 Chrome 主菜單並選擇 **More tools** > **Task manager**，打開任務管理器。
-
-
-
-   ![打開任務管理器](imgs/task-manager.png)
-
-
-1. 右鍵點擊任務管理器的表格標題並啓用 **JavaScript memory**。
-
-
-   ![啓用 JavaScript memory](imgs/js-memory.png)
-
-
-下面兩列可以告訴您與頁面的內存使用有關的不同信息：
-
-* **Memory** 列表示原生內存。DOM 節點存儲在原生內存中。
-如果此值正在增大，則說明正在創建 DOM 節點。
-* **JavaScript Memory** 列表示 JS 堆。此列包含兩個值。
-您感興趣的值是實時數字（括號中的數字）。
-實時數字表示您的頁面上的可到達對象正在使用的內存量。
-如果此數字在增大，要麼是正在創建新對象，要麼是現有對象正在增長。
-
-
+* The **Memory** column represents native memory. DOM nodes are stored in native memory. If this value is increasing, DOM nodes are getting created.
+* The **JavaScript Memory** column represents the JS heap. This column contains two values. The value you're interested in is the live number (the number in parentheses). The live number represents how much memory the reachable objects on your page are using. If this number is increasing, either new objects are being created, or the existing objects are growing.
 
 <!-- live number reference: https://groups.google.com/d/msg/google-chrome-developer-tools/aTMVGoNM0VY/bLmf3l2CpJ8J -->
 
-## 使用 Timeline 記錄可視化內存泄漏
+## Visualize memory leaks with Timeline recordings
 
-您也可以使用 Timeline 面板作爲調查的起點。
-Timeline 面板可以幫助您直觀瞭解頁面在一段時間內的內存使用情況。
+You can also use the Timeline panel as another starting point in your investigation. The Timeline panel helps you visualize a page's memory use over time.
 
+1. Open the **Timeline** panel on DevTools.
+2. Enable the **Memory** checkbox.
+3. [Make a recording](/web/tools/chrome-devtools/profile/evaluate-performance/timeline-tool#make-a-recording).
 
-1. 在 DevTools 上打開 **Timeline** 面板。
-1. 啓用 **Memory** 複選框。
-1. [做記錄][recording]。
+Tip: It's a good practice to start and end your recording with a forced garbage collection. Click the **collect garbage** button (![force garbage collection button](imgs/collect-garbage.png){:.inline}) while recording to force garbage collection.
 
-提示：一種比較好的做法是使用強制垃圾回收開始和結束記錄。
-在記錄時點擊 **Collect garbage** 按鈕 (![強制垃圾回收按鈕][cg]{:.inline}) 可以強制進行垃圾回收。
-
-
-
-要顯示 Timeline 內存記錄，請考慮使用下面的代碼：
+To demonstrate Timeline memory recordings, consider the code below:
 
     var x = [];
     
@@ -115,38 +76,21 @@ Timeline 面板可以幫助您直觀瞭解頁面在一段時間內的內存使�
     }
     
     document.getElementById('grow').addEventListener('click', grow);
+    
 
-每次按代碼中引用的按鈕時，將向文檔正文附加 1 萬個 `div` 節點，並將一個由 100 萬個 `x` 字符組成的字符串推送到 `x` 數組。運行此代碼會生成一個類似於以下屏幕截圖的 Timeline 記錄：
+Every time that the button referenced in the code is pressed, ten thousand `div` nodes are appended to the document body, and a string of one million `x` characters is pushed onto the `x` array. Running this code produces a Timeline recording like the following screenshot:
 
+![simple growth example](imgs/simple-growth.png)
 
-![簡單增長示例][sg]
+First, an explanation of the user interface. The **HEAP** graph in the **Overview** pane (below **NET**) represents the JS heap. Below the **Overview** pane is the **Counter** pane. Here you can see memory usage broken down by JS heap (same as **HEAP** graph in the **Overview** pane), documents, DOM nodes, listeners, and GPU memory. Disabling a checkbox hides it from the graph.
 
-首先，我們來說明一下用戶界面。**Overview** 窗格中的 **HEAP** 圖表（**NET** 下方）表示 JS 堆。**概覽**窗格下方是**計數器**窗格。從這裏，您可以看到內存使用按 JS 堆 （與 **Overview** 窗格中的 **HEAP** 圖表相同）、文檔、DOM 節點、偵聽器和 GPU 內存細分。停用對應的複選框可以將其在圖表中隱藏。
+Now, an analysis of the code compared with the screenshot. If you look at the node counter (the green graph) you can see that it matches up cleanly with the code. The node count increases in discrete steps. You can presume that each increase in the node count is a call to `grow()`. The JS heap graph (the blue graph) is not as straightforward. In keeping with best practices, the first dip is actually a forced garbage collection (achieved by pressing the **collect garbage** button). As the recording progresses you can see that the JS heap size spikes. This is natural and expected: the JavaScript code is creating the DOM nodes on every button click and doing a lot of work when it creates the string of one million characters. The key thing here is the fact that the JS heap ends higher than it began (the "beginning" here being the point after the forced garbage collection). In the real world, if you saw this pattern of increasing JS heap size or node size, it would potentially mean a memory leak.
 
+## Discover detached DOM tree memory leaks with Heap Snapshots
 
+A DOM node can only be garbage collected when there are no references to it from either the page's DOM tree or JavaScript code. A node is said to be "detached" when it's removed from the DOM tree but some JavaScript still references it. Detached DOM nodes are a common cause of memory leaks. This section teaches you how to use DevTools' heap profilers to identify detached nodes.
 
-
-現在，我們將根據屏幕截圖來分析代碼。如果查看節點計數器（綠色圖表），您會看到它與代碼完全匹配。節點計數以離散步長方式增大。
-您可以假定節點計數的每次增大都是對 `grow()` 的一次調用。
-JS 堆圖表（藍色圖表）的顯示並不直接。爲了符合最佳做法，第一次下降實際上是一次強制垃圾回收（通過按 **Collect garbage** 按鈕實現）。隨着記錄的進行，您會看到 JS 堆大小高低交錯變化。這種現象是正常的並且在預料之中：每次點擊按鈕，JavaScript 代碼都會創建 DOM 節點，在創建由 100 萬個字符組成的字符串期間，代碼會完成大量工作。這裏的關鍵是，JS 堆在結束時會比開始時大（這裏“開始”是指強制垃圾回收後的時間點）。在實際使用過程中，如果您看到這種 JS 堆大小或節點大小不斷增大的模式，則可能存在內存泄漏。
-
-
-[recording]: https://developers.google.com/web/tools/chrome-devtools/profile/evaluate-performance/timeline-tool#make-a-recording
-
-[cg]: imgs/collect-garbage.png
-
-[sg]: imgs/simple-growth.png
-
-[hngd]: https://jsfiddle.net/kaycebasques/tmtbw8ef/
-
-## 使用堆快照發現已分離 DOM 樹的內存泄漏
-
-只有頁面的 DOM 樹或 JavaScript 代碼不再引用 DOM 節點時，DOM 節點纔會被作爲垃圾進行回收。
-如果某個節點已從 DOM 樹移除，但某些 JavaScript 仍然引用它，我們稱此節點爲“已分離”。已分離的 DOM 節點是內存泄漏的常見原因。此部分將教您如何使用 DevTools 的堆分析器確定已分離的節點。
-
-
-
-下面是一個已分離 DOM 節點的簡單示例。 
+Here's a simple example of detached DOM nodes.
 
     var detachedNodes;
     
@@ -156,143 +100,90 @@ JS 堆圖表（藍色圖表）的顯示並不直接。爲了符合最佳做法�
         var li = document.createElement('li');
         ul.appendChild(li);
       }
-      detachedTree = ul;
+      detachedNodes = ul;
     }
     
     document.getElementById('create').addEventListener('click', create);
+    
 
-點擊代碼中引用的按鈕將創建一個包含 10 個 `li` 子級的 `ul` 節點。
-這些節點由代碼引用，但不存在於 DOM 樹中，因此它們已分離。
+Clicking the button referenced in the code creates a `ul` node with ten `li` children. These nodes are referenced by the code but do not exist in the DOM tree, so they're detached.
 
+Heap snapshots are one way to identify detached nodes. As the name implies, heap snapshots show you how memory is distributed among your page's JS objects and DOM nodes at the point of time of the snapshot.
 
-堆快照是確定已分離節點的一種方式。顧名思義，堆快照可以爲您顯示拍攝快照時內存在您頁面的 JS 對象和 DOM 節點間的分配。
+To create a snapshot, open DevTools and go to the **Profiles** panel, select the **Take Heap Snapshot** radio button, and then press the **Take Snapshot** button.
 
+![take heap snapshot](imgs/take-heap-snapshot.png)
 
+The snapshot may take some time to process and load. Once it's finished, select it from the lefthand panel (named **HEAP SNAPSHOTS**).
 
-要創建快照，請打開 DevTools 並轉到 **Profiles** 面板，選擇 **Take Heap Snapshot** 單選按鈕，然後按 **Take Snapshot** 按鈕。
+Type `Detached` in the **Class filter** textbox to search for detached DOM trees.
 
- 
+![filtering for detached nodes](imgs/detached-filter.png)
 
-![Take Heap Snapshot][ths]
+Expand the carats to investigate a detached tree.
 
-快照可能需要一些時間處理和加載。完成後，請從左側面板（名稱爲 **HEAP SNAPSHOTS**）中選擇該快照。
- 
+![investigating detached tree](imgs/expanded-detached.png)
 
-在 **Class filter** 文本框中鍵入 `Detached`，搜索已分離的 DOM 樹。
+Nodes highlighted yellow have direct references to them from the JavaScript code. Nodes highlighted red do not have direct references. They are only alive because they are part of the yellow node's tree. In general, you want to focus on the yellow nodes. Fix your code so that the yellow node isn't alive for longer than it needs to be, and you also get rid of the red nodes that are part of the yellow node's tree.
 
+Click on a yellow node to investigate it further. In the **Objects** pane you can see more information about the code that's referencing it. For example, in the screenshot below you can see that the `detachedTree` variable is referencing the node. To fix this particular memory leak, you would study the code that uses `detachedTree` and ensure that it removes its reference to the node when it's no longer needed.
 
-![針對已分離的節點過濾][df]
+![investigating a yellow node](imgs/yellow-node.png)
 
-展開三角符號以調查分離的樹。
+## Identify JS heap memory leaks with Allocation Timelines
 
-![調查分離的樹][ed]
+The Allocation Timeline is another tool that can help you track down memory leaks in your JS heap.
 
-以黃色突出顯示的節點具有 JavaScript 代碼對它們的直接引用。
-以紅色突出顯示的節點則沒有直接引用。只有屬於黃色節點的樹時，它們才處於活動狀態。
-一般而言，您需要將注意力放在黃色節點上。
-修復代碼，使黃色節點處於活動狀態的時間不長於需要的時間，您也需要消除屬於黃色節點樹的紅色節點。
-
-
-
-點擊黃色節點對其進行進一步調查。在 **Object** 窗格中，您可以看到與正在引用該節點的代碼相關的更多信息。
-例如，在下面的屏幕截圖中，您可以看到 `detachedTree` 變量正在引用該節點。要解決這一特定的內存泄漏，您需要研究使用 `detachedTree` 的代碼並確保在不需要時，此代碼可以移除其對節點的引用。
-
-
-
-![調查黃色節點][yn]
-
-[ths]: imgs/take-heap-snapshot.png
-
-[df]: imgs/detached-filter.png
-
-[ed]: imgs/expanded-detached.png
-
-[yn]: imgs/yellow-node.png
-
-## 使用分配時間線確定 JS 堆內存泄漏
-
-分配時間線是您可以用於跟蹤 JS 堆中內存泄漏的另一種工具。
- 
-
-要顯示分配時間線，請考慮使用下面的代碼：
+To demonstrate the Allocation Timeline consider the following code:
 
     var x = [];
-
+    
     function grow() {
       x.push(new Array(1000000).join('x'));
     }
-
+    
     document.getElementById('grow').addEventListener('click', grow);
+    
 
-每次按代碼中引用的按鈕時，都會向 `x` 數組添加一個由 100 萬個字符組成的字符串。
+Every time that the button referenced in the code is pushed, a string of one million characters is added to the `x` array.
 
+To record an Allocation Timeline, open DevTools, go to the **Profiles** panel, select the **Record Allocation Timeline** radio button, press the **Start** button, perform the action that you suspect is causing the memory leak, and then press the **stop recording** button (![stop recording button](imgs/stop-recording.png){:.inline}) when you're done.
 
-要記錄分配時間線，請打開 DevTools，然後轉到 **Profiles** 面板，選擇 **Record Allocation Timeline** 單選按鈕，按 **Start** 按鈕，執行您懷疑導致內存泄漏的操作。完成後，按 **stop recording** 按鈕 (![stop recording 按鈕][sr]{:.inline})。
+As you're recording, notice if any blue bars show up on the Allocation Timeline, like in the screenshot below.
 
+![new allocations](imgs/new-allocations.png)
 
+Those blue bars represent new memory allocations. Those new memory allocations are your candidates for memory leaks. You can zoom on a bar to filter the **Constructor** pane to only show objects that were allocated during the specified timeframe.
 
+![zoomed allocation timeline](imgs/zoomed-allocation-timeline.png)
 
- 
+Expand the object and click on its value to view more details about it in the **Object** pane. For example, in the screenshot below, by viewing the details of the object that was newly allocated, you'd be able to see that it was allocated to the `x` variable in the `Window` scope.
 
-記錄時，請注意分配時間線上是否顯示任何藍色豎線（如下面的屏幕截圖所示）。
- 
+![object details](imgs/object-details.png)
 
-![新分配][na]
+## Investigate memory allocation by function {: #allocation-profile }
 
-這些藍色豎線表示新內存分配。新內存分配中可能存在內存泄漏。
-您可以在豎線上放大，將 **Constructor** 窗格篩選爲僅顯示在指定時間範圍內分配的對象。
-
- 
-
-![縮放的分配時間線][zat]
-
-展開對象並點擊它的值，可以在 **Object** 窗格中查看其更多詳情。
-例如，在下面的屏幕截圖中，通過查看新分配對象的詳細信息，您可以看到它被分配到 `Window` 作用域中的 `x` 變量。
-
-
-
-![對象詳情][od]
-
-[sr]: imgs/stop-recording.png
-
-[na]: imgs/new-allocations.png
-
-[zat]: imgs/zoomed-allocation-timeline.png
-
-[od]: imgs/object-details.png
-
-## 按函數調查內存分配 {: #allocation-profile }
-
-使用 **Record Allocation Profiler** 類型可按 JavaScript 函數查看內存分配。
-
+Use the **Record Allocation Profiler** type to view memory allocation by JavaScript function.
 
 ![Record Allocation Profiler](imgs/record-allocation-profile.png)
 
-1. 選擇 **Record Allocation Profiler** 單選按鈕。如果頁面上有一個工作線程，您可以使用 **Start** 按鈕旁的下拉菜單選擇它作爲分析目標。
-1. 按 **Start** 按鈕。
-1. 在您想調查的頁面上執行操作。
-1. 完成所有操作時按 **Stop** 按鈕。
+1. Select the **Record Allocation Profiler** radio button. If there is a worker on the page, you can select that as the profiling target using the dropdown menu next to the **Start** button.
+2. Press the **Start** button.
+3. Perform the actions on the page which you want to investigate.
+4. Press the **Stop** button when you have finished all of your actions.
 
+DevTools shows you a breakdown of memory allocation by function. The default view is **Heavy (Bottom Up)**, which displays the functions that allocated the most memory at the top.
 
+![Allocation profile](imgs/allocation-profile.png)
 
-DevTools 按函數顯示內存分配明細。默認視圖爲 **Heavy (Bottom Up)**，將分配了最多內存的函數顯示在最上方。
+## Spot frequent garbage collections
 
+If your page appears to pause frequently, then you may have garbage collection issues.
 
+You can use either the Chrome Task Manager or Timeline memory recordings to spot frequent garbage collections. In the Task Manager, frequently rising and falling **Memory** or **JavaScript Memory** values represent frequent garbage collections. In Timeline recordings, frequently rising and falling JS heap or node count graphs indicate frequent garbage collections.
 
-![分配分析](imgs/allocation-profile.png)
+Once you've identified the problem, you can use an Allocation Timeline recording to find out where memory is being allocated and which functions are causing the allocations.
 
-## 發現頻繁的垃圾回收
+## Feedback {: #feedback }
 
-如果感覺頁面經常暫停，則可能存在垃圾回收問題。
- 
-
-您可以使用 Chrome 任務管理器或者 Timeline 內存記錄發現頻繁的垃圾回收。
-在任務管理器中，**Memory** 或 **JavaScript Memory** 值頻繁上升和下降表示存在頻繁的垃圾回收。在 Timeline 記錄中，JS 堆或節點計數圖表頻繁上升和下降指示存在頻繁的垃圾回收。
-
-
-確定問題後，您可以使用分配時間線記錄找出內存正在分配到什麼地方，以及哪些函數導致分配。
-
- 
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
