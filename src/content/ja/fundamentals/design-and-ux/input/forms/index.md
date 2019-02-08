@@ -1,14 +1,10 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: モバイルでのフォーム入力は大変な作業です。最高のフォームとは、入力内容を最小限にしたフォームです。
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Forms are hard to fill out on mobile. The best forms are the ones with the fewest inputs.
 
-{# wf_updated_on: 2018-08-05 #}
-{# wf_published_on: 2014-04-30 #}
+{# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2014-04-30 #} {# wf_blink_components: N/A #}
 
-# 最適なフォームの作成 {: .page-title }
+# Create Amazing Forms {: .page-title }
 
 {% include "web/_shared/contributors/petelepage.html" %}
-
 
 <div class="video-wrapper">
   <iframe class="devsite-embedded-youtube-video" data-video-id="iYYHRwLqrKM"
@@ -16,209 +12,188 @@ description: モバイルでのフォーム入力は大変な作業です。最�
   </iframe>
 </div>
 
-モバイルでのフォーム入力は大変な作業です。最高のフォームとは、入力内容を最小限にしたフォームです。良いフォームは意味のある入力タイプを提供します。ユーザーの入力タイプに応じて表示するキーボードを変え、シーンによってはユーザーがカレンダー上の日付を選択できるようにします。ユーザーへの通知も必要です。検証ツールを使用して、フォームを送信する前に必要なことをユーザーに伝えましょう。
+Forms are hard to fill out on mobile. The best forms are the ones with the fewest inputs. This article will cover designing efficient forms, validating them effectively, and keeping the user informed along the way.
 
+## Design efficient forms
 
-##  効率的なフォームを設計する
-
-
-効率的なフォームを設計するには、繰り返しのアクションを避けて、必要な情報のみを要求します。さらにマルチパート フォームのどの段階まで入力しているのかを示すことによって、ユーザーをガイドします
-
+Design efficient forms by avoiding repeated actions, asking for only the necessary information and guide users by showing them how far along they are in multi-part forms.
 
 ### TL;DR {: .hide-from-toc }
-- フィールドに既存のデータをあらかじめ設定し、自動入力を有効にします。
-- ユーザーがマルチ パート フォームを活用できるよう、明確にラベル付けされたプログレス バーを使用します。
-- カレンダーを表示することで、ユーザーがサイトを離れてスマートフォンのカレンダー アプリを開く手間を省きます。
 
+- Use existing data to pre-populate fields and be sure to enable autofill.
+- Use clearly-labeled progress bars to help users get through multi-part forms.
+- Provide visual calendar so users don’t have to leave your site and jump to the calendar app on their smartphones.
 
-###  繰り返しのアクションとフィールドを最小限に抑える
+### Minimize repeated actions and fields
 
 <figure class="attempt-right">
-  <img src="imgs/forms-multipart-good.png" srcset="imgs/forms-multipart-good.png 1x, imgs/forms-multipart-good-2x.png 2x" alt="マルチパート フォームに進捗を表示">
+  <img src="imgs/forms-multipart-good.png" srcset="imgs/forms-multipart-good.png 1x, imgs/forms-multipart-good-2x.png 2x" alt="Show progression in multi-part forms">
   <figcaption>
-    Progressive.com のウェブサイトでは、ユーザーは最初に郵便番号の入力を要求されます。その内容が、フォームの次の部分に事前に設定されます。
-</figcaption>
+    On the Progressive.com website, users are asked first for their ZIP code, which is then pre-populated into the next part of the form.
+  </figcaption>
 </figure>
 
-フォームに繰り返しのアクションがないことを確認し、フィールドの使用は必要最低限にとどめてください。[自動入力](/web/fundamentals/design-and-ux/input/forms/#use-metadata-to-enable-auto-complete)を活用すると、あらかじめデータが設定されるため、ユーザーは簡単にフォームの入力を完了できます。
+Make sure your forms have no repeated actions, only as many fields as necessary, and take advantage of [autofill](#use-metadata-to-enable-auto-complete), so that users can easily complete forms with pre-populated data.
 
-
-
-
-取得済みの情報を事前入力することで、ユーザーがその情報を入力する手間を省ける箇所がないか探します。
-たとえば、ユーザーによって入力された最新の配送先住所を事前に設定します。
-
-
+Look for opportunities to pre-fill information you already know, or may anticipated to save the user from having to provide it. For example, pre-populate the shipping address with the last shipping address supplied by the user.
 
 <div style="clear:both;"></div>
 
-###  ユーザーに進捗状況を示す
+### Show users how far along they are
 
 <figure class="attempt-right">
-  <img src="imgs/forms-multipart-good.png" srcset="imgs/forms-multipart-good.png 1x, imgs/forms-multipart-good-2x.png 2x" alt="マルチパート フォームに進捗を表示">
+  <img src="imgs/forms-multipart-good.png" srcset="imgs/forms-multipart-good.png 1x, imgs/forms-multipart-good-2x.png 2x" alt="Show progression in multi-part forms">
   <figcaption>
-    ユーザーがマルチパート フォームを活用できるよう、明確にラベル付けされたプログレス バーを使用します。
-</figcaption>
+    Use clearly-labeled progress bars to help users get through multi-part forms.
+  </figcaption>
 </figure>
 
-プログレス バーとメニューを使い、マルチステップのフォームやプロセスおける全体的な進捗状況を正確に伝える必要があります。
+Progress bars and menus should accurately convey overall progress through multi-step forms and processes.
 
-
-前のステップで不相応に複雑なフォームを配置した場合、ユーザーは全体のプロセスを終える前に、サイトを離れる可能性が高くなります。
-
+If you place a disproportionately complex form in an earlier step, users are more likely to abandon your site before they go through the entire process.
 
 <div style="clear:both;"></div>
 
-###  日付を選択するためのカレンダーを表示
+### Provide visual calendars when selecting dates
 
 <figure class="attempt-right">
-  <img src="imgs/forms-calendar-good.png" srcset="imgs/forms-calendar-good.png 1x, imgs/forms-calendar-good-2x.png 2x" alt="使いやすいカレンダーを使用するホテル予約サイト">
+  <img src="imgs/forms-calendar-good.png" srcset="imgs/forms-calendar-good.png 1x, imgs/forms-calendar-good-2x.png 2x" alt="Hotel website with easy to use calendar">
   <figcaption>
-    ホテル予約サイトでは、日付を簡単に選ぶためのカレンダー ウィジェットを使用しています。
-</figcaption>
+    Hotel booking website with easy to use calendar widget for picking dates.
+  </figcaption>
 </figure>
 
-ユーザーは旅行の予定や日程をスケジュールするときに、より多くのコンテキストを必要とする傾向があります。ユーザーがカレンダーをチェックするためにサイトを離れることを防止し、操作を容易にするために、開始日と終了日を選択するための明確なラベルがついたカレンダーを表示します。
-
-
-
+Users often need more context when scheduling appointments and travel dates, to make things easier and prevent them from leaving your site to check their calendar app, provide a visual calendar with clear labeling for selecting start and end dates.
 
 <div style="clear:both;"></div>
 
-##  最適な入力タイプを選ぶ
+## Choose the best input type
 
-正しい入力タイプを使用して情報の入力を効率化します。ユーザーは、電話番号を入力する際に自動的に数字キーパッドが表示されたり、入力後に自動的に次のフィールドへ遷移したりするウェブサイトを好みます。
-
-できるだけ無駄なタップ操作を省いたフォームにしましょう。
-
-
+Streamline information entry by using the right input type. Users appreciate websites that automatically present number pads for entering phone numbers, or automatically advance fields as they entered them. Look for opportunities to eliminate wasted taps in your forms.
 
 ### TL;DR {: .hide-from-toc }
-- データを簡単に入力できるよう、最適な入力タイプを選択します。
--  <code>datalist</code> 要素を使用して、ユーザーの入力時に候補を表示します。
 
+- Choose the most appropriate input type for your data to simplify input.
+- Offer suggestions as the user types with the `datalist` element.
 
-###  HTML5 入力タイプ
+### HTML5 input types
 
-HTML5 では多くの新しい入力タイプが導入されています。これらの新しい入力タイプは、画面上のキーボードとして表示するキーボード レイアウトの種類をブラウザに伝えます。
-
-ユーザーはキーボードを変更しなくても、入力タイプに合った適切なキーが表示されるため、必要な情報をより簡単に入力することができます。
-
-
+HTML5 introduced a number of new input types. These new input types give hints to the browser about what type of keyboard layout to display for on-screen keyboards. Users are more easily able to enter the required information without having to change their keyboard and only see the appropriate keys for that input type.
 
 <table class="responsive">
   <thead>
     <tr>
-      <th colspan="2">入力 <code>type</code></th>
+      <th colspan="2">Input <code>type</code></th>
     </tr>
   </thead>
   <tbody>
     <tr>
       <td data-th="Input type">
-        <code>url</code><br> URL を入力します。これは有効な URI スキームで始まる必要があります。たとえば <code>http://</code>、 <code>ftp://</code> または  <code>mailto:</code>mailto: などです。
-</td>
-
+        <code>url</code><br> For entering a URL. It must start with a valid URI scheme,
+        for example <code>http://</code>, <code>ftp://</code> or <code>mailto:</code>.
+      </td>
       <td data-th="Typical keyboard">
         <img src="imgs/url-ios.png" srcset="imgs/url-ios.png 1x, imgs/url-ios-2x.png 2x">
       </td>
     </tr>
     <tr>
       <td data-th="Input type">
-        <code>tel</code><br>電話番号を入力します。tel では、特定の構文に従った入力は必須<b>ではありません</b>。
-        したがって、特定の形式で入力されるようにしたい場合は、pattern 属性を使用します。
-</td>
-
+        <code>tel</code><br>For entering phone numbers. It does <b>not</b>
+        enforce a particular syntax for validation, so if you want to ensure
+        a particular format, you can use pattern.
+      </td>
       <td data-th="Typical keyboard">
         <img src="imgs/tel-android.png" srcset="imgs/tel-android.png 1x, imgs/tel-android-2x.png 2x">
       </td>
     </tr>
     <tr>
       <td data-th="Input type">
-        <code>email</code><br>メールアドレスを入力します。@ がデフォルトでキーボードに表示されます。
-multiple 属性を追加すると、複数のメールアドレスが入力可能になります。
-</td>
-
+        <code>email</code><br>For entering email addresses, and hints that
+        the @ should be shown on the keyboard by default. You can add the
+        multiple attribute if more than one email address will be provided.
+      </td>
       <td data-th="Typical keyboard">
         <img src="imgs/email-android.png" srcset="imgs/email-android.png 1x, imgs/email-android-2x.png 2x">
       </td>
     </tr>
     <tr>
       <td data-th="Input type">
-        <code>search</code><br>プラットフォームの検索フィールドとスタイルを合わせたテキスト入力フィールドです。
-</td>
-
+        <code>search</code><br>A text input field styled in a way that is
+        consistent with the platform's search field.
+      </td>
       <td data-th="Typical keyboard">
         <img src="imgs/plain-ios.png" srcset="imgs/plain-ios.png 1x, imgs/plain-ios-2x.png 2x" class="keybimg">
       </td>
     </tr>
     <tr>
       <td data-th="Input type">
-        <code>number</code><br>数字を入力します。有理整数または浮動小数点値です。
-</td>
-
+        <code>number</code><br>For numeric input, can be any rational integer. Additionally,
+        <a href="https://www.filamentgroup.com/lab/type-number.html">iOS requires using</a>
+        <code>pattern="\d*"</code> to show the numeric keyboard.
+      </td>
       <td data-th="Typical keyboard">
         <img src="imgs/number-android.png" srcset="imgs/number-android.png 1x, imgs/number-android-2x.png 2x" class="keybimg">
       </td>
     </tr>
     <tr>
       <td data-th="Input type">
-        <code>range</code><br>数字を入力しますが、number の入力タイプとは違い、数値自体は重要ではありません。
-これは、スライダ コントロールとしてユーザーに表示されます。
-</td>
-
+        <code>range</code><br>For number input, but unlike the number input
+        type, the value is less important. It is displayed to the user as a
+        slider control.
+      </td>
       <td data-th="Typical keyboard">
         <img src="imgs/range-ios.png">
       </td>
     </tr>
     <tr>
       <td data-th="Input type">
-        <code>datetime-local</code><br>日付と時刻の値を入力します。ここで提供されるタイムゾーンは現地時間です。
-</td>
-
+        <code>datetime-local</code><br>For entering a date and time value
+        where the time zone provided is the local time zone.
+      </td>
       <td data-th="Typical keyboard">
         <img src="imgs/datetime-local-ios.png" srcset="imgs/datetime-local-ios.png 1x, imgs/datetime-local-ios-2x.png 2x">
       </td>
     </tr>
     <tr>
       <td data-th="Input type">
-        <code>date</code><br>タイムゾーンなしで日付（のみ）を入力します。
-</td>
-
+        <code>date</code><br>For entering a date (only) with no time zone
+        provided.
+      </td>
       <td data-th="Typical keyboard">
         <img src="imgs/date-android.png" srcset="imgs/date-android.png 1x, imgs/date-android-2x.png 2x">
       </td>
     </tr>
     <tr>
       <td data-th="Input type">
-        <code>time</code><br>タイムゾーンなしで時間（のみ）を入力します。
-</td>
-
+        <code>time</code><br>For entering a time (only) with no time zone
+        provided.
+      </td>
       <td data-th="Typical keyboard">
         <img src="imgs/time-ios.png" srcset="imgs/time-ios.png 1x, imgs/time-ios-2x.png 2x">
       </td>
     </tr>
     <tr>
       <td data-th="Input type">
-        <code>week</code><br>タイムゾーンなしで週（のみ）を入力します。
-</td>
-
+        <code>week</code><br>For entering a week (only) with no time zone
+        provided.
+      </td>
       <td data-th="Typical keyboard">
         <img src="imgs/week-android.png" srcset="imgs/week-android.png 1x, imgs/week-android-2x.png 2x">
       </td>
     </tr>
     <tr>
       <td data-th="Input type">
-        <code>month</code><br>タイムゾーンなしで月（のみ）を入力します。
-</td>
-
+        <code>month</code><br>For entering a month (only) with no time zone
+        provided.
+      </td>
       <td data-th="Typical keyboard">
         <img src="imgs/month-ios.png" srcset="imgs/month-ios.png 1x, imgs/month-ios-2x.png 2x">
       </td>
     </tr>
     <tr>
       <td data-th="Input type">
-        <code>color</code><br>色を選択します。
-</td>
+        <code>color</code><br>For picking a color.
+      </td>
       <td data-th="Typical keyboard">
         <img src="imgs/color-android.png" srcset="imgs/color-android.png 1x, imgs/color-android-2x.png 2x">
       </td>
@@ -226,114 +201,88 @@ multiple 属性を追加すると、複数のメールアドレスが入力可�
   </tbody>
 </table>
 
-Warning: 入力タイプを選択する際は、ローカライズについても考慮してください。地域によっては、セパレータにカンマ（,）ではなく、ドット（.）を使用することもあります。
+Caution: Remember to keep localization in mind when choosing an input type, some locales use a dot (.) as a separator instead of a comma (,)
 
+### Offer suggestions during input with datalist
 
-###  データリストで入力中に候補を表示する
-
-`datalist` 要素は入力タイプではなく、フォーム フィールドに関連付けられた入力値の候補リストです。
-これによってブラウザは、ユーザーの入力時に、オートコンプリート機能で入力候補を表示できます。
-ユーザーが値を見つけるために長いリストをスキャンしなければならず、さらに入力内容が限定される選択要素とは異なり、`datalist` 要素ではユーザーの入力に応じて候補を表示できます。
-
-
+The `datalist` element isn't an input type, but a list of suggested input values to associated with a form field. It lets the browser suggest autocomplete options as the user types. Unlike select elements where users must scan long lists to find the value they're looking for, and limiting them only to those lists, `datalist` element provides hints as the user types.
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/design-and-ux/input/forms/_code/order.html" region_tag="datalist" adjust_indentation="auto" %}
 </pre>
 
-[サンプルを見る](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/input/forms/order.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/input/forms/order.html){: target="_blank" .external }
 
-注:  <code>datalist</code> の値は候補として表示されますが、ユーザーは提示された内容以外も入力できます。
+Note: The `datalist` values are provided as suggestions, and users are not restricted to the suggestions provided.
 
-##  入力項目に適切なラベルと名前を付ける
+## Label and name inputs properly
 
-モバイルでのフォーム入力は大変な作業です。最高のフォームとは、入力内容を最小限にしたフォームです。良いフォームは意味のある入力タイプを提供します。ユーザーの入力タイプに応じて表示するキーボードを変え、シーンによってはユーザーがカレンダー上の日付を選択できるようにします。ユーザーへの通知も必要です。検証ツールを使用して、フォームを送信する前に必要なことをユーザーに伝えましょう。
-
+Good forms provide semantic input types. This enables virtual keyboard layouts to match the input type, or lets users pick a date from a calendar, rather than entering it by hand.
 
 ### TL;DR {: .hide-from-toc }
-- フォームの入力項目には必ず  <code>label</code> を使用して、フォーカスが当たってる項目が見えるようにします。
--  <code>placeholder</code> を使用して、期待する入力する内容を例示します。
-- ブラウザでフォームを自動補完するために、要素に既定の  <code>name</code> を使用し、 <code>autocomplete</code> 属性を含めます。
 
+- Always use `label`s on form inputs, and ensure they're visible when the field is in focus.
+- Use `placeholder`s to provide guidance about what you expect.
+- To help the browser auto-complete the form, use established `name`'s for elements and include the `autocomplete` attribute.
 
-###  ラベルの重要性
+### The importance of labels
 
-`label` 要素は、フォーム要素で必要な情報をユーザに伝えます。
-各 `label` は `label` 要素の内部に配置されることによって、あるいは 「`for`」属性を使用することによって、入力要素と関連付けられます。要素を形成するためにラベルを適用すると、タッチ ターゲットのサイズを改善するのに役立ちます。ユーザーがラベルまたは入力要素のいずれかをタッチすること、入力項目にフォーカスが当たります。
-
-
+The `label` element provides direction to the user, telling them what information is needed in a form element. Each `label` is associated with an input element by placing it inside the `label` element, or by using the "`for`" attribute. Applying labels to form elements also helps to improve the touch target size: the user can touch either the label or the input in order to place focus on the input element.
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/design-and-ux/input/forms/_code/order.html" region_tag="labels" adjust_indentation="auto" %}
 </pre>
 
-[サンプルを見る](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/input/forms/order.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/input/forms/order.html){: target="_blank" .external }
 
-###  ラベルのサイズと配置
+### Label sizing and placement
 
-ラベルと入力項目は、押しやすいように十分大きくなければなりません。縦向きのビューポートでは、フィールド ラベルは入力要素の上にあり、横向きのビューポートでは横に配置されます。フィールド ラベルと対応する入力ボックスが同時に表示されることを確認してください。カスタム スクロール ハンドラに注意してください。入力要素をページの先頭にスクロールしてラベルを隠したり、入力要素の下に配置されたラベルが仮想キーボードによって覆われることがあります。
+Labels and inputs should be large enough to be easy to press. In portrait viewports, field labels should be above input elements, and beside them in landscape. Ensure field labels and the corresponding input boxes are visible at the same time. Be careful with custom scroll handlers that may scroll input elements to the top of the page hiding the label, or labels placed below input elements may be covered by the virtual keyboard.
 
+### Use placeholders
 
+The placeholder attribute provides a hint to the user about what's expected in the input, typically by displaying the value as light text until the user starts typing in the element.
 
-###  プレースホルダの使用
-
-プレースホルダ属性は、期待される入力内容をユーザーに示唆します。通常、ユーザーが入力を開始するまで、明るい色のテキストで値が表示されます。
-
-
-
-<input type="text" placeholder="MM-YYYY">
-
+<input type="text" placeholder="MM-YYYY" />
 
     <input type="text" placeholder="MM-YYYY" ...>
+    
 
+Caution: Placeholders disappear as soon as the user starts typing in an element, thus they are not a replacement for labels. They should be used as an aid to help guide users on the required format and content.
 
-Warning: プレースホルダは、ユーザーが要素に入力を始めるとすぐに消えるため、ラベルの代わりにはなりません。プレースホルダは、入力すべき内容とその形式をユーザーに示すためのヒントとして使用してください。
+### Use metadata to enable auto-complete
 
-###  オートコンプリートを有効にするためにメタデータを使用
+Users appreciate when websites save them time by automatically filling common fields like names, email addresses and other frequently used fields, plus it helps to reduce potential input errors -- especially on virtual keyboards and small devices.
 
-ウェブ サイトで、名前、メールアドレス、その他の頻繁に使用されるフィールドに自動的に入力することによって、ユーザーの時間を節約します。これは潜在的な入力ミスを減らすのに役立ち、特に仮想キーボードや小さな端末で便利です。
+Browsers use many heuristics to determine which fields they can [auto-populate](https://support.google.com/chrome/answer/142893) [based on previously specified data by the user](https://support.google.com/chrome/answer/142893), and you can give hints to the browser by providing both the `name` attribute and the `autocomplete` attribute on each input element.
 
+Note: Chrome requires `input` elements to be wrapped in a `<form>` tag to enable auto-complete. If they're not wrapped in a `form` tag, Chrome will offer suggestions, but will **not** complete the form.
 
-
-
-ブラウザではヒューリスティクスを多用し、[ユーザーが以前に指定したデータに基づいて](https://support.google.com/chrome/answer/142893)[自動入力](https://support.google.com/chrome/answer/142893)が可能な項目を判断します。また、そのための情報として、各入力要素の
-`name`
-属性と `autocomplete`
-属性をブラウザに伝えることができます。
-
-
-注: Chrome では、自動入力を有効にするために、`input` 要素を `<form>` タグで囲む必要があります。
-`form` タグで囲まれていない場合、Chrome によって候補は提示されますが、フォーム入力は完了**しません**。
-
-
-たとえば、ユーザー名、電子メールアドレス、電話番号を使用してフォームをオートコンプリートするようブラウザに伝えるには、次のようにします。
-
+For example, to hint to the browser that it should auto-complete the form with the users name, email address and phone number, you should use:
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/design-and-ux/input/forms/_code/order.html" region_tag="autocomplete" adjust_indentation="auto" %}
 </pre>
 
-[サンプルを見る](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/input/forms/order.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/input/forms/order.html){: target="_blank" .external }
 
+### Recommended input `name` and `autocomplete` attribute values
 
+`autocomplete` attribute values are part of the current [WHATWG HTML Standard](https://html.spec.whatwg.org/multipage/forms.html#autofill). The most commonly used `autocomplete` attributes are shown below.
 
-###  推奨入力 `name` および `autocomplete` 属性値
-
-`autocomplete` 属性値は現在の [WHATWG HTML Standard](https://html.spec.whatwg.org/multipage/forms.html#autofill) の一部です。一般に使用される `autocomplete` 属性は以下のとおりです。
-
-`autocomplete` 属性は **`shipping `**`given-name` または **`billing `**`street-address` などのセクション名を伴うことができます。ブラウザは、異なるセクションを継続的なフォームとしてではなく、個別にオートコンプリートします。
+The `autocomplete` attributes can be accompanied with a section name, such as **`shipping`**`given-name` or **`billing`**`street-address`. The browser will auto-complete different sections separately, and not as a continuous form.
 
 <table>
   <thead>
     <tr>
-      <th data-th="Content type">コンテンツの種類</th>
-      <th data-th="name attribute"><code>name</code> 属性</th>
-      <th data-th="autocomplete attribute"><code>autocomplete</code> 属性</th>
+      <th data-th="Content type">Content type</th>
+      <th data-th="name attribute"><code>name</code> attribute</th>
+      <th data-th="autocomplete attribute"><code>autocomplete</code> attribute</th>
     </tr>
   </thead>
   <tbody>
     <tr>
-      <td data-th="Content type">名前</td>
+      <td data-th="Content type">Name</td>
       <td data-th="name attribute">
         <code>name</code>
         <code>fname</code>
@@ -342,20 +291,20 @@ Warning: プレースホルダは、ユーザーが要素に入力を始める�
       </td>
       <td data-th="autocomplete attribute">
         <ul>
-          <li><code>name</code>（姓名）</li>
-          <li><code>given-name</code>（名）</li>
-          <li><code>additional-name</code>（ミドルネーム）</li>
-          <li><code>family-name</code>（姓）</li>
+          <li><code>name</code> (full name)</li>
+          <li><code>given-name</code> (first name)</li>
+          <li><code>additional-name</code> (middle name)</li>
+          <li><code>family-name</code> (last name)</li>
         </ul>
       </td>
     </tr>
     <tr>
-      <td data-th="Content type">メールアドレス</td>
+      <td data-th="Content type">Email</td>
       <td data-th="name attribute"><code>email</code></td>
       <td data-th="autocomplete attribute"><code>email</code></td>
     </tr>
     <tr>
-      <td data-th="Content type">住所</td>
+      <td data-th="Content type">Address</td>
       <td data-th="name attribute">
         <code>address</code>
         <code>city</code>
@@ -369,26 +318,26 @@ Warning: プレースホルダは、ユーザーが要素に入力を始める�
       </td>
       <td data-th="autocomplete attribute">
         <ul>
-          <li>アドレスを 1 つ入力:
-<ul>
+          <li>For one address input:
+            <ul>
               <li><code>street-address</code></li>
             </ul>
           </li>
-          <li>アドレスを 2 つ入力:
-<ul>
+          <li>For two address inputs:
+            <ul>
               <li><code>address-line1</code></li>
               <li><code>address-line2</code></li>
             </ul>
           </li>
-          <li><code>address-level1</code>（州または県）</li>
-          <li><code>address-level2</code>（市）</li>
-          <li><code>postal-code</code>（郵便番号）</li>
+          <li><code>address-level1</code> (state or province)</li>
+          <li><code>address-level2</code> (city)</li>
+          <li><code>postal-code</code> (zip code)</li>
           <li><code>country</code></li>
         </ul>
       </td>
     </tr>
     <tr>
-      <td data-th="Content type">電話番号</td>
+      <td data-th="Content type">Phone</td>
       <td data-th="name attribute">
         <code>phone</code>
         <code>mobile</code>
@@ -401,7 +350,7 @@ Warning: プレースホルダは、ユーザーが要素に入力を始める�
       <td data-th="autocomplete attribute"><code>tel</code></td>
     </tr>
     <tr>
-      <td data-th="Content type">クレジットカード</td>
+      <td data-th="Content type">Credit Card</td>
       <td data-th="name attribute">
         <code>ccname</code>
         <code>cardnumber</code>
@@ -424,7 +373,7 @@ Warning: プレースホルダは、ユーザーが要素に入力を始める�
       </td>
     </tr>
     <tr>
-      <td data-th="Content type">ユーザー名</td>
+      <td data-th="Content type">Usernames</td>
       <td data-th="name attribute">
         <code>username</code>
       </td>
@@ -435,281 +384,276 @@ Warning: プレースホルダは、ユーザーが要素に入力を始める�
       </td>
     </tr>
     <tr>
-      <td data-th="Content type">パスワード</td>
+      <td data-th="Content type">Passwords</td>
       <td data-th="name attribute">
         <code>password</code>
       </td>
       <td data-th="autocomplete attribute">
         <ul>
-          <li><code>current-password</code>（サインイン フォーム）</li>
-          <li><code>new-password</code>（サインアップおよびパスワード変更フォーム）</li>
+          <li><code>current-password</code> (for sign-in forms)</li>
+          <li><code>new-password</code> (for sign-up and password-change forms)</li>
         </ul>
       </td>
     </tr>
   </tbody>
 </table>
 
+Note: Use either only `street-address` or both `address-line1` and `address-line2`. `address-level1` and `address-level2` are only necessary if they're required for your address format.
 
-注:  <code>street-address</code> のみ、または  <code>address-line1</code> と  <code>address-line2</code> の両方を使用します。 <code>address-level1</code> と  <code>address-level2</code> は、住所形式に必要な場合にのみ使用します。
+### The `autofocus` attribute
 
+On some forms, for example the Google home page where the only thing you want the user to do is fill out a particular field, you can add the `autofocus` attribute. When set, desktop browsers immediately move the focus to the input field, making it easy for users to quickly begin using the form. Mobile browsers ignore the `autofocus` attribute, to prevent the keyboard from randomly appearing.
 
-###  `autofocus` 属性
-
-Google のホームページなどのフォームで、ユーザーが特定のフィールドだけを入力する場合などは、`autofocus` 属性を追加できます。設定した場合、デスクトップ ブラウザはすぐに入力フォールドにフォーカスを移動し、ユーザーが簡単にすばやくフォームの使用を開始できるようにします。モバイル ブラウザは `autofocus` 属性を無視し、キーボードがランダムに表示されるのを防止します。
-
-
-
-オートフォーカス属性を使用する際には注意してください。キーボード フォーカスを妨げ、ナビゲーションにバックスペース文字が使用されるのを潜在的に防止するためです。
-
-
-
+Be careful using the autofocus attribute because it will steal keyboard focus and potentially preventing the backspace character from being used for navigation.
 
     <input type="text" autofocus ...>
+    
 
+## Avoid common patterns that break Chrome Autofill
 
+Chrome Autofill makes filling out forms easier by automatically entering information they've saved to their Google account, Chrome browser, or mobile device. As a developer, you want to ensure that Autofill works well on your website so you can create a better experience for your users. This is especially important for checkout forms; users who successfully use Chrome Autofill to enter their information go through checkout an average of 30% faster than those who don't.
 
-##  リアルタイム検証のサポート
+If you haven't already, make sure you have read the previous sections on [developing good forms](#design_efficient_forms) and using [autocomplete attributes](#use_metadata_to_enable_auto-complete) (part of the WHATWG HTML standard) on your site. This section covers some of the common mistakes developers make when building forms. Avoiding these pitfalls helps ensure that your users can effectively use Autofill, and could help increase conversions.
 
-リアルタイム データ検証は、データを明確に保つだけではなく、ユーザー エクスペリエンスを改善するのにも役立ちます。最近のブラウザにはリアルタイム データ検証の実施に役立つ複数のツールが組み込まれており、ユーザーが無効なフォームを送信するのを回避することができます。フォームが正しく記入されたかどうかを示すには、視覚的な指示を使用する必要があります。
+### Field validation pitfalls
 
+Some developers use client-side validation, which triggers input change or key events. For example, a site might truncate fields with JavaScript instead of using the fields' "maxlength" attribute. Because Autofill does not recognize client-side validation, this truncation may cause the data to become invalid.
+
+This often happens with phone fields when the maximum length is enforced using Javascript. Without the use of autocomplete attributes, Autofill may infer that it needs to fill a full phone number including the country code (e.g., in the US, eleven digits, such as "15552125555"). If the website truncates the value to ten digits using Javascript, the field value incorrectly becomes "1555212555". The correct way to support Autofill is to include `autocomplete="tel-national"` on the field, as pointed out in the [WHATWG HTML standard](https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#autofilling-form-controls:-the-autocomplete-attribute).
+
+While client-side validation may provide some benefits to users typing in their data, it usually ends up removing values that are pasted or autofilled.
+
+### Use standard input fields
+
+Don't create your own form controls, especially custom dropdowns that replace `<select>` elements. This works poorly with accessibility frameworks as well as with Chrome Autofill. Instead, use standard dropdowns and other elements that can be easily modified through modern CSS.
+
+### Don't use fake placeholders in input fields
+
+Some websites use "fake placeholders" in input fields instead of using the placeholder attribute. This is done by setting the placeholder text as the value of the field (e.g., `value="First Name"`) and using JavaScript to remove the value when the field gains focus. Autofill interprets such values as user-entered and doesn't replace the placeholder text with actual values, resulting in a poor Autofill experience. Instead, use floating field labels or `placeholder="First Name"` to guide users.
+
+### Don't copy the shipping address into the billing address section
+
+Another common pitfall is when a user wants to use a billing address that differs from the shipping address. Often, the site automatically copies the shipping address values into the billing address section. This potentially creates additional work for the user, because Autofill has to be conservative about replacing the contents of pre-populated fields and is thus unable to assist in clearing the form and filling in the desired address.
+
+### Ensure that autocomplete attributes are correct
+
+[Autocomplete attributes](#use_metadata_to_enable_auto-complete) as defined in the WHATWG HTML standard help your website tell Chrome Autofill explicitly what the fields are supposed to be, removing guesswork. However, these attributes are often misspelled or otherwise incorrect. When this happens, Autofill won't recognize the attribute and the unknown field type will not be autofilled.
+
+For example, the correct attribute for the Credit Card CVC is "cc-csc". Many sites mistakenly use "cc-cvc", and because Autofill does not recognize this attribute, this field won't get autofilled.
+
+The best practice for these attributes is to use this format: `autocomplete="<section> <fieldtype>"`, for example: `autocomplete="shipping address-line1"`. For a complete list of all the accepted values, please see the [WHATWG HTML Living Standard](https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#autofill).
+
+## Provide real-time validation
+
+Keep your user informed. Validation tools should tell the user what they need to do before submitting the form.
+
+Real-time data validation doesn't just help to keep your data clean, but it also helps improve the user experience. Modern browsers have several built-in tools to help provide real-time data validation and may prevent the user from submitting an invalid form. Visual cues should be used to indicate whether a form has been completed properly.
 
 ### TL;DR {: .hide-from-toc }
--  <code>pattern</code>、 <code>required</code>、 <code>min</code>、 <code>max</code> などのブラウザに組み込まれた検証属性を活用します。
-- より複雑な検証要件には、JavaScript と Constraints Validation API を使用します。
-- リアルタイムで検証エラーを表示し、ユーザーが無効なフォームを送信しようとした際は、修正が必要な項目をすべて表示します。
 
+- Leverage the browser's built-in validation attributes like `pattern`, `required`, `min`, `max`, etc.
+- Use JavaScript and the Constraints Validation API for more complex validation requirements.
+- Show validation errors in real time, and if the user tries to submit an invalid form, show all fields they need to fix.
 
-###  入力内容の検証に使用する属性
+### Use these attributes to validate input
 
-####  `pattern` 属性
+#### The `pattern` attribute
 
-`pattern` 属性で、入力項目の検証に使用する[正規表現](https://en.wikipedia.org/wiki/Regular_expression)を指定します。
-たとえば、米国の郵便番号（5 桁の数字。そのあとにダッシュと 4 桁の数字が続く場合もある）を検証するには、`pattern`
-を次のように指定します。
-
-
+The `pattern` attribute specifies a [regular expression](https://en.wikipedia.org/wiki/Regular_expression) used to validate an input field. For example, to validate a US Zip code (5 digits, sometimes followed by a dash and an additional 4 digits), we would set the `pattern` like this:
 
     <input type="text" pattern="^\d{5,6}(?:[-\s]\d{4})?$" ...>
+    
 
-
-#####  一般的な正規表現パターン
+##### Common regular expression patterns
 
 <table class="responsive">
   <thead>
     <tr>
-      <th colspan="2">正規表現</th>
+      <th colspan="2">Regular expression</th>
     </tr>
   </thead>
   <tbody>
     <tr>
-      <td data-th="Description">住所</td>
+      <td data-th="Description">Postal address</td>
       <td data-th="Regular expression"><code>[a-zA-Z\d\s\-\,\#\.\+]+</code></td>
     </tr>
     <tr>
-      <td data-th="Description">郵便番号（US）</td>
+      <td data-th="Description">Zip Code (US)</td>
       <td data-th="Regular expression"><code>^\d{5,6}(?:[-\s]\d{4})?$</code></td>
     </tr>
     <tr>
-      <td data-th="Description">IP アドレス（IPv4）</td>
+      <td data-th="Description">IP Address (IPv4)</td>
       <td data-th="Regular expression"><code>^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$</code></td>
     </tr>
     <tr>
-      <td data-th="Description">IP アドレス（IPv6）</td>
+      <td data-th="Description">IP Address (IPv6)</td>
       <td data-th="Regular expression"><code>^(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]).){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]).){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))$</code></td>
     </tr>
     <tr>
-      <td data-th="Description">IP アドレス（両方）</td>
+      <td data-th="Description">IP Address (both)</td>
       <td data-th="Regular expression"><code>^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)|(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]).){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]).){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))$</code></td>
     </tr>
     <tr>
-      <td data-th="Description">クレジット カード番号</td>
+      <td data-th="Description">Credit Card Number</td>
       <td data-th="Regular expression"><code>^(?:4[0-9]{12}(?:[0-9]{3})?|5[1-5][0-9]{14}|3[47][0-9]{13}|3(?:0[0-5]|[68][0-9])[0-9]{11}|6(?:011|5[0-9]{2})[0-9]{12}|(?:2131|1800|35\d{3})\d{11})$</code></td>
     </tr>
     <tr>
-      <td data-th="Description">社会保障番号</td>
+      <td data-th="Description">Social Security Number</td>
       <td data-th="Regular expression"><code>^\d{3}-\d{2}-\d{4}$</code></td>
     </tr>
     <tr>
-      <td data-th="Description">北米電話番号</td>
+      <td data-th="Description">North American Phone Number</td>
       <td data-th="Regular expression"><code>^(?:(?:\+?1\s*(?:[.-]\s*)?)?(?:\(\s*([2-9]1[02-9]|[2-9][02-8]1|[2-9][02-8][02-9])\s*\)|([2-9]1[02-9]|[2-9][02-8]1|[2-9][02-8][02-9]))\s*(?:[.-]\s*)?)?([2-9]1[02-9]|[2-9][02-9]1|[2-9][02-9]{2})\s*(?:[.-]\s*)?([0-9]{4})(?:\s*(?:#|x\.?|ext\.?|extension)\s*(\d+))?$</code></td>
     </tr>
   </tbody>
 </table>
 
-####  `required` 属性
+#### The `required` attribute
 
-`required` 属性が存在する場合は、フォームを送信する前に、フィールドに値が含まれている必要があります。
-たとえば、郵便番号を必須にするには、単純に required 属性を追加します。
-
-
+If the `required` attribute is present, then the field must contain a value before the form can be submitted. For example, to make the zip code required, we'd simply add the required attribute:
 
     <input type="text" required pattern="^\d{5,6}(?:[-\s]\d{4})?$" ...>
+    
 
+#### The `min`, `max` and `step` attributes
 
-####  `min`、`max` および `step` 属性
-
-数値や範囲のような数値入力タイプ、および日付や時刻の入力については、最小値と最大値を指定できるほか、スライダまたはスピンボールで調整されるときの増減刻み値を設定することができます。たとえば、靴のサイズの入力については、最小サイズを 1、最大サイズを 13、刻み値を 0.5 に設定します。
-
-
-
+For numeric input types like number or range as well as date/time inputs, you can specify the minimum and maximum values, as well as how much they should each increment/decrement when adjusted by the slider or spinners. For example, a shoe size input would set a minimum size of 1 and a maximum size 13, with a step of 0.5
 
     <input type="number" min="1" max="13" step="0.5" ...>
+    
 
+#### The `maxlength` attribute
 
-####  `maxlength` 属性
-
-`maxlength` 属性を使用すると、入力またはテキストボックスの最大長を指定できます。この属性は、ユーザが入力できる情報の長さを制限する場合に便利です。たとえば、ファイル名の長さを 12 文字に制限する場合は、次のようにします。
-
-
+The `maxlength` attribute can be used to specify the maximum length of an input or textbox and is useful when you want to limit the length of information that the user can provide. For example, if you want to limit a filename to 12 characters, you can use the following.
 
     <input type="text" id="83filename" maxlength="12" ...>
+    
 
+#### The `minlength` attribute
 
-####  `minlength` 属性
-
-`minlength` 属性を使用すると、入力またはテキストボックスの最小長を指定できます。この属性は、ユーザが入力する必要のある最小長を指定する場合に便利です。たとえば、ファイル名の最小長を 8 文字と指定する場合は、次のようにします。
-
-
+The `minlength` attribute can be used to specify the minimum length of an input or textbox and is useful when you want to specify a minimum length the user must provide. For example, if you want to specify that a file name requires at least 8 characters, you can use the following.
 
     <input type="text" id="83filename" minlength="8" ...>
+    
 
+#### The `novalidate` attribute
 
-####  `novalidate` 属性
-
-フォームに無効な入力が含まれている場合でも、フォームの送信をユーザに許可したい場合があります。
-その場合は、フォーム要素、または個々の入力フィールドに `novalidate` 属性を追加します。
-その場合、すべての疑似クラスと JavaScript API では、依然としてフォームが正しいかどうかをチェックできます。
-
-
+In some cases, you may want to allow the user to submit the form even if it contains invalid input. To do this, add the `novalidate` attribute to the form element, or individual input fields. In this case, all pseudo classes and JavaScript APIs will still allow you to check if the form validates.
 
     <form role="form" novalidate>
-      <label for="inpEmail">メールアドレス</label>
+      <label for="inpEmail">Email address</label>
       <input type="email" ...>
     </form>
+    
 
+Success: Even with client-side input validation, it is always important to validate data on the server to ensure consistency and security in your data.
 
+### Use JavaScript for more complex real-time validation
 
-ポイント: データの一貫性とセキュリティを確保するために、クライアント側の入力検証においても、必ずサーバ側でデータを検証を行うことが重要です。
-
-###  JavaScript を使用した複雑なリアルタイム検証
-
-組み込みの検証機能と正規表現で十分でない場合は、[Constraint Validation API](https://w3c.github.io/html/sec-forms.html#constraints) を使用できます。これは独自の検証を制御するための強力なツールです。この API を使用すると、独自のエラーの設定や、要素が有効かどうかのチェックなどの処理を実行でき、要素が無効である理由を判定できます。
-
-
+When the built-in validation plus regular expressions aren't enough, you can use the [Constraint Validation API](https://w3c.github.io/html/sec-forms.html#constraints), a powerful tool for handling custom validation. The API allows you to do things like set a custom error, check whether an element is valid, and determine the reason that an element is invalid:
 
 <table class="responsive">
   <thead>
     <tr>
-      <th colspan="2">制約の検証</th>
+      <th colspan="2">Constraint Validation</th>
     </tr>
   </thead>
   <tbody>
     <tr>
       <td data-th="API"><code>setCustomValidity()</code></td>
-      <td data-th="Description">カスタム検証メッセージ、および  <code>ValidityState</code> オブジェクトの  <code>customError</code> プロパティを  <code>true</code> に設定します。</td>
+      <td data-th="Description">Sets a custom validation message and the <code>customError</code> property of the <code>ValidityState</code> object to <code>true</code>.</td>
     </tr>
     <tr>
       <td data-th="API"><code>validationMessage</code></td>
-      <td data-th="Description">入力内容が検証テストに通らなかった理由を示す文字列を返します。</td>
+      <td data-th="Description">Returns a string with the reason the input failed the validation test.</td>
     </tr>
     <tr>
       <td data-th="API"><code>checkValidity()</code></td>
-      <td data-th="Description">要素がすべての制約を満たす場合は  <code>true</code> を返し、それ以外の場合は  <code>false</code> を返します。チェックで  <code>false</code> が返されたときにページがどのように応答するかを決めるのは、デベロッパーの作業です。</td>
+      <td data-th="Description">Returns <code>true</code> if the element satisfies all of its constraints, and <code>false</code> otherwise. Deciding how the page responds when the check returns <code>false</code> is left up to the developer.</td>
     </tr>
     <tr>
       <td data-th="API"><code>reportValidity()</code></td>
-      <td data-th="Description">要素がすべての制約を満たす場合は  <code>true</code> を返し、それ以外の場合は  <code>false</code> を返します。ページから  <code>false</code> が返される場合は、制約上の問題点がユーザーに報告されます。</td>
+      <td data-th="Description">Returns <code>true</code> if the element satisfies all of its constraints, and <code>false</code> otherwise. When the page responds <code>false</code>, constraint problems are reported to the user.</td>
     </tr>
     <tr>
       <td data-th="API"><code>validity</code></td>
-      <td data-th="Description">要素の有効性を表す  <code>ValidityState</code> オブジェクトを返します。</td>
+      <td data-th="Description">Returns a <code>ValidityState</code> object representing the validity states of the element.</td>
     </tr>
   </tbody>
 </table>
 
+### Set custom validation messages
 
-
-###  カスタム検証メッセージの設定
-
-フィールドの検証でエラーが出た場合は、`setCustomValidity()` を使用してフィールドを無効とマークし、フィールドがエラーになった理由を説明します。
-たとえば、サインアップ フォームでは、ユーザーに電子メールアドレスを 2 回入力させることで、そのアドレスが正しいことを確認させます。
-2 回目の入力時に blur イベントを使用して 2 つの入力内容を検証し、適切な応答メッセージを設定します。次に例を示します。
+If a field fails validation, use `setCustomValidity()` to mark the field invalid and explain why the field didn't validate. For example, a sign up form might ask the user to confirm their email address by entering it twice. Use the blur event on the second input to validate the two inputs and set the appropriate response. For example:
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/design-and-ux/input/forms/_code/order.html" region_tag="customvalidation" adjust_indentation="auto" %}
 </pre>
 
-[サンプルを見る](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/input/forms/order.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/input/forms/order.html){: target="_blank" .external }
 
-###  無効なフォームの送信禁止
+### Prevent form submission on invalid forms
 
-フォームに無効なデータが入力されている場合に、すべてのブラウザがユーザによるフォームの送信を禁止するわけではないため、送信イベントを捕捉し、フォーム要素で `checkValidity()` を使用して、フォームが有効かどうかを判定する必要があります。
-
-次に例を示します。
+Because not all browsers will prevent the user from submitting the form if there is invalid data, you should catch the submit event, and use the `checkValidity()` on the form element to determine if the form is valid. For example:
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/design-and-ux/input/forms/_code/order.html" region_tag="preventsubmission" adjust_indentation="auto" %}
 </pre>
 
-[サンプルを見る](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/input/forms/order.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/input/forms/order.html){: target="_blank" .external }
 
-###  フィードバックのリアルタイム表示
+### Show feedback in real-time
 
-ユーザがフォームを送信する前に、フォームが正しく入力されたかどうかを示す視覚的指示を各フィールドで提示すると便利です。HTML5 には複数の新しい疑似クラスも用意されています。これらのクラスを使用すると、入力値または属性に基づいて入力をスタイル化できます。
-
-
-
+It's helpful to provide a visual indication on each field that indicates whether the user has completed the form properly before they've submitted the form. HTML5 also introduces a number of new pseudo-classes that can be used to style inputs based on their value or attributes.
 
 <table class="responsive">
   <thead>
     <tr>
-      <th colspan="2">リアルタイムのフィードバック</th>
+      <th colspan="2">Real-time Feedback</th>
     </tr>
   </thead>
   <tbody>
     <tr>
       <td data-th="Pseudo-class"><code>:valid</code></td>
-      <td data-th="Use">入力値がすべての検証要件を満たすときに、入力要素に使用するスタイルを明示的に設定します。</td>
+      <td data-th="Use">Explicitly sets the style for an input to be used when the value meets all of the validation requirements.</td>
     </tr>
     <tr>
       <td data-th="Pseudo-class"><code>:invalid</code></td>
-      <td data-th="Use">入力値がすべての検証要件を満たさないときに、入力要素に使用するスタイルを明示的に設定します。</td>
+      <td data-th="Use">Explicitly sets the style for an input to be used when the value does not meet all of the validation requirements.</td>
     </tr>
     <tr>
       <td data-th="Pseudo-class"><code>:required</code></td>
-      <td data-th="Use">required 属性が設定された入力要素のスタイルを明示的に設定します。</td>
+      <td data-th="Use">Explicitly sets the style for an input element that has the required attribute set.</td>
     </tr>
     <tr>
       <td data-th="Pseudo-class"><code>:optional</code></td>
-      <td data-th="Use">required 属性が設定されていない入力要素のスタイルを明示的に設定します。</td>
+      <td data-th="Use">Explicitly sets the style for an input element that does not have the required attribute set.</td>
     </tr>
     <tr>
       <td data-th="Pseudo-class"><code>:in-range</code></td>
-      <td data-th="Use">値が範囲内にある数値入力要素のスタイルを明示的に設定します。</td>
+      <td data-th="Use">Explicitly sets the style for a number input element where the value is in range.</td>
     </tr>
     <tr>
       <td data-th="Pseudo-class"><code>:out-of-range</code></td>
-      <td data-th="Use">値が範囲外にある数値入力要素のスタイルを明示的に設定します。</td>
+      <td data-th="Use">Explicitly sets the style for a number input element where the value is out of range.</td>
     </tr>
   </tbody>
 </table>
 
-検証は即座に実行されます。つまり、ページがロードされた直後で、ユーザーがまだフィールドに入力する機会がなくても、フィールドが無効とマークされる可能性があります。また、ユーザーが入力している最中に、無効なスタイルだと表示されることがあります。これを避けるために、CSS と JavaScript を組み合わせて、ユーザーがフィールドを操作したときのみ、無効なスタイルであることを表示することができます。
-
+Validation happens immediately which means that when the page is loaded, fields may be marked as invalid, even though the user hasn't had a chance to fill them in yet. It also means that as the user types, and it's possible they'll see the invalid style while typing. To prevent this, you can combine the CSS with JavaScript to only show invalid styling when the user has visited the field.
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/design-and-ux/input/forms/_code/order.html" region_tag="invalidstyle" adjust_indentation="auto" %}
 </pre>
+
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/design-and-ux/input/forms/_code/order.html" region_tag="initinputs" adjust_indentation="auto" %}
 </pre>
 
-[サンプルを見る](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/input/forms/order.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/input/forms/order.html){: target="_blank" .external }
 
+Success: You should show the user all of the issues on the form at once, rather than showing them one at a time.
 
-ポイント: 問題点は 1 つずつ表示せずに、フォーム上のすべての問題をまとめてユーザーに表示してください。
+## Feedback {: #feedback }
 
-
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
