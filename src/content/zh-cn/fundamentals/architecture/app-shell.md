@@ -1,126 +1,73 @@
-project_path: /web/_project.yaml 
-book_path: /web/fundamentals/_book.yaml
-description:App Shell 架构可保证 UI 的本地化和动态加载内容，同时不影响 Web 的可链接性和可检测性。 
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Application shell architecture keeps your UI local and loads content dynamically without sacrificing the linkability and discoverability of the web.
 
-{# wf_updated_on: 2016-09-26 #} 
-{# wf_published_on: 2016-09-27 #}
+{# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2016-09-27 #} {# wf_blink_components: N/A #}
 
-# App Shell 模型 {: .page-title }
+# The App Shell Model {: .page-title }
 
 {% include "web/_shared/contributors/addyosmani.html" %}
 
-**App Shell** 架构是构建 Progressive Web App 的一种方式，这种应用能可靠且即时地加载到您的用户屏幕上，与本机应用相似。
+An **application shell** (or app shell) architecture is one way to build a Progressive Web App that reliably and instantly loads on your users' screens, similar to what you see in native applications.
 
+The app "shell" is the minimal HTML, CSS and JavaScript required to power the user interface and when cached offline can ensure **instant, reliably good performance** to users on repeat visits. This means the application shell is not loaded from the network every time the user visits. Only the necessary content is needed from the network.
 
+For [single-page applications](https://en.wikipedia.org/wiki/Single-page_application) with JavaScript-heavy architectures, an application shell is a go-to approach. This approach relies on aggressively caching the shell (using a [service worker](/web/fundamentals/primers/service-worker/)) to get the application running. Next, the dynamic content loads for each page using JavaScript. An app shell is useful for getting some initial HTML to the screen fast without a network.
 
-App“shell”是支持用户界面所需的最小的 HTML、CSS 和 JavaScript，如果离线缓存，可确保在用户重复访问时提供**即时、可靠的良好性能**。这意味着并不是每次用户访问时都要从网络加载 App Shell。
-只需要从网络中加载必要的内容。
+![Application Shell architecture](images/appshell.png)
 
+Put another way, the app shell is similar to the bundle of code that you’d publish to an app store when building a native app. It is the skeleton of your UI and the core components necessary to get your app off the ground, but likely does not contain the data.
 
-对于使用包含大量 JavaScript 的架构的[单页应用](https://en.wikipedia.org/wiki/Single-page_application)来说，App Shell 是一种常用方法。这种方法依赖渐进式缓存 Shell（使用[服务工作线程](/web/fundamentals/primers/service-worker/)）让应用运行。接下来，为使用 JavaScript 的每个页面加载动态内容。App Shell 非常适合用于在没有网络的情况下将一些初始 HTML 快速加载到屏幕上。
+Note: Try the [First Progressive Web App](https://codelabs.developers.google.com/codelabs/your-first-pwapp/#0) codelab to learn how to architectect and implement your first application shell for a weather app. The [Instant Loading with the App Shell model](https://www.youtube.com/watch?v=QhUzmR8eZAo) video also walks through this pattern.
 
+### When to use the app shell model
 
+Building a PWA does not mean starting from scratch. If you are building a modern single-page app, then you are probably using something similar to an app shell already whether you call it that or not. The details might vary a bit depending upon which libraries or frameworks you are using, but the concept itself is framework agnostic.
 
-<img src="images/appshell.png" alt="App Shell 架构" />
+An application shell architecture makes the most sense for apps and sites with relatively unchanging navigation but changing content. A number of modern JavaScript frameworks and libraries already encourage splitting your application logic from its content, making this architecture more straightforward to apply. For a certain class of websites that only have static content you can still follow the same model but the site is 100% app shell.
 
-换个说法，App Shell 就类似于您在开发本机应用时需要向应用商店发布的一组代码。
-它是 UI 的主干以及让您的应用成功起步所需的核心组件，但可能并不包含数据。
+To see how Google built an app shell architecture, take a look at [Building the Google I/O 2016 Progressive Web App](/web/showcase/2016/iowa2016). This real-world app started with a SPA to create a PWA that precaches content using a service worker, dynamically loads new pages, gracefully transitions between views, and reuses content after the first load.
 
+### Benefits {: #app-shell-benefits }
 
+The benefits of an app shell architecture with a service worker include:
 
-Note: 请尝试[第一个 Progressive Web App](https://codelabs.developers.google.com/codelabs/your-first-pwapp/#0) 代码实验室，了解如何为天气应用构建和实现第一个 App Shell。[使用 App Shell 模型即时加载](https://www.youtube.com/watch?v=QhUzmR8eZAo)视频也演练了这种模式。
+* **Reliable performance that is consistently fast**. Repeat visits are extremely quick. Static assets and the UI (e.g. HTML, JavaScript, images and CSS) are cached on the first visit so that they load instantly on repeat visits. Content *may* be cached on the first visit, but is typically loaded when it is needed.
 
+* **Native-like interactions**. By adopting the app shell model, you can create experiences with instant, native-application-like navigation and interactions, complete with offline support.
 
+* **Economical use of data**. Design for minimal data usage and be judicious in what you cache because listing files that are non-essential (large images that are not shown on every page, for instance) result in browsers downloading more data than is strictly necessary. Even though data is relatively cheap in western countries, this is not the case in emerging markets where connectivity is expensive and data is costly.
 
-### 何时使用 App Shell 模型
+## Requirements {: #app-shell-requirements }
 
-构建 PWA 并不意味着从头开始。如果您构建的是现代单页应用，那么您很可能使用的就是类似于 App Shell 的模型，不管您是否这么称呼它。根据您使用的内容库或框架的不同，详细内容可能略有不同，但该概念本身与框架无关。
+The app shell should ideally:
 
+* Load fast
+* Use as little data as possible
+* Use static assets from a local cache
+* Separate content from navigation
+* Retrieve and display page-specific content (HTML, JSON, etc.)
+* Optionally, cache dynamic content
 
+The app shell keeps your UI local and pulls in content dynamically through an API but does not sacrifice the linkability and discoverability of the web. The next time the user accesses your app, the latest version displays automatically. There is no need to download new versions before using it.
 
-App Shell 架构具有相对不变的导航以及一直变化的内容，对应于和网站意义重大。
-大量现代 JavaScript 框架和内容库已经鼓励拆分应用逻辑及其内容，从而使这种架构更能直接应用。对于只有静态内容的某一类网站，您也可以使用相同的模型，但网站 100% 是 App Shell。
+Note: The [Lighthouse](https://github.com/googlechrome/lighthouse) auditing extension can be used to verify if your PWA using an app shell hits a high-bar for performance. [To the Lighthouse](https://www.youtube.com/watch?v=LZjQ25NRV-E) is a talk that walks through optimizing a PWA using this tool.
 
+## Building your app shell {: #building-your-app-shell }
 
+Structure your app for a clear distinction between the page shell and the dynamic content. In general, your app should load the simplest shell possible but include enough meaningful page content with the initial download. Determine the right balance between speed and data freshness for each of your data sources.<figure> 
 
+![Offline Wikipedia app using an application shell with content caching](images/wikipedia.jpg) <figcaption>Jake Archibald’s [offline Wikipedia application](https://wiki-offline.jakearchibald.com/wiki/Rick_and_Morty) is a good example of a PWA that uses an app shell model. It loads instantly on repeat visits, but dynamically fetches content using JS. This content is then cached offline for future visits. </figcaption> </figure> 
 
+### Example HTML for an app shell {: #example-html-for-appshell }
 
-如需了解 Google 构建 App Shell 架构的方式，请查看[构建 Google I/O 2016 Progressive Web App](/web/showcase/2016/iowa2016)。这个真实的应用以 SPA 开始创建 PWA，使用服务工作线程预先缓存内容、动态加载新页面、在视图之间完美过渡，并且在第一次加载后重用内容。
+This example separates the core application infrastructure and UI from the data. It is important to keep the initial load as simple as possible to display just the page’s layout as soon as the web app is opened. Some of it comes from your application’s index file (inline DOM, styles) and the rest is loaded from external scripts and stylesheets.
 
+All of the UI and infrastructure is cached locally using a service worker so that on subsequent loads, only new or changed data is retrieved, instead of having to load everything.
 
+Your `index.html` file in your work directory should look something like the following code. This is a subset of the actual contents and is not a complete index file. Let's look at what it contains.
 
-
-
-
-### 优势 {: #app-shell-benefits }
-
-使用服务工作线程的 App Shell 架构的优势包括：
-
-* **始终快速的可靠性能**。重复访问速度极快。
-第一次访问时即可缓存静态资产和 UI（例如 HTML、JavaScript、图像和 CSS），以便在重复访问时即时加载。内容可能会在第一次访问时缓存到系统中，但一般会在需要时才进行加载。
-
-
-* **如同本机一样的交互**。通过采用 App Shell 模型，您可以构建如同本机应用一样的即时导航和交互，包括离线支持。
-
-
-
-* **数据的经济使用**。其设计旨在实现最少的数据使用量，并且可以正确判断缓存的内容，因为列出不需要的文件（例如，并不是每个页面都显示的大型图像）会导致浏览器下载的数据超出所必需的量。尽管在西方国家和地区中，数据相对较廉价，但新兴市场并非如此，这些市场中连接和数据费用都非常昂贵。
-
-
-
-## 要求{: #app-shell-requirements }
-
-App Shell 应能完美地执行以下操作：
-
-* 快速加载
-* 尽可能使用较少的数据
-* 使用本机缓存中的静态资产
-* 将内容与导航分离开来
-* 检索和显示特定页面的内容（HTML、JSON 等）
-* 可选：缓存动态内容
-
-App Shell 可保证 UI 的本地化以及从 API 动态加载内容，但同时不影响网络的可链接性和可检测性。
-用户下次访问您的应用时，应用会自动显示最新版本。无需在使用前下载新版本。
-
-
-
-Note: [Lighthouse](https://github.com/googlechrome/lighthouse) 审核扩展可用于验证使用 App Shell 的 PWA 是否获得了高性能。[To the Lighthouse](https://www.youtube.com/watch?v=LZjQ25NRV-E) 介绍了使用这个工具优化 PWA 的过程。
-
-
-
-
-## 构建您自己的 App Shell {: #building-your-app-shell }
-
-构建您自己的应用，明确区分页面 Shell 和动态内容。
-一般而言，您的应用应加载尽可能最简单的 Shell，但初始下载时应包含足够的有意义的页面内容。
-确定每个数据来源的速度与数据新鲜度之间的正确平衡点。
-
-
-
-<figure>
-  <img src="images/wikipedia.jpg"
-    alt="App Shell 与内容缓存搭配使用的离线维基百科应用">
-  <figcaption>Jake Archibald 的<a href="https://wiki-offline.jakearchibald.com/wiki/Rick_and_Morty">离线维基百科应用</a>就是使用 App Shell 模型的 PWA 好例子。它会在重复访问时即时加载，但同时使用 JS 动态抓取内容。系统随后会离线缓存此内容，以备以后访问。
-</figcaption>
-</figure>
-
-### App Shell 的 HTML 示例 {: #example-html-for-appshell }
-
-此示例将核心应用基础架构和 UI 从数据中分离出来。请务必使初始加载尽可能简单，在打开网络应用后仅显示页面的布局。有些数据来自于应用的索引文件（内联 DOM、样式），其他数据加载自外部脚本和样式表。
-
-
-
-所有 UI 和基础架构都使用服务工作线程本地缓存，因此，随后的加载将仅检索新数据或发生更改的数据，而不是必须加载所有数据。
-
-
-
-您工作目录中的 `index.html` 文件内容应类似于以下代码。
-这是实际内容的子集，不是完整的索引文件。
-让我们看看它包含的内容。
-
-* 用户界面“主干”的 HTML 和 CSS，包含导航和内容占位符。
-* 用于处理导航和 UI 逻辑的外部 JavaScript 文件 (app.js)，以及用于显示从服务器中检索的帖子并使用 IndexedDB 等存储机制将其存储在本地的代码。
-* 网络应用清单和用于启用离线功能的服务工作线程加载程序。
+* HTML and CSS for the "skeleton" of your user interface complete with navigation and content placeholders.
+* An external JavaScript file (app.js) for handling navigation and UI logic as well as the code to display posts retrieved from the server and store them locally using a storage mechanism like IndexedDB.
+* A web app manifest and service worker loader to enable off-line capabilities.
 
 <div class="clearfix"></div>
 
@@ -132,31 +79,30 @@ Note: [Lighthouse](https://github.com/googlechrome/lighthouse) 审核扩展可�
       <link rel="manifest" href="/manifest.json">
       <meta http-equiv="X-UA-Compatible" content="IE=edge">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>App Shell</title>
       <link rel="stylesheet" type="text/css" href="styles/inline.css">
     </head>
-
+    
     <body>
       <header class="header">
         <h1 class="header__title">App Shell</h1>
       </header>
-      
+    
       <nav class="nav">
       ...
       </nav>
-      
+    
       <main class="main">
       ...
       </main>
-
+    
       <div class="dialog-container">
       ...
       </div>
-
+    
       <div class="loader">
         <!-- Show a spinner or placeholders for content -->
       </div>
-
+    
       <script src="app.js" async></script>
       <script>
       if ('serviceWorker' in navigator) {
@@ -171,45 +117,35 @@ Note: [Lighthouse](https://github.com/googlechrome/lighthouse) 审核扩展可�
       </script>
     </body>
     </html>
+    
 
 <div class="clearfix"></div>
 
+Note: See <https://app-shell.appspot.com/> for a real-life look at a very simple PWA using an application shell and server-side rendering for content. An app shell can be implemented using any library or framework as covered in our [Progressive Web Apps across all frameworks](https://www.youtube.com/watch?v=srdKq0DckXQ) talk. Samples are available using Polymer ([Shop](https://shop.polymer-project.org)) and React ([ReactHN](https://github.com/insin/react-hn),
+<a
+href="https://github.com/GoogleChrome/sw-precache/tree/master/app-shell-demo">iFixit</a>).
 
-Note: 请参阅 [https://app-shell.appspot.com/](https://app-shell.appspot.com/)，查看一个非常简单的、使用 App Shell 和内容服务器端渲染的 PWA 的真实演示。App Shell 可通过使用任意内容库或框架实现（如我们的<a
-href="https://www.youtube.com/watch?v=srdKq0DckXQ">所有框架上的 Progressive Web App</a> 讲座中所述）。您可以使用 Polymer (<a
-href="https://shop.polymer-project.org">Shop</a>) 和 React （<a
-href="https://github.com/insin/react-hn">ReactHN</a>、<a
-href="https://github.com/GoogleChrome/sw-precache/tree/master/app-shell-demo">iFixit</a>）查看示例。
+### Caching the application shell {: #app-shell-caching }
 
- 
+An app shell can be cached using a manually written service worker or a generated service worker using a static asset precaching tool like [sw-precache](https://github.com/googlechrome/sw-precache).
 
-### 缓存 App Shell {: #app-shell-caching }
+Note: The examples are provided for general information and illustrative purposes only. The actual resources used will likely be different for your application.
 
-您可以使用手动编写的服务工作线程或通过 [sw-precache](https://github.com/googlechrome/sw-precache) 等静态资产预缓存工具生成的服务工作线程缓存 App Shell。
+#### Caching the app shell manually
 
-
-
-Note: 这些示例仅为呈现一般信息以及进行说明而提供。
-您的应用使用的实际资源很可能不同。
-
-
-#### 手动缓存 App Shell
-
-以下是使用服务工作线程的 `install` 事件将 App Shell 中的静态资源缓存到 [Cache API](https://developer.mozilla.org/en-US/docs/Web/API/Cache) 中的服务工作线程代码示例：
-
-
+Below is example service worker code that caches static resources from the app shell into the [Cache API](https://developer.mozilla.org/en-US/docs/Web/API/Cache) using service worker's `install` event:
 
     var cacheName = 'shell-content';
     var filesToCache = [
       '/css/styles.css',
       '/js/scripts.js',
       '/images/logo.svg',
-
-      '/offline.html’,
-
-      '/’,
+    
+      '/offline.html',
+    
+      '/',
     ];
-
+    
     self.addEventListener('install', function(e) {
       console.log('[ServiceWorker] Install');
       e.waitUntil(
@@ -219,44 +155,36 @@ Note: 这些示例仅为呈现一般信息以及进行说明而提供。
         })
       );
     });
+    
 
-#### 使用 sw-precache 缓存 App Shell
+#### Using sw-precache to cache the app shell
 
-sw-precache 生成的服务工作线程会缓存并提供您在构建过程中配置的资源。
-您可以让此线程预先缓存构成 App Shell 的每个 HTML、JavaScript 和 CSS 文件。
-所有资源都可以离线工作，并且可在随后的访问中快速加载相关内容，无需其他操作。
+The service worker generated by sw-precache will cache and serve the resources that you configure as part of your build process. You can have it precache every HTML, JavaScript, and CSS file that makes up your app shell. Everything will both work offline, and load fast on subsequent visits without any extra effort.
 
-
-以下是在 [gulp](http://gulpjs.com) 构建过程中使用 sw-precache 的基本示例：
-
+Here is a basic example of using sw-precache as part of a [gulp](http://gulpjs.com) build process:
 
     gulp.task('generate-service-worker', function(callback) {
       var path = require('path');
       var swPrecache = require('sw-precache');
       var rootDir = 'app';
-
+    
       swPrecache.write(path.join(rootDir, 'service-worker.js'), {
         staticFileGlobs: [rootDir + '/**/*.{js,html,css,png,jpg,gif}'],
         stripPrefix: rootDir
       }, callback);
     });
+    
 
-如需了解有关静态资产缓存的详细信息，请参阅[使用 sw-precache 添加服务工作线程](https://codelabs.developers.google.com/codelabs/sw-precache/index.html?index=..%2F..%2Findex#0)代码实验室。
+To learn more about static asset caching, see the [Adding a Service Worker with sw-precache](https://codelabs.developers.google.com/codelabs/sw-precache/index.html?index=..%2F..%2Findex#0) codelab.
 
+Note: sw-precache is useful for offline caching your static resources. For runtime/dynamic resources, we recommend using our complimentary library [sw-toolbox](https://github.com/googlechrome/sw-toolbox).
 
+## Conclusion {: #conclusion }
 
-Note: sw-precache 对于离线缓存您的静态资源非常有用。对于运行时/动态资源，我们建议使用我们的免费内容库 [sw-toolbox](https://github.com/googlechrome/sw-toolbox)。
+An app shell using Service worker is powerful pattern for offline caching but it also offers significant performance wins in the form of instant loading for repeat visits to your PWA. You can cache your application shell so it works offline and populate its content using JavaScript.
 
+On repeat visits, this allows you to get meaningful pixels on the screen without the network, even if your content eventually comes from there.
 
+## Feedback {: #feedback }
 
-## 结论 {: #conclusion }
-
-使用服务工作线程的 App Shell 是实现离线缓存的强大模式，但同时还可以针对 PWA 的重复访问实现即时加载这一重要性能。您可以缓存自己的 App Shell，以便它可以离线使用并使用 JavaScript 填充其内容。
-
-
-如果重复访问，这样还可让您在没有网络的情况下（即使您的内容最终源自网络）在屏幕上获得有意义的像素。
-
-
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
