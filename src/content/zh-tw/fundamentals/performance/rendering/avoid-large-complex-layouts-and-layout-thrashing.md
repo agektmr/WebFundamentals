@@ -1,33 +1,28 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: 版面配置是瀏覽器弄清楚元素幾何形狀資訊之處：也就是它們在頁面中的大小和位置。 根據使用的 CSS、元素內容，或父系元素，每個元素將具有明確或隱含的大小資訊。 在 Blink、WebKit 瀏覽器和 Internet Explorer 中，這個過程叫做版面配置。 在例如 Firefox 的 Gecko 架構瀏覽器中，它被稱為自動重排，但實際上這些過程都是相同的。
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Layout is where the browser figures out the geometric information for elements: their size and location in the page. Each element will have explicit or implicit sizing information based on the CSS that was used, the contents of the element, or a parent element. The process is called Layout in Chrome.
 
-{# wf_updated_on: 2015-03-19 #}
-{# wf_published_on: 2000-01-01 #}
+# Avoid Large, Complex Layouts and Layout Thrashing {: .page-title }
 
-# 避免大型、複雜的版面配置和版面配置輾轉 {: .page-title }
+{# wf_updated_on: 2018-08-17 #} {# wf_published_on: 2015-03-20 #} {# wf_blink_components: Blink>Layout #}
 
 {% include "web/_shared/contributors/paullewis.html" %}
 
+Layout is where the browser figures out the geometric information for elements: their size and location in the page. Each element will have explicit or implicit sizing information based on the CSS that was used, the contents of the element, or a parent element. The process is called Layout in Chrome, Opera, Safari, and Internet Explorer. In Firefox it’s called Reflow, but effectively the process is the same.
 
-版面配置是瀏覽器弄清楚元素幾何形狀資訊之處：也就是它們在頁面中的大小和位置。 根據使用的 CSS、元素內容，或父系元素，每個元素將具有明確或隱含的大小資訊。 在 Chrome、Opera、Safari 和 Internet Explorer 中，這個過程叫做版面配置。 在 Firefox 中，它被稱為自動重排，但實際上過程都是相同的。
+Similarly to style calculations, the immediate concerns for layout cost are:
+
+1. The number of elements that require layout.
+2. The complexity of those layouts.
 
 ### TL;DR {: .hide-from-toc }
-- 版面配置的作用範圍通常是整個文件。
-- DOM 元素的數量會影響效能；您應該儘可能避免觸發版面配置。
-- 評估版面配置模型的效能；新版彈性方塊通常比舊版彈性方塊或浮動架構的版面配置模型來得快。
-- 避免強制性同步版面配置和版面配置輾轉；請讀取樣式值，然後進行樣式變更。
 
+* Layout is normally scoped to the whole document.
+* The number of DOM elements will affect performance; you should avoid triggering layout wherever possible.
+* Assess layout model performance; new Flexbox is typically faster than older Flexbox or float-based layout models.
+* Avoid forced synchronous layouts and layout thrashing; read style values then make style changes.
 
-類似於樣式計算，版面配置成本目前的顧慮在於：
+## Avoid layout wherever possible
 
-1. 需要版面配置的元素數量。
-2. 這些版面配置的複雜性。
-
-## 儘可能避免版面配置
-
-當您變更樣式時，瀏覽器會檢查是否有任何變更需要計算版面配置，以及是否需要更新轉譯樹狀結構。 例如寬度、高度，左側或頂部的「幾何形狀屬性」，都需要版面配置。
-
+When you change styles the browser checks to see if any of the changes require layout to be calculated, and for that render tree to be updated. Changes to “geometric properties”, such as widths, heights, left, or top all require layout.
 
     .box {
       width: 20px;
@@ -44,40 +39,41 @@ description: 版面配置是瀏覽器弄清楚元素幾何形狀資訊之處：�
     }
     
 
-**版面配置的作用範圍通常是整個文件。**如果您有大量的元素，將會需要很長的時間，才能弄清楚全部項目的位置和大小。
+**Layout is almost always scoped to the entire document.** If you have a lot of elements, it’s going to take a long time to figure out the locations and dimensions of them all.
 
-如果不可能避開版面配置，那麼關鍵在於再度使用 Chrome DevTools，來查看它需要多長時間，並判斷版面配置是否是瓶頸的原因所在。 首先，開啟 DevTools、前往「時間軸」標籤、點擊「錄製」，並和您的網站互動。 當停止錄製時，您會看到您網站效能的分類細項：
+If it’s not possible to avoid layout then the key is to once again use Chrome DevTools to see how long it’s taking, and determine if layout is the cause of a bottleneck. Firstly, open DevTools, go to the Timeline tab, hit record and interact with your site. When you stop recording you’ll see a breakdown of how your site performed:
 
-<img src="images/avoid-large-complex-layouts-and-layout-thrashing/big-layout.jpg"  alt="DevTools 在版面配置中顯示出一段長時間" />
+![DevTools showing a long time in Layout](images/avoid-large-complex-layouts-and-layout-thrashing/big-layout.jpg)
 
-當探究上例的框架時，我們發現到版面配置內花了超過 20ms 的時間；但我們在動畫內只有 16ms 的時間來將一個畫面放上螢幕，20ms 太高了。 您還可以看到，DevTools 會告訴您樹狀結構大小 (在本例中的 1,618 個元素)，以及多少節點需要版面配置。
+When digging into the frame in the above example, we see that over 20ms is spent inside layout, which, when we have 16ms to get a frame on screen in an animation, is far too high. You can also see that DevTools will tell you the tree size (1,618 elements in this case), and how many nodes were in need of layout.
 
-Note: 需要哪些 CSS 屬性會觸發版面配置、繪製或合成的明確清單嗎？請查閱 <a href="http://csstriggers.com/">CSS 觸發器</a>。
+Note: Want a definitive list of which CSS properties trigger layout, paint, or composite? Check out [CSS Triggers](https://csstriggers.com).
 
-##捨舊版面配置模型而使用彈性方塊
-網路上有各種版面配置模型，某些模型較受人廣泛支援。 最古老的 CSS 版面配置模型可使我們能夠在螢幕上，根據相對方式、絕對方式或根據浮動元素，來定位元素。
+## Use flexbox over older layout models
 
-以下的螢幕擷取畫面顯示出在 1,300 個方塊上使用浮動時的版面配置成本。 無可否認，這是一個很特意的例子，因為大多數應用程式會使用不同方法來定位元素。
+The web has a range of layout models, some being more widely supported than others. The oldest CSS layout model allows us to position elements on screen relatively, absolutely, and by floating elements.
 
-<img src="images/avoid-large-complex-layouts-and-layout-thrashing/layout-float.jpg"  alt="使用浮動做為版面配置" />
+The screenshot below shows the layout cost when using floats on 1,300 boxes. It is, admittedly, a contrived example, because most applications will use a variety of means to position elements.
 
-如果我們更新範例以使用彈性方塊 (網頁平台的最新功能)，我們會得到不同的畫面：
+![Using floats as layout](images/avoid-large-complex-layouts-and-layout-thrashing/layout-float.jpg)
 
-<img src="images/avoid-large-complex-layouts-and-layout-thrashing/layout-flex.jpg"  alt="使用彈性方塊做為版面配置" />
+If we update the sample to use Flexbox, a more recent addition to the web platform, we get a different picture:
 
-針對 _相同數目的元素_ 和相同的視覺外觀，現在我們在版面配置中所花的時間少多了 (此例中為 3.5ms 對 14ms) 很重要的是要記住，在某些情況下，您可能無法選擇彈性方塊，因為它 [比浮動的支援度低](http://caniuse.com/#search=flexbox)，不過您應該儘可能地至少探究一下版面配置模型對您的效能的影響，然後選擇能將執行成本降至最低的方案。
+![Using flexbox as layout](images/avoid-large-complex-layouts-and-layout-thrashing/layout-flex.jpg)
 
-無論是您選擇有無彈性方塊的任一方案，您仍然應該在應用程式的高壓力時機，**試著避免一次性觸發版面配置**！
+Now we spend far less time (3.5ms vs 14ms in this case) in layout for the *same number of elements* and the same visual appearance. It’s important to remember that for some contexts you may not be able to choose Flexbox, since it’s [less widely supported than floats](http://caniuse.com/#search=flexbox), but where you can you should at least investigate the layout model’s impact on your performance, and go with the one that minimizes the cost of performing it.
 
-## 避免強制性同步版面配置
-將一個畫面送到螢幕上的順序如下：
+In any case, whether you choose Flexbox or not, you should still **try and avoid triggering layout altogether** during high pressure points of your application!
 
-<img src="images/avoid-large-complex-layouts-and-layout-thrashing/frame.jpg"  alt="使用彈性方塊做為版面配置" />
+## Avoid forced synchronous layouts
 
-首先是 JavaScript 執行、_然後_ 樣式計算，_然後_ 版面配置。 然而，是可以利用 JavaScript 強制瀏覽器早一點執行版面配置。 它稱為 **強制性同步版面配置**。
+Shipping a frame to screen has this order:
 
-要牢記的第一件事是，在 JavaScript 執行的同時，前一畫面的所有舊版面配置值都已知曉，並可供您查詢。 比方說，如果您想要在畫面的開始寫出元素 (讓我們稱之為「方塊」) 的高度，則可以撰寫如下的程式碼：
+![Using flexbox as layout](images/avoid-large-complex-layouts-and-layout-thrashing/frame.jpg)
 
+First the JavaScript runs, *then* style calculations, *then* layout. It is, however, possible to force a browser to perform layout earlier with JavaScript. It is called a **forced synchronous layout**.
+
+The first thing to keep in mind is that as the JavaScript runs all the old layout values from the previous frame are known and available for you to query. So if, for example, you want to write out the height of an element (let’s call it “box”) at the start of the frame you may write some code like this:
 
     // Schedule our function to run at the start of the frame.
     requestAnimationFrame(logBoxHeight);
@@ -88,8 +84,7 @@ Note: 需要哪些 CSS 屬性會觸發版面配置、繪製或合成的明確清
     }
     
 
-在您要求取得高度 _之前_，如果您已變更方塊的樣式，就會出現問題：
-
+Things get problematic if you’ve changed the styles of the box *before* you ask for its height:
 
     function logBoxHeight() {
     
@@ -101,12 +96,11 @@ Note: 需要哪些 CSS 屬性會觸發版面配置、繪製或合成的明確清
     }
     
 
-現在，若要回答高度問題，瀏覽器必須 _先_ 套用樣式變更 (由於新增了 `super-big` 類別)，_然後_ 執行版面配置。 只有到那時候，它才能夠傳回正確的高度。 這是非必要且可能成本昂貴的工作。
+Now, in order to answer the height question, the browser must *first* apply the style change (because of adding the `super-big` class), and *then* run layout. Only then will it be able to return the correct height. This is unnecessary and potentially expensive work.
 
-因為如此，您應該一律批次處理您的樣式讀取並先處理它們 (讓瀏覽器可在此使用前一個畫面的版面配置值)，然後再執行任何寫入：
+Because of this you should always batch your style reads and do them first (where the browser can use the previous frame’s layout values) and then do any writes:
 
-若是正確完成，以上功能會變成：
-
+Done correctly the above function would be:
 
     function logBoxHeight() {
       // Gets the height of the box in pixels
@@ -117,11 +111,11 @@ Note: 需要哪些 CSS 屬性會觸發版面配置、繪製或合成的明確清
     }
     
 
-大多數情況下，您不需要套用樣式，然後查詢值；使用前一個畫面值就應足夠了。 比瀏覽器早一步同步執行樣式計算和版面配置，是潛在瓶頸所在，這不會是您想要做的事。
+For the most part you shouldn’t need to apply styles and then query values; using the last frame’s values should be sufficient. Running the style calculations and layout synchronously and earlier than the browser would like are potential bottlenecks, and not something you will typically want to do.
 
-## 避免版面配置輾轉
- 比強制性同步版面配置更糟的是：_接二連三的執行_。 看看這段程式碼：
+## Avoid layout thrashing
 
+There’s a way to make forced synchronous layouts even worse: *do lots of them in quick succession*. Take a look at this code:
 
     function resizeAllParagraphsToMatchBlockWidth() {
     
@@ -132,10 +126,9 @@ Note: 需要哪些 CSS 屬性會觸發版面配置、繪製或合成的明確清
     }
     
 
-此程式碼在一組段落上迴圈執行，並設定每個段落的寬度以符合稱為「方塊」的元素之寬度。 這看起來似乎無害，但問題在於每次迴圈反覆會讀取樣式值 (`box.offsetWidth`)，然後立即用它來更新段落的 (`paragraphs[i].style.width`) 的寬度。 在下一次迴圈反覆時，瀏覽器必須考慮一件事實：因為最後一次要求了 `offsetWidth` (在前一次反覆中)時造成樣式已改變，因此它必須套用樣式變更，並執行版面配置。 這個情況會在 _每一次反覆_ 時發生！
+This code loops over a group of paragraphs and sets each paragraph’s width to match the width of an element called “box”. It looks harmless enough, but the problem is that each iteration of the loop reads a style value (`box.offsetWidth`) and then immediately uses it to update the width of a paragraph (`paragraphs[i].style.width`). On the next iteration of the loop, the browser has to account for the fact that styles have changed since `offsetWidth` was last requested (in the previous iteration), and so it must apply the style changes, and run layout. This will happen on *every single iteration!*.
 
-此範例的修正方式是再次 _讀取_ 然後 _寫入_ 值：
-
+The fix for this sample is to once again *read* then *write* values:
 
     // Read.
     var width = box.offsetWidth;
@@ -148,6 +141,8 @@ Note: 需要哪些 CSS 屬性會觸發版面配置、繪製或合成的明確清
     }
     
 
-如果您想要確保安全，您應該檢查 [FastDOM](https://github.com/wilsonpage/fastdom)，它會為您自動批次處理讀取與寫入，也應該能避免您意外觸發強制同步版面配置或版面配置輾轉。
+If you want to guarantee safety you should check out [FastDOM](https://github.com/wilsonpage/fastdom), which automatically batches your reads and writes for you, and should prevent you from triggering forced synchronous layouts or layout thrashing accidentally.
 
+## Feedback {: #feedback }
 
+{% include "web/_shared/helpful.html" %}
