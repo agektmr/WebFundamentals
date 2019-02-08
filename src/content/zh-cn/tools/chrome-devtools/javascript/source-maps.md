@@ -1,78 +1,71 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description:保持您的客户端代码便于阅读和调试，即使在您组合、缩减或编译代码后也应如此。
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Keep your client-side code readable and debuggable even after you've combined, minified or compiled it.
 
-{# wf_updated_on:2015-04-21 #}
-{# wf_published_on:2015-04-13 #}
+{# wf_updated_on: 2018-07-27 #} {# wf_published_on: 2015-04-13 #} {# wf_blink_components: Platform>DevTools #}
 
-# 将预处理代码映射到源代码 {: .page-title }
+# Map Preprocessed Code to Source Code {: .page-title }
 
-{% include "web/_shared/contributors/megginkearney.html" %}
-{% include "web/_shared/contributors/pbakaus.html" %}
+{% include "web/_shared/contributors/megginkearney.html" %} {% include "web/_shared/contributors/pbakaus.html" %}
 
-保持您的客户端代码便于阅读和调试，即使在您组合、缩减或编译代码后也应如此。使用源映射将您的源代码映射到编译的代码。
-
+Keep your client-side code readable and debuggable even after you've combined, minified or compiled it. Use source maps to map your source code to your compiled code.
 
 ### TL;DR {: .hide-from-toc }
-- 使用 Source Maps 将缩减的代码映射到源代码。随后，您可以在其原始来源中阅读和调试编译的代码。
-- 仅使用<a href=''/web/tools/setup/setup-preprocessors?#supported-preprocessors''>可以产生 Source Maps 的预处理器</a>。
-- 验证您的网络服务器可以提供 Source Maps。
 
+* Use Source Maps to map minified code to source code. You can then read and debug compiled code in its original source.
+* Only use [preprocessors capable of producing Source Maps]().
+* Verify that your web server can serve Source Maps.
 
-## 预处理器使用入门
+## Get started with preprocessors
 
-本文将说明如何与 DevTools Sources 面板中的 JavaScript Source Maps 交互。要初步了解什么是预处理器、它们的作用以及 Source Maps 的工作方式，请转至[设置 CSS 和 JS 预处理器](/web/tools/setup/setup-preprocessors?#debugging-and-editing-preprocessed-content)。
+This article explains how to interact with JavaScript Source Maps in the DevTools Sources Panel. For a first overview of what preprocessors are, how they can help and how Source Maps work, head over to [Set Up CSS & JS Preprocessors](/web/tools/setup/setup-preprocessors?#debugging-and-editing-preprocessed-content).
 
-## 使用支持的预处理器
+## Use a supported preprocessor
 
-您需要使用可以创建源映射的压缩工具。有关最常用的选项，[请参见我们的预处理器支持部分](/web/tools/setup/setup-preprocessors?#supported-preprocessors)。要详细查看，请参见[源映射：语言、工具和其他信息](https://github.com/ryanseddon/source-map/wiki/Source-maps:-languages,-tools-and-other-info) Wiki 页面。
+You need to use a minifier that's capable of creating source maps. For the most popular options, [see our preprocessor support section](/web/tools/setup/setup-preprocessors?#supported-preprocessors). For an extended view, see the [Source maps: languages, tools and other info](https://github.com/ryanseddon/source-map/wiki/Source-maps:-languages,-tools-and-other-info) wiki page.
 
-Source Maps 一般与下列类型的预处理器搭配使用：
+The following types of preprocessors are commonly used in combination with Source Maps:
 
-* 转译器（[Babel](https://babeljs.io/){: .external }、[Traceur](https://github.com/google/traceur-compiler/wiki/Getting-Started)）
-* 编译器（[Closure Compiler](https://github.com/google/closure-compiler)、[TypeScript](http://www.typescriptlang.org/){: .external }、[CoffeeScript](http://coffeescript.org) 和 [Dart](https://www.dartlang.org)）
+* Transpilers ([Babel](https://babeljs.io/){: .external }, [Traceur](https://github.com/google/traceur-compiler/wiki/Getting-Started))
+* Compilers ([Closure Compiler](https://github.com/google/closure-compiler), [TypeScript](http://www.typescriptlang.org/){: .external }, [CoffeeScript](http://coffeescript.org), [Dart](https://www.dartlang.org))
 * Minifiers ([UglifyJS](https://github.com/mishoo/UglifyJS))
 
-## DevTools Sources 面板中的 Source Maps
+## Source Maps in DevTools Sources panel
 
-预处理器中的 Source Maps 可以使 DevTools 加载缩减代码与原始文件。然后，您可以使用原始文件设置断点和浏览代码。同时，Chrome 也会运行您的缩减代码。这会让您感觉到就像在生产环境中运行开发网站一样。
+Source Maps from preprocessors cause DevTools to load your original files in addition to your minified ones. You then use the originals to set breakpoints and step through code. Meanwhile, Chrome is actually running your minified code. This gives you the illusion of running a development site in production.
 
-在 DevTools 中运行 Source Maps 时，您会注意到 JavaScript 不会编译，也会看到 Source Maps 引用的所有 JavaScript 文件。这是使用源映射，不过后台却在实际运行编译的代码。任何错误、日志和断点都将映射到开发代码，从而实现出色的调试！因此，您会感觉到就像在生产环境中运行开发网站一样。
+When running Source Maps in DevTools, you'll notice that the JavaScript isn't compiled and you can see all the individual JavaScript files it references. This is using source mapping, but behind the scenes actually runs the compiled code. Any errors, logs and breakpoints will map to the dev code for awesome debugging! So in effect it gives you the illusion that you're running a dev site in production.
 
-### 在设置中启用 Source Maps
+### Enable Source Maps in settings
 
-Source Maps 默认处于启用状态（自 Chrome 39 开始），不过，如果您想要仔细检查或启用它们，请先打开 DevTools，然后点击设置配置 ![齿轮](imgs/gear.png){:.inline}。在 **Sources**下，选中 **Enable JavaScript Source Maps**。您也可以选中 **Enable CSS Source Maps**。
+Source Maps are enabled by default (as of Chrome 39), but if you'd like to double-check or enable them, first open DevTools and click the settings cog ![gear](imgs/gear.png){:.inline}. Under **Sources**, check **Enable JavaScript Source Maps**. You might also check **Enable CSS Source Maps**.
 
-![启用 Source Maps](imgs/source-maps.jpg)
+![Enable Source Maps](imgs/source-maps.jpg)
 
-### 使用 Source Maps 调试
+### Debugging with Source Maps
 
-[调试代码](/web/tools/chrome-devtools/debug/breakpoints/step-code) 和启用 Source Maps 时，Source Maps 将在两个地方显示：
+When [debugging your code](/web/tools/chrome-devtools/debug/breakpoints/step-code) and Source Maps enabled, Source Maps will show in two places:
 
-1. 控制台中（指向来源的链接应是原始文件，而不是生成的文件）
-2. 逐步执行代码时（调用堆栈中的链接应打开原始的源文件）
+1. In the console (the link to source should be the original file, not the generated one)
+2. When stepping through code (the links in the call stack should open the original source file)
 
-## @sourceURL 和 displayName
+## @sourceURL and displayName
 
-虽然不是 Source Map 规范的一部分，`@sourceURL` 仍然可以让您在处理 eval 时将开发变得更轻松。此帮助程序非常类似于 `//# sourceMappingURL` 属性，并且实际上在 Source Map V3 规范中也有所提及。
+While not part of the Source Map spec, the `@sourceURL` allows you to make development much easier when working with evals. This helper looks very similar to the `//# sourceMappingURL` property and is actually mentioned in the Source Map V3 specifications.
 
-通过将下面的特殊注释包含到代码中（将进行 eval 处理），您可以命名 eval 和内嵌脚本与样式，使其在 DevTools 中以更具逻辑的名称显示。
+By including the following special comment in your code, which will be evaled, you can name evals and inline scripts and styles so they appear as more logical names in your DevTools.
 
 `//# sourceURL=source.coffee`
 
-导航到此**[演示](http://www.thecssninja.com/demo/source_mapping/compile.html)**，然后执行以下操作：
+Navigate to this **[demo](http://www.thecssninja.com/demo/source_mapping/compile.html)**, then:
 
+* Open the DevTools and go to the **Sources** panel.
+* Enter in a filename into the *Name your code:* input field.
+* Click on the **compile** button.
+* An alert will appear with the evaluated sum from the CoffeeScript source.
 
-* 打开 DevTools 并转至 **Sources** 面板。
-* 将一个文件名输入“Name your code:”输入字段。
-* 点击 **compile** 按钮。
-* 将出现一条提醒，以及 CoffeeScript 源的评估和。
+If you expand the *Sources* sub-panel you will now see a new file with the custom filename you entered earlier. If you double-click to view this file it will contain the compiled JavaScript for our original source. On the last line, however, will be a `// @sourceURL` comment indicating what the original source file was. This can greatly help with debugging when working with language abstractions.
 
-如果您展开“Sources”子面板，现在您会看到一个具有您之前输入的自定义文件名的新文件。如果您双击来查看此文件，它将包含我们原始来源的已编译 JavaScript。不过，最后一行将是 `// @sourceURL` 注释，指示原始的源文件是什么。处理语言抽象时，这样可以为调试提供很大帮助。
+![Working with sourceURL](imgs/coffeescript.jpg)
 
-![使用 sourceURL](imgs/coffeescript.jpg)
+## Feedback {: #feedback }
 
-
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
