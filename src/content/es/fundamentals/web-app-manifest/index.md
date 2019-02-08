@@ -1,289 +1,230 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: El manifiesto de las apps web es un archivo JSON que te permite controlar cómo tu sitio o app web se muestra al usuario en áreas donde normalmente ven apps nativas (por ejemplo, la pantalla de inicio de un dispositivo), además de dirigir lo que el usuario puede iniciar y definir su apariencia al iniciarse.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: The web app manifest is a JSON file that gives you the ability to control how your web app or site appears to the user in areas where they would expect to see native apps (for example, a device's home screen), direct what the user can launch, and define its appearance at launch.
 
-{# wf_updated_on: 2017-10-06 #}
-{# wf_published_on: 2016-02-11 #}
+{# wf_updated_on: 2019-01-31 #} {# wf_published_on: 2016-02-11 #} {# wf_blink_components: Manifest #}
 
-# El manifiesto de las apps web {: .page-title }
+# The Web App Manifest {: .page-title }
 
-{% include "web/_shared/contributors/mattgaunt.html" %}
-{% include "web/_shared/contributors/paulkinlan.html" %}
+{% include "web/_shared/contributors/mattgaunt.html" %} {% include "web/_shared/contributors/paulkinlan.html" %}
 
-El [manifiesto de las apps web](https://developer.mozilla.org/en-US/docs/Web/Manifest) es un archivo JSON simple que permite que tú, el desarrollador, puedas controlar cómo se muestra tu app al usuario en áreas donde normalmente ven apps nativas (por ejemplo, la pantalla de inicio de un dispositivo móvil), además de indicar lo que el usuario puede iniciar y definir su apariencia al iniciarse.
+The [web app manifest](https://developer.mozilla.org/en-US/docs/Web/Manifest) is a simple JSON file that tells the browser about your web application and how it should behave when 'installed' on the user's mobile device or desktop. Having a manifest is required by Chrome to show the [Add to Home Screen prompt](/web/fundamentals/app-install-banners/).
 
-Los manifiestos de las apps web permiten guardar un marcador de sitio en la pantalla de inicio de un dispositivo. Cuando un sitio se inicia de esta manera: 
+A typical manifest file includes information about the app `name`, `icons` it should use, the `start_url` it should start at when launched, and more.
 
-* Tiene un ícono y un nombre únicos para que los usuarios puedan diferenciarlo de otros sitios.
-* Muestra algo al usuario mientras se descargan los recursos o se restauran a partir del caché.
-* Proporciona características predeterminadas de visualización al navegador para evitar una transición demasiado brusca cuando los recursos del sitio se encuentren disponibles. 
+## Create the manifest
 
-Hace todo esto a través del simple mecanismo de metadatos en un archivo de texto. Eso representa el manifiesto de aplicación web.
-
-Note: Aunque los manifiestos de apps web pueden usarse en cualquier sitio, son necesarios para las [apps web progresivas](/web/progressive-web-apps/).
-
-### TL;DR {: .hide-from-toc }
-- Crear un manifiesto y vincularlo a tu página son procesos muy sencillos.
-- Controla lo que el usuario ve cuando se inicia desde la pantalla de inicio.
-- Esto incluye elementos como una pantalla de presentación, colores del tema e incluso la URL que se abre. 
-
-## Crea el manifiesto
-
-Antes de adentrarnos en detalles sobre el manifiesto de la app web, creemos un manifiesto
-básico y vinculemos una página web al mismo.
-
-Puedes dar al manifiesto el nombre que desees. La mayoría de la gente usa `manifest.json`. A continuación, te mostramos un ejemplo:
-
+A complete `manifest.json` file for a progressive web app.
 
     {
-      "short_name": "AirHorner",
-      "name": "Kinlan's AirHorner of Infamy",
+      "short_name": "Maps",
+      "name": "Google Maps",
       "icons": [
         {
-          "src": "launcher-icon-1x.png",
-          "type": "image/png",
-          "sizes": "48x48"
-        },
-        {
-          "src": "launcher-icon-2x.png",
-          "type": "image/png",
-          "sizes": "96x96"
-        },
-        {
-          "src": "launcher-icon-4x.png",
+          "src": "/images/icons-192.png",
           "type": "image/png",
           "sizes": "192x192"
+        },
+        {
+          "src": "/images/icons-512.png",
+          "type": "image/png",
+          "sizes": "512x512"
         }
       ],
-      "start_url": "index.html?launcher=true"
+      "start_url": "/maps/?source=pwa",
+      "background_color": "#3367D6",
+      "display": "standalone",
+      "scope": "/maps/",
+      "theme_color": "#3367D6"
     }
     
 
-Asegúrate de incluir lo siguiente: 
+Note: See the [add to home screen criteria](/web/fundamentals/app-install-banners/#criteria) for the specific properties that are required to show the add to home screen prompt.
 
-* Un `short_name` para usar como el texto de la pantalla de inicio de los usuarios.  
-* Un `name` para usar en el banner de instalación de apps web.  
-  
+## Tell the browser about your manifest
 
-## Informa al navegador acerca del manifiesto
-
-Una vez que el manifiesto de tu app esté creado y se encuentre en tu sitio, agrega
-una etiqueta `link` a todas las páginas que compongan tu app web, como se muestra a continuación:
-
+When you have created the manifest, add a `link` tag to all the pages that encompass your web app:
 
     <link rel="manifest" href="/manifest.json">
-  
-## Configura una URL de inicio
+    
 
-Si no proporcionas una `start_url`, se usa la página actual, y
-es muy poco probable que esto sea lo que los usuarios quieran. Pero esa no es la razón para
-incluirla. Ya que ahora puedes definir la forma en la que se iniciará tu app, agrega un parámetro de cadena
-de consulta a la `start_url` para indicar cómo se inició. 
+## Key manifest properties
 
-    "start_url": "/?utm_source=homescreen"
+### `short_name` and/or `name` {: #name }
 
-Puedes elegir lo que quieras; el valor que usamos tiene la ventaja de ser relevante para Google Analytics.
- 
+You must provide at least the `short_name` or `name` property. If both are provided, `short_name` is used on the user's home screen, launcher, or other places where space may be limited. `name` is used in the [app install prompt](/web/fundamentals/app-install-banners/).
 
-## Personaliza los íconos
+    "short_name": "Maps",
+    "name": "Google Maps"
+    
 
-<figure class="attempt-right">
-  <img src="images/homescreen-icon.png" alt="Ícono de adición a la pantalla principal">
-  <figcaption>Ícono de adición a la pantalla principal</figcaption>
-</figure>
+### `icons` {: #icons }
 
- Puedes definir el conjunto de íconos que usará el navegador cuando un usuario agregue tu sitio a su pantalla de inicio. Puedes definirlos con un tipo y tamaño, de la siguiente manera:
+When a user adds your site to their home screen, you can define a set of icons for the browser to use. These icons are used in places like the home screen, app launcher, task switcher, splash screen, etc.
 
-<div style="clear:both;"></div>
+`icons` is an array of image objects. Each object should include the `src`, a `sizes` property, and the `type` of image.
 
-    "icons": [{
-        "src": "images/touch/icon-128x128.png",
-        "type": "image/png",
-        "sizes": "128x128"
-      }, {
-        "src": "images/touch/apple-touch-icon.png",
-        "type": "image/png",
-        "sizes": "152x152"
-      }, {
-        "src": "images/touch/ms-touch-icon-144x144-precomposed.png",
-        "type": "image/png",
-        "sizes": "144x144"
-      }, {
-        "src": "images/touch/chrome-touch-icon-192x192.png",
+    "icons": [
+      {
+        "src": "/images/icons-192.png",
         "type": "image/png",
         "sizes": "192x192"
-      }],
+      },
+      {
+        "src": "/images/icons-512.png",
+        "type": "image/png",
+        "sizes": "512x512"
+      }
+    ]
     
 
-Note: Cuando guardas un ícono en la pantalla de inicio, Chrome busca primero los íconos que concuerden con la densidad de la pantalla y que tengan el tamaño para una densidad de pantalla de 48 dp. Si no encuentra ninguno, busca el ícono que más cerca esté de concordar con las características del dispositivo. Si, por alguna razón, quieres que se encuentre específicamente un ícono en una densidad de píxeles en particular, puedes usar el miembro <code>density</code> opcional, que indica un número. Cuando no declaras la densidad, el valor predeterminado es 1.0. Esto significa: "usa este ícono para densidades de pantalla de 1.0 y superiores", que es lo que normalmente quieres.
+Success: include a 192x192 pixel icon and a 512x512 pixel icon. Chrome will automatically scale the icon for the device. If you'd prefer to scale your own icons and adjust them for pixel-perfection, provide icons in increments of 48dp.
 
-## Agrega una pantalla de presentación
+### `start_url` {: #start-url }
 
-<figure class="attempt-right">
-  <img src="images/background-color.gif" alt="color de fondo">
-  <figcaption>Color de fondo para la pantalla de presentación</figcaption>
-</figure>
+The `start_url` tells the browser where your application should start when it is launched, and prevents the app from starting on whatever page the user was on when they added your app to their home screen.
 
-Cuando inicias tu app web desde la pantalla de inicio suceden varias cosas bajo la
-superficie:
+Your `start_url` should direct the user straight into your app, rather than a product landing page. Think about what the user will want to do once they open your app, and place them there.
 
-1. Chrome se inicia.
-2. Se ejecuta el representador que muestra la página.
-3. Tu sitio se carga desde la red (o desde la caché si tiene un service worker).
-
-Mientras esto sucede, la pantalla se pone en blanco y parece detenida.
-Esto se nota sobre todo si cargas tu página web desde la red, ya que así las páginas
-tardan más de uno o dos segundos en visualizarse en la página principal.
-
-Para ofrecer una experiencia de usuario mejor, puedes reemplazar la pantalla blanca con un título, color e imágenes. 
-
-### Configura una imagen y un título
-
-Si sigues los pasos desde el principio, ya tienes una imagen y un título. Chrome infiere la imagen y el título a partir miembros específicos del manifiesto. Lo que importa aquí es conocer las características específicas. 
-
-Se toma una imagen a partir de la matriz de `icons` para la pantalla de presentación. Chrome elige la imagen de densidad más cercana a 128 dp para el dispositivo. El título se obtiene simplemente a partir del miembro `name`.
-
-### Configura un color de fondo 
-
-Especifica el color de fondo usando la propiedad con el nombre apropiado `background_color`
-. Chrome usa este color desde el momento en que la app web se inicia,
-y el color permanece en la pantalla hasta la primera aparición de la app web.
-
-Para configurar el color de fondo, indica lo siguiente en tu manifiesto:
-
-
-    "background_color": "#2196F3",
+    "start_url": "/?utm_source=a2hs"
     
 
-Ahora no se muestra una pantalla blanca cuando se inicia tu sitio desde la pantalla de inicio.
+Success: add a query string to the end of the `start_url` to track how often your installed app is launched.
 
-Un buen valor que se sugiere para esta propiedad es el color de fondo de la página de carga.  Usar los mismos colores que la página de carga permite una transición más suave desde la
-pantalla de presentación a la página principal.
+### `background_color` {: #background-color }
 
-### Configura un color de tema
+The `background_color` property is used on the [splash screen](#splash-screen) when the application is first launched.
 
-Especifica un color de tema por medio de la propiedad `theme_color`. Esta propiedad
-fija el color de la barra de herramientas. Para llevar esto a cabo sugerimos duplicar un color existente,
- específicamente el `theme-color` `<meta>`.
+### `display` {: #display }
 
-
-## Configura el estilo para iniciar
-
-<figure class="attempt-right">
-  <img src="images/manifest-display-options.png" alt="web-app-capable">
-  <figcaption>Opciones de visualización del manifiesto</figcaption>
-</figure>
-
-Usa el manifiesto de aplicación web para controlar el tipo de pantalla y la orientación de página.
-
-### Personaliza el tipo de pantalla
-
-Puedes hacer que tu app web oculte la IU del navegador si configuras el tipo de `display` en `standalone`:
-
+You can customize what browser UI is shown when your app is launched. For example, you can hide the address bar and browser chrome. Or games may want to go completely full screen.
 
     "display": "standalone"
     
 
-Si consideras que los usuarios preferirían ver tu página como un sitio normal en un navegador, puedes configurar el tipo de `display` en `browser`:
+<table id="display-params" class="responsive">
+  <tbody>
+    <tr>
+      <th colspan=2>Parameters</th>
+    </tr>
+    <tr>
+      <td><code>value</code></td><td><code>Description</code></td>
+    </tr>
+    <tr id="display-fullscreen">
+      <td><code>fullscreen</code></td>
+      <td>
+        Opens the web application without any browser UI and takes
+        up the entirety of the available display area.
+      </td>
+    </tr>
+    <tr>
+      <td><code>standalone</code></td>
+      <td>
+        Opens the web app to look and feel like a standalone native
+        app. The app runs in its own window, separate from the browser, and
+        hides standard browser UI elements like the URL bar, etc.</td>
+    </tr>
+    <tr>
+      <td><code>minimal-ui</code></td>
+      <td>
+        <b>Not supported by Chrome</b><br>
+        This mode is similar to <code>fullscreen</code>, but provides the
+        user with some means to access a minimal set of UI elements for
+        controlling navigation (i.e., back, forward, reload, etc).
+      </td>
+    </tr>
+    <tr>
+      <td><code>browser</code></td>
+      <td>A standard browser experience.</td>
+    </tr>
+  </tbody>
+</table>
 
+Success: In order to show the [Add to Home Screen Prompt](/web/fundamentals/app-install-banners/), `display` must be set to `standalone`.
 
-    "display": "browser"
-    
-<div style="clear:both;"></div>
+### `orientation` {: #orientation }
 
-### Especifica la orientación inicial de la página
-
-<figure class="attempt-right">
-  <img src="images/manifest-orientation-options.png" alt="Opciones de orientación del manifiesto de aplicación web">
-  <figcaption>Opciones de orientación del manifiesto de aplicación web</figcaption>
-</figure>
-
-Puedes imponer una orientación específica, lo cual beneficia a las apps
-que solo funcionan en una orientación; por ejemplo, juegos Usa esto 
-de manera selectiva. Los usuarios prefieren seleccionar la orientación.
-
+You can enforce a specific orientation, which is advantageous for apps that work in only one orientation, such as games. Use this selectively. Users prefer selecting the orientation.
 
     "orientation": "landscape"
-
-<div style="clear:both;"></div>
     
 
-## Proporciona un color de tema para todo el sitio
+### `scope` {: #scope }
+
+The `scope` defines the set of URLs that the browser considers to be within your app, and is used to decide when the user has left the app. The `scope` controls the URL structure that encompasses all the entry and exit points in your web app. Your `start_url` must reside within the `scope`.
+
+    "scope": "/maps/"
+    
+
+Caution: If the user clicks a link in your app that navigates outside of the `scope`, the link will open and render within the existing the PWA window. If you want the link to open in a browser tab, you must add `target="_blank"` to the `<a>` tag. On Android, links with `target="_blank"` will open in a Chrome Custom Tab.
+
+A few other tips:
+
+* If you don't include a `scope` in your manifest, then the default implied `scope` is the directory that your web app manifest is served from.
+* The `scope` attribute can be a relative path (`../`), or any higher level path (`/`) which would allow for an increase in coverage of navigations in your web app.
+* The `start_url` must be in the scope.
+* The `start_url` is relative to the path defined in the `scope` attribute.
+* A `start_url` starting with `/` will always be the root of the origin.
+
+### `theme_color` {: #theme-color }
+
+The `theme_color` sets the color of the tool bar, and may be reflected in the app's preview in task switchers.
+
+    "theme_color": "#3367D6"
+    
+
+Success: the `theme_color` should match the [`meta` theme color](/web/fundamentals/design-and-ux/browser-customization/) specified in your document head.
+
+Learn more about theming in [this video](https://www.youtube.com/watch?v=5fEMTxpA6BA&t=0s&index=7&list=PLNYkxOF6rcIB1V2i_qfRtDMcY6YZK1lkt).
+
+## Splash screens {: #splash-screen }
 
 <figure class="attempt-right">
-  <img src="images/theme-color.png" alt="color de fondo">
-  <figcaption>Color de tema</figcaption>
+  <img src="images/background-color.gif" alt="background color">
+  <figcaption>Background color for launch screen</figcaption>
 </figure>
 
-Chrome introdujo el concepto de un color de tema para tu sitio en 2014. El color de tema
-es una sugerencia de tu página web que indica al navegador el color con que deben matizarse los
-[elementos de IU como la barra de direcciones](/web/fundamentals/design-and-ux/browser-customization/).  
+When your app first launches, it can take a moment for the browser to spin up, and the initial content to begin rendering. Instead of showing a white screen that may look to the user like the app is stall, Chrome will show a splash screen, until the first paint.
 
-Sin un manifiesto, debes definir el color de tema en cada páginas, y si 
-tu sitio es grande o heredado, no será posible realizar muchos cambios en él.
+Chrome will automatically create the splash screen from the manifest properties, including:
 
-<div style="clear:both;"></div>
+* `name`
+* `background_color`
+* `icons`
 
-Agrega un atributo `theme_color` a tu manifiesto. Cuando se inicie el sitio
-desde la pantalla de inicio, cada página del dominio recibirá el color de tema de modo automático.
+The `background_color` should be the same color as the load page, to provide a smooth transition from the splash screen to your app.
 
+### Icons used for the splash screen {: #splash-screen-icons }
 
+Chrome will choose the icon that closely matches the 128dp icon for that device. 128dp is the ideal size for the image on the splash screen, and means no scaling will be applied to the image.
 
-    "theme_color": "#2196F3"
-    
+Again, providing a 192px and a 512px icon will be sufficient for most cases, but you can provide additional icons as necessary.
 
-<figure>
-  <img src="images/manifest-display-options.png" alt="color de fondo">
-  <figcaption>Color de tema para todo el sitio</figcaption>
+<div class="clearfix"></div>
+
+## Feedback {: .hide-from-toc }
+
+{% include "web/_shared/helpful.html" %}
+
+<div class="clearfix"></div>
+
+## Test your manifest {: #test }
+
+<figure class="attempt-right">
+  <img src="images/devtools-manifest.png" alt="DevTools">
+  <figcaption>Manifest tab of Chrome DevTools</figcaption>
 </figure>
 
-## Prueba tu manifiesto {: #test }
+To manually verify your manifest is setup correctly, you can use the [**Manifest**](/web/tools/chrome-devtools/progressive-web-apps) tab on the **Application** panel of Chrome DevTools.
 
-Si quieres verificar de forma manual que el manifiesto de tu app web esté configurado correctamente,
-usa la pestaña **Manifest** en el panel **Application** de Chrome DevTools.
+This tab provides a human-readable version of many of your manifest's properties. You can also simulate Add to Home Screen events from here. See [Testing the app install banner](/web/fundamentals/app-install-banners#test) for more on this topic.
 
-![La pestaña Manifest de Chrome DevTools](images/devtools-manifest.png)
+If you want an automated approach towards validating your web app manifest, check out [Lighthouse](/web/tools/lighthouse/). Lighthouse is a web app auditing tool. It's built into the Audits tab of Chrome DevTools, or can be run as an NPM module. You provide Lighthouse with a URL, it runs a suite of audits against that page, and then displays the results in a report.
 
-Esta pestaña proporciona una versión en lenguaje natural de muchas de las propiedades
-de tu manifiesto. Consulta [Manifiesto
-de app web](/web/tools/chrome-devtools/progressive-web-apps#manifest) en
-la documentación de Chrome DevTools para obtener más información sobre esta pestaña. También
-puedes simular los eventos Add to Homescreen (agregar a la pantalla de inicio) desde aquí. Consulta [Prueba del banner de instalación
-de apps](/web/fundamentals/app-install-banners#test)
-para obtener más información sobre este tema.
+## What's next?
 
-Si prefieres un enfoque automático para validar el manifiesto de tu app web,
-visita [Lighthouse](/web/tools/lighthouse/). Lighthouse es una herramienta
-de auditoría de apps web que ejecutas como una extensión de Chrome o como un módulo NPM. Le proporcionas una URL a
-Lighthouse, este ejecuta un conjunto de auditorías en la página y luego
-muestra los resultados en un informe. Las auditorías de Lighthouse en relación con los manifiestos de apps web
-incluyen controlar lo siguiente:
+* If you're using a web app manifest, you'll probably want to set up an [app install banner](/web/fundamentals/app-install-banners) as well.
+* [A complete reference](https://developer.mozilla.org/en-US/docs/Web/Manifest) to the web app manifest is available on the Mozilla Developer Network.
+* If you want feature descriptions from the engineers who created web app manifests, you can read the [W3C Web App Manifest Spec](http://www.w3.org/TR/appmanifest/).
 
-* Que la app pueda agregarse a la pantalla de inicio.
-* Que luego de agregarse, la app se inicie con una pantalla de presentación personalizada.
-* Que la barra de direcciones del navegador tenga un color personalizado.
-* Que la app esté en HTTPS (un requisito previo para Add to Homescreen).
+## Feedback {: #feedback }
 
-## Más información
-
-Este artículo te ha brindado una introducción rápida a los manifiestos de apps web, pero
-hay más por aprender.
-
-* Si usas un manifiesto de apps web, probablemente será conveniente que también configures un
-[banner de instalación de apps](/web/fundamentals/app-install-banners).
-
-* En Mozilla Developer Network puedes encontrar una [guía completa](https://developer.mozilla.org/en-US/docs/Web/Manifest)
-sobre el manifiesto de apps web.
-
-* Si quieres descripciones destacadas de los ingenieros que crearon los manifiestos
-de apps web, puedes leer la [propia especificación del W3C](http://www.w3.org/TR/appmanifest/){: .external }.
-
-Note: Si actualizas tu archivo `manifest.json` en el futuro, el usuario no
-verá automáticamente esos cambios, a menos que vuelva a agregar tu app a sus
-pantallas de inicio.
-
-
-
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
