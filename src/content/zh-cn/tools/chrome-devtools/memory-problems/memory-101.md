@@ -1,150 +1,139 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description:本部分将介绍内存分析中的常用术语，适用于不同语言的各种内存分析工具。
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: This section describes common terms used in memory analysis, and is applicable to a variety of memory profiling tools for different languages.
 
-{# wf_updated_on:2015-05-18 #}
-{# wf_published_on:2015-05-18 #}
+{# wf_updated_on: 2018-07-27 #} {# wf_published_on: 2015-05-18 #} {# wf_blink_components: Platform>DevTools #}
 
-# 内存术语 {: .page-title }
+# Memory Terminology {: .page-title }
 
 {% include "web/_shared/contributors/megginkearney.html" %}
 
-本部分将介绍内存分析中的常用术语，适用于不同语言的各种内存分析工具。
+This section describes common terms used in memory analysis, and is applicable to a variety of memory profiling tools for different languages.
 
-此处介绍的术语和概念适用于 [Chrome DevTools 堆分析器](/web/tools/chrome-devtools/profile/memory-problems/heap-snapshots)。如果您之前使用过 Java、.NET 或其他内存分析器，那么本部分内容对您来说将是全新的。
+The terms and notions described here refer to the [Chrome DevTools Heap Profiler](/web/tools/chrome-devtools/profile/memory-problems/heap-snapshots). If you have ever worked with either the Java, .NET, or some other memory profiler, then this may be a refresher.
 
+## Object sizes
 
+Think of memory as a graph with primitive types (like numbers and strings) and objects (associative arrays). It might visually be represented as a graph with a number of interconnected points as follows:
 
+![Visual representation of memory](imgs/thinkgraph.png)
 
-## 对象大小
+An object can hold memory in two ways:
 
-将内存视为具有原语类型（如数字和字符串）和对象（关联数组）的图表。形象一点，可以将内存表示为一个由多个互连的点组成的图表，如下所示：
+* Directly by the object itself.
 
-![内存的直观表示](imgs/thinkgraph.png)
+* Implicitly by holding references to other objects, and therefore preventing those objects from being automatically disposed by a garbage collector (**GC** for short).
 
-对象可通过以下两种方式占用内存：
+When working with the Heap Profiler in DevTools (a tool for investigating memory issues found under "Profiles"), you will likely find yourself looking at a few different columns of information. Two that stand out are **Shallow Size** and **Retained Size**, but what do these represent?
 
-* 直接通过对象自身占用。
+![Shallow and Retained Size](imgs/shallow-retained.png)
 
-* 通过保持对其他对象的引用隐式占用，这种方式可以阻止这些对象被垃圾回收器（简称 **GC**）自动处置。
+### Shallow size
 
-使用 DevTools 中的堆分析器（一种用于检查在“Profiles”下发现的内存问题的工具）时，您会看到多个信息列。<strong>Shallow Size</strong> 和 <strong>Retained Size</strong> 这两个列比较引人注目，但它们表示什么呢？
+This is the size of memory that is held by the object itself.
 
-![浅层大小和保留大小](imgs/shallow-retained.png)
+Typical JavaScript objects have some memory reserved for their description and for storing immediate values. Usually, only arrays and strings can have a significant shallow size. However, strings and external arrays often have their main storage in renderer memory, exposing only a small wrapper object on the JavaScript heap.
 
-### 浅层大小
+Renderer memory is all memory of the process where an inspected page is rendered: native memory + JS heap memory of the page + JS heap memory of all dedicated workers started by the page. Nevertheless, even a small object can hold a large amount of memory indirectly, by preventing other objects from being disposed of by the automatic garbage collection process.
 
-这是对象自身占用内存的大小。
+### Retained size
 
-典型的 JavaScript 对象会将一些内存用于自身的说明和保存中间值。通常，只有数组和字符串会有明显的浅层大小。不过，字符串和外部数组的主存储一般位于渲染器内存中，仅将一个小包装器对象置于 JavaScript 堆上。
+This is the size of memory that is freed once the object itself is deleted along with its dependent objects that were made unreachable from **GC roots**.
 
-渲染器内存是渲染检查页面的进程的内存总和：原生内存 + 页面的 JS 堆内存 + 页面启动的所有专用工作线程的 JS 堆内存。尽管如此，即使一个小对象也可能通过阻止其他对象被自动垃圾回收进程处理的方式间接地占用大量内存。
+**GC roots** are made up of *handles* that are created (either local or global) when making a reference from native code to a JavaScript object outside of V8. All such handles can be found within a heap snapshot under **GC roots** > **Handle scope** and **GC roots** > **Global handles**. Describing the handles in this documentation without diving into details of the browser implementation may be confusing. Both GC roots and the handles are not something you need to worry about.
 
-### 保留大小
+There are lots of internal GC roots most of which are not interesting for the users. From the applications standpoint there are following kinds of roots:
 
-这是将对象本身连同其无法从 **GC 根**到达的相关对象一起删除后释放的内存大小。
+* Window global object (in each iframe). There is a distance field in the heap snapshots which is the number of property references on the shortest retaining path from the window.
 
-**GC 根**由*句柄*组成，这些句柄在从原生代码引用 V8 外部的 JavaScript 对象时创建（本地或全局）。所有此类句柄都可以在 **GC 根** > **句柄作用域**和 **GC 根** > **全局句柄**下的堆快照内找到。本文档对句柄的介绍没有深入到浏览器实现的细节，可能让您感到困惑。您不必担心 GC 根和句柄。
+* Document DOM tree consisting of all native DOM nodes reachable by traversing the document. Not all of them may have JS wrappers but if they have the wrappers will be alive while the document is alive.
 
-存在很多内部 GC 根，其中的大部分都不需要用户关注。从应用角度来看，存在以下种类的根：
+* Sometimes objects may be retained by debugger context and DevTools console (e.g. after console evaluation). Create heap snapshots with clear console and no active breakpoints in the debugger.
 
-* Window 全局对象（位于每个 iframe 中）。堆快照中有一个距离字段，表示从 window 出发的最短保留路径上的属性引用数量。
+The memory graph starts with a root, which may be the `window` object of the browser or the `Global` object of a Node.js module. You don't control how this root object is GC'd.
 
-* 文档 DOM 树，由可以通过遍历文档到达的所有原生 DOM 节点组成。并不是所有的节点都有 JS 包装器，不过，如果有包装器，并且文档处于活动状态，包装器也将处于活动状态。
+![Root object can't be controlled](imgs/dontcontrol.png)
 
-* 有时，对象可能会被调试程序上下文和 DevTools 控制台保留（例如，在控制台评估后）。在调试程序中清除控制台并移除活动断点，创建堆快照。
+Whatever is not reachable from the root gets GC.
 
-内存图从根开始，根可以是浏览器的 `window` 对象或 Node.js 模块的 `Global` 对象。您无法控制此根对象的垃圾回收方式。
+Note: Both the Shallow and Retained size columns represent data in bytes.
 
-![无法控制的对象](imgs/dontcontrol.png)
+## Objects retaining tree
 
-任何无法从根到达的对象都会被 GC 回收。
+The heap is a network of interconnected objects. In the mathematical world, this structure is called a *graph* or memory graph. A graph is constructed from *nodes* connected by means of *edges*, both of which are given labels.
 
-Note: 浅层大小和保留大小列均以字节为单位表示数据。
+* **Nodes** (*or objects*) are labelled using the name of the *constructor* function that was used to build them.
+* **Edges** are labelled using the names of *properties*.
 
-## 对象保留树
+Learn [how to record a profile using the Heap Profiler](/web/tools/chrome-devtools/profile/memory-problems/heap-snapshots). Some of the eye-catching things we can see in the Heap Profiler recording below include distance: the distance from the GC root. If almost all the objects of the same type are at the same distance, and a few are at a bigger distance, that's something worth investigating.
 
-堆是一个由互连的对象组成的网络。在数学领域，此结构被称为“图表”或内存图。图表由通过*边缘*连接的*节点*组成，两者都是给定标签。
+![Distance from root](imgs/root.png)
 
-* **节点**（*或对象*）使用*构造函数*（用于构建节点）的名称进行标记。
-* **边缘**使用*属性*的名称进行标记。
+## Dominators
 
-了解[如何使用堆分析器记录分析](/web/tools/chrome-devtools/profile/memory-problems/heap-snapshots)。我们可以从下面的堆分析器记录中看到一些引人注目的参数，例如距离：距离是指与 GC 根之间的距离。如果相同类型的几乎所有对象的距离都相同，只有少数对象的距离偏大，则有必要进行调查。
+Dominator objects are comprised of a tree structure because each object has exactly one dominator. A dominator of an object may lack direct references to an object it dominates; that is, the dominator's tree is not a spanning tree of the graph.
 
+In the diagram below:
 
+* Node 1 dominates node 2
+* Node 2 dominates nodes 3, 4 and 6
+* Node 3 dominates node 5
+* Node 5 dominates node 8
+* Node 6 dominates node 7
 
+![Dominator tree structure](imgs/dominatorsspanning.png)
 
+In the example below, node `#3` is the dominator of `#10`, but `#7` also exists in every simple path from GC to `#10`. Therefore, an object B is a dominator of an object A if B exists in every simple path from the root to the object A.
 
+![Animated dominator illustration](imgs/dominators.gif)
 
-![距根的距离](imgs/root.png)
+## V8 specifics
 
-## 支配项
+When profiling memory, it is helpful to understand why heap snapshots look a certain way. This section describes some memory-related topics specifically corresponding to the **V8 JavaScript virtual machine** (V8 VM or VM).
 
-支配对象由一个树结构组成，因为每个对象都有且仅有一个支配项。对象的支配项可能缺少对其所支配对象的直接应用；也就是说，支配项的树不是图表的生成树。
+### JavaScript object representation
 
-在下面的图表中：
+There are three primitive types:
 
-* 节点 1 支配节点 2
-* 节点 2 支配节点 3 、4 和 6
-* 节点 3 支配节点 5
-* 节点 5 支配节点 8
-* 节点 6 支配节点 7
+* Numbers (e.g., 3.14159..)
+* Booleans (true or false)
+* Strings (e.g., 'Werner Heisenberg')
 
-![支配项树结构](imgs/dominatorsspanning.png)
+They cannot reference other values and are always leafs or terminating nodes.
 
-在下面的示例中，节点 `#3` 是 `#10` 的支配项，但 `#7` 也存在于从 GC 到 `#10` 的每一个简单路径中。因此，如果对象 B 存在于从根到对象 A 的每一个简单路径中，那么对象 B 就是对象 A 的支配项。
+**Numbers** can be stored as either:
 
-![支配项动画图示](imgs/dominators.gif)
+* an immediate 31-bit integer values called **small integers** (*SMIs*), or
+* heap objects, referred to as **heap numbers**. Heap numbers are used for storing values that do not fit into the SMI form, such as *doubles*, or when a value needs to be *boxed*, such as setting properties on it.
 
-## V8 详细信息
+**Strings** can be stored in either:
 
-分析内存时，了解堆快照的显示方式非常有用。本部分将介绍一些特定于 **V8 JavaScript 虚拟机**（V8 VM 或 VM）的内存相关主题。
+* the **VM heap**, or
+* externally in the **renderer’s memory**. A *wrapper object* is created and used for accessing external storage where, for example, script sources and other content that is received from the Web is stored, rather than copied onto the VM heap.
 
-### JavaScript 对象表示
+Memory for new JavaScript objects is allocated from a dedicated JavaScript heap (or **VM heap**). These objects are managed by V8's garbage collector and therefore, will stay alive as long as there is at least one strong reference to them.
 
-存在三种原语类型：
+**Native objects** are everything else which is not in the JavaScript heap. Native object, in contrast to heap object, is not managed by the V8 garbage collector throughout its lifetime, and can only be accessed from JavaScript using its JavaScript wrapper object.
 
-* 数字（例如 3.14159..）
-* 布尔值（true 或 false）
-* 字符串（例如“Werner Heisenberg”）
+**Cons string** is an object that consists of pairs of strings stored then joined, and is a result of concatenation. The joining of the *cons string* contents occurs only as needed. An example would be when a substring of a joined string needs to be constructed.
 
-它们无法引用其他值，并且始终是叶或终止节点。
+For example, if you concatenate **a** and **b**, you get a string (a, b) which represents the result of concatenation. If you later concatenated **d** with that result, you get another cons string ((a, b), d).
 
-**数字**可以存储为：
+**Arrays** - An Array is an Object with numeric keys. They are used extensively in the V8 VM for storing large amounts of data. Sets of key-value pairs used like dictionaries are backed up by arrays.
 
-* 中间 31 位整型值（称为**小整型** (*SMI*)），或
-* 堆对象，作为**堆数字**引用。堆数字用于存储不适合 SMI 格式的值（例如*双精度*），或者在需要将值“包装”起来时使用（例如在值上设置属性）。
+A typical JavaScript object can be one of two array types used for storing:
 
-**字符串**可以存储在以下位置：
+* named properties, and
+* numeric elements
 
-* **VM 堆**中，或
-* **渲染器内存**中（外部）。将创建一个*包装器对象*并用于访问外部存储空间，例如，外部存储空间是存储脚本源和从网页接收（而不是复制到 VM 堆上）的其他内容的位置。
+In cases where there is a very small number of properties, they can be stored internally in the JavaScript object itself.
 
-新 JavaScript 对象的内存分配自专用的 JavaScript 堆（或 **VM 堆**）。这些对象由 V8 的垃圾回收器管理，因此，只要存在一个对它们的强引用，它们就会一直保持活动状态。
+**Map** - an object that describes the kind of object and its layout. For example, maps are used to describe implicit object hierarchies for [fast property access](/v8/design.html#prop_access).
 
-**原生对象**是 JavaScript 堆之外的任何对象。与堆对象相反，原生对象在其生命周期内不由 V8 垃圾回收器管理，并且只能使用其 JavaScript 包装器对象从 JavaScript 访问。
+### Object groups
 
-**Cons 字符串**是一种由存储并联接的成对字符串组成的对象，是串联的结果。*cons 字符串*内容仅根据需要进行联接。一个示例便是需要构造已联接字符串的子字符串。
+Each native objects group is made up of objects that hold mutual references to each other. Consider, for example, a DOM subtree where every node has a link to its parent and links to the next child and next sibling, thus forming a connected graph. Note that native objects are not represented in the JavaScript heap — that's why they have zero size. Instead, wrapper objects are created.
 
-例如，如果您将 **a** 与 **b** 串联，您将获得一个字符串 (a, b)，它表示串联结果。如果您稍后将 **d** 与该结果串联，您将得到另一个 cons 字符串 ((a, b), d)。
+Each wrapper object holds a reference to the corresponding native object, for redirecting commands to it. In its own turn, an object group holds wrapper objects. However, this doesn't create an uncollectable cycle, as GC is smart enough to release object groups whose wrappers are no longer referenced. But forgetting to release a single wrapper will hold the whole group and associated wrappers.
 
-**数组** - 数组是一个具有数字键的对象。它们在 V8 VM 中广泛使用，用于存储大量数据。用作字典的成套键值对采用数组形式。
+## Feedback {: #feedback }
 
-典型的 JavaScript 对象可以是两个数组类型之一，用于存储：
-
-* 命名属性，以及
-* 数字元素
-
-数字元素如果属性数量非常少，可以将其存储在 JavaScript 对象自身内部。
-
-**映射** - 一种用于说明对象种类及其布局的对象。例如，可以使用映射说明用于[快速属性访问](/v8/design.html#prop_access)的隐式对象层次结构。
-
-### 对象组
-
-每个原生对象组都由保持对彼此的相互引用的对象组成。例如，在 DOM 子树中，每个节点都有一个指向其父级的链接，并链接到下一个子级和下一个同级，形成一个互连图。请注意，原生对象不会在 JavaScript 堆中表示 - 这正是它们的大小为什么为零的原因。相反，创建包装器对象。
-
-每个包装器对象都会保持对相应原生对象的引用，用于将命令重定向到自身。这样，对象组会保持包装器对象。不过，这不会形成一个无法回收的循环，因为 GC 非常智能，可以释放包装器对象不再被引用的对象组。但是，忘记释放单个包装器将保持整个组和关联的包装器。
-
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
