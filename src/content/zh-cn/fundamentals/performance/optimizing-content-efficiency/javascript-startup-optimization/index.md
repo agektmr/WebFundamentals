@@ -1,287 +1,161 @@
-project_path: /web/fundamentals/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description:保持较低的 JavaScript 网络传输以及解析/编译成本，确保页面快速进行交互。
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Keep your network transmission and parse/compile cost for JavaScript low to ensure pages get interactive quickly.
 
-{# wf_updated_on: 2019-02-06 #}
-{# wf_published_on: 2017-11-30 #}
-{# wf_blink_components: Blink>JavaScript #}
+{# wf_updated_on: 2018-07-02 #} {# wf_published_on: 2017-11-30 #} {# wf_blink_components: Blink>JavaScript #}
 
-# JavaScript 启动优化 {: .page-title }
+# JavaScript Start-up Optimization {: .page-title }
 
 {% include "web/_shared/contributors/addyosmani.html" %}
 
-在构建严重依赖 JavaScript 的网站时，我们有时会在不知不觉中为所发送的内容付出代价。
- 在本文中，我们将说明当您希望网站在移动设备上快速加载和交互时，遵守几项**规则**的重要性。
- 减少传递的 JavaScript 数量意味着减少网络传输时间、解压缩代码的成本以及花费在解析和编译 JavaScript 上的时间。
+As we build sites more heavily reliant on JavaScript, we sometimes pay for what we send down in ways that we can’t always easily see. In this article, we’ll cover why a little **discipline** can help if you’d like your site to load and be interactive quickly on mobile devices. Delivering less JavaScript can mean less time in network transmission, less spent decompressing code and less time parsing and compiling this JavaScript.
 
+## Network
 
+When most developers think about the cost of JavaScript, they think about it in terms of the **download and execution cost**. Sending more bytes of JavaScript over the wire takes longer the slower a user’s connection is.
 
-## 网络
+![When a browser requests a
+resource, that resource needs to be fetched and then decompressed. In the case
+of resources like JavaScript, they must be parsed and compiled prior to
+execution.](images/1_U00XcnhqoczTuJ8NH8UhOw.png)
 
-大部分开发者在考虑 JavaScript 的成本时，考虑的都是**下载和执行成本**。
- 通过网络发送较多的 JavaScript 字节时，用户的连接越慢，花费的时间就越长。
+This can be a problem, even in first-world countries, as the **effective network connection type** a user has might not actually be 3G, 4G or Wi-Fi. You can be on coffee-shop Wi-Fi but connected to a cellular hotspot with 2G speeds.
 
+You can **reduce** the network transfer cost of JavaScript through:
 
-<img src="images/1_U00XcnhqoczTuJ8NH8UhOw.png" alt="当浏览器请求资源时，需要先提取该资源，然后将其解压缩。
- 对于 JavaScript 等资源，必须先进行解析和编译，然后才能执行资源。"/>
+* **Only sending the code a user needs**. 
+    * Use [code-splitting](/web/updates/2017/06/supercharged-codesplit) to break up your JavaScript into what is critical and what is not. Module bundlers like [webpack](https://webpack.js.org) support [code-splitting](https://webpack.js.org/guides/code-splitting/).
+    * Lazily loading in code that is non-critical.
+* **Minification** 
+    * Use [UglifyJS](https://github.com/mishoo/UglifyJS) for [minifying](/web/fundamentals/performance/optimizing-content-efficiency/optimize-encoding-and-transfer#minification_preprocessing_context-specific_optimizations) ES5 code.
+    * Use [babel-minify](https://github.com/babel/minify) or [uglify-es](https://www.npmjs.com/package/uglify-es) to minify ES2015+.
+* **Compression** 
+    * At minimum, use [gzip](/web/fundamentals/performance/optimizing-content-efficiency/optimize-encoding-and-transfer#text_compression_with_gzip) to compress text-based resources.
+    * Consider using [Brotli](https://www.smashingmagazine.com/2016/10/next-generation-server-compression-with-brotli/) ~[q11](https://twitter.com/paulcalvano/status/924660429846208514). Brotli outperforms gzip on compression ratio. It helped CertSimple save [17%](https://speakerdeck.com/addyosmani/the-browser-hackers-guide-to-instant-loading?slide=30) on the size of compressed JS bytes and LinkedIn save [4%](https://engineering.linkedin.com/blog/2017/05/boosting-site-speed-using-brotli-compression) on their load times.
+* **Removing unused code**. 
+    * Identify opportunities for code that can be removed or lazily loaded in with [DevTools code coverage](/web/updates/2017/04/devtools-release-notes#coverage).
+    * Use [babel-preset-env](https://github.com/babel/babel/tree/master/packages/babel-preset-env) and browserlist to avoid transpiling features already in modern browsers. Advanced developers may find careful [analysis of their webpack bundles](https://github.com/webpack-contrib/webpack-bundle-analyzer) helps identify opportunities to trim unneeded dependencies.
+    * For stripping code, see [tree-shaking](https://webpack.js.org/guides/tree-shaking/), [Closure Compiler](/closure/compiler/)’s advanced optimizations and library trimming plugins like [lodash-babel-plugin](https://github.com/lodash/babel-plugin-lodash) or webpack’s [ContextReplacementPlugin](https://iamakulov.com/notes/webpack-front-end-size-caching/#moment-js) for libraries like Moment.js.
+* **Caching code to minimize network trips.** 
+    * Use [HTTP caching](/web/fundamentals/performance/optimizing-content-efficiency/http-caching) to ensure browsers cache responses effectively. Determine optimal lifetimes for scripts (max-age) and supply validation tokens (ETag) to avoid transferring unchanged bytes.
+    * Service Worker caching can make your app network resilient and give you eager access to features like [V8’s code cache](https://v8project.blogspot.com/2015/07/code-caching.html).
+    * Use long-term caching to avoid having to re-fetch resources that haven't changed. If using Webpack, see [filename hashing](https://webpack.js.org/guides/caching/).
 
+## Parse/Compile
 
+Once downloaded, one of JavaScript’s **heaviest** costs is the time for a JS engine to **parse/compile** this code. In [Chrome DevTools](/web/tools/chrome-devtools/), parse and compile are part of the yellow "Scripting" time in the Performance panel.
 
-这可能会成为一个问题，即使在第一世界国家也是如此，因为用户的**有效网络连接类型**实际上可能不是 3G、4G 或 Wi-Fi。
- 您可能使用的是咖啡店的 Wi-Fi，但连接到 2G 速度的蜂窝热点。
+![](images/1__4gNDmBlXxOF2-KmsOrKkw.png)
 
+The Bottom-Up and Call Tree tabs show you exact Parse/compile timings:<figure> 
 
-您可以通过以下方法**降低** JavaScript 的网络传输成本：
+![](images/1_GdrVt_BTTzzBOIoyZZsQZQ.png) <figcaption> Chrome DevTools Performance panel > Bottom-Up. With V8’s Runtime Call Stats enabled, we can see time spent in phases like Parse and Compile </figcaption> </figure> 
 
-* **仅发送用户所需的代码**。
-    * 使用[代码拆分](/web/updates/2017/06/supercharged-codesplit)将 JavaScript 分解成关键部分和非关键部分。
- [webpack](https://webpack.js.org) 等模块捆绑程序支持[代码拆分](https://webpack.js.org/guides/code-splitting/)。
-    * 延迟加载非关键代码。
-* **源码压缩**
-    * 使用 [UglifyJS](https://github.com/mishoo/UglifyJS) 来[压缩](/web/fundamentals/performance/optimizing-content-efficiency/optimize-encoding-and-transfer#minification_preprocessing_context-specific_optimizations)
-ES5 代码。
-    * 使用 [babel-minify](https://github.com/babel/minify) 或
-[uglify-es](https://www.npmjs.com/package/uglify-es) 来压缩 ES2015+。
-* **压缩**
-    * 至少使用
-[gzip](/web/fundamentals/performance/optimizing-content-efficiency/optimize-encoding-and-transfer#text_compression_with_gzip)
-来压缩基于文本的资源。
-    * 考虑使用
-[Brotli](https://www.smashingmagazine.com/2016/10/next-generation-server-compression-with-brotli/)
-      ~[q11](https://twitter.com/paulcalvano/status/924660429846208514)。 Brotli
-在压缩比率方面优于 gzip， 已帮助 CertSimple 节省
-[17%](https://speakerdeck.com/addyosmani/the-browser-hackers-guide-to-instant-loading?slide=30) 的压缩 JS 字节大小，并且帮助 LinkedIn 节省 [4%](https://engineering.linkedin.com/blog/2017/05/boosting-site-speed-using-brotli-compression) 的加载时间。
+Note: Performance panel support for Runtime Call Stats is currently experimental. To enable, go to chrome://flags/#enable-devtools-experiments -> restart Chrome -> go to DevTools -> Settings -> Experiments -> hit shift 6 times -> check the option called `Timeline: V8 Runtime Call Stats on Timeline` and close then re-open DevTools.
 
+But, why does this matter?
 
+![](images/1_Dirw7RdQj9Dktc-Ny6-xbA.png)
 
-* **移除未使用的代码**。
-    * 识别可以使用 [DevTools 代码覆盖](/web/updates/2017/04/devtools-release-notes#coverage)来移除或延迟加载代码的机会。
-    * 使用
-[babel-preset-env](https://github.com/babel/babel/tree/master/packages/babel-preset-env)
-和 browserlist，避免转译现代浏览器中已有的功能。
-      高级开发者可能会发现仔细[分析其 webpack 软件包](https://github.com/webpack-contrib/webpack-bundle-analyzer)有助于找到裁减非必要依赖项的机会。
-    * 要删除代码，请查看 [tree-shaking](https://webpack.js.org/guides/tree-shaking/)、[Closure Compiler](/closure/compiler/) 的高级优化和库裁剪插件（例如 [lodash-babel-plugin](https://github.com/lodash/babel-plugin-lodash)）或者 webpack 的 [ContextReplacementPlugin](https://iamakulov.com/notes/webpack-front-end-size-caching/#moment-js)（适用于 Moment.js 等库）。
+Spending a long time parsing/compiling code can heavily delay how soon a user can interact with your site. The more JavaScript you send, the longer it will take to parse and compile it before your site is interactive.
 
+> Byte-for-byte, **JavaScript is more expensive for the browser to process than the equivalently sized image or Web Font** — Tom Dale
 
+Compared to JavaScript, there are numerous costs involved in processing equivalently sized images (they still have to be decoded!) but on average mobile hardware, JS is more likely to negatively impact a page’s interactivity.<figure> 
 
+![](images/1_PRVzNizF9jQ_QADF5lQHpA.png) <figcaption>JavaScript and image bytes have very different costs. Images usually don’t block the main thread or prevent interfaces from getting interactive while being decoded and rasterized. JS however can delay interactivity due to parse, compile and execution costs.</figcaption> </figure> 
 
+When we talk about parse and compile being slow; context is important — we’re talking about **average** mobile phones here. **Average users can have phones with slow CPUs and GPUs, no L2/L3 cache and which may even be memory constrained.**
 
+> Network capabilities and device capabilities don’t always match up. A user with an amazing Fiber connection doesn’t necessarily have the best CPU to parse and evaluate JavaScript sent to their device. This is also true in reverse..a terrible network connection, but a blazing fast CPU. — Kristofer Baxter, LinkedIn
 
-* **缓存代码以最大限度减少网络往返次数。**
-    * 使用 [HTTP
-缓存](/web/fundamentals/performance/optimizing-content-efficiency/http-caching)来确保浏览器缓存有效响应。
- 确定脚本的最佳生命周期 (max-age)，并提供验证令牌 (ETag) 以避免传输未更改的字节。
-    * Service Worker 缓存可使您的应用网络更有弹性，并允许您对 [V8 的代码缓存](https://v8project.blogspot.com/2015/07/code-caching.html)等功能进行 Eager 访问。
-    * 使用长期缓存以避免重新提取尚未更改的资源。
- 如果您使用 Webpack，请参阅[文件名哈希](https://webpack.js.org/guides/caching/)。
+Below we can see the cost of parsing ~1MB of decompressed (simple) JavaScript on low and high-end hardware. **There is a 2–5x difference in time to parse/compile code between the fastest phones on the market and average phones**.<figure> 
 
+![](images/1_8BQ3bCYu1AVvJWPR1x8Yig.png) <figcaption>This graph highlights parse times for a 1MB bundle of JavaScript (~250KB gzipped) across desktop and mobile devices of differing classes. When looking at the cost of parse, it’s the decompressed figures to consider e.g ~250KB gzipped JS decompresses to ~1MB of code.</figcaption> </figure> 
 
-## 解析/编译
+What about a real-world site, like CNN.com?
 
-下载 JavaScript 之后，JS
-引擎**解析/编译**此代码的时间成为 JavaScript **最大的**成本之一。 在 [Chrome
-DevTools](/web/tools/chrome-devtools/) 中，解析和编译是 Performance 面板中黄色“脚本”时间的一部分。
+**On the high-end iPhone 8 it takes just ~4s to parse/compile CNN’s JS compared to ~13s for an average phone (Moto G4)**. This can significantly impact how quickly a user can fully interact with this site.<figure> 
 
+![](images/1_7ysArXJ4nN0rQEMT9yZ_Sg.png) <figcaption>Above we see parse times comparing the performance of Apple’s A11 Bionic chip to the Snapdragon 617 in more average Android hardware.</figcaption> </figure> 
 
-<img src="images/1__4gNDmBlXxOF2-KmsOrKkw.png"/>
+This highlights the importance of testing on **average** hardware (like the Moto G4) instead of just the phone that might be in your pocket. Context matters however: **optimize for the device and network conditions your users have.**<figure> 
 
-Bottom-Up 和 Call Tree 选项卡显示确切的解析/编译时间：
+![](images/1_6oEpMEi_pjRNjmtN9i2TCA.png) <figcaption>Google Analytics can provide insight into the [mobile device classes](https://crossbrowsertesting.com/blog/development/use-google-analytics-find-devices-customers-use/) your real users are accessing your site with. This can provide opportunities to understand the real CPU/GPU constraints they’re operating with.</figcaption> </figure> 
 
-<figure> <img src="images/1_GdrVt_BTTzzBOIoyZZsQZQ.png"/> <figcaption> Chrome
-DevTools Performance 面板 > Bottom-Up。 启用 V8 的 Runtime Call Stats 后，我们可以看到在解析和编译等阶段花费的时间</figcaption></figure>
+**Are we really sending down too much JavaScript? Err, possibly :)**
 
+Using HTTP Archive (top ~500K sites) to analyze the state of [JavaScript on mobile](http://beta.httparchive.org/reports/state-of-javascript#bytesJs), we can see that 50% of sites take over 14 seconds to get interactive. These sites spend up to 4 seconds just parsing and compiling JS.
 
-注：Performance 面板对 Runtime Call Stats 的支持目前处于实验阶段。
-若要启用支持，请转到 chrome://flags/#enable-devtools-experiments -> 重新启动 Chrome ->
-转到 DevTools -> Settings -> Experiments -> 按 Shift 6 次 -> 勾选名为 `Timeline: V8 Runtime Call Stats on Timeline` 的选项，然后关闭再重新打开 DevTools。
+![](images/1_sVgunAoet0i5FWEI9NSyMg.png)
 
+Factor in the time it takes to fetch and process JS and other resources and it’s perhaps not surprising that users can be left waiting a while before feeling pages are ready to use. We can definitely do better here.
 
-但是，为什么该支持很重要？
+**Removing non-critical JavaScript from your pages can reduce transmission times, CPU-intensive parsing and compiling and potential memory overhead. This also helps get your pages interactive quicker.**
 
-<img src="images/1_Dirw7RdQj9Dktc-Ny6-xbA.png"/>
+## Execution time
 
-花费很长时间来解析/编译代码会严重推迟用户与网站交互的时间。
- 发送的 JavaScript 越多，在网站可进行交互之前就要花费越长的时间来解析和编译。
+It’s not just parse and compile that can have a cost. **JavaScript execution** (running code once parsed/compiled) is one of the operations that has to happen on the main thread. Long execution times can also push out how soon a user can interact with your site.
 
+![](images/1_ec0wEKKVl7iQidBks3oDKg.png)
 
-> 就字节而言，**浏览器处理 JavaScript 的成本高于
-> 相同大小的图像或网页字体** - Tom Dale
+> If script executes for more than 50ms, time-to-interactive is delayed by the *entire* amount of time it takes to download, compile, and execute the JS — Alex Russell
 
-与 JavaScript 相比，处理相同大小的图像涉及多项成本（仍要对其进行解码！），但在普通移动硬件上，JS 更有可能对页面的交互性产生负面影响。
+To address this, JavaScript benefits from being in **small chunks** to avoid locking up the main thread. Explore if you can reduce how much work is being done during execution.
 
+## Other costs
 
+JavaScript can impact page performance in other ways:
 
-<figure> <img src="images/1_PRVzNizF9jQ_QADF5lQHpA.png"/> <figcaption>JavaScript
-与图像字节的成本大不相同。 在解码和光栅化图像的过程中，通常不会阻止主线程或界面交互。
- 但是，JS 可能会因为解析、编译和执行成本而延迟交互。</figcaption> </figure>
+* Memory. Pages can appear to jank or pause frequently due to GC (garbage collection). When a browser reclaims memory, JS execution is paused so a browser frequently collecting garbage can pause execution more frequently than we may like. Avoid [memory leaks](/web/tools/chrome-devtools/memory-problems/) and frequent gc pauses to keep pages jank free.
+* During runtime, long-running JavaScript can block the main-thread causing pages that are unresponsive. Chunking up work into smaller pieces (using `<a
+href="/web/fundamentals/performance/rendering/optimize-javascript-execution#use_requestanimationframe_for_visual_changes">requestAnimationFrame()</a>` or `<a
+href="/web/updates/2015/08/using-requestidlecallback">requestIdleCallback()</a>` for scheduling) can minimize responsiveness issues.
 
+## Patterns for reducing JavaScript delivery cost
 
-谈及解析和编译的速度较慢时，需要考虑环境；在这里，我们谈论的是**普通**手机。
- **普通用户使用的可能是 CPU 和 GPU 速度缓慢、没有 L2/L3 缓存，甚至内存量也很有限的手机。**
-
-
-
-> 网络能力与设备能力并不总是相称。 拥有高速光纤连接的用户
-> 不一定使用最好的 CPU 来
-> 解析和评估发送到其所用设备上的 JavaScript。 反过来也是如此，网络连接速度慢，但是 CPU 速度很快。
- - Kristofer
-> Baxter，LinkedIn
-
-我们可以从下图中看到在低端和高端硬件上解析大约 1MB 解压缩（简单）JavaScript 的成本。
- **就市面上速度最快的手机与普通手机而言，解析/编译代码所花费的时间有 2 到 5 倍的差距**。
-
-
-<figure> <img src="images/1_8BQ3bCYu1AVvJWPR1x8Yig.png"/> <figcaption>此图表突出显示在不同等级的桌面设备和移动设备上，1MB 的 JavaScript 软件包（gzip 压缩大小约为 250KB）的解析时间。
- 查看解析成本时，要考虑的是解压缩后的数字，例如，大约 250KB 的 gzip 压缩 JS 解压缩为大约 1MB 的代码。</figcaption> </figure>
-
-
-
-在 CNN.com 等实际网站上情况如何？
-
-**在高端 iPhone 8 上，只需大约 4 秒即可解析/编译 CNN 的 JS，而在 Moto G4 等普通手机上，需花费大约 13 秒的时间**。
- 这会显著影响用户与此网站完全交互的速度。
-
-
-<figure> <img src="images/1_7ysArXJ4nN0rQEMT9yZ_Sg.png"/> <figcaption>上图将 Apple 的 A11 仿生芯片的性能与普通 Android 硬件上的 Snapdragon 617 作对比，显示各自的解析时间。</figcaption> </figure>
-
-
-
-此图着重强调务必在**普通**硬件（例如，Moto
-G4）上进行测试，而不仅仅在您所用手机上进行测试，这一点很重要。 但是，环境也很重要：**请针对您的设备和网络情况进行优化。**
-
-
-<figure> <img src="images/1_6oEpMEi_pjRNjmtN9i2TCA.png"/> <figcaption>Google
-Analytics 可以帮助您了解实际用户用来访问网站的<ahref="https://crossbrowsertesting.com/blog/development/use-google-analytics-find-devices-customers-use/">移动设备等级</a>。
- 这样，您就有机会了解用户实际的 CPU/GPU 限制情况。</figcaption> </figure>
-
-
-
-
-**我们是否确实发送了过多的 JavaScript？不见得如此 :)**
-
-通过使用 HTTP Archive（大约前 50 万个网站）来分析[移动设备上的
-JavaScript](http://beta.httparchive.org/reports/state-of-javascript#bytesJs) 状态，我们可以看到，50% 的网站需要经过 14 秒以上的时间才能交互。
- 这些网站用来解析和编译 JS 的时间就多达 4 秒。
-
-
-<img src="images/1_sVgunAoet0i5FWEI9NSyMg.png"/>
-
-考虑到提取和处理 JS 及其他资源所花费的时间，用户会觉得需要等待片刻才能使用页面也不足为奇。
- 在这方面，我们绝对可以做得更好。
-
-**从页面中移除非关键 JavaScript 可以减少传输时间、CPU 密集型解析和编译以及潜在的内存开销。
- 这也有助于加快页面的交互速度。**
-
-
-## 执行时间
-
-并不是只有解析和编译会产生成本。 **执行 JavaScript**（在解析/编译后运行代码）是必须在主线程中执行的其中一项操作。
- 较长的执行时间也可能会推迟用户与您网站交互的时间。
-
-
-<img src="images/1_ec0wEKKVl7iQidBks3oDKg.png"/>
-
-> 如果执行脚本所花费的时间超过 50 毫秒，那么交互时间就会因为下载、编译和执行 JS 所需的
-> *全部*时间而推迟 -
-> Alex Russell
-
-为解决此问题，可以将 JavaScript 分成**小型代码段**，以避免锁定主线程。
- 了解您能否减少执行期间完成的工作量。
-
-
-## 其他成本
-
-JavaScript 可以在其他方面影响页面性能：
-
-* 内存。 页面可能会因为 GC（垃圾回收）而出现卡顿或频繁暂停现象。
- 当浏览器收回内存时，就会暂停执行 JS，因此频繁收集垃圾的浏览器会导致暂停执行的频率超出我们的容忍程度。
- 请避免[内存泄漏](/web/tools/chrome-devtools/memory-problems/)和频繁的 GC 暂停，以消除页面卡顿。
-* 在运行时，长时间运行的 JavaScript 可能会阻塞主线程，从而导致页面无响应。
- 将工作分为较小的块（使用 <code><a
-  href="/web/fundamentals/performance/rendering/optimize-javascript-execution#use_requestanimationframe_for_visual_changes">requestAnimationFrame()</a></code>
-  或 <code><a
-  href="/web/updates/2015/08/using-requestidlecallback">requestIdleCallback()</a></code>
-  排程）可以最大限度减少无响应问题。
-
-## 减少 JavaScript 交付成本的模式
-
-如果您想保持较短的 JavaScript 解析/编译及网络传输时间，不妨试试基于路由的分块或
-[PRPL](/web/fundamentals/performance/prpl-pattern/) 等模式。
-
+When you’re trying to keep parse/compile and network transmit times for JavaScript slow, there are patterns that can help like route-based chunking or [PRPL](/web/fundamentals/performance/prpl-pattern/).
 
 ### PRPL
 
-PRPL（推送、渲染、预先缓存、延迟加载）是一种通过激进代码拆分和缓存来优化交互性的模式：
+PRPL (Push, Render, Pre-cache, Lazy-load) is a pattern that optimizes for interactivity through aggressive code-splitting and caching:
 
+![](images/1_VgdNbnl08gcetpqE1t9P9w.png)
 
-<img src="images/1_VgdNbnl08gcetpqE1t9P9w.png"/>
+Let’s visualize the impact it can have.
 
-上图直观地呈现出 PRPL 的影响。
+We analyze the load-time of popular mobile sites and Progressive Web Apps using V8’s Runtime Call Stats. As we can see, parse time (shown in orange) is a significant portion of where many of these sites spend their time:
 
-我们使用
-V8 的 Runtime Call Stats 来分析热门移动网站和渐进式网页应用的加载时间。 正如我们所见，许多网站都将大部分的时间用在解析（以橙色显示）上：
+![](images/1_9BMRW5i_bS4By_JSESXX8A.png)
 
+[Wego](https://www.wego.com), a site that uses PRPL, manages to maintain a low parse time for their routes, getting interactive very quickly. Many of the other sites above adopted code-splitting and performance budgets to try lowering their JS costs.
 
-<img src="images/1_9BMRW5i_bS4By_JSESXX8A.png"/>
+### Progressive Bootstrapping
 
-[Wego](https://www.wego.com) 网站使用 PRPL 来保持较短的路由解析时间，从而快速进行交互。
- 上述许多其他网站采用代码拆分和性能预算来尝试降低其 JS 成本。
+Many sites optimize content visibility at the expensive of interactivity. To get a fast first paint when you do have large JavaScript bundles, developers sometimes employ server-side rendering; then "upgrade" it to attach event handlers when the JavaScript finally gets fetched.
 
+Be careful — this has its own costs. You 1) generally send down a *larger* HTML response which can push our interactivity, 2) can leave the user in an uncanny valley where half the experience can’t actually be interactive until JavaScript finishes processing.
 
+Progressive Bootstrapping may be a better approach. Send down a minimally functional page (composed of just the HTML/JS/CSS needed for the current route). As more resources arrive, the app can lazy-load and unlock more features.<figure> 
 
+![](images/1_zY03Y5nVEY21FXA63Qe8PA.png) <figcaption> [Progressive Bootstrapping](https://twitter.com/aerotwist/status/729712502943174657) by Paul Lewis </figcaption> </figure> 
 
-### 渐进式引导
+Loading code proportionate to what’s in view is the holy grail. PRPL and Progressive Bootstrapping are patterns that can help accomplish this.
 
-许多网站以交互性为代价来优化内容可见性。 为在确实有大型 JavaScript 软件包时快速进行首次绘制，开发者有时会利用服务器端渲染；然后将其“升级”，以便最终提取 JavaScript 时附加事件处理程序。
+## Conclusions
 
+**Transmission size is critical for low end networks. Parse time is important for CPU bound devices. Keeping these low matters.**
 
+Teams have found success adopting strict performance budgets for keeping their JavaScript transmission and parse/compile times low. See Alex Russell’s "[Can You Afford It?: Real-world Web Performance Budgets](https://infrequently.org/2017/10/can-you-afford-it-real-world-web-performance-budgets/)" for guidance on budgets for mobile.<figure> 
 
+![](images/1_U8PJVNrA_tYADQ6_S4HUYw.png) <figcaption>It’s useful to consider how much JS "headroom" the architectural decisions we make can leave us for app logic.</figcaption> </figure> 
 
-请慎重思考，因为这种方法自身也会产生成本。 您 1) 通常会发送*大型* HTML
-响应，这可能会推动交互性，2) 也可能会让用户处于“恐怖谷”，即在 JavaScript 完成处理之前，半数体验实际上都没有交互性。
+If you’re building a site that targets mobile devices, do your best to develop on representative hardware, keep your JavaScript parse/compile times low and adopt a Performance Budget for ensuring your team are able to keep an eye on their JavaScript costs.
 
+## Learn More
 
-
-或许渐进式引导是更好的方法。 发送具有最低限度功能的页面（仅由当前路由所需的 HTML/JS/CSS 组成）。
-当有更多资源到达时，应用可以进行延迟加载，并解锁更多功能。
-
-<figure> <img src="images/1_zY03Y5nVEY21FXA63Qe8PA.png"/> <figcaption> <a
-href="https://twitter.com/aerotwist/status/729712502943174657">渐进式引导</a>，发布人：Paul Lewis</figcaption> </figure>
-
-
-加载与视图中显示的内容成比例的代码是诀窍所在。 PRPL
-和渐进式引导模式可以帮助您实现这一点。
-
-## 结论
-
-**传输大小对于低端网络极为关键。 在 CPU 处理能力有限的设备上，解析时间十分重要。
- 应该尽量降低这两个指标。**
-
-某些团队已成功通过采用严格的性能预算来保持较短的
-JavaScript 传输和解析/编译时间。 请参阅 Alex Russell 的“[您能否承受？：
-真实的网络性能预算](https://infrequently.org/2017/10/can-you-afford-it-real-world-web-performance-budgets/)”，以获取有关适用于移动设备的预算指南。
-
-
-
-<figure> <img src="images/1_U8PJVNrA_tYADQ6_S4HUYw.png"/> <figcaption>最好考虑一下我们所作的架构决策有多少 JS“余量”可供我们用于应用逻辑。</figcaption> </figure>
-
-
-
-如果您正在构建面向移动设备的网站，请尽量在有代表性的硬件上进行开发，保持较短的 JavaScript 解析/编译时间，并采用性能预算来确保团队能够密切关注其 JavaScript 成本。
-
-
-
-
-## 了解详情
-
-* [Chrome 开发峰会 2017 - 现代加载最佳做法](https://www.youtube.com/watch?v=_srJ7eHS3IM)
-* [JavaScript 启动性能](https://medium.com/reloading/javascript-start-up-performance-69200f43b201)
-* [解决网络性能危机](https://nolanlawson.github.io/frontendday-2016/) - Nolan Lawson
-* [您能否承受？真实的性能预算](https://infrequently.org/2017/10/can-you-afford-it-real-world-web-performance-budgets/) - Alex Russell
-* [评估网络框架和库](https://twitter.com/kristoferbaxter/status/908144931125858304) -
-Kristofer Baxter
-* [Cloudflare 的 Brotli 压缩实验结果](https://blog.cloudflare.com/results-experimenting-brotli/)（请注意，较高质量的动态 Brotli 会导致初始页面渲染延迟，因此务必谨慎评估。
- 您可能想改为使用静态压缩。）
-* [性能的未来](https://medium.com/@samccone/performance-futures-bundling-281543d9a0d5) - Sam Saccone
-
-
+* [Chrome Dev Summit 2017 - Modern Loading Best Practices](https://www.youtube.com/watch?v=_srJ7eHS3IM)
+* [JavaScript Start-up Performance](https://medium.com/reloading/javascript-start-up-performance-69200f43b201)
+* [Solving the web performance crisis](https://nolanlawson.github.io/frontendday-2016/) — Nolan Lawson
+* [Can you afford it? Real-world performance budgets](https://infrequently.org/2017/10/can-you-afford-it-real-world-web-performance-budgets/) — Alex Russell
+* [Evaluating web frameworks and libraries](https://twitter.com/kristoferbaxter/status/908144931125858304) — Kristofer Baxter
+* [Cloudflare’s Results of experimenting with Brotli](https://blog.cloudflare.com/results-experimenting-brotli/) for compression (note dynamic Brotli at a higher quality can delay initial page render so evaluate carefully. You probably want to statically compress instead.)
+* [Performance Futures](https://medium.com/@samccone/performance-futures-bundling-281543d9a0d5) — Sam Saccone
