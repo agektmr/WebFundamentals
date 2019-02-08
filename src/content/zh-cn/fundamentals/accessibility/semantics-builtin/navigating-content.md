@@ -1,60 +1,33 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description:语义在网页导航中的作用
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: The role of semantics in page navigation
 
+{# wf_blink_components: Blink>Accessibility #} {# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2016-10-04 #}
 
-{# wf_updated_on:2016-10-04 #}
-{# wf_published_on:2016-10-04 #}
+# Semantics and Navigating Content {: .page-title }
 
-# 语义和内容导航 {: .page-title }
+{% include "web/_shared/contributors/megginkearney.html" %} {% include "web/_shared/contributors/dgash.html" %} {% include "web/_shared/contributors/aliceboxhall.html" %}
 
-{% include "web/_shared/contributors/megginkearney.html" %}
-{% include "web/_shared/contributors/dgash.html" %}
-{% include "web/_shared/contributors/aliceboxhall.html" %}
+You've learned about affordances, semantics, and how assistive technologies use the accessibility tree to create an alternative user experience for their users. You can see that writing expressive, semantic HTML gives you a lot of accessibility with very little effort, as many standard elements have both the semantics and supporting behavior built in.
 
+In this lesson we'll cover some less obvious semantics that are very important to screen reader users, especially as regards navigation. In a simple page with lots of controls but not much content, it's easy to scan the page to find what you need. But on a content-heavy page, such as a Wikipedia entry or a news aggregator, it's not practical to read through everything from the top down; you need a way to efficiently navigate through the content.
 
+Developers often have the misconception that screen readers are tedious and slow to use, or that everything on the screen has to be focusable for the screen reader to find it. That's often not the case.
 
-您已了解功能可见性、语义的相关内容，以及辅助技术如何利用无障碍树为其用户打造替代性用户体验。如您所见，编写具有表现力的语义 HTML 让不费什么力气便可获得大量无障碍功能，因为许多标准元素同时内置了语义和支持行为。
+Screen reader users often rely on a list of headings to locate information. Most screen readers have easy ways to isolate and scan a list of page headings, an important feature called the *rotor*. Let's see how we can use HTML headings effectively to support this feature.
 
+## Using headings effectively
 
+First, let's reiterate an earlier point: [*DOM order matters*](/web/fundamentals/accessibility/focus/dom-order-matters), not only for focus order but for screen reader order. As you experiment with screen readers like VoiceOver, NVDA, JAWS, and ChromeVox, you'll find the heading list follows the DOM order rather than the visual order.
 
+This is true for screen readers in general. Because screen readers interact with the accessibility tree, and the accessibility tree is based on the DOM tree, the order a screen reader perceives is thus directly based on the DOM order. This means that an appropriate heading structure is more important than ever.
 
+In most well-structured pages, the heading levels are nested to indicate parent-child relationships among content blocks. The [WebAIM checklist](http://webaim.org/standards/wcag/checklist) repeatedly refers to this technique.
 
-在本节课中，我们将阐述一些不太明显的语义，它们对屏幕阅读器用户非常重要，特别是在导航方面。
-在一个包含大量控件但没有多少内容的简单页面中，可轻易通过扫描页面找到所需内容。但在一个内容丰富的页面（例如维基百科条目或新闻聚合器）中，从上到下通读所有内容并不现实；您需要找到一种高效的内容浏览方式。
+- [1.3.1](http://webaim.org/standards/wcag/checklist#sc1.3.1){: .external } mentions "Semantic markup is used to designate headings"
+- [2.4.1](http://webaim.org/standards/wcag/checklist#sc2.4.1){: .external } mentions heading structure as a technique for bypassing blocks of content
+- [2.4.6](http://webaim.org/standards/wcag/checklist#sc2.4.6){: .external } discusses some details for writing useful headings
+- [2.4.10](http://webaim.org/standards/wcag/checklist#sc2.4.10){: .external } states "individual sections of content are designated using headings, where appropriate"
 
-
-
-开发者往往错误地认为屏幕阅读器使用起来繁琐而又效率低下，或者屏幕上的所有内容都必须是可聚焦内容，才能让屏幕阅读器找到。实际情况往往并非如此。
-
-屏幕阅读器用户通常依赖标题列表来定位信息。大多数屏幕阅读器都可以轻松地隔离和扫描页面标题列表，这项重要功能称作“转子”。让我们看看如何才能有效利用 HTML 标题支持这项功能。
-
-
-## 有效利用标题
-
-首先，让我们重申前面提出的一个观点：[*DOM 顺序很重要*](/web/fundamentals/accessibility/focus/dom-order-matters)，不仅对焦点顺序很重要，对屏幕阅读器顺序同样很重要。在试用 VoiceOver、NVDA、JAWS 和 ChromeVox 等屏幕阅读器时，您会发现标题列表遵循的是 DOM 顺序而非视觉顺序。
-
-
-
-屏幕阅读器大都如此。由于屏幕阅读器与无障碍树交互，而无障碍树基于 DOM 树，因此屏幕阅读器感知的顺序直接基于 DOM 顺序。这意味着，适当的标题结构具有前所未有的重要性。
-
-
-大多数结构良好的网页均采用嵌套式标题级别，以指示内容块之中的父-子关系。
-[WebAIM 检查清单](http://webaim.org/standards/wcag/checklist)反复提及了这一方法。
-
-
-
- - [1.3.1](http://webaim.org/standards/wcag/checklist#sc1.3.1){: .external } 提到“使用语义标记来指定标题”
- - [2.4.1](http://webaim.org/standards/wcag/checklist#sc2.4.1){: .external } 提到可利用标题结构这种方法来绕过内容块
- - [2.4.6](http://webaim.org/standards/wcag/checklist#sc2.4.6){: .external } 阐述了一些关于编写有用标题的详情
- - [2.4.10](http://webaim.org/standards/wcag/checklist#sc2.4.10){: .external } 指出“视情况利用标题来指定各个内容区”
-
-
-
-并非所有标题都要出现在屏幕上。例如，[维基百科](https://www.wikipedia.org/)采用的一种方法会刻意将一些标题置于屏幕之外，并明确限定*只有*屏幕阅读器以及其他辅助技术才能访问它们。
-
-
-
+Not all headings have to be visible on-screen. [Wikipedia](https://www.wikipedia.org/), for instance, uses a technique that deliberately places some headings off-screen to specifically make them accessible *only* to screen readers and other assistive technology.
 
     <style>
       .sr-only {
@@ -66,70 +39,42 @@ description:语义在网页导航中的作用
         overflow:hidden;
       }
     </style>
-
+    
     <h2 class="sr-only">This heading is offscreen.</h2>
+    
 
-Note: WebAIM 网站在[这篇有关屏幕外内容的文章](http://webaim.org/techniques/css/invisiblecontent/)中对此方法做了详细阐述。
+Note: The WebAIM site discusses this technique at length in [this article on offscreen content](http://webaim.org/techniques/css/invisiblecontent/).
 
+For complex applications, this can be a good way to accommodate headings when the visual design doesn't require or have room for a visible heading.
 
-对于复杂应用，如果视觉设计不需要或没有空间容纳可见标题，可能适合采用此方法来容纳标题。
+Caution: It's important not to go overboard with this technique. Remember that assistive technology users may also be able to see the screen for themselves, so going too far down the path of creating "screen reader only" content may actually degrade the user experience for some users. It can also create a maintenance headache for you later.
 
+## Other navigation options
 
-Note: 采用此方法时切忌过火。别忘了，辅助技术用户或许自己也能看到屏幕，因此如果在创建“屏幕阅读器专用”内容这条道路上走得太远，实际上可能会令某些用户的体验水平下降。并且还会给后期维护造成困难。
+Although pages with good headings help screen reader users navigate, there are other elements they can use to move around a page, including *links*, *form controls*, and *landmarks*.
 
+Readers can use the screen reader's rotor feature (an easy way to isolate and scan a list of page headings) to access a *list of links* on the page. Sometimes, as on a wiki, there are many links, so the reader might search for a term within the links. This limits the hits to links that actually contain the term, rather than every occurrence of the term on the page.
 
-## 其他导航方案
+This feature is useful only if the screen reader can find the links and the link text is meaningful. For example, here are some common patterns that make links hard to find.
 
-尽管包含有效标题的页面有助于屏幕阅读器用户进行导航，但他们也可利用其他元素在页面上导航，其中包括*链接*、*表单控件*和*地标*。
+- Anchor tags without `href` attributes. Often used in single-page applications, these link targets cause problems for screen readers. You can read more in [this article on single-page apps](http://neugierig.org/software/blog/2014/02/single-page-app-links.html).
+- Buttons that are implemented with links. These cause the screen reader to interpret the content as a link, and the button functionality is lost. For these cases, replace the anchor tag with a real button and style it appropriately.
+- Images used as link content. Sometimes necessary, linked images can be unusable to screen readers. To guarantee that the link is properly exposed to assistive technology, make sure the image has `alt` attribute text.
 
+Poor link text is another problem. Clickable text such as "learn more" or "click here" provides no semantic information about where the link goes. Instead, use descriptive text like "learn more about responsive design" or "see this canvas tutorial" to help screen readers provide meaningful context about links.
 
+The rotor can also retrieve a *form control list*. Using this list, readers can search for specific items and go directly to them.
 
-读者可以利用屏幕阅读器的转子功能（一种轻松隔离和扫描页面标题列表的方法）获取页面上的*链接列表*。有时存在许多链接（Wiki 上就是如此），因此阅读器可能会在这些链接内查找某个词语。这会将命中结果限定在实际包含该词语的链接而非该词语在页面上的每一次出现。
+A common error that screen readers make is pronunciation. For example, a screen reader might pronounce "Udacity" as "oo-dacity", or read a phone number as a large integer, or read capitalized text as though it were an acronym. Interestingly, screen reader users are quite used to this quirk and take it into consideration.
 
+Some developers try to ameliorate this situation by providing screen-reader-only text that is spelled phonetically. Here's a simple rule for phonetic spelling: **don't do it**; it only makes the problem worse! If, for example, a user is using a braille display, the word will be spelled incorrectly, leading to more confusion. Screen readers allow words to be spelled aloud, so leave it to the reader to control their experience and decide when this is necessary.
 
-仅当屏幕阅读器能找到链接并且链接文本有意义时，此功能才有用。
-例如，以下这些常见模式会使链接变得难以找到。
+Readers can use the rotor to see a *landmarks list*. This list helps readers find the main content and a set of navigational landmarks provided by HTML landmark elements.
 
+HTML5 introduced some new elements that help define the semantic structure of the page, including `header`, `footer`, `nav`, `article`, `section`, `main`, and `aside`. These elements specifically provide structural clues in the page without forcing any built-in styling (which you should do with CSS anyway).
 
- - 不带 `href` 属性的锚点标记。这些常用于单页面应用的链接目标会给屏幕阅读器造成困难。
-您可以在[这篇有关单页面应用的文章](http://neugierig.org/software/blog/2014/02/single-page-app-links.html)中阅读到更多内容。
- - 实现时包含链接的按钮。这些按钮会使屏幕阅读器将内容解读为链接，从而使按钮功能丧失。
-在这些情况下，请将锚点标记替换为实际按钮，并对按钮进行相应的样式设置。
- - 用作链接内容的图像。有时屏幕阅读器无法使用某些必要的链接图像。
-为保证向辅助技术正确公开链接，确保图像具有 `alt` 属性文本。
+Semantic structural elements replace multiple, repetitive `div` blocks, and provide a clearer, more descriptive way to intuitively express page structure for both authors and readers.
 
+## Feedback {: #feedback }
 
-还有一个问题是不良链接文本。“了解详情”或“点击此处”等可点击文本对链接的指向未提供任何相关语义信息。
-请改用“了解有关自适应设计的详情”或“请参阅此 canvas 教程”，以帮助屏幕阅读器提供有关链接的有意义上下文。
-
-
-
-转子还可检索*表单控件列表*。阅读器可以利用该列表查找并直接跳转到特定项目。
-
-
-屏幕阅读器的一种常犯错误是发音错误。例如，屏幕阅读器对“Udacity”的发音可能是“oo-dacity”，以大整数形式读出电话号码，或者以首字母缩写词形式读出大写文本。有趣的是，屏幕阅读器用户对这种古怪行为已习以为常，在使用时就考虑到了这种情况。
-
-
-
-
-
-一些开发者尝试通过提供以语音拼写的屏幕阅读器专用文本来改善这一状况。
-以下是有关语音拼写的一条简单规则：**不要这样做**，这只会让问题更加严重！
-例如，如果用户使用盲文显示器，将会出现词语拼写不正确的情况，造成更多困惑。屏幕阅读器允许朗读式拼写词语，因此应交由阅读器来控制其体验以及决定何时有必要这样做。
-
-
-阅读器可以利用转子来查看*地标列表*。该列表有助于阅读器找到主要内容以及一组由 HTML 地标元素提供的导航地标。
-
-
-
-HTML5 引入的一些新元素有助于定义页面的语义结构，其中包括 `header`、`footer`、`nav`、`article`、`section`、`main` 以及 `aside`。这些元素在页面中明确提供结构线索，不会强制进行任何内置样式设置（反正您都应使用 CSS 来完成）。
-
-
-语义结构元素可以取代多个重复性的 `div` 块，并提供了一种更加清晰、更具描述性的方式，能够同时为制作者和阅读器直观表达页面结构。
-
-
-
-
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
