@@ -1,78 +1,71 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Mantenha o código do lado do cliente legível e depurável mesmo depois de combinar, minificar ou compilar.
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Keep your client-side code readable and debuggable even after you've combined, minified or compiled it.
 
-{# wf_updated_on: 2015-04-21 #}
-{# wf_published_on: 2015-04-13 #}
+{# wf_updated_on: 2018-07-27 #} {# wf_published_on: 2015-04-13 #} {# wf_blink_components: Platform>DevTools #}
 
-# Mapear código pré-processado no código-fonte {: .page-title }
+# Map Preprocessed Code to Source Code {: .page-title }
 
-{% include "web/_shared/contributors/megginkearney.html" %}
-{% include "web/_shared/contributors/pbakaus.html" %}
+{% include "web/_shared/contributors/megginkearney.html" %} {% include "web/_shared/contributors/pbakaus.html" %}
 
-Mantenha o código do lado do cliente legível e depurável mesmo depois de combinar, minificar ou compilar. Use mapas de origem para mapear seu código-fonte no código compilado.
-
+Keep your client-side code readable and debuggable even after you've combined, minified or compiled it. Use source maps to map your source code to your compiled code.
 
 ### TL;DR {: .hide-from-toc }
-- Use o Source Maps para mapear código minificado no código-fonte. Você pode ler e depurar código compilado na fonte original.
-- Use somente <a href=''/web/tools/setup/setup-preprocessors?#supported-preprocessors''>pré-processadores capazes de produzir Source Maps</a>.
-- Verifique se o servidor Web pode fornecer Source Maps.
 
+* Use Source Maps to map minified code to source code. You can then read and debug compiled code in its original source.
+* Only use [preprocessors capable of producing Source Maps]().
+* Verify that your web server can serve Source Maps.
 
-## Começar com pré-processadores
+## Get started with preprocessors
 
-Este artigo explica como interagir com o JavaScript Source Maps no painel Sources do DevTools. Para ver mais detalhes sobre o que são pré-processadores, como eles podem ajudar e como o Source Maps funciona, acesse [Configurar pré-processadores JS e CSS](/web/tools/setup/setup-preprocessors?#debugging-and-editing-preprocessed-content).
+This article explains how to interact with JavaScript Source Maps in the DevTools Sources Panel. For a first overview of what preprocessors are, how they can help and how Source Maps work, head over to [Set Up CSS & JS Preprocessors](/web/tools/setup/setup-preprocessors?#debugging-and-editing-preprocessed-content).
 
-## Usar um pré-processador compatível
+## Use a supported preprocessor
 
-Você precisa usar um minificador capaz de criar mapas de origem. Para as opções mais populares, [veja nossa seção de compatibilidade do pré-processador](/web/tools/setup/setup-preprocessors?#supported-preprocessors). Caso queira mais informações, veja a página wiki [Mapas de origem: linguagens, ferramentas e outras informações](https://github.com/ryanseddon/source-map/wiki/Source-maps:-languages,-tools-and-other-info).
+You need to use a minifier that's capable of creating source maps. For the most popular options, [see our preprocessor support section](/web/tools/setup/setup-preprocessors?#supported-preprocessors). For an extended view, see the [Source maps: languages, tools and other info](https://github.com/ryanseddon/source-map/wiki/Source-maps:-languages,-tools-and-other-info) wiki page.
 
-Os tipos de pré-processadores a seguir são comumente usados junto com o Source Maps:
+The following types of preprocessors are commonly used in combination with Source Maps:
 
-* Transcompiladores ([Babel](https://babeljs.io/){: .external }, [Traceur](https://github.com/google/traceur-compiler/wiki/Getting-Started))
-* Compiladores ([Closure Compiler](https://github.com/google/closure-compiler), [TypeScript](http://www.typescriptlang.org/){: .external }, [CoffeeScript](http://coffeescript.org), [Dart](https://www.dartlang.org))
-* Minimizadores ([UglifyJS](https://github.com/mishoo/UglifyJS))
+* Transpilers ([Babel](https://babeljs.io/){: .external }, [Traceur](https://github.com/google/traceur-compiler/wiki/Getting-Started))
+* Compilers ([Closure Compiler](https://github.com/google/closure-compiler), [TypeScript](http://www.typescriptlang.org/){: .external }, [CoffeeScript](http://coffeescript.org), [Dart](https://www.dartlang.org))
+* Minifiers ([UglifyJS](https://github.com/mishoo/UglifyJS))
 
-## Source Maps no painel Sources do DevTools
+## Source Maps in DevTools Sources panel
 
-Mapas de origem de pré-processadores fazem o DevTools carregar seus arquivos originais, além dos minificados. Depois, você usa os originais para definir pontos de interrupção e percorrer o código. Enquanto isso, o Chrome está executando o código minificado. Isso dá a ilusão de execução em um site de desenvolvimento em produção.
+Source Maps from preprocessors cause DevTools to load your original files in addition to your minified ones. You then use the originals to set breakpoints and step through code. Meanwhile, Chrome is actually running your minified code. This gives you the illusion of running a development site in production.
 
-Ao executar o Source Maps no DevTools, você perceberá que o JavaScript não está compilado e que pode ver todos os arquivos JavaScript que ele referencia individualmente. Isso é usar mapeamento de origem mas, por trás dos bastidores, o código compilado é realmente executado. Todo erro, registro e ponto de interrupção será mapeado no código de desenvolvimento para criar depuração incrível! Então, na prática, ele cria a ilusão de que você está executando um em ambiente de desenvolvimento em produção.
+When running Source Maps in DevTools, you'll notice that the JavaScript isn't compiled and you can see all the individual JavaScript files it references. This is using source mapping, but behind the scenes actually runs the compiled code. Any errors, logs and breakpoints will map to the dev code for awesome debugging! So in effect it gives you the illusion that you're running a dev site in production.
 
-### Ativar mapas de origem nas configurações
+### Enable Source Maps in settings
 
-Os mapas de origem estão ativados por padrão (a partir do Chrome 39), mas, se você quiser verificar ou ativá-lo, abra o DevTools e clique na engrenagem de configuração ![engrenagem](imgs/gear.png){:.inline}. Em **Sources**, marque **Enable JavaScript Source Maps**. Você também pode marcar **Enable CSS Source Maps**.
+Source Maps are enabled by default (as of Chrome 39), but if you'd like to double-check or enable them, first open DevTools and click the settings cog ![gear](imgs/gear.png){:.inline}. Under **Sources**, check **Enable JavaScript Source Maps**. You might also check **Enable CSS Source Maps**.
 
-![Ativar mapas de origem](imgs/source-maps.jpg)
+![Enable Source Maps](imgs/source-maps.jpg)
 
-### Depurar com mapas de origem
+### Debugging with Source Maps
 
-Ao [depurar seu código](/web/tools/chrome-devtools/debug/breakpoints/step-code) e com o Source Maps ativado, o Source Maps aparecerá em dois lugares:
+When [debugging your code](/web/tools/chrome-devtools/debug/breakpoints/step-code) and Source Maps enabled, Source Maps will show in two places:
 
-1. No console (o link para a origem deve ser o arquivo original, não o gerado)
-2. Ao percorrer o código (os links na pilha de chamadas devem abrir o arquivo-fonte original)
+1. In the console (the link to source should be the original file, not the generated one)
+2. When stepping through code (the links in the call stack should open the original source file)
 
-## @sourceURL e displayName
+## @sourceURL and displayName
 
-Embora não faça parte das especificações do Source Map, o `@sourceURL` facilita muito o desenvolvimento ao trabalhar com evals (avaliações). Este auxiliar é muito parecido com a propriedade `//# sourceMappingURL` e, na verdade, é mencionado nas especificações do Source Map V3.
+While not part of the Source Map spec, the `@sourceURL` allows you to make development much easier when working with evals. This helper looks very similar to the `//# sourceMappingURL` property and is actually mentioned in the Source Map V3 specifications.
 
-Ao incluir o comentário especial a seguir no código, que será avaliado, você pode chamar evals e scripts e estilos embutidos para que apareçam como nomes mais lógicos no DevTools.
+By including the following special comment in your code, which will be evaled, you can name evals and inline scripts and styles so they appear as more logical names in your DevTools.
 
 `//# sourceURL=source.coffee`
 
-Navegue para esta
-**[demonstração](http://www.thecssninja.com/demo/source_mapping/compile.html)** e, em seguida:
+Navigate to this **[demo](http://www.thecssninja.com/demo/source_mapping/compile.html)**, then:
 
-* Abra o DevTools para acessar o painel **Sources**.
-* Insira um nome de arquivo no campo de entrada _Name your code:_.
-* Clique no botão **compile**.
-* Um alerta aparecerá com a soma avaliada pelo código do CoffeeScript.
+* Open the DevTools and go to the **Sources** panel.
+* Enter in a filename into the *Name your code:* input field.
+* Click on the **compile** button.
+* An alert will appear with the evaluated sum from the CoffeeScript source.
 
-Se você expandir o subpainel _Sources_, verá um novo arquivo com o nome personalizado que inseriu anteriormente. Ao clicar duas vezes para visualizar esse arquivo, ele conterá o JavaScript compilado da fonte original. Na última linha, no entanto, haverá um comentário de `// @sourceURL` indicando qual era o arquivo-fonte original. Isso pode ser de grande ajuda na depuração quando se trabalha com abstrações de linguagem
+If you expand the *Sources* sub-panel you will now see a new file with the custom filename you entered earlier. If you double-click to view this file it will contain the compiled JavaScript for our original source. On the last line, however, will be a `// @sourceURL` comment indicating what the original source file was. This can greatly help with debugging when working with language abstractions.
 
-![Trabalhar com sourceURL](imgs/coffeescript.jpg)
+![Working with sourceURL](imgs/coffeescript.jpg)
 
+## Feedback {: #feedback }
 
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
