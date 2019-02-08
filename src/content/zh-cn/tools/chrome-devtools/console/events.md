@@ -1,94 +1,73 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description:通过 Chrome DevTools Command Line API，您可以使用各种方式观察和检查事件侦听器
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: The Chrome DevTools Command Line API offers various ways to observe and inspect event listeners
 
-{# wf_updated_on: 2015-08-02 #}
-{# wf_published_on: 2015-04-13 #}
+{# wf_updated_on: 2018-07-27 #} {# wf_published_on: 2015-04-13 #} {# wf_blink_components: Platform>DevTools #}
 
-# 监控事件 {: .page-title }
+# Monitor Events {: .page-title }
 
-{% include "web/_shared/contributors/megginkearney.html" %}
-{% include "web/_shared/contributors/flaviocopes.html" %}
-通过 Chrome DevTools Command Line API，您可以使用各种方式观察和检查事件侦听器。JavaScript 在交互式页面中扮演着重要角色，浏览器为您提供一些有用的工具来调试事件和事件处理程序。
-
+{% include "web/_shared/contributors/megginkearney.html" %} {% include "web/_shared/contributors/flaviocopes.html" %} The Chrome DevTools Command Line API offers various ways to observe and inspect event listeners. JavaScript plays a central role in interactive pages, and the browser provides you some useful tools to debug events and event handlers.
 
 ### TL;DR {: .hide-from-toc }
-- 使用  <code>monitorEvents()</code> 侦听特定类型的事件。
-- 使用  <code>unmonitorEvents()</code> 停止侦听。
-- 使用  <code>getEventListeners()</code> 获取 DOM 元素的侦听器。
-- 使用“Event Listeners Inspector”面板获取有关事件侦听器的信息。
 
+- Listen to events of a certain type using `monitorEvents()`.
+- Use `unmonitorEvents()` to stop listening.
+- Get listeners of a DOM element using `getEventListeners()`.
+- Use the Event Listeners Inspector panel to get information on event listeners.
 
-## 监控事件
+## Monitor events
 
-[monitorEvents()](/web/tools/chrome-devtools/debug/command-line/command-line-reference#monitoreventsobject-events) 方法指示 DevTools 记录与指定目标有关的信息。
+The [monitorEvents()](/web/tools/chrome-devtools/debug/command-line/command-line-reference#monitoreventsobject-events) method instructs the DevTools to log information on the specified targets.
 
+The first parameter is the object to monitor. All events return if the second parameter is not provided. To specify the events to listen to, pass either a string or an array of strings as the second parameter.
 
-第一个参数是要监控的对象。如果不提供第二个参数，所有事件都将返回。若要指定要侦听的事件，则传递一个字符串或一个字符串数组作为第二个参数。
-
-
-
-
-在页面正文上侦听“click”事件：
+Listen to click events on the body of the page:
 
     monitorEvents(document.body, "click");
+    
 
-如果监控的事件是受支持的*事件类型*，DevTools 将其映射到一组标准事件名称，则该方法侦听该类型的事件。
+If the monitored event is a supported *event type* that the DevTools maps to a set of standard event names, then the method listens to the events for that type.
 
+The [Command Line API](/web/tools/chrome-devtools/debug/command-line/command-line-reference) has a full mapping of *event types* to the events they cover.
 
+To stop monitoring events, call the `unmonitorEvents()` method and give it the object to stop monitoring.
 
-[Command Line API](/web/tools/chrome-devtools/debug/command-line/command-line-reference) 可提供完整的*事件类型*与其涵盖的事件的对应情况。
-
-如需停止监控事件，请调用 `unmonitorEvents()` 方法并为其提供对象以停止监控。
-
-
-停止侦听 `body` 对象上的事件：
+Stop listening to events on the `body` object:
 
     unmonitorEvents(document.body);
+    
 
-## 查看在对象上注册的事件侦听器
+## View event listeners registered on objects
 
-[getEventListeners() API](/web/tools/chrome-devtools/debug/command-line/command-line-reference#geteventlistenersobject) 返回在指定对象上注册的事件侦听器。
+The [getEventListeners() API](/web/tools/chrome-devtools/debug/command-line/command-line-reference#geteventlistenersobject) returns the event listeners registered on the specified object.
 
-
-返回值是一个对象，其包含每个注册的事件类型（例如，`click` 或 `keydown`）数组。每个数组的成员是描述为每个类型注册的侦听器的对象。例如，以下代码列出了在文档对象上注册的所有事件侦听器：
-
-
-
-
+The return value is an object that contains an array for each registered event type (`click` or `keydown`, for example). The members of each array are objects that describe the listener registered for each type. For example, the following code lists all the event listeners registered on the document object:
 
     getEventListeners(document);
+    
 
-![使用 getEventListeners() 时的输出](images/events-call-geteventlisteners.png)
+![Output of using getEventListeners()](images/events-call-geteventlisteners.png)
 
-如果在指定对象上注册了多个侦听器，则数组包含每个侦听器的成员。以下示例中，在“#scrollingList”元素上为 `mousedown` 事件注册了两个事件侦听器：
+If more than one listener is registered on the specified object, then the array contains a member for each listener. In the following example, there are two event listeners registered on the #scrollingList element for the `mousedown` event:
 
+![View of the event listeners attached to mousedown](images/events-geteventlisteners_multiple.png)
 
+Further expand each of these objects to explore their properties:
 
+![Expanded view of listener object](images/events-geteventlisteners_expanded.png)
 
-![附加到 mousedown 的事件侦听器的视图](images/events-geteventlisteners_multiple.png)
+## View event listeners registered on DOM elements
 
-进一步展开每个对象以查看它们的属性：
+By default, the *Event Listeners* panel in the Elements Inspector shows all the events attached to a page:
 
-![展开的 listener 对象的视图](images/events-geteventlisteners_expanded.png)
+![Event listeners panel](images/events-eventlisteners_panel.png)
 
-## 查看在 DOM 元素上注册的事件侦听器
+The filter limits the events just to the selected node:
 
-默认情况下，Elements Inspector 中的 *Event Listeners* 面板显示附加到页面的所有事件：
+![Event listeners panel, filtered by selected node only](images/events-eventlisteners_panel_filtered.png)
 
+By expanding the object, the panel shows the event listener details. In this example, the page has two event listeners attached via jQuery:
 
-![Event listeners 面板](images/events-eventlisteners_panel.png)
+![Expanded view of the event listeners](images/events-eventlisteners_panel_details.png)
 
-过滤器将事件限制在选定的节点：
+## Feedback {: #feedback }
 
-![Event listeners 面板，仅按选定的节点过滤](images/events-eventlisteners_panel_filtered.png)
-
-通过展开对象，此面板显示事件侦听器详细信息。在此示例中，此页面拥有两个通过 jQuery 附加的事件侦听器：
-
-
-
-![展开的事件侦听器视图](images/events-eventlisteners_panel_details.png)
-
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
