@@ -1,38 +1,35 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description:更好地了解动画及其在现代应用和网站中的用途。
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Get a better understanding of animations and their use in modern apps and sites.
 
-{# wf_updated_on: 2016-08-23 #}
-{# wf_published_on: 2014-08-08 #}
+{# wf_blink_components: Blink>Animation #} {# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2014-08-08 #}
 
-# 动画 {: .page-title }
+# Animations {: .page-title }
 
 {% include "web/_shared/contributors/paullewis.html" %}
 
-动画是使网络应用和网站吸引人的重要因素。用户希望有快速响应和高度交互的用户界面。但是，为界面设置动画未必很简单。什么应设置动画，何时显示，以及动画应有哪种感觉？
-
+Animations are a huge part of making compelling web applications and sites. Users have come to expect highly responsive and interactive user interfaces. Animating your interface, however, is not necessarily straightforward. What should be animated, when, and what kind of feel should the animation have?
 
 ### TL;DR {: .hide-from-toc }
-* 使用动画方式给项目增加活力。
-* 动画应支持用户交互。
-* 要小心选择您为其设置动画的属性；有些属性比其他属性开销更大。
 
+* Use animations as a way to add life to your projects.
+* Animations should be in support of user interaction.
+* Be careful which properties you animate; some are more expensive than others.
 
-## 选择合适的内容来设置动画
+## Choose the right things to animate
 
-出色的动画可增添一层乐趣，增加项目对用户的吸引力。可以将您喜欢的几乎所有内容设置动画，不管是宽度、高度、位置、颜色，还是背景，但您需要注意潜在的性能瓶颈，以及动画如何影响您的应用的个性。卡顿或选择不当的动画可能对用户体验产生负面影响，因此动画需要高性能并且恰当。
+Great animations add a layer of enjoyment and engagement to your projects for your users. You can animate pretty much anything you like, whether that’s widths, heights, positions, colors, or backgrounds, but you need to be aware of potential performance bottlenecks and how animations affect the personality of your application. Stuttering or poorly chosen animations can negatively affect user experience, so animations need to be both performant and appropriate.
 
-## 使用动画来支持交互
+## Use animations to support interactions
 
-不要仅仅因为您可以做动画就随便做；它只会惹恼用户并妨碍操作。相反，要有策略地放置动画以_增强_用户交互。如果用户点击菜单图标，滑动以显示抽屉式导航栏，或者点击按钮，则可以使用少量辉光或弹跳来确认交互。避免不必要地打断或妨碍用户活动的动画。
+Don’t just animate something because you can; it just annoys users and feels obstructive. Instead, use strategically placed animations to *reinforce* the user interactions. If they tap the menu icon, swipe to reveal a navigation drawer, or tap a button, use perhaps a subtle glow or bounce to acknowledge the interaction. Avoid animations that interrupt or obstruct the user's activity unnecessarily.
 
-## 避免为开销大的属性设置动画
+## Avoid animating expensive properties
 
-唯一比放置不当的动画更糟的事情是导致页面卡顿的动画。这种类型的动画让用户感到沮丧和不快，并且可能希望你没有设置动画。
+The only thing worse than animations that are poorly placed are those that cause the page to stutter. This type of animation leaves users feeling frustrated and unhappy, and likely wishing you didn't animate things at all.
 
-某些属性做出改变所花费的开销比其他属性要多，因此更可能使动画卡顿。例如，与改变元素的文本颜色相比，改变元素的 `box-shadow` 需要开销大很多的绘图操作。同样，改变元素的 `width` 可能比改变其 `transform` 要多一些开销。
+Some properties are more expensive to change than others, and are therefore more likely to make things stutter. So, for example, changing the `box-shadow` of an element requires a much more expensive paint operation than changing, say, its text color. Similarly, changing the `width` of an element is likely to be more expensive than changing its `transform`.
 
-您可以在[动画与性能](animations-and-performance)指南中阅读有关动画性能考虑事项的更多内容，但是如果想要 TL;DR（太长；未读），则坚持使用转换和透明度改变，以及使用 `will-change`。如果想确切知道给指定的属性设置动画会触发什么效果，请参阅 [CSS 触发器](http://csstriggers.com)。
+You can read more about the performance considerations of animations in the [Animations and Performance](animations-and-performance) guide, but if you want the TL;DR, stick to transforms and opacity changes, and use `will-change`. If you want to know exactly which work is triggered by animating a given property, see [CSS Triggers](http://csstriggers.com).
 
+## Feedback {: #feedback }
 
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
