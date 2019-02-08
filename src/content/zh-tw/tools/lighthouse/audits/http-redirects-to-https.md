@@ -1,35 +1,28 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description:“網站將 HTTP 流量重定向到 HTTPS”Lighthouse 審查的參考文檔。
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Reference documentation for the "Redirects HTTP Traffic To HTTPS" Lighthouse audit.
 
-{# wf_updated_on: 2016-09-20 #}
-{# wf_published_on: 2016-09-20 #}
+{# wf_updated_on: 2018-07-23 #} {# wf_published_on: 2016-09-20 #} {# wf_blink_components: N/A #}
 
-# 網站將 HTTP 流量重定向到 HTTPS {: .page-title }
+# Redirects HTTP Traffic To HTTPS {: .page-title }
 
-## 爲什麼說此審查非常重要 {: #why }
+## Overview {: #overview }
 
-所有網站都應使用 HTTPS 進行保護。請參閱以下 Lighthouse 文檔瞭解原因：[網站在 HTTPS 上](https)。
+All sites should be protected with HTTPS. See the following Lighthouse doc to learn why: [Site is on HTTPS](https).
 
+Once you've got HTTPS set up, you need to make sure that all unsecure HTTP traffic to your site is redirected to HTTPS.
 
-在您設置好 HTTPS 後，您需要確保將網站的所有不安全的 HTTP 流量重定向到 HTTPS。
+## Recommendations {: #recommendations }
 
+1. Use canonical links in the `head` of your HTML to help search engines figure out the best way to get to the page.
+    
+    <link rel="canonical" href="https://example.com" />
+    
 
-## 如何通過此審查 {: #how }
+2. Configure your server to redirect HTTP traffic to HTTPS. See your server's documentation to figure out the best way to do this.
 
-1. 在 HTML 的 `head` 中使用規範鏈接，以幫助搜索引擎瞭解到達此頁面的最佳方式。
+## More information {: #more-info }
 
+Lighthouse changes the page's URL to `http`, loads the page, and then waits for the event from the Chrome Debugger that indicates that the page is secure. If Lighthouse does not receive the event within 10 seconds then the audit fails.
 
-       <link rel="canonical" href="https://example.com"/>
+## Feedback {: #feedback }
 
-2. 配置您的服務器以將 HTTP 流量重定向到 HTTPS。請查看您的服務器的文檔以瞭解執行此操作的最佳方式。
-
-
-{% include "web/tools/lighthouse/audits/implementation-heading.html" %}
-
-Lighthouse 將頁面的網址更改爲 `http`，加載頁面，然後等待來自 Chrome Debugger 的一個事件，該事件可表明頁面安全。
-如果 Lighthouse 在 10 秒內沒有收到此事件，則表明審查失敗。
-
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
