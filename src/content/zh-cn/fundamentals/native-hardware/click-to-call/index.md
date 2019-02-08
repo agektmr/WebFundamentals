@@ -1,86 +1,62 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description:在有电话功能的设备上，使用户只需点击电话号码，即可直接联系您，通常称为一键通话。
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: On devices with phone capabilities, make it easy for users to directly connect with you by simply tapping a phone number, more commonly known as click to call.
 
-{# wf_updated_on:2016-08-22 #}
-{# wf_published_on:2014-06-17 #}
+{# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2014-06-17 #} {# wf_blink_components: Blink>Input #}
 
-# 一键通话 {: .page-title }
+# Click to Call {: .page-title }
 
 {% include "web/_shared/contributors/petelepage.html" %}
 
-在有电话功能的设备上，使用户只需点击电话号码，即可直接联系您，通常称为一键通话。
-
+On devices with phone capabilities, make it easy for users to directly connect with you by simply tapping a phone number, more commonly known as click to call.
 
 ### TL;DR {: .hide-from-toc }
 
-* 通过  <code>tel:</code> 架构将所有电话号码包含在超链接中。
-* 始终使用国际拨号格式。
+* Wrap all phone numbers in hyperlinks with the `tel:` schema.
+* Always use the international dialing format.
 
+## Link telephone numbers for click to call
 
-## 链接电话号码实现一键通话
+While many modern mobile browsers automatically detect phone numbers and convert them to links, it’s a good idea to do this directly in your code. By manually tagging each phone number, you can ensure that phone numbers are always enabled for click to call and that they will be styled to match your site.
 
-尽管许多现代移动浏览器将自动检测电话号码并将其转换为链接，但直接在您的代码中做链接仍是个好方法。通过手动标记每个电话号码，您可以确保电话号码始终启用一键通话，并且它们的样式与您的网站相匹配。
-
-
-
-
-要将电话号码标记为链接，可使用 `tel:` 架构。语法很简单：
-
-
+To mark a phone number as a link, use the `tel:` scheme. The syntax is simple:
 
     NIST Telephone Time-of-Day Service 
     <a href="tel:+1-303-499-7111">+1 (303) 499-7111</a>
+    
 
-此语法在浏览器中是这样呈现的：
+Your browser displays this syntax as follows:
 
-NIST Telephone Time-of-Day Service <a href="tel:+1-303-499-7111">+1 (303) 499-7111</a>
+NIST Telephone Time-of-Day Service [+1 (303) 499-7111](tel:+1-303-499-7111)
 
 <div class="attempt-right">
   <figure>
     <img src="images/click-to-call_framed.jpg" >
-    <figcaption>一键通话示例</figcaption>
+    <figcaption>Click to call example</figcaption>
   </figure>
 </div>
 
-在大多数有电话功能的设备上，在拨打号码之前，用户都会收到确认信息，以确保用户不会被骗拨打昂贵的长途或收费电话号码。当设备不支持电话呼叫时，可以为用户提供一个菜单，允许他们选择浏览器应如何处理该号码。
+On most devices with telephone capabilities, the user receives a confirmation before the number is dialed, to ensure that the user isn't being tricked into calling an expensive long distance or premium phone number. When the device doesn’t support phone calls, users may be presented with a menu allowing them to choose how the browser should handle the number.
 
+Desktop browsers that don’t support voice calls open the default telephony app on the computer; for example Google Voice or Microsoft Communicator.
 
-不支持语音通话的桌面浏览器将打开计算机上的默认电话应用，例如 Google 语音或 Microsoft Communicator。
+## Use the international dialing format
 
+Always supply the phone number using the international dialing format: the plus sign (`+`), country code, area code, and number. While not absolutely necessary, it’s a good idea to separate each segment of the number with a hyphen (`-`) for easier reading and better auto-detection.
 
+Using a hyphenated international dialing format ensures that no matter where the user is calling from, whether a few hundred meters away or thousands of kilometers, their call will be connected.
 
-## 使用国际拨号格式
+## Disable auto-detection when necessary
 
-始终按国际拨号格式提供电话号码：加号 (`+`)、国家/地区代码、区号和号码。
-尽管不是绝对必要，但用连字符 (`-`) 分隔号码的每个分段仍是好方法，可实现更轻松的读取和更好的自动检测。
+Modern mobile browsers automatically detect phone numbers and enable click to call. Mobile Safari automatically converts phone numbers to links with the associated hyperlink styles. Chrome for Android automatically detects phone numbers and allows users to click to call, but does not wrap the phone numbers in hyperlinks or apply any special styles.
 
-
-
-使用连字符分隔的国际拨号格式可确保无论用户从哪里呼叫，相距几百米还是几千公里，都将连接他们的呼叫。
-
-
-
-## 必要时停用自动检测
-
-现代移动浏览器会自动检测电话号码并启用一键通话。
-Mobile Safari 自动将电话号码转换为带相关超链接样式的链接。
-Chrome（Android 版）会自动检测电话号码，并允许用户一键通话，但是不会将电话号码包装在超链接中，也不会应用任何特殊样式。
-
-
-
-为防止 Mobile Safari 自动检测电话号码，可将以下元标记添加到页面顶部：
-
-
+To prevent Mobile Safari from automatically detecting phone numbers, add the following meta tag to the top of the page:
 
     <meta name="format-detection" content="telephone=no">
+    
 
+## Other click to call features
 
-## 其他一键通话功能
+In addition to the `tel:` schema, some modern browsers also support the `sms:` and `mms:` schemas, though support is not as consistent, and some features like setting the message body don't always work.
 
-除了 `tel:` 架构之外，一些现代浏览器还支持 `sms:` 和 `mms:` 架构，但支持程度不一致，并且一些功能（如设置消息正文）不一定有用。
+## Feedback {: #feedback }
 
- 
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
