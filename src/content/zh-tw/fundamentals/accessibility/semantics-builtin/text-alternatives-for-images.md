@@ -1,87 +1,60 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: 利用 alt 屬性提供圖像的替代文本
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Using the alt attribute to provide text alternatives for images
 
+{# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2016-10-04 #} {# wf_blink_components: N/A #}
 
-{# wf_updated_on:2016-10-04 #}
-{# wf_published_on:2016-10-04 #}
+# Text Alternatives for Images {: .page-title }
 
-# 圖像的替代文本 {: .page-title }
+{% include "web/_shared/contributors/megginkearney.html" %} {% include "web/_shared/contributors/dgash.html" %} {% include "web/_shared/contributors/aliceboxhall.html" %}
 
-{% include "web/_shared/contributors/megginkearney.html" %}
-{% include "web/_shared/contributors/dgash.html" %}
-{% include "web/_shared/contributors/aliceboxhall.html" %}
-
-
-
-圖像是大多數網頁的重要組成部分，當然也是對弱視用戶造成阻礙的一個特定因素。
-我們必須考慮圖像在網頁中發揮的作用，才能知道應該爲其使用什麼類型的替代文本。請看下面這幅圖像。
-
-
+Images are an important component of most web pages, and are of course a particular sticking point for low-vision users. We must consider the role an image plays in a page to work out what type of text alternative it should have. Take a look at this image.
 
     <article>
       <h2>Study shows 9 out of 10 cats quietly judging their owners as they sleep</h2>
       <img src="imgs/160204193356-01-cat-500.jpg">
     </article>
+    
 
 <article>
   <h2>Study shows 9 out of 10 cats quietly judging their owners as they sleep</h2>
   <img src="imgs/160204193356-01-cat-500.jpg">
 </article>
 
-我們在網頁中看到的是一幅貓的圖片，是一篇有關貓著名的審判行爲的文章插圖。
-屏幕閱讀器可以利用這幅圖像的文字名稱 `"/160204193356-01-cat-500.jpg"` 敘述對其的說明。
-這樣做雖然準確，卻毫無用處。
+In the page we have a picture of a cat, illustrating an article on cats' well-known judgmental behavior. A screen reader will announce this image using its literal name, `"/160204193356-01-cat-500.jpg"`. That's accurate, but not at all useful.
 
+You can use the `alt` attribute to provide a useful text alternative to this image &mdash; for example, "A cat staring menacingly off into space."
 
-可以利用 `alt` 屬性爲這幅圖像提供有用的替代文本，例如“一隻目光洶洶凝視遠方的貓”。
+    <img src="/160204193356-01-cat-500.jpg" alt="A cat staring menacingly off into space">
+    
 
+Then the screen reader can announce a succinct description of the image ( seen in the black VoiceOver bar) and the user can choose whether to move on to the article.
 
-    <img src="/160204193356-01-cat-500.jpg" alt="一隻目光洶洶凝視遠方的貓">
+![an image with improved alt text](imgs/funioncat2.png)
 
-然後屏幕閱讀器就可以敘述對圖像的簡潔說明（可在黑色旁白欄中看到），用戶可以選擇是否繼續閱讀下一篇文章。
+A couple of comments about `alt`:
 
+- `alt` allows you to specify a simple string to be used any time the image isn't available, such as when the image fails to load, or is accessed by web crawling bot, or is encountered by a screen reader.
+- `alt` differs from `title`, or any type of caption, in that it is *only* used if the image is not available.
 
+Writing useful alt text is a bit of an art. In order for a string to be a usable text alternative, it needs to convey the same concept as the image, in the same context.
 
-![一幅包含經過改善的替代文本的圖像](imgs/funioncat2.png)
+Consider a linked logo image in the masthead of a page like those shown above. We can describe the image pretty accurately as "The Funion logo".
 
-以下是有關 `alt` 的兩個註解：
+    <img class="logo" src="logo.jpg" alt="The Funion logo">
+    
 
- - `alt` 允許指定在圖像不可用時（例如圖像加載失敗、被網絡爬蟲訪問或被屏幕閱讀器讀取時）使用的簡單字符串。
- - `alt` 不同於 `title` 或任何類型的字幕，因爲它*只*在圖像不可用時使用。
+It might be tempting to give it a simpler text alternative of "home" or "main page", but that does a disservice to both low-vision and sighted users.
 
+But imagine a screen reader user who wants to locate the masthead logo on the page; giving it an alt value of "home" actually creates a more confusing experience. And a sighted user faces the same challenge &mdash; figuring out what clicking the site logo does &mdash; as a screen reader user.
 
-編寫有用的替代文本算得上是門學問。要想讓字符串成爲有用的替代文本，它必須在同一環境下傳達與圖像相同的概念。
+On the other hand, it's not always useful to describe an image. For example, consider a magnifying glass image inside a search button that has the text "Search". If the text wasn't there, you would definitely give that image an alt value of "search". But because we have the visible text, the screen reader will pick up and read aloud the word "search"; thus, an identical `alt` value on the image is redundant.
 
-
-
-以上圖所示網頁報頭中的鏈接徽標圖像爲例。我們可以將這幅圖像相當準確地描述成“The Funion 徽標”。
-
-
-    <img class="logo" src="logo.jpg" alt="The Funion 徽標">
-
-可能很容易爲它指定一個“首頁”或“主頁”這樣更簡單的替代文本，但這樣做對弱視和正常視力的用戶都不夠周到。
-
-
-但假使一位屏幕閱讀器用戶想要找到網頁上的報頭徽標；如果爲其指定的 alt 值是“首頁”，實際帶來的體驗會更令人困惑。視力正常的用戶也面臨同樣的挑戰，與屏幕閱讀器用戶一樣，他們也要弄明白點擊網站徽標的作用。
-
-
-另一方面，描述圖像並不總是有用。例如，假定在一個包含文本“搜索”的搜索按鈕內有一幅放大鏡圖像。如果其中不包含文本，您肯定會指定“搜索”作爲這幅圖像的 alt 值。
-但由於文本處於可見狀態，屏幕閱讀器將拾取並朗讀“搜索”一詞；因此，圖像上完全相同的 `alt` 值就成了多餘的內容。
-
-
-
-不過，我們也知道，如果將 `alt` 省略，我們聽到的很可能不是替代文本，而是圖像文件名，這不僅毫無用處，還可能令人困惑。
-在這種情況下，只需使用空的 `alt` 屬性就可讓屏幕閱讀器將圖像整個跳過。
-
-
+However, we know that if we leave the `alt` text out, we'll probably hear the image file name instead, which is both useless and potentially confusing. In this case you can just use an empty `alt` attribute, and the screen reader will skip the image altogether.
 
     <img src="magnifying-glass.jpg" alt="">
+    
 
-總結一下，所有圖像都應有 `alt` 屬性，但它們無需都包含文本。
-重要的圖像應使用描述性替代文本簡潔地說明圖像內容，而裝飾性圖像應使用空的 alt 屬性，即 `alt=""`。
+To summarize, all images should have an `alt` attribute, but they need not all have text. Important images should have descriptive alt text that succinctly describes what the image is, while decorative images should have empty alt attributes &mdash; that is, `alt=""`.
 
+## Feedback {: #feedback }
 
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
