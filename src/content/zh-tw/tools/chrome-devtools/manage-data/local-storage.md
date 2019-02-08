@@ -1,176 +1,115 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description:從 Application 面板檢查和管理存儲、數據庫與緩存。
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Inspect and manage storage, databases, and caches from the Application panel.
 
-{# wf_updated_on:2016-07-28 #}
-{# wf_published_on:2015-04-13 #}
+{# wf_updated_on: 2018-07-27 #} {# wf_published_on: 2015-04-13 #} {# wf_blink_components: Platform>DevTools #}
 
-# 檢查和管理存儲、數據庫與緩存 {: .page-title }
+# Inspect and Manage Storage, Databases, and Caches {: .page-title }
 
-{% include "web/_shared/contributors/kaycebasques.html" %}從 <strong>Application</strong> 面板檢查和管理存儲、數據庫與緩存。
-
-
-
+{% include "web/_shared/contributors/kaycebasques.html" %} Inspect and manage storage, databases, and caches from the
+<strong>Application</strong> panel.
 
 ### TL;DR {: .hide-from-toc }
-- 查看和修改本地存儲與會話存儲。
-- 檢查和修改 IndexedDB 數據庫。
-- 對 Web SQL 數據庫執行語句。
-- 查看應用緩存和服務工作線程緩存。
-- 點擊一次按鈕即可清除所有存儲、數據庫、緩存和服務工作線程。
 
+* View and edit local and session storage.
+* Inspect and modify IndexedDB databases.
+* Execute statements on a Web SQL database.
+* View Application and Service Worker Caches.
+* Clear all storage, databases, caches, and service workers with a single button click.
 
-## 本地存儲 {: #local-storage}
+## Local storage {:#local-storage}
 
-如果您使用[本地存儲][ls]存儲鍵值對 (KVP)，則可以從 **Local Storage** 窗格中檢查、修改和刪除這些 KVP。
+If you're using [local storage](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage) to store key-value pairs (KVPs), you can inspect, modify, and delete these KVPs from the **Local Storage** pane.
 
+![local storage pane](/web/tools/chrome-devtools/manage-data/imgs/local-storage.png)
 
-![Local Storage 窗格][ls-pane]
+* Double-click on a key or value to edit that value.
+* Double-click on an empty cell to add a new KVP.
+* Click on a KVP and then press the **delete** button (![delete button](/web/tools/chrome-devtools/manage-data/imgs/delete.png){:.inline}) to delete that KVP. You can wipe all of your local storage data with a single button click from the [**Clear storage** pane](#clear-storage).
+* If you're interacting with a page in a way that creates, deletes, or modifies KVPs, you won't see those changes get updated in realtime. Click the **refresh** button (![refresh button](/web/tools/chrome-devtools/manage-data/imgs/refresh.png){:.inline}) to see your changes.
 
-* 雙擊鍵或值可以修改相應的值。
-* 雙擊空白單元格可以添加新 KVP。
-* 點擊 KVP ，然後按 **Delete** 按鈕 (![Delete 按鈕][delete]{:.inline}) 可以刪除該 KVP。
-只需點擊一次按鈕，即可從 [**Clear storage** 窗格](#clear-storage)擦除所有本地存儲數據。
+## Session storage {:#session-storage}
 
+The **Session Storage** pane works the same as the **Local Storage** pane. Check out the [Local storage](#local-storage) section above to learn how to view and edit [session storage](https://developer.mozilla.org/en-US/docs/Web/API/Window/sessionStorage).
 
-* 如果您使用一種可以創建、刪除或修改 KVP 的方式與頁面交互，則不會看到這些更改實時更新。
-點擊 **refresh** 按鈕 (![refresh 按鈕][refresh]{:.inline}) 可以查看您的更改。
+## IndexedDB {:#indexeddb}
 
+Use the **IndexedDB** pane to inspect, modify, and delete IndexedDB data.
 
-[ls]: https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage
-[ls-pane]: /web/tools/chrome-devtools/manage-data/imgs/local-storage.png
-[refresh]: /web/tools/chrome-devtools/manage-data/imgs/refresh.png
-[delete]: /web/tools/chrome-devtools/manage-data/imgs/delete.png
+When you expand the **IndexedDB** pane, the first level below that are databases. If there are multiple databases active, then you'll see multiple entries. In the screenshot below there's only one database active for the page.
 
-## Session storage {: #session-storage}
+![indexeddb tab](/web/tools/chrome-devtools/manage-data/imgs/idb-tab.png)
 
-**Session Storage** 窗格與 **Local Storage** 窗格的工作方式相同。
-參閱上面的[本地存儲](#local-storage)部分，瞭解如何查看和編輯[會話存儲][ss]。
+Click on the name of a database to view the security origin, name, and version of that database.
 
+![indexeddb database](/web/tools/chrome-devtools/manage-data/imgs/idb-db.png)
 
-[ss]: https://developer.mozilla.org/en-US/docs/Web/API/Window/sessionStorage
+Expand a database to view its key-value pairs (KVPs).
 
-## IndexedDB {: #indexeddb}
+![indexeddb key-value pairs](/web/tools/chrome-devtools/manage-data/imgs/idb-kvps.png)
 
-使用 **IndexedDB** 窗格可以檢查、修改和刪除 IndexedDB 數據。
+Use the arrow buttons next to the **Start from key** textfield to move between pages of KVPs.
 
-展開 **IndexedDB** 窗格時，IndexedDB 下的第一個級別是數據庫。
-如果存在多個活動的數據庫，您會看到多個條目。
-在下面的屏幕截圖中，頁面只有一個活動的數據庫。
+Expand a value and double-click to edit that value. When you add, modify, or delete values, those changes won't get updated in realtime. Click the **refresh** button to update a database. ![editing an indexeddb kvp](/web/tools/chrome-devtools/manage-data/imgs/idb-edit.png)
 
-![indexeddb 標籤][idb-tab]
+Enter a key in the **Start from key** textfield to filter out all keys with a value smaller than that one.
 
-點擊數據庫的名稱可以查看該數據庫的安全源、名稱和版本。
+![filtered kvps](/web/tools/chrome-devtools/manage-data/imgs/idb-filter.png)
 
+When you add, modify, or delete values, those changes won't get updated in realtime. Click the **refresh** button (![refresh button](/web/tools/chrome-devtools/manage-data/imgs/refresh.png){:.inline}) to update a database.
 
-![indexeddb 數據庫][idb-db]
+Click the **clear object store** button (![clear object store](/web/tools/chrome-devtools/manage-data/imgs/clear-object-store.png){:.inline}) to delete all data from your database. You can also accomplish this as well as unregistering service workers and removing other storage and caches with a single click from the [**Clear storage** pane](#clear-storage).
 
-展開數據庫可以查看其鍵值對 (KVP)。
+## Web SQL {:#web-sql}
 
-![indexeddb 鍵值對][idb-kvps]
+Use the **Web SQL** pane to query and modify Web SQL databases.
 
-使用 **Start from key** 文本字段旁的箭頭按鈕可以在 KVP 的頁面之間移動。
+Click on a database name to open a console for that database. From here you can execute statements on the database.
 
+![web sql console](/web/tools/chrome-devtools/manage-data/imgs/web-sql-console.png)
 
-展開值並雙擊可以編輯該值。在您添加、修改或刪除值時，這些更改不會實時更新。
+Click on a database table to view that table's data.
 
-點擊 **refresh** 按鈕可以更新數據庫。
-![編輯 indexeddb kvp][idb-edit]
+![web sql table](/web/tools/chrome-devtools/manage-data/imgs/web-sql-table.png)
 
-在 **Start from key** 文本字段中輸入鍵可以過濾出值小於該值的所有鍵。
+* You can't update values from here, but you can do so via the database console (see above).
+* Click on a column's header to sort the table by that column.
+* Changes that you make to a table won't update in realtime. Click the **refresh** button (![refresh button](/web/tools/chrome-devtools/manage-data/imgs/refresh.png){:.inline}) to view your updates.
+* Enter a space-separated or comma-separated list of column names in the **Visible columns** textfield to only display those columns.
 
+## Application Cache {:#application-cache}
 
-![過濾的 kvp][idb-filter]
+Use the **Application Cache** pane to inspect resources and rules that have been created via the [Application Cache API](https://developer.mozilla.org/en-US/docs/Web/HTML/Using_the_application_cache).
 
-在您添加、修改或刪除值時，這些更改不會實時更新。
-點擊 **refresh** 按鈕 (![refresh 按鈕][refresh]{:.inline}) 可以更新數據庫。
+![application cache pane](/web/tools/chrome-devtools/manage-data/imgs/appcache.png)
 
+Each row represents a resource.
 
-點擊 **Clear Object Store** 按鈕 (![Clear Object Store][cos]{:.inline}) 可以刪除數據庫中的所有數據。
-從 [**Clear storage** 窗格](#clear-storage)中，點擊一次按鈕註銷服務工作線程並移除其他存儲與緩存也可以實現此目標。
+The **Type** column will have one of the following values:
 
+* **Master**. The `manifest` attribute on the resource indicated that this cache is its master.
+* **Explicit**. This resource was explicitly listed in the manifest.
+* **Network**. The manifest specified that this resource must come from the network.
+* **Fallback**. The URL in the **Resource** column was listed as a fallback for another URL (not shown in DevTools).
 
+At the bottom of the table there are status icons indicating your network connection and the status of the application cache. The application cache can have the following statuses:
 
-[idb-tab]: /web/tools/chrome-devtools/manage-data/imgs/idb-tab.png
-[idb-db]: /web/tools/chrome-devtools/manage-data/imgs/idb-db.png
-[idb-kvps]: /web/tools/chrome-devtools/manage-data/imgs/idb-kvps.png
-[idb-edit]: /web/tools/chrome-devtools/manage-data/imgs/idb-edit.png
-[idb-filter]: /web/tools/chrome-devtools/manage-data/imgs/idb-filter.png
-[cos]: /web/tools/chrome-devtools/manage-data/imgs/clear-object-store.png
+* **IDLE**. The cache has no new changes.
+* **CHECKING**. The manifest is being fetched and checked for updates.
+* **DOWNLOADING**. Resources are being added to the cache.
+* **UPDATEREADY**. A new version of the cache is available.
+* **OBSOLETE**. The cache is being deleted.
 
-## Web SQL {: #web-sql}
+## Service Worker Caches {:#service-worker-caches}
 
-使用 **Web SQL** 窗格可以查詢和修改 Web SQL 數據庫。
-
-點擊數據庫名稱可以打開該數據庫的控制檯。從這裏，您可以對數據庫執行語句。
-
-
-![web sql 控制檯][wsc]
-
-點擊數據庫表可以查看該表的數據。
-
-![web sql 表][wst]
-
-* 您無法從這裏更新值，但是可以通過數據庫控制檯（參見上文）更新。
-
-* 點擊列標題可以按該列排序表格。
-* 您對錶格的更改不會實時更新。點擊 **refresh** 按鈕 (![refresh 按鈕][refresh]{:.inline}) 可以查看更新。
-
-
-* 在 **Visibile columns** 文本字段中輸入一個由空格分隔或逗號分隔的列名稱列表可以僅顯示列表中包含的列。
-
-
-[wsc]: /web/tools/chrome-devtools/manage-data/imgs/web-sql-console.png
-[wst]: /web/tools/chrome-devtools/manage-data/imgs/web-sql-table.png
-
-## 應用緩存 {: #application-cache}
-
-使用 **Application Cache** 窗格可以檢查通過 [Application Cache API][appcache-api] 創建的資源和規則。
-
-
-![Application Cache 窗格][appcache]
-
-每一行表示一個資源。
-
-**Type** 列的值爲以下值之一：
-
-* **Master**。資源上指示此緩存爲其主文件的 `manifest` 屬性。
-
-* **Explicit**。此資源在清單中明確列出。
-* **Network**。指定此資源的清單必須來自網絡。
-
-* **Fallback**。**Resource** 列中的網址作爲另一個網址（未在 DevTools 中顯示）的回退網址形式列出。
-
-
-表格底部擁有指示網絡連接和應用緩存狀態的狀態圖標。
-應用緩存可能擁有以下狀態：
-
-
-* **IDLE**。緩存沒有新更改。
-* **CHECKING**。正在提取清單並檢查有無更新。
-* **DOWNLOADING**。正在將資源添加到緩存中。
-* **UPDATEREADY**。存在新版本的緩存。
-* **OBSOLETE**。正在刪除緩存。
-
-[appcache-api]: https://developer.mozilla.org/en-US/docs/Web/HTML/Using_the_application_cache
-[appcache]: /web/tools/chrome-devtools/manage-data/imgs/appcache.png
-
-## 服務工作線程緩存 {:#service-worker-caches}
-
-利用 **Application** 面板上的 **Cache Storage** 窗格，您可以檢查、修改和調試使用（服務工作線程）Cache API 創建的緩存。
-參閱下面的指南獲取更多幫助。
-
+The **Cache Storage** pane on the **Application** panel lets you inspect, modify, and debug caches created with the (service worker) Cache API. Check out the guide below for more help.
 
 {# include shared/related_guides.liquid inline=true list=page.related-guides.pwa #}
 
-## 清除服務工作線程、存儲、數據庫和緩存 {:#clear-storage}
+## Clear service workers, storage, databases, and caches {:#clear-storage}
 
-有時，您只需要擦除給定源的所有數據。利用 **Application** 面板上的 **Clear Storage** 窗格，您可以選擇性地註銷服務工作線程、存儲和緩存。要清除數據，只需啓用您想要擦除的組件旁的複選框，然後點擊 **Clear site data**。操作將擦除 **Clear storage** 標籤下所列源的所有數據。
+Sometimes you just need to wipe all of the data for a given origin. The **Clear Storage** pane on the **Application** panel lets you selectively unregister service workers, storage, and caches. To clear data, just enable the checkboxes next to the components that you want to wipe, and then click **Clear site data**. The action wipes all of the data for the origin listed under the **Clear storage** label.
 
+![clear storage](/web/tools/chrome-devtools/manage-data/imgs/clear-storage.png)
 
-![clear storage][clear]
+## Feedback {: #feedback }
 
-[clear]: /web/tools/chrome-devtools/manage-data/imgs/clear-storage.png
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
