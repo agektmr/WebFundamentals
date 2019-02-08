@@ -1,9 +1,6 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description:從 Windows、Mac 或 Linux 計算機遠程調試 Android 設備上的實時內容。
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Remote debug live content on an Android device from a Windows, Mac, or Linux computer.
 
-{# wf_updated_on:2016-12-09 #}
-{# wf_published_on:2015-04-13 #}
+{# wf_updated_on: 2018-11-19 #} {# wf_published_on: 2015-04-13 #} {# wf_blink_components: Platform>DevTools #} 
 
 <style>
 .devtools-inline {
@@ -12,173 +9,126 @@ description:從 Windows、Mac 或 Linux 計算機遠程調試 Android 設備上�
 }
 </style>
 
-# 遠程調試 Android 設備使用入門 {: .page-title }
+ 
+
+# Get Started with Remote Debugging Android Devices {: .page-title }
 
 {% include "web/_shared/contributors/kaycebasques.html" %}
 
-從 Windows、Mac 或 Linux 計算機遠程調試 Android 設備上的實時內容。
-本教程將向您展示如何：
+Remote debug live content on an Android device from your Windows, Mac, or Linux computer. This tutorial teaches you how to:
 
-* 設置您的 Android 設備進行遠程調試，並從開發計算機上發現設備。
-* 從您的開發計算機檢查和調試 Android 設備上的實時內容。
-* 將 Android 設備上的內容抓屏到您的開發計算機上的 DevTools 實例中。
+* Set up your Android device for remote debugging, and discover it from your development machine.
+* Inspect and debug live content on your Android device from your development machine.
+* Screencast content from your Android device onto a DevTools instance on your development machine.
 
+<figure>
+  <img src="imgs/remote-debugging.png"
+       alt="Remote Debugging lets you inspect a page running on an Android device from
+            your development machine."/>
+  <figcaption>
+    <b>Figure 1</b>. Remote Debugging lets you inspect a page running on an Android device
+    from your development machine.
+  </figcaption>
+</figure>
 
-![遠程調試圖示](imgs/remote-debugging.png)
+## Step 1: Discover your Android device {: #discover }
 
-## 要求 {: #requirements }
+The workflow below works for most users. See [Troubleshooting: DevTools is not detecting the Android device](#troubleshooting) for more help.
 
-* 開發計算機上已安裝 Chrome 32 或更高版本。
-* 開發計算機上已安裝 [USB 驅動程序][drivers]（如果您使用 Windows）。
-確保設備管理器報告正確的 USB 驅動程序
-* 擁有一根可以將您的 Android 設備連接至開發計算機的 USB 電纜。
-* Android 4.0 或更高版本。
-* 您的 Android 設備上已安裝 Chrome（Android 版）。
+1. Open the **Developer Options** screen on your Android. See [Configure On-Device Developer Options](https://developer.android.com/studio/debug/dev-options.html){:.external}.
+2. Select **Enable USB Debugging**.
+3. On your development machine, open Chrome.
+4. [Open DevTools](/web/tools/chrome-devtools/#open).
+5. In DevTools, click the **Main Menu** ![Main Menu](/web/tools/chrome-devtools/images/three-dot.png){:.devtools-inline} then select **More tools** > **Remote devices**.
+    
+    <figure> 
+    
+    ![Opening the Remote Devices tab via the Main Menu.](imgs/open-remote-devices.png) <figcaption> **Figure 2**. Opening the **Remote Devices** tab via the **Main Menu** </figcaption> </figure>
+6. In DevTools, open the **Settings** tab.
 
-[drivers]: https://developer.android.com/tools/extras/oem-usb.html
+7. Make sure that the **Discover USB devices** checkbox is enabled.
+    
+    <figure> 
+    
+    ![The Discover USB Devices checkbox is
+       enabled.](imgs/discover-usb-devices.png) <figcaption> **Figure 3**. The **Discover USB Devices** checkbox is enabled </figcaption> </figure>
+8. Connect your Android device directly to your development machine using a USB cable. The first time you do this, you usually see that DevTools has detected an unknown device. If you see a green dot and the text **Connected** below the model name of your Android device, then DevTools has successfully established the connection to your device. Continue to [Step 2](#debug).
+    
+    <figure> 
+    
+    ![The Remote Devices tab has successfully detected
+       an unknown device that is pending authorization.](imgs/unknown-device.png) <figcaption> **Figure 4**. The **Remote Devices** tab has successfully detected an unknown device that is pending authorization </figcaption> </figure>
+9. If your device is showing up as **Unknown**, accept the **Allow USB Debugging** permission prompt on your Android device.
 
-## 第 1 步：發現您的 Android 設備 {: #discover }
+### Troubleshooting: DevTools is not detecting the Android device {: #troubleshooting }
 
-1. 在您的 Android 設備上，選擇 **Settings** > **Developer Options** > **Enable USB Debugging**。
-在運行 Android 4.2 及更新版本的設備上，**Developer options** 默認情況下處於隱藏狀態。
-請參閱[啓用設備上的開發者選項][android]以瞭解如何啓用它。
+Make sure that your hardware is set up correctly:
 
+* If you're using a USB hub, try connecting your Android device directly to your development machine instead.
+* Try unplugging the USB cable between your Android device and development machine, and then plugging it back in. Do it while your Android and development machine screens are unlocked.
+* Make sure that your USB cable works. You should be able to inspect files on your Android device from your development machine.
 
-[android]: https://developer.android.com/studio/run/device.html#developer-device-options
+Make sure that your software is set up correctly:
 
-1. 在您的開發計算機上打開 Chrome。您應使用您的一個 Google 帳戶登錄到 Chrome。
-遠程調試在[隱身模式][incognito]或[訪客模式][guest]下無法運行。
+* If your development machine is running Windows, try manually installing the USB drivers for your Android device. See [Install OEM USB Drivers](https://developer.android.com/tools/extras/oem-usb.html){:.external}.
+* Some combinations of Windows and Android devices (especially Samsung) require extra set up. See [Chrome DevTools Devices does not detect device when plugged in](https://stackoverflow.com/questions/21925992){:.external}.
 
+If you don't see the **Allow USB Debugging** prompt on your Android device try:
 
-[guest]: https://support.google.com/chrome/answer/6130773
-[incognito]: https://support.google.com/chrome/answer/95464
+* Disconnecting and then re-connecting the USB cable while DevTools is in focus on your development machine and your Android homescreen is showing. In other words, sometimes the prompt doesn't show up when your Android or development machine screens are locked.
+* Updating the display settings for your Android device and development machine so that they never go to sleep.
+* Setting Android's USB mode to PTP. See [Galaxy S4 does not show Authorize USB debugging dialog box](https://android.stackexchange.com/questions/101933){: .external }.
+* Select **Revoke USB Debugging Authorizations** from the **Developer Options** screen on your Android device to reset it to a fresh state.
 
-1. [打開 DevTools](/web/tools/chrome-devtools/#open)。
+If you find a solution that is not mentioned in this section or in [Chrome DevTools Devices does not detect device when plugged in](https://stackoverflow.com/questions/21925992){: .external}, please add an answer to that Stack Overflow question, or [open an issue in the webfundamentals repository](https://github.com/google/webfundamentals/issues/new?title=[Remote%20Debugging]){:.external}!
 
-1. 在 DevTools 中，點擊 **Main Menu** ![主菜單][main]{:.devtools-inline}，然後選擇 **More tools** > **Remote devices**。
- 
+## Step 2: Debug content on your Android device from your development machine {: #debug }
 
-     ![打開遠程設備抽屜式導航欄][open]
+1. Open Chrome on your Android device.
+2. In the **Remote Devices** tab, click the tab that matches your Android device model name. At the top of this page, you see your Android device's model name, followed by its serial number. Below that, you can see the version of Chrome that's running on the device, with the version number in parentheses. Each open Chrome tab gets its own section. You can interact with that tab from this section. If there are any apps using WebView, you see a section for each of those apps, too. In **Figure 5** there are no tabs or WebViews open.
+    
+    <figure> 
+    
+    ![A connected remote device.](imgs/connected-remote-device.png) <figcaption> **Figure 5**. A connected remote device </figcaption> </figure>
+3. In the **New tab** text box, enter a URL and then click **Open**. The page opens in a new tab on your Android device.
 
-[main]: /web/tools/chrome-devtools/images/three-dot.png
-[open]: /web/tools/chrome-devtools/remote-debugging/imgs/open-remote-devices.png
+4. Click **Inspect** next to the URL that you just opened. A new DevTools instance opens. The version of Chrome running on your Android device determines the version of DevTools that opens on your development machine. So, if your Android device is running a very old version of Chrome, the DevTools instance may look very different than what you're used to.
 
-1. 在 DevTools 中，點擊 **Settings** 標籤（如果正在顯示另一個標籤）。
+### More actions: reload, focus, or close a tab {: #more-actions }
 
-1. 確保已啓用 **Discover USB devices**。
+Click **More Options** ![More Options](/web/tools/chrome-devtools/images/three-dot.png){:.devtools-inline} next to the tab that you want to reload, focus, or close.
 
-     ![已啓用 Discover USB devices][discover]
+<figure>
+  <img src="imgs/reload.png" alt="The menu for reloading, focusing, or closing a tab."/>
+  <figcaption>
+    <b>Figure 6</b>. The menu for reloading, focusing, or closing a tab
+  </figcaption>
+</figure>
 
-[discover]: /web/tools/chrome-devtools/remote-debugging/imgs/discover-usb-devices.png
+### Inspect elements {: #inspect }
 
-1. 使用一根 USB 電纜將 Android 設備直接連接到您的開發計算機。
-請勿使用任何中間 USB 集線器。如果這是您首次將您的 Android 設備連接到此開發計算機，您的設備將顯示在 **Unknown** 中，其下面具有文本 **Pending Authorization**。
+Go to the **Elements** panel of your DevTools instance, and hover over an element to highlight it in the viewport of your Android device.
 
+You can also tap an element on your Android device screen to select it in the **Elements** panel. Click **Select Element** ![Select
+Element](imgs/select-element.png){:.devtools-inline} on your DevTools instance, and then tap the element on your Android device screen. Note that **Select Element** is disabled after the first touch, so you need to re-enable it every time you want to use this feature.
 
+### Screencast your Android screen to your development machine {: #screencast }
 
+Click **Toggle Screencast** ![Toggle Screencast](imgs/toggle-screencast.png){:.devtools-inline} to view the content of your Android device in your DevTools instance.
 
-       ![未知的設備，待授權][unknown]
+You can interact with the screencast in multiple ways:
 
-[unknown]: /web/tools/chrome-devtools/remote-debugging/imgs/unknown-device.png
+* Clicks are translated into taps, firing proper touch events on the device. 
+* Keystrokes on your computer are sent to the device. 
+* To simulate a pinch gesture, hold <kbd>Shift</kbd> while dragging. 
+* To scroll, use your trackpad or mouse wheel, or fling with your mouse pointer.
 
-1. 如果您的設備顯示爲 **Unknown**，則在 Android 設備上接受 **Allow USB Debugging** 權限提示。
-**Unknown** 被替換爲您的 Android 設備的型號名稱。
-綠色圓圈和 **Connected** 文本表示您已大功告成，可以從開發計算機遠程調試您的 Android 設備。
+Some notes on screencasts:
 
+* Screencasts only display page content. Transparent portions of the screencast represent device interfaces, such as the Chrome address bar, the Android status bar, or the Android keyboard.
+* Screencasts negatively affect frame rates. Disable screencasting while measuring scrolls or animations to get a more accurate picture of your page's performance.
+* If your Android device screen locks, the content of your screencast disappears. Unlock your Android device screen to automatically resume the screencast.
 
-Note: 如果您在發現流程中遇到任何問題，您可以通過在 Android 設備上選擇 **Settings** > **Developer Options** > **Revoke USB Debugging Authorizations** 重啓該流程。
+## Feedback {: #feedback }
 
-
-
-## 第 2 步：從您的開發計算機調試 Android 設備上的內容。 {: #debug }
-
-1. 如果您尚未在 Android 設備上打開 Chrome，則現在打開它。
-
-1. 返回 DevTools，點擊與設備的型號名稱匹配的標籤。
-在此頁面的頂部，您會看到 Android 設備的型號名稱，後面緊跟着其序列號。
-在型號名稱下面，您可以看到在設備上運行的 Chrome 的版本，版本號在括號裏。每個打開的 Chrome 標籤都會有自己的區域。您可以從此區域與該標籤交互。
-如果有任何使用 WebView 的應用，您也會看到針對每個應用的區域。
-下面的屏幕截圖沒有任何打開的標籤或 WebViews。
-
-
-       ![連接的遠程設備][connected]
-
-[connected]: /web/tools/chrome-devtools/remote-debugging/imgs/connected-remote-device.png
-
-1. 在 **New tab** 旁輸入一個網址，然後點擊 **Open**。此頁面將在 Android 設備上的新標籤中打開。
-
-
-1. 點擊您剛剛打開的網址旁的 **Inspect**。這將打開一個新的 DevTools 實例。
-您的 Android 設備上運行的 Chrome 的版本決定在開發計算機上打開的 DevTools 的版本。因此，如果您的 Android 設備正在運行一個非常舊的 Chrome 版本，則 DevTools 實例看上去可能與您常用的實例有很大的差別。
-
-
-### 更多操作：重新加載、聚焦或關閉一個標籤 {: #more-actions }
-
-點擊您要重新加載、聚焦或關閉的標籤旁的 **More Options** ![更多選項][more]{:.devtools-inline}。
-
-
-[more]: /web/tools/chrome-devtools/images/three-dot.png
-
-![重新加載、聚焦或關閉一個標籤](imgs/reload.png)
-
-### 檢查元素 {: #inspect }
-
-轉到您的 DevTools 實例的 **Elements** 面板，將鼠標懸停在一個元素上以在 Android 設備的視口中突出顯示它。
-
-
-您還可以在 Android 設備屏幕上點按一個元素，以在 **Elements** 面板中選中它。
-點擊您的 DevTools 實例上的 **Select Element** ![Select
-Element][select]{:.devtools-inline}，然後在您的 Android 設備屏幕上點按此元素。
-請注意，**Select Element** 將在第一次觸摸後停用，因此，每次想要使用此功能時您都需要重新啓用它。
-
-
-
-[select]: imgs/select-element.png
-
-### Android 設備到開發計算機的抓屏 {: #screencast }
-
-點按 **Toggle Screencast** ![Toggle Screencast][screencast]{:.devtools-inline} 以在您的 DevTools 實例中查看 Android 設備的內容。
-
-
-[抓屏]: imgs/toggle-screencast.png
-
-您可以通過多種方式與抓屏互動：
-
-* 將點擊轉變爲點按，在設備上觸發適當的觸摸事件。 
-* 將計算機上的按鍵發送至設備。 
-* 要模擬雙指張合手勢，請按住 <kbd>Shift</kbd> 拖動。 
-* 要滾動，請使用您的觸控板或鼠標滾輪，或者使用您的鼠標指針拋式滾動。
-
-
-關於抓屏的一些注意事項：
-
-* 抓屏僅顯示頁面內容。抓屏的透明部分表示設備界面，如 Chrome 多功能框、Android 狀態欄或 Android 鍵盤。
-* 抓屏會對幀率產生負面影響。在測量滾動或動畫時停用抓屏，以更準確地瞭解頁面的性能。
-* 如果您的 Android 設備屏幕鎖定，您的抓屏內容將消失。
-將您的 Android 設備屏幕解鎖可自動恢復抓屏。
-
-
-## 反饋 {: #feedback }
-
-如果您想幫助我們改進此教程，請回答下面的問題！
-
-
-{% framebox width="auto" height="auto" %}
-<p>您是否已成功完成此教程？</p>
-<button class="gc-analytics-event"
-   data-category="DevTools / Remote Debugging"
-   data-label="Completed / Yes">是</button>
-<button class="gc-analytics-event"
-   data-category="DevTools / Remote Debugging"
-   data-label="Completed / No">否</button>
-<p>此教程是否包含您在尋找的信息？</p>
-<button class="gc-analytics-event"
-   data-category="DevTools / Remote Debugging"
-   data-label="Relevant / Yes">是</button>
-<button class="gc-analytics-event"
-   data-category="DevTools / Remote Debugging"
-   data-label="Relevant / No">否</button>
-{% endframebox %}
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
