@@ -1,94 +1,73 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Chrome DevTools コマンドライン API を使用すると、さまざまな方法でイベント リスナーを観察したり調査したりできます。
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: The Chrome DevTools Command Line API offers various ways to observe and inspect event listeners
 
-{# wf_updated_on: 2015-08-02 #}
-{# wf_published_on: 2015-04-13 #}
+{# wf_updated_on: 2018-07-27 #} {# wf_published_on: 2015-04-13 #} {# wf_blink_components: Platform>DevTools #}
 
-#  イベントの監視 {: .page-title }
+# Monitor Events {: .page-title }
 
-{% include "web/_shared/contributors/megginkearney.html" %}
-{% include "web/_shared/contributors/flaviocopes.html" %}
-Chrome DevTools コマンドライン API を使用すると、さまざまな方法でイベント リスナーを観察したり調査したりできます。JavaScript はインタラクティブなページで中心的な役割を果たすもので、ブラウザはイベントやイベント ハンドラのデバッグに役立つツールを提供します。
-
+{% include "web/_shared/contributors/megginkearney.html" %} {% include "web/_shared/contributors/flaviocopes.html" %} The Chrome DevTools Command Line API offers various ways to observe and inspect event listeners. JavaScript plays a central role in interactive pages, and the browser provides you some useful tools to debug events and event handlers.
 
 ### TL;DR {: .hide-from-toc }
-- 特定のタイプのイベントは、 <code>monitorEvents()</code> を使用してリッスンします。
-- リッスンを停止するには  <code>unmonitorEvents()</code> を使用します。
-- DOM 要素のリスナーは  <code>getEventListeners()</code> を使用して取得します。
-- イベント リスナーに関する情報を取得するには、[Event Listeners Inspector] パネルを使用します。
 
+- Listen to events of a certain type using `monitorEvents()`.
+- Use `unmonitorEvents()` to stop listening.
+- Get listeners of a DOM element using `getEventListeners()`.
+- Use the Event Listeners Inspector panel to get information on event listeners.
 
-##  イベントの監視
+## Monitor events
 
-[monitorEvents()](/web/tools/chrome-devtools/debug/command-line/command-line-reference#monitoreventsobject-events)
-メソッドを使用すると、DevTools は指定されたターゲットに関する情報を記録します。
+The [monitorEvents()](/web/tools/chrome-devtools/debug/command-line/command-line-reference#monitoreventsobject-events) method instructs the DevTools to log information on the specified targets.
 
-最初のパラメータは、監視するオブジェクトです。2 つ目のパラメータが指定されていない場合は、すべてのイベントが返されます。リッスンするイベントを指定するには、文字列または文字列の配列を 2 つ目のパラメータとして渡します。
+The first parameter is the object to monitor. All events return if the second parameter is not provided. To specify the events to listen to, pass either a string or an array of strings as the second parameter.
 
-
-
-
-ページの本文に対するクリック イベントをリッスンする場合:
+Listen to click events on the body of the page:
 
     monitorEvents(document.body, "click");
+    
 
-監視対象イベントがサポート対象の「イベントタイプ」で、DevTools によって一連の標準のイベント名にマップされている場合、このメソッドはそのタイプのイベントをリッスンします。
+If the monitored event is a supported *event type* that the DevTools maps to a set of standard event names, then the method listens to the events for that type.
 
+The [Command Line API](/web/tools/chrome-devtools/debug/command-line/command-line-reference) has a full mapping of *event types* to the events they cover.
 
+To stop monitoring events, call the `unmonitorEvents()` method and give it the object to stop monitoring.
 
-[コマンドライン API](/web/tools/chrome-devtools/debug/command-line/command-line-reference) では、「イベントタイプ」を、対応するイベントに完全にマッピングしています。
-
-イベントの監視を停止するには、`unmonitorEvents()` メソッドを呼び出し、そのメソッドに監視を停止するオブジェクトを指定します。
-
-
-`body` オブジェクトに対するイベントのリッスンを停止する場合:
+Stop listening to events on the `body` object:
 
     unmonitorEvents(document.body);
+    
 
-##  オブジェクトに登録されているイベント リスナーの表示
+## View event listeners registered on objects
 
-[getEventListeners() API](/web/tools/chrome-devtools/debug/command-line/command-line-reference#geteventlistenersobject)
-は、指定されたオブジェクトに登録されているイベント リスナーを返します。
+The [getEventListeners() API](/web/tools/chrome-devtools/debug/command-line/command-line-reference#geteventlistenersobject) returns the event listeners registered on the specified object.
 
-戻り値は、登録済みの各イベントタイプ（`click` または `keydown` など）の配列が含まれるオブジェクトです。各配列のメンバーは、各タイプに登録されているリスナーを記述するオブジェクトです。たとえば、次のコードでは、ドキュメント オブジェクトに登録されているすべてのイベント リスナーのリストが表示されます。
-
-
-
-
+The return value is an object that contains an array for each registered event type (`click` or `keydown`, for example). The members of each array are objects that describe the listener registered for each type. For example, the following code lists all the event listeners registered on the document object:
 
     getEventListeners(document);
+    
 
-![getEventListeners() を使用した場合の出力](images/events-call-geteventlisteners.png)
+![Output of using getEventListeners()](images/events-call-geteventlisteners.png)
 
-指定したオブジェクトに複数のリスナーが登録されている場合は、配列に各リスナーのメンバーが含まれます。次の例では `mousedown` イベントについて、#scrollingList 要素に 2 つのイベント リスナーが登録されています。
+If more than one listener is registered on the specified object, then the array contains a member for each listener. In the following example, there are two event listeners registered on the #scrollingList element for the `mousedown` event:
 
+![View of the event listeners attached to mousedown](images/events-geteventlisteners_multiple.png)
 
+Further expand each of these objects to explore their properties:
 
+![Expanded view of listener object](images/events-geteventlisteners_expanded.png)
 
-![mousedown にアタッチされたイベント リスナーの表示](images/events-geteventlisteners_multiple.png)
+## View event listeners registered on DOM elements
 
-これらの各オブジェクトをさらに展開して、そのプロパティを調べることができます。
+By default, the *Event Listeners* panel in the Elements Inspector shows all the events attached to a page:
 
-![リスナー オブジェクトの展開されたビュー](images/events-geteventlisteners_expanded.png)
+![Event listeners panel](images/events-eventlisteners_panel.png)
 
-##  DOM 要素に登録されているイベント リスナーの表示
+The filter limits the events just to the selected node:
 
-デフォルトでは、Elements Inspector の [*Event Listeners*] パネルには、ページにアタッチされているすべてのイベントが表示されます。
+![Event listeners panel, filtered by selected node only](images/events-eventlisteners_panel_filtered.png)
 
+By expanding the object, the panel shows the event listener details. In this example, the page has two event listeners attached via jQuery:
 
-![[Event Listeners] パネル](images/events-eventlisteners_panel.png)
+![Expanded view of the event listeners](images/events-eventlisteners_panel_details.png)
 
-フィルタを使用すると、イベントが選択したノードのみに限定されます。
+## Feedback {: #feedback }
 
-![[Selected Node Only] でフィルタされた [Event listeners] パネル](images/events-eventlisteners_panel_filtered.png)
-
-オブジェクトを展開すると、パネルにイベント リスナーの詳細が表示されます。この例では、ページに jQuery 経由で 2 つのイベント リスナーがアタッチされています。
-
-
-
-![展開されたイベント リスナーのビュー](images/events-eventlisteners_panel_details.png)
-
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
