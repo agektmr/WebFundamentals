@@ -1,70 +1,51 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description:使用分配分析器工具可以查找未正确执行垃圾回收的对象，并继续保留内存。
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Use the allocation profiler tool to find objects that aren't being properly garbage collected, and continue to retain memory.
 
-{# wf_updated_on:2015-07-08 #}
-{# wf_published_on:2015-04-13 #}
+{# wf_updated_on: 2018-07-27 #} {# wf_published_on: 2015-04-13 #} {# wf_blink_components: Platform>DevTools #}
 
-# 如何使用分配分析器工具 {: .page-title }
+# How to Use the Allocation Profiler Tool {: .page-title }
 
-{% include "web/_shared/contributors/megginkearney.html" %}使用分配分析器工具可以查找未正确执行垃圾回收的对象，并继续保留内存。
+{% include "web/_shared/contributors/megginkearney.html" %} Use the allocation profiler tool to find objects that aren't being properly garbage collected, and continue to retain memory.
 
+## How the tool works
 
+The **allocation profiler** combines the detailed snapshot information of the [heap profiler](/web/tools/chrome-devtools/profile/memory-problems/heap-snapshots) with the incremental updating and tracking of the [Timeline panel](/web/tools/chrome-devtools/profile/evaluate-performance/timeline-tool). Similar to these tools, tracking objects’ heap allocation involves starting a recording, performing a sequence of actions, then stop the recording for analysis.
 
-## 工具的工作方式
+The tool takes heap snapshots periodically throughout the recording (as frequently as every 50 ms!) and one final snapshot at the end of the recording.
 
-**分配分析器**将[堆分析器](/web/tools/chrome-devtools/profile/memory-problems/heap-snapshots)的详细快照信息与 [Timeline 面板](/web/tools/chrome-devtools/profile/evaluate-performance/timeline-tool)的增量式更新和跟踪相结合。与这些工具类似，跟踪对象的堆分配涉及开始记录，执行一系列操作，然后停止记录进行分析。
+![Allocation profiler](imgs/object-tracker.png)
 
+Note: The number after the @ is an object ID that persists among multiple snapshots taken. This allows precise comparison between heap states. Displaying an object's address makes no sense, as objects are moved during garbage collections.
 
+## Enable allocation profiler
 
+To begin using the allocation profiler:
 
+1. Make sure you have the latest [Chrome Canary](https://www.google.com/intl/en/chrome/browser/canary.html).
+2. Open the Developer Tools and click on the gear icon in the lower right.
+3. Now, open the Profiler panel, you should see a profile called "Record Heap Allocations"
 
+![Record heap allocations profiler](imgs/record-heap.png)
 
-该工具在整个记录过程中定期（频率高达每 50 毫秒一次！）拍摄堆快照，并在记录结束时最后拍摄一次快照。
+## Read a heap allocation profile
 
-![分配分析器](imgs/object-tracker.png)
+The heap allocation profile shows where objects are being created and identifies the retaining path. In the snapshot below, the bars at the top indicate when new objects are found in the heap.
 
-Note: @ 后面的数字是存在于拍摄的多个快照之间的对象 ID。使用此 ID 可以精确比较堆状态。显示对象的地址毫无意义，因为对象在垃圾回收过程中会被移动。
+The height of each bar corresponds to the size of the recently allocated objects, and the color of the bars indicate whether or not those objects are still live in the final heap snapshot. Blue bars indicate objects that are still live at the end of the timeline, Gray bars indicate objects that were allocated during the timeline, but have since been garbage collected:
 
-## 启用分配分析器
+![Allocation profiler snapshot](imgs/collected.png)
 
-要开始使用分配分析器，请执行以下操作：
+In the snapshot below, an action was performed 10 times. The sample program caches five objects, so the last five blue bars are expected. But the leftmost blue bar indicates a potential problem.
 
-1. 确保您已安装最新的 [Chrome Canary](https://www.google.com/intl/en/chrome/browser/canary.html)。
-2. 打开 Developer Tools，然后点击右下方的齿轮图标。
-3. 现在，打开 Profiler 面板，您会看到名为“Record Heap Allocations”的配置文件
+You can then use the sliders in the timeline above to zoom in on that particular snapshot and see the objects that were recently allocated at that point:
 
-![Record heap allocations 分析器](imgs/record-heap.png)
+![Zoom in on snapshot](imgs/sliders.png)
 
-## 读取堆分配配置文件
+Clicking on a specific object in the heap will show its retaining tree in the bottom portion of the heap snapshot. Examining the retaining path to the object should give you enough information to understand why the object was not collected, and you can make the necessary code changes to remove the unnecessary reference.
 
-堆分配配置文件会显示正在创建对象的位置并确定保留路径。在下面的快照中，顶部的竖线指示在堆中发现新对象的时间。
+## View memory allocation by function {: #allocation-profiler }
 
+You can also view memory allocation by JavaScript function. See [Investigate memory allocation by function](index#allocation-profile) for more information.
 
-每条线的高度与最近分配的对象大小对应，竖线的颜色表示这些对象是否仍然显示在最终的堆快照中。蓝色竖线表示在时间线最后对象仍然显示，灰色竖线表示对象已在时间线期间分配，但曾对其进行过垃圾回收：
+## Feedback {: #feedback }
 
-
-
-
-
-![分配分析器快照](imgs/collected.png)
-
-在下面的快照中，操作执行了 10 次。示例程序缓存了五个对象，因此才有最后五条蓝色竖线。最左边蓝色竖线指示潜在问题。
-
-
-
-然后，您可以使用上面时间线中的滑块放大特定快照并查看最近在该点分配的对象：
-
-
-![放大快照](imgs/sliders.png)
-
-点击堆中的特定对象会在堆快照的底部显示其保留树。检查对象的保留路径能够为您提供足够的信息以了解对象为什么未被回收，您可以进行必要的代码更改以移除不必要的引用。
-
-## 按函数查看内存分配 {: #allocation-profiler }
-
-您还可以按 JavaScript 函数查看内存分配。如需了解详细信息，请参阅[按函数调查内存分配](index#allocation-profile)。
-
-
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
