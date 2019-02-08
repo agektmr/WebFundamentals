@@ -1,34 +1,30 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Er moeten drie variabelen worden geoptimaliseerd om de snelste initiële weergavetijd te leveren: minimaliseer het aantal kritieke bronnen, minimaliseer het aantal kritieke bytes en minimaliseer het kritieke weergavepad.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Learn the key factors in optimizing the critical rendering path.
 
-{# wf_updated_on: 2014-04-27 #}
-{# wf_published_on: 2014-03-31 #}
+{# wf_updated_on: 2018-08-17 #} {# wf_published_on: 2014-03-31 #} {# wf_blink_components: N/A #}
 
-# Het kritieke weergavepad optimaliseren {: .page-title }
+# Optimizing the Critical Rendering Path {: .page-title }
 
 {% include "web/_shared/contributors/ilyagrigorik.html" %}
 
-Er moeten drie variabelen worden geoptimaliseerd om de snelste initiële weergavetijd te leveren:
+To deliver the fastest possible time to first render, we need to minimize three variables:
 
-* **Het aantal kritieke bronnen minimaliseren.**
-* **Het aantal kritieke bytes minimaliseren.**
-* **De kritieke padlengte minimaliseren.**
+- The number of critical resources.
+- The critical path length.
+- The number of critical bytes.
 
-Een kritieke bron is elke bron die de initiële weergave van een pagina kan blokkeren. Hoe minder van dit soort bronnen een pagina heeft, hoe minder werk de browser moet verrichten om de inhoud op het scherm te krijgen en hoe minder concurrentie er is voor de CPU en andere bronnen.
+A critical resource is a resource that could block initial rendering of the page. The fewer of these resources, the less work for the browser, the CPU, and other resources.
 
-Op vergelijkbare wijze betekent hoe minder kritieke bytes de browser moet downloaden, hoe sneller de browser kan beginnen met het verwerken van de inhoud en deze weer te geven. We kunnen het aantal bronnen verminderen (door deze te elimineren of niet-kritiek te maken) en zorgen dat de overdrachtsgrootte wordt geminimaliseerd door elke bron te comprimeren en te optimaliseren om het aantal bytes te verminderen.
+Similarly, the critical path length is a function of the dependency graph between the critical resources and their bytesize: some resource downloads can only be initiated after a previous resource has been processed, and the larger the resource the more roundtrips it takes to download.
 
-Tot slot is de kritieke padlengte een functie van het afhankelijkheidsschema tussen alle kritieke bronnen (en de bytegrootte van deze bronnen) die de pagina nodig heeft: bepaalde brondownloads kunnen alleen worden geïnitieerd als de vorige bron is verwerkt en hoe groter de bron is, hoe meer roundtrips er nodig zijn om deze te downloaden.
+Finally, the fewer critical bytes the browser has to download, the faster it can process content and render it visible on the screen. To reduce the number of bytes, we can reduce the number of resources (eliminate them or make them non-critical) and ensure that we minimize the transfer size by compressing and optimizing each resource.
 
-In andere woorden: het aantal bronnen, de respectievelijke bytegrootte en de kritieke padlengte zijn verbonden met elkaar, maar zijn niet gelijk aan elkaar. U kunt bijvoorbeeld het aantal kritieke bronnen mogelijk niet verminderen, of de kritieke padlengte verkorten, maar het verminderen van het aantal kritieke bytes is nog steeds een belangrijke optimalisatie. En omgekeerd kan natuurlijk ook.
+**The general sequence of steps to optimize the critical rendering path is:**
 
-**De algemene volgorde om het kritieke weergavepad te optimaliseren is:**
+1. Analyze and characterize your critical path: number of resources, bytes, length.
+2. Minimize number of critical resources: eliminate them, defer their download, mark them as async, and so on.
+3. Optimize the number of critical bytes to reduce the download time (number of roundtrips).
+4. Optimize the order in which the remaining critical resources are loaded: download all critical assets as early as possible to shorten the critical path length.
 
-1. Uw kritieke pad analyseren en karakteriseren: aantal bronnen, bytes, lengte.
-2. Aantal kritieke bronnen minimaliseren: bronnen elimineren, brondownloads uitstellen, bronnen markeren als asynchroon, enzovoort.
-3. De volgorde waarin de overgebleven kritieke bronnen worden geladen: u wilt alle kritieke items zo snel mogelijk downloaden om de kritieke padlengte te verkorten.
-4. Het aantal kritieke bytes optimaliseren om de downloadtijd te verkorten (aantal roundtrips).
+## Feedback {: #feedback }
 
-
-
+{% include "web/_shared/helpful.html" %}
