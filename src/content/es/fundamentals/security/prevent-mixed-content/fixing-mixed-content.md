@@ -1,313 +1,232 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Buscar y solucionar problemas de contenido mixto es una tarea importante, pero puede tomar mucho tiempo. En esta guía, se analizan algunas herramientas disponibles para facilitar el proceso.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Finding and fixing mixed content is an important task, but it can be time-consuming. This guide discusses some tools that are available to help with the process.
 
-{# wf_published_on: 2015-09-28 #}
-{# wf_updated_on: 2017-07-12 #}
+{# wf_published_on: 2015-09-28 #} {# wf_updated_on: 2018-09-20 #} {# wf_blink_components: Blink>SecurityFeature #}
 
-# Prevención del contenido mixto {: .page-title }
+# Preventing Mixed Content {: .page-title }
 
 {% include "web/_shared/contributors/johyphenel.html" %}
 
-Success: Admitir HTTPS en tu sitio web es un paso importante para proteger a tu sitio y a los usuarios contra ataques. Sin embargo, el contenido mixto puede inutilizar esta protección. Para brindar protección a tu sitio y a los usuarios, es muy importante que encuentres y soluciones los problemas de contenido mixto.
+Success: Supporting HTTPS for your website is an important step to protecting your site and your users from attack, but mixed content can render that protection useless. To protect your site and your users, it is very important to find and fix mixed content issues.
 
-Buscar y solucionar problemas de contenido mixto es una tarea importante, pero puede tomar mucho tiempo. En esta guía, se analizan algunas herramientas y técnicas disponibles para facilitar el proceso. Para obtener más información sobre el contenido mixto en sí, consulta [Qué es el contenido mixto](./what-is-mixed-content).
+Finding and fixing mixed content is an important task, but it can be time-consuming. This guide discusses some tools and techniques that are available to help with the process. For more information on mixed content itself, see [What is Mixed Content](./what-is-mixed-content).
 
 ### TL;DR {: .hide-from-toc }
 
-* Siempre usa URL del tipo https:// cuando cargues recursos en tu página.
-* Usa el encabezado `Content-Security-Policy-Report-Only` para supervisar los errores de contenido mixto en tu sitio.
-* Usa la directiva de CSP `upgrade-insecure-requests` para proteger a los visitantes contra el contenido inseguro.
+* Always use https:// URLs when loading resources on your page.
+* Use the `Content-Security-Policy-Report-Only` header to monitor mixed content errors on your site.
+* Use the `upgrade-insecure-requests` CSP directive to protect your visitors from insecure content.
 
-## Buscar y solucionar problemas de contenido mixto 
+## Find and fix mixed content
 
-Buscar manualmente el contenido mixto puede tomar tiempo, según la cantidad de problemas que haya. El proceso descrito en este documento usa el navegador Chrome. Sin embargo, la mayoría de los navegadores modernos brindan herramientas similares para ayudar durante este proceso.
+Manually finding mixed content can be time consuming, depending on the number of issues you have. The process described in this document uses the Chrome browser; however most modern browsers provide similar tools to help with this process.
 
-### Visitar tu sitio para encontrar el contenido mixto
+### Finding mixed content by visiting your site
 
-Cuando visitas una página HTTPS en Google Chrome, el navegador te alerta sobre contenido 
-mixto con errores y advertencias en la Consola de JavaScript.
+When visiting an HTTPS page in Google Chrome, the browser alerts you to mixed content as errors and warnings in the JavaScript console.
 
-Para ver estas alertas, visita nuestra página de muestra de contenido mixto pasivo o contenido mixto activo, y abre la consola de JavaScript de Chrome. Puedes abrir la consola desde el menú View: _View_ -&gt; _Developer_ -&gt; _JavaScript Console_ o haciendo clic con el botón secundario en la página y luego seleccionando _Inspect Element_ y _Console_.
+To view these alerts, go to our passive mixed content or active mixed content sample page and open the Chrome JavaScript console. You can open the console either from the View menu: *View* -&gt; *Developer* -&gt; *JavaScript Console*, or by right-clicking the page, selecting *Inspect Element*, and then selecting *Console*.
 
-El [ejemplo de contenido mixto pasivo](https://googlesamples.github.io/web-fundamentals/fundamentals/security/prevent-mixed-content/passive-mixed-content.html){: .external} de la página [Qué es el contenido mixto](what-is-mixed-content#passive-mixed-content){: .external} hace que aparezcan advertencias de contenido mixto, como las siguientes:
+The [passive mixed content example](https://googlesamples.github.io/web-fundamentals/fundamentals/security/prevent-mixed-content/passive-mixed-content.html){: .external} on the [What Is Mixed Content](what-is-mixed-content#passive-mixed-content){: .external} page causes mixed content warnings to be displayed, like the ones below:
 
 <figure>
   <img src="imgs/passive-mixed-content-warnings.png" alt="Mixed Content: The page was loaded over HTTPS, but requested an insecure video. This content should also be served over HTTPS.">
 </figure>
 
-[Pruébalo](https://googlesamples.github.io/web-fundamentals/fundamentals/security/prevent-mixed-content/passive-mixed-content.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/security/prevent-mixed-content/passive-mixed-content.html){: target="_blank" .external }
 
-A su vez, el ejemplo de contenido mixto activo hace que se muestren los siguientes errores de contenido 
-mixto:
+While the active mixed content example causes mixed content errors to be displayed:
 
 <figure>
   <img src="imgs/active-mixed-content-errors.png" alt="Mixed Content: The page was loaded over HTTPS, but requested an insecure resource. This request has been blocked; the content must be served over HTTPS.">
 </figure>
 
-[Pruébalo](https://googlesamples.github.io/web-fundamentals/fundamentals/security/prevent-mixed-content/active-mixed-content.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/security/prevent-mixed-content/active-mixed-content.html){: target="_blank" .external }
 
+You need to fix the http:// URLs listed in these errors and warnings, in your site's source. It's helpful to make a list of these URLs, along with the page you found them on, for use when you fix them.
 
-Tienes que corregir las URL del tipo http:// que se muestran en estos errores y advertencias, en la fuente de tu sitio. Es útil hacer una lista de estas URL junto con la página en la que las encontraste para usar cuando las corrijas. 
+Note: Mixed content errors and warnings are only shown for the page your are currently viewing, and the JavaScript console is cleared every time you navigate to a new page. This means you will have to view every page of your site individually to find these errors. Some errors may only show up after you interact with part of the page, see the image gallery mixed content example from our previous guide.
 
-Note: Solo se muestran los errores y las advertencias de contenido mixto de la página que estés viendo, y la consola de JavaScript se borra cada vez que te diriges a otra página. Esto significa que deberás ver cada una de las páginas de tu sitio para encontrar estos errores. Algunos errores solo aparecerán cuando interactúes con parte de la página, consulta el ejemplo de contenido mixto en la galería de imágenes de la guía anterior.
+### Finding mixed content in your source code
 
-### Encontrar contenido mixto en tu código fuente
+You can search for mixed content directly in your source code. Search for `http://` in your source and look for tags that include HTTP URL attributes. Specifically, look for tags listed in the [mixed content types & security threats associated](what-is-mixed-content#mixed-content-types--security-threats-associated){: .external} section of our previous guide. Note that having `http://` in the href attribute of anchor tags (`<a>`) is often not a mixed content issue, with some notable exceptions discussed later.
 
-Puedes encontrar contenido mixto directamente en tu código fuente. Busca 
-`http://` en tu código y encuentra etiquetas en las que se incluyan atributos de URL HTTP.
-Busca específicamente las etiquetas que aparecen en la sección [tipos de contenido mixto y amenazas de seguridad asociadas](what-is-mixed-content#mixed-content-types--security-threats-associated){: .external} de nuestra guía anterior.
-Ten en cuenta que si aparece `http://` en el atributo href de las etiquetas delimitadoras (`<a>`),
-no significa, en general, que haya un problema de contenido mixto. Existen excepciones específicas que analizaremos posteriormente. 
+If you have a list of HTTP URLs from Chrome mixed content errors and warnings, you can also search for these complete URLs in your source to find where they are included in your site.
 
-Si tienes una lista de URL HTTP producto de errores y advertencias de contenido mixto en Chrome, 
-también puedes buscar estas URL completas en tu código para saber dónde 
-se incluyen en tu sitio. 
+### Fixing mixed content
 
-### Solucionar problemas de contenido mixto
+Once you've found where the mixed content is included in your site's source, follow these steps to fix it.
 
-Cuando sepas dónde se incluye el contenido mixto en el código de tu sitio, 
-sigue los próximos pasos para solucionarlo.
-
-Uso del siguiente error de contenido mixto en Chrome como ejemplo:
+Using the following mixed content error in Chrome as an example:
 
 <figure>
   <img src="imgs/image-gallery-warning.png" alt="Mixed Content: The page was loaded over HTTPS, but requested an insecure image. This content should also be served over HTTPS.">
 </figure>
 
-Que encontraste en la fuente aquí:
- 
-    <img src="http://googlesamples.github.io/web-fundamentals/.../puppy.jpg"> 
+Which you found in source here:
 
-#### Paso 1
+    <img src="http://googlesamples.github.io/web-fundamentals/.../puppy.jpg">
+    
 
-Verifica que la URL esté disponible a través del protocolo HTTPS abriendo una nueva pestaña en 
-tu navegador, ingresando la URL en la barra de direcciones y cambiando `http://` por `https://`.
+#### Step 1
 
-Si el recurso que se muestra es el mismo en **HTTP** y **HTTPS**, significa que todo funciona bien.
-Continúa con el [paso 2](#step-2).
+Check that the URL is available over HTTPS by opening a new tab in your browser, entering the URL in the address bar, and changing `http://` to `https://`
+
+If the resource displayed is the same over **HTTP** and **HTTPS**, everything is OK. Proceed to [Step 2](#step-2).
 
 <div class="attempt-left">
   <figure>
     <img src="imgs/puppy-http.png">
     <figcaption class="success">
-      En HTTP, la imagen se carga sin errores.
+      HTTP image loads without error.
      </figcaption>
   </figure>
 </div>
+
 <div class="attempt-right">
   <figure>
     <img src="imgs/puppy-https.png">
     <figcaption class="success">
-      En HTTPS, la imagen se carga sin errores y es igual a la imagen en HTTP. Sigue con el <a href="#step-2">paso 2</a>.
+      HTTPS image loads without error, and image is the same as HTTP. Go to <a href="#step-2">step 2</a>!
      </figcaption>
   </figure>
 </div>
 
 <div style="clear:both;"></div>
 
-Si ves una advertencia de certificado, o el contenido no se puede mostrar en
-**HTTPS**, significa que el recurso no está disponible de forma segura.
+If you see a certificate warning, or if the content can't be displayed over **HTTPS**, it means the resource is not available securely.
 
 <div class="attempt-left">
   <figure>
     <img src="imgs/https-not-available.png">
     <figcaption class="warning">
-      El recurso no está disponible a través del protocolo HTTPS
+      Resource not available over HTTPS
      </figcaption>
   </figure>
 </div>
+
 <div class="attempt-right">
   <figure>
     <img src="imgs/https-cert-warning.png">
     <figcaption class="warning">
-      Aparece una advertencia de certificado cuando se intenta ver el recurso a través del protocolo HTTPS.
+      Certificate warning when attempting to view resource over HTTPS.
      </figcaption>
   </figure>
 </div>
 
 <div style="clear:both;"></div>
 
-En este caso, considera alguna de las siguientes opciones:
+In this case, you should consider one of the following options:
 
-* Incluye el recurso desde un host distinto si es posible.
-* Descarga y aloja el contenido directamente en tu sitio si puedes hacerlo legalmente.
-* Quita el recurso de tu sitio.
+* Include the resource from a different host, if one is available.
+* Download and host the content on your site directly, if you are legally allowed to do so.
+* Exclude the resource from your site altogether.
 
-#### Paso 2
+#### Step 2
 
-Cambia la URL `http://` por `https://`, guarda el archivo de origen y vuelve a implementar el archivo actualizado si es necesario.
+Change the URL from `http://` to `https://`, save the source file, and redeploy the updated file if necessary.
 
-#### Paso 3
+#### Step 3
 
-Visita la página en la cual encontraste el error y verifica que este haya desaparecido.
+View the page where you found the error originally and verify that the error no longer appears.
 
-### Ten cuidado con el uso no convencional de las etiquetas
+### Beware of non-standard tag usage
 
-Ten cuidado con el uso no convencional de las etiquetas en tu sitio. Por ejemplo, las URL con etiquetas delimitadoras (`<a>`)
-no generan contenido mixto por sí solas, ya que se encargan de que el navegador 
-visite una página nueva. Por lo general, esto significa que no hace falta corregirlas. Sin embargo, 
-algunas secuencias de comandos de la galería de imágenes anulan la funcionalidad de las etiquetas `<a>` y 
-cargan el recurso HTTP especificado por el atributo `href` en una ventana lightbox 
-en la página, lo cual ocasiona un problema de contenido mixto. 
+Beware of non-standard tag usage on your site. For instance, anchor (`<a>`) tag URLs don't cause mixed content by themselves, as they cause the browser to navigate to a new page. This means they usually don't need to be fixed. However some image gallery scripts override the functionality of the `<a>` tag and load the HTTP resource specified by the `href` attribute into a lightbox display on the page, causing a mixed content problem.
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/security/prevent-mixed-content/_code/image-gallery-example.html" region_tag="snippet1" adjust_indentation="auto" %}
 </pre>
 
-[Pruébalo](https://googlesamples.github.io/web-fundamentals/fundamentals/security/prevent-mixed-content/image-gallery-example.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/security/prevent-mixed-content/image-gallery-example.html){: target="_blank" .external }
 
-En el código anterior, dejar el href de las etiquetas `<a>` en `http://` puede parecer una alternativa segura. 
-Sin embargo, si visualizas el ejemplo y haces clic en la imagen, verás que a través de él se carga y se muestra en la página 
-un recurso de contenido mixto. 
+In the code above, it may seem safe to leave the `<a>` tags href as `http://`; however if you view the sample and click the image, you'll see that it loads a mixed content resource and displays it on the page.
 
-## Trabajar con contenido mixto a escala
+## Handle mixed content at scale
 
-Los pasos manuales descritos anteriormente funcionan bien en sitios web pequeños. No obstante, en sitios web más grandes 
-o sitios con varios equipos de desarrollo independientes, puede resultar difícil llevar el control 
-del contenido que se carga. Para facilitar esta tarea, puedes usar la política de seguridad de 
-contenido a fin de indicarle al navegador que te notifique cuando aparezcan contenidos mixtos y 
-asegurarte de que tus páginas nunca carguen recursos inseguros de manera inesperada.
+The manual steps above work well for smaller websites; but for large websites or sites with many separate development teams, it can be tough to keep track of all the content being loaded. To help with this task, you can use content security policy to instruct the browser to notify you about mixed content and ensure that your pages never unexpectedly load insecure resources.
 
-### Política de seguridad de contenido
+### Content security policy
 
-[**La política de seguridad de contenido**](/web/fundamentals/security/csp/) (CSP) es una
-función multipropósito del navegador que puedes usar para administrar el contenido mixto a 
-escala. El mecanismo de informes de la CSP se puede usar para realizar el seguimiento del contenido mixto de
-tu sitio. La política de cumplimiento se puede usar para proteger a los usuarios mediante la actualización o
-el bloqueo de contenido mixto. 
+[**Content security policy**](/web/fundamentals/security/csp/) (CSP) is a multi-purpose browser feature that you can use to manage mixed content at scale. The CSP reporting mechanism can be used to track the mixed content on your site; and the enforcement policy, to protect users by upgrading or blocking mixed content.
 
-Puedes habilitar estas funciones en una página incluyendo el encabezado 
-`Content-Security-Policy` o `Content-Security-Policy-Report-Only` en la 
-respuesta que envíe tu servidor. Además, puedes establecer la `Content-Security-Policy` (pero 
-**no** `Content-Security-Policy-Report-Only`) usando una etiqueta `<meta>` 
-en la sección `<head>` de tu página. Consulta los ejemplos de las siguientes 
-secciones.
+You can enable these features for a page by including the `Content-Security-Policy` or `Content-Security-Policy-Report-Only` header in the response sent from your server. Additionally you can set `Content-Security-Policy` (but **not** `Content-Security-Policy-Report-Only`) using a `<meta>` tag in the `<head>` section of your page. See examples in the following sections.
 
-La CSP es útil para muchas cosas fuera de sus usos de contenido mixto. La información sobre otras directivas de la CSP está disponible en los siguientes recursos:
+CSP is useful for many things outside of its mixed content uses. Information about other CSP directives is available at the following resources:
 
-* [Introducción a CSP de Mozilla](https://developer.mozilla.org/en-US/docs/Web/Security/CSP/Introducing_Content_Security_Policy){: .external}
-* [Introducción a CSP de HTML5 Rocks](//www.html5rocks.com/en/tutorials/security/content-security-policy/){: .external}
+* [Mozilla's intro to CSP](https://developer.mozilla.org/en-US/docs/Web/Security/CSP/Introducing_Content_Security_Policy){: .external}
+* [HTML5 Rocks' intro to CSP](//www.html5rocks.com/en/tutorials/security/content-security-policy/){: .external}
 * [CSP playground](http://www.cspplayground.com/){: .external }
-* [Especificación de la CSP](//www.w3.org/TR/CSP/){: .external }
+* [CSP spec](//www.w3.org/TR/CSP/){: .external }
 
-Note: Los navegadores implementan <b>todas</b> las políticas de seguridad de contenido.
-Los diferentes valores del encabezado de CSP que el navegador recibe en el encabezado de respuesta o en los elementos
-<code>&lt;meta&gt;</code> se combinan e implementan como una única política.
-Asimismo, se combinan las políticas de informes. Para combinar las políticas, se toman las
-intersecciones de ellas; es decir, después de la primera, cada política solo
-puede restringir más el contenido permitido, no puede ampliarlo.
+Note: Browsers enforce **all** content security policies that they receive. Multiple CSP header values received by the browser in the response header or
+<code>&lt;meta&gt;</code> elements are combined and enforced as a single policy; reporting policies are likewise combined. Policies are combined by taking the intersection of the policies; that is to say, each policy after the first can only further restrict the allowed content, not broaden it.
 
-### Cómo encontrar contenido mixto con la política de seguridad de contenido 
+### Finding mixed content with content security policy
 
-Puedes usar la política de seguridad de contenido para recopilar informes de contenido mixto en tu 
-sitio. Para habilitar esta función, agrega y establece la directiva `Content-Security-Policy-Report-Only` como un 
-encabezado de respuesta para tu sitio. 
+You can use content security policy to collect reports of mixed content on your site. To enable this feature, set the `Content-Security-Policy-Report-Only` directive by adding it as a response header for your site.
 
-Encabezado de respuesta:  
+Response header:
 
-    Content-Security-Policy-Report-Only: default-src https: 'unsafe-inline' 'unsafe-eval'; report-uri https://example.com/reportingEndpoint 
+    Content-Security-Policy-Report-Only: default-src https: 'unsafe-inline' 'unsafe-eval'; report-uri https://example.com/reportingEndpoint
+    
 
+Whenever a user visits a page on your site, their browser sends JSON-formatted reports regarding anything that violates the content security policy to `https://example.com/reportingEndpoint`. In this case, anytime a subresource is loaded over HTTP, a report is sent. These reports include the page URL where the policy violation occurred and the subresource URL that violated the policy. If you configure your reporting endpoint to log these reports, you can track the mixed content on your site without visiting each page yourself.
 
-Cuando un usuario visita una página de tu sitio, su navegador envía a //example.com/reportingEndpoint` informes en 
-formato JSON sobre cualquier elemento que no respete 
-`https://example.com/reportingEndpoint`. En este caso, se envía un informe cada vez que se 
-carga un subrecurso a través de HTTP. En estos informes se incluye la 
-URL de la página donde se produjo el incumplimiento de política y la URL del subrecurso que 
-no cumplió con la política. Si configuras el terminal encargado de los informes para que registre estos 
-informes, puedes realizar un seguimiento del contenido mixto de tu sitio sin tener que visitar cada 
-una de las páginas. 
+The two caveats to this are:
 
-Para poder hacer esto, se debe tener en cuenta lo siguiente:
+* Users have to visit your page in a browser that understands the CSP header. This is true for most modern browsers.
+* You only get reports for pages visited by your users. So if you have pages that don't get much traffic, it might be some time before you get reports for your entire site.
 
-* Los usuarios deben visitar tu página con un navegador que interprete el encabezado de CSP.
-  La mayoría de los navegadores actuales pueden hacerlo.
-* Solo obtendrás informes de las páginas que visiten los usuarios. Por lo tanto, si algunas páginas 
- no reciben mucho tráfico, es posible que no obtengas informes de todo tu sitio por 
- un tiempo.
+For more information on CSP header format, see the [Content Security Policy specification](https://w3c.github.io/webappsec/specs/content-security-policy/#violation-reports){: .external}.
 
-Para obtener más información sobre el formato del encabezado de CSP, consulta las [especificaciones de la política de seguridad de contenido](https://w3c.github.io/webappsec/specs/content-security-policy/#violation-reports){: .external}. 
+If you don't want to configure a reporting endpoint yourself, <https://report-uri.io/>{: .external} is a reasonable alternative.
 
-Si no deseas configurar tú mismo un terminal que se encargue de los informes, 
-[https://report-uri.io/](https://report-uri.io/){: .external} es una alternativa 
-aceptable.
+### Upgrading insecure requests
 
-### Cómo actualizar solicitudes inseguras
+One of the newest and best tools to automatically fix mixed content is the [**`upgrade-insecure-requests`**](//www.w3.org/TR/upgrade-insecure-requests/){: .external} CSP directive. This directive instructs the browser to upgrade insecure URLs before making network requests.
 
-Una de las herramientas más nuevas y de mejor calidad que permiten arreglar el contenido mixto automáticamente es la directiva 
-[**`upgrade-insecure-requests`**](//www.w3.org/TR/upgrade-insecure-requests/){: .external} 
-de CSP. Esta directiva indica al navegador que actualice las URL inseguras 
-antes de realizar solicitudes de red.
+As an example, if a page contains an image tag with an HTTP URL:
 
-A modo de ejemplo, si una página contiene una etiqueta de imagen con una URL HTTP, como la siguiente:
+    <img src="http://example.com/image.jpg">
+    
 
- 
-    <img src="http://example.com/image.jpg"> 
+The browser instead makes a secure request for
+<code><b>https:</b>//example.com/image.jpg</code>, thus saving the user from mixed content.
 
+You can enable this behavior either by sending a `Content-Security-Policy` header with this directive:
 
-Como alternativa, el navegador realiza una solicitud segura de 
-<code><b>https:</b>//example.com/image.jpg</code>. De esta forma, el usuario evita el contenido 
-mixto.
+    Content-Security-Policy: upgrade-insecure-requests
+    
 
-Puedes habilitar este comportamiento enviando un encabezado `Content-Security-Policy` 
-con esta directiva:
+Or by embedding that same directive inline in the document's `<head>` section using a `<meta>` element:
 
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+    
 
-    Content-Security-Policy: upgrade-insecure-requests  
+It is worth noting, that if the resource is not available over HTTPS, the upgraded request fails and the resource is not loaded. This maintains the security of your page.
 
+The `upgrade-insecure-requests` directive cascades into `<iframe>` documents, ensuring the entire page is protected.
 
-También puedes hacerlo incorporando esa misma directiva integrada en la sección `<head>` 
-del documento con un elemento `<meta>`:
+### Blocking all mixed content
 
-  
-    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">  
+Not all browsers support the upgrade-insecure-requests directive, so an alternative for protecting users is the [**`block-all-mixed-content`**](http://www.w3.org/TR/mixed-content/#strict-checking){: .external} CSP directive. This directive instructs the browser to never load mixed content; all mixed content resource requests are blocked, including both active and passive mixed content. This option also cascades into `<iframe>` documents, ensuring the entire page is mixed content free.
 
+A page can opt itself into this behavior either by sending a `Content-Security-Policy` header with this directive:
 
-Vale la pena aclarar que si el recurso no está disponible a través de HTTPS, la 
-solicitud actualizada fallará y el recurso no se cargará. Esto permite preservar 
-la seguridad de tu página. 
+    Content-Security-Policy: block-all-mixed-content
+    
 
-La directiva `upgrade-insecure-requests` se carga en cascada en documentos `<iframe>`, lo cual 
-garantiza la protección de toda la página.
+Or by embedding that same directive inline in the document's `<head>` section using a `<meta>` element:
 
-### Cómo bloquear todo el contenido mixto
-
-No todos los navegadores admiten la directiva upgrade-insecure-requests. Una 
-alternativa para proteger a los usuarios es la directiva 
-[**`block-all-mixed-content`**](http://www.w3.org/TR/mixed-content/#strict-checking){: .external}
-de CSP. Esta directiva indica al navegador que nunca cargue contenido mixto. 
-Se bloquean todas las solicitudes de recursos de contenido mixto, incluidos el contenido mixto activo y 
-pasivo. Esta opción también se carga en cascada en documentos `<iframe>`, lo cual 
-garantiza que toda la página esté libre de contenido mixto.
-
-Puedes incorporar este comportamiento en una página enviando un encabezado 
-`Content-Security-Policy` con esta directiva:
-
-  
-    Content-Security-Policy: block-all-mixed-content  
-
-
-También puedes hacerlo incorporando esa misma directiva integrada en la sección `<head>` 
-del documento con un elemento `<meta>`:
-
-  
     <meta http-equiv="Content-Security-Policy" content="block-all-mixed-content">
+    
 
+The downside of using `block-all-mixed-content` is, perhaps obviously, that all content is blocked. This is a security improvement, but it means that these resources are no longer available on the page. This might break features and content that your users expect to be available.
 
-La desventaja más obvia de usar `block-all-mixed-content` es que se bloquea 
-todo el contenido. Se trata de una mejora en la seguridad, pero significa que estos 
-recursos ya no estarán disponibles en la página. Esto puede dañar funciones y 
-contenidos que los usuarios esperan hallar. 
+### Alternatives to CSP
 
-### Alternativas a las CSP
+If your site is hosted for you by a platform such as Blogger, you may not have access to modify headers & add a CSP. Instead a viable alternative could be to use a website crawler to find issues across your site for you, such as [HTTPSChecker](https://httpschecker.net/how-it-works#httpsChecker){: .external } or [Mixed Content Scan](https://github.com/bramus/mixed-content-scan){: .external }
 
-Si una plataforma como Blogger es el host de tu sitio, puede ser que no tengas 
-acceso para modificar encabezados y agregar una CSP.
-En cambio, una alternativa viable podría ser el uso de un rastreador de sitios web para encontrar los problemas 
-en tu sitio, como 
-[HTTPSChecker](https://httpschecker.net/how-it-works#httpsChecker){: .external } 
-o 
-[Mixed Content Scan](https://github.com/bramus/mixed-content-scan){: .external }
+## Feedback {: #feedback }
 
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
