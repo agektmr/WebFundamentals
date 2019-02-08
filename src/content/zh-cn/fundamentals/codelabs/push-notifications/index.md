@@ -1,669 +1,595 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description:在此代码实验室中，您将学习如何向网络应用添加推送通知。
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: In this codelab you'll how to add push notifications to your web app.
 
-{# wf_updated_on: 2017-10-06 #}
-{# wf_published_on: 2016-01-01 #}
+{# wf_auto_generated #} {# wf_updated_on: 2018-05-15 #} {# wf_published_on: 2016-01-01 #}
 
-
-# 向网络应用添加推送通知 {: .page-title }
+# Adding Push Notifications to a Web App {: .page-title }
 
 {% include "web/_shared/contributors/mattgaunt.html" %}
 
+## Overview
 
+Push messaging provides a simple and effective way to re-engage with your users and in this code lab you'll learn how to add push notifications to your web app.
 
-## 概览
+### What you'll learn
 
+* How to subscribe and unsubscribe a user for push messaging
+* How to handle incoming push messages
+* How to display a notification
+* How to respond to notification clicks
 
+### What you'll need
 
+* Chrome 52 or above
+* [Web Server for Chrome](https://chrome.google.com/webstore/detail/web-server-for-chrome/ofhbbkphhbklhfoeikjpcbhemlocgigb), or your own web server of choice
+* A text editor
+* Basic knowledge of HTML, CSS, JavaScript, and Chrome DevTools
+* The sample code, see Get setup
 
-推送消息提供了重新吸引用户的简单有效方式，在此代码实验室中，您将学习如何向网络应用添加推送通知。
+## Get Setup
 
-### 您将学习的内容
+### Download the sample code
 
-* 如何为用户订阅或取消订阅推送消息
-* 如何处理进入的推送消息
-* 如何显示通知
-* 如何响应通知点击
+You can get the sample code for this code by either downloading the zip here:
 
-### 您需具备的条件
+[Download source code](https://github.com/googlechrome/push-notifications/archive/master.zip)
 
-* Chrome 52 或更高版本
-*  [Web Server for Chrome](https://chrome.google.com/webstore/detail/web-server-for-chrome/ofhbbkphhbklhfoeikjpcbhemlocgigb)，或者使用您自己选择的网络服务器
-* 文本编辑器
-* 对 HTML、CSS、JavaScript 和 Chrome DevTools 的基本了解
-* 示例代码，请参见“设置”
-
-
-## 设置
-
-
-
-
-### 下载示例代码
-
-您可以通过以下其中一种方式获取此代码实验室的示例代码：下载 zip 文件：
-
-[链接](https://github.com/googlechrome/push-notifications/archive/master.zip)
-
-或者克隆此 Git 存储区：
+or by cloning this git repo:
 
     git clone https://github.com/GoogleChrome/push-notifications.git
+    
 
-如果以 zip 文件形式下载源代码，解压后是一个根文件夹 `push-notifications-master`。
+If you downloaded the source as a zip, unpacking it should give you a root folder `push-notifications-master`.
 
-### 安装并验证网络服务器
+### Install and verify web server
 
-尽管您可以使用自己的网络服务器，但此代码实验室的设计只有与 Chrome Web Server 结合使用时才能正常运行。如果您尚未安装此应用，可以从 Chrome 网上应用店安装。
+While you're free to use your own web server, this codelab is designed to work well with the Chrome Web Server. If you don't have that app installed yet, you can install it from the Chrome Web Store.
 
-[链接](https://chrome.google.com/webstore/detail/web-server-for-chrome/ofhbbkphhbklhfoeikjpcbhemlocgigb)
+[Install Web Server for Chrome](https://chrome.google.com/webstore/detail/web-server-for-chrome/ofhbbkphhbklhfoeikjpcbhemlocgigb)
 
-安装 Web Server for Chrome 后，点击书签栏上的 Apps 快捷方式：
+After installing the Web Server for Chrome app, click on the Apps shortcut on the bookmarks bar:
 
 ![a80b29d5e878df22.png](img/a80b29d5e878df22.png)
 
-在随后出现的窗口中，点击 Web Server 图标：
+In the ensuing window, click on the Web Server icon:
 
 ![dc07bbc9fcfe7c5b.png](img/dc07bbc9fcfe7c5b.png)
 
-接下来您将看到此对话框，您可以在其中配置本地网络服务器：
+You'll see this dialog next, which allows you to configure your local web server:
 
 ![433870360ad308d4.png](img/433870360ad308d4.png)
 
-点击 __choose folder__ 按钮，然后选择 app 文件夹。这样您就可以通过网络服务器对话框（在 __Web Server URL(s)__ 部分）中突出显示的网址为正在进行的工作提供支持。
+Click the **choose folder** button, and select the app folder. This will enable you to serve your work in progress via the URL highlighted in the web server dialog (in the **Web Server URL(s)** section).
 
-在 Options 下，选中“Automatically show index.html”旁边的框，如下所示：
+Under Options, check the box next to "Automatically show index.html", as shown below:
 
 ![39b4e0371e9703e6.png](img/39b4e0371e9703e6.png)
 
-然后将标记为“Web Server:STARTED”的切换按钮向左滑动，然后向右滑动，停止并重启服务器。
+Then stop and restart the server by sliding the toggle labeled "Web Server: STARTED" to the left and then back to the right.
 
 ![daefd30e8a290df5.png](img/daefd30e8a290df5.png)
 
-现在，在您的网络浏览器中访问您的网站（通过点击突出显示的 Web Server URL），然后您会看到如下页面：
+Now visit your site in your web browser (by clicking on the highlighted Web Server URL) and you should see a page that looks like this:
 
 ![4525ec369fc2ae47.png](img/4525ec369fc2ae47.png)
 
-### 始终更新服务工作线程
+### Always update the service worker
 
-在开发的过程中，非常有必要确保您的服务工作线程始终保持最新状态并拥有最新更改。
+During development it's helpful to ensure your service worker is always up to date and has the latest changes.
 
-要在 Chrome 中进行设置，请打开 DevTools（点击右键 > Inspect）并转至 __Application__ 面板。点击 __Service Workers__ 标签，然后选中 __Update on Reload__ 复选框。如果启用此复选框，服务工作线程会在每次页面重新加载时强制更新。
+To set this up in Chrome, open DevTools (Right Click > Inspect) and go to the **Application** panel, click the **Service Workers** tab and check the **Update on Reload** checkbox. When this checkbox is enabled the service worker is forcibly updated every time the page reloads.
 
 ![6b698d7c7bbf1bc0.png](img/6b698d7c7bbf1bc0.png)
 
+## Register a Service Worker
 
-## 注册服务工作线程
+In your `app` directory, notice that you have an empty file named `sw.js`. This file will be your service worker, for now it can stay empty and we'll be adding code to it later.
 
+First we need to register this file as our Service Worker.
 
+Our `app/index.html` page loads `scripts/main.js` and it's in this JavaScript file that we'll register our service worker.
 
+Add the following code to `scripts/main.js`:
 
-在您的 `app` 目录中，请注意有一个名称为 `sw.js` 的空文件。这个文件是您的服务工作线程，目前此文件为空，我们稍后会向其添加代码。
+    if ('serviceWorker' in navigator && 'PushManager' in window) {
+      console.log('Service Worker and Push is supported');
+    
+      navigator.serviceWorker.register('sw.js')
+      .then(function(swReg) {
+        console.log('Service Worker is registered', swReg);
+    
+        swRegistration = swReg;
+      })
+      .catch(function(error) {
+        console.error('Service Worker Error', error);
+      });
+    } else {
+      console.warn('Push messaging is not supported');
+      pushButton.textContent = 'Push Not Supported';
+    }
+    
 
-首先，我们需要将此文件注册为服务工作线程。
+This code checks if service workers and push messaging is supported by the current browser and if it is, it registers our `sw.js` file.
 
-我们的 `app/index.html` 页面会加载 `scripts/main.js`，它位于我们将注册服务工作线程的 JavaScript 文件中。
+#### Try it out
 
-将以下代码添加到 `scripts/main.js`：
+Check your changes by refreshing the app in the browser.
 
-```
-if ('serviceWorker' in navigator && 'PushManager' in window) {
-  console.log('Service Worker and Push is supported');
-
-  navigator.serviceWorker.register('sw.js')
-  .then(function(swReg) {
-    console.log('Service Worker is registered', swReg);
-
-    swRegistration = swReg;
-  })
-  .catch(function(error) {
-    console.error('Service Worker Error', error);
-  });
-} else {
-  console.warn('Push messaging is not supported');
-  pushButton.textContent = 'Push Not Supported';
-}
-```
-
-此代码会检查当前的浏览器是否支持服务工作线程和推送消息，如果支持，它便会注册我们的 `sw.js` 文件。
-
-#### 试一试
-
-请在浏览器中打开网址 __127.0.0.1:8887__ 以检查所做更改。
-
-打开 Chrome DevTools 以检查 `Service Worker is registered` 的控制台，如下所示：
+Check the console in Chrome DevTools for `Service Worker is registered`, like so:
 
 ![de3ceca91043d278.png](img/de3ceca91043d278.png)
 
-### 获取应用服务器密钥
+### Get Application Server Keys
 
-如需使用此代码实验室，您需要生成一些应用服务器密钥，我们可以使用此配套网站执行这一操作：[https://web-push-codelab.glitch.me/](https://web-push-codelab.glitch.me/)
+To work with this code lab you need to generate some application server keys which we can do with this companion site: <https://web-push-codelab.glitch.me/>
 
-您可以在这里生成一个公私密钥对。
+Here you can generate a Public and Private key pair.
 
 ![a1304b99e7b981dd.png](img/a1304b99e7b981dd.png)
 
-将公钥复制到 `scripts/main.js` 替换 `<Your Public Key>` 值：
+Copy your public key into `scripts/main.js` replacing the `<Your Public Key>` value:
 
-```
-const applicationServerPublicKey = '<Your Public Key>';
-```
+    const applicationServerPublicKey = '<Your Public Key>';
+    
 
-Note: 决不能将私钥放在网络应用中！
+Note: You should never put your private key in your web app!
 
+## Initialize State
 
-## 初始化状态
+At the moment the web app's button is disabled and can't be clicked. This is because it's good practice to disable the push button by default and enable it once you know push is supported and can know if the user is currently subscribed or not.
 
+Let's create two functions in `scripts/main.js`, one called `initializeUI`, which will check if the user is currently subscribed, and one called `updateBtn` which will enable our button and change the text if the user is subscribed or not.
 
+We want our `initializeUI` function to look like this:
 
-
-目前，网络应用的按钮处于禁用状态，无法点击。因为默认情况下最好禁用推送按钮，在了解推送受支持并且知道用户当前是否订阅后，再启用此按钮。
-
-我们将在 `scripts/main.js` 中创建两个函数，一个称为 `initialiseUI`，会检查用户当前有没有订阅，另一个称为 `updateBtn`，将启用我们的按钮，以及更改用户是否订阅的文本。
-
-我们希望 `initialiseUI` 函数如下所示：
-
-```
-function initialiseUI() {
-  // Set the initial subscription value
-  swRegistration.pushManager.getSubscription()
-  .then(function(subscription) {
-    isSubscribed = !(subscription === null);
-
-    if (isSubscribed) {
-      console.log('User IS subscribed.');
-    } else {
-      console.log('User is NOT subscribed.');
+    function initializeUI() {
+      // Set the initial subscription value
+      swRegistration.pushManager.getSubscription()
+      .then(function(subscription) {
+        isSubscribed = !(subscription === null);
+    
+        if (isSubscribed) {
+          console.log('User IS subscribed.');
+        } else {
+          console.log('User is NOT subscribed.');
+        }
+    
+        updateBtn();
+      });
     }
+    
 
-    updateBtn();
-  });
-}
-```
+Our new method uses the `swRegistration` from the previous step and calls `getSubscription()` on it's `pushManager`. `getSubscription()` is a method that returns a promise that resolves with the current subscription if there is one, otherwise it'll return `null`. With this we can check if the user is already subscribed or not, set some state and then call `updateBtn()` so the button can be enabled with some helpful text.
 
-我们的新方法使用之前步骤中的 `swRegistration`，在其 `pushManager` 上调用 `getSubscription()`。`getSubscription()` 方法可以在存在订阅时返回可使用当前订阅解析的 promise，否则，返回 `null`。这样我们就能检查用户是否已经订阅，设置特定的状态，然后调用 `updateBtn()`，以便启用按钮，并附带有用的文本。
+Add the following code to implement the `updateBtn()` function.
 
-添加以下代码以实现 `updateBtn()` 函数。
+    function updateBtn() {
+      if (isSubscribed) {
+        pushButton.textContent = 'Disable Push Messaging';
+      } else {
+        pushButton.textContent = 'Enable Push Messaging';
+      }
+    
+      pushButton.disabled = false;
+    }
+    
 
-```
-function updateBtn() {
-  if (isSubscribed) {
-    pushButton.textContent = 'Disable Push Messaging';
-  } else {
-    pushButton.textContent = 'Enable Push Messaging';
-  }
+This function simply changes the text depending on the whether the user is subscribed or not and then enables the button.
 
-  pushButton.disabled = false;
-}
-```
+The last thing to do is call `initializeUI()` when our service worker is registered.
 
-此函数会根据用户是否订阅而简单地更改文本，然后启用按钮。
+    navigator.serviceWorker.register('sw.js')
+    .then(function(swReg) {
+      console.log('Service Worker is registered', swReg);
+    
+      swRegistration = swReg;
+      initializeUI();
+    })
+    
 
-最后就是在注册服务工作线程时调用 `initialiseUI()`。
+#### Try it out
 
-```
-navigator.serviceWorker.register('sw.js')
-.then(function(swReg) {
-  console.log('Service Worker is registered', swReg);
-
-  swRegistration = swReg;
-  initialiseUI();
-})
-```
-
-#### 试一试
-
-打开网络应用，您会看到“‘Enable Push Messaging”按钮现已启用（您可以点击了），并且您会在控制台中看到“User is NOT subscribed.”。
+Refresh your web app and you should see the ‘Enable Push Messaging' button is now enabled (you can click it) and you should see ‘User is NOT subscribed.' in the console.
 
 ![15f6375617c11974.png](img/15f6375617c11974.png)
 
-在我们继续学习此代码实验室的过程中，您会看到按钮文本会在用户订阅/取消订阅时发生更改。
+When we progress through the rest of the code lab you should see the button text change when the user subscribed / un-subscribed.
 
+## Subscribe the user
 
-## 订阅用户
+At the moment our ‘Enable Push Messaging' button doesn't do too much, so let's fix that.
 
+Add a click listener to our button in the `initializeUI()` function, like so:
 
-
-
-目前我们的“Enable Push Messaging”按钮未执行太多的操作，让我们来修复这个问题。
-
-向 `initialiseUI()` 函数中的按钮添加点击侦听器，如下所示：
-
-```
-function initialiseUI() {
-  pushButton.addEventListener('click', function() {
-    pushButton.disabled = true;
-    if (isSubscribed) {
-      // TODO: Unsubscribe user
-    } else {
-      subscribeUser();
+    function initializeUI() {
+      pushButton.addEventListener('click', function() {
+        pushButton.disabled = true;
+        if (isSubscribed) {
+          // TODO: Unsubscribe user
+        } else {
+          subscribeUser();
+        }
+      });
+    
+      // Set the initial subscription value
+      swRegistration.pushManager.getSubscription()
+      .then(function(subscription) {
+        isSubscribed = !(subscription === null);
+    
+        updateSubscriptionOnServer(subscription);
+    
+        if (isSubscribed) {
+          console.log('User IS subscribed.');
+        } else {
+          console.log('User is NOT subscribed.');
+        }
+    
+        updateBtn();
+      });
     }
-  });
+    
 
-  // Set the initial subscription value
-  swRegistration.pushManager.getSubscription()
-  .then(function(subscription) {
-    isSubscribed = !(subscription === null);
+When the user clicks the push button, we first disable the button just to make sure the user can't click it a second time while we're subscribing to push as it can take some time.
 
-    updateSubscriptionOnServer(subscription);
+Then we call `subscribeUser()` when we know the user isn't currently subscribed, so copy and paste the following code into `scripts/main.js`.
 
-    if (isSubscribed) {
-      console.log('User IS subscribed.');
-    } else {
-      console.log('User is NOT subscribed.');
+    function subscribeUser() {
+      const applicationServerKey = urlB64ToUint8Array(applicationServerPublicKey);
+      swRegistration.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: applicationServerKey
+      })
+      .then(function(subscription) {
+        console.log('User is subscribed.');
+    
+        updateSubscriptionOnServer(subscription);
+    
+        isSubscribed = true;
+    
+        updateBtn();
+      })
+      .catch(function(err) {
+        console.log('Failed to subscribe the user: ', err);
+        updateBtn();
+      });
     }
+    
 
-    updateBtn();
-  });
-}
-```
+Lets step through what this code is doing and how it's subscribing the user for push messaging.
 
-当用户点击推送按钮时，我们会首先禁用按钮，这仅仅是为了确保用户无法在我们正在订阅推送消息时（这需要一些时间）第二次点击此按钮。
+First we take the application server's public key, which is base 64 URL safe encoded, and we convert it to a `UInt8Array` as this is the expected input of the subscribe call. We've already given you the function `urlB64ToUint8Array` at the top of `scripts/main.js`.
 
-然后我们会在知道用户当前没有订阅时调用 `subscribeUser()`，因此复制以下代码并将其粘贴到 `scripts/main.js`。
+Once we've converted the value, we call the `subscribe()` method on our service worker's `pushManager`, passing in our application server's public key and the value `userVisibleOnly: true`.
 
-```
-function subscribeUser() {
-  const applicationServerKey = urlB64ToUint8Array(applicationServerPublicKey);
-  swRegistration.pushManager.subscribe({
-    userVisibleOnly: true,
-    applicationServerKey: applicationServerKey
-  })
-  .then(function(subscription) {
-    console.log('User is subscribed:', subscription);
+    const applicationServerKey = urlB64ToUint8Array(applicationServerPublicKey);
+    swRegistration.pushManager.subscribe({
+      userVisibleOnly: true,
+      applicationServerKey: applicationServerKey
+    })
+    
 
-    updateSubscriptionOnServer(subscription);
+The `userVisibleOnly` parameter is basically an admission that you will show a notification every time a push is sent. At the time of writing this value is required and must be true.
 
-    isSubscribed = true;
+Calling `subscribe()` returns a promise which will resolve after the following steps:
 
-    updateBtn();
-  })
-  .catch(function(err) {
-    console.log('Failed to subscribe the user: ', err);
-    updateBtn();
-  });
-}
-```
+1. The user has granted permission to display notifications.
+2. The browser has sent a network request to a push service to get the details to generate a PushSubscription.
 
-我们来看看此代码执行什么操作，以及它如何为用户订阅推送消息。
+The `subscribe()` promise will resolve with a `PushSubscription` if these steps were successful. If the user doesn't grant permission or if there is any problem subscribing the user, the promise will reject with an error. This gives us the following promise chain in our codelab:
 
-首先我们获取应用服务器的公钥（base64 网址安全编码），然后将其转换为 `UInt8Array`（这是订阅调用的预期输入）。我们已经在 `scripts/main.js` 顶部为您提供 `urlB64ToUint8Array` 函数。
+    swRegistration.pushManager.subscribe({
+      userVisibleOnly: true,
+      applicationServerKey: applicationServerKey
+    })
+    .then(function(subscription) {
+      console.log('User is subscribed.');
+    
+      updateSubscriptionOnServer(subscription);
+    
+      isSubscribed = true;
+    
+      updateBtn();
+    
+    })
+    .catch(function(err) {
+      console.log('Failed to subscribe the user: ', err);
+      updateBtn();
+    });
+    
 
-转换此值后，我们对调用服务工作线程的 `pushManager` 调用 `subscribe()` 方法，传递应用服务器的公钥和值 `userVisibleOnly: true`。
+With this, we get a subscription and treat the user as subscribed or we catch the error and print it to the console. In both scenarios we call `updateBtn()` to ensure the button is re-enabled and has the appropriate text.
 
-```
-const applicationServerKey = urlB64ToUint8Array(applicationServerPublicKey);
-swRegistration.pushManager.subscribe({
-  userVisibleOnly: true,
-  applicationServerKey: applicationServerKey
-})
-```
+The method `updateSubscriptionOnServer` is a method where in a real application we would send our subscription to a backend, but for our codelab we are going to print the subscription in our UI which will help us later on. Add this method to `scripts/main.js`:
 
-`userVisibleOnly` 参数基本上就表示承认您会在发送推送时显示通知。此时必须编写此值并且此值必须为 true。
+    function updateSubscriptionOnServer(subscription) {
+      // TODO: Send subscription to application server
+    
+      const subscriptionJson = document.querySelector('.js-subscription-json');
+      const subscriptionDetails =
+        document.querySelector('.js-subscription-details');
+    
+      if (subscription) {
+        subscriptionJson.textContent = JSON.stringify(subscription);
+        subscriptionDetails.classList.remove('is-invisible');
+      } else {
+        subscriptionDetails.classList.add('is-invisible');
+      }
+    }
+    
 
-调用 `subscribe()` 会返回在执行以下操作后解析的 promise：
+#### Try it out
 
-1. 用户已授权显示通知。
-2. 浏览器已向推送服务发送网络请求，以便获取详细信息来生成 PushSubscription。
-
-如果这些步骤成功执行，`subscribe()` promise 将通过 `PushSubscription` 解析。如果用户未授权，或者如果订阅用户存在任何问题，promise 将会拒绝，并显示错误。这会在我们的代码实验室中向我们提供以下 promise 链：
-
-```
-swRegistration.pushManager.subscribe({
-  userVisibleOnly: true,
-  applicationServerKey: applicationServerKey
-})
-.then(function(subscription) {
-  console.log('User is subscribed:', subscription);
-
-  updateSubscriptionOnServer(subscription);
-
-  isSubscribed = true;
-
-  updateBtn();
-
-})
-.catch(function(err) {
-  console.log('Failed to subscribe the user: ', err);
-  updateBtn();
-});
-```
-
-如此一来，我们就可以收到订阅，并将用户视为已订阅用户，或者收到错误并将其打印到控制台。在这两种情况下，我们调用 `updateBtn()` 都是为了确保按钮已重新启用并且有合适的文本。
-
-我们可以在实际应用中使用 `updateSubscriptionOnServer` 方法将订阅发送到后端，但我们的代码实验室会使用此方法打印 UI 中的订阅，这将在稍后为我们提供帮助。将此方法添加到 `scripts/main.js`：
-
-```
-function updateSubscriptionOnServer(subscription) {
-  // TODO: Send subscription to application server
-
-  const subscriptionJson = document.querySelector('.js-subscription-json');
-  const subscriptionDetails =
-    document.querySelector('.js-subscription-details');
-
-  if (subscription) {
-    subscriptionJson.textContent = JSON.stringify(subscription);
-    subscriptionDetails.classList.remove('is-invisible');
-  } else {
-    subscriptionDetails.classList.add('is-invisible');
-  }
-}
-```
-
-#### 试一试
-
-如果您返回到网络应用，并尝试点击此按钮，会看到如下所示的权限提示：
+If you go back to your web app and try clicking the button you should see a permission prompt like this:
 
 ![227cea0abe03a5b4.png](img/227cea0abe03a5b4.png)
 
-如果您进行授权，则会看到控制台使用 `PushSubscription` 打印 `User is subscribed:`，按钮的文本会更改为“Disable Push Messaging”，并且您将能够在页面底部以 JSON 形式查看订阅。
+If you grant the permission you should see the console print "User is subscribed.", the button's text will change to ‘Disable Push Messaging' and you'll be able to view the subscription as JSON at the bottom of the page.
 
 ![8fe2b1b110f87b34.png](img/8fe2b1b110f87b34.png)
 
+## Handle Permission Denied
 
-## 处理拒绝的权限
+One thing that we haven't handled yet is what happens if the user blocks the permission request. This needs some unique consideration because if the user blocks the permission, our web app will not be able to re-show the permission prompt and will not be able to subscribe the user, so we need to at least disable the push button so the user knows it can't be used.
 
+The obvious place for us to handle this scenario is in the `updateBtn()` function. All we need to do is check the `Notification.permission` value, like so:
 
+    function updateBtn() {
+      if (Notification.permission === 'denied') {
+        pushButton.textContent = 'Push Messaging Blocked.';
+        pushButton.disabled = true;
+        updateSubscriptionOnServer(null);
+        return;
+      }
+    
+      if (isSubscribed) {
+        pushButton.textContent = 'Disable Push Messaging';
+      } else {
+        pushButton.textContent = 'Enable Push Messaging';
+      }
+    
+      pushButton.disabled = false;
+    }
+    
 
+We know that if the permission is `denied`, then the user can't be subscribed and there is nothing more we can do, so disabling the button for good is the best approach.
 
-我们目前为止还没有解决的事情是，如果用户阻止权限请求会怎么样。这需要考虑一些特殊的注意事项，因为如果用户阻止权限，我们的网络应用将无法重新显示权限提示，也不能订阅用户，因此，我们需要至少停用推送按钮，以便用户知道无法使用此按钮。
+#### Try it out
 
-很明显，我们需要在 `updateBtn()` 函数中处理这个情况。我们只需要检查 `Notification.permission` 值，如下所示：
-
-```
-function updateBtn() {
-  if (Notification.permission === 'denied') {
-    pushButton.textContent = 'Push Messaging Blocked.';
-    pushButton.disabled = true;
-    updateSubscriptionOnServer(null);
-    return;
-  }
-
-  if (isSubscribed) {
-    pushButton.textContent = 'Disable Push Messaging';
-  } else {
-    pushButton.textContent = 'Enable Push Messaging';
-  }
-
-  pushButton.disabled = false;
-}
-```
-
-我们知道，如果权限为 `denied`，就无法订阅用户，并且我们无法执行其他操作，因此，停用此按钮是最好的做法。
-
-#### 试一试
-
-因为我们已经在之前的步骤中为网络应用授权，我们需要点击网址栏的圆圈中的 __i__，将通知权限更改为  *Use global default (Ask)* 。
+Since we've already granted permission for our web app from the previous step we need to click the **i** in a circle in the URL bar and change the notifications permission to *Use global default (Ask)* .
 
 ![8775071d7fd66432.png](img/8775071d7fd66432.png)
 
-更改此设置后，请刷新页面，然后点击 *Enable Push Messaging* 按钮，这次在权限对话框中选择 *Block*。按钮的文本现在为 *Push Messaging Blocked*，并且已停用。
+After you've changed this setting, refresh the page and click the *Enable Push Messaging* button and this time select *Block* on the permission dialog. The button text will now be *Push Messaging Blocked* and be disabled.
 
 ![2b5314607196f4e1.png](img/2b5314607196f4e1.png)
 
-进行此更改后，我们现在就可以订阅用户了，我们会考虑可能的权限情景。
+With this change we can now subscribe the user and we're taking care of the possible permission scenarios.
 
+## Handle a Push Event
 
-## 处理推送事件
+Before we cover how to send a push message from your backend, we need to consider what will actually happen when a subscribed user receives a push message.
 
+When we trigger a push message, the browser receives the push message, figures out what service worker the push is for before waking up that service worker and dispatching a push event. We need to listen for this event and show a notification as a result.
 
+Add the following code to your `sw.js` file:
 
+    self.addEventListener('push', function(event) {
+      console.log('[Service Worker] Push Received.');
+      console.log(`[Service Worker] Push had this data: "${event.data.text()}"`);
+    
+      const title = 'Push Codelab';
+      const options = {
+        body: 'Yay it works.',
+        icon: 'images/icon.png',
+        badge: 'images/badge.png'
+      };
+    
+      event.waitUntil(self.registration.showNotification(title, options));
+    });
+    
 
-在我们介绍如何从后端发送推送消息之前，我们需要考虑在订阅用户收到推送消息后实际会发生什么。
+Let's step through this code. We are listening for push events in our service worker by adding an event listener to our service worker, which is this piece of code:
 
-在我们触发推送消息后，浏览器会收到推送消息，弄明白推送的服务工作线程，然后再唤醒相应的服务线程并分配推送事件。我们需要侦听此事件，显示通知作为结果。
+    self.addEventListener('push', ...... );
+    
 
-将以下代码添加到 `sw.js` 文件：
+Unless you've played with Web Workers before, `self` is probably new. `self` is referencing the service worker itself, so we are adding an event listener to our service worker.
 
-```
-self.addEventListener('push', function(event) {
-  console.log('[Service Worker] Push Received.');
-  console.log(`[Service Worker] Push had this data: "${event.data.text()}"`);
+When a push message is received, our event listener will be fired, and we create a notification by calling `showNotification()` on our registration. `showNotification()` expects a `title` and we can give it an `options` object. Here we are going to set a body message, icon and a badge in the options (the badge is only used on Android at the time of writing).
 
-  const title = 'Push Codelab';
-  const options = {
-    body: 'Yay it works.',
-    icon: 'images/icon.png',
-    badge: 'images/badge.png'
-  };
+    const title = 'Push Codelab';
+    const options = {
+      body: 'Yay it works.',
+      icon: 'images/icon.png',
+      badge: 'images/badge.png'
+    };
+    self.registration.showNotification(title, options);
+    
 
-  event.waitUntil(self.registration.showNotification(title, options));
-});
-```
+The last thing to cover in our push event is `event.waitUntil()`. This method takes a promise and the browser will keep your service worker alive and running until the promise passed in has resolved.
 
-我们来了解一下这个代码。我们通过向服务工作线程添加事件侦听器来侦听服务工作线程中的推送事件，代码如下所示：
+To make the code above a little easier to understand we can re-write it like so:
 
-```
-self.addEventListener('push', ...... );
-```
+    const notificationPromise = self.registration.showNotification(title, options);
+    event.waitUntil(notificationPromise);
+    
 
-如果您之前没有使用过 Web Workers，`self` 就是新内容。`self` 会引用服务工作线程本身，以便我们向服务工作线程添加事件侦听器。
+Now that we've stepped through the push event, let's test out a push event.
 
-收到推送消息后，会触发我们的事件侦听器，我们通过在注册时调用 `showNotification()` 来创建通知。`showNotification()` 期望使用 `title`，我们可以提供 `options` 对象。现在我们来看看选项中的消息正文、图标和标志（标志仅在写入时在 Android 上使用）。
+#### Try it out
 
-```
-const title = 'Push Codelab';
-const options = {
-  body: 'Yay it works.',
-  icon: 'images/icon.png',
-  badge: 'images/badge.png'
-};
-self.registration.showNotification(title, options);
-```
+With our push event in the service worker we can test what happens when a message is received by triggering a fake push event using DevTools.
 
-我们在推送事件中要介绍的最后一个内容是 `event.waitUntil()`。此方法带有 promise ，并且浏览器会保持服务工作线程处于活动状态并运行，直到传入的 promise 已进行解析。
-
-为了简化上述代码，使其易于理解，我们可以重新编写代码，如下所示：
-
-```
-const notificationPromise = self.registration.showNotification(title, options);
-event.waitUntil(notificationPromise);
-```
-
-处理完推送事件后，我们来测试一下。
-
-#### 试一试
-
-通过使用服务工作线程中的推送事件，我们可以使用 DevTools 触发虚假的推送事件，测试收到消息后会发生什么。
-
-在您的网络应用中，订阅推送消息（确保控制台中有 *User IS subscribed*），然后转至 DevTools 中的 *Application*  面板，并在 *Service Workers* 选项卡下，点击相应服务工作线程下的 *Push*  链接。
+In your web app, subscribe to push messaging, making sure you have *User IS subscribed* in your console, then go to the *Application* panel in DevTools and under the *Service Workers* tab click on the *Push* link under your service worker.
 
 ![2b089bdf10a8a945.png](img/2b089bdf10a8a945.png)
 
-点击后，您会看到类似于如下的通知：
+Once you've clicked it you should see a notification like this:
 
 ![eee7f9133a97c1c4.png](img/eee7f9133a97c1c4.png)
 
-Note: 如果这个步骤不管用，请通过 DevTools Application 面板中的 *Unregister* 链接取消注册服务工作线程，等待服务工作线程停止，然后重新加载页面。
+Note: If this step doesn't work, try unregistering your service work, via the *Unregister* link in the DevTools Application panel, wait for the service worker to be stopped, and then reload the page.
 
+## Notification click
 
-## 通知点击
+If you click on one of these notifications you'll notice nothing happens. We can handle notification clicks by listening for `notificationclick` events in your service worker.
 
+Start by adding a `notificationclick` listener in `sw.js` like so:
 
+    self.addEventListener('notificationclick', function(event) {
+      console.log('[Service Worker] Notification click Received.');
+    
+      event.notification.close();
+    
+      event.waitUntil(
+        clients.openWindow('https://developers.google.com/web/')
+      );
+    });
+    
 
+When the user clicks on the notification, the `notificationclick` event listener will be called.
 
-如果您点击以下其中一个通知，会发现没有发生任何事情。我们可以通过侦听服务工作线程中的 `notificationclick` 事件，处理通知点击。
+In this code lab we first close the notification that was clicked with:
 
-开始在 `sw.js` 中添加 `notificationclick` 侦听器，如下所示：
+    event.notification.close();
+    
 
-```
-self.addEventListener('notificationclick', function(event) {
-  console.log('[Service Worker] Notification click Received.');
+Then we open a new window / tab loading the url ‘https://developers.google.com/web/' , feel free to change this :)
 
-  event.notification.close();
-
-  event.waitUntil(
     clients.openWindow('https://developers.google.com/web/')
-  );
-});
-```
+    
 
-当用户点击通知时，会调用 `notificationclick` 事件侦听器。
+We are calling `event.waitUntil()` again to ensure the browser doesn't terminate our service worker before our new window has been displayed.
 
-在此代码实验室中，我们首先关闭点击过的通知：
+#### Try it out
 
-```
-event.notification.close();
-```
+Try triggering a push message in DevTools again and click on the notification. You'll now see the notification close and open a new tab.
 
-然后，打开新窗口/标签加载网址 [developers.google.com](/web/)，您可以随意更改此网址：）
+## Sending push messages
 
-```
-clients.openWindow('https://developers.google.com/web/')
-```
+We've seen that our web app is capable of showing a notification using DevTools and looked at how to close the notification of a click. The next step is to send an actual push message.
 
-我们重新调用 `event.waitUntil()`，确保浏览器不会在显示新窗口前终止服务工作线程。
+Normally the process for this would be sending a subscription from a web page to a backend and the backend would then trigger a push message by making an API call to the endpoint in the subscription.
 
-#### 试一试
-
-尝试重新在 DevTools 中触发推送消息，然后点击通知。您现在会看到通知关闭，并打开了新标签。
-
-
-## 发送推送消息
-
-
-
-
-我们已经看到网络应用能够使用 DevTools 显示通知，并且了解了如何通过点击关闭通知，接下来是发送实际的推送消息。
-
-一般情况下，这个过程就是从网页向后端发送订阅，然后后端通过对订阅中的端点实施 API 调用，进而触发推送消息。
-
-这超出了此代码实验室的讨论范围，但您可以使用此代码实验室的配套网站 ( [https://web-push-codelab.glitch.me/](https://web-push-codelab.glitch.me/)) 来触发实际的推送消息。复制粘贴页面底部的订阅：
+This is out of scope for this codelab, but you can use the companion site ( <https://web-push-codelab.glitch.me/>) for this codelab to trigger an actual push message. Copy and paste the subscription at the bottom of your page:
 
 ![cf0e71f76cb79cc4.png](img/cf0e71f76cb79cc4.png)
 
-然后将此内容粘贴到配套网站的 *Subscription to Send To*  文本区域：
+Then paste this into the companion site in the *Subscription to Send To* text area:
 
 ![a12fbfdc08233592.png](img/a12fbfdc08233592.png)
 
-然后，您可以在 *Text to Send* 下添加您想要与推送消息一起发送的任意字符串，最后点击 *Send Push Message* 按钮。
+Then under *Text to Send* you can add any string you want to send with the push message and finally click the *Send Push Message* button.
 
 ![2973c2b818ca9324.png](img/2973c2b818ca9324.png)
 
-然后，您就能收到推送消息，其中包含的文本也将打印到控制台。
+You should then receive a push message and the text you included will be printed to the console.
 
 ![75b1fedbfb7e0b99.png](img/75b1fedbfb7e0b99.png)
 
-这可让您测试发送和接收数据，并最终操作通知。
+This should give you a chance to test out sending and receiving data and manipulate notifications as a result.
 
-配套应用其实就是使用  [web-push 库](https://github.com/web-push-libs/web-push) 发送消息的节点服务器。非常有必要查看  [Github 上的 web-push-libs org](https://github.com/web-push-libs/)，看看有哪些库可以向您发送推送消息（这样可以了解触发推送消息的详细信息）。
+The companion app is actually just a node server that is using the [web-push library](https://github.com/web-push-libs/web-push) to send messages. It's worthwhile checking out the [web-push-libs org on Github](https://github.com/web-push-libs/) to see what libraries are available to send push messages for you (this handles a lot of the nitty gritty details to trigger push messages).
 
+You can see all the [code for the companion site here](https://glitch.com/edit/#!/web-push-codelab).
 
-## 取消订阅用户
+## Unsubscribe the user
 
+The one thing we are missing is the ability to unsubscribe the user from push. To do this we need to call `unsubscribe()` on a `PushSubscription`.
 
+Back in our `scripts/main.js` file, change the `pushButton`'s click listener in `initializeUI()` to the following:
 
+    pushButton.addEventListener('click', function() {
+      pushButton.disabled = true;
+      if (isSubscribed) {
+        unsubscribeUser();
+      } else {
+        subscribeUser();
+      }
+    });
+    
 
-我们到现在还没介绍如何取消用户的推送消息订阅。为此，我们需要对 `PushSubscription` 调用 `unsubscribe()`。
+Notice we are now going to call a new function `unsubscribeUser()`. In this method we'll get the current subscription and called unsubscribe on it. Add the following code to `scripts/main.js`:
 
-返回到我们的 `scripts/main.js` 文件，将 `initialiseUI()` 中 `pushButton` 的点击侦听器更改为以下内容：
-
-```
-pushButton.addEventListener('click', function() {
-  pushButton.disabled = true;
-  if (isSubscribed) {
-    unsubscribeUser();
-  } else {
-    subscribeUser();
-  }
-});
-```
-
-请注意，我们现在准备调用新函数 `unsubscribeUser()`。在此方法中，我们会获取当前的订阅，并对其调用取消订阅。将以下代码添加到 `scripts/main.js`：
-
-```
-function unsubscribeUser() {
-  swRegistration.pushManager.getSubscription()
-  .then(function(subscription) {
-    if (subscription) {
-      return subscription.unsubscribe();
+    function unsubscribeUser() {
+      swRegistration.pushManager.getSubscription()
+      .then(function(subscription) {
+        if (subscription) {
+          return subscription.unsubscribe();
+        }
+      })
+      .catch(function(error) {
+        console.log('Error unsubscribing', error);
+      })
+      .then(function() {
+        updateSubscriptionOnServer(null);
+    
+        console.log('User is unsubscribed.');
+        isSubscribed = false;
+    
+        updateBtn();
+      });
     }
-  })
-  .catch(function(error) {
-    console.log('Error unsubscribing', error);
-  })
-  .then(function() {
-    updateSubscriptionOnServer(null);
+    
 
-    console.log('User is unsubscribed.');
-    isSubscribed = false;
+Let's step through this function.
 
-    updateBtn();
-  });
-}
-```
+First we get the current subscription by calling `getSubscription()`:
 
-我们来了解一下这个函数。
+    swRegistration.pushManager.getSubscription()
+    
 
-首先，我们通过调用 `getSubscription()` 获取当前的订阅：
+This returns a promise that resolves with a `PushSubscription` if one exists, otherwise it returns `null`. If there is a subscription, we call `unsubscribe()` on it, which makes the `PushSubscription` invalid.
 
-```
-swRegistration.pushManager.getSubscription()
-```
+    swRegistration.pushManager.getSubscription()
+    .then(function(subscription) {
+      if (subscription) {
+        // TODO: Tell application server to delete subscription
+        return subscription.unsubscribe();
+      }
+    })
+    .catch(function(error) {
+      console.log('Error unsubscribing', error);
+    })
+    
 
-这会返回使用 `PushSubscription` 进行解析的 promise（如果存在），否则返回 `null`。如果存在订阅，我们会对其调用 `unsubscribe()`，这会使 `PushSubscription` 无效。
+Calling `unsubscribe()` returns a promise as it can take some time to complete, so we return that promise so the next `then()` in the chain waits for `unsubscribe()` to finish. We also add a catch handler in case calling `unsubscribe()` results in an error. After this we can update our UI.
 
-```
-swRegistration.pushManager.getSubscription()
-.then(function(subscription) {
-  if (subscription) {
-    // TODO: Tell application server to delete subscription
-    return subscription.unsubscribe();
-  }
-})
-.catch(function(error) {
-  console.log('Error unsubscribing', error);
-})
-```
+    .then(function() {
+      updateSubscriptionOnServer(null);
+    
+      console.log('User is unsubscribed.');
+      isSubscribed = false;
+    
+      updateBtn();
+    })
+    
 
-调用 `unsubscribe()` 会返回一个 promise（因为这需要一些时间才能完成），因此我们返回该 promise，以便完成链中等待 `unsubscribe()` 的下一个 `then()`。同时，我们还添加了抓取处理程序，以防调用 `unsubscribe()` 导致错误。然后，我们就可以更新 UI 了。
+#### Try it out
 
-```
-.then(function() {
-  updateSubscriptionOnServer(null);
-
-  console.log('User is unsubscribed.');
-  isSubscribed = false;
-
-  updateBtn();
-})
-```
-
-#### 试一试
-
-您应能够按网络应用中的 *Enable Push Messaging*  /  *Disable Push Messaging*，日志会向用户显示已经订阅或取消订阅的用户。
+You should be able to press the *Enable Push Messaging* / *Disable Push Messaging* in your web app and the logs will show the user being subscribed and unsubscribed.
 
 ![33dd89c437c17c97.png](img/33dd89c437c17c97.png)
 
+## Finished
 
-## 完成
+Congratulations on completing this codelab!
 
+This code lab has shown you how to get up and running with adding push to your web app. If you want to learn more about what web notifications can do, [check out theses docs](/web/fundamentals/engage-and-retain/push-notifications/).
 
+If you are looking to deploy push on your site, you may be interested in adding support for older / non-standards compliant browsers which use GCM, [learn more here](https://web-push-book.gauntface.com/chapter-06/01-non-standards-browsers/).
 
+### Further Reading
 
-恭喜您完成此代码实验室！
+* [Web Push Notification](/web/fundamentals/engage-and-retain/push-notifications/) documentation on Web__Fundamentals__.
+* [Web Push Libraries](https://github.com/web-push-libs/) - Web Push libraries including Node.js, PHP, Java and Python.
 
-此代码实验室向您介绍了如何设置和运行向网络应用中添加推送的过程。如果您想要了解有关网络通知可以执行的操作的详细信息，[请查看这些文档](/web/fundamentals/push-notifications)。
+#### Relevant blog posts
 
-如果您准备在自己的网站上部署推送，可能会有兴趣了解为使用 GCM 的旧版/非标准合规浏览器添加支持，[在此处了解详细信息](https://web-push-book.gauntface.com/chapter-06/01-non-standards-browsers/)。
+* [Web Push Payload Encryption](/web/updates/2016/03/web-push-encryption)
+* [Application Server Keys and Web Push](/web/updates/2016/07/web-push-interop-wins)
+* [Notification Actions](/web/updates/2016/01/notification-actions)
+* [Icons, Close Events, Renotify Preferences and Timestamps](/web/updates/2016/03/notifications)
 
-### 深入阅读
+## Found an issue, or have feedback? {: .hide-from-toc }
 
-*  Web__Fundamentals__ 上的[网络推送通知](/web/fundamentals/push-notifications)文档
-*  [网络推送库](https://github.com/web-push-libs/) - 网络推送库包括 Node.js、PHP、Java 和 Python。
-
-#### 相关博文
-
-*  [网络推送负载加密](/web/updates/2016/03/web-push-encryption)
-*  [应用服务器密钥和网络推送](/web/updates/2016/07/web-push-interop-wins)
-*  [通知操作](/web/updates/2016/01/notification-actions)
-*  [图标、关闭事件、重新通知首选项和时间戳](/web/updates/2016/03/notifications)
-
-
-
-
-
-## 发现问题，或者有反馈？{: .hide-from-toc }
-立即提交[问题](https://github.com/googlechrome/push-notifications/issues)，帮助我们让代码实验室更加强大。谢谢！
-
-{# wf_devsite_translation #}
+Help us make our code labs better by submitting an [issue](https://github.com/GoogleChromeLabs/web-push-codelab/issues) today. And thanks!
