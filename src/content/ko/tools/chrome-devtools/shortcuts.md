@@ -1,554 +1,484 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Chrome DevTools의 모든 단축키에 대한 참조입니다.
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: The canonical documentation for Chrome DevTools keyboard shortcuts.
 
-{# wf_updated_on: 2016-11-28 #}
-{# wf_published_on: 2015-04-29 #}
+{# wf_updated_on: 2018-12-14 #} {# wf_published_on: 2015-04-29 #} {# wf_blink_components: Platform>DevTools #}
 
-# 단축키 참조 {: .page-title }
+# Chrome DevTools Keyboard Shortcuts {: .page-title }
 
-{% include "web/_shared/contributors/megginkearney.html" %}
+{% include "web/tools/chrome-devtools/_shared/styles.html" %}
+
 {% include "web/_shared/contributors/kaycebasques.html" %}
 
-이 페이지는 Chrome DevTools의 단축키에 대한 참조입니다.
-일부 단축키는 전역적으로 사용 가능하지만 일부 단축키는
-단일 패널에서만 사용 가능합니다.
+This page is a reference of keyboard shortcuts in Chrome DevTools.
 
-단축키는 도움말에서 찾을 수도 있습니다. DevTools의 UI 요소 위에
-마우스를 가져가면 해당 도움말이 표시됩니다. UI 요소의 단축키는 도움말에 포함되어 있습니다.
+You can also find shortcuts in tooltips. Hover over a UI element of DevTools to display its tooltip. If the element has a shortcut, the tooltip includes it.
 
-## DevTools 액세스
+## Keyboard shortcuts for opening DevTools {: #open }
 
-<table>
-  <thead>
-      <th>DevTools 액세스</th>
-      <th>Windows의 경우</th>
-      <th>Mac의 경우</th>
-  </thead>
-  <tbody>
-    <tr>
-      <td data-th="Launch DevTools">Developer Tools 열기</td>
-      <td data-th="Windows"><kbd class="kbd">F12</kbd>, <kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">Shift</kbd> + <kbd class="kbd">I</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Cmd</kbd> + <kbd class="kbd">Opt</kbd> + <kbd class="kbd">I</kbd></td>
-    </tr>
-    <tr>
-      <td data-th="Launch DevTools">요소 검사 모드 및 브라우저 창에서 열기/전환</td>
-      <td data-th="Windows"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">Shift</kbd> + <kbd class="kbd">C</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Cmd</kbd> + <kbd class="kbd">Shift</kbd> + <kbd class="kbd">C</kbd></td>
-    </tr>
-    <tr>
-      <td data-th="Launch DevTools">Developer Tools를 열고 콘솔에 포커스 두기</td>
-      <td data-th="Windows"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">Shift</kbd> + <kbd class="kbd">J</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Cmd</kbd> + <kbd class="kbd">Opt</kbd> + <kbd class="kbd">J</kbd></td>
-    </tr>
-    <tr>
-      <td data-th="Launch DevTools">Inspector 검사(첫 번째 항목 도킹 해제 후 누름)</td>
-      <td data-th="Windows"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">Shift</kbd> + <kbd class="kbd">I</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Cmd</kbd> + <kbd class="kbd">Opt</kbd> + <kbd class="kbd">I</kbd></td>
-    </tr>
-  </tbody>
-</table>
-
-## 전역 키보드 단축키
-
-다음 단축키는 모든 DevTools 패널에서 사용할 수 있습니다.
+To open DevTools, press the following keyboard shortcuts while your cursor is focused on the browser viewport:
 
 <table>
   <thead>
-      <th>전역 단축키</th>
-      <th>Windows</th>
+      <th>Action</th>
       <th>Mac</th>
+      <th>Windows / Linux</th>
   </thead>
   <tbody>
     <tr>
-      <td data-th="Global Shortcuts">일반 설정 대화상자 표시</td>
-      <td data-th="Windows"><kbd class="kbd">?</kbd>, <kbd class="kbd">F1</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">?</kbd></td>
+      <td>Open whatever panel you used last</td>
+      <td><kbd>Command</kbd>+<kbd>Option</kbd>+<kbd>I</kbd></td>
+      <td><kbd>F12</kbd> or <kbd>Control</kbd>+<kbd>Shift</kbd>+<kbd>I</kbd></td>
     </tr>
     <tr>
-      <td data-th="Global Shortcuts">다음 패널</td>
-      <td data-th="Windows"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">]</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Cmd</kbd> + <kbd class="kbd">]</kbd></td>
+      <td>Open the <b>Console</b> panel</td>
+      <td><kbd>Command</kbd>+<kbd>Option</kbd>+<kbd>J</kbd></td>
+      <td><kbd>Control</kbd>+<kbd>Shift</kbd>+<kbd>J</kbd></td>
     </tr>
     <tr>
-      <td data-th="Global Shortcuts">이전 패널</td>
-      <td data-th="Windows"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">[</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Cmd</kbd> + <kbd class="kbd">[</kbd></td>
-    </tr>
-    <tr>
-      <td data-th="Global Shortcuts">패널 기록 뒤로</td>
-      <td data-th="Windows"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">Alt</kbd> + <kbd class="kbd">[</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Cmd</kbd> + <kbd class="kbd">Opt</kbd> + <kbd class="kbd">[</kbd></td>
-    </tr>
-    <tr>
-      <td data-th="Global Shortcuts">패널 기록 앞으로</td>
-      <td data-th="Windows"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">Alt</kbd> + <kbd class="kbd">]</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Cmd</kbd> + <kbd class="kbd">Opt</kbd> + <kbd class="kbd">]</kbd></td>
-    </tr>
-    <tr>
-      <td data-th="Global Shortcuts">도킹 위치 변경</td>
-      <td data-th="Windows"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">Shift</kbd> + <kbd class="kbd">D</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Cmd</kbd> + <kbd class="kbd">Shift</kbd> + <kbd class="kbd">D</kbd></td>
-    </tr>
-    <tr>
-      <td data-th="Global Shortcuts">Device Mode 열기</td>
-      <td data-th="Windows"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">Shift</kbd> + <kbd class="kbd">M</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Cmd</kbd> + <kbd class="kbd">Shift</kbd> + <kbd class="kbd">M</kbd></td>
-    </tr>
-    <tr>
-      <td data-th="Global Shortcuts">콘솔 전환 / 열 때 설정 대화상자 닫기</td>
-      <td data-th="Windows"><kbd class="kbd">Esc</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Esc</kbd></td>
-    </tr>
-    <tr>
-      <td data-th="Global Shortcuts">페이지 새로고침</td>
-      <td data-th="Windows"><kbd class="kbd">F5</kbd>, <kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">R</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Cmd</kbd> + <kbd class="kbd">R</kbd></td>
-    </tr>
-    <tr>
-      <td data-th="Global Shortcuts">캐시된 콘텐츠를 무시하고 페이지 새로고침</td>
-      <td data-th="Windows"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">F5</kbd>, <kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">Shift</kbd> + <kbd class="kbd">R</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Cmd</kbd> + <kbd class="kbd">Shift</kbd> + <kbd class="kbd">R</kbd></td>
-    </tr>
-    <tr>
-      <td data-th="Global Shortcuts">현재 파일 또는 패널 내에서 텍스트 검색</td>
-      <td data-th="Windows"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">F</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Cmd</kbd> + <kbd class="kbd">F</kbd></td>
-    </tr>
-    <tr>
-      <td data-th="Global Shortcuts">모든 소스에서 텍스트 검색</td>
-      <td data-th="Windows"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">Shift</kbd> + <kbd class="kbd">F</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Cmd</kbd> + <kbd class="kbd">Opt</kbd> + <kbd class="kbd">F</kbd></td>
-    </tr>
-    <tr>
-      <td data-th="Global Shortcuts">파일 이름으로 검색(타임라인 제외)</td>
-      <td data-th="Windows"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">O</kbd>, <kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">P</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Cmd</kbd> + <kbd class="kbd">O</kbd>, <kbd class="kbd">Cmd</kbd> + <kbd class="kbd">P</kbd></td>
-    </tr>
-    <tr>
-      <td data-th="Global Shortcuts">확대(DevTools에 포커스를 둔 상태에서)</td>
-      <td data-th="Windows"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">+</kbd></td>
-      <td data-th="Mac"><kbd>Cmd</kbd> + <kbd class="kbd">Shift</kbd> + <kbd class="kbd">+</kbd></td>
-    </tr>
-    <tr>
-      <td data-th="Global Shortcuts">축소</td>
-      <td data-th="Windows"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">-</kbd></td>
-      <td data-th="Mac"><kbd>Cmd</kbd> + <kbd class="kbd">Shift</kbd> + <kbd class="kbd">-</kbd></td>
-    </tr>
-    <tr>
-      <td data-th="Global Shortcuts">기본 텍스트 크기 복원</td>
-      <td data-th="Windows"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">0</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Cmd</kbd> + <kbd class="kbd">0</kbd></td>
+      <td>Open the <b>Elements</b> panel</td>
+      <td><kbd>Command</kbd>+<kbd>Option</kbd>+<kbd>C</kbd></td>
+      <td><kbd>Control</kbd>+<kbd>Shift</kbd>+<kbd>C</kbd></td>
     </tr>
   </tbody>
 </table>
 
-## 패널별 단축키
+## Global keyboard shortcuts {: #global }
 
-### Elements
+The following keyboard shortcuts are available in most, if not all, DevTools panels.
 
 <table>
   <thead>
-      <th>Elements 패널</th>
-      <th>Windows</th>
+      <th>Action</th>
       <th>Mac</th>
+      <th>Windows / Linux</th>
   </thead>
   <tbody>
     <tr>
-      <td data-th="Elements Panel">변경 취소</td>
-      <td data-th="Windows"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">Z</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Cmd</kbd> + <kbd class="kbd">Z</kbd></td>
+      <td>Show <b>Settings</b></td>
+      <td><kbd>?</kbd> or <kbd>Function</kbd>+<kbd>F1</kbd></td>
+      <td><kbd>?</kbd> or <kbd>F1</kbd></td>
     </tr>
     <tr>
-      <td data-th="Elements Panel">변경 다시 실행</td>
-      <td data-th="Windows"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">Y</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Cmd</kbd> + <kbd class="kbd">Y</kbd>, <kbd class="kbd">Cmd</kbd> + <kbd class="kbd">Shift</kbd> + <kbd class="kbd">Z</kbd></td>
+      <td>Focus the next panel</td>
+      <td><kbd>Command</kbd>+<kbd>]</kbd></kbd></td>
+      <td><kbd>Control</kbd>+<kbd>]</kbd></kbd></td>
     </tr>
     <tr>
-      <td data-th="Elements Panel">탐색</td>
-      <td data-th="Windows"><kbd class="kbd">위쪽 화살표</kbd>, <kbd class="kbd">아래쪽 화살표</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">위쪽 화살표</kbd>, <kbd class="kbd">아래쪽 화살표</kbd></td>
+      <td>Focus the previous panel</td>
+      <td><kbd>Command</kbd>+<kbd>[</kbd></td>
+      <td><kbd>Control</kbd>+<kbd>[</kbd></td>
     </tr>
     <tr>
-      <td data-th="Elements Panel">노드 확장/축소</td>
-      <td data-th="Windows"><kbd class="kbd">오른쪽 화살표</kbd>, <kbd class="kbd">왼쪽 화살표</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">오른쪽 화살표</kbd>, <kbd class="kbd">왼쪽 화살표</kbd></td>
+      <!-- TODO make a bug about this shortcut being ambiguous -->
+      <td>
+        Switch back to whatever <a href="/web/tools/chrome-devtools/ui#placement">docking position</a> you last used.
+        If DevTools has been in its default position for the entire session, then this shortcut undocks
+        DevTools into a separate window
+      </td>
+      <td><kbd>Command</kbd>+<kbd>Shift</kbd>+<kbd>D</kbd></td>
+      <td><kbd>Control</kbd>+<kbd>Shift</kbd>+<kbd>D</kbd></td>
     </tr>
     <tr>
-      <td data-th="Elements Panel">노드 확장</td>
-      <td data-th="Windows"><kbd class="kbd">화살표 한 번 클릭</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">화살표 한 번 클릭</kbd></td>
+      <td>Toggle <b><a href="/web/tools/chrome-devtools/device-mode/">Device Mode</a><b></td>
+      <td><kbd>Command</kbd>+<kbd>Shift</kbd>+<kbd>M</kbd></td>
+      <td><kbd>Control</kbd>+<kbd>Shift</kbd>+<kbd>M</kbd></td>
     </tr>
     <tr>
-      <td data-th="Elements Panel">노드 및 모든 자식 노드 확장/축소</td>
-      <td data-th="Windows"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">Alt</kbd> + <kbd class="kbd">화살표 아이콘 클릭</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Opt</kbd> + <kbd class="kbd">화살표 아이콘 클릭</kbd></td>
+      <!-- TODO: Link "Inspect Element Mode" when a good section exists. -->
+      <td>Toggle <b>Inspect Element Mode</b></td>
+      <td><kbd>Command</kbd>+<kbd>Shift</kbd>+<kbd>C</kbd></td>
+      <td><kbd>Control</kbd>+<kbd>Shift</kbd>+<kbd>C</kbd></td>
     </tr>
     <tr>
-      <td data-th="Elements Panel">속성 편집</td>
-      <td data-th="Windows"><kbd class="kbd">Enter</kbd>, <kbd class="kbd">속성 두 번 클릭</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Enter</kbd>, <kbd class="kbd">속성 두 번 클릭</kbd></td>
+      <td>Open the <b><a href="/web/tools/chrome-devtools/ui#command-menu">Command Menu</a></b></td>
+      <td><kbd>Command</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd></td>
+      <td><kbd>Control</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd></td>
     </tr>
     <tr>
-      <td data-th="Elements Panel">요소 숨기기</td>
-      <td data-th="Windows"><kbd class="kbd">H</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">H</kbd></td>
+      <td>Toggle the <b><a href="/web/tools/chrome-devtools/ui#drawer">Drawer</a></b></td>
+      <td><kbd>Escape</kbd></td>
+      <td><kbd>Escape</kbd></td>
     </tr>
     <tr>
-      <td data-th="Elements Panel">HTML로 편집 전환</td>
-      <td data-th="Windows"><kbd class="kbd">F2</kbd></td>
-      <td data-th="Mac"></td>
+      <td>Normal reload</td>
+      <td><kbd>Command</kbd>+<kbd>R</kbd></td>
+      <td><kbd>F5</kbd> or <kbd>Control</kbd>+<kbd>R</kbd></td>
+    </tr>
+    <tr>
+      <td>Hard reload</td>
+      <td><kbd>Command</kbd>+<kbd>Shift</kbd>+<kbd>R</kbd></td>
+      <td><kbd>Control</kbd>+<kbd>F5</kbd> or <kbd>Control</kbd>+<kbd>Shift</kbd>+<kbd>R</kbd></td>
+    </tr>
+    <tr>
+      <td>
+        Search for text within the current panel. Not supported in the <b>Audits</b>, <b>Application</b>, and <b>Security</b> panels
+      </td>
+      <td><kbd>Command</kbd>+<kbd>F</kbd></td>
+      <td><kbd>Control</kbd>+<kbd>F</kbd></td>
+    </tr>
+    <tr>
+      <td>Opens the <b>Search</b> tab in the <b><a href="/web/tools/chrome-devtools/ui#drawer">Drawer</a></b>, which lets you search for text across all loaded resources</td>
+      <td><kbd>Command</kbd>+<kbd>Option</kbd>+<kbd>F</kbd></td>
+      <td><kbd>Control</kbd>+<kbd>Shift</kbd>+<kbd>F</kbd></td>
+    </tr>
+    <tr>
+      <td>Open a file in the <b>Sources</b> panel</td>
+      <td><kbd>Command</kbd>+<kbd>O</kbd> or <kbd>Command</kbd>+<kbd>P</kbd></td>
+      <td><kbd>Control</kbd>+<kbd>O</kbd> or <kbd>Control</kbd>+<kbd>P</kbd></td>
+    </tr>
+    <tr>
+      <td>Zoom in</td>
+      <td><kbd>Command</kbd>+<kbd>Shift</kbd>+<kbd>+</kbd></td>
+      <td><kbd>Control</kbd>+<kbd>Shift</kbd>+<kbd>+</kbd></td>
+    </tr>
+    <tr>
+      <td>Zoom out</td>
+      <td><kbd>Command</kbd>+<kbd>-</kbd></td>
+      <td><kbd>Control</kbd>+<kbd>-</kbd></td>
+    </tr>
+    <tr>
+      <td>Restore default zoom level</td>
+      <td><kbd>Command</kbd>+<kbd>0</kbd></td>
+      <td><kbd>Control</kbd>+<kbd>0</kbd></td>
+    </tr>
+    <tr>
+      <td>Run snippet</td>
+      <td>Press <kbd>Command</kbd>+<kbd>O</kbd> to open the <b><a href="/web/tools/chrome-devtools/ui#command-menu">Command Menu</a></b>, type <kbd>!</kbd> followed by the name of the script, then press <kbd>Enter</kbd></td>
+      <td>Press <kbd>Control</kbd>+<kbd>O</kbd> to open the <b><a href="/web/tools/chrome-devtools/ui#command-menu">Command Menu</a></b>, type <kbd>!</kbd> followed by the name of the script, then press <kbd>Enter</kbd></td>
     </tr>
   </tbody>
 </table>
 
-#### Styles 사이드바
-
-Styles 사이드바에서 사용할 수 있는 단축키:
+## Elements panel keyboard shortcuts {: #elements }
 
 <table>
   <thead>
-      <th>Styles 사이드바</th>
-      <th>Windows</th>
+      <th>Action</th>
       <th>Mac</th>
+      <th>Windows / Linux</th>
   </thead>
   <tbody>
     <tr>
-      <td data-th="Styles Sidebar">규칙 편집</td>
-      <td data-th="Windows"><kbd class="kbd">한 번 클릭</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">한 번 클릭</kbd></td>
+      <td>Undo change</td>
+      <td><kbd>Command</kbd>+<kbd>Z</kbd></td>
+      <td><kbd>Control</kbd>+<kbd>Z</kbd></td>
     </tr>
     <tr>
-      <td data-th="Styles Sidebar">새 속성 삽입</td>
-      <td data-th="Windows"><kbd class="kbd">공백 한 번 클릭</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">공백 한 번 클릭</kbd></td>
+      <td>Redo change</td>
+      <td><kbd>Command</kbd>+<kbd>Shift</kbd>+<kbd>Z</kbd></td>
+      <td><kbd>Control</kbd>+<kbd>Y</kbd></td>
     </tr>
     <tr>
-      <td data-th="Styles Sidebar">소스에서 스타일 규칙 속성 선언 줄로 이동</td>
-      <td data-th="Windows"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">속성 클릭</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Cmd</kbd> + <kbd class="kbd">속성 클릭</kbd></td>
+      <td>Select the element above / below the currently-selected element</td>
+      <td><kbd>Up Arrow</kbd> / <kbd>Down Arrow</kbd></td>
+      <td><kbd>Up Arrow</kbd> / <kbd>Down Arrow</kbd></td>
     </tr>
     <tr>
-      <td data-th="Styles Sidebar">소스에서 속성 값 선언 줄로 이동</td>
-      <td data-th="Windows"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">속성 값 클릭</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Cmd</kbd> + <kbd class="kbd">속성 값 클릭</kbd></td>
+      <td>Expand the currently-selected node. If the node is already expanded, this shortcut selects the element below it</td>
+      <td><kbd>Right Arrow</kbd></td>
+      <td><kbd>Right Arrow</kbd></td>
     </tr>
     <tr>
-      <td data-th="Styles Sidebar">색 정의 값 순환</td>
-      <td data-th="Windows"><kbd class="kbd">Shift</kbd> + <kbd class="kbd">색 선택 상자 클릭</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Shift</kbd> + <kbd class="kbd">색 선택 상자 클릭</kbd></td>
+      <td>Collapse the currently-selected node. If the node is already collapsed, this shortcut selects the element above it</td>
+      <td><kbd>Left Arrow</kbd></td>
+      <td><kbd>Left Arrow</kbd></td>
     </tr>
     <tr>
-      <td data-th="Styles Sidebar">다음/이전 속성 편집</td>
-      <td data-th="Windows"><kbd class="kbd">Tab</kbd>, <kbd class="kbd">Shift</kbd> + <kbd class="kbd">Tab</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Tab</kbd>, <kbd class="kbd">Shift</kbd> + <kbd class="kbd">Tab</kbd></td>
+      <td>Expand or collapse the currently-selected node and all of its children</td>
+      <td>Hold <kbd>Option</kbd> then click the arrow icon next to the element's name</td>
+      <td>Hold <kbd>Control</kbd>+<kbd>Alt</kbd> then click the arrow icon next to the element's name</td>
     </tr>
     <tr>
-      <td data-th="Styles Sidebar">값 증가/감소</td>
-      <td data-th="Windows"><kbd class="kbd">위쪽 화살표</kbd>, <kbd class="kbd">아래쪽 화살표</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">위쪽 화살표</kbd>, <kbd class="kbd">아래쪽 화살표</kbd></td>
+      <td>Toggle <b>Edit Attributes</b> mode on the currently-selected element</td>
+      <td><kbd>Enter</kbd></td>
+      <td><kbd>Enter</kbd></td>
     </tr>
     <tr>
-      <td data-th="Styles Sidebar">10씩 값 증가/감소</td>
-      <td data-th="Windows"><kbd class="kbd">Shift</kbd> + <kbd class="kbd">위쪽 화살표</kbd>, <kbd class="kbd">Shift</kbd> + <kbd class="kbd">아래쪽 화살표</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Shift</kbd> + <kbd class="kbd">위쪽 화살표</kbd>, <kbd class="kbd">Shift</kbd> + <kbd class="kbd">아래쪽 화살표</kbd></td>
+      <td>Select the next / previous attribute after entering <b>Edit Attributes</b> mode</td>
+      <td><kbd>Tab</kbd> / <kbd>Shift</kbd>+<kbd>Tab</kbd></td>
+      <td><kbd>Tab</kbd> / <kbd>Shift</kbd>+<kbd>Tab</kbd></td>
     </tr>
     <tr>
-      <td data-th="Styles Sidebar">10씩 값 증가/감소</td>
-      <td data-th="Windows"><kbd class="kbd">PgUp</kbd>, <kbd class="kbd">PgDown</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">PgUp</kbd>, <kbd class="kbd">PgDown</kbd></td>
+      <td>Hide the currently-selected element</td>
+      <td><kbd>H</kbd></td>
+      <td><kbd>H</kbd></td>
     </tr>
     <tr>
-      <td data-th="Styles Sidebar">100씩 값 증가/감소</td>
-      <td data-th="Windows"><kbd class="kbd">Shift</kbd> + <kbd class="kbd">PgUp</kbd>, <kbd class="kbd">Shift</kbd> + <kbd class="kbd">PgDown</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Shift</kbd> + <kbd class="kbd">PgUp</kbd>, <kbd class="kbd">Shift</kbd> + <kbd class="kbd">PgDown</kbd></td>
-    </tr>
-    <tr>
-      <td data-th="Styles Sidebar">0.1씩 값 증가/감소</td>
-      <td data-th="Windows"><kbd class="kbd">Alt</kbd> + <kbd class="kbd">위쪽 화살표</kbd>, <kbd class="kbd">Alt</kbd> + <kbd class="kbd">아래쪽 화살표</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Opt</kbd> + <kbd class="kbd">위쪽 화살표</kbd>, <kbd class="kbd">Opt</kbd> + <kbd class="kbd">아래쪽 화살표</kbd></td>
+      <td>Toggle <b>Edit as HTML</b> mode on the currently-selected element</td>
+      <td><kbd>Function</kbd>+<kbd>F2</kbd></td>
+      <td><kbd>F2</kbd></td>
     </tr>
   </tbody>
 </table>
 
-### Sources
+### Styles pane keyboard shortcuts {: #styles }
 
 <table>
   <thead>
-      <th>Sources 패널</th>
-      <th>Windows</th>
+      <th>Action</th>
       <th>Mac</th>
+      <th>Windows / Linux</th>
   </thead>
   <tbody>
     <tr>
-      <td data-th="Sources Panel">스크립트 실행 일시 중지/계속</td>
-      <td data-th="Windows"><kbd class="kbd">F8</kbd>, <kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">\</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">F8</kbd>, <kbd class="kbd">Cmd</kbd> + <kbd class="kbd">\</kbd></td>
+      <td>Go to the line where a property value is declared</td>
+      <td>Hold <kbd>Command</kbd> then click the property value</td>
+      <td>Hold <kbd>Control</kbd> then click the property value</td>
     </tr>
     <tr>
-      <td data-th="Sources Panel">다음 함수 호출 Step Over</td>
-      <td data-th="Windows"><kbd class="kbd">F10</kbd>, <kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">'</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">F10</kbd>, <kbd class="kbd">Cmd</kbd> + <kbd class="kbd">'</kbd></td>
+      <td>Cycle through the RBGA, HSLA, and Hex representations of a color value</td>
+      <td>Hold <kbd>Shift</kbd> then click the <b>Color Preview</b> box next to the value</td>
+      <td>Hold <kbd>Shift</kbd> then click the <b>Color Preview</b> box next to the value</td>
     </tr>
     <tr>
-      <td data-th="Sources Panel">다음 함수 호출 Step Into</td>
-      <td data-th="Windows"><kbd class="kbd">F11</kbd>, <kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">;</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">F11</kbd>, <kbd class="kbd">Cmd</kbd> + <kbd class="kbd">;</kbd></td>
+      <td>Select the next / previous property or value</td>
+      <td>Click a property name or value then press <kbd>Tab</kbd> / <kbd>Shift</kbd>+<kbd>Tab</kbd></td>
+      <td>Click a property name or value then press <kbd>Tab</kbd> / <kbd>Shift</kbd>+<kbd>Tab</kbd></td>
     </tr>
     <tr>
-      <td data-th="Sources Panel">현재 함수에서 Step Out</td>
-      <td data-th="Windows"><kbd class="kbd">Shift</kbd> + <kbd class="kbd">F11</kbd>, <kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">Shift</kbd> + <kbd class="kbd">;</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Shift</kbd> + <kbd class="kbd">F11</kbd>, <kbd class="kbd">Cmd</kbd> + <kbd class="kbd">Shift</kbd> + <kbd class="kbd">;</kbd></td>
+      <td>Increment / decrement a property value by 0.1</td>
+      <td>Click a value then press <kbd>Option</kbd>+<kbd>Up Arrow</kbd> / <kbd>Option</kbd>+<kbd>Down Arrow</kbd></td>
+      <td>Click a value then press <kbd>Alt</kbd>+<kbd>Up Arrow</kbd> / <kbd>Alt</kbd>+<kbd>Down Arrow</kbd></td>
     </tr>
     <tr>
-      <td data-th="Sources Panel">다음 호출 프레임 선택</td>
-      <td data-th="Windows"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">.</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Opt</kbd> + <kbd class="kbd">.</kbd></td>
+      <td>Increment / decrement a property value by 1</td>
+      <td>Click a value then press <kbd>Up Arrow</kbd> / <kbd>Down Arrow</kbd></td>
+      <td>Click a value then press <kbd>Up Arrow</kbd> / <kbd>Down Arrow</kbd></td>
     </tr>
     <tr>
-      <td data-th="Sources Panel">이전 호출 프레임 선택</td>
-      <td data-th="Windows"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">,</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Opt</kbd> + <kbd class="kbd">,</kbd></td>
+      <td>Increment / decrement a property value by 10</td>
+      <td>Click a value then press <kbd>Shift</kbd>+<kbd>Up Arrow</kbd> / <kbd>Shift</kbd>+<kbd>Down Arrow</kbd></td>
+      <td>Click a value then press <kbd>Shift</kbd>+<kbd>Up Arrow</kbd> / <kbd>Shift</kbd>+<kbd>Down Arrow</kbd></td>
     </tr>
     <tr>
-      <td data-th="Sources Panel">중단점 조건 전환</td>
-      <td data-th="Windows"><kbd class="kbd">줄 번호 클릭</kbd>, <kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">B</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">줄 번호 클릭</kbd>, <kbd class="kbd">Cmd</kbd> + <kbd class="kbd">B</kbd></td>
-    </tr>
-    <tr>
-      <td data-th="Sources Panel">중단점 조건 편집</td>
-      <td data-th="Windows"><kbd class="kbd">마우스 오른쪽 버튼으로 줄 번호 클릭</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">마우스 오른쪽 버튼으로 줄 번호 클릭</kbd></td>
-    </tr>
-    <tr>
-      <td data-th="Sources Panel">개별 단어 삭제</td>
-      <td data-th="Windows"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">Delete</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Opt</kbd> + <kbd class="kbd">Delete</kbd></td>
-    </tr>
-    <tr>
-      <td data-th="Sources Panel">줄 또는 선택한 텍스트에 주석 달기</td>
-      <td data-th="Windows"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">/</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Cmd</kbd> + <kbd class="kbd">/</kbd></td>
-    </tr>
-    <tr>
-      <td data-th="Sources Panel">로컬 수정에 변경 내용 저장</td>
-      <td data-th="Windows"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">S</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Cmd</kbd> + <kbd class="kbd">S</kbd></td>
-    </tr>
-    <tr>
-      <td data-th="Sources Panel">변경 내용 모두 저장</td>
-      <td data-th="Windows"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">Alt</kbd> + <kbd class="kbd">S</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Cmd</kbd> + <kbd class="kbd">Opt</kbd> + <kbd class="kbd">S</kbd></td>
-    </tr>
-    <tr>
-      <td data-th="Sources Panel">줄 이동</td>
-      <td data-th="Windows"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">G</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">G</kbd></td>
-    </tr>
-    <tr>
-      <td data-th="Sources Panel">파일 이름으로 검색</td>
-      <td data-th="Windows"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">O</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Cmd</kbd> + <kbd class="kbd">O</kbd></td>
-    </tr>
-    <tr>
-      <td data-th="Sources Panel">줄 번호로 이동</td>
-      <td data-th="Windows"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">P</kbd> + <span class="kbd">:<i>번호</i></span></td>
-      <td data-th="Mac"><kbd class="kbd">Cmd</kbd> + <kbd class="kbd">P</kbd> + <span class="kbd">:<i>번호</i></span></td>
-    </tr>
-    <tr>
-      <td data-th="Sources Panel">열로 이동</td>
-      <td data-th="Windows"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">O</kbd> + <span class="kbd">:<i>번호</i></span> + <span class="kbd">:<i>번호</i></span></td>
-      <td data-th="Mac"><kbd class="kbd">Cmd</kbd> + <kbd class="kbd">O</kbd> + <span class="kbd">:<i>번호</i></span> + <span class="kbd">:<i>번호</i></span></td>
-    </tr>
-    <tr>
-      <td data-th="Sources Panel">멤버로 이동</td>
-      <td data-th="Windows"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">Shift</kbd> + <kbd class="kbd">O</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Cmd</kbd> + <kbd class="kbd">Shift</kbd> + <kbd class="kbd">O</kbd></td>
-    </tr>
-    <tr>
-      <td data-th="Sources Panel">활성 탭 닫기</td>
-      <td data-th="Windows"><kbd class="kbd">Alt</kbd> + <kbd class="kbd">W</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Opt</kbd> + <kbd class="kbd">W</kbd></td>
-    </tr>
-    <tr>
-      <td data-th="Sources Panel">스니펫 실행</td>
-      <td data-th="Windows"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">Enter</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Cmd</kbd> + <kbd class="kbd">Enter</kbd></td>
+      <td>Increment / decrement a property value by 100</td>
+      <td>Click a value then press <kbd>Command</kbd>+<kbd>Up Arrow</kbd> / <kbd>Command</kbd>+<kbd>Down Arrow</kbd></td>
+      <td>Click a value then press <kbd>Control</kbd>+<kbd>Up Arrow</kbd> / <kbd>Control</kbd>+<kbd>Down Arrow</kbd></td>
     </tr>
   </tbody>
 </table>
 
-#### 코드 편집기 내부
+## Sources panel keyboard shortcuts {: #sources }
 
 <table>
   <thead>
-      <th>코드 편집기</th>
-      <th>Windows</th>
+      <th>Action</th>
       <th>Mac</th>
+      <th>Windows / Linux</th>
   </thead>
   <tbody>
     <tr>
-      <td data-th="Code Editor">짝을 이루는 대괄호로 이동</td>
-      <td data-th="Windows"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">M</kbd></td>
-      <td data-th="Mac"><span class="kbd"></span></td>
+      <td>Pause script execution (if currently running) or resume (if currently paused)</td>
+      <td><kbd>F8</kbd> or <kbd>Command</kbd>+<kbd>\</kbd></td>
+      <td><kbd>F8</kbd> or <kbd>Control</kbd>+<kbd>\</kbd></td>
     </tr>
     <tr>
-      <td data-th="Code Editor">줄 번호로 이동</td>
-      <td data-th="Windows"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">P</kbd> + <span class="kbd">:<i>번호</i></span></td>
-      <td data-th="Mac"><kbd class="kbd">Cmd</kbd> + <kbd class="kbd">P</kbd> + <span class="kbd">:<i>번호</i></span></td>
+      <td>Step over next function call</td>
+      <td><kbd>F10</kbd> or <kbd>Command</kbd>+<kbd>'</kbd></td>
+      <td><kbd>F10</kbd> or <kbd>Control</kbd>+<kbd>'</kbd></td>
     </tr>
     <tr>
-      <td data-th="Code Editor">열로 이동</td>
-      <td data-th="Windows"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">O</kbd> + <span class="kbd">:<i>번호</i></span> + <span class="kbd">:<i>번호</i></span></td>
-      <td data-th="Mac"><kbd class="kbd">Cmd</kbd> + <kbd class="kbd">O</kbd> + <span class="kbd">:<i>번호</i></span> + <span class="kbd">:<i>번호</i></span></td>
+      <td>Step into next function call</td>
+      <td><kbd>F11</kbd> or <kbd>Command</kbd>+<kbd>;</kbd></td>
+      <td><kbd>F11</kbd> or <kbd>Control</kbd>+<kbd>;</kbd></td>
     </tr>
     <tr>
-      <td data-th="Code Editor">주석 전환</td>
-      <td data-th="Windows"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">/</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Cmd</kbd> + <kbd class="kbd">/</kbd></td>
+      <td>Step out of current function</td>
+      <td><kbd>Shift</kbd>+<kbd>F11</kbd> or <kbd>Command</kbd>+<kbd>Shift</kbd>+<kbd>;</kbd></td>
+      <td><kbd>Shift</kbd>+<kbd>F11</kbd> or <kbd>Control</kbd>+<kbd>Shift</kbd>+<kbd>;</kbd></td>
     </tr>
     <tr>
-      <td data-th="Code Editor">다음 항목 선택</td>
-      <td data-th="Windows"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">D</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Cmd</kbd> + <kbd class="kbd">D</kbd></td>
+      <td><a href="/web/updates/2017/05/devtools-release-notes#continue">Continue to a certain line of code while paused</a></td>
+      <td>Hold <kbd>Command</kbd> and then click the line of code</td>
+      <td>Hold <kbd>Control</kbd> and then click the line of code</td>
     </tr>
     <tr>
-      <td data-th="Code Editor">마지막 선택 실행 취소</td>
-      <td data-th="Windows"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">U</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Cmd</kbd> + <kbd class="kbd">U</kbd></td>
+      <!-- TODO mention that it only works when paused on a line -->
+      <td>Select the call frame below / above the currently-selected frame</td>
+      <td><kbd>Control</kbd>+<kbd>.</kbd> / <kbd>Control</kbd>+<kbd>,</kbd></td>
+      <td><kbd>Control</kbd>+<kbd>.</kbd> / <kbd>Control</kbd>+<kbd>,</kbd></td>
+    </tr>
+    <tr>
+      <td>Save changes to local modifications</td>
+      <td><kbd>Command</kbd>+<kbd>S</kbd></td>
+      <td><kbd>Control</kbd>+<kbd>S</kbd></td>
+    </tr>
+    <tr>
+      <td>Save all changes</td>
+      <td><kbd>Command</kbd>+<kbd>Option</kbd>+<kbd>S</kbd></td>
+      <td><kbd>Control</kbd>+<kbd>Alt</kbd>+<kbd>S</kbd></td>
+    </tr>
+    <tr>
+      <td>Go to line</td>
+      <td><kbd>Control</kbd>+<kbd>G</kbd></td>
+      <td><kbd>Control</kbd>+<kbd>G</kbd></td>
+    </tr>
+    <tr>
+      <td>Jump to a line number of the currently-open file</td>
+      <td>Press <kbd>Command</kbd>+<kbd>O</kbd> to open the <b><a href="/web/tools/chrome-devtools/ui#command-menu">Command Menu</a></b>, type <kbd>:</kbd> followed by the line number, then press <kbd>Enter</kbd></td>
+      <td>Press <kbd>Control</kbd>+<kbd>O</kbd> to open the <b><a href="/web/tools/chrome-devtools/ui#command-menu">Command Menu</a></b>, type <kbd>:</kbd> followed the line number, then press <kbd>Enter</kbd></td>
+    </tr>
+    <tr>
+      <td>Jump to a column of the currently-open file (for example line 5, column 9)</td>
+      <td>Press <kbd>Command</kbd>+<kbd>O</kbd> to open the <b><a href="/web/tools/chrome-devtools/ui#command-menu">Command Menu</a></b>, type <kbd>:</kbd>, then the line number, then another <kbd>:</kbd>, then the column number, then press <kbd>Enter</kbd></td>
+      <td>Press <kbd>Control</kbd>+<kbd>O</kbd> to open the <b><a href="/web/tools/chrome-devtools/ui#command-menu">Command Menu</a></b>, type <kbd>:</kbd>, then the line number, then another <kbd>:</kbd>, then the column number, then press <kbd>Enter</kbd></td>
+    </tr>
+    <tr>
+      <td>Go to a function declaration (if currently-open file is HTML or a script), or a rule set (if currently-open file is a stylesheet)</td>
+      <td>Press <kbd>Command</kbd>+<kbd>Shift</kbd>+<kbd>O</kbd>, then type in the name of the declaration / rule set, or select it from the list of options</td>
+      <td>Press <kbd>Control</kbd>+<kbd>Shift</kbd>+<kbd>O</kbd>, then type in the name of the declaration / rule set, or select it from the list of options</td>
+    </tr>
+    <tr>
+      <td>Close the active tab</td>
+      <td><kbd>Option</kbd>+<kbd>W</kbd></td>
+      <td><kbd>Alt</kbd>+<kbd>W</kbd></td>
     </tr>
   </tbody>
 </table>
 
-### Timeline
+### Code Editor keyboard shortcuts {: #editor }
 
 <table>
   <thead>
-      <th>Timeline 패널</th>
-      <th>Windows</th>
+      <th>Action</th>
       <th>Mac</th>
+      <th>Windows / Linux</th>
   </thead>
   <tbody>
     <tr>
-      <td data-th="Timeline Panel">기록 시작/중지</td>
-      <td data-th="Windows"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">E</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Cmd</kbd> + <kbd class="kbd">E</kbd></td>
+      <td>Delete all characters in the last word, up to the cursor</td>
+      <td><kbd>Option</kbd>+<kbd>Delete</kbd></td>
+      <td><kbd>Control</kbd>+<kbd>Delete</kbd></td>
     </tr>
     <tr>
-      <td data-th="Timeline Panel">타임라인 데이터 저장</td>
-      <td data-th="Windows"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">S</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Cmd</kbd> + <kbd class="kbd">S</kbd></td>
+      <td>Add or remove a <a href="/web/tools/chrome-devtools/javascript/breakpoints#loc">line-of-code breakpoint</a></td>
+      <td>Focus your cursor on the line and then press <kbd>Command</kbd>+<kbd>B</kbd></td>
+      <td>Focus your cursor on the line and then press <kbd>Control</kbd>+<kbd>B</kbd></td>
     </tr>
     <tr>
-      <td data-th="Timeline Panel">타임라인 데이터 로드</td>
-      <td data-th="Windows"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">O</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Cmd</kbd> + <kbd class="kbd">O</kbd></td>
+      <td>Go to matching bracket</td>
+      <td><kbd>Control</kbd>+<kbd>M</kbd></td>
+      <td><kbd>Control</kbd>+<kbd>M</kbd></td>
+    </tr>
+    <tr>
+      <td>Toggle single-line comment. If multiple lines are selected, DevTools adds a comment to the start of each line</td>
+      <td><kbd>Command</kbd>+<kbd>/</kbd></td>
+      <td><kbd>Control</kbd>+<kbd>/</kbd></td>
+    </tr>
+    <tr>
+      <td>Select / de-select the next occurrence of whatever word the cursor is on. Each occurrence is highlighted simultaneously</td>
+      <td><kbd>Command</kbd>+<kbd>D</kbd> / <kbd>Command</kbd>+<kbd>U</kbd></td>
+      <td><kbd>Control</kbd>+<kbd>D</kbd> / <kbd>Control</kbd>+<kbd>U</kbd></td>
     </tr>
   </tbody>
 </table>
 
-### Profiles
+## Performance panel keyboard shortcuts {: #performance }
 
 <table>
   <thead>
-      <th>Profiles 패널</th>
-      <th>Windows</th>
+      <th>Action</th>
       <th>Mac</th>
+      <th>Windows / Linux</th>
   </thead>
   <tbody>
     <tr>
-      <td data-th="Profiles Panel">기록 시작/중지</td>
-	  <td data-th="Windows"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">E</kbd></td>
-	  <td data-th="Mac"><kbd class="kbd">Cmd</kbd> + <kbd class="kbd">E</kbd></td>
+      <td>Start / stop recording</td>
+      <td><kbd>Command</kbd>+<kbd>E</kbd></td>
+      <td><kbd>Control</kbd>+<kbd>E</kbd></td>
+    </tr>
+    <tr>
+      <td>Save recording</td>
+      <td><kbd>Command</kbd>+<kbd>S</kbd></td>
+      <td><kbd>Control</kbd>+<kbd>S</kbd></td>
+    </tr>
+    <tr>
+      <td>Load recording</td>
+      <td><kbd>Command</kbd>+<kbd>O</kbd></td>
+      <td><kbd>Control</kbd>+<kbd>O</kbd></td>
     </tr>
   </tbody>
 </table>
 
-### 콘솔
+## Memory panel keyboard shortcuts {: #memory }
 
 <table>
   <thead>
-      <th>콘솔 단축키</th>
-      <th>Windows</th>
+      <th>Action</th>
       <th>Mac</th>
+      <th>Windows / Linux</th>
   </thead>
   <tbody>
     <tr>
-      <td data-th="Console Shortcuts">제안 수락</td>
-      <td data-th="Windows"><kbd class="kbd">오른쪽 화살표</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">오른쪽 화살표</kbd></td>
-    </tr>
-    <tr>
-      <td data-th="Console Shortcuts">이전 명령/줄</td>
-      <td data-th="Windows"><kbd class="kbd">위쪽 화살표</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">위쪽 화살표</kbd></td>
-    </tr>
-    <tr>
-      <td data-th="Console Shortcuts">다음 명령/줄</td>
-      <td data-th="Windows"><kbd class="kbd">아래쪽 화살표</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">아래쪽 화살표</kbd></td>
-    </tr>
-    <tr>
-      <td data-th="Console Shortcuts">콘솔에 포커스 두기</td>
-      <td data-th="Windows"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">`</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">`</kbd></td>
-    </tr>
-    <tr>
-      <td data-th="Console Shortcuts">콘솔 지우기</td>
-      <td data-th="Windows"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">L</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Cmd</kbd> + <kbd class="kbd">K</kbd>, <kbd class="kbd">Opt</kbd> + <kbd class="kbd">L</kbd></td>
-    </tr>
-    <tr>
-      <td data-th="Console Shortcuts">여러 줄 입력</td>
-      <td data-th="Windows"><kbd class="kbd">Shift</kbd> + <kbd class="kbd">Enter</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">Return</kbd></td>
-    </tr>
-    <tr>
-      <td data-th="Console Shortcuts">실행</td>
-      <td data-th="Windows"><kbd class="kbd">Enter</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Return</kbd></td>
+      <td>Start / stop recording</td>
+      <td><kbd>Command</kbd>+<kbd>E</kbd></td>
+      <td><kbd>Control</kbd>+<kbd>E</kbd></td>
     </tr>
   </tbody>
 </table>
 
-### Device Mode
+## Console panel keyboard shortcuts {: #console }
 
 <table>
   <thead>
-      <th>Device Mode 단축키</th>
-      <th>Windows</th>
+      <th>Action</th>
       <th>Mac</th>
+      <th>Windows / Linux</th>
   </thead>
   <tbody>
     <tr>
-      <td data-th="Emulation Shortcuts">손가락으로 확대/축소</td>
-      <td data-th="Windows"><kbd class="kbd">Shift</kbd> + <kbd class="kbd">스크롤</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Shift</kbd> + <kbd class="kbd">스크롤</kbd></td>
+      <td>Accept autocomplete suggestion</td>
+      <td><kbd>Right Arrow</kbd> or <kbd>Tab</kbd></td>
+      <td><kbd>Right Arrow</kbd> or <kbd>Tab</kbd></td>
+    </tr>
+    <tr>
+      <td>Reject autocomplete suggestion</td>
+      <td><kbd>Escape</kbd></td>
+      <td><kbd>Escape</kbd></td>
+    </tr>
+    <tr>
+      <td>Get previous statement</td>
+      <td><kbd>Up Arrow</kbd></td>
+      <td><kbd>Up Arrow</kbd></td>
+    </tr>
+    <tr>
+      <td>Get next statement</td>
+      <td><kbd>Down Arrow</kbd></td>
+      <td><kbd>Down Arrow</kbd></td>
+    </tr>
+    <tr>
+      <td>Focus the <b>Console</b></td>
+      <td><kbd>Control</kbd>+<kbd>`</kbd></td>
+      <td><kbd>Control</kbd>+<kbd>`</kbd></td>
+    </tr>
+    <tr>
+      <td>Clear the <b>Console</b></td>
+      <td><kbd>Command</kbd>+<kbd>K</kbd> or <kbd>Option</kbd>+<kbd>L</kbd></td>
+      <td><kbd>Control</kbd>+<kbd>L</kbd></td>
+    </tr>
+    <tr>
+      <td>Force a multi-line entry. Note that DevTools should detect multi-line scenarios by default, so this shortcut is now usually unnecessary</td>
+      <td><kbd>Command</kbd>+<kbd>Return</kbd></td>
+      <td><kbd>Shift</kbd>+<kbd>Enter</kbd></td>
+    </tr>
+    <tr>
+      <td>Execute</td>
+      <td><kbd>Return</kbd></td>
+      <td><kbd>Enter</kbd></td>
+    </tr>
+    <tr>
+      <td>Expand all sub-properties of an object that's been logged to the Console</td>
+      <td>
+        Hold <kbd>Alt</kbd> then click <b>Expand</b>
+        <img class="cdt-inl" src="/web/tools/chrome-devtools/images/expand.png"/>
+      </td>
+      <td>
+        Hold <kbd>Alt</kbd> then click <b>Expand</b>
+        <img class="cdt-inl" src="/web/tools/chrome-devtools/images/expand.png"/>
+      </td>
     </tr>
   </tbody>
 </table>
 
-#### 스크린캐스팅 시
+## Feedback {: #feedback .hide-from-toc }
 
-<table>
-  <thead>
-      <th>스크린캐스팅 단축키</th>
-      <th>Windows</th>
-      <th>Mac</th>
-  </thead>
-  <tbody>
-    <tr>
-      <td data-th="Screencasting Shortcuts">손가락으로 확대/축소</td>
-      <td data-th="Windows"><kbd class="kbd">Alt</kbd> + <kbd class="kbd">스크롤</kbd>,<kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">두 손가락으로 클릭하여 드래그하기</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Opt</kbd> + <kbd class="kbd">스크롤</kbd>, <kbd class="kbd">Cmd</kbd> + <kbd class="kbd">두 손가락으로 클릭하여 드래그하기</kbd></td>
-    </tr>
-    <tr>
-      <td data-th="Screencasting Shortcuts">요소 검사 도구</td>
-      <td data-th="Windows"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">Shift</kbd> + <kbd class="kbd">C</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Cmd</kbd> + <kbd class="kbd">Shift</kbd> + <kbd class="kbd">C</kbd></td>
-    </tr>
-  </tbody>
-</table>
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
