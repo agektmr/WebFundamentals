@@ -1,41 +1,34 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description:“具有已註冊的服務工作線程”Lighthouse 審查的參考文檔。
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Reference documentation for the "Registers A Service Worker" Lighthouse audit.
 
-{# wf_updated_on:2016-07-25 #}
-{# wf_published_on:2016-07-25 #}
+{# wf_updated_on: 2018-07-23 #} {# wf_published_on: 2016-07-25 #} {# wf_blink_components: N/A #}
 
-# 具有已註冊的服務工作線程 {: .page-title }
+# Registers A Service Worker {: .page-title }
 
-## 爲什麼說此審查非常重要 {: #why }
+## Overview {: #overview }
 
-註冊服務工作線程是啓用以下 Progressive Web App 功能的第一步：
+Registering a service worker is the first step towards enabling the following progressive web app features:
 
+* Offline
+* Push notifications
+* Add to homescreen
 
-* 離線
-* 推送通知
-* 添加到主屏幕
+See [Service Workers: an Introduction](/web/fundamentals/getting-started/primers/service-workers) to learn more.
 
-## 如何通過此審查 {: #how }
+## Recommendations {: #recommendations }
 
-註冊服務工作線程僅涉及幾行代碼，但您使用服務工作線程的唯一原因是實現上面列出的某一個 Progressive Web App 功能。實現上述功能需要執行更多工作。
+Registering a service worker involves only a few lines of code, but the only reason you'd use a service worker is to implement one of the progressive web app features outlined above. Implementing those features requires more work.
 
+For more help on caching files for offline use, see the "How to pass the audit" section of the following Lighthouse doc: [URL responds with a 200 when offline](http-200-when-offline#recommendations).
 
-有關緩存文件以供離線使用的更多幫助，請參閱以下 Lighthouse 文檔的“如何通過此審查”部分：[處於離線狀態時訪問網址返回 200](http-200-when-offline#how)。
+For enabling push notifications or "add to homescreen", complete the following step-by-step tutorials and then use what you learn to implement the features in your own app:
 
+* [Enable push notifications for your web app](https://codelabs.developers.google.com/codelabs/push-notifications).
+* [Add your web app to a user's home screen](https://codelabs.developers.google.com/codelabs/add-to-home-screen).
 
+## More information {: #more-info }
 
-對於啓用推送通知或“添加到主屏幕”，請完成以下分步教程，然後運用您學到的知識在您自己的應用中實現這些功能：
+Checks if the Chrome Debugger returns a service worker version.
 
+## Feedback {: #feedback }
 
-
-* [爲網絡應用啓用推送通知](https://codelabs.developers.google.com/codelabs/push-notifications)。
-* [將網絡應用添加到用戶的主屏幕](https://codelabs.developers.google.com/codelabs/add-to-home-screen)。
-
-
-{% include "web/tools/lighthouse/audits/implementation-heading.html" %}
-
-檢查 Chrome Debugger 是否返回一個服務工作線程版本。
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
