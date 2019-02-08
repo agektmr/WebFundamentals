@@ -1,28 +1,23 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Het kritieke weergavepad optimaliseren door de weergave prioriteit te geven voor die inhoud die verband houdt met de primaire actie die een gebruiker op de pagina wil uitvoeren.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Optimizing the critical rendering path refers to prioritizing the display of content that relates to the current user action.
 
-{# wf_updated_on: 2014-04-27 #}
-{# wf_published_on: 2014-03-31 #}
+{# wf_updated_on: 2018-08-17 #} {# wf_published_on: 2014-03-31 #} {# wf_blink_components: N/A #}
 
-# Het kritieke weergavepad {: .page-title }
+# Critical Rendering Path {: .page-title }
 
 {% include "web/_shared/contributors/ilyagrigorik.html" %}
 
+*Optimizing the critical rendering path* refers to prioritizing the display of content that relates to the current user action.
 
-Het optimaliseren van het kritieke weergavepad is cruciaal voor het verbeteren van de prestaties van onze pagina's: ons doel is om die inhoud prioriteit te geven en weer te geven die verband houd met de primaire actie die een gebruiker op een pagina wil uitvoeren.
+Delivering a fast web experience requires a lot of work by the browser. Most of this work is hidden from us as web developers: we write the markup, and a nice looking page comes out on the screen. But how exactly does the browser go from consuming our HTML, CSS, and JavaScript to rendered pixels on the screen?
 
-Een internetbrowser moet veel werk leveren om een snelle webervaring te bieden. Veel van dit werk gebeurt zonder dat we het zien: de webontwikkelaars schrijven de opmaak en op het scherm wordt een mooie webpagina weergegeven. Maar hoe wordt HTML, CSS en JavScript door de browsers verwerkt om pixels op een scherm weer te geven?
+Optimizing for performance is all about understanding what happens in these intermediate steps between receiving the HTML, CSS, and JavaScript bytes and the required processing to turn them into rendered pixels - that's the **critical rendering path**.
 
-Het belangrijkste voor het optimaliseren van prestaties is dat u begrijpt wat er tussen het ontvangen van de HTML-, CSS- en JavaScript-bytes en de vereiste verwerking gebeurt waardoor deze opdrachten als pixels worden weergegeven. Dit noemen we het **kritieke weergavepad**.
+<img src="images/progressive-rendering.png"  alt="progressive page rendering" />
 
-<img src="images/progressive-rendering.png" class="center" alt="progressieve paginaweergave">
-
-Door het kritieke weergavepad te optimaliseren kunnen we de tijd om onze pagina`s voor het eerst weer te geven aanzienlijk verbeteren. Daarnaast helpt een goede kennis van het kritieke weergavepad ook als een basis voor het maken van goed presterende, interactieve apps. En het blijkt dat het proces voor het verwerken van interactieve updates hetzelfde is, alleen wordt dit in een continue cirkel en het liefst met 60 frames per seconde gedaan. Maar laten we nog niet op de zaken vooruit lopen. Eerst zullen we een opbouwend overzicht bekijken van hoe een browser een eenvoudige pagina weergeeft.
-
+By optimizing the critical rendering path we can significantly improve the time to first render of our pages. Further, understanding the critical rendering path also serves as a foundation for building well-performing interactive applications. The interactive updates process is the same, just done in a continuous loop and ideally at 60 frames per second! But first, an overview of how the browser displays a simple page.
 
 {% include "web/_shared/udacity/ud884.html" %}
 
+## Feedback {: #feedback }
 
-
-
+{% include "web/_shared/helpful.html" %}
