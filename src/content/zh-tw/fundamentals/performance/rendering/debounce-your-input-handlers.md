@@ -1,47 +1,42 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: 輸入處理常式可能是您的應用程式效能問題的潛在原因，因為它們可以阻止畫面完成，也會導致額外的 (且不必要的) 版面配置工作。
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Input handlers are a potential cause of performance problems in your apps, as they can block frames from completing, and can cause additional and unnecessary layout work.
 
-{# wf_updated_on: 2015-03-19 #}
-{# wf_published_on: 2000-01-01 #}
+{# wf_updated_on: 2018-08-17 #} {# wf_published_on: 2015-03-20 #} {# wf_blink_components: Blink>JavaScript #}
 
-# 解彈跳您的輸入處理常式 {: .page-title }
+# Debounce Your Input Handlers {: .page-title }
 
 {% include "web/_shared/contributors/paullewis.html" %}
 
-
-輸入處理常式可能是您的應用程式效能問題的潛在原因，因為它們可以阻止畫面完成，也會導致額外的 (且不必要的) 版面配置工作。
+Input handlers are a potential cause of performance problems in your apps, as they can block frames from completing, and can cause additional and unnecessary layout work.
 
 ### TL;DR {: .hide-from-toc }
-- 避免長時間執行的輸入處理常式；它們可能會封鎖捲動。
-- 請不要在輸入處理常式中進行樣式變更。
-- 解彈跳您的處理常式；在下一次 requestAnimationFrame 回呼中，儲存事件值並處理樣式變更。
 
+* Avoid long-running input handlers; they can block scrolling.
+* Do not make style changes in input handlers.
+* Debounce your handlers; store event values and deal with style changes in the next requestAnimationFrame callback.
 
-## 避免長時間執行的輸入處理常式
+## Avoid long-running input handlers
 
-在速度最快的情況下，當使用者與頁面進行互動時，頁面的合成執行緒可以接受使用者輕觸輸入，而四處移動內容。 這部份不需要執行 JavaScript、版面配置、樣式或繪製的主執行緒來負責。
+In the fastest possible case, when a user interacts with the page, the page’s compositor thread can take the user’s touch input and simply move the content around. This requires no work by the main thread, where JavaScript, layout, styles, or paint are done.
 
-<img src="images/debounce-your-input-handlers/compositor-scroll.jpg" class="center" alt="輕度捲動；僅限合成器。">
+<img src="images/debounce-your-input-handlers/compositor-scroll.jpg" alt="Lightweight scrolling; compositor only." />
 
-然而，如果您附加如 `touchstart`、`touchmove` 或 `touchend` 等輸入處理常式，合成執行緒必須等待此處理常式完成執行，因為您可能選擇呼叫 `preventDefault()` 並停止輕觸捲動發生。 即使您不呼叫 `preventDefault()`，合成器也必須等待，而如此一來使用者的捲動就被封鎖了，這可能會導致斷斷續續和錯失的畫面。
+If, however, you attach an input handler, like `touchstart`, `touchmove`, or `touchend`, the compositor thread must wait for this handler to finish executing because you may choose to call `preventDefault()` and stop the touch scroll from taking place. Even if you don’t call `preventDefault()` the compositor must wait, and as such the user’s scroll is blocked, which can result in stuttering and missed frames.
 
-<img src="images/debounce-your-input-handlers/ontouchmove.jpg" class="center" alt="重度捲動；合成器是在 JavaScript 上被封鎖。">
+<img src="images/debounce-your-input-handlers/ontouchmove.jpg" alt="Heavy scrolling; compositor is blocked on JavaScript." />
 
-總之，您應確保執行的任何輸入處理常式快速執行，並且允許合成器完成它的工作。
+In short, you should make sure that any input handlers you run should execute quickly and allow the compositor to do its job.
 
-## 在輸入處理常式中避免樣式變更
+## Avoid style changes in input handlers
 
-如捲動和輕觸等輸入處理常式，被排程在緊臨 `requestAnimationFrame` 回呼之前執行。
+Input handlers, like those for scroll and touch, are scheduled to run just before any `requestAnimationFrame` callbacks.
 
-如果您在這些處理常式之一的內部進行視覺變更，那麼在 `requestAnimationFrame` 開頭就會有等候中的樣式變更。 如「[避免大型、複雜的版面配置和版面配置輾轉](avoid-large-complex-layouts-and-layout-thrashing)」所建議，如果 _然後_ 您讀取 requestAnimationFrame 回呼開頭的視覺屬性，將會觸發強制性同步版面配置！
+If you make a visual change inside one of those handlers, then at the start of the `requestAnimationFrame`, there will be style changes pending. If you *then* read visual properties at the start of the requestAnimationFrame callback, as the advice in “[Avoid large, complex layouts and layout thrashing](avoid-large-complex-layouts-and-layout-thrashing)” suggests, you will trigger a forced synchronous layout!
 
-<img src="images/debounce-your-input-handlers/frame-with-input.jpg" class="center" alt="重度捲動；合成器是在 JavaScript 上被封鎖。">
+<img src="images/debounce-your-input-handlers/frame-with-input.jpg" alt="Heavy scrolling; compositor is blocked on JavaScript." />
 
-## 解彈跳您的捲動處理常式
+## Debounce your scroll handlers
 
-上述兩項問題的解決方案是一樣的：您應該總是針對下一個 `requestAnimationFrame` 回呼，解彈跳視覺變更：
-
+The solution to both of the problems above is the same: you should always debounce visual changes to the next `requestAnimationFrame` callback:
 
     function onScroll (evt) {
     
@@ -59,6 +54,8 @@ description: 輸入處理常式可能是您的應用程式效能問題的潛在�
     window.addEventListener('scroll', onScroll);
     
 
-這樣做也有另一好處，那就是讓您的輸入處理常式保持輕重量，現在你就不必以高運算成本的程式碼，來封鎖捲動或輕觸等事件了，太好了！
+Doing this also has the added benefit of keeping your input handlers light, which is awesome because now you’re not blocking things like scrolling or touch on computationally expensive code!
 
+## Feedback {: #feedback }
 
+{% include "web/_shared/helpful.html" %}
