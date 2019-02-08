@@ -1,12 +1,8 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Um guia abrangente sobre os recursos do painel "Network" do Chrome DevTools.
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: A comprehensive reference of Chrome DevTools Network panel features.
 
-{# wf_updated_on: 2019-02-06 #}
-{# wf_published_on: 2015-04-13 #}
-{# wf_blink_components: Platform>DevTools #}
+{# wf_updated_on: 2018-08-23 #} {# wf_published_on: 2015-04-13 #} {# wf_blink_components: Platform>DevTools #}
 
-{% include "web/tools/chrome-devtools/_shared/styles.html" %}
+{% include "web/tools/chrome-devtools/_shared/styles.html" %} 
 
 <style>
 figcaption {
@@ -14,868 +10,707 @@ figcaption {
 }
 </style>
 
-[ui]: #ui-overview
-[requests]: #requests
-[overview]: #overview
+ 
 
-# Referência de análise do Network {: .page-title }
+# Network Analysis Reference {: .page-title }
 
 {% include "web/_shared/contributors/kaycebasques.html" %}
 
-Conheça novas maneiras de analisar como sua página é carregada neste guia
-abrangente sobre os recursos de análise de rede do Chrome DevTools.
+Discover new ways to analyze how your page loads in this comprehensive reference of Chrome DevTools network analysis features.
 
-Note: este guia é baseado no Chrome 58. Se você usar outra versão
-do Chrome, a IU e os recursos do DevTools poderão ser diferentes. Confira
-`chrome://help` para ver qual é a versão do Chrome que você está usando.
+Note: This reference is based on Chrome 58. If you use another version of Chrome, the UI and features of DevTools may be different. Check `chrome://help` to see what version of Chrome you're running.
 
-## Registrar as solicitações de rede {: #record }
+## Record network requests {: #record }
 
-Por padrão, o DevTools registra todas as solicitações de rede no painel "Network",
-desde que o DevTools esteja aberto.
+By default, DevTools records all network requests in the Network panel, so long as DevTools is open.
 
 <figure>
-  <img src="imgs/network.png" alt="O painel "Network".">
+  <img src="imgs/network.png" alt="The Network panel.">
   <figcaption>
-    <b>Imagem 1</b>. O painel "Network"
+    <b>Figure 1</b>. The Network panel
   </figcaption>
 </figure>
 
-### Suspender o registro das solicitações de rede {: #stop-recording }
+### Stop recording network requests {: #stop-recording }
 
-Para interromper o registro de solicitações:
+To stop recording requests:
 
-* Clique em **Stop recording network log** ![Stop recording network
- log](imgs/record-on.png){: .devtools-inline } no painel "Network". Ele
- fica cinza para indicar que o DevTools não está mais registrando as solicitações.
-* Pressione <kbd>Command</kbd>+<kbd>E</kbd> (Mac) ou
- <kbd>Control</kbd>+<kbd>E</kbd> (Windows, Linux) enquanto o painel Network
- estiver em foco.
+* Click **Stop recording network log** ![Stop recording network
+log](imgs/record-on.png){: .devtools-inline } on the Network panel. It turns grey to indicate that DevTools is no longer recording requests.
+* Press <kbd>Command</kbd>+<kbd>E</kbd> (Mac) or <kbd>Control</kbd>+<kbd>E</kbd> (Windows, Linux) while the Network panel is in focus.
 
-### Apagar as solicitações {: #clear }
+### Clear requests {: #clear }
 
-Clique em **Clear** ![Clear][clear]{:.devtools-inline} no painel "Network"
-para apagar todas as solicitações na tabela Requests.
+Click **Clear** ![Clear](imgs/clear-requests.png){:.devtools-inline} on the Network panel to clear all requests from the Requests table.
 
 <figure>
-  <img src="imgs/clear.svg" alt="O botão "Clear".">
+  <img src="imgs/clear.svg" alt="The Clear button.">
   <figcaption>
-    <b>Imagem 2</b>. Botão "Clear" destacado em azul
- </figcaption>
+    <b>Figure 2</b>. Clear, outlined in blue
+  </figcaption>
 </figure>
 
-[clear]: imgs/clear-requests.png
+### Save requests across page loads {: #preserve-log }
 
-### Salvar as solicitações nos carregamentos de páginas {: #preserve-log }
-
-Para salvar solicitações nos carregamentos de página, marque a caixa de seleção **Preserve log**
-no painel "Network". O DevTools salva todas as solicitações até você desativar o
-**Preserve log**.
+To save requests across page loads, check the **Preserve log** checkbox on the Network panel. DevTools saves all requests until you disable **Preserve log**.
 
 <figure>
-  <img src="imgs/preserve-log.svg" alt="A caixa de seleção "Preserve Log".">
+  <img src="imgs/preserve-log.svg" alt="The Preserve Log checkbox.">
   <figcaption>
-    <b>Imagem 3</b>. A caixa de seleção "Preserve Log” destacada em azul
- </figcaption>
+    <b>Figure 3</b>. The Preserve Log checkbox, outlined in blue
+  </figcaption>
 </figure>
 
-### Fazer capturas de tela durante o carregamento da página {: #screenshots }
+### Capture screenshots during page load {: #screenshots }
 
-Faça capturas de tela para analisar o que os usuários visualizam enquanto esperam o carregamento da
-página.
+Capture screenshots to analyze what users see as they wait for your page to load.
 
-Para ativar as capturas de tela, clique em **Capture screenshots** ![Capture
-screenshots][capture]{: .devtools-inline } no painel "Network". Ele fica
-azul quando ativado.
+To enable screenshots, click **Capture screenshots** ![Capture
+screenshots](imgs/capture-screenshots.png){: .devtools-inline } on the Network panel. It turns blue when enabled.
 
-Atualize a página enquanto o painel "Network" está em foco para fazer as capturas de tela.
+Reload the page while the Network panel is in focus to capture screenshots.
 
-Após as imagens serem capturadas, você pode interagir com elas das seguintes formas:
+Once captured, you can interact with screenshots in the following ways:
 
-* Passe o cursor sobre a captura de tela para visualizar o ponto em que a imagem foi
- capturada. Uma linha amarela aparece no painel "Overview".
-* Clique na miniatura de uma captura de tela para filtrar qualquer solicitação que tenha sido feita
- depois que a imagem foi capturada.
-* Clique duas vezes em uma miniatura para aumentar o zoom.
+* Hover over a screenshot to view the point at which that screenshot was captured. A yellow line appears on the Overview pane.
+* Click a screenshot's thumbnail to filter out any requests that occurred after the screenshot was captured.
+* Double-click a thumbnail to zoom in on it.
 
 <figure>
   <img src="imgs/screenshot-hover.png"
-       alt="Passando o cursor sobre uma captura de tela.">
+       alt="Hovering over a screenshot.">
   <figcaption>
-    <b>Imagem 4</b>. Passando o cursor sobre uma captura de tela. A linha vertical amarela
-    no painel "Overview" e a cascata representam o momento em que a
-    captura de tela foi feita.
+    <b>Figure 4</b>. Hovering over a screenshot. The yellow, vertical line
+    in the Overview pane and the Waterfall represent the time at which the
+    screenshot was captured.
   </figcaption>
 </figure>
 
-[capture]: imgs/capture-screenshots.png
+### Replay XHR request {: #replay-xhr }
 
-### Repetir a reprodução de uma solicitação XHR {: #replay-xhr }
-
-Para reproduzir novamente uma solicitação XHR, clique com o botão direito na solicitação na tabela "Requests"
-e selecione **Replay XHR**.
+To replay an XHR request, right-click the request in the Requests table and select **Replay XHR**.
 
 <figure>
-  <img src="imgs/replay-xhr.png" alt="Seleção de "Replay XHR".">
+  <img src="imgs/replay-xhr.png" alt="Selecting Replay XHR.">
   <figcaption>
-    <b>Imagem 5</b>. Seleção de "Replay XHR"
- </figcaption>
+    <b>Figure 5</b>. Selecting Replay XHR
+  </figcaption>
 </figure>
 
-## Alterar o comportamento de carregamento
+## Change loading behavior
 
-### Emular um visitante novo ao desabilitar o cache do navegador {: #disable-cache}
+### Emulate a first-time visitor by disabling the browser cache {: #disable-cache}
 
-Para emular a experiência de um usuário que visita seu site pela primeira vez, marque a caixa de seleção **Disable
-cache**. O DevTools desativa o cache do navegador. Isso faz com que a
-emulação dessa experiência seja mais precisa porque as solicitações são disponibilizadas por meio do
-cache do navegador em visitadas repetidas.
+To emulate how a first-time user experiences your site, check the **Disable cache** checkbox. DevTools disables the browser cache. This more accurately emulates a first-time user's experience, because requests are served from the browser cache on repeat visits.
 
 <figure>
-  <img src="imgs/disable-cache.svg" alt="A caixa de seleção "Disable Cache".">
+  <img src="imgs/disable-cache.svg" alt="The Disable Cache checkbox.">
   <figcaption>
-    <b>Imagem 6</b>. A caixa de seleção "Disable Cache" destacada em azul
- </figcaption>
+    <b>Figure 6</b>. The Disable Cache checkbox, outlined in blue
+  </figcaption>
 </figure>
 
-#### Desativar o cache do navegador na gaveta "Network Conditions" {: #disable-cache-network-conditions }
+#### Disable the browser cache from the Network Conditions drawer {: #disable-cache-network-conditions }
 
-Se você quiser desativar o cache enquanto trabalha em outros painéis do DevTools, use
-a gaveta "Network Conditions".
+If you want to disable the cache while working in other DevTools panels, use the Network Conditions drawer.
 
-1. Abra a [gaveta Network Conditions](#network-conditions).
-1. Marque ou desmarque a caixa de seleção **Disable Cache**.
+1. Open the [Network Conditions drawer](#network-conditions).
+2. Check or uncheck the **Disable cache** checkbox.
 
-### Apagar manualmente o cache do navegador {: #clear-cache}
+### Manually clear the browser cache {: #clear-cache}
 
-Para apagar manualmente o cache do navegador a qualquer momento, clique com o botão direito em qualquer lugar
-na tabela "Requests" e selecione **Clear Navegador Cache**.
+To manually clear the browser cache at any time, right-click anywhere in the Requests table and select **Clear Browser Cache**.
 
 <figure>
   <img src="imgs/clear-browser-cache.png"
-       alt="Seleção de "Clear Browser Cache".">
+       alt="Selecting Clear Browser Cache.">
   <figcaption>
-    <b>Imagem 7</b>. Seleção de "Clear Browser Cache"
- </figcaption>
+    <b>Figure 7</b>. Selecting Clear Browser Cache
+  </figcaption>
 </figure>
 
-### Emular off-line {: #offline }
+### Emulate offline {: #offline }
 
-Existe uma nova classe de aplicativos da Web, chamados [Progressive Web Apps][pwa], que podem
-funcionar off-line com a ajuda de [service workers][sw]. Ao criar
-esse tipo de aplicativo, é útil poder simular rapidamente um dispositivo que
-não tem conexão de dados.
+There's a new class of web apps, called [Progressive Web Apps](/web/progressive-web-apps/), which can function offline with the help of [service workers](/web/fundamentals/getting-started/primers/service-workers). When you're building this type of app, it's useful to be able to quickly simulate a device that has no data connection.
 
-Marque a caixa de seleção **Offline** para simular uma experiência de rede completamente
-off-line.
+Check the **Offline** checkbox to simulate a completely offline network experience.
 
 <figure>
   <img src="imgs/offline.svg"
-       alt="A caixa de seleção "Offline"">
+       alt="The Offline checkbox">
   <figcaption>
-    <b>Imagem 8</b>. A caixa de seleção "Offline" destacada em azul
- </figcaption>
+    <b>Figure 8</b>. The Offline checkbox, outlined in blue
+  </figcaption>
 </figure>
 
-[pwa]: /web/progressive-web-apps/
-[sw]: /web/fundamentals/getting-started/primers/service-workers
+### Emulate slow network connections {: #throttling }
 
-### Emular conexões de rede lentas {: #throttling }
-
-Emule 2G, 3G e outras velocidades de conexão no
-menu **Network Throttling**.
+Emulate 2G, 3G, and other connection speeds from the **Network Throttling** menu.
 
 <figure>
   <img src="imgs/network-panel-throttling-menu.svg"
-       alt="O menu "Network Throttling".">
+       alt="The Network Throttling menu.">
   <figcaption>
-    <b>Imagem 9</b>. O menu "Network Throttling" destacado em azul
- </figcaption>
+    <b>Figure 9</b>. The Network Throttling menu, outlined in blue
+  </figcaption>
 </figure>
 
-Você pode selecionar entre uma variedade de predefinições, como "Regular" ou "Good 2G". Você
-também pode adicionar sua própria predefinição personalizada. Abra o menu "Network Throttling"
-e selecione **Custom** > **Add**.
+You can select from a variety of presets, such as Regular or Good 2G. You can also add your own custom presets by opening the Network Throttling menu and selecting **Custom** > **Add**.
 
-O DevTools mostra um ícone de aviso próximo à guia **Network** para
-lembrar você que a limitação está ativa.
+DevTools displays a warning icon next to the **Network** tab to remind you that throttling is enabled.
 
-#### Emular conexões de rede lentas na gaveta "Network Conditions" {: #throttling-network-conditions }
+#### Emulate slow network connections from the Network Conditions drawer {: #throttling-network-conditions }
 
-Se você quiser limitar a conexão de rede enquanto trabalha em outros painéis do
-DevTools, use a gaveta "Network Conditions".
+If you want to throttle the network connection while working in other DevTools panels, use the Network Conditions drawer.
 
-1. Abra a [gaveta Network Conditions](#network-conditions).
-1. Selecione a velocidade de conexão desejada no menu **Network Throttling**.
+1. Open the [Network Conditions drawer](#network-conditions).
+2. Select your desired connection speed from the **Network Throttling** menu.
 
-### Apagar manualmente os cookies do navegador {: #clear-cookies }
+### Manually clear browser cookies {: #clear-cookies }
 
-Para apagar manualmente os cookies do navegador a qualquer momento, clique com o botão direito em qualquer lugar da
-tabela "Requests" e selecione **Clear Browser Cookies**.
+To manually clear browser cookies at any time, right-click anywhere in the Requests table and select **Clear Browser Cookies**.
 
 <figure>
   <img src="imgs/clear-browser-cookies.png"
-       alt="Seleção de "Clear Browser Cookies".">
+       alt="Selecting Clear Browser Cookies.">
   <figcaption>
-    <b>Imagem 10</b>. Seleção de "Clear Browser Cookies"
- </figcaption>
+    <b>Figure 10</b>. Selecting Clear Browser Cookies
+  </figcaption>
 </figure>
 
-### Modificar o user agent {: #user-agent }
+### Override the user agent {: #user-agent }
 
-Para modificar manualmente o user agent:
+To manually override the user agent:
 
-1. Abra a [gaveta Network Conditions](#network-conditions).
-1. Desmarque **Select automatically**.
-1. Selecione uma opção de user agent no menu ou insira uma opção personalizada na
-   caixa de texto.
+1. Open the [Network Conditions drawer](#network-conditions).
+2. Uncheck **Select automatically**.
+3. Choose a user agent option from the menu, or enter a custom one in the text box.
 
-## Filtrar solicitações {: #filter }
+## Filter requests {: #filter }
 
-### Filtrar solicitações por property {: #filter-by-property }
+### Filter requests by properties {: #filter-by-property }
 
-Usar a caixa de texto **Filter** para filtrar as solicitações por property, como
-domínio ou tamanho da solicitação.
+Use the **Filter** text box to filter requests by properties, such as the domain or size of the request.
 
-Se a caixa de texto não for exibida, é provável que o painel "Filters" esteja oculto.
-Veja [Ocultar o painel "Filters"](#hide-filters).
+If you can't see the text box, the Filters pane is probably hidden. See [Hide the Filters pane](#hide-filters).
 
 <figure>
-  <img src="imgs/filter-text-box.svg" alt="A caixa de texto "Filters".">
+  <img src="imgs/filter-text-box.svg" alt="The Filters text box.">
   <figcaption>
-    <b>Imagem 11</b>. A caixa de texto "Filters" destacada em azul
- </figcaption>
+    <b>Figure 11</b>. The Filters text box, outlined in blue
+  </figcaption>
 </figure>
 
-Você pode usar várias properties ao mesmo tempo separando cada uma delas
-com um espaço. Por exemplo, `mime-type:image/gif larger-than:1K` exibe
-todos os GIFs com mais de um kilobyte. Esses filtros de várias properties
-são equivalentes a operações AND. Atualmente, não há suporte para as operações OR
-.
+You can use multiple properties simultaneously by separating each property with a space. For example, `mime-type:image/gif larger-than:1K` displays all GIFs that are larger than one kilobyte. These multi-property filters are equivalent to AND operations. OR operations are currently not supported.
 
-Veja abaixo uma lista completa das properties compatíveis.
+Below is a complete list of supported properties.
 
-* `domain`. Só exibe recursos do domínio especificado. Você pode usar um
- caractere curinga (`*`) para incluir diversos domínios. Por exemplo, `*.com`
- exibe recursos de todos os nomes de domínio que acabam com `.com`. O DevTools
- preenche o menu suspenso de preenchimento automático com todos os domínios
- que encontrar.
-* `has-response-header`. Exibe os recursos que contêm o cabeçalho de resposta
- HTTP especificado. O DevTools preenche o menu suspenso de preenchimento automático com
- todos os cabeçalhos de resposta que encontrar.
-* `is`. Use `is:running` para encontrar recursos `WebSocket`.
-* `larger-than`. Exibe recursos maiores do que o tamanho especificado,
- em bytes. Definir um valor de `1000` é equivalente a aplicar o valor `1k`.
-* `method`. Exibe recursos que foram recuperados por um tipo de método HTTP
- especificado. O DevTools preenche o menu suspenso com todos os métodos HTTP que
- encontrar.
-* `mime-type`. Exibe recursos de um tipo MIME específico. O DevTools preenche o
- menu suspenso com todos os tipos MIME que encontrar.
-* `mixed-content`. Mostra todos os recursos de conteúdo misto (`mixed-content:all`) ou
- somente os que estão em exibição no momento (`mixed-content:displayed`).
-* `scheme`. Exibe recursos recuperados por HTTP desprotegido (`scheme:http`)
- ou HTTPS protegido (`scheme:https`).
-* `set-cookie-domain`. Exibe os recursos que têm um cabeçalho `Set-Cookie`
- com um atributo `Domain` correspondente ao valor especificado. O DevTools
- preenche automaticamente com todos os domínios de cookies que
- encontrar.
-* `set-cookie-name`. Exibe os recursos que têm um cabeçalho `Set-Cookie`
- com um nome correspondente ao valor especificado. O DevTools
- preenche automaticamente com todos os nomes de cookie que encontrar.
-* `set-cookie-value`. Exibe os recursos que têm um cabeçalho `Set-Cookie`
- com um valor correspondente ao especificado. O DevTools
-preenche automaticamente com todos os valores de cookie que encontrar.
-* `status-code`. Exibe somente recursos com códigos de status HTTP que correspondem ao
- código especificado. O DevTools preenche o menu suspenso de preenchimento automático com todos
- os códigos de status que encontrar.
+* `domain`. Only display resources from the specified domain. You can use a wildcard character (`*`) to include multiple domains. For example, `*.com` displays resources from all domain names ending in `.com`. DevTools populates the autocomplete dropdown menu with all of the domains it has encountered.
+* `has-response-header`. Show the resources that contain the specified HTTP response header. DevTools populates the autocomplete dropdown with all of the response headers that it has encountered.
+* `is`. Use `is:running` to find `WebSocket` resources.
+* `larger-than`. Show resources that are larger than the specified size, in bytes. Setting a value of `1000` is equivalent to setting a value of `1k`.
+* `method`. Show resources that were retrieved over a specified HTTP method type. DevTools populates the dropdown with all of the HTTP methods it has encountered.
+* `mime-type`. Show resources of a specified MIME type. DevTools populates the dropdown with all MIME types it has encountered.
+* `mixed-content`. Show all mixed content resources (`mixed-content:all`) or just the ones that are currently displayed (`mixed-content:displayed`).
+* `scheme`. Show resources retrieved over unprotected HTTP (`scheme:http`) or protected HTTPS (`scheme:https`).
+* `set-cookie-domain`. Show the resources that have a `Set-Cookie` header with a `Domain` attribute that matches the specified value. DevTools populates the autocomplete with all of the cookie domains that it has encountered.
+* `set-cookie-name`. Show the resources that have a `Set-Cookie` header with a name that matches the specified value. DevTools populates the autocomplete with all of the cookie names that it has encountered.
+* `set-cookie-value`. Show the resources that have a `Set-Cookie` header with a value that matches the specified value. DevTools populates the autocomplete with all of the cookie values that it has encountered.
+* `status-code`. Only show resources whose HTTP status code match the specified code. DevTools populates the autocomplete dropdown menu with all of the status codes it has encountered.
 
-### Filtrar solicitações por tipo {: #filter-by-type }
+### Filter requests by type {: #filter-by-type }
 
-Para filtrar solicitações por tipo, clique nos botões **XHR**, **JS**, **CSS**,
-**Img**, **Media**, **Font**, **Doc**, **WS** (WebSocket), **Manifest** ou
-**Other** (qualquer outro tipo não listado aqui) no painel "Network".
+To filter requests by request type, click the **XHR**, **JS**, **CSS**, **Img**, **Media**, **Font**, **Doc**, **WS** (WebSocket), **Manifest**, or **Other** (any other type not listed here) buttons on the Network panel.
 
-Se esses botões não forem exibidos, é provável que o painel "Filters" esteja oculto.
-Veja [Ocultar o painel "Filters"](#hide-filters).
+If you can't see these buttons, the Filters pane is probably hidden. See [Hide the Filters pane](#hide-filters).
 
-Para ativar vários tipos de filtro ao mesmo tempo, mantenha pressionado <kbd>Command</kbd>
-(Mac) ou <kbd>Control</kbd> (Windows, Linux) e então clique.
+To enable multiple type filters simultaneously, hold <kbd>Command</kbd> (Mac) or <kbd>Control</kbd> (Windows, Linux) and then click.
 
 <figure>
   <img src="imgs/multi-type-filter.png"
-       alt="Usando os filtros de tipo para exibir os recursos JS, CSS e
-            Doc[ument].">
+       alt="Using the Type filters to display JS, CSS, and Doc[ument]
+            resources.">
   <figcaption>
-    <b>Imagem 12</b>. Usando os filtros de tipo para exibir os recursos JS, CSS e
-    Doc[ument].
+    <b>Figure 12</b>. Using the Type filters to display JS, CSS, and Doc[ument]
+    resources.
   </figcaption>
 </figure>
 
-### Filtrar solicitações por tempo {: #filter-by-time }
+### Filter requests by time {: #filter-by-time }
 
-Clique e arraste para a esquerda ou para a direita a fim de exibir somente solicitações
-que estavam ativas durante aquele período de tempo. O filtro é inclusivo. Qualquer solicitação
-que estava ativa durante o tempo destacado é exibida.
+Click and drag left or right on the Overview pane to only display requests that were active during that time frame. The filter is inclusive. Any request that was active during the highlighted time is shown.
 
 <figure>
   <img src="imgs/overview-filter.png"
-       alt="Filtrando qualquer solicitação que não estava ativa por volta dos 2500 ms.">
+       alt="Filtering out any requests that weren't active around 2500ms.">
   <figcaption>
-    <b>Imagem 13</b>. Filtrando qualquer solicitação que não estava ativa por volta
-    dos 2.500 ms
- </figcaption>
+    <b>Figure 13</b>. Filtering out any requests that weren't active around
+    2500ms
+  </figcaption>
 </figure>
 
-### Ocultar URLs de dados
+### Hide data URLs
 
-[URLs de dados][data-uris] são pequenos arquivos incorporados em outros documentos. Qualquer
-solicitação que você veja na tabela "Requests" e comece com
-`data:` é um URL de dados.
+[Data URLs](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/Data_URIs) are small files embedded into other documents. Any request that you see in the Requests table that starts with `data:` is a data URL.
 
-Marque a caixa de seleção **Hide data URLs** para ocultar essas solicitações.
+Check the **Hide data URLs** checkbox to hide these requests.
 
 <figure>
-  <img src="imgs/hide-data-urls.svg" alt="A caixa de seleção "Hide Data URLs".">
+  <img src="imgs/hide-data-urls.svg" alt="The Hide Data URLs checkbox.">
   <figcaption>
-    <b>Imagem 14</b>. A caixa de seleção "Hide Data URLs"
- </figcaption>
+    <b>Figure 14</b>. The Hide Data URLs checkbox
+  </figcaption>
 </figure>
 
-[data-uris]: https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/Data_URIs
+## Sort requests
 
-## Classificar solicitações
+By default, the requests in the Requests table are sorted by initiation time, but you can sort the table using other criteria.
 
-Por padrão, as solicitações na tabela "Requests" são classificadas por
-tempo de iniciação, mas você pode classificá-las usando outros critérios.
+### Sort by column {: #sort-by-column }
 
-### Classificar por coluna {: #sort-by-column }
+Click the header of any column in the Requests to sort requests by that column.
 
-Clique no cabeçalho de qualquer coluna nas solicitações para classificá-las por essa
-coluna.
+### Sort by activity phase {: #sort-by-activity }
 
-### Classificar por fase de atividade {: #sort-by-activity }
+To change how the Waterfall sorts requests, right-click the header of the Requests table, hover over **Waterfall**, and select one of the following options:
 
-Para alterar como a cascata classifica as solicitações, clique com o botão direito no cabeçalho da
-tabela "Requests", passe o cursor sobre **Waterfall** e selecione uma das seguintes
-opções:
+* **Start Time**. The first request that was initiated is at the top.
+* **Response Time**. The first request that started downloading is at the top.
+* **End Time**. The first request that finished is at the top.
+* **Total Duration**. The request with the shortest connection setup and request / response is at the top.
+* **Latency**. The request that waited the shortest time for a response is at the top.
 
-* **Start Time**. A primeira solicitação que foi iniciada fica no topo.
-* **Response Time**. A primeira solicitação que teve o download iniciado fica no topo.
-* **End Time**. A primeira solicitação a ser finalizada fica no topo.
-* **Total Duration**. A solicitação com menor configuração de conexão e
-   solicitação/resposta fica no topo.
-* **Latency**. A solicitação que esperou o menor tempo por uma resposta fica
- no topo.
-
-Essas descrições presumem que cada opção está classificada da menor
-para a maior. Ao clicar no cabeçalho da coluna **Waterfall**, a ordem é revertida.
+These descriptions assume that each respective option is ranked from shortest to longest. Clicking on the **Waterfall** column's header reverses the order.
 
 <figure>
   <img src="imgs/waterfall-total-duration.png"
-       alt="Classificação de "Waterfall" pela duração total.">
+       alt="Sorting the Waterfall by total duration.">
   <figcaption>
-    <b>Imagem 15</b>. Classificação de "Waterfall" pela duração total. A parte mais clara
-    de cada barra representa o tempo de espera. A parte mais escura
-    representa o download de bytes.
+    <b>Figure 15</b>. Sorting the Waterfall by total duration. The lighter
+    portion of each bar is time spent waiting. The darker portion is time
+    spent downloading bytes.
   </figcaption>
 </figure>
 
-## Analisar solicitações {: #analyze }
+## Analyze requests {: #analyze }
 
-Se o DevTools estiver aberto, ele registrará todas as solicitações no painel "Network".
-Use o painel "Network" para analisar as solicitações.
+So long as DevTools is open, it logs all requests in the Network panel. Use the Network panel to analyze requests.
 
-### Visualizar um registro de solicitações {: #requests }
+### View a log of requests {: #requests }
 
-Use a tabela "Requests" para visualizar o registro de todas as solicitações feitas enquanto o DevTools
-estava aberto. Ao clicar ou passar o cursor sobre as solicitações, mais informações
-sobre elas são reveladas.
+Use the Requests table to view a log of all requests made while DevTools has been open. Clicking or hovering over requests reveals more information about them.
 
 <figure>
   <img src="imgs/requests-table.svg"
-       alt="A tabela "Requests".">
+       alt="The Requests table.">
   <figcaption>
-    <b>Imagem 16</b>. A tabela "Requests" destacada em azul
- </figcaption>
+    <b>Figure 16</b>. The Requests table, outlined in blue
+  </figcaption>
 </figure>
 
-Por padrão, a tabela "Requests" exibe as seguintes colunas:
+The Requests table displays the following columns by default:
 
-* **Name**. É o nome de arquivo ou o identificador do recurso.
-* **Status**. É o código de status HTTP.
-* **Type**. É o tipo MIME do recurso solicitado.
-* **Initiator**. Os seguintes objetos ou processos podem iniciar solicitações:
-    * **Parser**. O analisador HTML do Chrome.
-    * **Redirect**. Um redirecionamento HTTP.
-    * **Script**. Uma função JavaScript.
-    * **Other**. Algum outro processo ou ação, como navegar até uma página
-      por meio de um link ou digitar um URL na barra de endereço.
-* **Size**. O tamanho combinado dos cabeçalhos de resposta
-  mais o corpo da resposta, conforme fornecido pelo servidor.
-* **Time**. É a duração total, desde o início da solicitação até o
- recebimento do byte final na resposta.
-* [**Waterfall**](#waterfall). Um detalhamento visual de cada atividade da solicitação.
+* **Name**. The filename of, or an identifier for, the resource.
+* **Status**. The HTTP status code.
+* **Type**. The MIME type of the requested resource.
+* **Initiator**. The following objects or processes can initiate requests: 
+    * **Parser**. Chrome's HTML parser.
+    * **Redirect**. An HTTP redirect.
+    * **Script**. A JavaScript function.
+    * **Other**. Some other process or action, such as navigating to a page via a link or entering a URL in the address bar.
+* **Size**. The combined size of the response headers plus the response body, as delivered by the server.
+* **Time**. The total duration, from the start of the request to the receipt of the final byte in the response.
+* [**Waterfall**](#waterfall). A visual breakdown of each request's activity.
 
-#### Adicionar ou remover colunas {: #columns }
+#### Add or remove columns {: #columns }
 
-Clique com o botão direito no cabeçalho da tabela "Requests" e selecione uma opção
-para ocultar ou exibir. Atualmente, as opções exibidas têm marcas de seleção ao lado.
+Right-click the header of the Requests table and select an option to hide or show it. Currently displayed options have checkmarks next to them.
 
 <figure>
   <img src="imgs/add-column.png"
-       alt="Adição de uma coluna à tabela "Requests".">
+       alt="Adding a column to the Requests table.">
   <figcaption>
-    <b>Imagem 17</b>. Adição de uma coluna à tabela "Requests".
+    <b>Figure 17</b>. Adding a column to the Requests table.
   </figcaption>
 </figure>
 
-#### Adicionar colunas personalizadas {: #custom-columns }
+#### Add custom columns {: #custom-columns }
 
-Para adicionar uma coluna personalizada à tabela "Requests", clique com o botão direito no cabeçalho da
-tabela e selecione **Response Headers** > **Manage Header Columns**.
+To add a custom column to the Requests table, right-click the header of the Requests table and select **Response Headers** > **Manage Header Columns**.
 
 <figure>
   <img src="imgs/custom-column.png"
-       alt="Adição de uma coluna personalizada à tabela "Requests".">
+       alt="Adding a custom column to the Requests table.">
   <figcaption>
-    <b>Imagem 18</b>. Adição de uma coluna personalizada à tabela "Requests".
+    <b>Figure 18</b>. Adding a custom column to the Requests table.
   </figcaption>
 </figure>
 
-### Visualizar o tempo das solicitações em relação às outras {: #waterfall }
+### View the timing of requests in relation to one another {: #waterfall }
 
-Use "Waterfall" para visualizar o tempo de uma solicitação em relação a outra.
-Por padrão, a organização de "Waterfall" é feita pelo horário de início das solicitações.
-Assim, as solicitações mais à esquerda começaram antes daquelas
-que estão mais à direita.
+Use the Waterfall to view the timing of requests in relation to one another. By default, the Waterfall is organized by the start time of the requests. So, requests that are farther to the left started earlier than those that are farther to the right.
 
-Veja [Classificar por fase de atividade](#sort-by-activity) para ver as diferentes formas
-de classificação de "Waterfall".
+See [Sort by activity phase](#sort-by-activity) to see the different ways that you can sort the Waterfall.
 
 <figure>
   <img src="imgs/waterfall.png"
-       alt="A coluna "Waterfall" do painel "Requests".">
+       alt="The Waterfall column of the Requests pane.">
   <figcaption>
-    <b>Imagem 19</b>. A coluna "Waterfall" do painel "Requests".
+    <b>Figure 19</b>. The Waterfall column of the Requests pane.
   </figcaption>
 </figure>
 
-### Analisar os frames de uma conexão WebSocket {: #frames }
+### Analyze the frames of a WebSocket Connection {: #frames }
 
-Para visualizar os frames de uma conexão WebSocket:
+To view the frames of a WebSocket connection:
 
-1. Clique no URL da conexão WebSocket, abaixo da coluna**Name**
-   da tabela "Requests".
-1. Clique na guia **Frames**. A tabela exibe os últimos 100 frames.
+1. Click the URL of the WebSocket connection, under the **Name** column of the Requests table.
+2. Click the **Frames** tab. The table shows the last 100 frames.
 
-Para atualizar a tabela, clique novamente no nome da conexão WebSocket abaixo da coluna
-**Name** na tabela "Requests".
+To refresh the table, re-click the name of the WebSocket connection under the **Name** column of the Requests table.
 
 <figure>
   <img src="imgs/frames.svg"
-       alt="A guia "Frames".">
+       alt="The Frames tab.">
   <figcaption>
-    <b>Imagem 20</b>. A guia "Frames" destacada em azul
- </figcaption>
+    <b>Figure 20</b>. The Frames tab, outlined in blue
+  </figcaption>
 </figure>
 
-A tabela tem três colunas:
+The table contains three columns:
 
-* **Data**. É o payload da mensagem. Se a mensagem for de texto simples, será
- exibida aqui. Para códigos de operação binária, este campo exibe o nome e o código
- da operação. Os seguintes códigos de operação são aceitos: Continuation Frame,
- Binary Frame, Connection Close Frame, Ping Frame e Pong Frame.
-* **Length**. A duração do payload da mensagem, em bytes.
-* **Time**. O horário em que a mensagem foi recebida ou enviada.
+* **Data**. The message payload. If the message is plain text, it's displayed here. For binary opcodes, this column displays the opcode's name and code. The following opcodes are supported: Continuation Frame, Binary Frame, Connection Close Frame, Ping Frame, and Pong Frame.
+* **Length**. The length of the message payload, in bytes.
+* **Time**. The time when the message was received or sent.
 
-As mensagens são codificadas por cor de acordo com o tipo:
+Messages are color-coded according to their type:
 
-* As mensagens de texto enviadas têm cor verde-claro.
-* As mensagens de texto recebidas têm cor branca.
-* Os códigos de operação WebSocket têm cor amarelo-claro.
-* Os erros têm cor vermelho-claro.
+* Outgoing text messages are light-green.
+* Incoming text messages are white.
+* WebSocket opcodes are light-yellow.
+* Errors are light-red.
 
-### Visualizar uma prévia de um corpo de resposta {: #preview }
+### View a preview of a response body {: #preview }
 
-Para visualizar uma prévia de um corpo de resposta:
+To view a preview of a response body:
 
-1. Clique no URL da solicitação, abaixo da coluna **Name** da tabela
-   "Requests".
-1. Clique na guia **Preview**.
+1. Click the URL of the request, under the **Name** column of the Requests table.
+2. Click the **Preview** tab.
 
-Essa guia é mais útil para visualizar imagens.
+This tab is mostly useful for viewing images.
 
 <figure>
   <img src="imgs/preview.svg"
-       alt="A guia "Preview".">
+       alt="The Preview tab.">
   <figcaption>
-    <b>Imagem 21</b>. A guia "Preview" destacada em azul
- </figcaption>
+    <b>Figure 21</b>. The Preview tab, outlined in blue
+  </figcaption>
 </figure>
 
-### Visualizar um corpo de resposta {: #response }
+### View a response body {: #response }
 
-Para visualizar o corpo de resposta de uma solicitação:
+To view the response body to a request:
 
-1. Clique no URL da solicitação, abaixo da coluna **Name** da tabela
-   "Requests".
-1. Clique na guia **Response**.
+1. Click the URL of the request, under the **Name** column of the Requests table.
+2. Click the **Response** tab.
 
 <figure>
   <img src="imgs/response.svg"
-       alt="A guia "Response".">
+       alt="The Response tab.">
   <figcaption>
-    <b>Imagem 22</b>. A guia "Response" destacada em azul
- </figcaption>
+    <b>Figure 22</b>. The Response tab, outlined in blue
+  </figcaption>
 </figure>
 
-### Visualizar cabeçalhos HTTP {: #headers }
+### View HTTP headers {: #headers }
 
-Para visualizar dados de cabeçalho HTTP sobre uma solicitação:
+To view HTTP header data about a request:
 
-1. Clique no URL da solicitação, abaixo da coluna **Name** da tabela
-   "Requests".
-1. Clique na guia **Headers**.
+1. Click on the URL of the request, under the **Name** column of the Requests table.
+2. Click the **Headers** tab.
 
 <figure>
   <img src="/web/tools/chrome-devtools/images/headers.svg"
-       alt="A guia "Headers".">
+       alt="The Headers tab.">
   <figcaption>
-    <b>Imagem 23</b>. A guia "Headers" destacada em azul
- </figcaption>
+    <b>Figure 23</b>. The Headers tab, outlined in blue
+  </figcaption>
 </figure>
 
-#### Visualizar a origem do cabeçalho HTTP {: #header-source }
+#### View HTTP header source {: #header-source }
 
-Por padrão, a guia "Headers" exibe os nomes dos cabeçalhos em ordem alfabética. Para visualizar os
-nomes dos cabeçalhos HTTP na ordem em que foram recebidos:
+By default, the Headers tab shows header names alphabetically. To view the HTTP header names in the order they were received:
 
-1. Abra a guia **Headers** para a solicitação de seu interesse. Veja
-   [Visualizar cabeçalhos HTTP](#headers).
-1. Clique em **view source**, ao lado da seção **Request Header** ou **Response
-   Header**.
+1. Open the **Headers** tab for the request you're interested in. See [View HTTP headers](#headers).
+2. Click **view source**, next to the **Request Header** or **Response Header** section.
 
-### Visualizar parâmetros da string de consulta {: #query-string }
+### View query string parameters {: #query-string }
 
-Para visualizar os parâmetros da string de consulta de um URL em um formato legível:
+To view the query string parameters of a URL in a human-readable format:
 
-1. Abra a guia **Headers** para a solicitação de seu interesse. Veja
-   [Visualizar cabeçalhos HTTP](#headers).
-1. Acesse a seção **Query String Parameters**.
+1. Open the **Headers** tab for the request you're interested in. See [View HTTP headers](#headers).
+2. Go to the **Query String Parameters** section.
 
 <figure>
-  <img src="imgs/query-string.svg" alt="A seção "Query String Parameters".">
+  <img src="imgs/query-string.svg" alt="The Query String Parameters section.">
   <figcaption>
-    <b>Imagem 24</b>. A seção "Query String Parameters" destacada em azul
- </figcaption>
+    <b>Figure 24</b>. The Query String Parameters section, outlined in blue
+  </figcaption>
 </figure>
 
-#### Visualizar a origem dos parâmetros da string de consulta {: #query-string-source }
+#### View query string parameters source {: #query-string-source }
 
-Para visualizar a origem dos parâmetros da string de consulta de uma solicitação:
+To view the query string parameter source of a request:
 
-1. Acesse a seção "Query String Parameters". Veja [Visualizar parâmetros da string
-   de consulta](#query-string).
-1. Clique em **view source**.
+1. Go to the Query String Parameters section. See [View query string parameters](#query-string).
+2. Click **view source**.
 
-#### Visualizar parâmetros da string de consulta codificada em URL {: #query-string-encodings }
+#### View URL-encoded query string parameters {: #query-string-encodings }
 
-Para visualizar os parâmetros da string de consulta em formato legível, porém
-preservando as codificações:
+To view query string parameters in a human-readable format, but with encodings preserved:
 
-1. Acesse a seção "Query String Parameters". Veja [Visualizar parâmetros da string
-   de consulta](#query-string).
-1. Clique em **view URL encoded**.
+1. Go to the Query String Parameters section. See [View query string parameters](#query-string).
+2. Click **view URL encoded**.
 
-### Ver cookies {: #cookies }
+### View cookies {: #cookies }
 
-Para visualizar os cookies enviados no cabeçalho HTTP de uma solicitação:
+To view the cookies sent in a request's HTTP header:
 
-1. Clique no URL da solicitação, abaixo da coluna **Name** da
-    tabela "Requests".
-1. Clique na guia**Cookies**.
+1. Click the URL of the request, under the **Name** column of the Requests table.
+2. Click the **Cookies** tab.
 
-Consulte [Campos](/web/tools/chrome-devtools/manage-data/cookies#fields) para ver uma
-descrição de cada uma das colunas.
+See [Fields](/web/tools/chrome-devtools/manage-data/cookies#fields) for a description of each of the columns.
 
 <figure>
   <img src="imgs/cookies.svg"
-       alt="A guia "Cookies".">
+       alt="The Cookies tab.">
   <figcaption>
-    <b>Imagem 25</b>. A guia "Cookies" destacada em azul
- </figcaption>
+    <b>Figure 25</b>. The Cookies tab, outlined in blue
+  </figcaption>
 </figure>
 
-### Visualizar o detalhamento de tempo de uma solicitação {: #timing }
+### View the timing breakdown of a request {: #timing }
 
-Para visualizar o detalhamento de tempo de uma solicitação:
+To view the timing breakdown of a request:
 
-1. Clique no URL da solicitação, abaixo da coluna **Name** da tabela
-   "Requests".
-1. Clique na guia **Timing**.
+1. Click the URL of the request, under the **Name** column of the Requests table.
+2. Click the **Timing** tab.
 
-Consulte [Visualizar detalhamento de tempo](#timing-preview) para ver um modo mais rápido de
-acessar esses dados.
+See [Preview a timing breakdown](#timing-preview) for a faster way to access this data.
 
-Consulte [Explicação das fases do detalhamento de tempo](#timing-explanation) para saber mais
-informações sobre cada uma das fases que você pode ver na guia "Timing".
+See [Timing breakdown phases explained](#timing-explanation) for more information about each of the phases that you may see in the Timing tab.
 
 <figure>
-  <img src="imgs/timing.svg" alt="A guia "Timing".">
+  <img src="imgs/timing.svg" alt="The Timing tab.">
   <figcaption>
-    <b>Imagem 26</b>. A guia "Timing" destacada em azul
- </figcaption>
+    <b>Figure 26</b>. The Timing tab, outlined in blue
+  </figcaption>
 </figure>
 
-Veja mais informações sobre cada uma das fases.
+Here's more information about each of the phases.
 
-Consulte [Visualizar detalhamento de tempo](#timing-breakdown) para ver outras maneiras de acessar
-essa visualização.
+See [View timing breakdown](#timing-breakdown) for another way to access this view.
 
-#### Ver uma prévia do detalhamento de tempo {: #timing-preview }
+#### Preview a timing breakdown {: #timing-preview }
 
-Para ver uma prévia do detalhamento de tempo de uma solicitação, passe o cursor sobre
-a entrada da solicitação na coluna **Waterfall** da tabela "Requests".
+To view a preview of the timing breakdown of a request, hover over the request's entry in the **Waterfall** column of the Requests table.
 
-Consulte [Visualizar o detalhamento de tempo de uma solicitação](#timing) para ver uma forma de acessar
-esses dados sem ter que passar o cursor.
+See [View the timing breakdown of a request](#timing) for a way to access this data that does not require hovering.
 
 <figure>
   <img src="imgs/waterfall-hover.png"
-       alt="Visualização prévia do detalhamento de tempo de uma solicitação.">
+       alt="Previewing the timing breakdown of a request.">
   <figcaption>
-    <b>Imagem 27</b>. Visualização prévia do detalhamento de tempo de uma solicitação
- </figcaption>
+    <b>Figure 27</b>. Previewing the timing breakdown of a request
+  </figcaption>
 </figure>
 
-#### Explicação das fases de detalhamento de tempo {: #timing-explanation }
+#### Timing breakdown phases explained {: #timing-explanation }
 
-Veja mais informações sobre cada uma das fases que podem aparecer na guia "Timing"
-:
+Here's more information about each of the phases you may see in the Timing tab:
 
-* **Queueing**. O navegador enfileira solicitações quando:
-    * existem solicitações de prioridade mais alta;
-    * já existem seis conexões TCP abertas para essa origem. Esse é
-      o limite. Aplica-se somente a HTTP/1.0 e HTTP/1.1;
-    * o navegador aloca brevemente espaço no cache do disco
-* **Stalled**. A solicitação pode ficar parada por qualquer um dos motivos descritos
- em **Queueing**.
-* **DNS Lookup**. O navegador está resolvendo o endereço IP da solicitação.
-* **Proxy negotiation**. O navegador está negociando a solicitação com um [servidor
- proxy](https://en.wikipedia.org/wiki/Proxy_server).
-* **Request sent**. A solicitação está sendo enviada.
-* **ServiceWorker Preparation**. O navegador está iniciando o service worker.
-* **Request to ServiceWorker**. A solicitação está sendo enviada ao service
- worker.
-* **Waiting (TTFB)**. O navegador está esperando pelo primeiro byte de uma resposta.
-  TTFB significa tempo até o primeiro byte (Time To First Byte). Esse tempo inclui uma viagem de ida e volta de latência
- e o tempo que o servidor demorou para preparar a resposta.
-* **Content Download**. O navegador está recebendo a resposta.
-* **Receiving Push**. O navegador está recebendo os dados para essa resposta por meio do envio push do
- servidor HTTP/2.
-* **Reading Push**. O navegador está lendo os dados locais recebidos anteriormente.
+* **Queueing**. The browser queues requests when: 
+    * There are higher priority requests.
+    * There are already six TCP connections open for this origin, which is the limit. Applies to HTTP/1.0 and HTTP/1.1 only.
+    * The browser is briefly allocating space in the disk cache
+* **Stalled**. The request could be stalled for any of the reasons described in **Queueing**.
+* **DNS Lookup**. The browser is resolving the request's IP address.
+* **Proxy negotiation**. The browser is negotiating the request with a [proxy server](https://en.wikipedia.org/wiki/Proxy_server).
+* **Request sent**. The request is being sent.
+* **ServiceWorker Preparation**. The browser is starting up the service worker.
+* **Request to ServiceWorker**. The request is being sent to the service worker.
+* **Waiting (TTFB)**. The browser is waiting for the first byte of a response. TTFB stands for Time To First Byte. This timing includes 1 round trip of latency and the time the server took to prepare the response.
+* **Content Download**. The browser is receiving the response.
+* **Receiving Push**. The browser is receiving data for this response via HTTP/2 Server Push.
+* **Reading Push**. The browser is reading the local data previously received.
 
-### Visualizar iniciadores e dependências {: #initiators-dependencies }
+### View initiators and dependencies {: #initiators-dependencies }
 
-Para visualizar os iniciadores e as dependências de uma solicitação, mantenha pressionado <kbd>Shift</kbd>
-e passe o cursor sobre a solicitação na tabela "Requests". O DevTools colore os iniciadores
-de verde e as dependências, de vermelho.
+To view the initiators and dependencies of a request, hold <kbd>Shift</kbd> and hover over the request in the Requests table. DevTools colors initiators green, and dependencies red.
 
 <figure>
   <img src="imgs/initiators-dependencies.png"
-       alt="Visualização de iniciadores e dependências de uma solicitação.">
+       alt="Viewing the initiators and dependencies of a request.">
   <figcaption>
-    <b>Imagem 28</b>. Visualização de iniciadores e dependências de uma solicitação
- </figcaption>
+    <b>Figure 28</b>. Viewing the initiators and dependencies of a request
+  </figcaption>
 </figure>
 
-Quando a tabela "Requests" é ordenada cronologicamente, a primeira
-solicitação em verde, acima da que você está passando o cursor, é o iniciador
-da dependência. Se houver outra solicitação em verde sobre essa, a maior
-é o iniciador do iniciador. E assim por diante.
+When the Requests table is ordered chronologically, the first green request above the request that you're hovering over is the initiator of the dependency. If there's another green request above that, that higher request is the initiator of the initiator. And so on.
 
-### Visualizar eventos de carregamento {: #load }
+### View load events {: #load }
 
-O DevTools exibe o tempo dos eventos `DOMContentLoaded` e `load` em
-vários locais, no painel "Network". O evento `DOMContentLoaded` tem a cor
-azul, e o `load` tem a cor vermelha.
+DevTools displays the timing of the `DOMContentLoaded` and `load` events in multiple places on the Network panel. The `DOMContentLoaded` event is colored blue, and the `load` event is red.
 
 <figure>
   <img src="imgs/load-events.svg"
-       alt="As localizações dos eventos DOMContentLoaded e load no painel "Network".">
+       alt="The locations of the DOMContentLoaded and load events on the Network panel.">
   <figcaption>
-    <b>Imagem 29</b>. As localizações dos eventos <code>DOMContentLoaded</code> e
-    <code>load</code> no painel "Network"
- </figcaption>
+    <b>Figure 29</b>. The locations of the <code>DOMContentLoaded</code> and
+    <code>load</code> events in the Network panel
+  </figcaption>
 </figure>
 
-### Visualizar o número total de solicitações {: #total-number }
+### View the total number of requests {: #total-number }
 
-O número total de solicitações é listado no painel "Summary", na parte inferior do
-painel "Network".
+The total number of requests is listed in the Summary pane, at the bottom of the Network panel.
 
-Atenção: esse número só rastreia as solicitações que foram registradas desde que o DevTools
-foi aberto. Outras solicitações que ocorreram antes de o DevTools ser aberto
-não serão contabilizadas.
+Caution: This number only tracks requests that have been logged since DevTools was opened. If other requests occurred before DevTools was opened, those requests aren't counted.
 
 <figure>
   <img src="imgs/total-requests.svg"
-       alt="O número total de solicitações desde que o DevTools foi aberto">
+       alt="The total number of requests since DevTools was opened">
   <figcaption>
-    <b>Imagem 30</b>. O número total de solicitações desde que o DevTools foi aberto
- </figcaption>
+    <b>Figure 30</b>. The total number of requests since DevTools was opened
+  </figcaption>
 </figure>
 
-### Visualizar o tamanho total do download {: #total-size }
+### View the total download size {: #total-size }
 
-O tamanho total do download das solicitações é listado no painel "Summary", na parte
-inferior do painel "Network".
+The total download size of requests is listed in the Summary pane, at the bottom of the Network panel.
 
-Atenção: esse número só rastreia as solicitações que foram registradas desde que o DevTools
-foi aberto. Outras solicitações que ocorreram antes de o DevTools ser aberto
-não serão contabilizadas.
+Caution: This number only tracks requests that have been logged since DevTools was opened. If other requests occurred before DevTools was opened, those requests aren't counted.
 
 <figure>
   <img src="imgs/total-size.svg"
-       alt="O tamanho total do download das solicitações">
+       alt="The total download size of requests">
   <figcaption>
-    <b>Imagem 31</b>. O tamanho total do download das solicitações
- </figcaption>
+    <b>Figure 31</b>. The total download size of requests
+  </figcaption>
 </figure>
 
-Consulte [Visualizar o tamanho não compactado de um recurso](#uncompressed) para ver qual é o tamanho dos recursos
-após o navegador realizar a descompactação deles.
+See [View the uncompressed size of a resource](#uncompressed) to see how large resources are after the browser uncompresses them.
 
-### Visualizar o rastreamento de pilha que gerou uma solicitação {: #initiator-stack-trace }
+### View the stack trace that caused a request {: #initiator-stack-trace }
 
-Quando uma instrução JavaScript fizer com que um recurso seja solicitado, passe o cursor sobre a coluna **Initiator**
-para visualizar o rastreamento de pilha que leva à solicitação.
+When a JavaScript statement causes a resource to be requested, hover over the **Initiator** column to view the stack trace leading up to the request.
 
 <figure>
   <img src="imgs/initiator-stack.png"
-       alt="O rastreamento de pilha que leva à solicitação do recurso">
+       alt="The stack trace leading up to a resource request">
   <figcaption>
-    <b>Imagem 32</b>. O rastreamento de pilha que leva à solicitação do recurso
- </figcaption>
+    <b>Figure 32</b>. The stack trace leading up to a resource request
+  </figcaption>
 </figure>
 
-### Visualizar o tamanho não compactado de um recurso {: #uncompressed }
+### View the uncompressed size of a resource {: #uncompressed }
 
-Clique em **Use Large Request Rows** ![Use Large Request
-Rows](imgs/large-resource-rows-button.png){:.inline-icon} e olhe o
-valor na parte inferior da coluna **Size**.
+Click **Use Large Request Rows** ![Use Large Request
+Rows](imgs/large-resource-rows-button.png){:.inline-icon} and then look at the bottom value of the **Size** column.
 
 <figure>
   <img src="imgs/large-request-rows.png"
-       alt="Exemplo de recursos não compactados.">
+       alt="An example of uncompressed resources.">
   <figcaption>
-    <b>Imagem 33</b>. O tamanho compactado do arquivo <code>jquery-bundle.js</code>
-    enviado pela rede era de <code>30.9 KB</code>, enquanto o arquivo não compactado tinha um tamanho de
+    <b>Figure 33</b>. The compressed size of the <code>jquery-bundle.js</code> file
+    that was sent over the network was <code>30.9 KB</code>, whereas the uncompressed size was
     <code>86.3 KB</code>
   </figcaption>
 </figure>
 
-## Exportar dados de solicitações {: #export }
+## Export requests data {: #export }
 
-### Salvar todas as solicitações de rede em um arquivo HAR {: #save-as-har }
+### Save all network requests to a HAR file {: #save-as-har }
 
-Para salvar todas as solicitações de rede em um arquivo HAR:
+To save all network requests to a HAR file:
 
-1. Clique com o botão direito em qualquer solicitação da tabela "Requests".
-1. Selecione **Save as HAR with Content**. O DevTools salva todas as solicitações que ocorreram desde que foi aberto
-   em um arquivo HAR. Não há como filtrar solicitações nem salvar apenas uma
-   solicitação.
+1. Right-click any request in the Requests table.
+2. Select **Save as HAR with Content**. DevTools saves all requests that have occurred since you opened DevTools to the HAR file. There is no way to filter requests, or to save just a single request.
 
-Assim que tiver um arquivo HAR, você poderá importá-lo de volta para o DevTools e analisá-lo. Basta
-arrastar e soltar o arquivo HAR na tabela "Requests". Veja também [Analisador HAR][HAR Analyzer]{: .external }.
-
-[HAR Analyzer]: https://toolbox.googleapps.com/apps/har_analyzer/
+Once you've got a HAR file, you can import it back into DevTools for analysis. Just drag-and-drop the HAR file into the Requests table. See also [HAR Analyzer](https://toolbox.googleapps.com/apps/har_analyzer/){: .external }.
 
 <figure>
   <img src="imgs/save-as-har.png"
-       alt="Seleção de "Save as HAR with Content”.">
+       alt="Selecting Save as HAR with Content.">
   <figcaption>
-    <b>Imagem 34</b>. Seleção de <b>Save as HAR with Content</b>
+    <b>Figure 34</b>. Selecting <b>Save as HAR with Content</b>
   </figcaption>
 </figure>
 
-### Copiar uma ou mais solicitações na área de transferência {: #copy }
+### Copy one or more requests to the clipboard {: #copy }
 
-Abaixo da coluna **Name** da tabela "Requests", clique com o botão direito em uma solicitação,
-passe o cursor sobre **Copy** e selecione uma das seguintes opções:
+Under the **Name** column of the Requests table, right-click a request, hover over **Copy**, and select one of the following options:
 
-* **Copy Link Address**. Copia o URL da solicitação para a área de transferência.
-* **Copy Response**. Copia o corpo da resposta para a área de transferência.
-* **Copy as cURL**. Copia a solicitação como um comando cURL.
-* **Copy All as cURL**. Copia todas as solicitações como uma cadeia de comandos cURL.
-* **Copy All as HAR**. Copia todas as solicitações como dados HAR.
-
-<figure>
-  <img src="imgs/copy.png" alt="Seleção de "Copy Response".">
-  <figcaption>
-    <b>Imagem 35</b>. Seleção de "Copy Response"
- </figcaption>
-</figure>
-
-## Alterar o layout do painel "Network"
-
-Você pode expandir ou recolher seções da IU do painel "Network" para se concentrar no que
-considera importante.
-
-### Ocultar o painel "Filters" {: #hide-filters }
-
-Por padrão, o DevTools exibe o [painel Filters](#filters).
-Clique em **Filter** ![Filter][filter]{: .devtools-inline } para ocultá-lo.
+* **Copy Link Address**. Copy the request's URL to the clipboard.
+* **Copy Response**. Copy the response body to the clipboard.
+* **Copy as cURL**. Copy the request as a cURL command.
+* **Copy All as cURL**. Copy all requests as a chain of cURL commands.
+* **Copy All as HAR**. Copy all requests as HAR data.
 
 <figure>
-  <img src="imgs/hide-filters.svg" alt="O botão "Hide Filters"">
+  <img src="imgs/copy.png" alt="Selecting Copy Response.">
   <figcaption>
-    <b>Imagem 36</b>. "Hide Filters" destacado em azul
- </figcaption>
+    <b>Figure 35</b>. Selecting Copy Response
+  </figcaption>
 </figure>
 
-[filter]: imgs/filters.png
+## Change the layout of the Network panel
 
-### Usar linhas de solicitação grandes {: #request-rows }
+Expand or collapse sections of the Network panel UI to focus on what's important to you.
 
-Use linhas grandes quando você quiser mais espaço em branco na sua tabela de solicitações
-de rede. Algumas colunas também apresentam algumas informações a mais
-quando linhas grandes são utilizadas. Por exemplo, o valor na parte inferior da coluna **Size**
-é o tamanho não compactado de uma solicitação.
+### Hide the Filters pane {: #hide-filters }
+
+By default, DevTools shows the [Filters pane](#filters). Click **Filter** ![Filter](imgs/filters.png){: .devtools-inline } to hide it.
+
+<figure>
+  <img src="imgs/hide-filters.svg" alt="The Hide Filters button">
+  <figcaption>
+    <b>Figure 36</b>. Hide Filters, outlined in blue
+  </figcaption>
+</figure>
+
+### Use large request rows {: #request-rows }
+
+Use large rows when you want more whitespace in your network requests table. Some columns also provide a little more information when using large rows. For example, the bottom value of the **Size** column is the uncompressed size of a request.
 
 <figure>
   <img src="imgs/large-request-rows.png"
-       alt="Exemplo de linhas de solicitação grandes no painel "Requests".">
+       alt="An example of large request rows in the Requests pane.">
   <figcaption>
-    <b>Imagem 37</b>. Exemplo de linhas de solicitação grandes no painel "Requests"
+    <b>Figure 37</b>. An example of large request rows in the Requests pane
   </figcaption>
 </figure>
 
-Clique em **Use large request rows** ![Use large request
-rows][large]{:.devtools-inline} para ativar linhas grandes.
-
-[large]: imgs/large-resource-rows-button.png
+Click **Use large request rows** ![Use large request
+rows](imgs/large-resource-rows-button.png){:.devtools-inline} to enable large rows.
 
 <figure>
-  <img src="imgs/large-request-rows.svg" alt="O botão "Large Request Rows"">
+  <img src="imgs/large-request-rows.svg" alt="The Large Request Rows button">
   <figcaption>
-    <b>Imagem 38</b>. "Large Request Rows" destacado em azul
+    <b>Figure 38</b>. Large Request Rows, outlined in blue
   </figcaption>
 </figure>
 
-### Ocultar o painel "Overview" {: #hide-overview }
+### Hide the Overview pane {: #hide-overview }
 
-Por padrão, o DevTools exibe o [painel Overview](#overview).
-Clique em **Hide overview** ![Hide overview][hide]{:.devtools-inline} para ocultá-lo.
+By default, DevTools shows the [Overview pane](#overview). Click **Hide overview** ![Hide overview](imgs/hide-overview.png){:.devtools-inline} to hide it.
 
 <figure>
-  <img src="imgs/hide-overview.svg" alt="O botão "Hide Overview"">
+  <img src="imgs/hide-overview.svg" alt="The Hide Overview button">
   <figcaption>
-    <b>Imagem 39</b>. "Hide Overview" destacado em azul
- </figcaption>
+    <b>Figure 39</b>. Hide Overview, outlined in blue
+  </figcaption>
 </figure>
-
-[hide]: imgs/hide-overview.png
 
 ## Feedback {: #feedback }
 
