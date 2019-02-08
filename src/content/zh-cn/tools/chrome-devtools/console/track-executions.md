@@ -1,36 +1,29 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description:利用 Console API 测量执行时间和对语句执行进行计数。
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Take advantage of the Console API to measure execution times and count statement executions.
 
-{# wf_updated_on:2015-05-11 #}
-{# wf_published_on:2015-04-13 #}
+{# wf_updated_on: 2018-07-27 #} {# wf_published_on: 2015-04-13 #} {# wf_blink_components: Platform>DevTools #}
 
-# 测量执行时间和对执行进行计数 {: .page-title }
+# Measure and count executions {: .page-title }
 
-{% include "web/_shared/contributors/megginkearney.html" %}
-{% include "web/_shared/contributors/flaviocopes.html" %}
-{% include "web/_shared/contributors/pbakaus.html" %}
+{% include "web/_shared/contributors/megginkearney.html" %} {% include "web/_shared/contributors/flaviocopes.html" %} {% include "web/_shared/contributors/pbakaus.html" %}
 
-利用 Console API 测量执行时间和对语句执行进行计数。
-
+Take advantage of the Console API to measure execution times and count statement executions.
 
 ### TL;DR {: .hide-from-toc }
-- 使用  <code>console.time()</code> 和  <code>console.timeEnd()</code> 跟踪代码执行点之间经过的时间。
-- 使用  <code>console.count()</code> 对相同字符串传递到函数的次数进行计数。
 
+- Use `console.time()` and `console.timeEnd()` to track time elapsed between code execution points.
+- Use `console.count()` to count how many times the same string is passed to a function.
 
-## 测量执行时间
+## Measure execution times
 
-[`time()`](./console-reference#consoletimelabel) 方法可以启动一个新计时器，并且对测量某个事项花费的时间非常有用。将一个字符串传递到方法，以便为标记命名。
+The [`time()`](./console-reference#consoletimelabel) method starts a new timer and is very useful to measure how long something took. Pass a string to the method to give the marker a name.
 
-如果您想要停止计时器，请调用 [`timeEnd()`](./console-reference#consoletimeendlabel) 并向其传递已传递到初始值设定项的相同字符串。
+When you want to stop the timer, call [`timeEnd()`](./console-reference#consoletimeendlabel) and pass it the same string passed to the initializer.
 
-控制台随后会在 `timeEnd()` 方法触发时记录标签和经过的时间。
+The console then logs the label and time elapsed when the `timeEnd()` method fires.
 
-### 基本示例
+### Basic example
 
-在这里，我们将测量 100 万个新 Array 的初始化：
-
+Here, we measure the initialization of a million new Arrays:
 
     console.time("Array initialize");
     var array= new Array(1000000);
@@ -38,33 +31,30 @@ description:利用 Console API 测量执行时间和对语句执行进行计数�
         array[i] = new Object();
     };
     console.timeEnd("Array initialize");
+    
 
+Which outputs the following in the Console: ![Time elapsed](images/track-executions-time-duration.png)
 
-将在控制台中输出下列结果：
-![经过的时间](images/track-executions-time-duration.png)
+### Timers on the Timeline
 
-### Timeline 上的计时器
+When a [Timeline](/web/tools/chrome-devtools/profile/evaluate-performance/timeline-tool) recording is taking place during a `time()` operation, it annotates the timeline as well. Use it when you want to trace what your application does and where it comes from.
 
-当 [Timeline](/web/tools/chrome-devtools/profile/evaluate-performance/timeline-tool) 记录在 `time()` 操作期间发生时，它也会对 Timeline 进行标注。如果您想要跟踪应用的操作和操作来自何处，请使此记录。
+How an annotation on the timeline looks from `time()`:
 
-执行 `time()` 时 Timeline 上的标注如下所示：
+![Time annotation on timeline](images/track-executions-time-annotation-on-timeline.png)
 
-![timeline 上的时间标注](images/track-executions-time-annotation-on-timeline.png)
+### Marking the Timeline
 
-### 标记 Timeline
+*Note: The `timeStamp()` method only functions while a Timeline recording is in progress.*
 
-*Note: `timeStamp()` 方法只能在某个 Timeline 记录正在进行时发挥作用。*
+The [Timeline panel](/web/tools/chrome-devtools/profile/evaluate-performance/timeline-tool) provides a complete overview of where the engine spends time. You can add a mark to the timeline from the console with the [`timeStamp()`](./console-reference#consoletimestamplabel). This is a simple way to correlate events in your application with other events.
 
-[Timeline 面板](/web/tools/chrome-devtools/profile/evaluate-performance/timeline-tool)可以提供引擎时间消耗的完整概览。您可以使用 [`timeStamp()`](./console-reference#consoletimestamplabel) 从控制台向 Timeline 添加一个标记。
-这是一种将您应用中的事件与其他事件进行关联的简单方式。
+The `timeStamp()` annotates the Timeline in the following places:
 
-`timeStamp()` 会在以下地方对 Timeline 进行标Note:
+- A yellow vertical line in the Timeline's summary and details view.
+- It adds a record to the list of events.
 
-- Timeline 汇总和详细信息视图中的黄色垂直线。
-- 会向事件列表添加一条记录。
-
-以下示例代码：
-
+The following example code:
 
     function AddResult(name, result) {
         console.timeStamp("Adding result");
@@ -72,41 +62,39 @@ description:利用 Console API 测量执行时间和对语句执行进行计数�
         var results = document.getElementById("results");
         results.innerHTML += (text + "<br>");
     }
+    
 
+Results in the following Timeline timestamps:
 
-将生成下面的 Timeline 时间戳：
+![Timestamps in the timeline](images/track-executions-timestamp2.png)
 
-![Timeline 中的时间戳](images/track-executions-timestamp2.png)
+## Counting statement executions
 
-## 对语句执行进行计数
+Use the `count()` method to log a provided string along with the number of times the same string has been provided. When the exact statement is given to `count()` on the same line, the number is incremented.
 
-使用 `count()` 方法记录提供的字符串，以及相同字符串已被提供的次数。当完全相同的语句被提供给同一行上的 `count()` 时，此数字将增大。
-
-将 `count()` 与某些动态内容结合使用的示例代码：
-
+Example code of using `count()` with some dynamic content:
 
     function login(user) {
         console.count("Login called for user " + user);
     }
-
+    
     users = [ // by last name since we have too many Pauls.
         'Irish',
         'Bakaus',
         'Kinlan'
     ];
-
+    
     users.forEach(function(element, index, array) {
         login(element);
     });
-
+    
     login(users[0]);
+    
 
-
-代码示例的输出：
+Output of the code sample:
 
 ![console.count() example output](images/track-executions-console-count.png)
 
+## Feedback {: #feedback }
 
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
