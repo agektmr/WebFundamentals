@@ -1,42 +1,32 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description:“清單包含 start_url”Lighthouse 審查的參考文檔。
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Reference documentation for the "Manifest Contains start_url" Lighthouse audit.
 
-{# wf_updated_on:2016-09-21 #}
-{# wf_published_on:2016-09-21 #}
+{# wf_updated_on: 2018-07-23 #} {# wf_published_on: 2016-09-21 #} {# wf_blink_components: N/A #}
 
-# 清單包含 start_url {: .page-title }
+# Manifest Contains Start URL {: .page-title }
 
-## 爲什麼說此審查非常重要 {: #why }
+## Overview {: #overview }
 
-將您的網絡應用添加到用戶的主屏幕後，當用戶從主屏幕啓動應用時，網絡應用清單中的 `start_url` 屬性決定首先加載
-應用的哪個頁面。
+After your web app has been added to a user's homescreen, the `start_url` property in the Web App Manifest determines what page of your app loads first when the user launches your app from the homescreen.
 
+If the `start_url` property is absent, then the browser defaults to whatever page was active when the user decided to add the app to the homescreen.
 
+## Recommendations {: #recommendations }
 
-如果 `start_url` 屬性不存在，當用戶決定將應用添加到主屏幕時，瀏覽器將默認跳轉到任何處於活動狀態的頁面。
-
-
-## 如何通過此審查 {: #how }
-
-在您的網絡應用清單中添加一個 `start_url` 屬性。
+Add a `start_url` property in your Web App Manifest.
 
     {
       ...
       "start_url": ".",
       ...
     }
+    
 
-有關向您展示如何在應用中正確實現和測試“添加到主屏幕”支持的指南清單，請查看[清單是否存在](manifest-exists#how)。
+Check out [Manifest Exists](manifest-exists#recommendations) for a list of guides that teach you how to properly implement and test "Add to Homescreen" support in your app.
 
+## More information {: #more-info }
 
+Lighthouse fetches the manifest and verifies that it has a `start_url` property. The manifest that Lighthouse fetches is separate from the one that Chrome is using on the page, which can possibly cause inaccurate results.
 
-{% include "web/tools/lighthouse/audits/implementation-heading.html" %}
+## Feedback {: #feedback }
 
-Lighthouse 提取清單並驗證它是否具有一個 `start_url` 屬性。Lighthouse 提取的清單獨立於 Chrome 當前在頁面上
-使用的清單，這可能會產生不準確的結果。
-
-
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
