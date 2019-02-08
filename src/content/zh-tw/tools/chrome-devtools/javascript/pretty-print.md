@@ -1,26 +1,23 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description:點擊 Chrome DevTools 中的 Pretty-Print 圖標，將您的 JavaScript 轉換成更便於閱讀的形式。
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Transform your JavaScript into a more readable form by clicking the Pretty-Print icon in Chrome DevTools.
 
-{# wf_updated_on:2016-02-21 #}
-{# wf_published_on:2015-04-13 #}
+{# wf_updated_on: 2018-07-27 #} {# wf_published_on: 2015-04-13 #} {# wf_blink_components: Platform>DevTools #}
 
-# 美化 JavaScript 外觀 {: .page-title }
+# Make JavaScript Look Pretty {: .page-title }
 
-{% include "web/_shared/contributors/megginkearney.html" %}
-{% include "web/_shared/contributors/kaycebasques.html" %}
+{% include "web/_shared/contributors/megginkearney.html" %} {% include "web/_shared/contributors/kaycebasques.html" %}
 
-在 **Sources** 面板中查看腳本時，請點擊 **Pretty-Print**
-![pretty-print 圖標](imgs/prettyprint-icon.png){:.inline} 圖標，將縮減的腳本轉換成更便於人閱讀的形式。
+Warning: This page is deprecated. See [Make a minified file readable](reference#format) for up-to-date information.
 
+When viewing a script in the **Sources** panel, click the **Pretty-Print** ![the pretty-print icon](imgs/prettyprint-icon.png){:.inline} icon to transform a minified script into a more human-readable form.
 
-下面是縮減的腳本在 **Sources** 面板中可能的外觀：
+Here is how a minified script might look in the **Sources** panel:
 
-![縮減的腳本](imgs/pretty-print-off.jpg)
+![a minified script](imgs/pretty-print-off.jpg)
 
-下面是相同腳本在點擊 **Pretty-Print** 圖標後的外觀：
+Here is how the same script looks after clicking the **Pretty-Print** icon:
 
-![點擊 pretty print 之後縮減的腳本](imgs/pretty-print-on.jpg)
+![a minified script after pretty print](imgs/pretty-print-on.jpg)
 
+## Feedback {: #feedback }
 
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
