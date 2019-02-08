@@ -1,85 +1,58 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description:瞭解如何在本地存儲數據以縮短響應時間和改進離線支持。
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Learn how to store data locally for improved response time and offline support.
 
-{# wf_updated_on:2016-09-29 #}
-{# wf_published_on:2016-09-29 #}
+{# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2016-09-29 #} {# wf_blink_components: Blink>Storage #}
 
-# Progressive Web App 的離線存儲 {: .page-title }
+# Offline Storage for Progressive Web Apps {: .page-title }
 
-{% include "web/_shared/contributors/addyosmani.html" %}
-{% include "web/_shared/contributors/mco.html" %}
+{% include "web/_shared/contributors/addyosmani.html" %} {% include "web/_shared/contributors/mco.html" %}
 
 <figure class="attempt-right">
-  <img src="images/pwa-in-devtools.jpg" alt="DevTools 中的 PWA">
+  <img src="images/pwa-in-devtools.jpg" alt="PWA in DevTools">
   <figcaption>
-    <a href="https://pokedex.org" class="external">Pokedex</a>
-    Progressive Web App 針對應用狀態和 Pokemon 數據集使用 IndexedDB，而對於網址可尋址的資源則使用 Cache API。
-</figcaption>
-
+    The <a href="https://pokedex.org" class="external">Pokedex</a>
+    Progressive Web App uses IndexedDB for application state and the Pokemon
+    data set while the Cache API is used for URL addressable resources.
+  </figcaption>
 </figure>
 
-在路上時互聯網連接會變得不穩定或無法上網，這是離線支持和可靠的性能成爲 [Progressive Web App](/web/progressive-web-apps/) 中的常用功能的原因。即使在完美的無線環境中，明智地使用緩存和其他存儲技術也可顯著改善用戶體驗。在此博文中，我們將圍繞 PWA  的離線數據存儲總結一些想法—思考提供*有效的*離線體驗所需的 JSON 負載、圖像和常規靜態數據。
-
-
-
+Internet connections can be flakey or non-existent on the go, which is why offline support and reliable performance are common features in [progressive web apps](/web/progressive-web-apps/). Even in perfect wireless environments, judicious use of caching and other storage techniques can substantially improve the user experience. In this post, we’ll summarize some ideas around offline data storage for PWAs — think JSON payloads, images and general static data required to provide a *meaningful* experience offline.
 
 <div class="clearfix"></div>
 
-## 建議：
+## Recommendation
 
-我們進入正題，首先介紹針對離線存儲數據的建議：
+Let’s get right to the point with a general recommendation for storing data offline:
 
+* For the network resources necessary to load your app while offline, use the [**Cache API**](cache-api) (part of [service workers](/web/fundamentals/primers/service-worker/)).
+* For all other data, use [**IndexedDB**](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API) (with a [promises wrapper](https://www.npmjs.com/package/idb)).
 
-* 對於網址可尋址的資源，使用 [**Cache API**](https://davidwalsh.name/cache)（[服務工作線程](/web/fundamentals/primers/service-worker/)的一部分）。
-* 對於所有其他數據，使用 [**IndexedDB**](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API)（具有一個 [Promise](/web/fundamentals/getting-started/primers/promises) 包裝器）。
+Here’s the rationale:
 
+Both APIs are asynchronous (IndexedDB is event based and the Cache API is Promise based). They also work with [web workers, window and service workers](https://nolanlawson.github.io/html5workertest/). IndexedDB is available [everywhere](http://caniuse.com/#feat=indexeddb). Service Workers (and the Cache API) are [now available](https://jakearchibald.github.io/isserviceworkerready/) in Chrome, Firefox, Opera and are in development for Edge. Promise wrappers for IndexedDB hide some of the powerful but also complex machinery (e.g. transactions, schema versioning) that comes with the IndexedDB library. IndexedDB will support [observers](https://github.com/WICG/indexed-db-observers), which allow easy synchronization between tabs.
 
-下面介紹基本原理：
+Safari 10 has [fixed many long-standing IndexedDB bugs](https://gist.github.com/nolanlawson/08eb857c6b17a30c1b26) in their latest Tech Previews. NOTE: Some folks have run into stability issues with Safari 10’s IndexedDB and PouchDB and have found it to be a little slow. Until more research has been done here, your mileage may vary. Please do test and file browser bugs so the folks @webkit and related OSS library authors can take a look. LocalForage, PouchDB, YDN and Lovefield use WebSQL in Safari by default (due to lack of an efficient way to feature-test for broken IndexedDB). This means these libraries will work in Safari 10 without extra effort (just not using IndexedDB directly).
 
-上述兩個 API 都是異步的（IndexedDB 基於事件的，而 Cache API 基於 Promise）。
-它們也使用[網頁工作線程、窗口和服務工作線程](https://nolanlawson.github.io/html5workertest/)。
-IndexedDB 在[每個位置](http://caniuse.com/#feat=indexeddb)都可用。
-服務工作線程（和 Cache API）目前在 Chrome、Firefox、Opera 中[可用](https://jakearchibald.github.io/isserviceworkerready/)，並正在針對 Edge 進行開發。IndexedDB 的 Promise 包裝器隱藏了 IndexedDB 庫自帶的一些強大但同時也非常複雜的 machinery（例如，事務處理、架構版本）。IndexedDB 將支持 [observers](https://github.com/WICG/indexed-db-observers)，其讓您可以輕鬆實現標籤之間的同步。
+For PWAs, you can cache static resources, composing your application shell (JS/CSS/HTML files) using the Cache API and fill in the offline page data from IndexedDB. Debugging support for IndexedDB is now available in [Chrome](/web/tools/chrome-devtools/iterate/manage-data/local-storage) (Application tab), Opera, [Firefox](https://developer.mozilla.org/en-US/docs/Tools/Storage_Inspector) (Storage Inspector) and Safari (see the Storage tab).
 
+## What about other storage mechanisms?
 
+Web Storage (e.g LocalStorage and SessionStorage) is synchronous, has no Web Worker support and is size and type (strings only) limited. Cookies [have their uses](https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies) but are synchronous, lack web worker support and are also size-limited. WebSQL does not have broad browser support and its use is not recommended. The File System API is not supported on any browser besides Chrome. The [File API](https://developer.mozilla.org/en-US/docs/Web/API/File) is being improved in the [File and Directory Entries API](https://wicg.github.io/entries-api/) and [File API](https://w3c.github.io/FileAPI/) specs but neither is sufficiently mature or standardized to encourage widespread adoption yet.
 
-Safari 10 在其最新的技術預覽版中[修復了許多長期存在的 IndexedDB 錯誤](https://gist.github.com/nolanlawson/08eb857c6b17a30c1b26)。Note: 一些用戶發現 Safari 10 的 IndexedDB 和 PouchDB 存在穩定性問題，並發現其速度有些慢。在對此問題進行更多研究之前，您的情況可能有所不同。請進行測試並提交瀏覽器錯誤，以便 @webkit 工作任意和相關的 OSS 庫作者可以查看。默認情況下，LocalForage、PouchDB、YDN 和 Lovefield 在 Safari 中使用 WebSQL（因爲缺少有效的方法對損壞的 IndexedDB 進行功能測試）。這意味着這些庫無需任何額外操作即可在 Safari 10 中使用（只是不直接使用 IndexedDB）。
-
-
-對於 PWA，您可以緩存靜態資源，從而使用 Cache API 編寫您的應用 Application Shell（JS/CSS/HTML 文件），並從 IndexedDB 填充離線頁面數據。
-
-針對 IndexedDB 的調試支持目前在 [Chrome](/web/tools/chrome-devtools/iterate/manage-data/local-storage)（Application 標籤）、Opera、[Firefox](https://developer.mozilla.org/en-US/docs/Tools/Storage_Inspector)(Storage Inspector) 和 Safari（請參閱 Storage 標籤）中可用。
-
-
-
-
-
-## 其他存儲機制是怎樣的？
-
-Web Storage（例如 LocalStorage 和 SessionStorage）是同步的，不支持網頁工作線程，並對大小和類型（僅限字符串）進行限制。
-Cookie [具有自身的用途](https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies)，但它們是同步的，缺少網頁工作線程支持，同時對大小進行限制。WebSQL 不具有廣泛的瀏覽器支持，因此不建議使用它。File System API 在 Chrome 以外的任意瀏覽器上都不受支持。目前正在 [File and Directory Entries API](https://wicg.github.io/entries-api/) 和 [File API](https://w3c.github.io/FileAPI/) 規範中改進 [File API](https://developer.mozilla.org/en-US/docs/Web/API/File)，但該 API 還不夠成熟也未完全標準化，因此無法被廣泛採用。
-
-
-
-
-
-
-## 我能存儲多少數據？
+## How much can I store?
 
 <table>
   <thead>
-    <th>瀏覽器</th>
-    <th>限制</th>
+    <th>Browser</th>
+    <th>Limit</th>
   </thead>
   <tbody>
     <tr>
       <td>Chrome</td>
-      <td>可用空間 &lt;6%</td>
+      <td>&lt;6% of free space</td>
     </tr>
     <tr>
-      <td>Firebox</td>
-      <td>可用空間 &lt;10%</td>
+      <td>Firefox</td>
+      <td>&lt;10% of free space</td>
     </tr>
     <tr>
       <td>Safari</td>
@@ -89,174 +62,130 @@ Cookie [具有自身的用途](https://developer.mozilla.org/en-US/docs/Web/HTTP
       <td>IE10</td>
       <td>&lt;250MB</td>
     </tr>
+    <tr>
+      <td>Edge</td>
+      <td>
+        <a href="https://developer.microsoft.com/en-us/microsoft-edge/platform/documentation/dev-guide/storage/IndexedDB/">
+          Dependent on volume size
+        </a>
+      </td>
+    </tr>
   <tbody>
 </table>
 
-在 Chrome 和 Opera 中，按照源（而不是 API）進行存儲。這兩個存儲機制都將存儲數據，直到達到瀏覽器[配額](http://www.html5rocks.com/en/tutorials/offline/quota-research/)。應用可以使用 [Quota Management API](https://developer.mozilla.org/en-US/docs/Web/API/StorageQuota) 檢查它們目前使用了多少配額。
-在 Chrome 中，應用最多可使用 6% 的磁盤空間。在 Firefox 中，應用最多可使用 10% 的可用磁盤空間，但在存儲 50MB 數據後將提示用戶進行更多存儲請求。
-在 Mobile Safari 中，應用最多可使用 50MB 存儲空間，而 Safari 桌面版不限制存儲空間的使用（並在達到 5MB 後進行提示）。IE10+ 最多可存儲 250MB，並在存儲 10MB 後提示用戶。
-PouchDB [跟蹤](https://pouchdb.com/faq.html#data_limits) IDB 存儲行爲。
+In Chrome and Opera, your storage is per origin (rather than per API). Both storage mechanisms will store data until the browser [quota](http://www.html5rocks.com/en/tutorials/offline/quota-research/) is reached. Apps can check how much quota they’re using with the [Quota Management API](https://developer.mozilla.org/en-US/docs/Web/API/StorageQuota). In Chrome, apps can use up to 6% of free disk space. In Firefox, apps can use up to 10% of free disk space, but will prompt the user for further storage requests after 50MB data stored. In mobile Safari, apps can use up to 50MB max, whereas desktop Safari allows unlimited storage (and prompts after 5MB). IE10+ maxes out at 250MB and prompts the user at 10MB. PouchDB [tracks](https://pouchdb.com/faq.html#data_limits) IDB storage behavior.
 
+## How can I tell how much storage space my app is using?
 
-## 如何瞭解我的應用目前使用了多少存儲空間？
+In Chrome, the [Quota Management API](https://www.w3.org/TR/quota-api/) lets you query for the size of storage space currently used and how much is available to the application. A newer [Storage Quota Estimate API](https://www.chromestatus.com/features/5630353511284736) tries to make it even easier to discover how much quota an origin is using with support for Promises.
 
-在 Chrome 中，您可以使用 [Quota Management API](https://www.w3.org/TR/quota-api/) 查詢目前使用的存儲空間大小，以及應用可使用多少空間。更新的 [Storage Quota Estimate API](https://www.chromestatus.com/features/5630353511284736) 嘗試通過支持 Promise，讓用戶更容易瞭解源目前使用了多少配額。
-
-
-
-
-## 緩存逐出是如何工作的？
+## How does cache eviction work?
 
 <table>
   <thead>
-    <th>瀏覽器</th>
-    <th>逐出政策</th>
+    <th>Browser</th>
+    <th>Eviction Policy</th>
   </thead>
   <tbody>
     <tr>
       <td>Chrome</td>
-      <td>在 Chrome 耗盡空間後採用 LRU 策略</td>
+      <td>LRU once Chrome runs out of space</td>
     </tr>
     <tr>
-      <td>Firebox</td>
-      <td>在整個磁盤已裝滿時採用 LRU 策略</td>
+      <td>Firefox</td>
+      <td>LRU if the whole disk gets full</td>
     </tr>
     <tr>
       <td>Safari</td>
-      <td>無逐出</td>
+      <td>No eviction</td>
     </tr>
     <tr>
       <td>Edge</td>
-      <td>無逐出</td>
+      <td>No eviction</td>
     </tr>
   <tbody>
 </table>
 
-根據源的需求爲源提供空間量。此可用空間在所有形式的源存儲（IndexedDB、Cache API、localStorage 等）中共享。提供的空間量未指定，具體容量因設備和存儲條件而異。
+An origin is given an amount of space to do with as it pleases. This free space is shared across all forms of origin storage (IndexedDB, Cache API, localStorage etc). The amount given isn’t specified and will vary depending on device and storage conditions.
 
+When web storage is low, a UA will clear storage to make space available. This can harm offline responsiveness so the recently updated [Storage](https://storage.spec.whatwg.org/) spec defines "persistent", and “best effort” strategies, with “best effort” being the default. “Best effort” means the storage can be cleared without interrupting the user, but is less durable for long-term and/or critical data. IndexedDB and the Cache API both fall into the “best effort” category today.
 
-如果網絡存儲容量低，則 UA 將清除存儲以提供可用的空間。這會損害離線響應能力，因此，最近更新的[存儲](https://storage.spec.whatwg.org/)規範定義了“持久化”和“盡力而爲”策略，默認策略是“盡力而爲”。“盡力而爲”指的是在不干擾用戶的情況下可以清除存儲，但對於長期和/或關鍵數據而言持久性較差。IndexedDB 和 Cache API 目前都屬於“盡力而爲”類別。
+"Persistent" storage is not automatically cleared when storage is low. The user needs to manually clear this storage (via browser settings). Chrome has been experimenting with support for [Persistent Storage](/web/updates/2016/06/persistent-storage) under an origin trial, and the latest news suggests it will be shipping in [Chrome 55](https://groups.google.com/a/chromium.org/d/msg/blink-dev/5Sihi1iAXYc/wnvNDFIPAQAJ).
 
-“持久化”存儲在存儲容量低時不會自動清除。用戶需要手動清除此存儲（通過瀏覽器設置）。
-Chrome 一直在來源試用版中試驗對[持久化存儲](/web/updates/2016/06/persistent-storage)的支持，最新消息表明將在 [Chrome 55](https://groups.google.com/a/chromium.org/d/msg/blink-dev/5Sihi1iAXYc/wnvNDFIPAQAJ) 中發佈對持久化存儲的支持。
+## Current and future offline storage work
 
+If offline storage interests you, the efforts below are worth keeping an eye on.
 
+* [Durable Storage](https://storage.spec.whatwg.org/): protect storage from the user agent’s clearing policies.
 
+* [Indexed Database API 2.0](https://w3c.github.io/IndexedDB/): advanced key-value data management.
 
+* [Promisified IndexedDB](https://github.com/inexorabletash/indexeddb-promises): native support for a Promise-friendly version of IndexedDB.
 
+* [IndexedDB Observers](https://github.com/WICG/indexed-db-observers): native IndexedDB observation without needing wrapper around the database.
 
-## 當前和未來的離線存儲運行
+* [Async Cookies API](https://github.com/bsittler/async-cookies-api): async JavaScript cookies API for documents and workers.
 
-如果您對離線存儲感興趣，則要注意下面取得的成就。
+* [Quota Management API](https://www.w3.org/TR/quota-api/): check how much quota an app/origin is using.
 
+* [writable-files](https://github.com/WICG/writable-files): allow sites to interact with local files more seamlessly.
 
-* [Durable Storage](https://storage.spec.whatwg.org/)：防止存儲受 User Agent 的清除政策影響。
+* [Directory downloads](https://github.com/drufball/directory-download): allow sites to download directories without .zip files.
 
+* [File and Directory Entries API](https://wicg.github.io/entries-api/): support for file and directory upload by drag-and-drop.
 
-* [Indexed Database API 2.0](https://w3c.github.io/IndexedDB/)：高級鍵/值數據管理。
+* Support for an [Async Cookies API](https://github.com/WICG/async-cookies-api) is being sketched out right now with a polyfill in the works.
 
+* Debugging IndexedDB is not currently supported in Edge (however, it is possible to debug the underlying JetDB) — vote [here](https://wpdev.uservoice.com/forums/257854-microsoft-edge-developer/suggestions/6517763-indexeddb-explorer-in-dev-tools) for built in support.
 
-* [Promisified IndexedDB](https://github.com/inexorabletash/indexeddb-promises)：爲支持 Promise 的 IndexedDB 版本提供原生支持。
+* Although [ideas](https://github.com/slightlyoff/async-local-storage) for async LocalStorage have been kicked around in the past, current focus is on getting [IndexedDB 2.0](https://w3c.github.io/IndexedDB/) in a good state.
 
+* The [writable-files](https://github.com/WICG/writable-files) proposal may eventually give us a better standards-track solution for seamless local file interaction.
 
+* For apps requiring more persistent storage, see the on-going work on [Durable Storage](https://storage.spec.whatwg.org/).
 
-* [IndexedDB Observers](https://github.com/WICG/indexed-db-observers)：原生 IndexedDB observation，無需與數據庫有關的包裝器。
+Offline storage isn’t quite magical and an understanding of the underlying APIs will go far in helping you make the most out of what we now have available. Whether you prefer to directly use these APIs or work with an abstraction library, take some time to get familiar with your options.
 
+Hopefully this guidance will help you craft an offline experience that makes your PWA shine! ✨
 
-* [Async Cookies API](https://github.com/bsittler/async-cookies-api)：適用於文檔和工作線程的異步 JavaScript cookie API。
+### Background reading
 
+* [State of Offline Storage APIs](https://docs.google.com/presentation/d/11CJnf77N45qPFAhASwnfRNeEMJfR-E_x05v1Z6Rh5HA/edit) by Joshua Bell
 
-* [Quota Management API](https://www.w3.org/TR/quota-api/)：檢查應用/源目前使用了多少配額。
+* [Browser Database Comparison](http://nolanlawson.github.io/database-comparison/) by Nolan Lawson
 
+* [IndexedDB, WebSQL, LocalStorage — What Blocks the DOM?](https://nolanlawson.com/2015/09/29/indexeddb-websql-localstorage-what-blocks-the-dom/)
 
-* [writable-files](https://github.com/WICG/writable-files)：允許網站更無縫地與本地文件進行交互。
+* [How to Think about Databases (Pokedex research)](https://nolanlawson.com/2016/02/08/how-to-think-about-databases/)
 
+* [Which APIs are Supported in Web Workers and Service Workers?](https://nolanlawson.github.io/html5workertest/)
 
-* [Directory downloads](https://github.com/drufball/directory-download)：允許網站下載不帶 .zip 文件的目錄。
+### Helpful resources
 
+* [Workbox](/web/tools/workbox/) (set of service worker libraries that make building progressive web apps easy)
 
-* [File and Directory Entries API](https://wicg.github.io/entries-api/)：支持通過拖放上傳文件和目錄。
+* Webpack users can directly use the above or [offline-plugin](https://github.com/NekR/offline-plugin)
 
+### IndexedDB libraries worth checking out
 
-* 目前正在擬定對 [Async Cookies API](https://github.com/WICG/async-cookies-api) 的支持以及在作品中使用 polyfill。
+* [localForage](https://github.com/localForage/localForage) (~8KB, promises, good legacy browser support)
 
+* [IDB-keyval](https://www.npmjs.com/package/idb-keyval) (500 byte alternative to localForage, for modern browsers)
 
+* [IDB-promised](https://www.npmjs.com/package/idb) (~2k, same IndexedDB API, but with promises)
 
-* 調試 IndexedDB 目前在 Edge 中不受支持（不過，它可以調試底層 JetDB） —[在此處](https://wpdev.uservoice.com/forums/257854-microsoft-edge-developer/suggestions/6517763-indexeddb-explorer-in-dev-tools)針對內置支持進行投票。
+* [Dexie](http://dexie.org/) (~16KB, promises, complex queries, secondary indices)
 
+* [PouchDB](https://pouchdb.com/) (~45KB (supports [custom builds](https://pouchdb.com/2016/06/06/introducing-pouchdb-custom-builds.html)), synchronization)
 
+* [Lovefield](https://github.com/google/lovefield) (relational)
 
+* [LokiJS](http://lokijs.org/#/) (in-memory)
 
-* 儘管過去我們討論了有關異步 LocalStorage 的[想法](https://github.com/slightlyoff/async-local-storage)，但目前的重點是使 [IndexedDB 2.0](https://w3c.github.io/IndexedDB/) 進展順利。
+* [ydn-db](https://github.com/yathit/ydn-db) (dexie-like, works with WebSQL)
 
+**Thanks to Nolan Lawson, Joshua Bell (whose work on Open Web Storage and [BlinkOn talk](https://docs.google.com/presentation/d/11CJnf77N45qPFAhASwnfRNeEMJfR-E_x05v1Z6Rh5HA/edit) heavily inspired this article), Jake Archibald, Dru Knox and others for their previous work in the web storage space.**
 
+## Feedback {: #feedback }
 
-* [writable-files](https://github.com/WICG/writable-files) 提議可能最終爲我們提供一個更好的標準跟蹤解決方案，從而實現無縫的本地文件交互。
-
-
-
-* 對於需要更多持久化存儲的應用，請了解正在進行中的[持久化存儲](https://storage.spec.whatwg.org/)。
-
-
-離線存儲並沒有多神奇，瞭解底層 API 對您大有幫助，讓您可充分利用我們現在提供的 API。無論您是否願意直接使用這些 API 還是使用一個抽象庫，都需要花些時間熟悉您的選項。
-
-
-
-
-希望本指南將幫助您設計一個離線體驗，讓您的 PWA 大放光彩！✨
-
-
-### 背景閱讀
-
-* [Offline Storage API 的狀態](https://docs.google.com/presentation/d/11CJnf77N45qPFAhASwnfRNeEMJfR-E_x05v1Z6Rh5HA/edit)（作者：Joshua Bell）
-
-
-
-* [瀏覽器數據庫比較](http://nolanlawson.github.io/database-comparison/)（作者：Nolan Lawson）
-
-
-* [IndexedDB、WebSQL、LocalStorage —什麼阻止了 DOM？](https://nolanlawson.com/2015/09/29/indexeddb-websql-localstorage-what-blocks-the-dom/)
-
-
-* [如何探討數據庫（Pokedex 研究）](https://nolanlawson.com/2016/02/08/how-to-think-about-databases/)
-
-
-* [網絡工作線程和服務工作線程中支持哪些 API？](https://nolanlawson.github.io/html5workertest/)
-
-
-###實用資源
-
-* [sw-toolbox](https://github.com/GoogleChrome/sw-toolbox)（針對動態/運行時請求的離線緩存）
-
-
-* [sw-precache](https://github.com/GoogleChrome/sw-precache)（針對靜態資產/Application Shell 的離線預緩存
-
-
-* Webpack 用戶可以直接使用上面的資源或 [offline-plugin](https://github.com/NekR/offline-plugin)
-
-
-### 值得關注的 IndexedDB 庫
-
-* [localForage](https://github.com/localForage/localForage)（~8KB、Promise、舊版瀏覽器可以提供良好支持）
-
-
-* [Dexie](http://dexie.org/)（~16KB、Promises、複雜查詢、次要索引）
-
-
-* [PouchDB](https://pouchdb.com/)（~45KB （支持[自定義版本](https://pouchdb.com/2016/06/06/introducing-pouchdb-custom-builds.html)）、同步）
-
-
-
-* [Lovefield](https://github.com/google/lovefield)（關係型）
-
-* [LokiJS](http://lokijs.org/#/)（內存）
-
-* [ydn-db](https://github.com/yathit/ydn-db)（與 dexie 類似、使用 WebSQL）
-
-**在此我要感謝 Nolan Lawson、Joshua Bell （這篇文章的主要靈感來自於他在 Open Web Storage 方面的工作和 [BlinkOn 演講](https://docs.google.com/presentation/d/11CJnf77N45qPFAhASwnfRNeEMJfR-E_x05v1Z6Rh5HA/edit)）、Jake Archibald、Dru Knox 以及之前致力於網絡存儲空間的其他人。**
-
-
-
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
