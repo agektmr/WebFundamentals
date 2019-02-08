@@ -1,41 +1,29 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description:“网站使用 HTTP/2 传输自身资源”Lighthouse 审查的参考文档。
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Reference documentation for the "Uses HTTP/2 For Its Own Resources" Lighthouse audit.
 
-{# wf_updated_on: 2016-12-05 #}
-{# wf_published_on: 2016-12-05 #}
+{# wf_updated_on: 2018-07-23 #} {# wf_published_on: 2016-12-05 #} {# wf_blink_components: N/A #}
 
-# 网站使用 HTTP/2 传输自身资源 {: .page-title }
+# Uses HTTP/2 For Its Own Resources {: .page-title }
 
-## 为什么说此审查非常重要{: #why }
+## Overview {: #overview }
 
-HTTP/2 可更快地提供页面的资源，并且可减少通过网络传输的数据。
+HTTP/2 can serve your page's resources faster, and with less data moving over the wire.
 
+See [HTTP/2 Frequently Asked Question](https://http2.github.io/faq/) for a list of benefits that HTTP/2 provides over HTTP/1.1.
 
-有关 HTTP/2 通过 HTTP/1.1 提供的优势的列表，请参阅 [HTTP/2 常见问题解答][faq]。
+See [Introduction to HTTP/2](/web/fundamentals/performance/http2/) for an in-depth technical overview.
 
+## Recommendations {: #recommendations }
 
-有关深入的技术概览，请参阅 [HTTP/2 简介][intro]。
+Under **URLs**, Lighthouse lists every resource that was not served over HTTP/2. To pass this audit, serve each of those resources over HTTP/2.
 
-[faq]: https://http2.github.io/faq/
-[intro]: /web/fundamentals/performance/http2/
+To learn how to enable HTTP/2 on your servers, see [Setting Up HTTP/2](https://dassur.ma/things/h2setup/).
 
-## 如何通过此审查{: #how }
+## More information {: #more-info }
 
-在 **URLs** 下，Lighthouse 列出不是通过 HTTP/2 提供的每个资源。要通过此审查，需要通过 HTTP/2 提供其中的每个资源。
+Lighthouse gathers all of the resources that are from the same host as the page, and then checks the HTTP protocol version of each resource.
 
+Lighthouse excludes resources from other hosts from this audit, because it assumes that you have no control over how these resources are served.
 
-要了解如何在您的服务器上启用 HTTP/2，请参阅[设置 HTTP/2][setup]。
+## Feedback {: #feedback }
 
-[setup]: https://dassur.ma/things/h2setup/
-
-{% include "web/tools/lighthouse/audits/implementation-heading.html" %}
-
-Lighthouse 收集与页面来自同一个主机的所有资源，然后检查每个资源的 HTTP 协议版本。
-
-
-Lighthouse 从此审查中排除来自其他主机的资源，因为它假定您无法控制这些资源的提供方式。
-
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
