@@ -1,33 +1,23 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description:“網站不使用 document.write()”Lighthouse 審查的參考文檔。
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Reference documentation for the "Avoids document.write()" Lighthouse audit.
 
-{# wf_updated_on: 2016-12-01 #}
-{# wf_published_on: 2016-12-01 #}
+{# wf_updated_on: 2018-07-23 #} {# wf_published_on: 2016-12-01 #} {# wf_blink_components: N/A #}
 
-# 網站不使用 document.write() {: .page-title }
+# Avoids document.write() {: .page-title }
 
-## 爲什麼說此審查非常重要 {: #why }
+## Overview {: #overview }
 
-對於網速較慢（如 2G、3G 或較慢的 WLAN）的用戶，外部腳本通過 `document.write()` 動態注入會使主要頁面內容的顯示延遲數十秒。
+For users on slow connections, such as 2G, 3G, or slow Wi-Fi, external scripts dynamically injected via `document.write()` can delay the display of main page content by tens of seconds.
 
+See [Intervening against `document.write()`](/web/updates/2016/08/removing-document-write) to learn more.
 
+## Recommendations {: #recommendations }
 
-請參閱[干預 `document.write()`][blog] 瞭解更多信息。
+In your report, Lighthouse lists out every call to `document.write()`. Review this list, and note any call that dynamically injects a script. If the script meets the criteria outlined in the introduction to [Intervening against `document.write()`](/web/updates/2016/08/removing-document-write), Chrome won't execute the injected script. These are the calls to `document.write()` that you want to change. See [How do I fix this?](/web/updates/2016/08/removing-document-write#how_do_i_fix_this) for possible solutions.
 
-[blog]: /web/updates/2016/08/removing-document-write
+## More information {: #more-info }
 
-## 如何通過此審查 {: #how }
+Lighthouse reports every instance of `document.write()` that it encounters. Note that Chrome's intervention against `document.write()` only applies to render-blocking, dynamically-injected scripts. Other uses of `document.write()` may be acceptable.
 
-在您的報告中，Lighthouse 列出了對 `document.write()` 的每次調用。查看此列表，並注意動態注入腳本的任何調用。如果腳本符合[干預 `document.write()`][blog] 簡介中列出的條件，則 Chrome 不會執行注入的腳本。這些調用的是您要更改的 `document.write()`。
-請參閱[如何解決此問題？][fix]，瞭解可能的解決方案。 
+## Feedback {: #feedback }
 
-[fix]: /web/updates/2016/08/removing-document-write#how_do_i_fix_this
-
-{% include "web/tools/lighthouse/audits/implementation-heading.html" %}
-
-Lighthouse 報告它遇到的 `document.write()` 的每個實例。請注意，Chrome 的干預 `document.write()` 僅適用於動態注入的阻塞渲染的腳本。`document.write()` 的其他用法是可以接受的。
-
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
