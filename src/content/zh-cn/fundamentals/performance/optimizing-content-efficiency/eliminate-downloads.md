@@ -1,33 +1,32 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description:您应该定期审核资源，以确保每个资源都有助于提供更好的用户体验。
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: You should audit your resources periodically to ensure that each resource is helping deliver a better user experience.
 
-{# wf_updated_on: 2016-08-29 #}
-{# wf_published_on: 2014-03-31 #}
+{# wf_updated_on: 2018-08-17 #} {# wf_published_on: 2014-03-31 #} {# wf_blink_components: Blink>Network #}
 
-# 避免不必要的下载 {: .page-title }
+# Eliminating Unnecessary Downloads {: .page-title }
 
 {% include "web/_shared/contributors/ilyagrigorik.html" %}
 
 ### TL;DR {: .hide-from-toc }
-* 清点您的网页上的自有资产和第三方资产。
-* 评估每个资产的表现：其价值及其技术性能。
-* 确定这些资源是否提供了足够的价值。
 
-最快速并且优化最充分的资源是不需要发送的资源。您应当从您的应用中消除不必要的资源。与您的团队一起，对隐式和显式的假设提出问题并定期重检，这不失为一种好的做法。比如以下几个例子：
+* Inventory your own assets and third-party assets on your pages.
+* Measure the performance of each asset: its value and its technical performance.
+* Determine if the resources are providing sufficient value.
 
-* 您的网页上一直包含资源 X，但它提供给用户的价值能否抵消下载并显示它的开销呢？您是否能够评估并证明其价值？
-* 该资源（特别是第三方资源）能否保持稳定的性能？该资源是否处于或是否需要处于关键路径中？如果该资源处于关键路径中，是否会成为我们网站的单点故障？也就是说，如果该资源不可用，是否会影响网页的性能和用户体验？
-* 该资源是否需要或具有 SLA？该资源是否遵循性能最佳做法：压缩、缓存等？
+The fastest and best-optimized resource is a resource not sent. You should eliminate unnecessary resources from your application. It’s a good practice to question, and periodically revisit, the implicit and explicit assumptions with your team. Here are a few examples:
 
-网页往往会包含一些不必要的资源；或者更糟的是，包含的某些资源会影响网页性能，同时还无法给访问者或所处的网站带来太大价值。这同样适用于自有和第三方资源及小工具：
+* You've always included resource X on your pages, but does the cost of downloading and displaying it offset the value it delivers to the user? Can you measure and prove its value?
+* Does the resource (especially if it's a third-party resource) deliver consistent performance? Is this resource in the critical path, or need to be? If the resource is in the critical path, could it be a single point of failure for the site? That is, if the resource is unavailable, does it affect performance and the user experience of your pages?
+* Does this resource need or have an SLA? Does this resource follow performance best practices: compression, caching, and so on?
 
-* 网站 A 决定在其首页上显示一个照片轮播器，访问者可通过快速点击预览多张照片。所有照片都在网页加载时进行加载，用户在照片之间浏览。
-    * **问题：**您是否统计过有多少用户在轮播器中查看多张照片？您可能给大多数访问者造成了不必要的昂贵下载开销，让他们下载了很多永远不会查看的资源。
-* 网站 B 决定安装一个第三方小工具来显示相关内容、改善社交互动或提供某种其他服务。
-    * **问题：**您是否追踪过有多少访问者使用小部件或点击浏览小部件提供的内容？这个小部件带来的社交互动能否抵消其产生的开销？
+Too often, pages contain resources that are unnecessary, or worse, that hinder page performance without delivering much value to the visitor or to the site they're hosted on. This applies equally to first-party and third-party resources and widgets:
 
-确定是否消除不必要的下载往往需要大量周密的思考和评估。要实现最佳效果，请针对网页上的每个资源定期清点和重新评估上述问题。
+* Site A has decided to display a photo carousel on its homepage to allow the visitor to preview multiple photos with a quick click. All of the photos are loaded when the page is loaded, and the user advances through the photos. 
+    * **Question:** Have you measured how many users view multiple photos in the carousel? You might be incurring high overhead by downloading resources that most visitors never view.
+* Site B has decided to install a third-party widget to display related content, improve social engagement, or provide some other service. 
+    * **Question:** Have you tracked how many visitors use the widget or click-through on the content that the widget provides? Is the engagement that this widget generates enough to justify its overhead?
 
+Determining whether to eliminate unnecessary downloads often requires a lot of careful thinking and measurement. For best results, periodically inventory and revisit these questions for every asset on your pages.
 
-{# wf_devsite_translation #}
+## Feedback {: #feedback }
+
+{% include "web/_shared/helpful.html" %}
