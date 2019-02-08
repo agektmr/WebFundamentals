@@ -1,347 +1,366 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: 使用 Chrome Device Mode 下的虚拟设备打造移动设备优先的网站。
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Use virtual devices in Chrome's Device Mode to build mobile-first websites.
 
-{# wf_updated_on: 2019-02-06 #}
-{# wf_published_on: 2015-04-13 #}
-{# wf_blink_components: Platform>DevTools #}
+{# wf_updated_on: 2018-12-14 #} {# wf_published_on: 2015-04-13 #} {# wf_blink_components: Platform>DevTools #}
 
-[capture]: /web/tools/chrome-devtools/images/shared/capture-settings.png
-[customize]: /web/tools/chrome-devtools/images/shared/customize-and-control-devtools.png
-
-# 使用 Chrome DevTools 中的 Device Mode 模拟移动设备 {: .page-title }
+# Simulate Mobile Devices with Device Mode in Chrome DevTools {: .page-title }
 
 {% include "web/_shared/contributors/kaycebasques.html" %}
 
-使用 Device Mode 可以大致了解您的页面在移动设备上呈现的外观和效果。
+Use Device Mode to approximate how your page looks and performs on a mobile device.
 
-Device Mode 是 Chrome DevTools 中未绑定功能集的名称，有助于您模拟移动设备。
- 这些功能包括：
+Device Mode is the name for the loose collection of features in Chrome DevTools that help you simulate mobile devices. These features include:
 
-* [模拟移动设备视口](#viewport)
-* [限制网络流量](#network)
-* [限制 CPU 占用率](#cpu)
-* [模拟地理定位](#geolocation)
-* [设置屏幕方向](#orientation)
+* [Simulating a mobile viewport](#viewport)
+* [Throttling the network](#network)
+* [Throttling the CPU](#cpu)
+* [Simulating geolocation](#geolocation)
+* [Setting orientation](#orientation)
 
-## 限制 {: #limitations }
+## Limitations {: #limitations }
 
-Device Mode 被视为对您的页面在移动设备上的外观取[一阶近似][approximation]{:.external} 。
- 使用 Device Mode 时，实际不是在移动设备上运行您的代码，
- 而是在笔记本电脑或桌面设备上模拟移动用户体验。
+Think of Device Mode as a [first-order approximation](https://en.wikipedia.org/wiki/Order_of_approximation#First-order){:.external} of how your page looks and feels on a mobile device. With Device Mode you don't actually run your code on a mobile device. You simulate the mobile user experience from your laptop or desktop.
 
-[approximation]: https://en.wikipedia.org/wiki/Order_of_approximation#First-order
+There are some aspects of mobile devices that DevTools will never be able to simulate. For example, the architecture of mobile CPUs is very different than the architecture of laptop or desktop CPUs. When in doubt, your best bet is to actually run your page on a mobile device. Use [Remote Debugging](/web/tools/chrome-devtools/remote-debugging/) to view, change, debug, and profile a page's code from your laptop or desktop while it actually runs on a mobile device.
 
-不过，移动设备的某些方面是 DevTools 永远无法模拟的。 例如，移动设备 CPU 的架构与笔记本电脑或桌面设备 CPU 的架构大不一样。
- 如果心存疑虑，最好可以在移动设备上运行您的页面。 
-在移动设备上实际运行某页面代码时，可通过[远程调试](/web/tools/chrome-devtools/remote-debugging/)在笔记本电脑或桌面设备上查看、更改、调试和分析页面代码。
+## Simulate a mobile viewport {: #viewport }
 
-
-## 模拟移动设备视口 {: #viewport }
-
-点击 **Toggle Device Toolbar** ![切换设备工具栏][TDB]{: .inline-icon } 可以打开用于模拟移动设备视口的界面。
-
-
-[TDB]: /web/tools/chrome-devtools/images/shared/toggle-device-toolbar.png
+Click **Toggle Device Toolbar** ![Toggle Device Toolbar](/web/tools/chrome-devtools/images/shared/toggle-device-toolbar.png){: .inline-icon } to open the UI that enables you to simulate a mobile viewport.
 
 <figure>
   <img src="imgs/device-toolbar.png"
-       alt="设备工具栏。"/>
+       alt="The Device Toolbar."/>
   <figcaption>
-    <b>图 1</b>. 设备工具栏
+    <b>Figure 1</b>. The Device Toolbar
   </figcaption>
 </figure>
 
-默认情况下，设备工具栏在打开时处于自适应视口模式。 
+By default the Device Toolbar opens in Responsive Viewport Mode.
 
-### 自适应视口模式 {: #responsive }
+### Responsive Viewport Mode {: #responsive }
 
-拖动手柄可以将视口大小调整为所需的任何尺寸。 或者，您也可以在宽度和高度框中输入特定值。
- 在**图 2** 中，宽度设置为 `628`，高度设置为 `662`。
-
+Drag the handles to resize the viewport to whatever dimensions you need. Or, enter specific values in the width and height boxes. In **Figure 2**, the width is set to `628` and the height is set to `662`.
 
 <figure>
   <img src="imgs/responsive-handles.png"
-       alt="在自适应视口模式下更改视口尺寸的手柄。"/>
+       alt="The handles for changing the viewport's dimensions when in Responsive Viewport Mode."/>
   <figcaption>
-    <b>图 2</b>. 在自适应视口模式下更改视口尺寸的手柄
+    <b>Figure 2</b>. The handles for changing the viewport's dimensions when in Responsive Viewport Mode
   </figcaption>
 </figure>
 
-#### 显示媒体查询 {: #queries }
+#### Show media queries {: #queries }
 
-要在视口上方显示媒体查询断点，请点击 **More options**，然后选择 **Show media
-queries**。
+To show media query breakpoints above your viewport, click **More options** and then select **Show media queries**.
 
 <figure>
   <img src="imgs/show-media-queries.png"
-       alt="显示媒体查询。"/>
+       alt="Show media queries."/>
   <figcaption>
-    <b>图 3</b>. 显示媒体查询
+    <b>Figure 3</b>. Show media queries
   </figcaption>
 </figure>
 
-点击更改视口宽度的断点，以触发此断点。
+Click a breakpoint to change the viewport's width so that the breakpoint gets triggered.
 
 <figure>
   <img src="imgs/breakpoint.png"
-       alt="点击更改视口宽度的断点。"/>
+       alt="Click a breakpoint to change the viewport's width."/>
   <figcaption>
-    <b>图 4</b>. 点击更改视口宽度的断点
+    <b>Figure 4</b>. Click a breakpoint to change the viewport's width
   </figcaption>
 </figure>
 
-### 移动设备视口模式 {: #device }
+#### Set the device type {: #type }
 
-要模拟特定移动设备的尺寸，请从 **Device** 列表中选择设备。
+Use the **Device Type** list to simulate a mobile device or desktop device.
+
+<figure>
+  <img src="imgs/device-type.png"
+       alt="The Device Type list."/>
+  <figcaption>
+    <b>Figure 5</b>. The <b>Device Type</b> list
+  </figcaption>
+</figure>
+
+The table below describes the differences between the options. **Rendering method** refers to whether Chrome renders the page as a mobile or desktop viewport. **Cursor icon** refers to what type of cursor you see when you hover over the page. **Events fired** refers to whether the page fires `touch` or `click` events when you interact with the page.
+
+<table>
+  <tr>
+    <th>Option</th>
+    <th>Rendering method</th>
+    <th>Cursor icon</th>
+    <th>Events fired</th>
+  </tr>
+  <tr>
+    <td>Mobile</td>
+    <td>Mobile</td>
+    <td>Circle</td>
+    <td>touch</td>
+  </tr>
+  <tr>
+    <td>Mobile (no touch)</td>
+    <td>Mobile</td>
+    <td>Normal</td>
+    <td>click</td>
+  </tr>
+  <tr>
+    <td>Desktop</td>
+    <td>Desktop</td>
+    <td>Normal</td>
+    <td>click</td>
+  </tr>
+  <tr>
+    <td>Desktop (touch)</td>
+    <td>Desktop</td>
+    <td>Circle</td>
+    <td>touch</td>
+  </tr>
+</table>
+
+### Mobile Device Viewport Mode {: #device }
+
+To simulate the dimensions of a specific mobile device, select the device from the **Device** list.
 
 <figure>
   <img src="imgs/device-list.png"
-       alt="Device 列表。"/>
+       alt="The Device list."/>
   <figcaption>
-    <b>图 5</b>. Device 列表
+    <b>Figure 6</b>. The Device list
   </figcaption>
 </figure>
 
-#### 将视口旋转为横向 {: #landscape }
+#### Rotate the viewport to landscape orientation {: #landscape }
 
-点击 **Rotate** ![旋转](imgs/rotate.png){: .inline-icon } 可以将视口旋转为横向。
+Click **Rotate** ![Rotate](imgs/rotate.png){: .inline-icon } to rotate the viewport to landscape orientation.
 
 <figure>
   <img src="imgs/landscape.png"
-       alt="横向。"/>
+       alt="Landscape orientation."/>
   <figcaption>
-    <b>图 6</b>. 横向
+    <b>Figure 7</b>. Landscape orientation
   </figcaption>
 </figure>
 
-请注意，如果 **Device Toolbar** 布局较窄，则 **Rotate** 按钮会消失。
+Note that the **Rotate** button disappears if your **Device Toolbar** is narrow.
 
 <figure>
   <img src="imgs/device-toolbar.png"
-       alt="设备工具栏。"/>
+       alt="The Device Toolbar."/>
   <figcaption>
-    <b>图 7</b>. 设备工具栏
+    <b>Figure 8</b>. The Device Toolbar
   </figcaption>
 </figure>
 
-另请参阅[设置屏幕方向](#orientation)。
+See also [Set orientation](#orientation).
 
-#### 显示设备框架 {: #frame }
+#### Show device frame {: #frame }
 
-在模拟 iPhone 6 等特定移动设备的尺寸时，可打开 **More options**，然后选择 **Show device frame** 以显示设备视口物理框架。
+When simulating the dimensions of a specific mobile device like an iPhone 6, open **More options** and then select **Show device frame** to show the physical device frame around the viewport.
 
-
-注：如果看不到特定设备的设备框架，则可能意味着 DevTools
-没有该特定选项的效果图。
+Note: If you don't see a device frame for a particular device, it probably means that DevTools just doesn't have art for that specific option.
 
 <figure>
   <img src="imgs/show-device-frame.png"
-       alt="显示设备框架。"/>
+       alt="Show device frame."/>
   <figcaption>
-    <b>图 8</b>. 显示设备框架
+    <b>Figure 9</b>. Show device frame
   </figcaption>
 </figure>
 
 <figure>
   <img src="imgs/iphone-frame.png"
-       alt="iPhone 6 的设备框架。"/>
+       alt="The device frame for the iPhone 6."/>
   <figcaption>
-    <b>图 9</b>. iPhone 6 的设备框架
+    <b>Figure 10</b>. The device frame for the iPhone 6
   </figcaption>
 </figure>
 
-### 显示标尺 {: #rulers }
+#### Add a custom mobile device {: #custom }
 
-点击 **More options**，然后选择 **Show rulers** 可以看到视口上方和左侧的标尺。
- 标尺的尺寸调整单位是像素。
+To add a custom device:
+
+1. Click the **Device** list and then select **Edit**.
+    
+    <figure> 
+    
+    ![Selecting 'Edit'.](imgs/edit.png) <figcaption> **Figure 11**. Selecting **Edit** </figcaption> </figure>
+2. Click **Add custom device**.
+
+3. Enter a name, width, and height for the device. The [device pixel ratio](https://developer.mozilla.org/en-US/docs/Web/API/Window/devicePixelRatio), [user agent string](https://developer.mozilla.org/en-US/docs/Glossary/User_agent), and [device type](#type) fields are optional. The device type field is the list that is set to **Mobile** by default.
+    
+    <figure> 
+    
+    ![Creating a custom device.](imgs/add-custom-device.png) <figcaption> **Figure 12**. Creating a custom device </figcaption> </figure>
+
+### Show rulers {: #rulers }
+
+Click **More options** and then select **Show rulers** to see rulers above and to the left of your viewport. The sizing unit of the rulers is pixels.
 
 <figure>
   <img src="imgs/show-rulers.png"
-       alt="显示标尺。"/>
+       alt="Show rulers."/>
   <figcaption>
-    <b>图 10</b>. 显示标尺
+    <b>Figure 13</b>. Show rulers
   </figcaption>
 </figure>
 
 <figure>
   <img src="imgs/rulers.png"
-       alt="视口上方和左侧的标尺。"/>
+       alt="Rulers above and to the left of the viewport."/>
   <figcaption>
-    <b>图 11</b>. 视口上方和左侧的标尺
+    <b>Figure 14</b>. Rulers above and to the left of the viewport
   </figcaption>
 </figure>
 
-### 缩放视口 {: #zoom }
+### Zoom the viewport {: #zoom }
 
-使用 **Zoom** 列表可以放大或缩小视口。
+Use the **Zoom** list to zoom in or out.
 
 <figure>
   <img src="imgs/zoom-viewport.png"
-       alt="缩放。"/>
+       alt="Zoom."/>
   <figcaption>
-    <b>图 11</b>. 缩放
+    <b>Figure 15</b>. Zoom
   </figcaption>
 </figure>
 
-## 限制网络流量和 CPU 占用率 {: #throttle }
+## Throttle the network and CPU {: #throttle }
 
-要限制网络流量和 CPU 占用率，请从 **Throttle** 列表中选择 **Mid-tier mobile**
-或 **Low-end mobile**。
+To throttle the network and CPU, select **Mid-tier mobile** or **Low-end mobile** from the **Throttle** list.
 
 <figure>
   <img src="imgs/throttling.png"
-       alt="Throttle 列表。"/>
+       alt="The Throttle list."/>
   <figcaption>
-    <b>图 12</b>. Throttle 列表
+    <b>Figure 16</b>. The Throttle list
   </figcaption>
 </figure>
 
-**Mid-tier mobile** 可模拟快速 3G 网络，并限制 CPU 占用率，以使模拟性能比普通性能低 4 倍。
- **Low-end mobile** 可模拟慢速 3G 网络，并限制 CPU 占用率，以使模拟性能比普通性能低 6 倍。
-请记住，限制是相对于笔记本电脑或桌面设备的普通性能而言。 
+**Mid-tier mobile** simulates fast 3G and throttles your CPU so that it is 4 times slower than normal. **Low-end mobile** simulates slow 3G and throttles your CPU 6 times slower than normal. Keep in mind that the throttling is relative to the normal capability of your laptop or desktop.
 
-请注意，如果 **Device Toolbar** 布局较窄，则会隐藏 **Throttle** 列表。
+Note that the **Throttle** list will be hidden if your **Device Toolbar** is narrow.
 
 <figure>
   <img src="imgs/device-toolbar.png"
-       alt="设备工具栏。"/>
+       alt="The Device Toolbar."/>
   <figcaption>
-    <b>图 13</b>. 设备工具栏
+    <b>Figure 17</b>. The Device Toolbar
   </figcaption>
 </figure>
 
-### 只限制 CPU 占用率 {: #cpu }
+### Throttle the CPU only {: #cpu }
 
-如果只限制 CPU 占用率而不限制网络流量，请转至 **Performance** 面板，点击 **Capture Settings** ![捕获设置][capture]
-{:.inline-icon}，然后从 **CPU** 列表中选择 **4x slowdown** 或 **6x slowdown**。
-
+To throttle the CPU only and not the network, go to the **Performance** panel, click **Capture Settings** ![Capture Settings](/web/tools/chrome-devtools/images/shared/capture-settings.png){:.inline-icon}, and then select **4x slowdown** or **6x slowdown** from the **CPU** list.
 
 <figure>
   <img src="imgs/cpu.png"
-       alt="CPU 列表。"/>
+       alt="The CPU list."/>
   <figcaption>
-    <b>图 14</b>. CPU 列表
+    <b>Figure 18</b>. The CPU list
   </figcaption>
 </figure>
 
-### 只限制网络流量 {: #network }
+### Throttle the network only {: #network }
 
-如果只限制网络流量而不限制 CPU 占用率，请转至 **Network** 面板，然后从 **Throttle** 列表中选择 **Fast 3G** 或 **Slow 3G**。
-
+To throttle the network only and not the CPU, go the **Network** panel and select **Fast 3G** or **Slow 3G** from the **Throttle** list.
 
 <figure>
   <img src="imgs/network.png"
-       alt="Throttle 列表。"/>
+       alt="The Throttle list."/>
   <figcaption>
-    <b>图 14</b>. Throttle 列表
+    <b>Figure 19</b>. The Throttle list
   </figcaption>
 </figure>
 
-或者按 <kbd>Command</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd> (Mac) 或 <kbd>Control</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd>（Windows、Linux、Chrome 操作系统），以打开命令菜单，输入 `3G`，然后选择 **Enable fast 3G throttling** 或 **Enable slow 3G throttling**。
-
-
-
+Or press <kbd>Command</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd> (Mac) or 
+<kbd>Control</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd> (Windows, Linux, Chrome OS) to open the Command Menu, type `3G`, and select **Enable fast 3G throttling** or **Enable slow 3G throttling**.
 
 <figure>
   <img src="imgs/commandmenu.png"
-       alt="命令菜单。"/>
+       alt="The Command Menu."/>
   <figcaption>
-    <b>图 15</b>. 命令菜单
+    <b>Figure 20</b>. The Command Menu
   </figcaption>
 </figure>
 
-您还可以在 **Performance** 面板中设置网络节流。 点击
-**Capture Settings** ![捕获设置][capture]，{: .inline-icon } 然后从 **Network** 列表中选择 **Fast 3G** 或 **Slow 3G**。
-
+You can also set network throttling from the **Performance** panel. Click **Capture Settings** ![Capture Settings](/web/tools/chrome-devtools/images/shared/capture-settings.png){: .inline-icon } and then select **Fast 3G** or **Slow 3G** from the **Network** list.
 
 <figure>
   <img src="imgs/network2.png"
-       alt="在 Performance 面板中设置网络节流。"/>
+       alt="Setting network throttling from the Performance panel."/>
   <figcaption>
-    <b>图 16</b>. 在 Performance 面板中设置网络节流
+    <b>Figure 21</b>. Setting network throttling from the Performance panel
   </figcaption>
 </figure>
 
-## 替换地理定位 {: #geolocation }
+## Override geolocation {: #geolocation }
 
-要打开地理定位替换界面，请点击 **Customize and control DevTools**
-![自定义和控制 DevTools][customize]，{: .inline-icon } 然后选择
-**More tools** > **Sensors**。
+To open the geolocation overriding UI click **Customize and control DevTools** ![Customize and control DevTools](/web/tools/chrome-devtools/images/shared/customize-and-control-devtools.png){: .inline-icon } and then select **More tools** > **Sensors**.
 
 <figure>
   <img src="imgs/sensors.png"
-       alt="传感器"/>
+       alt="Sensors"/>
   <figcaption>
-    <b>图 17</b>. 传感器
+    <b>Figure 22</b>. Sensors
   </figcaption>
 </figure>
 
-或者按 <kbd>Command</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd> (Mac) 或
-<kbd>Control</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd>（Windows、Linux、Chrome 操作系统），以打开命令菜单，输入 `Sensors`，然后选择 **Show Sensors**。
-
+Or press <kbd>Command</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd> (Mac) or 
+<kbd>Control</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd> (Windows, Linux, Chrome OS) to open the Command Menu, type `Sensors`, and then select **Show Sensors**.
 
 <figure>
   <img src="imgs/show-sensors.png"
-       alt="显示传感器"/>
+       alt="Show Sensors"/>
   <figcaption>
-    <b>图 18</b>. 显示传感器
+    <b>Figure 23</b>. Show Sensors
   </figcaption>
 </figure>
 
-从 **Geolocation** 列表中选择其中一个预设，或选择 **Custom location**
-以输入自己的坐标，或选择 **Location unavailable** 以测试您的页面在地理定位处于错误状态时的表现。
-
+Select one of the presets from the **Geolocation** list, or select **Custom location** to enter your own coordinates, or select **Location unavailable** to test out how your page behaves when geolocation is in an error state.
 
 <figure>
   <img src="imgs/geolocation.png"
-       alt="地理定位"/>
+       alt="Geolocation"/>
   <figcaption>
-    <b>图 19</b>. 地理定位
+    <b>Figure 24</b>. Geolocation
   </figcaption>
 </figure>
 
-## 设置屏幕方向 {: #orientation }
+## Set orientation {: #orientation }
 
-要打开屏幕方向界面，请点击 **Customize and control DevTools**
-![自定义和控制 DevTools][customize]，{: .inline-icon } 然后选择
-**More tools** > **Sensors**。
-
+To open the orientation UI click **Customize and control DevTools** ![Customize and control DevTools](/web/tools/chrome-devtools/images/shared/customize-and-control-devtools.png){: .inline-icon } and then select **More tools** > **Sensors**.
 
 <figure>
   <img src="imgs/sensors.png"
-       alt="传感器"/>
+       alt="Sensors"/>
   <figcaption>
-    <b>图 20</b>. 传感器
+    <b>Figure 25</b>. Sensors
   </figcaption>
 </figure>
 
-或者按 <kbd>Command</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd> (Mac) 或
-<kbd>Control</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd>（Windows、Linux、Chrome 操作系统），以打开命令菜单，输入 `Sensors`，然后选择 **Show Sensors**。
-
+Or press <kbd>Command</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd> (Mac) or 
+<kbd>Control</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd> (Windows, Linux, Chrome OS) to open the Command Menu, type `Sensors`, and then select **Show Sensors**.
 
 <figure>
   <img src="imgs/show-sensors.png"
-       alt="显示传感器"/>
+       alt="Show Sensors"/>
   <figcaption>
-    <b>图 21</b>. 显示传感器
+    <b>Figure 26</b>. Show Sensors
   </figcaption>
 </figure>
 
-从 **Orientation** 列表中选择其中一个预设，或选择 **Custom orientation**
-以设置自己的 alpha、beta 和 gamma 值。
+Select one of the presets from the **Orientation** list or select **Custom orientation** to set your own alpha, beta, and gamma values.
 
 <figure>
   <img src="imgs/orientation.png"
-       alt="屏幕方向"/>
+       alt="Orientation"/>
   <figcaption>
-    <b>图 22</b>. 屏幕方向
+    <b>Figure 27</b>. Orientation
   </figcaption>
 </figure>
 
-## 反馈 {: #feedback }
+## Feedback {: #feedback }
 
 {% include "web/_shared/helpful.html" %}
 
-如需了解提供反馈的其他方式，请参阅[加入 DevTools 社区](/web/tools/chrome-devtools/#community)。
-
+See [Join the DevTools community](/web/tools/chrome-devtools/#community) for other ways to leave feedback.
