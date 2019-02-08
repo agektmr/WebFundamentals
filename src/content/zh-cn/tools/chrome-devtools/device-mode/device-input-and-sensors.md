@@ -1,82 +1,90 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description:由于大多数桌面设备都没有触摸屏、GPS 芯片和加速度计，所以测试它们比较困难。Chrome DevTools 传感器模拟器可以通过模拟常见的移动设备传感器来降低测试的开销。
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Touch screens, GPS chips, and accelerometers can be difficult to test since most desktops don't have them. The Chrome DevTools sensor emulators reduce the overhead of testing by emulating common mobile device sensors. robots: noindex
 
-{# wf_updated_on: 2016-03-07 #}
-{# wf_published_on: 2015-04-13 #}
+{# wf_updated_on: 2018-12-18 #} {# wf_published_on: 2015-04-13 #} {# wf_blink_components: Platform>DevTools #}
 
-# 模拟传感器：地理定位与加速度计 {: .page-title }
+# Emulate Sensors: Geolocation and Accelerometer {: .page-title }
 
-{% include "web/_shared/contributors/megginkearney.html" %}
-{% include "web/_shared/contributors/pbakaus.html" %}
+{% include "web/_shared/contributors/megginkearney.html" %} {% include "web/_shared/contributors/pbakaus.html" %}
 
-由于大多数桌面设备都没有 GPS 芯片和加速度计，所以测试它们比较困难。Chrome DevTools 的 Sensors 模拟窗格可以通过模拟常见的移动设备传感器来降低测试的开销。
+<aside class="warning">
+  <b>This page is deprecated</b>. There are links to up-to-date documentation
+  throughout the page.
+</aside>
 
+GPS chips and accelerometers can be difficult to test since most desktops don't have them. The Chrome DevTools Sensors emulation pane reduces the overhead of testing by emulating common mobile device sensors.
 
 ### TL;DR {: .hide-from-toc }
-- 模拟地理定位坐标以测试地理定位替换值。
-- 模拟设备方向以测试加速度计数据。
 
+- Emulate geolocation coordinates to test geolocation overrides.
+- Simulate device orientation to test accelerometer data.
 
-## 访问传感器控件
+## Access sensor controls
 
 <div class="wf-devtools-flex">
   <div>
-    <p>要访问 Chrome DevTools 传感器控件，请执行以下操作：</p>
+    <p>To access the Chrome DevTools sensor controls:</p>
     <ol>
-      <li>打开 DevTools 主菜单</li>
-      <li>在 <strong>More Tools</strong> 菜单下，点击 <strong>Sensors</strong></li>
+      <li>Open the DevTools main menu, then</li>
+      <li>Under <strong>More Tools</strong>, click on <strong>Sensors</strong></li>
     </ol>
   </div>
   <div class="wf-devtools-flex-half">
-    <img src="imgs/navigate-to-sensors.png" alt="导航至 Sensors 面板">
+    <img src="imgs/navigate-to-sensors.png" alt="Navigate to Sensors panel">
   </div>
 </div>
 
-Note: 如果您的应用检测到使用 JavaScript（如 Modernizr）的传感器加载，请确保在启用传感器模拟器之后重新加载页面。
+Note: If your app detects sensors onload using JavaScript (such as Modernizr), make sure that you reload the page after enabling sensor emulators.
 
-## 替换地理定位数据
+## Override geolocation data
 
-与桌面设备不同，移动设备通常使用 GPS 硬件检测位置。在 Sensors 窗格中，您可以模拟地理定位坐标，以便与 <a href='http://www.w3.org/TR/geolocation-API/'>Geolocation API</a> 结合使用。
+<aside class="warning">
+  <b>This page is deprecated</b>. See <a href="/web/tools/chrome-devtools/device-mode/geolocation">Override Geolocation</a>.
+</aside>
+
+Unlike desktops, mobile devices commonly use GPS hardware to detect location. In the Sensors pane, you can simulate geolocation coordinates to use with the [Geolocation API](http://www.w3.org/TR/geolocation-API/).
 
 <div class="wf-devtools-flex">
   <div>
-    <p>在模拟抽屉式导航栏的 Sensors 窗格中选中 <strong>Emulate geolocation coordinates</strong> 复选框，启用地理定位模拟。</p>
+    <p>Enable the geolocation emulation by selecting the <strong>Emulate geolocation coordinates</strong> checkbox in the sensors pane of the emulation drawer.</p>
   </div>
   <div class="wf-devtools-flex-half">
-    <img src="imgs/emulation-drawer-geolocation.png" alt="已启用的地理定位模拟器">
+    <img src="imgs/emulation-drawer-geolocation.png" alt="geolocation emulator enabled">
   </div>
 </div>
 
-您可以使用此模拟器替换 `navigator.geolocation` 的位置值，并在地理定位数据不可用时模拟用例。
+You can use this emulator to override position values for `navigator.geolocation`, as well as to simulate cases when geolocation data is unavailable.
 
-## 模拟加速度计（设备方向）
+## Emulate Accelerometer (Device Orientation)
+
+<aside class="warning">
+  <b>This page is deprecated</b>. See <a href="/web/tools/chrome-devtools/device-mode/orientation">Simulate Device Orientation</a>.
+</aside>
 
 <div class="wf-devtools-flex">
   <div>
-    <p>要测试来自 <a href='http://www.w3.org/TR/screen-orientation/'>Orientation API</a> 的加速度计数据，请在 Sensors 窗格中选中 <strong>Accelerometer</strong> 复选框，启用加速度计模拟器。</p>
+    <p>To test accelerometer data coming from the <a href='http://www.w3.org/TR/screen-orientation/'>Orientation API</a>, enable the accelerometer emulator by selecting the <strong>Accelerometer</strong> checkbox in the Sensors pane.</p>
   </div>
   <div class="wf-devtools-flex-half">
-    <img src="imgs/emulation-drawer-accelerometer.png" alt="加速度计控件">
+    <img src="imgs/emulation-drawer-accelerometer.png" alt="Accelerometer control">
   </div>
 </div>
 
-您可以操作下列方向参数：
+You can manipulate the following orientation parameters:
 
 <dl>
+  
 <dt><abbr title="alpha">α</abbr></dt>
-<dd>围绕 Z 轴旋转。</dd>
+<dd>Rotation around the z-axis.</dd>
 <dt><abbr title="beta">β</abbr></dt>
-<dd>左右倾斜。</dd>
+<dd>Left-to-right tilt.</dd>
 <dt><abbr title="gamma">γ</abbr></dt>
-<dd>前后倾斜。</dd>
+<dd>Front-to-back tilt.</dd>
 </dl>
 
-您也可以点击模型加速度计并将其拖动到所需方向。
+You can also click and drag the model accelerometer to the desired orientation.
 
-使用此[设备方向演示](http://googlesamples.github.io/web-fundamentals/fundamentals/native-hardware/device-orientation/dev-orientation.html)试用加速度计模拟器。
+Try out the accelerometer emulator using this [device orientation demo](http://googlesamples.github.io/web-fundamentals/fundamentals/native-hardware/device-orientation/dev-orientation.html).
 
+## Feedback {: #feedback }
 
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
