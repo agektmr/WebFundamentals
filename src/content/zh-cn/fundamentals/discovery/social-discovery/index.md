@@ -1,228 +1,196 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description:您只需为每个页面添加几行代码，就可以影响通过社交媒体分享时网站的呈现方式。这可能有助于吸引更多的人访问您的网站，因为提供的预览所包含的信息要比以其他方式提供的信息更加丰富。
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: You can influence the way your site appears when shared via social media by adding a few lines of code to each page. This can help bring more people to your site by providing previews with richer information than would otherwise be available.
 
-{# wf_updated_on:2014-11-08 #}
-{# wf_published_on:2014-10-07 #}
+{# wf_blink_components: N/A #} {# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2014-10-07 #}
 
-# 社交发现 {: .page-title }
+# Social Discovery {: .page-title }
 
 {% include "web/_shared/contributors/agektmr.html" %}
 
-您只需为每个页面添加几行代码，就可以影响通过社交媒体分享时网站的呈现方式。
-这可能有助于吸引更多的人访问您的网站，因为提供的预览所包含的信息要比以其他方式提供的信息更加丰富。
-
-
-
+You can influence the way your site appears when shared via social media by adding a few lines of code to each page. This can help bring more people to your site by providing previews with richer information than would otherwise be available.
 
 ### TL;DR {: .hide-from-toc }
-- 使用 schema.org microdata 来提供 Google+ 的页面标题、说明和图片。
-- 使用开放图表协议 (OGP) 来提供 Facebook 的页面标题、说明和图片。
-- 使用 Twitter Card 来提供 Twitter 的页面标题、说明、图片以及 Twitter ID。
 
-您只需为每个页面添加几行代码，就可以影响通过社交媒体分享时网站的呈现方式。
-这可能有助于提高吸引力，因为提供的预览所包含的信息要比以其他方式提供的信息更加丰富。如果没有它，社交网站只能提供不含图片或其他有帮助信息的基本信息。
+* Use schema.org microdata to provide page title, description, and an image for Google+.
+* Use Open Graph Protocol (OGP) to provide page title, description, and an image for Facebook.
+* Use Twitter Cards to provide page title, description, an image, and a Twitter id for Twitter.
 
+You can influence the way your site appears when shared via social media by adding a few lines of code to each page. This can help increase engagement by providing previews with richer information than would otherwise be available. Without it, social sites will provide only basic information, without images or other helpful information.
 
- 
-
-您认为下面哪一个被点击的可能性更大？用户容易被图片吸引，如果能提前预览，就会更坚信他们会喜欢自己找到的内容。
-
-
+Which one do you think is more likely to be clicked? People are drawn to images and feel more confident they'll like what they find when they have an early preview.
 
 <div class="attempt-left">
   <figure>
     <img src="imgs/gplus-snippet-2.png" srcset="imgs/gplus-snippet-2.png 1x,
       imgs/gplus-snippet-2-2x.png 2x" />
     <figcaption class="success">
-      使用了适当的标记：包含正确的标题、简短说明和图片。
-添加这些项目可能有助于提高吸引力。</figcaption>
-
-
+      With the appropriate markup: the correct title, a short
+      description, and an image are included. Adding these items can help
+      increase engagement.
+     </figcaption>
   </figure>
 </div>
+
 <div class="attempt-right">
   <figure>
     <img src="imgs/gplus-snippet-1.png" srcset="imgs/gplus-snippet-1.png 1x,
       imgs/gplus-snippet-1-2x.png 2x" />
     <figcaption class="warning">
-      未使用适当的标记，只包含页面标题。</figcaption>
-
-
+      Without the proper mark up, only the page title is
+      included.
+     </figcaption>
   </figure>
 </div>
 
 <div style="clear:both;"></div>
 
-当社交网络上的某个人想把您的网站分享给自己的朋友时，他们多半会添加一些注释来说明它有多棒，然后再进行分享。但描述网站往往是件麻烦事，并且从网页所有者的观点来看，描述的内容可能抓不住要点。某些服务会对用户可以在注释中输入的字符数作出限制。
+When someone on a social network wants to share your website with their friends, they would probably add some notes explaining how awesome it is, and share it. But describing a website tends be cumbersome and can miss the point from the page owner's point of view. Some services restrict the number of characters users can put in the note.
 
+By adding the appropriate metadata to your pages, you can simplify the sharing process for users by providing the title, a description, and an attractive image. This means they don't have to spend valuable time (or characters) describing the link.
 
-您可以通过向页面添加适当的元数据来提供标题、说明和吸引人的图片，从而简化用户的分享过程。这意味着他们不必将宝贵的时间（或字符）浪费在描述链接上。
+## Use schema.org + microdata to provide rich snippets on Google+
 
+Crawlers use many methods to parse a page and understand its content. By using [microdata](http://www.w3.org/TR/microdata/){: .external }, and [schema.org](https://schema.org/){: .external } vocabulary, you help social sites and search engines better understand the contents of the page.
 
-## 使用 schema.org + microdata 在 Google+ 上提供丰富的摘要
-
-抓取工具使用许多方法来解析页面和识别其内容。通过使用 [microdata](http://www.w3.org/TR/microdata/){: .external }和 [schema.org](https://schema.org/){: .external } 词汇，您可以帮助社交网站和搜索引擎更有效地识别页面的内容。
-
-
-
-
-下面是一个示例：
+Here's an example:
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/discovery/social-discovery/_code/social-sites.html" region_tag="microdata" adjust_indentation="auto" %}
 </pre>
 
-尽管大多数元数据嵌入在网页的 head 部分，但 microdata 则是位于存在上下文的位置。
+While most metadata are embedded in the head section of a web page, microdata lives where the context exists.
 
+### Add `itemscope` to define microdata scope
 
-### 添加 `itemscope` 来定义 microdata 作用域
-通过添加 `itemscope`，您可以将标记指定为一个有关特定项的内容块。
+By adding `itemscope`, you can specify the tag as a block of contents about a particular item.
 
+### Add `itemtype` to define type of your website
 
-### 添加 `itemtype` 来定义网站类型
-您可以将 `itemtype` 属性与 `itemscope` 联用来指定项目的类型。
-`itemtype` 的值可根据网页上的内容类型确定。
-您应该可以在[此页面](https://schema.org/docs/full.html)中找到一个相关值。
+You can specify the type of item by using the `itemtype` attribute along with the `itemscope`. The value of an `itemtype` can be determined according to the type of content on your web page. You should be able to find one that is relevant in [this page](https://schema.org/docs/full.html).
 
+### Add `itemprop` to describe each item using schema.org vocabulary
 
-### 添加 `itemprop` 来使用 schema.org 词汇描述每个项目
-`itemprop` 定义作用域中 `itemtype` 的属性。对于向社交网站提供元数据，典型的 `itemprop` 值为 `name`、`description` 和 `image`。
+`itemprop` defines properties for `itemtype` in the scope. For providing metadata to social sites, typical `itemprop` values are `name`, `description`, and `image`.
 
+### Learn more
 
+These microdata provide semantic information to crawlers, typically for [Google+](https://plus.google.com/){: .external } and Google Search. To learn more about snippets and rendering on Google+, read the following documents:
 
-### 了解详情
-这些 microdata 向抓取工具（通常是 [Google+](https://plus.google.com/){: .external } 和 Google 搜索）提供语义信息。
-如需了解有关 Google+ 上摘要和渲染的更多信息，请阅读下列文档：
+* [Article Rendering - Google+ Platform](/+/web/snippet/article-rendering)
+* [Snippet - Google+ Platform](/+/web/snippet/)
 
+### Validate rich snippets
 
-* [文章渲染 - Google+ 平台](/+/web/snippet/article-rendering)
-* [摘要 - Google+ 平台](/+/web/snippet/)
+In order to validate rich snippets on Google+, you can use tools such as:
 
-### 验证丰富摘要
-要验证 Google+ 上的丰富摘要，您可以使用下面这样的工具：
-
-* [结构化数据测试工具](https://www.google.com/webmasters/tools/richsnippets) - 网站站长工具  
+* [Structured Data Testing Tool](https://www.google.com/webmasters/tools/richsnippets) - Webmaster Tools
 
 <img src="imgs/webmaster-tools.png" srcset="imgs/webmaster-tools.png 1x, imgs/webmaster-tools-2x.png 2x" />
 
-## 使用开放图表协议 (OGP) 在 Facebook 上提供丰富摘要
+## Use Open Graph Protocol (OGP) to provide rich snippets on Facebook
 
-[开放图表协议 (OGP)](http://ogp.me/){: .external } 为 Facebook 提供了必要的元数据，让网页能够具有与其他 Facebook 对象相同的功能。
-
-
+The [Open Graph Protocol (OGP)](http://ogp.me/){: .external } provides Facebook with the metadata necessary to allow web pages to have the same functionality as other Facebook objects.
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/discovery/social-discovery/_code/social-sites.html" region_tag="ogp" adjust_indentation="auto" %}
 </pre>
 
-加入网页的 head 部分时，这些元数据可以在分享网页时提供丰富的摘要信息。
+When included in the head section of your page, this metadata provides rich snippet information when the page is shared.
 
+### Use `og:` namespaced `meta` tags to describe metadata
 
-### 使用 `og:` 带命名空间的 `meta` 标记来描述元数据
-一个 `meta` 标记包括一个 `property` 属性和一个 `content` 属性。属性和内容可取下列值：
-
+A `meta` tag consists of a `property` attribute and a `content` attribute. Properties and contents may take the following values:
 
 <table>
   <thead>
     <tr>
-      <th data-th="Property">属性</th>
-      <th data-th="Content">内容</th>
+      <th data-th="Property">Property</th>
+      <th data-th="Content">Content</th>
     </tr>
   </thead>
   <tbody>
     <tr>
       <td data-th="Property"><code>og:title</code></td>
-      <td data-th="Content">网页的标题。</td>
+      <td data-th="Content">The title of the web page.</td>
     </tr>
     <tr>
       <td data-th="Property"><code>og:description</code></td>
-      <td data-th="Content">网页的说明。</td>
+      <td data-th="Content">The description of the web page.</td>
     </tr>
     <tr>
       <td data-th="Property"><code>og:url</code></td>
-      <td data-th="Content">网页的规范网址。</td>
+      <td data-th="Content">The canonical url of the web page.</td>
     </tr>
     <tr>
       <td data-th="Property"><code>og:image</code></td>
-      <td data-th="Content">分享的帖子随附图片的网址。</td>
+      <td data-th="Content">URL to an image attached to the shared post.</td>
     </tr>
     <tr>
       <td data-th="Property"><code>og:type</code></td>
-      <td data-th="Content">表示网页类型的字符串。您可以在<a href="https://developers.facebook.com/docs/reference/opengraph/">此处</a>找到适合网页的字符串。</td>
+      <td data-th="Content">A string that indicates the type of the web page. You can find one that is suitable for your web page <a href="https://developers.facebook.com/docs/reference/opengraph/">here</a>.</td>
     </tr>
   </tbody>
 </table>
 
-这些元标记向社交网站（通常是 [Google+](https://plus.google.com/){: .external } 和 [Facebook](https://www.facebook.com/){: .external }）的抓取工具提供语义信息。
+These meta tags provide semantic information to crawlers from social sites, typically from [Google+](https://plus.google.com/){: .external } and [Facebook](https://www.facebook.com/){: .external }.
 
+### Learn more
 
-
-### 了解详情
-如需了解有关可以为 Facebook 帖子附加的内容的更多信息，请访问  Open Graph Protocol 官方网站。
-
+To learn more about things you can attach to the post on Facebook, visit the official Open Graph Protocol site.
 
 * [ogp.me](http://ogp.me/){: .external }
 
-### 验证丰富摘要
-要验证 Facebook 上的标记，您可以使用下面这样的工具：
+### Validate rich snippets
 
-* [调试程序](https://developers.facebook.com/tools/debug/){: .external }
+In order to validate your markup on Facebook, you can use tools such as:
 
-## 使用 Twitter Card 在 Twitter 上提供丰富摘要
-[Twitter Card](https://dev.twitter.com/docs/cards) 是 [适用于 Twitter 的开放图表协议](https://twitter.com/){: .external }的一个扩展程序。
-它们允许您向包含网页链接的 Tweets 添加图片和视频之类的媒体附件。通过添加相应的元数据，可以为包含网页链接的 Tweets 添加一张卡片，其中包含您添加的丰富细节。
+* [Debugger](https://developers.facebook.com/tools/debug/){: .external }
 
+## Use Twitter Cards to provide rich snippets on Twitter
 
-### 使用 `twitter:` 带命名空间的元标记来描述元数据
-为了让 Twitter Card 发挥作用，[您的网域必须获得批准](https://cards-dev.twitter.com/validator)并必须包含以 `twitter:card` 作为 `name` 属性而非 `property` 属性的元标记。
+[Twitter Cards](https://dev.twitter.com/cards/overview) are an extension to the Open [Graph Protocol applicable for Twitter](https://twitter.com/){: .external }. They allow you to add media attachments like images and video to Tweets with a link to your web page. By adding the appropriate metadata, Tweets with links to your page will have a card added that includes the rich detail you've added.
 
+### Use `twitter:` namespaced meta tags to describe metadata
 
-下面是一个快速示例：
+In order to get a Twitter Card working, [your domain must be approved](https://cards-dev.twitter.com/validator) and must contain a meta tag that has `twitter:card` as the `name` attribute instead of `property` attribute.
 
-
-
-  
-
+Here's a quick example:
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/discovery/social-discovery/_code/social-sites.html" region_tag="twitter" adjust_indentation="auto" %}
 </pre>
 
-通过将 Twitter ID 指定为 twitter:site 的值，Twitter 可以将这些信息嵌入到分享的帖子中，这样用户就能轻松地与页面所有者进行互动。
-
-
+By assigning the Twitter id to the value of twitter:site, Twitter embeds this information in the shared post so that people can easily engage with the page owner.
 
 <img src="imgs/twitter-card.png" srcset="imgs/twitter-card.png 1x, imgs/twitter-card-2x.png 2x" />
 
-### 了解详情
-如需了解有关 Twitter Card 的更多信息，请访问：
+### Learn more
 
-* [Twitter 的开发者网站](https://dev.twitter.com/docs/cards)
+To learn more about Twitter Cards, visit:
 
-### 验证丰富摘要
-为验证标记，Twitter 提供了以下工具：
+* [Twitter's developer site](https://dev.twitter.com/cards)
+
+### Validate rich snippets
+
+In order to validate your markup, Twitter provides:
 
 * [Card Validator](https://cards-dev.twitter.com/validator)
 
-## 最佳做法
-考虑到所有三个选择，最佳做法是将它们都加入到网页中。
-下面是一个示例：
+## The Best Practice
+
+Given all three options, the best thing you can do is to include them all in your web page. Here's an example:
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/discovery/social-discovery/_code/social-sites2.html" region_tag="best_practice" adjust_indentation="auto" %}
 </pre>
 
-请注意，microdata 和 OGP 共享某些标记：
+Notice that microdata and OGP share some markup:
 
-* `itemscope` 位于 `head` 标记处
-* `title` 和 `description` 在 microdata 与 OGP 之间共享
-* `itemprop="image"` 使用带 `href` 属性的 `link` 标记，而不是重复使用带 `property="og:image"` 的 `meta` 标记
-最后，务必验证网页在各社交网站上的呈现方式合乎预期，然后再进行发布。
-  
+* `itemscope` is located at `head` tag
+* `title` and `description` are shared between microdata and OGP
+* `itemprop="image"` is using `link` tag with `href` attribute instead of reusing `meta` tag with `property="og:image"`
 
+Lastly, make sure to validate that your web page appears as expected on each social site before publishing.
 
+## Feedback {: #feedback }
 
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
