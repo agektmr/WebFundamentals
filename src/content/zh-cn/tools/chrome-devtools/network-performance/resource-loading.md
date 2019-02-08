@@ -1,584 +1,464 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description:使用 Chrome DevTools 的 Network 面板测量您网页应用的网络性能。
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Measure the network performance of your web application using the Chrome DevTools Network panel.
 
-{# wf_updated_on: 2019-02-06 #}
-{# wf_published_on: 2015-04-13 #}
-{# wf_blink_components: Platform>DevTools #}
+{# wf_updated_on: 2018-07-27 #} {# wf_published_on: 2015-04-13 #} {# wf_blink_components: Platform>DevTools #}
 
-# 测量资源加载时间 {: .page-title }
+# Measure Resource Loading Times {: .page-title }
 
-{% include "web/_shared/contributors/kaycebasques.html" %}
-{% include "web/_shared/contributors/megginkearney.html" %}
+{% include "web/_shared/contributors/kaycebasques.html" %} {% include "web/_shared/contributors/megginkearney.html" %}
 
+Warning: This page is deprecated. At the top of each section, there's a link to an up-to-date page where you can find similar information.
 
-Warning: 此页面已遭弃用。 各部分顶部均提供最新页面的链接，您可在其中找到相似的信息。
+Measure the network performance of your site using the
+<strong>Network</strong> panel.
 
-
-使用 <strong>Network</strong> 面板测量您网站的网络性能。
-
-
-
-**Network** 面板记录页面上每个网络操作的相关信息，包括详细的时间数据、HTTP 请求与响应标头和 Cookie 等等。
-
-
-
+The **Network** panel records information about each network operation on a page, including detailed timing data, HTTP request and response headers, cookies, and more.
 
 ### TL;DR {: .hide-from-toc }
-- 使用 Network 面板记录和分析网络活动。
-- 整体或单独查看资源的加载信息。
-- 过滤和排序资源的显示方式。
-- 保存、复制和清除网络记录。
-- 根据需求自定义 Network 面板。
 
-## Network 面板概览
+* Use the Network panel to record and analyze network activity.
+* View load information in aggregate or for individual resources.
+* Filter and sort how resources are displayed.
+* Save, copy, and clear network recordings.
+* Customize the Network panel to your needs.
+
+## Network panel overview
 
 <aside class="warning">
-  <b>Warning: </b>此页面已遭弃用。 如需最新信息，请参阅以下部分：
-
+  <b>Warning:</b> This page is deprecated. See following sections for up-to-date
+  information:
   <ul>
-    <li><a href="reference#controls">Controls 窗格</a></li>
-    <li><a href="reference#filters">Filters 窗格</a></li>
-    <li><a href="reference#overview">Overview 窗格</a></li>
-    <li><a href="reference#requests">Requests 窗格</a></li>
-    <li><a href="reference#summary">Summary 窗格</a></li>
+    <li><a href="reference#controls">Controls pane</a></li>
+    <li><a href="reference#filters">Filters pane</a></li>
+    <li><a href="reference#overview">Overview pane</a></li>
+    <li><a href="reference#requests">Requests pane</a></li>
+    <li><a href="reference#summary">Summary pane</a></li>
   </ul>
 </aside>
 
-Network 面板由五个窗格组成：
+The Network panel consists of five panes:
 
-1. **Controls**。 使用这些选项可以控制 **Network** 面板的外观和功能。
-2. **Filters**。 使用这些选项可以控制在 **Requests Table** 中显示哪些资源。
- 提示：按住 <kbd>Cmd</kbd> (Mac) 或 <kbd>Ctrl</kbd>
-   (Windows/Linux)，并点击过滤器可以同时选择多个过滤器。
-3. **Overview**. 此图表显示资源检索时间的时间线。
-   如果您看到多条竖线堆叠在一起，则说明这些资源被同时检索。
-4. **Requests Table**. 此表格列出了检索的每一个资源。
-   默认情况下，此表格按时间顺序排序，最早的资源在顶部。
+1. **Controls**. Use these options to control how the **Network** panel looks and functions.
+2. **Filters**. Use these options to control which resources are displayed in the **Requests Table**. Tip: hold <kbd>Cmd</kbd> (Mac) or <kbd>Ctrl</kbd> (Window/Linux), and then click on a filter to select multiple filters at the same time.
+3. **Overview**. This graph shows a timeline of when resources were retrieved. If you see multiple bars stacked vertically, it means that those resources were retrieved simultaneously.
+4. **Requests Table**. This table lists out every resource that was retrieved. By default, this table is sorted chronologically, with the earliest resources at the top. Clicking on the name of a resource yields more information about it. Tip: right-click on any of the table headers except **Timeline** to add or remove columns of information.
+5. **Summary**. At a glance this pane tells you the total number of requests, amount of data transferred, and load times.
 
-   点击资源的名称可以显示更多信息。
-   提示：右键点击 **Timeline** 以外的任何一个表格表头可以添加或移除信息列。
-5. **Summary**。 此窗格可以一目了然地告诉您请求总数、传输的数据量和加载时间。
+![network panel panes](imgs/panes.png)
 
+The **Requests Table** displays the following columns by default. You can [add and remove columns](#add-and-remove-table-columns).
 
-![Network 面板的窗格](imgs/panes.png)
+* **Name**. The name of the resource.
+* **Status**. The HTTP status code.
+* **Type**. The MIME type of the requested resource.
+* **Initiator**. The object or process that initiated the request. It can have one of the following values: 
+    * **Parser**. Chrome's HTML parser initiated the request.
+    * **Redirect**. An HTTP redirect initiated the request.
+    * **Script**. A script initiated the request.
+    * **Other**. Some other process or action initiated the request, such as the user navigating to a page via a link, or by entering a URL in the address bar.
+* **Size**. The combined size of the response headers (usually a few hundred bytes) plus the response body, as delivered by the server.
+* **Time**. The total duration, from the start of the request to the receipt of the final byte in the response.
+* **Timeline**. The Timeline column displays a visual waterfall of all network requests. Clicking the header of this column reveals a menu of additional sorting fields.
 
-默认情况下，**Requests Table** 会显示以下列。 您可以[添加和移除列](#add-and-remove-table-columns)。
-
-
-* **Name**。 资源的名称。
-* **Status**。 HTTP 状态代码。
-* **Type**。 已请求资源的 MIME 类型。
-* **Initiator**。 发起请求的对象或进程。 值为以下选项之一：
-  * **Parser**。 发起请求的 Chrome 的 HTML 解析器。
-  * **Redirect**。 发起请求的 HTTP 重定向进程。
-  * **Script**。 发起请求的脚本。
-  * **Other**。 发起请求的某些其他进程或操作，例如用户通过链接或者在地址栏中输入网址导航到页面。
-* **Size**。 响应标头（通常为数百字节）加响应正文（由服务器提供）的组合大小。
-* **Time**。 从请求开始至在响应中接收到最终字节的总持续时间。
-* **Timeline**。 Timeline 列可以显示所有网络请求的可视瀑布。
- 点击此列的标题可以显示一个包含更多排序字段的菜单。
-
-
-## 记录网络活动
+## Record network activity
 
 <aside class="warning">
-  <b>Warning: </b>此页面已遭弃用。 如需最新信息，请参阅<a href="reference#record">开始或停止记录</a>
-  。
+  <b>Warning:</b> This page is deprecated. See
+  <a href="reference#record">Start or stop recording</a>
+  for up-to-date information.
 </aside>
 
-在 **Network** 面板打开时，DevTools 在默认情况下会记录所有网络活动。
- 要记录活动，只需在面板打开时重新加载页面，或者等待当前加载页面上的网络活动。
+When the **Network** panel is open, DevTools records all network activity by default. To record, just reload a page while the panel is open, or wait for network activity on the currently loaded page.
 
+You can tell whether or not DevTools is recording via the **record** button. When it's red (![record button on](imgs/record-on.png){:.inline}), DevTools is recording. When it's grey (![record button off](imgs/record-off.png){:.inline}), DevTools is not recording. Click this button to start or stop recording, or press the keyboard shortcut <kbd>Cmd/Ctrl</kbd>+<kbd>e</kbd>.
 
-您可以通过
-**record** 按钮确定 DevTools 是否正在记录。 显示红色 (![记录按钮打开](imgs/record-on.png)
-{:.inline}) 表明 DevTools 正在记录。
-显示灰色 (![记录按钮关闭](imgs/record-off.png){:.inline}) 表明 DevTools 未进行记录。
- 点击此按钮可以开始或停止记录，也可以按键盘快捷键 <kbd>Cmd/Ctrl</kbd>+<kbd>e</kbd>。
-
-
-## 在记录期间捕捉屏幕截图 {:#filmstrip}
+## Capture screenshots during recording {:#filmstrip}
 
 <aside class="warning">
-  <b>Warning: </b>此页面已遭弃用。 如需最新信息，请参阅<a href="reference#screenshots">在记录期间捕捉屏幕截图</a>
-  。
+  <b>Warning:</b> This page is deprecated. See
+  <a href="reference#screenshots">Capture screenshots during recording</a>
+  for up-to-date information.
 </aside>
 
-**Network** 面板可以在页面加载期间捕捉屏幕截图。 此功能称为**幻灯片**。
+The **Network** panel can capture screenshots during a page load. This feature is known as the **Filmstrip**.
 
+Click on the **camera** icon to enable the Filmstrip. When the icon is grey, the Filmstrip is disabled (![filmstrip
+disabled](imgs/filmstrip-disabled.png){:.inline}). When the icon is blue, it is enabled (![filmstrip enabled](imgs/filmstrip-enabled.png){:.inline}).
 
-点击 **camera** 图标可以启用幻灯片。 此图标为灰色时，幻灯片处于停用状态 (![已停用幻灯片](imgs/filmstrip-disabled.png){:.inline})。 如果图标为蓝色，则说明已启用 (![已启用幻灯片](imgs/filmstrip-enabled.png){:.inline})。
+Reload the page to capture the screenshots. The screenshots are displayed above the **Overview**.
 
-重新加载页面可以捕捉屏幕截图。 屏幕截图显示在 **Overview** 窗格上方。
+![recording with filmstrip](imgs/filmstrip.png)
 
+When you hover over a screenshot, the **Timeline** displays a vertical yellow line indicating when the frame was captured.
 
-![带幻灯片的记录](imgs/filmstrip.png)
+![filmstrip overlay on timeline](imgs/filmstrip-timeline-overlay.png)
 
-将鼠标指针悬停在一个屏幕截图上时，**Timeline** 将显示一条黄色竖线，指示帧的捕捉时间。
+Double-click on a screenshot to view a zoomed version of the screenshot. While a screenshot is zoomed, use the left and right arrows of your keyboard to navigate between screenshots.
 
+![zoomed filmstrip screenshot](imgs/filmstrip-zoom.png)
 
-![Timeline 上的幻灯片叠加层](imgs/filmstrip-timeline-overlay.png)
-
-双击屏幕截图可查看放大版本。 在屏幕截图处于放大状态时，使用键盘的向左和向右箭头可以在屏幕截图之间导航。
-
-
-
-![放大的幻灯片屏幕截图](imgs/filmstrip-zoom.png)
-
-## 查看 DOMContentLoaded 和 load 事件信息
+## View DOMContentLoaded and load event information
 
 <aside class="warning">
-  <b>Warning: </b>此页面已遭弃用。 如需最新信息，请参阅<a href="reference#load">查看 load 事件</a>
-  。
+  <b>Warning:</b> This page is deprecated. See
+  <a href="reference#load">View load events</a>
+  for up-to-date information.
 </aside>
 
-**Network** 面板突出显示两种事件：
-[`DOMContentLoaded`](https://developer.mozilla.org/en-US/docs/Web/Events/DOMContentLoaded) 和
-[`load`](https://developer.mozilla.org/en-US/docs/Web/Events/load)。
+The **Network** panel highlights two events: [`DOMContentLoaded`](https://developer.mozilla.org/en-US/docs/Web/Events/DOMContentLoaded) and [`load`](https://developer.mozilla.org/en-US/docs/Web/Events/load).
 
-解析页面的初始标记时会触发 `DOMContentLoaded`。
- 此事件显示在 **Network** 面板中的两个地方：
+`DOMContentLoaded` is fired when the initial markup of a page has been parsed. It is displayed in two places on the **Network** panel:
 
-1. **Overview** 窗格中的蓝色竖线是表示事件。
-2. 在 **Summary** 窗格中，您可以看到事件的确切时间。
+1. The blue vertical bar in the **Overview** pane signifies the event.
+2. In the **Summary** pane you can see the exact time of the event.
 
-![Network 面板上的 DOMContentLoaded 事件](imgs/domcontentloaded.png)
+![DOMContentLoaded event on network panel](imgs/domcontentloaded.png)
 
-页面完全加载时将触发 `load`。 此事件显示在三个地方：
+`load` is fired when a page has fully loaded. It is displayed in three places:
 
-1. **Overview** 窗格中的红色竖线是表示事件。
-2. **Requests Table** 中的红色竖线也表示事件。
-3. 在 **Summary** 窗格中，您可以看到此事件的确切时间。
+1. The red vertical bar in the **Overview** pane signifies the event.
+2. The red vertical bar in the **Requests Table** signifies the event, too.
+3. In the **Summary** pane you can see the exact time of the event.
 
-![Network 面板上的 load 事件](imgs/load.png)
+![load event on network panel](imgs/load.png)
 
-## 查看单个资源的详细信息
+## View details for a single resource
 
 <aside class="warning">
-  <b>Warning: </b>此页面已遭弃用。 如需最新信息，请参阅<a href="reference#details">查看详细信息</a>
-  。
+  <b>Warning:</b> This page is deprecated. See
+  <a href="reference#details">View details</a>
+  for up-to-date information.
 </aside>
 
-点击资源名称（位于 **Requests Table** 的 **Name** 列下）以查看与该资源有关的更多信息。
+Click on a resource name (under the **Name** column of the **Requests Table**) to view more information about that resource.
 
+The tabs available change depending on what type of resource you've selected, but the four tabs below are most common:
 
-可用标签会因您所选择资源类型的不同而不同，但下面四个标签最常见：
+* **Headers**. HTTP headers associated with the resource.
+* **Preview**. Previews of JSON, image, and text resources.
+* **Response**. HTTP response data (if any).
+* **Timing**. A granular breakdown of the request lifecycle for the resource.
 
+![viewing details for a single resource](imgs/network-headers.png)
 
-* **Headers**。 与资源关联的 HTTP 标头。
-* **Preview**。 JSON、图像和文本资源的预览。
-* **Response**。 HTTP 响应数据（如果存在）。
-* **Timing**。 资源请求生命周期的精细分解。
-
-
-![查看单个资源的详细信息](imgs/network-headers.png)
-
-### 查看网络时间
+### View network timing
 
 <aside class="warning">
-  <b>Warning: </b>此页面已遭弃用。 如需最新信息，请参阅
-<a href="reference#timing">Timing 标签</a>
-  。
+  <b>Warning:</b> This page is deprecated. See
+  <a href="reference#timing">Timing tab</a>
+  for up-to-date information.
 </aside>
 
-点击 **Timing** 标签可以查看单个资源请求生命周期的精细分解。
+Click the **Timing** tab to view a granular breakdown of the request lifecycle for a single resource.
 
-
-生命周期按照以下类别显示花费的时间：
+The lifecycle shows how much time is spent in the following categories:
 
 <!-- the screenshot above and list below are redundant, but we include
      the text for SEO -->
 
 * Queuing
 * Stalled
-* 如果适用：DNS lookup、initial connection、SSL handshake
+* If applicable: DNS lookup, initial connection, SSL handshake
 * Request sent
-* Waiting (TTFB)
+* Waiting (Time to first byte (TTFB))
 * Content Download
 
-![timing 标签](imgs/timing-tab.png)
+![timing tab](imgs/timing-tab.png)
 
-您也可以将鼠标指针悬停在 **Timeline** 图表内的资源上，查看相同的信息。
+You can also view this same information by hovering your mouse over a resource within the **Timeline** graph.
 
-
-![Timeline 中一个资源的时间数据](imgs/timeline-view-hover.png)
+![timing data for one resource in timeline](imgs/timeline-view-hover.png)
 
 {# include shared/related_guides.liquid inline=true list=page.related-guides.timing #}
 
-相关指南：
+Related Guides:
 
-* [了解 Resource Timing](understanding-resource-timing)
+* [Understanding Resource Timing](understanding-resource-timing)
 
-### 查看 HTTP 标头
+### View HTTP headers
 
 <aside class="warning">
-  <b>Warning: </b>此页面已遭弃用。 如需最新信息，请参阅
-<a href="reference#headers">Headers 标签</a>
-  。
+  <b>Warning:</b> This page is deprecated. See
+  <a href="reference#headers">Headers tab</a>
+  for up-to-date information.
 </aside>
 
-点击 **Headers** 显示该资源的标头。
+Clicking the **Headers** shows the headers for that resource.
 
-**Headers** 标签显示资源的请求网址、HTTP 方法以及响应状态代码。
- 此外，该标签还会列出 HTTP 响应、请求标头、其值以及任何查询字符串参数。
+The **Headers** tab displays the resource's request URL, HTTP method, and response status code. Additionally, it lists the HTTP response and request headers and their values, and any query string parameters.
 
+![HTTP headers for a single resource](imgs/network-headers.png)
 
-![单个资源的 HTTP 标头](imgs/network-headers.png)
+You can view response headers, request headers, or query string parameters in source or parsed format by clicking the `view source` or `view parsed` link next to each section.
 
-点击每一部分旁边的 `view source` 或 `view parsed` 链接，以源格式或者解析格式查看响应标头、请求标头或者查询字符串参数。
+![view header source](imgs/view-header-source.png)
 
+You can also view query string parameters in URL-encoded or decoded format by clicking the `view URL encoded` or `view decoded` link next to that section.
 
+![view URL encoded](imgs/view-url-encoded.png)
 
-![查看标头源](imgs/view-header-source.png)
-
-您也可以点击相应部分旁边的 `view URL encoded` 或 `view decoded` 链接，以网址编码或解码格式查看查询字符串参数。
-
-
-![查看已编码网址](imgs/view-url-encoded.png)
-
-### 预览资源
+### Preview a resource
 
 <aside class="warning">
-  <b>Warning: </b>此页面已遭弃用。 如需最新信息，请参阅
-<a href="reference#preview">Preview 标签</a>
-  。
+  <b>Warning:</b> This page is deprecated. See
+  <a href="reference#preview">Preview tab</a>
+  for up-to-date information.
 </aside>
 
-点击 **Preview** 标签可以预览该资源。 **Preview**
-标签可能显示一些有用的信息，也可能不显示，具体取决于您所选择资源的类型。
+Click the **Preview** tab to view a preview of that resource. The **Preview** tab may or may not display any useful information, depending on the type of resource you've selected.
 
+![image resource preview](imgs/preview-png.png)
 
-![图像资源预览](imgs/preview-png.png)
-
-### 查看 HTTP 响应内容
+### View HTTP response content
 
 <aside class="warning">
-  <b>Warning: </b>此页面已遭弃用。 如需最新信息，请参阅
-<a href="reference#response">Response 标签</a>
-  。
+  <b>Warning:</b> This page is deprecated. See
+  <a href="reference#response">Response tab</a>
+  for up-to-date information.
 </aside>
 
-点击 **Response** 标签可以查看资源未格式化的 HTTP 响应内容。
- **Response** 标签可能包含一些有用的信息，也可能不包含，具体取决于您所选择资源的类型。
+Click the **Response** tab to view the resource's unformatted HTTP response content. The **Response** tab may or may not contain any useful information, depending on the type of resource you've selected.
 
+![JSON resource response data](imgs/response-json.png)
 
-![JSON 资源响应数据](imgs/response-json.png)
-
-### 查看 Cookie
+### View cookies
 
 <aside class="warning">
-  <b>Warning: </b>此页面已遭弃用。 如需最新信息，请参阅
-<a href="reference#cookies">Cookies 标签</a>
-  。
+  <b>Warning:</b> This page is deprecated. See
+  <a href="reference#cookies">Cookies tab</a>
+  for up-to-date information.
 </aside>
 
-点击 **Cookies** 标签可以查看在资源的 HTTP 请求和响应标头中传输的 Cookie 表。
- 只有传输 Cookie 时，此标签才可用。
+Click the **Cookies** tab to view a table of cookies transmitted in the resource's HTTP request and response headers. This tab is only available when cookies are transmitted.
 
+Below is a description of each of the columns in the table:
 
-下面是 Cookie 表中每一列的说明：
+* **Name**. The cookie's name.
+* **Value**. The cookie's value.
+* **Domain**. The domain the cookie belongs to.
+* **Path**. The URL path the cookie came from.
+* **Expires / Max-Age**. The value of the cookie's expires or max-age properties.
+* **Size**. The size of the cookie in bytes.
+* **HTTP**. Indicates that the cookie should only be set by the browser in the HTTP request, and cannot be accessed with JavaScript.
+* **Secure**. The presence of this attribute indicates that the cookie should only be transmitted over a secure connection.
 
-* **Name**。 Cookie 的名称。
-* **Value**。 Cookie 的值。
-* **Domain**。 Cookie 所属的域。
-* **Path**。 Cookie 来源的网址路径。
-* **Expires / Max-Age**。 Cookie 的 expires 或 max-age 属性的值。
-* **Size**。 Cookie 的大小（以字节为单位）。
-* **HTTP**。 指示 Cookie 应仅由浏览器在 HTTP 请求中设置，而无法通过 JavaScript 访问。
-* **Secure**。 如果存在此属性，则表示 Cookie 应仅通过安全连接传输。
+![resource cookies](imgs/cookies.png)
 
-
-![资源 Cookie](imgs/cookies.png)
-
-### 查看 WebSocket 帧
+### View WebSocket frames
 
 <aside class="warning">
-  <b>Warning: </b>此页面已遭弃用。 如需最新信息，请参阅
-<a href="reference#frames">Frames 标签</a>
-  。
+  <b>Warning:</b> This page is deprecated. See
+  <a href="reference#frames">Frames tab</a>
+  for up-to-date information.
 </aside>
 
-点击 **Frames** 标签可以查看
-[`WebSocket`](https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API)
-连接信息。 只有选定资源发起 `WebSocket` 连接时，此标签才会显示。
+Click the **Frames** tab to view [`WebSocket`](https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API) connection information. This tab is only visible when the selected resource initiated a `WebSocket` connection.
 
+![websocket frames tab](imgs/websocket-frames.png)
 
-![WebSocket 框架标签](imgs/websocket-frames.png)
+The list below describes each of the columns in the table on the **Frames** tab:
 
-下表对 **Frames**
-标签上表格中的每一列进行说明：
+* **Data**. The message payload. If the message is plain text, it's displayed here. For binary opcodes, this field displays the opcode's name and code. The following opcodes are supported: 
+    * Continuation Frame
+    * Binary Frame
+    * Connection Close Frame
+    * Ping Frame
+    * Pong Frame
+* **Length**. The length of the message payload in bytes.
+* **Time**. The time stamp when the message was created.
 
-* **Data**。 消息负载。 如果消息为纯文本，则在此处显示。
- 对于二进制操作码，此字段将显示操作码的名称和代码。
- 支持以下操作码：
-  * Continuation Frame
-  * Binary Frame
-  * Connection Close Frame
-  * Ping Frame
-  * Pong Frame
-* **Length**。 消息负载的长度（以字节为单位）。
-* **Time**。 消息创建时的时间戳。
+Messages are color-coded according to their type:
 
-消息根据其类型进行彩色编码：
+* Outgoing text messages are color-coded light-green.
+* Incoming text messages are white.
+* WebSocket opcodes are light-yellow.
+* Errors are light-red.
 
-* 传出的文本消息为浅绿色。
-* 传入的文本消息为白色。
-* WebSocket 操作码为浅黄色。
-* 错误为浅红色。
+**Notes about current implementation:**
 
-**有关当前实现的说明：**
+* To refresh the **Frames** table after new messages arrive, click the resource name on the left.
+* Only the last 100 `WebSocket` messages are preserved by the **Frames** table.
 
-* 要在新消息到达后刷新 **Frames** 表，请点击左侧的资源名称。
-* **Frames** 表格仅保留最后 100 条 `WebSocket` 消息。
-
-## 查看资源发起者和依赖项 {:#initiators-dependencies}
+## View resource initiators and dependencies {:#initiators-dependencies}
 
 <aside class="warning">
-  <b>Warning: </b>此页面已遭弃用。 如需最新信息，请参阅<a href="reference#initiators-dependencies">查看发起者和依赖项</a>。
-
-
+  <b>Warning:</b> This page is deprecated. See
+  <a href="reference#initiators-dependencies">View initiators and
+  dependencies</a> for up-to-date information.
 </aside>
 
-按住 <kbd>Shift</kbd> 并将鼠标指针悬停在资源上，可以查看其发起者和依赖项。
- 本部分将鼠标指针悬停位置的资源称为**目标**。
+Hold <kbd>Shift</kbd> and hover over a resource to view its initiators and dependencies. This section refers to the resource that you are hovering over as the **target**.
 
+The first resource above the target that is color-coded green is the initiator of the target. If there is a second resource above that which is color-coded green, that's the initiator of the initiator. Any resources below the target that are color-coded red are dependencies of the target.
 
-目标上方的第一个绿色编码资源为目标的发起者。
- 如果上方存在第二个也是绿色编码的资源，那么该资源将是发起者的发起者。
- 目标下方红色编码的任何资源都是目标的依赖项。
+In the screenshot below, the target is `dn/`. The initiator of the target is the script beginning with `rs=AA2Y`. The initiator of the initiator (`rs=AA2Y`) is `google.com`. Last, `dn.js` is a dependency of the target (`dn/`).
 
+![viewing resource initiators and
+dependencies](imgs/initiators-dependencies.png)
 
-下方的屏幕截图中，目标是 `dn/`。 此目标的发起者为以 `rs=AA2Y` 开头的脚本。
- 发起者 (`rs=AA2Y`) 的发起者为 `google.com`。
- 最后，`dn.js` 是目标 (`dn/`) 的依赖项。
+Keep in mind that for pages with lots of resources it's possible that you may not be able to see all of the initiators or dependencies.
 
-
-![查看资源发起者和依赖项](imgs/initiators-dependencies.png)
-
-
-请记住，对于具有大量资源的页面，您可能无法看到所有的发起者或依赖项。
-
-
-## 对请求排序
+## Sort requests
 
 <aside class="warning">
-  <b>Warning: </b>此页面已遭弃用。 如需最新信息，请参阅<a href="reference#sort-by-activity">按活动阶段排序</a>
-  。
+  <b>Warning:</b> This page is deprecated. See
+  <a href="reference#sort-by-activity">Sort by activity phase</a>
+  for up-to-date information.
 </aside>
 
-默认情况下，**Requests Table** 中的资源按照每个请求的开始时间排序，最早的请求位于顶部。
+By default, the resources in the **Requests Table** are sorted by the start time of each request, starting with the earliest requests at the top.
 
+Click on the header of a column to sort the table by each resource's value for that header. Click the same header again to change the sort order to ascending or descending.
 
-点击列标题可以按照该标题下每个资源的值对表格排序。
- 再次点击相同的标题可以将排序顺序更改为升序或降序。
+The **Timeline** column is unique from the others. When clicked, it displays a menu of sort fields:
 
+* **Timeline**. Sorts by the start time of each network request. This is the default sort, and is the same as sorting by the **Start Time** option.
+* **Start Time**. Sorts by the start time of each network request (same as sorting by the **Timeline** option).
+* **Response Time**. Sorts by each request's response time.
+* **End Time**. Sorts by the time when each request completed.
+* **Duration**. Sorts by the total time of each request. Select this filter to determine which resource takes the longest time to load.
+* **Latency**. Sorts by the time between the start of the request and the beginning of the response. Select this filter to determine which resource takes the longest time to first byte (TTFB).
 
-**Timeline** 列与其他列不同。 点击此列时，其将显示一个由多个排序字段组成的菜单：
+![Timeline sort fields](imgs/timeline-sort-fields.png)
 
-
-* **Timeline**。 按每个网络请求的开始时间排序。 这是默认排序方式，与按 **Start Time** 选项排序相同。
-* **Start Time**。 按每个网络请求的开始时间排序（与按 **Timeline** 选项排序相同）。
-* **Response Time**。 按每个请求的响应时间排序。
-* **End Time**。 按每个请求完成的时间排序。
-* **Duration**。 按每个请求的总时间排序。 选择此过滤器可以确定哪些资源的加载时间最长。
-* **Latency**。 按请求开始与响应开始之间的时间排序。
- 选择此过滤器可以确定哪些资源至第一字节 (TTFB) 的时间最长。
-
-
-![“Timeline”排序字段](imgs/timeline-sort-fields.png)
-
-## 过滤请求
+## Filter requests
 
 <aside class="warning">
-  <b>Warning: </b>此页面已遭弃用。 如需最新信息，请参阅
-<a href="reference#filters">Filters 面板</a>
-  。
+  <b>Warning:</b> This page is deprecated. See
+  <a href="reference#filters">Filters panel</a>
+  for up-to-date information.
 </aside>
 
-**Network** 面板提供多种方式来过滤显示的资源。
- 点击 **filters** 按钮 (![filters 按钮](imgs/filters.png)
-{:.inline}) 可以隐藏或显示 **Filters** 窗格。
+The **Network** panel provides numerous ways to filter which resources are displayed. Click the **filters** button (![filters button](imgs/filters.png){:.inline}) to hide or display the **Filters** pane.
 
+Use the content type buttons to only display resources of the selected content type.
 
-使用内容类型按钮可以仅显示选定内容类型的资源。
+Note: Hold <kbd>Cmd</kbd> (Mac) or <kbd>Ctrl</kbd> (Windows/Linux) and then click to enable multiple filters simultaneously.
 
+![multiple content type filters selected
+simultaneously](imgs/multiple-content-type-filters.png)
 
-注：按住 <kbd>Cmd</kbd> (Mac) 或 <kbd>Ctrl</kbd> (Windows/Linux) 并点击过滤器可以同时启用多个过滤器。
+The **filter** text field is deceptively powerful. If you enter an arbitrary string in it, the **Network** panel only displays the resources whose filenames match the given string.
 
-![同时选择多个内容类型过滤器](imgs/multiple-content-type-filters.png)
+![resource name filtering](imgs/resource-name-filtering.png)
 
+The **filter** text field also supports various keywords that let you sort resources by various properties, such as file size using the `larger-than` keyword.
 
-**filter** 文本字段看似非常强大。 如果您在其中输入任意字符串，**Network** 面板仅会显示文件名与给定字符串匹配的资源。
+The list below describes all of the keywords.
 
+* `domain`. Only display resources from the specified domain. You can use a wildcard character (`*`) to include multiple domains. For example, `*.com` displays resources from all domain names ending in `.com`. DevTools populates the autocomplete dropdown menu with all of the domains it has encountered.
+* `has-response-header`. Show the resources that contain the specified HTTP response header. DevTools populates the autocomplete dropdown with all of the response headers that it has encountered.
+* `is`. Use `is:running` to find `WebSocket` resources.
+* `larger-than`. Show resources that are larger than the specified size, in bytes. Setting a value of `1000` is equivalent to setting a value of `1k`.
+* `method`. Show resources that were retrieved over a specified HTTP method type. DevTools populates the dropdown with all of the HTTP methods it has encountered.
+* `mime-type`. Show resources of a specified MIME type. DevTools populates the dropdown with all MIME types it has encountered.
+* `mixed-content`. Show all mixed content resources (`mixed-content:all`) or just the ones that are currently displayed (`mixed-content:displayed`).
+* `scheme`. Show resources retrieved over unprotected HTTP (`scheme:http`) or protected HTTPS (`scheme:https`).
+* `set-cookie-domain`. Show the resources that have a `Set-Cookie` header with a `Domain` attribute that matches the specified value. DevTools populates the autocomplete with all of the cookie domains that it has encountered.
+* `set-cookie-name`. Show the resources that have a `Set-Cookie` header with a name that matches the specified value. DevTools populates the autocomplete with all of the cookie names that it has encountered.
+* `set-cookie-value`. Show the resources that have a `Set-Cookie` header with a value that matches the specified value. DevTools populates the autocomplete with all of the cookie values that it has encountered.
+* `status-code`. Only show resources whose HTTP status code match the specified code. DevTools populates the autocomplete dropdown menu with all of the status codes it has encountered.
 
+![filtering by file size](imgs/larger-than.png)
 
-![资源名称过滤](imgs/resource-name-filtering.png)
+Some of the keywords above mention an autocomplete dropdown menu. To trigger the autocomplete menu, type in the keyword followed by a colon. For example, in the screenshot below typing `domain:` triggered the autocomplete dropdown.
 
-**filter** 文本字段还支持各种关键字，让您可以按照各种属性对资源排序，例如使用 `larger-than` 关键字按文件大小进行排序。
+![filter text field autocomplete](imgs/filter-autocomplete.png)
 
-
-
-下文列表说明了所有关键字。
-
-* `domain`。 仅显示来自指定域的资源。 您可以使用通配符字符 (`*`) 纳入多个域。
- 例如，`*.com`
-将显示来自以 `.com` 结尾的所有域名的资源。 DevTools
-会使用其遇到的所有域填充自动填充下拉菜单。
-* `has-response-header`。 显示包含指定
-HTTP 响应标头的资源。 DevTools 会使用其遇到的所有响应标头填充自动填充下拉菜单。
-* `is`。 使用 `is:running` 可以查找 `WebSocket` 资源。
-* `larger-than`。 显示大于指定大小的资源（以字节为单位）。
- 将值设为 `1000` 等同于设置为 `1k`。
-* `method`。 显示通过指定 HTTP 方法类型检索的资源。
- DevTools 会使用其遇到的所有 HTTP 方法填充下拉菜单。
-* `mime-type`。 显示指定 MIME 类型的资源。 DevTools 会使用其遇到的所有 MIME 类型填充下拉菜单。
-* `mixed-content`。 显示所有混合内容资源 (`mixed-content:all`)，或者仅显示当前显示的资源 (`mixed-content:displayed`)。
-* `scheme`。 显示通过未保护 HTTP (`scheme:http`) 或受保护 HTTPS (`scheme:https`) 检索的资源。
-* `set-cookie-domain`。 显示具有 `Set-Cookie` 标头并且 `Domain` 属性与指定值匹配的资源。
- DevTools 会使用其遇到的所有 Cookie 域填充自动填充下拉菜单。
-* `set-cookie-name`。 显示具有 `Set-Cookie` 标头并且名称与指定值匹配的资源。
- DevTools 会使用其遇到的所有 Cookie 名称填充自动填充下拉菜单。
-* `set-cookie-value`。 显示具有 `Set-Cookie` 标头并且值与指定值匹配的资源。
- DevTools 会使用其遇到的所有 Cookie 值填充自动填充下拉菜单。
-* `status-code`。 仅显示 HTTP 状态代码与指定代码匹配的资源。
- DevTools 会使用其遇到的所有状态代码填充自动填充下拉菜单。
-
-
-![按文件大小过滤](imgs/larger-than.png)
-
-上面的一些关键字都提及自动填充下拉菜单。 要触发自动填充菜单，请在键入关键字时后面加一个冒号。
- 例如，在下面的屏幕截图中，输入 `domain:` 触发了自动填充下拉菜单。
-
-
-![过滤文本字段自动填充](imgs/filter-autocomplete.png)
-
-## 复制、保存和清除网络信息
+## Copy, save, and clear network information
 
 <aside class="warning">
-  <b>Warning: </b>此页面已遭弃用。 如需最新信息，请参阅以下部分：
-
+  <b>Warning:</b> This page is deprecated. See following sections for up-to-date
+  information:
   <ul>
-    <li><a href="reference#copy">复制一个或所有请求</a></li>
-    <li><a href="reference#save-as-har">将内容另存为 HAR 文件</a></li>
-    <li><a href="reference#clear-cache">清除浏览器缓存</a></li>
-    <li><a href="reference#clear-cookies">清除浏览器 Cookie</a></li>
+    <li><a href="reference#copy">Copy one or all requests</a></li>
+    <li><a href="reference#save-as-har">Save as HAR with content</a></li>
+    <li><a href="reference#clear-cache">Clear browser cache</a></li>
+    <li><a href="reference#clear-cookies">Clear browser cookies</a></li>
   </ul>
 </aside>
 
-在 **Requests Table** 中点击右键可以复制、保存或删除网络信息。
- 某些选项取决于上下文，因此，如果您希望操作单个资源，则需要右键点击该资源所在的行。
- 下面的列表说明了每一个选项。
+Right-click within the **Requests Table** to copy, save, or delete network information. Some of the options are context-sensitive, so if you want to operate on a single resource, you need to right-click on that resource's row. The list below describes each of the options.
 
-* **Copy Response**。 将选定资源的 HTTP 响应复制到系统剪贴板。
-* **Copy as cURL**。 以
-[cURL](http://curl.haxx.se/){: .external } 命令字符串的形式将选定资源的网络请求复制到系统剪贴板。
-  请参阅[以 cURL 命令形式复制请求](#copy-requests-as-curl-commands)。
-* **Copy All as HAR**。 以
-[HAR](https://en.wikipedia.org/wiki/.har) 数据形式将所有资源复制到系统{: .external } 剪贴板。
-  HAR 文件包含用于说明网络“瀑布”的 JSON 数据结构。
- 多款[第三方](https://ericduran.github.io/chromeHAR/){: .external }
-  [工具](https://code.google.com/p/harviewer/){: .external } 可以依据 HAR 文件中的数据重建网络瀑布。
- 请参阅[网页性能工具：
-HTTP Archive
-(HAR)](https://www.igvita.com/2012/08/28/web-performance-power-tool-http-archive-har/)，了解更多信息。
-* **Save as HAR with Content**。 将所有网络数据及每一个页面资源保存到 HAR 文件。
- 二进制资源（包括图像）以 Base64 编码文本的形式编码。
-* **Clear Browser Cache**。 清除浏览器缓存。
-  **提示**：您也可以从
-[**Network Conditions**][nc] 抽屉式导航栏中启用或停用浏览器缓存。
-* **Clear Browser Cookies**。 清除浏览器的 Cookie。
-* **Open in Sources Panel**。 在 **Sources**
-  面板中打开选定资源。
-* **Open Link in New Tab**。 在新标签中打开选定资源。 您也可以在 Network 表格中双击资源名称。
-* **Copy Link Address**。 将资源网址复制到系统剪贴板。
-* **Save**。 保存选定的文本资源。 仅在文本资源上显示。
-* **Replay XHR**。 重新发送选定的 `XMLHTTPRequest`。 仅在 XHR 资源上显示。
+* **Copy Response**. Copies the HTTP response of the selected resource to the system clipboard.
+* **Copy as cURL**. Copies the network request of the selected resource as a [cURL](http://curl.haxx.se/){: .external } command string to the system clipboard. See [Copying requests as cURL commands](#copy-requests-as-curl-commands).
+* **Copy All as HAR**. Copies all resources to the system clipboard as [HAR](https://en.wikipedia.org/wiki/.har){: .external } data. A HAR file contains a JSON data structure that describes the network "waterfall". Several [third-party](https://ericduran.github.io/chromeHAR/){: .external } [tools](https://code.google.com/p/harviewer/){: .external } can reconstruct the network waterfall from the data in the HAR file. See [Web Performance Power Tool: HTTP Archive (HAR)](https://www.igvita.com/2012/08/28/web-performance-power-tool-http-archive-har/) for more information.
+* **Save as HAR with Content**. Saves all network data to an HAR file along with each page resource. Binary resources, including images, are encoded as Base64-encoded text.
+* **Clear Browser Cache**. Clear the browser cache. **Tip**: You can also enable or disable the browser cache from the [**Network Conditions**](/web/tools/chrome-devtools/profile/network-performance/network-conditions#network-conditions) drawer.
+* **Clear Browser Cookies**. Clear the browser's cookies.
+* **Open in Sources Panel**. Open the selected resource in the **Sources** panel.
+* **Open Link in New Tab**. Opens the selected resource in a new tab. You can also double-click the resource name in the Network table.
+* **Copy Link Address**. Copies the resource URL to the system clipboard.
+* **Save**. Save the selected text resource. Only displayed on text resources.
+* **Replay XHR**. Re-send the selected `XMLHTTPRequest`. Only displayed on XHR resources.
 
+![copy and save context menu](imgs/copy-save-menu.png)
 
-![复制并保存上下文菜单](imgs/copy-save-menu.png)
-
-[nc]: /web/tools/chrome-devtools/profile/network-performance/network-conditions#network-conditions
-
-### 以 cURL 命令形式复制一个或所有请求 {: #curl }
+### Copy one or all requests as cURL commands {: #curl }
 
 <aside class="warning">
-  <b>Warning: </b>此页面已遭弃用。 如需最新信息，请参阅<a href="reference#copy">复制一个或所有请求</a>
-  。
+  <b>Warning:</b> This page is deprecated. See
+  <a href="reference#copy">Copy one or all requests</a>
+  for up-to-date information.
 </aside>
 
-[cURL](http://curl.haxx.se/){: .external } 是一种用于完成 HTTP 事务的命令行工具。
+[cURL](http://curl.haxx.se/){: .external } is a command line tool for making HTTP transactions.
 
+Right-click on a resource within the Requests Table, hover over **Copy** and then select **Copy as cURL** to copy a string of cURL requests for all resources that have been detected by the Network panel.
 
-在 Requests Table 中右键点击某个资源，将鼠标指针悬停在
-**Copy** 上，然后选择 **Copy as cURL**，以复制 Network 面板检测到的所有资源的 cURL 请求的字符串。
+![Copy single request as cURL command](imgs/copy-as-curl.png)
 
+Select **Copy All as cURL** to copy a string of cURL requests for all resources that have been detected by the Network panel.
 
-![以 cURL 命令形式复制单个请求](imgs/copy-as-curl.png)
+When you copy all, filtering is ignored (e.g. if you filter the Network panel to only display CSS resources and then press **Copy All as cURL**, you'll get all the detected resources, not just the CSS).
 
-选择 **Copy All as cURL**，可以复制 Network 面板检测到的所有资源的 cURL 请求的字符串。
-
-
-复制全部内容时，会忽略过滤（例如， 如果过滤 Network 面板以仅显示 CSS 资源，然后按 **Copy All as cURL**，您将获得所有检测到的资源，而不只是 CSS）。
-
-
-
-## 自定义 Network 面板
+## Customize the Network panel
 
 <aside class="warning">
-  <b>Warning: </b>此页面已遭弃用。 如需最新信息，请参阅<a href="reference#request-rows">使用大请求行或小请求行</a>
-  。
+  <b>Warning:</b> This page is deprecated. See
+  <a href="reference#request-rows">Use large or small requests rows</a>
+  for up-to-date information.
 </aside>
 
-默认情况下，**Requests Table** 会使用小行显示资源。 点击 **Use large resource rows** 按钮 (![大资源行按钮](imgs/large-resource-rows-button.png){:.inline}) 可以增大每一行的大小。
+By default the **Requests Table** displays resources with small rows. Click the **Use large resource rows** button (![large resource rows button](imgs/large-resource-rows-button.png){:.inline}) to increase the size of each row.
 
+Large rows enable some columns to display two text fields: a primary field and a secondary field. The column header indicates the meaning of the secondary field.
 
-大行可以让某些列显示两个文本字段：主要字段和次要字段。
- 列标题指示次要字段的含义。
+![large resource rows](imgs/large-resource-rows.png)
 
-
-![大资源行](imgs/large-resource-rows.png)
-
-### 添加和移除表格列
+### Add and remove table columns
 
 <aside class="warning">
-  <b>Warning: </b>此页面已遭弃用。 如需最新信息，请参阅以下部分：
-
+  <b>Warning:</b> This page is deprecated. See following sections for up-to-date
+  information:
   <ul>
-    <li><a href="reference#columns">显示或隐藏列</a></li>
-    <li><a href="reference#custom-columns">添加自定义列</a></li>
+    <li><a href="reference#columns">Show or hide columns</a></li>
+    <li><a href="reference#custom-columns">Add custom columns</a></li>
   </ul>
 </aside>
 
-右键点击 **Requests Table** 中的任一标题可以添加或移除列。
+Right-click on any of the headers in the **Requests Table** to add or remove columns.
 
+![Add or remove columns](imgs/add-remove-columns.png)
 
-![添加或移除列](imgs/add-remove-columns.png)
-
-### 导航时保留网络日志
+### Preserve the network log upon navigation
 
 <aside class="warning">
-  <b>Warning: </b>此页面已遭弃用。 如需最新信息，请参阅<a href="reference#preserve-log">保留日志</a>
-  。
+  <b>Warning:</b> This page is deprecated. See
+  <a href="reference#preserve-log">Preserve log</a>
+  for up-to-date information.
 </aside>
 
-默认情况下，每当您重新加载当前页面或者加载不同的页面时，网络活动记录会被舍弃。
-在这些情况下，启用 **Preserve log** 复选框可以保存网络日志。
- 新记录将附加到 **Requests Table** 的底部。
+By default, the network activity recording is discarded whenever you reload the current page or load a different page. Enable the **Preserve log** checkbox to save the network log across these scenarios. New records are appended to the bottom of the **Requests Table**.
 
-## 其他资源
+## Additional resources
 
-要详细了解如何优化您的应用的网络性能，请参阅下面的资源：
+To learn more optimizing the network performance of your application, see the following resources:
 
-* 使用 [PageSpeed
-Insights](/speed/pagespeed/insights) 可以确定适用于您网站的性能最佳做法，而使用 [PageSpeed 优化工具](/speed/pagespeed/optimization)可以自动执行应用这些最佳做法的流程。
-* [Google Chrome 中的高性能网络](https://www.igvita.com/posa/high-performance-networking-in-google-chrome/)讨论 Chrome 网络内部机制，以及如何充分利用这些机制加快您的网站速度。
-* [gzip 压缩的工作原理](/speed/articles/gzip)简要概述 gzip 压缩，以及这种压缩出色的原因。
-* [网页性能最佳做法](/speed/docs/best-practices/rules_intro)提供更多有关优化网页或应用网络性能的提示。
+* Use [PageSpeed Insights](/speed/pagespeed/insights) to identify performance best practices that can be applied to your site, and [PageSpeed optimization tools](/speed/pagespeed/optimization) to automate the process of applying those best practices.
+* [High Performance Networking in Google Chrome](https://www.igvita.com/posa/high-performance-networking-in-google-chrome/) discusses Chrome network internals and how you can take advantage of them to make your site faster.
+* [How gzip compression works](/speed/articles/gzip) provides a high-level overview gzip compression and why it's a good idea.
+* [Web Performance Best Practices](/speed/docs/best-practices/rules_intro) provides additional tips for optimizing the network performance of your web page or application.
 
-
-
-
-## 反馈 {: #feedback }
+## Feedback {: #feedback }
 
 {% include "web/_shared/helpful.html" %}
