@@ -1,108 +1,73 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml
 
-{# wf_updated_on:2016-11-08 #}
-{# wf_published_on:2016-11-08 #}
+{# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2016-11-08 #} {# wf_blink_components: Blink>SecurityFeature>CredentialManagement #}
 
-# 凭据管理 API {: .page-title }
+# The Credential Management API {: .page-title }
 
-{% include "web/_shared/contributors/agektmr.html" %}
-{% include "web/_shared/contributors/megginkearney.html" %}
+{% include "web/_shared/contributors/agektmr.html" %} {% include "web/_shared/contributors/megginkearney.html" %}
 
-[凭据管理 API](https://www.w3.org/TR/credential-management/) 是一个基于标准的浏览器 API，它在网站和浏览器之间提供一个编程接口以支持无缝登录各个设备，同时简化登录流程。
+The [Credential Management API](https://www.w3.org/TR/credential-management/) is a standards-based browser API that provides a programmatic interface between the site and the browser for seamless sign-in across devices.
 
+The Credential Management API:
 
+* **Removes friction from sign-in flows** - Users can be automatically signed back into a site even if their session has expired or they saved credentials on another device.
+* **Allows one tap sign in with account chooser** - Users can choose an account in a native account chooser.
+* **Stores credentials** - Your application can store either a username and password combination or even federated account details. These credentials can be synced across devices by the browser.
 
+Key Point: Using the Credential Management API requires the page be served from a secure origin.
 
-<div class="attempt-right">
-  <figure>
-    <video src="animations/credential-management-smaller.mov" style="max-height: 400px;" autoplay muted loop controls></video>
-    <figcaption>用户登录流程</figcaption>
-  </figure>
-</div>
-
-凭据管理 API：
-
-* **简化登录流程** - 用户可以自动重新登录某个网站，即使其会话已过期。
-* **支持使用帐户选择器一键登录** - 系统显示原生帐户选择器，无需使用登录表单。
-* **存储凭据** - 可以存储用户名和密码的组合，甚至联合帐户详情。
-
-
-想了解其实用效果？试用[凭据管理 API 演示](https://credential-management-sample.appspot.com)并查看[代码](https://github.com/GoogleChrome/credential-management-sample)。
-
-
-
+Want to see it in action? Try the [Credential Management API Demo](https://credential-management-sample.appspot.com) and take a look at the [code](https://github.com/GoogleChrome/credential-management-sample).
 
 <div class="clearfix"></div>
 
+### Check Credential Management API browser support
 
-## 实现凭据管理的步骤
+Before using the Credential Management API, first check if `PasswordCredential` or `FederatedCredential` is supported.
 
-成功集成凭据管理 API 的方法有很多，集成的具体做法取决于网站的结构和用户体验，使用此流程的网站具有以下用户体验优势：
+    if (window.PasswordCredential || window.FederatedCredential) {
+      // Call navigator.credentials.get() to retrieve stored
+      // PasswordCredentials or FederatedCredentials.
+    }
+    
 
+Warning: Feature detection by checking `navigator.credentials` may break your website on browsers supporting [WebAuthn](https://www.w3.org/TR/webauthn/)(PublicKeyCredential) but not all credential types (`PasswordCredential` and `FederatedCredential`) defined by the Credential Management API. [Learn more](/web/updates/2018/03/webauthn-credential-management).
 
+### Sign in user
 
+To sign in the user, retrieve the credentials from the browser's password manager and use them to log in the user.
 
-* 将一个服务凭据保存到浏览器的现有用户可立即登录，在完成身份验证后系统将他们重定向到登录页面。
-* 保存多个凭据或已停用自动登录的用户在转到网站的登录页面之前需要回复一个对话框。
-* 当用户退出时，网站确保他们不会自动重新登录。
+For example:
 
+1. When a user lands on your site and they are not signed in, call [`navigator.credentials.get()`](https://developer.mozilla.org/en-US/docs/Web/API/CredentialsContainer/get).
+2. Use the retrieved credentials to sign in the user.
+3. Update the UI to indicate the user has been signed in.
 
-要点：使用凭据管理 API 需要通过安全来源提供的页面。
+Learn more in [Sign In Users](/web/fundamentals/security/credential-management/retrieve-credentials#auto-sign-in).
 
+### Save or update user credentials
 
-### 检索用户凭据并登录
+If the user signed in with a federated identity provider such as Google Sign-In, Facebook, GitHub:
 
-要使用户登录，请从浏览器的密码管理器检索凭据，并使用这些凭据让用户登录。
+1. After the user successfully signs in or creates an account, create the [`FederatedCredential`](https://developer.mozilla.org/en-US/docs/Web/API/FederatedCredential) with the user's email address as the ID and specify the identity provider with `FederatedCredentials.provider`.
+2. Save the credential object using [`navigator.credentials.store()`](https://developer.mozilla.org/en-US/docs/Web/API/CredentialsContainer/store).
 
+Learn more in [Sign In Users](/web/fundamentals/security/credential-management/retrieve-credentials#federated-login).
 
-例如：
+If the user signed in with a username and password:
 
-1. 当用户访问您的网站并尚未登录时，调用 `navigator.credential.get()`
-2. 使用检索的凭据让用户登录。
-3. 更新 UI 以表明用户已登录。
+1. After the user successfully signs in or creates an account, create the [`PasswordCredential`](https://developer.mozilla.org/en-US/docs/Web/API/PasswordCredential) with the user ID and the password.
+2. Save the credential object using [`navigator.credentials.store()`](https://developer.mozilla.org/en-US/docs/Web/API/CredentialsContainer/store).
 
+Learn more in [Save Credentials from Forms](/web/fundamentals/security/credential-management/save-forms).
 
-[检索凭据](/web/fundamentals/security/credential-management/retrieve-credentials)中提供了更多详情。
+### Sign out
 
+When the user signs out, call [`navigator.credentials.preventSilentAccess()`](/web/fundamentals/security/credential-management/retrieve-credentials#turn_off_auto_sign-in_for_future_visits) to prevent the user from being automatically signed back in.
 
-### 保存或更新用户凭据
+Disabling auto-sign-in also enables users to switch between accounts easily, for example, between work and personal accounts, or between accounts on shared devices, without having to re-enter their sign-in information.
 
-如果用户使用用户名和密码登录：
+Learn more in [Sign out](/web/fundamentals/security/credential-management/retrieve-credentials#sign-out).
 
-1. 在用户成功登录后，创建一个帐号或更改密码，使用用户 ID 和密码创建 `PasswordCredential`。
-2. 使用 `navigator.credentials.store()` 保存凭据对象。
+## Feedback {: #feedback }
 
-
-
-
-如果用户通过 Google Sign-In、Facebook、GitHub 等联合身份提供程序登录：
-
-
-1. 在用户成功登录后，创建帐号或更改密码，使用用户的电子邮件地址作为 ID 创建 `FederatedCredential`，并通过 `.provider` 指定身份提供程序
-2. 使用 `navigator.credentials.store()` 保存凭据对象。
-
-
-
-[存储凭据](/web/fundamentals/security/credential-management/store-credentials)中提供了更多详情。
-
-
-### 退出
-
-当用户退出时，调用 `navigator.credentials.requireUserMediation()` 以阻止用户自动重新登录。
-
-
-通过停用自动登录，用户还可以轻松地在帐号之间切换，例如，在工作帐号和个人帐号之间切换，或在共享设备上的帐号之间切换，无需重新输入他们的登录信息。
-
-
-
-[退出](/web/fundamentals/security/credential-management/retrieve-credentials#sign-out)中提供了更多详情。
-
-
-
-## 其他参考
-
-[MDN 上的凭据管理 API](https://developer.mozilla.org/en-US/docs/Web/API/Credential_Management_API)
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
