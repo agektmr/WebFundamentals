@@ -1,212 +1,177 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: ****了解如何导航 Chrome DevTools JavaScript 控制台。
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Learn how to navigate the Chrome DevTools JavaScript Console.
 
-{# wf_updated_on: 2019-02-06 #}
-{# wf_published_on: 2015-05-10 #}
-{# wf_blink_components: Platform>DevTools #}
+{# wf_updated_on: 2018-07-27 #} {# wf_published_on: 2015-05-10 #} {# wf_blink_components: Platform>DevTools #}
 
-# 使用控制台 {: .page-title }
+# Using the Console {: .page-title }
 
-{% include "web/_shared/contributors/kaycebasques.html" %}
-{% include "web/_shared/contributors/andismith.html" %}
-{% include "web/_shared/contributors/megginkearney.html" %}
-{% include "web/_shared/contributors/pbakaus.html" %}
+{% include "web/_shared/contributors/kaycebasques.html" %} {% include "web/_shared/contributors/andismith.html" %} {% include "web/_shared/contributors/megginkearney.html" %} {% include "web/_shared/contributors/pbakaus.html" %}
 
-了解如何：打开 DevTools 控制台；堆叠冗余消息或将其显示在各自的行上；清除或保留输出，或者将其保存到文件中；过滤输出，以及访问其他控制台设置。
-
-
-
+Learn how to: open the DevTools Console, stack redundant messages or display them on their own lines, clear or persist output or save it to a file, filter output, and access additional Console settings.
 
 ### TL;DR {: .hide-from-toc }
-- 以专用面板或任何其他面板旁的抽屉式导航栏形式打开控制台。
-- 堆叠冗余消息，或者将其显示在各自的行上。
-- 清除或保留页面之间的输出，或者将其保存到文件中。
-- 按严重性等级、通过隐藏网络消息或者按正则表达式模式对输出进行过滤。
 
-## 打开控制台
+* Open the Console as a dedicated panel or as a drawer next to any other panel.
+* Stack redundant messages, or display them on their own lines.
+* Clear or persist output between pages, or save it to a file.
+* Filter output by severity level, by hiding network messages, or by regular expression patterns.
 
-以全屏模式的专用面板形式访问控制台：
+## Opening the Console
 
-![Console 面板](images/console-panel.png)
+Access the Console as a full-screen, dedicated panel:
 
-或以任何其他面板旁的抽屉式导航栏的形式：
+![The Console panel](images/console-panel.png)
 
-![Console 抽屉式导航栏](images/console-drawer.png)
+Or as a drawer that opens next to any other panel:
 
-### 以面板形式打开
+![The Console drawer](images/console-drawer.png)
 
-要打开专用的 **Console** 面板，请执行以下操作之一：
+### Open as panel
 
-* 按 <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>J</kbd> (Windows / Linux) 或者 <kbd>Cmd</kbd>+<kbd>Opt</kbd>+<kbd class="kbd">J</kbd> (Mac)。
-* 如果 DevTools 已打开，则按 **Console** 按钮。
+To open the dedicated **Console** panel, either:
 
-打开 Console 面板时，Console 抽屉式导航栏将自动折叠。
+* Press <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>J</kbd> (Windows / Linux) or <kbd>Cmd</kbd>+<kbd>Opt</kbd>+<kbd class="kbd">J</kbd> (Mac).
+* If DevTools is already open, press the **Console** button.
 
-### 以抽屉式导航栏形式打开
+When you open the Console panel, the Console drawer collapses automatically.
 
-要以任何其他面板旁的抽屉式导航栏的形式打开控制台，请执行以下操作之一：
+### Open as drawer
 
-* 在 DevTools 处于聚焦状态时按 <kbd>Esc</kbd>。
-* 按 **Customize and control DevTools** 按钮，然后按
-**Show console**。
+To open the Console as a drawer next to any other panel, either:
 
-![显示控制台](images/show-console.png)
+* Press <kbd>Esc</kbd> while DevTools is in focus.
+* Press the **Customize and control DevTools** button and then press **Show console**.
 
-## 消息堆叠
+![Show console](images/show-console.png)
 
-如果一条消息连续重复，而不是在新行上输出每一个消息实例，控制台将“堆叠”消息并在左侧外边距显示一个数字。
+## Message stacking
 
- 此数字表示该消息已重复的次数。
+If a message is consecutively repeated, rather than printing out each instance of the message on a new line, the Console "stacks" the messages and shows a number in the left margin instead. The number indicates how many times the message has repeated.
 
+![Message stacking](images/message-stacking.png)
 
-![消息堆叠](images/message-stacking.png)
+If you prefer a unique line entry for every log, enable **Show timestamps** from the DevTools settings.
 
-如果您倾向于为每一个日志使用一个独特的行条目，请在 DevTools 设置中启用 **Show timestamps**。
+![Show timestamps](images/show-timestamps.png)
 
+Since the timestamp of each message is different, each message is displayed on its own line.
 
-![显示时间戳](images/show-timestamps.png)
+![Timestamped console](images/timestamped-console.png)
 
-由于每一条消息的时间戳均不同，因此，每一条消息都将显示在各自的行上。
+## Working with the Console history
 
+### Clearing the history {: #clearing}
 
-![带时间戳的控制台](images/timestamped-console.png)
+You can clear the console history by doing any of the following:
 
-## 处理控制台历史记录
+* Right-click in the Console and press **Clear console**.
+* Type `clear()` in the Console.
+* Call `console.clear()` from within your JavaScript code.
+* Type <kbd class="kbd">Ctrl</kbd>+<kbd class="kbd">L</kbd> (Mac, Windows, Linux).
 
-### 清除历史记录 {: #clearing}
+### Persisting the history {: #preserve-log}
 
-您可以通过以下方式清除控制台历史记录：
+Enable the **Preserve log** checkbox at the top of the console to persist the console history between page refreshes or changes. Messages will be stored until you clear the Console or close the tab.
 
-* 在控制台中点击右键，然后按 **Clear console**。
-* 在控制台中输入 `clear()`。
-* 从您的 JavaScript 代码内调用 `console.clear()`。
-* 按 <kbd class="kbd">Ctrl</kbd>+<kbd class="kbd">L</kbd>（Mac、Windows、Linux）。
+### Saving the history
 
+Right-click in the Console and select **Save as** to save the output of the console to a log file.
 
-### 保留历史记录 {: #preserve-log}
+![Save Console to log file](images/console-save-as.png)
 
-启用控制台顶部的 **Preserve log** 复选框可以在页面刷新或更改之间保留控制台历史记录。
- 消息将一直存储，直至您清除控制台或者关闭标签。
+## Selecting execution context {: #execution-context }
 
-
-### 保存历史记录
-
-在控制台中点击右键，然后选择 **Save as**，将控制台的输出保存到日志文件中。
-
-
-![将控制台的输出保存到日志文件](images/console-save-as.png)
-
-## 选择执行环境 {: #execution-context }
-
-以下屏幕截图中以蓝色突出显示的下拉菜单称为 **Execution Context Selector**。
-
+The dropdown menu highlighted in blue in the screenshot below is called the **Execution Context Selector**.
 
 ![Execution Context Selector](images/execution-context-selector.png)
 
-通常，您会看到此环境设置为 `top`（页面的顶部框架）。
+You'll usually see the context set to `top` (the top frame of the page).
 
-其他框架和扩展程序在其自身的环境中运行。 要使用这些其他环境，您需要从下拉菜单中选中它们。
- 例如，如果您要查看 `<iframe>` 元素的日志输出，并修改该环境中存在的某个变量，您需要从 Execution Context Selector 下拉菜单中选中该元素。
+Other frames and extensions operate in their own context. To work with these other contexts you need to select them from the dropdown menu. For example, if you wanted to see the logging output of an `<iframe>` element and modify a variable that exists within that context, you'd need to select it from the Execution Context Selector dropdown menu.
 
+The Console defaults to the `top` context, unless you access DevTools by inspecting an element within another context. For example, if you inspect a `<p>` element within an `<iframe>`, then DevTools sets the Execution Context Selector to the context of that `<iframe>`.
 
+When you're working in a context other than `top`, DevTools highlights the Execution Context Selector red, as in the screenshot below. This is because developers rarely need to work in any context other than `top`. It can be pretty confusing to type in a variable, expecting a value, only to see that it's `undefined` (because it's defined in a different context).
 
+![Execution Context Selector highlighted red](images/non-top-context.png)
 
-控制台默认设置为 `top` 环境，除非您通过检查其他环境中的某个元素来访问 DevTools。
- 例如，如果您检查 `<iframe>` 中的一个 `<p>` 元素，那么，DevTools 将 Execution Context Selector 设置为该 `<iframe>` 的环境。
+## Filtering the Console output
 
+Click the **Filter** button (![filter button](images/filter-button.png){:.inline}) to filter console output. You can filter by severity level, by a regular expression, or by hiding network messages.
 
+![Filtered Console output](images/filtered-console.png)
 
-当您在 `top` 以外的环境中操作时，DevTools 将 Execution Context Selector 突出显示为红色，如下面的屏幕截图中所示。
- 这是因为开发者很少需要在 `top` 以外的任意环境中操作。
- 输入一个变量，期待返回一个值，只是为了查看该变量是否为 `undefined`（因为该变量是在不同环境中定义的），这会非常令人困惑。
-
-
-
-![Execution Context Selector 突出显示为红色](images/non-top-context.png)
-
-## 过滤控制台输出
-
-点击 **Filter** 按钮（![filter 按钮](images/filter-button.png)
-{:.inline}）可以过滤控制台输出。
- 您可以按严重性等级、按正则表达式模式或者通过隐藏网络消息的方式进行过滤。
-
-
-![过滤的控制台输出](images/filtered-console.png)
-
-按严重性等级进行过滤的说明如下所示：
+Filtering by severity level is equivalent to the following:
 
 <table class="responsive">
   <thead>
      <tr>
-      <th colspan="2">选项及显示的内容</th>
+      <th colspan="2">Option &amp; Shows</th>
     </tr>   
   </thead>
   <tbody>
   <tr>
     <td>All</td>
-    <td>显示所有控制台输出</td>
+    <td>Shows all console output</td>
   </tr>
   <tr>
     <td>Errors</td>
-    <td>仅显示 <a href="/web/tools/chrome-devtools/debug/console/console-reference#consoleerrorobject--object-">console.error()</a> 的输出。</td>
+    <td>Only show output from <a href="/web/tools/chrome-devtools/debug/console/console-reference#consoleerrorobject--object-">console.error()</a>.</td>
   </tr>
   <tr>
     <td>Warnings</td>
-    <td>仅显示 <a href="/web/tools/chrome-devtools/debug/console/console-reference#consolewarnobject--object-">console.warn()</a> 的输出。</td>
+    <td>Only show output from <a href="/web/tools/chrome-devtools/debug/console/console-reference#consolewarnobject--object-">console.warn()</a>.</td>
   </tr>
   <tr>
     <td>Info</td>
-    <td>仅显示 <a href="/web/tools/chrome-devtools/debug/console/console-reference#consoleinfoobject--object-">console.info()</a> 的输出。</td>
+    <td>Only show output from <a href="/web/tools/chrome-devtools/debug/console/console-reference#consoleinfoobject--object-">console.info()</a>.</td>
   </tr>
   <tr>
     <td>Logs</td>
-    <td>仅显示 <a href="/web/tools/chrome-devtools/debug/console/console-reference#consolelogobject--object-">console.log()</a> 的输出。</td>
+    <td>Only show output from <a href="/web/tools/chrome-devtools/debug/console/console-reference#consolelogobject--object-">console.log()</a>.</td>
   </tr>
   <tr>
     <td>Debug</td>
-    <td>仅显示 <a href="/web/tools/chrome-devtools/debug/console/console-reference#consoletimeendlabel">console.timeEnd()</a> 和<a href="/web/tools/chrome-devtools/debug/console/console-reference#consoledebugobject--object-">console.debug()</a> 的输出。</td>
+    <td>Only show output from <a href="/web/tools/chrome-devtools/debug/console/console-reference#consoletimeendlabel">console.timeEnd()</a> and <a href="/web/tools/chrome-devtools/debug/console/console-reference#consoledebugobject--object-">console.debug()</a>.</td>
   </tr>
   </tbody>
 </table>
 
-## 其他设置
+## Additional settings
 
-打开 DevTools 设置，转至 **General** 标签，然后向下滚动到 **Console** 部分，查看更多控制台设置。
+Open the DevTools settings, go to the **General** tab, and scroll down to the **Console** section for further Console settings.
 
-
-![控制台设置](images/console-settings.png)
+![Console settings](images/console-settings.png)
 
 <table class="responsive">
   <thead>
      <tr>
-      <th colspan="2">设置及说明</th>
+      <th colspan="2">Setting &amp; Description</th>
     </tr>   
   </thead>
   <tbody>
   <tr>
     <td>Hide network messages</td>
-    <td>默认情况下，控制台将报告网络问题。 启用此设置将指示控制台不显示这些错误的日志。 例如，将不会记录 404 和 500 系列错误。</td>
+    <td>By default, the console reports network issues. Turning this on instructs the console to not show logs for these errors. For example, 404 and 500 series errors will not be logged.</td>
   </tr>
   <tr>
     <td>Log XMLHttpRequests</td>
-    <td>确定控制台是否记录每一个 XMLHttpRequest。</td>
+    <td>Determines if the console logs each XMLHttpRequest.</td>
   </tr>
   <tr>
     <td>Preserve log upon navigation</td>
-    <td>在页面刷新或导航时保留控制台历史记录。</td>
+    <td>Persists the console history during page refreshes or navigation.</td>
   </tr>
   <tr>
     <td>Show timestamps</td>
-    <td>在调用时向显示的每条控制台消息追加一个时间戳。 对于发生特定事件时的调试非常实用。 这会停用消息堆叠。</td>
+    <td>Prepends a timestamp to each console message showing when the call was made. Useful for debugging when a certain event occurred. This will disable message stacking.</td>
   </tr>
   <tr>
     <td>Enable custom formatters</td>
-    <td>控制 JavaScript 对象的<a href="https://docs.google.com/document/d/1FTascZXT9cxfetuPRT2eXPQKXui4nWFivUnS_335T3U/preview">格式设置</a>。</td>
+    <td>Control the <a href="https://docs.google.com/document/d/1FTascZXT9cxfetuPRT2eXPQKXui4nWFivUnS_335T3U/preview">formatting</a> of JavaScript objects.</td>
   </tr>
   </tbody>
 </table>
 
-## 反馈 {: #feedback }
+## Feedback {: #feedback }
 
 {% include "web/_shared/helpful.html" %}
