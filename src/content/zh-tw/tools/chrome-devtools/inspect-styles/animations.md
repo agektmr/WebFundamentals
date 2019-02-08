@@ -1,145 +1,112 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description:使用 Chrome DevTools 動畫檢查器檢查和修改動畫。
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Inspect and modify animations with the Chrome DevTools Animation Inspector.
 
-{# wf_updated_on: 2016-05-02 #}
-{# wf_published_on: 2016-05-02 #}
+{# wf_updated_on: 2018-07-27 #} {# wf_published_on: 2016-05-02 #} {# wf_blink_components: Platform>DevTools #}
 
-# 檢查動畫 {: .page-title }
+# Inspect animations {: .page-title }
 
 {% include "web/_shared/contributors/kaycebasques.html" %}
 
-使用 Chrome DevTools 動畫檢查器檢查和修改動畫。
+Inspect and modify animations with the Chrome DevTools Animation Inspector.
 
-
-![動畫檢查器](imgs/animation-inspector.png)
-
+![animation inspector](imgs/animation-inspector.png)
 
 ### TL;DR {: .hide-from-toc }
-- 通過打開動畫檢查器捕捉動畫。檢查器會自動檢測動畫並將它們分類爲多個組。
-- 通過慢速播放、重播或查看動畫源代碼來檢查動畫。
-- 通過更改動畫時間、延遲、持續時間或關鍵幀偏移修改動畫。
 
+* Capture animations by opening the Animation Inspector. It automatically detects animations and sorts them into groups.
+* Inspect animations by slowing them down, replaying them, or viewing their source code.
+* Modify animations by changing their timing, delay, duration, or keyframe offsets.
 
-## 概覽 {: #overview }
+## Overview {:#overview}
 
-Chrome DevTools 動畫檢查器有兩個主要用途。 
+The Chrome DevTools Animation Inspector has two main purposes.
 
-* 檢查動畫。您希望慢速播放、重播或檢查動畫組的源代碼。
- 
-* 修改動畫。您希望修改動畫組的時間、延遲、持續時間或關鍵幀偏移。
-當前不支持編輯貝塞爾曲線和關鍵幀。
- 
+* Inspecting animations. You want to slow down, replay, or inspect the source code for an animation group. 
+* Modifying animations. You want to modify the timing, delay, duration, or keyframe offsets of an animation group. Bezier editing and keyframe editing are currently not supported. 
 
-動畫檢查器支持 CSS 動畫、CSS 過渡和網絡動畫。當前不支持 `requestAnimationFrame` 動畫。
+The Animation Inspector supports CSS animations, CSS transitions, and web animations. `requestAnimationFrame` animations are currently not supported.
 
+### What's an animation group?
 
+An animation group is a group of animations that *appear* to be related to each other. Currently, the web has no real concept of a group animation, so motion designers and developers have to compose and time individual animations so that they appear to be one coherent visual effect. The Animation Inspector predicts which animations are related based on start time (excluding delays, and so on) and groups them all side-by-side. In other words, a set of animations all triggered in the same script block are grouped together, but if they're asynchronous then they're grouped separately.
 
-### 什麼是動畫組？
+## Get started
 
-動畫組是一組*看上去*彼此相關的動畫。
-當前，網頁沒有真正概念的組動畫，動畫設計師和開發者必須編排和設置各個動畫的時間，讓它們看上去有一種連貫的視覺效果。動畫檢查器會根據開始時間（不包括延遲等等）預測哪些動畫相關並將它們並排分組。也就是說，全部在同一腳本塊中觸發的一組動畫被分爲一組，但如果是異步的，它們將單獨分組。
+There are two ways to open the Animation Inspector:
 
- 
+* Go to the **Styles** pane (on the **Elements** panel) and press the **Animations** button (![animations 
+button](imgs/animations-button.png){:.inline}). 
+* Open the Command Menu and type `Drawer: Show Animations`. 
 
-## 使用入門
+The Animation Inspector opens up as a tab next to the Console Drawer. Since it's a Drawer tab, you can use it from any DevTools panel.
 
-可以通過兩種方式打開動畫檢查器：
+![Empty Animation Inspector](imgs/empty-ai.png)
 
-* 轉到 **Styles** 窗格（位於 **Elements** 面板上），然後按 **Animations** 按鈕（![Animations 按鈕](imgs/animations-button.png){:.inline}）。
-* 打開 Command Menu，鍵入 `Drawer: Show Animations`。 
+The Animation Inspector is grouped into four main sections (or panes). This guide refers to each pane as follows:
 
-動畫檢查器將在 Console 抽屜旁作爲標籤打開。由於檢查器是一個是抽屜式導航欄標籤，您可以從任何 DevTools 面板打開它。
- 
+1. **Controls**. From here you can clear all currently captured Animation Groups, or change the speed of the currently selected Animation Group. 
+2. **Overview**. Select an Animation Group here to inspect and modify it in the **Details** pane.
+3. **Timeline**. Pause and start an animation from here, or jump to a specific point in the animation.
+4. **Details**. Inspect and modify the currently selected Animation Group. 
 
-![空的動畫檢查器](imgs/empty-ai.png)
+![annotation Animation Inspector](imgs/annotated-animation-inspector.png)
 
-動畫檢查器分爲四個主要部分（或窗格）。本指南使用以下名稱指代各個窗格：
-
-
-1. **Controls**。從這裏，您可以清除所有當前捕捉的動畫組，或者更改當前選定動畫組的速度。
-2. **Overview**。在這裏選擇動畫組，然後在 **Details** 窗格中進行檢查和修改。
-3. **Timeline**。
-從這裏暫停和開始動畫，或者跳到動畫中的特定點。
-4. **Details**。
-檢查和修改當前選定的動畫組。
- 
-
-![註解動畫檢查器](imgs/annotated-animation-inspector.png)
-
-要捕捉動畫，只需在動畫檢查器打開時執行可以觸發動畫的交互。
-如果動畫在頁面加載時觸發，您可以重新加載頁面，幫助動畫檢查器檢測動畫。
-
- 
+To capture an animation, just perform the interaction that triggers the animation while the Animation Inspector is open. If an animation is triggered on page load, you can help the Animation Inspector detect the animation by reloading the page.
 
 <video src="animations/capture-animations.mp4"
        autoplay loop muted controls></video>
 
-## 檢查動畫 {: #inspect }
+## Inspect animations {:#inspect}
 
-捕捉動畫後，可以通過以下幾種方式重播動畫：
+Once you've captured an animation, there are a few ways to replay it:
 
-* 在 **Overview** 窗格中將鼠標懸停在動畫的縮略圖上方，查看它的預覽。
-* 從 **Overview** 窗格中選擇動畫組（這樣，動畫組就會顯示在 **Details** 窗格中），然後按 **replay** 按鈕（![replay 按鈕](imgs/replay-button.png){:.inline}）。動畫會在視口中重播。點擊 **animation speed** 按鈕（![animation speed 按鈕](imgs/animation-speed-buttons.png){:.inline}）更改當前選定動畫組的預覽速度。您可以使用紅色的垂直條更改當前位置。
-* 點擊並拖動紅色的垂直條以拖拽視口動畫。 
+* Hover over its thumbnail in the **Overview** pane to view a preview of it.
+* Select the Animation Group from the **Overview** pane (so that it's displayed in the **Details** pane) and press the **replay** button (![replay button](imgs/replay-button.png){:.inline}). The animation is replayed in the viewport. Click on the **animation speed** buttons (![animation speed 
+buttons](imgs/animation-speed-buttons.png){:.inline}) to change the preview speed of the currently selected Animation Group. You can use the red vertical bar to change your current position. 
+* Click and drag the red vertical bar to scrub the viewport animation. 
 
-### 查看動畫詳細信息
+### View animation details
 
-捕捉動畫組後，在 **Overview** 窗格點擊動畫組可以查看其詳細信息。
-在 **Details** 窗格中，每個動畫會單獨成行。
- 
+Once you've captured an Animation Group, click on it from the **Overview** pane to view its details. In the **Details** pane each individual animation gets its own row.
 
-![動畫組詳情](imgs/animation-group-details.png)
+![animation group details](imgs/animation-group-details.png)
 
-將鼠標懸停在動畫上可以在視口中突出顯示該動畫。點擊動畫，在 **Elements** 面板中將其選中。
- 
+Hover over an animation to highlight it in the viewport. Click on the animation to select it in the **Elements** panel.
 
-![將鼠標懸停在動畫上，使其在視口中突出顯示](imgs/highlight-animation.png)
+![hover over animation to highlight it in 
+viewport](imgs/highlight-animation.png)
 
+The leftmost, darker section of an animation is its definition. The right, more faded section represents iterations. For example, in the screenshot below, sections two and three represent iterations of section one.
 
-動畫最左側的深色部分是其定義。右側的淺色部分表示重複。
-例如，在下方的屏幕截圖中，第二和第三部分表示第一部分的重複。
- 
+![diagram of animation iterations](imgs/animation-iterations.png)
 
-![動畫重複示意圖](imgs/animation-iterations.png)
+If two elements have the same animation applied to them, the Animation Inspector assigns them the same color. The color itself is random and has no significance. For example, in the screenshot below the two elements `div.eye.left::after` and `div.eye.right::after` have the same animation (`eyes`) applied to them, as do the `div.feet::before` and `div.feet::after` elements.
 
-如果兩個元素應用了同一個動畫，動畫檢查器會給它們分配相同的顏色。
-顏色本身是隨機的且沒有意義。例如，在下方的屏幕截圖中，兩個元素 `div.eye.left::after` 和 `div.eye.right::after` 已應用了同一個動畫 (`eyes`)，`div.feet::before` 和 `div.feet::after` 元素也同樣如此。
+![color-coded animations](imgs/color-coded-animations.png)
 
+## Modify animations {:#modify}
 
+There are three ways you can modify an animation with the Animation Inspector:
 
- 
+* Animation duration.
+* Keyframe timings.
+* Start time delay.
 
-![帶有彩色編碼的動畫](imgs/color-coded-animations.png)
+For this section suppose that the screenshot below represents the original animation:
 
-## 修改動畫 {: #modify }
+![original animation before modification](imgs/modify-original.png)
 
-可以通過以下三種方式使用動畫檢查器修改動畫：
+To change the duration of an animation, click and drag the first or last circle.
 
-* 動畫持續時間。
-* 關鍵幀時間。
-* 開始時間延遲。
+![modified duration](imgs/modify-duration.png)
 
-對於本部分，假設下面的屏幕截圖代表原始動畫：
+If the animation defines any keyframe rules, then these are represented as white inner circles. Click and drag one of these to change the timing of the keyframe.
 
+![modified keyframe](imgs/modify-keyframe.png)
 
-![修改之前的原始動畫](imgs/modify-original.png)
+To add a delay to an animation, click and drag it anywhere except the circles.
 
-要更改動畫的持續時間，請點擊並拖動第一個或最後一個圓圈。
+![modified delay](imgs/modify-delay.png)
 
+## Feedback {: #feedback }
 
-![修改的持續時間](imgs/modify-duration.png)
-
-如果動畫定義了任何關鍵幀規則，那麼這些將表示爲白色內圈。
-點擊並拖動其中一個以更改關鍵幀的時間。
-
-
-![修改的關鍵幀](imgs/modify-keyframe.png)
-
-要爲動畫添加延遲，請點擊並將其拖動至圓圈以外的任何位置。
- 
-
-![修改的延遲](imgs/modify-delay.png)
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
