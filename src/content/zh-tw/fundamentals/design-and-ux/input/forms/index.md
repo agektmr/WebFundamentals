@@ -1,19 +1,10 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: 手機上很難填寫表單。 最好的表單是輸入量最少的表單。
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Forms are hard to fill out on mobile. The best forms are the ones with the fewest inputs.
 
-{# wf_updated_on: 2018-08-05 #}
-{# wf_published_on: 2014-04-30 #}
+{# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2014-04-30 #} {# wf_blink_components: N/A #}
 
-# 建立令人驚艷的表單 {: .page-title }
+# Create Amazing Forms {: .page-title }
 
 {% include "web/_shared/contributors/petelepage.html" %}
-
-
-
-手機上很難填寫表單。 最好的表單是輸入量最少的表單。 好的表單應該提供語意式輸入類型。 按鍵應該可以變更以符合使用者的輸入類型；使用者可在日曆中選擇日期。 讓您的使用者瞭若指掌。 驗證工具應該在提交表單之前就告知使用者應該做什麼。
-
-有關建立令人驚歎表單的這些指南總覽，請查看以下影片。
 
 <div class="video-wrapper">
   <iframe class="devsite-embedded-youtube-video" data-video-id="iYYHRwLqrKM"
@@ -21,106 +12,85 @@ description: 手機上很難填寫表單。 最好的表單是輸入量最少的
   </iframe>
 </div>
 
+Forms are hard to fill out on mobile. The best forms are the ones with the fewest inputs. This article will cover designing efficient forms, validating them effectively, and keeping the user informed along the way.
 
+## Design efficient forms
 
-## 設計高效率表單
-
-
-
-
-要設計高效率表單，請避免重複行為、只要求必要資訊，並向使用者展示其在多部分表單中的進度以引導使用者。
-
+Design efficient forms by avoiding repeated actions, asking for only the necessary information and guide users by showing them how far along they are in multi-part forms.
 
 ### TL;DR {: .hide-from-toc }
-- 使用現有資料預先填入欄位，並確保啟用自動填寫。
-- 使用標記清楚的進度列，以協助使用者完成多部分表單。
-- 提供視覺化日曆，讓使用者無需離開您的網站，以跳至智慧手機上的日曆應用程式。
 
+- Use existing data to pre-populate fields and be sure to enable autofill.
+- Use clearly-labeled progress bars to help users get through multi-part forms.
+- Provide visual calendar so users don’t have to leave your site and jump to the calendar app on their smartphones.
 
-### 儘量減少重複行為和欄位
+### Minimize repeated actions and fields
 
-請確保您的表單沒有重複行為、
-只加入必要的欄位數目，
-並善用 [自動填寫](/web/fundamentals/input/form/#use_metadata_to_enable_auto-complete)，以便使用者可以利用預先填入資料，
-輕鬆完成表單。
-
-<figure>
-  <img src="imgs/forms-multipart-good.png" srcset="imgs/forms-multipart-good.png 1x, imgs/forms-multipart-good-2x.png 2x" alt="在多部分表單中顯示進度">
+<figure class="attempt-right">
+  <img src="imgs/forms-multipart-good.png" srcset="imgs/forms-multipart-good.png 1x, imgs/forms-multipart-good-2x.png 2x" alt="Show progression in multi-part forms">
   <figcaption>
-    在 Progressive.com 網站上，會先要求使用者提供 ZIP 郵遞區號，然後區號會預先填入到表單的下一部分。
+    On the Progressive.com website, users are asked first for their ZIP code, which is then pre-populated into the next part of the form.
   </figcaption>
 </figure>
 
-尋找機會預先填寫您已知或預期的資訊，
-讓使用者省掉提供資訊的必要性。  例如，以使用者提供的上一次交貨地址，
-預先填入交貨地址。
+Make sure your forms have no repeated actions, only as many fields as necessary, and take advantage of [autofill](#use-metadata-to-enable-auto-complete), so that users can easily complete forms with pre-populated data.
 
+Look for opportunities to pre-fill information you already know, or may anticipated to save the user from having to provide it. For example, pre-populate the shipping address with the last shipping address supplied by the user.
 
-### 向使用者顯示已完成的進度
+<div style="clear:both;"></div>
 
-進度列和功能表應該透過多步驟表單和程序，
-精確傳達整體進度。
+### Show users how far along they are
 
-<figure>
-  <img src="imgs/forms-multipart-good.png" srcset="imgs/forms-multipart-good.png 1x, imgs/forms-multipart-good-2x.png 2x" alt="在多部分表單中顯示進度">
+<figure class="attempt-right">
+  <img src="imgs/forms-multipart-good.png" srcset="imgs/forms-multipart-good.png 1x, imgs/forms-multipart-good-2x.png 2x" alt="Show progression in multi-part forms">
   <figcaption>
-    使用標記清楚的進度列，以協助使用者完成多部分表單。
+    Use clearly-labeled progress bars to help users get through multi-part forms.
   </figcaption>
 </figure>
 
-如果您將一個不成比例的複雜表單放在初期步驟，
-使用者更有可能在完成整個程序之前，就放棄您的網站。
+Progress bars and menus should accurately convey overall progress through multi-step forms and processes.
 
+If you place a disproportionately complex form in an earlier step, users are more likely to abandon your site before they go through the entire process.
 
-### 在選擇日期時提供視覺化日曆
+<div style="clear:both;"></div>
 
-排程約會和旅行日期時，
-使用者經常需要更多的前後文資訊。要簡化過程，
-並避免使用者離開您的網站以查看其日曆應用程式，請提供一個帶有明確標籤的視覺化日曆，
-以選擇開始和結束日期。
+### Provide visual calendars when selecting dates
 
-<figure>
-  <img src="imgs/forms-calendar-good.png" srcset="imgs/forms-calendar-good.png 1x, imgs/forms-calendar-good-2x.png 2x" alt="具有易用日曆的旅館網站">
+<figure class="attempt-right">
+  <img src="imgs/forms-calendar-good.png" srcset="imgs/forms-calendar-good.png 1x, imgs/forms-calendar-good-2x.png 2x" alt="Hotel website with easy to use calendar">
   <figcaption>
-    具有易用日曆小工具的旅館預約網站，方便選擇日期。
+    Hotel booking website with easy to use calendar widget for picking dates.
   </figcaption>
 </figure>
 
+Users often need more context when scheduling appointments and travel dates, to make things easier and prevent them from leaving your site to check their calendar app, provide a visual calendar with clear labeling for selecting start and end dates.
 
+<div style="clear:both;"></div>
 
+## Choose the best input type
 
-## 選擇最佳輸入類型
-
-
-
-使用正確的輸入類型，簡化資訊輸入。 使用者會喜歡自動呈現數字按鍵，以供輸入電話號碼的網站，或是在輸入號碼時自動移至下個欄位。 在您的表單中尋找剔除多餘點選動作的機會。
-
+Streamline information entry by using the right input type. Users appreciate websites that automatically present number pads for entering phone numbers, or automatically advance fields as they entered them. Look for opportunities to eliminate wasted taps in your forms.
 
 ### TL;DR {: .hide-from-toc }
-- 為您的資料選擇最合適的輸入類型，以簡化輸入。
-- 當使用者以 <code>datalist</code> 元素輸入時，提供建議。
 
+- Choose the most appropriate input type for your data to simplify input.
+- Offer suggestions as the user types with the `datalist` element.
 
-#### HTML5 輸入類型
+### HTML5 input types
 
-HTML5 導入了數種新輸入類型。 這些新的輸入類型可以提示瀏覽器，
-有關應為螢幕小鍵盤，
-顯示哪種類型的鍵盤。  無需變更鍵盤，
-並只看到該輸入類型所需的適當按鍵時，
-使用者能更輕鬆地輸入所需的資訊。
+HTML5 introduced a number of new input types. These new input types give hints to the browser about what type of keyboard layout to display for on-screen keyboards. Users are more easily able to enter the required information without having to change their keyboard and only see the appropriate keys for that input type.
 
-<table>
+<table class="responsive">
   <thead>
     <tr>
-      <th data-th="Input type">輸入 <code>type</code></th>
-      <th data-th="Typical keyboard">一般鍵盤</th>
+      <th colspan="2">Input <code>type</code></th>
     </tr>
   </thead>
   <tbody>
     <tr>
       <td data-th="Input type">
-        <code>url</code><br> 用於輸入 URL。 它必須先以一個有效的 URI 配置開始，
-例如 <code>http://</code>, <code>ftp://</code> 或 <code>mailto:</code>。
+        <code>url</code><br> For entering a URL. It must start with a valid URI scheme,
+        for example <code>http://</code>, <code>ftp://</code> or <code>mailto:</code>.
       </td>
       <td data-th="Typical keyboard">
         <img src="imgs/url-ios.png" srcset="imgs/url-ios.png 1x, imgs/url-ios-2x.png 2x">
@@ -128,9 +98,9 @@ HTML5 導入了數種新輸入類型。 這些新的輸入類型可以提示瀏�
     </tr>
     <tr>
       <td data-th="Input type">
-        <code>tel</code><br>用於輸入電話號碼。 它<b>不會</b>
-        強制特定語法供驗證，
-所以您若要確定特定格式，可以使用模式。
+        <code>tel</code><br>For entering phone numbers. It does <b>not</b>
+        enforce a particular syntax for validation, so if you want to ensure
+        a particular format, you can use pattern.
       </td>
       <td data-th="Typical keyboard">
         <img src="imgs/tel-android.png" srcset="imgs/tel-android.png 1x, imgs/tel-android-2x.png 2x">
@@ -138,9 +108,9 @@ HTML5 導入了數種新輸入類型。 這些新的輸入類型可以提示瀏�
     </tr>
     <tr>
       <td data-th="Input type">
-        <code>email</code><br>用於輸入電子郵件地址，
-並提示 @ 應該按預設在鍵盤上顯示。 如果將要提供多個電子郵件地址，
-您可以新增多個屬性。
+        <code>email</code><br>For entering email addresses, and hints that
+        the @ should be shown on the keyboard by default. You can add the
+        multiple attribute if more than one email address will be provided.
       </td>
       <td data-th="Typical keyboard">
         <img src="imgs/email-android.png" srcset="imgs/email-android.png 1x, imgs/email-android-2x.png 2x">
@@ -148,8 +118,8 @@ HTML5 導入了數種新輸入類型。 這些新的輸入類型可以提示瀏�
     </tr>
     <tr>
       <td data-th="Input type">
-        <code>search</code><br>文字輸入欄位，
-其樣式和平臺的搜尋欄位一致。
+        <code>search</code><br>A text input field styled in a way that is
+        consistent with the platform's search field.
       </td>
       <td data-th="Typical keyboard">
         <img src="imgs/plain-ios.png" srcset="imgs/plain-ios.png 1x, imgs/plain-ios-2x.png 2x" class="keybimg">
@@ -157,8 +127,9 @@ HTML5 導入了數種新輸入類型。 這些新的輸入類型可以提示瀏�
     </tr>
     <tr>
       <td data-th="Input type">
-        <code>number</code><br>用於數字輸入，
-可以是任何合理的整數或浮點值。
+        <code>number</code><br>For numeric input, can be any rational integer. Additionally,
+        <a href="https://www.filamentgroup.com/lab/type-number.html">iOS requires using</a>
+        <code>pattern="\d*"</code> to show the numeric keyboard.
       </td>
       <td data-th="Typical keyboard">
         <img src="imgs/number-android.png" srcset="imgs/number-android.png 1x, imgs/number-android-2x.png 2x" class="keybimg">
@@ -166,9 +137,9 @@ HTML5 導入了數種新輸入類型。 這些新的輸入類型可以提示瀏�
     </tr>
     <tr>
       <td data-th="Input type">
-        <code>range</code><br>用於數字輸入，但與數字輸入類型不同，
-此值較不重要。 它是以滑桿控制的形式顯示給使用者。
-
+        <code>range</code><br>For number input, but unlike the number input
+        type, the value is less important. It is displayed to the user as a
+        slider control.
       </td>
       <td data-th="Typical keyboard">
         <img src="imgs/range-ios.png">
@@ -176,8 +147,8 @@ HTML5 導入了數種新輸入類型。 這些新的輸入類型可以提示瀏�
     </tr>
     <tr>
       <td data-th="Input type">
-        <code>datetime-local</code><br>用於輸入一個日期和時間值，
-而提供的時區為當地時區。
+        <code>datetime-local</code><br>For entering a date and time value
+        where the time zone provided is the local time zone.
       </td>
       <td data-th="Typical keyboard">
         <img src="imgs/datetime-local-ios.png" srcset="imgs/datetime-local-ios.png 1x, imgs/datetime-local-ios-2x.png 2x">
@@ -185,8 +156,8 @@ HTML5 導入了數種新輸入類型。 這些新的輸入類型可以提示瀏�
     </tr>
     <tr>
       <td data-th="Input type">
-        <code>date</code><br>用於輸入日期 (僅限)，
-不提供時區。
+        <code>date</code><br>For entering a date (only) with no time zone
+        provided.
       </td>
       <td data-th="Typical keyboard">
         <img src="imgs/date-android.png" srcset="imgs/date-android.png 1x, imgs/date-android-2x.png 2x">
@@ -194,8 +165,8 @@ HTML5 導入了數種新輸入類型。 這些新的輸入類型可以提示瀏�
     </tr>
     <tr>
       <td data-th="Input type">
-        <code>time</code><br>用於輸入時間 (僅限)，
-不提供時區。
+        <code>time</code><br>For entering a time (only) with no time zone
+        provided.
       </td>
       <td data-th="Typical keyboard">
         <img src="imgs/time-ios.png" srcset="imgs/time-ios.png 1x, imgs/time-ios-2x.png 2x">
@@ -203,8 +174,8 @@ HTML5 導入了數種新輸入類型。 這些新的輸入類型可以提示瀏�
     </tr>
     <tr>
       <td data-th="Input type">
-        <code>week</code><br>用於輸入週 (僅限)，
-不提供時區。
+        <code>week</code><br>For entering a week (only) with no time zone
+        provided.
       </td>
       <td data-th="Typical keyboard">
         <img src="imgs/week-android.png" srcset="imgs/week-android.png 1x, imgs/week-android-2x.png 2x">
@@ -212,8 +183,8 @@ HTML5 導入了數種新輸入類型。 這些新的輸入類型可以提示瀏�
     </tr>
     <tr>
       <td data-th="Input type">
-        <code>month</code><br>用於輸入月份 (僅限)，
-不提供時區。
+        <code>month</code><br>For entering a month (only) with no time zone
+        provided.
       </td>
       <td data-th="Typical keyboard">
         <img src="imgs/month-ios.png" srcset="imgs/month-ios.png 1x, imgs/month-ios-2x.png 2x">
@@ -221,7 +192,7 @@ HTML5 導入了數種新輸入類型。 這些新的輸入類型可以提示瀏�
     </tr>
     <tr>
       <td data-th="Input type">
-        <code>color</code><br>用於選擇一種顏色。
+        <code>color</code><br>For picking a color.
       </td>
       <td data-th="Typical keyboard">
         <img src="imgs/color-android.png" srcset="imgs/color-android.png 1x, imgs/color-android-2x.png 2x">
@@ -230,100 +201,88 @@ HTML5 導入了數種新輸入類型。 這些新的輸入類型可以提示瀏�
   </tbody>
 </table>
 
-#### 以 datalist 輸入時提供建議
+Caution: Remember to keep localization in mind when choosing an input type, some locales use a dot (.) as a separator instead of a comma (,)
 
-`datalist` 元素不是一種輸入類型，
-而是關聯表單欄位的建議輸入值之清單。 它可以在使用者輸入時，
-讓瀏覽器顯示自動完成選項。 使用者在選取元素時必須掃描一長串清單尋找值，
-並限制只能使用清單上的項目，與其不同的是，
-`datalist` 元素會在使用者輸入時提供提示。
+### Offer suggestions during input with datalist
+
+The `datalist` element isn't an input type, but a list of suggested input values to associated with a form field. It lets the browser suggest autocomplete options as the user types. Unlike select elements where users must scan long lists to find the value they're looking for, and limiting them only to those lists, `datalist` element provides hints as the user types.
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/design-and-ux/input/forms/_code/order.html" region_tag="datalist" adjust_indentation="auto" %}
 </pre>
 
-Note: <code>datalist</code> 值是以建議項目的方式提供，而使用者並不侷限於所提供的建議。
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/input/forms/order.html){: target="_blank" .external }
 
+Note: The `datalist` values are provided as suggestions, and users are not restricted to the suggestions provided.
 
+## Label and name inputs properly
 
-手機上很難填寫表單。 最好的表單是輸入量最少的表單。 好的表單應該提供語意式輸入類型。 按鍵應該可以變更以符合使用者的輸入類型；使用者可在日曆中選擇日期。 讓您的使用者瞭若指掌。 驗證工具應該在提交表單之前就告知使用者應該做什麼。
+Good forms provide semantic input types. This enables virtual keyboard layouts to match the input type, or lets users pick a date from a calendar, rather than entering it by hand.
 
+### TL;DR {: .hide-from-toc }
 
+- Always use `label`s on form inputs, and ensure they're visible when the field is in focus.
+- Use `placeholder`s to provide guidance about what you expect.
+- To help the browser auto-complete the form, use established `name`'s for elements and include the `autocomplete` attribute.
 
-#### 標籤的重要性
+### The importance of labels
 
-`label` 元素為使用者提供方向，
-告之它們表單元素中需要什麼資訊。  每個 `label` 與一個輸入元素關聯，
-方法是將之放在 `label` 元素內，或使用「`for`」屬性。
-  套用標籤至表單元素也有助於改善輕觸目標的大小：
-使用者可以輕觸標籤或輸入，以將焦點放在輸入元素上。
-
+The `label` element provides direction to the user, telling them what information is needed in a form element. Each `label` is associated with an input element by placing it inside the `label` element, or by using the "`for`" attribute. Applying labels to form elements also helps to improve the touch target size: the user can touch either the label or the input in order to place focus on the input element.
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/design-and-ux/input/forms/_code/order.html" region_tag="labels" adjust_indentation="auto" %}
 </pre>
 
-#### 標籤調整大小和放置
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/input/forms/order.html){: target="_blank" .external }
 
-標籤和輸入應該要夠大，以易於按下。  在直向視區中，
-欄位標籤應該放在輸入元素之上，
-橫向時則放在旁邊。  確保欄位標籤和相應的輸入方塊要同時可見。
-  要小心自動捲動處理常式，它可能會捲動輸入元素至網頁頂端，隱藏了標籤；
-或是置於輸入元素下的標籤可能會被虛擬鍵盤蓋住。
+### Label sizing and placement
 
+Labels and inputs should be large enough to be easy to press. In portrait viewports, field labels should be above input elements, and beside them in landscape. Ensure field labels and the corresponding input boxes are visible at the same time. Be careful with custom scroll handlers that may scroll input elements to the top of the page hiding the label, or labels placed below input elements may be covered by the virtual keyboard.
 
-#### 使用預留位置
+### Use placeholders
 
-預留位置屬性會對使用者提示輸入中可以預期的內容，通常會顯示值為淺色文字，
-直到使用者在元素中開始打字。
+The placeholder attribute provides a hint to the user about what's expected in the input, typically by displaying the value as light text until the user starts typing in the element.
 
-
-<input type="text" placeholder="MM-YYYY">
+<input type="text" placeholder="MM-YYYY" />
 
     <input type="text" placeholder="MM-YYYY" ...>
+    
 
+Caution: Placeholders disappear as soon as the user starts typing in an element, thus they are not a replacement for labels. They should be used as an aid to help guide users on the required format and content.
 
-一旦焦點放在元素中時，預留位置就會消失，因此預留位置不可取代標籤。  預留位置應該當做輔助工具，協助指導使用者使用所需的格式和內容。
+### Use metadata to enable auto-complete
 
-#### 使用中繼資料來啟用自動完成
+Users appreciate when websites save them time by automatically filling common fields like names, email addresses and other frequently used fields, plus it helps to reduce potential input errors -- especially on virtual keyboards and small devices.
 
-透過自動填寫如姓名、電子郵件地址和其他常用欄位等常見欄位，
-使用者會喜歡網站幫他們節省時間；
-再加上如此也可減少潛在的輸入錯誤 -- 尤其是在虛擬鍵盤與小型裝置上。
+Browsers use many heuristics to determine which fields they can [auto-populate](https://support.google.com/chrome/answer/142893) [based on previously specified data by the user](https://support.google.com/chrome/answer/142893), and you can give hints to the browser by providing both the `name` attribute and the `autocomplete` attribute on each input element.
 
+Note: Chrome requires `input` elements to be wrapped in a `<form>` tag to enable auto-complete. If they're not wrapped in a `form` tag, Chrome will offer suggestions, but will **not** complete the form.
 
-瀏覽器使用許多啟發法來判斷它們可以
-(https://support.google.com/chrome/answer/142893){: .external}
-[根據使用者先前指定的資料]
-(https://support.google.com/chrome/answer/142893){: .external}[自動填入]哪些欄位 ，您可以提供提示給瀏覽器，
-方法是在每一項輸入元素上提供 name 與 autocomplete 屬性。
-
-
-例如要提示瀏覽器，它應該以使用者名稱、電子郵件地址和電話號碼自動完成表單時，
-您應該使用：
+For example, to hint to the browser that it should auto-complete the form with the users name, email address and phone number, you should use:
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/design-and-ux/input/forms/_code/order.html" region_tag="autocomplete" adjust_indentation="auto" %}
 </pre>
 
-#### 建議輸入 `name` 和 `autocomplete` 屬性值
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/input/forms/order.html){: target="_blank" .external }
 
+### Recommended input `name` and `autocomplete` attribute values
 
-`autocomplete` 屬性值是目前 [WHATWG HTML 標準](https://html.spec.whatwg.org/multipage/forms.html#autofill){: .external}的一部分。 最常用的 `autocomplete` 屬性如下所示：
+`autocomplete` attribute values are part of the current [WHATWG HTML Standard](https://html.spec.whatwg.org/multipage/forms.html#autofill). The most commonly used `autocomplete` attributes are shown below.
 
-`autocomplete` 屬性可以伴隨區段名稱，如 **`shipping `**`given-name` 或 **`billing `**`street-address`。 瀏覽器將個別自動完成不同的區段，而非視為連續的表單。
+The `autocomplete` attributes can be accompanied with a section name, such as **`shipping`**`given-name` or **`billing`**`street-address`. The browser will auto-complete different sections separately, and not as a continuous form.
 
 <table>
-    <thead>
+  <thead>
     <tr>
-      <th data-th="Content type">內容類型</th>
-      <th data-th="name attribute"><code>name</code> 屬性</th>
-      <th data-th="autocomplete attribute"><code>autocomplete</code> 屬性</th>
+      <th data-th="Content type">Content type</th>
+      <th data-th="name attribute"><code>name</code> attribute</th>
+      <th data-th="autocomplete attribute"><code>autocomplete</code> attribute</th>
     </tr>
   </thead>
   <tbody>
     <tr>
-      <td data-th="Content type">名稱</td>
+      <td data-th="Content type">Name</td>
       <td data-th="name attribute">
         <code>name</code>
         <code>fname</code>
@@ -332,20 +291,20 @@ Note: <code>datalist</code> 值是以建議項目的方式提供，而使用者�
       </td>
       <td data-th="autocomplete attribute">
         <ul>
-          <li><code>name</code> (完整姓名)</li>
-          <li><code>given-name</code> (名字)</li>
-          <li><code>additional-name</code> (中間名)</li>
-          <li><code>family-name</code> (姓氏)</li>
+          <li><code>name</code> (full name)</li>
+          <li><code>given-name</code> (first name)</li>
+          <li><code>additional-name</code> (middle name)</li>
+          <li><code>family-name</code> (last name)</li>
         </ul>
       </td>
     </tr>
     <tr>
-      <td data-th="Content type">電子郵件</td>
+      <td data-th="Content type">Email</td>
       <td data-th="name attribute"><code>email</code></td>
       <td data-th="autocomplete attribute"><code>email</code></td>
     </tr>
     <tr>
-      <td data-th="Content type">地址</td>
+      <td data-th="Content type">Address</td>
       <td data-th="name attribute">
         <code>address</code>
         <code>city</code>
@@ -359,26 +318,26 @@ Note: <code>datalist</code> 值是以建議項目的方式提供，而使用者�
       </td>
       <td data-th="autocomplete attribute">
         <ul>
-          <li>針對單行地址輸入：
+          <li>For one address input:
             <ul>
               <li><code>street-address</code></li>
             </ul>
           </li>
-          <li>針對兩行地址輸入：
+          <li>For two address inputs:
             <ul>
               <li><code>address-line1</code></li>
               <li><code>address-line2</code></li>
             </ul>
           </li>
-          <li><code>address-level1</code> (州或省)</li>
-          <li><code>address-level2</code> (城市)</li>
-          <li><code>postal-code</code> (郵遞區號)</li>
+          <li><code>address-level1</code> (state or province)</li>
+          <li><code>address-level2</code> (city)</li>
+          <li><code>postal-code</code> (zip code)</li>
           <li><code>country</code></li>
         </ul>
       </td>
     </tr>
     <tr>
-      <td data-th="Content type">電話</td>
+      <td data-th="Content type">Phone</td>
       <td data-th="name attribute">
         <code>phone</code>
         <code>mobile</code>
@@ -391,7 +350,7 @@ Note: <code>datalist</code> 值是以建議項目的方式提供，而使用者�
       <td data-th="autocomplete attribute"><code>tel</code></td>
     </tr>
     <tr>
-      <td data-th="Content type">信用卡</td>
+      <td data-th="Content type">Credit Card</td>
       <td data-th="name attribute">
         <code>ccname</code>
         <code>cardnumber</code>
@@ -413,342 +372,288 @@ Note: <code>datalist</code> 值是以建議項目的方式提供，而使用者�
         </ul>
       </td>
     </tr>
+    <tr>
+      <td data-th="Content type">Usernames</td>
+      <td data-th="name attribute">
+        <code>username</code>
+      </td>
+      <td data-th="autocomplete attribute">
+        <ul>
+          <li><code>username</code></li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td data-th="Content type">Passwords</td>
+      <td data-th="name attribute">
+        <code>password</code>
+      </td>
+      <td data-th="autocomplete attribute">
+        <ul>
+          <li><code>current-password</code> (for sign-in forms)</li>
+          <li><code>new-password</code> (for sign-up and password-change forms)</li>
+        </ul>
+      </td>
+    </tr>
   </tbody>
 </table>
 
-當表單方法為 post 時，自動完成才有效。
+Note: Use either only `street-address` or both `address-line1` and `address-line2`. `address-level1` and `address-level2` are only necessary if they're required for your address format.
 
-#### `autofocus` 屬性
+### The `autofocus` attribute
 
-在某些表單上，例如 Google 首頁上，您要使用者做的唯一一件事就是填寫特定欄位，
-此時您可以新增 `autofocus`
- 屬性。  當設定時，桌面瀏覽器會立即將焦點移動到輸入欄位，
-便於使用者快速開始使用該表單。  行動瀏覽器會忽略
-`autofocus` 屬性，以防止鍵盤隨機出現。
+On some forms, for example the Google home page where the only thing you want the user to do is fill out a particular field, you can add the `autofocus` attribute. When set, desktop browsers immediately move the focus to the input field, making it easy for users to quickly begin using the form. Mobile browsers ignore the `autofocus` attribute, to prevent the keyboard from randomly appearing.
 
-
-要小心使用自動焦點屬性，
-因為它可能偷走鍵盤焦點，
-並防止倒退鍵字元用於導覽。
+Be careful using the autofocus attribute because it will steal keyboard focus and potentially preventing the backspace character from being used for navigation.
 
     <input type="text" autofocus ...>
+    
 
+## Avoid common patterns that break Chrome Autofill
 
----
-title: "提供即時驗證"
-updated_on: 2014-10-21
-key-takeaways:
-  provide-real-time-validation:
-    - 利用瀏覽器的內建驗證屬性，如<code>pattern</code>、<code>required</code>、<code>min</code>、<code>max</code>等。
-    - 使用 JavaScript 和 Constraints Validation API 於更複雜的驗證要求上。
-    - 以即時方式顯示驗證錯誤，而且如果使用者嘗試提交無效的表單，就顯示他們必須修正的所有欄位。
-notes:
-  use-placeholders:
-    -一旦焦點放在元素中時，預留位置就會消失，因此預留位置不可取代標籤。  預留位置應該當做輔助工具，協助指導使用者使用所需的格式和內容。
-  recommend-input:
-    - 當表單方法為 post 時，自動完成才有效。
-  use-datalist:
-    - <code>datalist</code> 值是以建議項目的方式提供，而使用者並不侷限於所提供的建議。
-  provide-real-time-validation:
-    - 即使以用戶端輸入驗證，需記得一件非常重要的事，請驗證伺服器上的資料，以確保您資料的一致性和安全性。
-  show-all-errors:
-    - 您應該向使用者一次性顯示表單上的所有問題，而非一次展示一個問題。
-  request-auto-complete-flow:
-    - 如果您要求任何種類的個人資訊或信用卡資料，確保是透過 SSL 提供頁面。  否則對話方塊中將警告使用者，他們的資訊可能不安全。
----
-<p class="intro">
-  即時資料驗證不但能協助保持您的資料乾淨，還有助於改善使用者體驗。  最新瀏覽器具有幾個內建工具，可協助提供即時資料驗證，以防止使用者提交無效的表單。  應使用視覺提示，以表明一張表單是否已正確完成。
-</p>
+Chrome Autofill makes filling out forms easier by automatically entering information they've saved to their Google account, Chrome browser, or mobile device. As a developer, you want to ensure that Autofill works well on your website so you can create a better experience for your users. This is especially important for checkout forms; users who successfully use Chrome Autofill to enter their information go through checkout an average of 30% faster than those who don't.
 
-即使以用戶端輸入驗證，需記得一件非常重要的事，請驗證伺服器上的資料，以確保您資料的一致性和安全性。
+If you haven't already, make sure you have read the previous sections on [developing good forms](#design_efficient_forms) and using [autocomplete attributes](#use_metadata_to_enable_auto-complete) (part of the WHATWG HTML standard) on your site. This section covers some of the common mistakes developers make when building forms. Avoiding these pitfalls helps ensure that your users can effectively use Autofill, and could help increase conversions.
 
-#### 使用這些屬性來驗證輸入
+### Field validation pitfalls
 
-##### `pattern` 屬性
+Some developers use client-side validation, which triggers input change or key events. For example, a site might truncate fields with JavaScript instead of using the fields' "maxlength" attribute. Because Autofill does not recognize client-side validation, this truncation may cause the data to become invalid.
 
-`pattern` 屬性會指定
- [規則運算式](http://en.wikipedia.org/wiki/Regular_expression){: .external}，
-以用來驗證輸入欄位。 例如，若要驗證美國郵遞區號
- (5 位數，有時候是再加一個短破折號與額外的 4 位數字)，我們會設定 `pattern` 如下：
+This often happens with phone fields when the maximum length is enforced using Javascript. Without the use of autocomplete attributes, Autofill may infer that it needs to fill a full phone number including the country code (e.g., in the US, eleven digits, such as "15552125555"). If the website truncates the value to ten digits using Javascript, the field value incorrectly becomes "1555212555". The correct way to support Autofill is to include `autocomplete="tel-national"` on the field, as pointed out in the [WHATWG HTML standard](https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#autofilling-form-controls:-the-autocomplete-attribute).
 
+While client-side validation may provide some benefits to users typing in their data, it usually ends up removing values that are pasted or autofilled.
+
+### Use standard input fields
+
+Don't create your own form controls, especially custom dropdowns that replace `<select>` elements. This works poorly with accessibility frameworks as well as with Chrome Autofill. Instead, use standard dropdowns and other elements that can be easily modified through modern CSS.
+
+### Don't use fake placeholders in input fields
+
+Some websites use "fake placeholders" in input fields instead of using the placeholder attribute. This is done by setting the placeholder text as the value of the field (e.g., `value="First Name"`) and using JavaScript to remove the value when the field gains focus. Autofill interprets such values as user-entered and doesn't replace the placeholder text with actual values, resulting in a poor Autofill experience. Instead, use floating field labels or `placeholder="First Name"` to guide users.
+
+### Don't copy the shipping address into the billing address section
+
+Another common pitfall is when a user wants to use a billing address that differs from the shipping address. Often, the site automatically copies the shipping address values into the billing address section. This potentially creates additional work for the user, because Autofill has to be conservative about replacing the contents of pre-populated fields and is thus unable to assist in clearing the form and filling in the desired address.
+
+### Ensure that autocomplete attributes are correct
+
+[Autocomplete attributes](#use_metadata_to_enable_auto-complete) as defined in the WHATWG HTML standard help your website tell Chrome Autofill explicitly what the fields are supposed to be, removing guesswork. However, these attributes are often misspelled or otherwise incorrect. When this happens, Autofill won't recognize the attribute and the unknown field type will not be autofilled.
+
+For example, the correct attribute for the Credit Card CVC is "cc-csc". Many sites mistakenly use "cc-cvc", and because Autofill does not recognize this attribute, this field won't get autofilled.
+
+The best practice for these attributes is to use this format: `autocomplete="<section> <fieldtype>"`, for example: `autocomplete="shipping address-line1"`. For a complete list of all the accepted values, please see the [WHATWG HTML Living Standard](https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#autofill).
+
+## Provide real-time validation
+
+Keep your user informed. Validation tools should tell the user what they need to do before submitting the form.
+
+Real-time data validation doesn't just help to keep your data clean, but it also helps improve the user experience. Modern browsers have several built-in tools to help provide real-time data validation and may prevent the user from submitting an invalid form. Visual cues should be used to indicate whether a form has been completed properly.
+
+### TL;DR {: .hide-from-toc }
+
+- Leverage the browser's built-in validation attributes like `pattern`, `required`, `min`, `max`, etc.
+- Use JavaScript and the Constraints Validation API for more complex validation requirements.
+- Show validation errors in real time, and if the user tries to submit an invalid form, show all fields they need to fix.
+
+### Use these attributes to validate input
+
+#### The `pattern` attribute
+
+The `pattern` attribute specifies a [regular expression](https://en.wikipedia.org/wiki/Regular_expression) used to validate an input field. For example, to validate a US Zip code (5 digits, sometimes followed by a dash and an additional 4 digits), we would set the `pattern` like this:
 
     <input type="text" pattern="^\d{5,6}(?:[-\s]\d{4})?$" ...>
+    
 
-###### 常見的規則運算式模式
+##### Common regular expression patterns
 
-<table>
+<table class="responsive">
   <thead>
     <tr>
-      <th data-th="Description">描述</th>
-      <th data-th="Regular expression">規則運算式</th>
+      <th colspan="2">Regular expression</th>
     </tr>
   </thead>
   <tbody>
     <tr>
-      <td data-th="Description">郵政地址</td>
+      <td data-th="Description">Postal address</td>
       <td data-th="Regular expression"><code>[a-zA-Z\d\s\-\,\#\.\+]+</code></td>
     </tr>
     <tr>
-      <td data-th="Description">郵遞區號 (美國)</td>
+      <td data-th="Description">Zip Code (US)</td>
       <td data-th="Regular expression"><code>^\d{5,6}(?:[-\s]\d{4})?$</code></td>
     </tr>
     <tr>
-      <td data-th="Description">IP 位址 (IPv4)</td>
+      <td data-th="Description">IP Address (IPv4)</td>
       <td data-th="Regular expression"><code>^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$</code></td>
     </tr>
-
-<tr>
-      <td data-th="Description">IP 位址 (IPv6)</td>
+    <tr>
+      <td data-th="Description">IP Address (IPv6)</td>
       <td data-th="Regular expression"><code>^(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]).){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]).){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))$</code></td>
     </tr>
-
-<tr>
-      <td data-th="Description">IP 位址 (兩種)</td>
+    <tr>
+      <td data-th="Description">IP Address (both)</td>
       <td data-th="Regular expression"><code>^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)|(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]).){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]).){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))$</code></td>
     </tr>
-
     <tr>
-      <td data-th="Description">信用卡號</td>
+      <td data-th="Description">Credit Card Number</td>
       <td data-th="Regular expression"><code>^(?:4[0-9]{12}(?:[0-9]{3})?|5[1-5][0-9]{14}|3[47][0-9]{13}|3(?:0[0-5]|[68][0-9])[0-9]{11}|6(?:011|5[0-9]{2})[0-9]{12}|(?:2131|1800|35\d{3})\d{11})$</code></td>
     </tr>
     <tr>
-      <td data-th="Description">社會安全號碼</td>
+      <td data-th="Description">Social Security Number</td>
       <td data-th="Regular expression"><code>^\d{3}-\d{2}-\d{4}$</code></td>
     </tr>
     <tr>
-      <td data-th="Description">北美電話號碼</td>
+      <td data-th="Description">North American Phone Number</td>
       <td data-th="Regular expression"><code>^(?:(?:\+?1\s*(?:[.-]\s*)?)?(?:\(\s*([2-9]1[02-9]|[2-9][02-8]1|[2-9][02-8][02-9])\s*\)|([2-9]1[02-9]|[2-9][02-8]1|[2-9][02-8][02-9]))\s*(?:[.-]\s*)?)?([2-9]1[02-9]|[2-9][02-9]1|[2-9][02-9]{2})\s*(?:[.-]\s*)?([0-9]{4})(?:\s*(?:#|x\.?|ext\.?|extension)\s*(\d+))?$</code></td>
     </tr>
   </tbody>
 </table>
 
-##### `required` 屬性
+#### The `required` attribute
 
-如果 `required` 屬性存在，
-則提交表單之前，欄位必須包含一個值。 例如，要讓郵遞區號成為必要條件，
-我們只要新增必要的屬性：
+If the `required` attribute is present, then the field must contain a value before the form can be submitted. For example, to make the zip code required, we'd simply add the required attribute:
 
     <input type="text" required pattern="^\d{5,6}(?:[-\s]\d{4})?$" ...>
+    
 
-##### `min`、`max`和`step`屬性
+#### The `min`, `max` and `step` attributes
 
-對於數字或範圍等數字輸入類型，
-以及日期/時間輸入，您可以指定最小值和最大值，
-以及被滑桿或微調按鈕調整時的增/減量。  例如，鞋子大小輸入會設定最小值為 1 ，
-最大值為 13，級距為 0.5
-
+For numeric input types like number or range as well as date/time inputs, you can specify the minimum and maximum values, as well as how much they should each increment/decrement when adjusted by the slider or spinners. For example, a shoe size input would set a minimum size of 1 and a maximum size 13, with a step of 0.5
 
     <input type="number" min="1" max="13" step="0.5" ...>
+    
 
-##### `maxlength` 屬性
+#### The `maxlength` attribute
 
-`maxlength` 屬性可以用於指定輸入或文字方塊的最大長度，
-而且當您想要限制使用者可以提供的資訊長度時，非常實用。
- 例如，如果您想要限制檔案名稱為最多 12 個字元之內，
-您可以使用以下。
+The `maxlength` attribute can be used to specify the maximum length of an input or textbox and is useful when you want to limit the length of information that the user can provide. For example, if you want to limit a filename to 12 characters, you can use the following.
 
     <input type="text" id="83filename" maxlength="12" ...>
+    
 
-##### `minlength` 屬性
+#### The `minlength` attribute
 
-`minlength` 屬性可以用於指定輸入或文字方塊的最小長度，
-而且當您想要指定使用者必須提供的最小長度時，非常實用。
- 例如，如果您想要指定檔案名稱為至少需要 8 個字元時，
-您可以使用以下。
+The `minlength` attribute can be used to specify the minimum length of an input or textbox and is useful when you want to specify a minimum length the user must provide. For example, if you want to specify that a file name requires at least 8 characters, you can use the following.
 
     <input type="text" id="83filename" minlength="8" ...>
+    
 
-##### `novalidate` 屬性
+#### The `novalidate` attribute
 
-在某些情況下，您可能想在表單含有不正確輸入資料時，
-允許使用者提交表單。 為此，將 `novalidate` 屬性新增到表單元素中，
-或個別輸入欄位中。 在這種情況下，
-所有虛擬類別與 JavaScript API 將仍然可讓您檢查表單是否通過驗證。
+In some cases, you may want to allow the user to submit the form even if it contains invalid input. To do this, add the `novalidate` attribute to the form element, or individual input fields. In this case, all pseudo classes and JavaScript APIs will still allow you to check if the form validates.
 
     <form role="form" novalidate>
       <label for="inpEmail">Email address</label>
       <input type="email" ...>
     </form>
+    
 
-即使以用戶端輸入驗證，需記得一件非常重要的事，請驗證伺服器上的資料，以確保您資料的一致性和安全性。
+Success: Even with client-side input validation, it is always important to validate data on the server to ensure consistency and security in your data.
 
-#### 針對更複雜的即時驗證，請使用 JavaScript
+### Use JavaScript for more complex real-time validation
 
-當內建的驗證再加上規則運算式還不夠用的時候，
-您可以用 [Constraints Validation API] (https://w3c.github.io/html/sec-forms.html#constraints){: .external}這項強大的工具，以處理自訂驗證。
-  此 API 可讓您執行如設定自訂錯誤、
-檢查元素是否有效，
-並判斷元素無效的原因等動作：
+When the built-in validation plus regular expressions aren't enough, you can use the [Constraint Validation API](https://w3c.github.io/html/sec-forms.html#constraints), a powerful tool for handling custom validation. The API allows you to do things like set a custom error, check whether an element is valid, and determine the reason that an element is invalid:
 
-<table>
+<table class="responsive">
   <thead>
     <tr>
-      <th data-th="API">API</th>
-      <th data-th="Description">描述</th>
+      <th colspan="2">Constraint Validation</th>
     </tr>
   </thead>
   <tbody>
     <tr>
       <td data-th="API"><code>setCustomValidity()</code></td>
-      <td data-th="Description">將自訂驗證訊息和 <code>ValidityState</code> 物件的 <code>customError</code> 屬性設定為 <code>true</code>。</td>
+      <td data-th="Description">Sets a custom validation message and the <code>customError</code> property of the <code>ValidityState</code> object to <code>true</code>.</td>
     </tr>
     <tr>
       <td data-th="API"><code>validationMessage</code></td>
-      <td data-th="Description">傳回一個字串與輸入未能通過驗證測試的原因。</td>
+      <td data-th="Description">Returns a string with the reason the input failed the validation test.</td>
     </tr>
     <tr>
       <td data-th="API"><code>checkValidity()</code></td>
-      <td data-th="Description">如果元素滿足所有限制，則傳回 <code>true</code>，否則傳回 <code>false</code>。 決定當檢查傳回 <code>false</code> 時網頁如何回應的問題，將交由開發人員處理。</td>
+      <td data-th="Description">Returns <code>true</code> if the element satisfies all of its constraints, and <code>false</code> otherwise. Deciding how the page responds when the check returns <code>false</code> is left up to the developer.</td>
     </tr>
     <tr>
       <td data-th="API"><code>reportValidity()</code></td>
-      <td data-th="Description">如果元素滿足所有限制，則傳回 <code>true</code>，否則傳回 <code>false</code>。 當網頁回應 <code>false</code> 時，限制問題會回報給使用者。</td>
+      <td data-th="Description">Returns <code>true</code> if the element satisfies all of its constraints, and <code>false</code> otherwise. When the page responds <code>false</code>, constraint problems are reported to the user.</td>
     </tr>
     <tr>
       <td data-th="API"><code>validity</code></td>
-      <td data-th="Description">傳回一個 <code>ValidityState</code> 物件，代表元素的有效狀態。</td>
+      <td data-th="Description">Returns a <code>ValidityState</code> object representing the validity states of the element.</td>
     </tr>
   </tbody>
 </table>
 
-##### 設定自訂驗證訊息
+### Set custom validation messages
 
-如果一個欄位驗證失敗，請使用 `setCustomValidity()` ，以標記欄位為無效，
-並解釋欄位為何無法通過驗證。  例如，註冊表單可能會要求使用者輸入兩次，
-以確認電子郵件地址是否正確。  對第二個輸入使用模糊
-事件，以驗證這兩個輸入，並設定適當的
-回應。  例如：
+If a field fails validation, use `setCustomValidity()` to mark the field invalid and explain why the field didn't validate. For example, a sign up form might ask the user to confirm their email address by entering it twice. Use the blur event on the second input to validate the two inputs and set the appropriate response. For example:
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/design-and-ux/input/forms/_code/order.html" region_tag="customvalidation" adjust_indentation="auto" %}
 </pre>
 
-##### 避免無效表單的表單提交
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/input/forms/order.html){: target="_blank" .external }
 
-因為並非所有瀏覽器都會在資料無效時，
-避免使用者提交表單，您應該擷取提交事件，並對表單元素使用 `checkValidity()`
-，以確定表單是否有效。  例如：
+### Prevent form submission on invalid forms
+
+Because not all browsers will prevent the user from submitting the form if there is invalid data, you should catch the submit event, and use the `checkValidity()` on the form element to determine if the form is valid. For example:
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/design-and-ux/input/forms/_code/order.html" region_tag="preventsubmission" adjust_indentation="auto" %}
 </pre>
 
-#### 即時顯示回饋
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/input/forms/order.html){: target="_blank" .external }
 
-針對每個欄位提供視覺指示，以在使用者提交表單之前指明使用者是否已正確完成表單，
-將非常有幫助。
-HTML5 還導入了數個虛擬類別，
-可根據其值或屬性用在樣式輸入上。
+### Show feedback in real-time
 
-<table>
+It's helpful to provide a visual indication on each field that indicates whether the user has completed the form properly before they've submitted the form. HTML5 also introduces a number of new pseudo-classes that can be used to style inputs based on their value or attributes.
+
+<table class="responsive">
   <thead>
     <tr>
-      <th data-th="Pseudo-class">虛擬類別</th>
-      <th data-th="Use">使用</th>
+      <th colspan="2">Real-time Feedback</th>
     </tr>
   </thead>
   <tbody>
     <tr>
       <td data-th="Pseudo-class"><code>:valid</code></td>
-      <td data-th="Use">當值滿足所有驗證要求時，明確設定要使用的輸入之樣式。</td>
+      <td data-th="Use">Explicitly sets the style for an input to be used when the value meets all of the validation requirements.</td>
     </tr>
     <tr>
       <td data-th="Pseudo-class"><code>:invalid</code></td>
-      <td data-th="Use">當值未滿足所有驗證要求時，明確設定要使用的輸入之樣式。</td>
+      <td data-th="Use">Explicitly sets the style for an input to be used when the value does not meet all of the validation requirements.</td>
     </tr>
     <tr>
       <td data-th="Pseudo-class"><code>:required</code></td>
-      <td data-th="Use">針對設定了必要屬性的輸入元素，明確設定樣式。</td>
+      <td data-th="Use">Explicitly sets the style for an input element that has the required attribute set.</td>
     </tr>
     <tr>
       <td data-th="Pseudo-class"><code>:optional</code></td>
-      <td data-th="Use">針對未設定必要屬性的輸入元素，明確設定樣式。</td>
+      <td data-th="Use">Explicitly sets the style for an input element that does not have the required attribute set.</td>
     </tr>
     <tr>
       <td data-th="Pseudo-class"><code>:in-range</code></td>
-      <td data-th="Use">針對值在範圍內的數字輸入元素，明確設定樣式。</td>
+      <td data-th="Use">Explicitly sets the style for a number input element where the value is in range.</td>
     </tr>
     <tr>
       <td data-th="Pseudo-class"><code>:out-of-range</code></td>
-      <td data-th="Use">針對值不在範圍內的數字輸入元素，明確設定樣式。</td>
+      <td data-th="Use">Explicitly sets the style for a number input element where the value is out of range.</td>
     </tr>
   </tbody>
 </table>
 
-驗證會立刻發生，這代表當網頁載入時，
-即使使用者尚無機會填寫欄位，
-欄位也可能被標記為無效。  這也代表，有可能當使用者打字時，
-就會看到無效的樣式。 為了避免這種情況，您可以結合 CSS 與 JavaScript，
-以在使用者造訪該欄位後，僅顯示無效樣式。
+Validation happens immediately which means that when the page is loaded, fields may be marked as invalid, even though the user hasn't had a chance to fill them in yet. It also means that as the user types, and it's possible they'll see the invalid style while typing. To prevent this, you can combine the CSS with JavaScript to only show invalid styling when the user has visited the field.
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/design-and-ux/input/forms/_code/order.html" region_tag="invalidstyle" adjust_indentation="auto" %}
 </pre>
+
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/design-and-ux/input/forms/_code/order.html" region_tag="initinputs" adjust_indentation="auto" %}
 </pre>
 
-您應該向使用者一次性顯示表單上的所有問題，而非一次展示一個問題。
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/input/forms/order.html){: target="_blank" .external }
 
+Success: You should show the user all of the issues on the form at once, rather than showing them one at a time.
 
+## Feedback {: #feedback }
 
-
-## 以 requestAutocomplete API 簡化結帳
-
-
-
-雖然 <code>requestAutocomplete</code> 原始設計是為了協助使用者填寫任何表單，但時下最常見的用途是在電子商務中，當行動網路上 <a href='http://seewhy.com/97-shopping-cart-abandonment-rate-mobile-devices-concern-you/'> 放棄購物車商品率可高達 97% 之際</a>。 想像一下超市中有 97% 的人推著滿滿商品的購物車，突然就把車翻倒並走出門。
-
-
-### TL;DR {: .hide-from-toc }
-- <code>requestAutocomplete</code> 可大大簡化結帳過程，並改善使用者體驗。
-- 如果 <code>requestAutocomplete</code> 可供使用，請隱藏結帳表單，並將人們直接移往確認頁。
-- 確保輸入欄位包含適當的自動完成的屬性。
-
-
-網站不必依賴特定的付款服務提供者，
-`requestAutocomplete` 會向瀏覽器要求付款詳細資料 (如姓名、地址和信用卡資訊)；
-這些資訊很像其他自動完成欄位一樣，是由瀏覽器選擇性儲存。
-
-
-<div class="video-wrapper">
-  <iframe class="devsite-embedded-youtube-video" data-video-id="ljYeHwGgzQk"
-          data-autohide="1" data-showinfo="0" frameborder="0" allowfullscreen>
-  </iframe>
-</div>
-
-#### `requestAutocomplete` 流程
-
-最理想的體驗是顯示 `requestAutocomplete` 對話方塊，
-而非載入顯示結帳表單的網頁。 如果一切順利，
-使用者應該不會看到任何表單。  您可以輕鬆新增 `requestAutocomplete` 至現有表單，
-而不必變更任何欄位名稱。  只需以適當的值，將 `autocomplete`
- 屬性新增至每個表單元素，並在表單元素上加入
-`requestAutocomplete()` 函數。 瀏覽器將處理剩下的操作。
-
-
-<img src="imgs/rac_flow.png" class="center" alt="請求自動完成流程">
-
-<pre class="prettyprint">
-{% includecode content_path="web/fundamentals/design-and-ux/input/forms/_code/rac.html" region_tag="rac"   adjust_indentation="auto" %}
-</pre>
-
-`form` 元素上的 `requestAutocomplete` 函數向瀏覽器指示，
-它應填入表單。  作為安全目的，
-函數必須透過輕觸或滑鼠按一下等使用者手勢來呼叫。 然後會顯示對話方塊，
-向使用者要求填入欄位的權限，以及要以哪些詳細資料來填入欄位。
-
-
-<pre class="prettyprint">
-{% includecode content_path="web/fundamentals/design-and-ux/input/forms/_code/rac.html" region_tag="handlerac"   adjust_indentation="auto" %}
-</pre>
-
-在 `requestAutocomplete` 完成的同時，此函數將觸發
-`autocomplete` 事件 (如果它成功完成)，或 `autocompleteerror` (如果未能完成表單)。
-  如果它成功完成，而表單也驗證您的需求，
-只要提交表單並繼續到最終確認步驟即可。
-
-
-Note: 如果您要求任何種類的個人資訊或信用卡資料，確保是透過 SSL 提供頁面。  否則對話方塊中將警告使用者，他們的資訊可能不安全。
-
-
+{% include "web/_shared/helpful.html" %}
