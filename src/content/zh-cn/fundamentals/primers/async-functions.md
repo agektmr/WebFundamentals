@@ -1,20 +1,14 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description:异步函数用于像编写同步代码那样编写基于 Promise 的代码
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Async functions allow you to write promise-based code as if it were synchronous
 
-{# wf_published_on: 2016-10-20 #}
-{# wf_updated_on: 2016-10-20 #}
+{# wf_published_on: 2016-10-20 #} {# wf_updated_on: 2018-10-10 #} {# wf_blink_components: Blink>JavaScript #}
 
-# 异步函数 - 提高 Promise 的易用性 {: .page-title }
+# Async functions - making promises friendly {: .page-title }
 
 {% include "web/_shared/contributors/jakearchibald.html" %}
 
-Chrome 55 中默认情况下启用异步函数，坦率地讲，它们的作用相当不可思议。
-可以利用它们像编写同步代码那样编写基于 Promise 的代码，而且还不会阻塞主线程。
-它们可以让异步代码“智商”下降、可读性提高。
+Async functions are enabled by default in Chrome 55 and they're quite frankly marvelous. They allow you to write promise-based code as if it were synchronous, but without blocking the main thread. They make your asynchronous code less "clever" and more readable.
 
-
-异步函数的工作方式是这样的：
+Async functions work like this:
 
     async function myFirstAsyncFunction() {
       try {
@@ -24,19 +18,15 @@ Chrome 55 中默认情况下启用异步函数，坦率地讲，它们的作用�
         // …
       }
     }
+    
 
-如果在函数定义之前使用了 `async` 关键字，就可以在函数内使用 `await`。
-当您 `await` 某个 Promise 时，函数暂停执行，直至该 Promise 产生结果，并且暂停并不会阻塞主线程。
-如果 Promise 执行，则会返回值。
-如果 Promise 拒绝，则会抛出拒绝的值。
+If you use the `async` keyword before a function definition, you can then use `await` within the function. When you `await` a promise, the function is paused in a non-blocking way until the promise settles. If the promise fulfills, you get the value back. If the promise rejects, the rejected value is thrown.
 
-Note: 如果不熟悉 Promise，可以看一看[我们的 Promise 指南](/web/fundamentals/getting-started/primers/promises)。
+Note: If you're unfamiliar with promises, check out [our promises guide](/web/fundamentals/getting-started/primers/promises).
 
+## Example: Logging a fetch
 
-## 示例：记录获取日志
-
-假设我们想获取某个网址并以文本形式记录响应日志。以下是利用 Promise 编写的代码：
-
+Say we wanted to fetch a URL and log the response as text. Here's how it looks using promises:
 
     function logFetch(url) {
       return fetch(url)
@@ -47,8 +37,9 @@ Note: 如果不熟悉 Promise，可以看一看[我们的 Promise 指南](/web/f
           console.error('fetch failed', err);
         });
     }
+    
 
-以下是利用异步函数具有相同作用的代码：
+And here's the same thing using async functions:
 
     async function logFetch(url) {
       try {
@@ -59,78 +50,73 @@ Note: 如果不熟悉 Promise，可以看一看[我们的 Promise 指南](/web/f
         console.log('fetch failed', err);
       }
     }
+    
 
-代码行数虽然相同，但去掉了所有回调。这可以提高代码的可读性，对不太熟悉 Promise 的人而言，帮助就更大了。
+It's the same number of lines, but all the callbacks are gone. This makes it way easier to read, especially for those less familiar with promises.
 
+Note: Anything you `await` is passed through `Promise.resolve()`, so you can safely `await` non-native promises.
 
-Note: 您 `await` 的任何内容都通过 `Promise.resolve()` 传递，这样您就可以安全地 `await` 非原生 Promise。
+## Async return values
 
-
-## 异步函数返回值
-
-无论是否使用 `await`，异步函数*都会*返回 Promise。该 Promise 解析时返回异步函数返回的任何值，拒绝时返回异步函数抛出的任何值。
-
-因此，对于：
+Async functions *always* return a promise, whether you use `await` or not. That promise resolves with whatever the async function returns, or rejects with whatever the async function throws. So with:
 
     // wait ms milliseconds
     function wait(ms) {
       return new Promise(r => setTimeout(r, ms));
     }
-
+    
     async function hello() {
       await wait(500);
       return 'world';
     }
+    
 
-…调用 `hello()` 返回的 Promise 会在*执行*时返回 `"world"`。
+…calling `hello()` returns a promise that *fulfills* with `"world"`.
 
     async function foo() {
       await wait(500);
       throw Error('bar');
     }
+    
 
-…调用 `foo()` 返回的 Promise 会在*拒绝*时返回 `Error('bar')`。
+…calling `foo()` returns a promise that *rejects* with `Error('bar')`.
 
-## 示例：流式传输响应
+## Example: Streaming a response
 
-异步函数在更复杂示例中更有用武之地。假设我们想在流式传输响应的同时记录数据块日志，并返回数据块最终大小。
+The benefit of async functions increases in more complex examples. Say we wanted to stream a response while logging out the chunks, and return the final size.
 
+Note: The phrase "logging out the chunks" made me sick in my mouth.
 
-Note: 一看到“记录数据块日志”这几个字就让我感到不舒服。
-
-以下是使用 Promise 编写的代码：
+Here it is with promises:
 
     function getResponseSize(url) {
       return fetch(url).then(response => {
         const reader = response.body.getReader();
         let total = 0;
-
+    
         return reader.read().then(function processResult(result) {
           if (result.done) return total;
-
+    
           const value = result.value;
           total += value.length;
           console.log('Received chunk', value);
-
+    
           return reader.read().then(processResult);
         })
       });
     }
+    
 
-请“Promise 大师”Jake Archibald 给我检查一下。看到我是如何在 `processResult` 内调用其自身来建立异步循环了吧？
-这样编写的代码让我觉得*很智能*。
-但就像大多数“智能”代码那样，你得盯着它看上半天才能弄明白它的作用，要拿出揣摩上世纪 90 年代流行的魔眼图片的那种劲头才行。
+Check me out, Jake "wielder of promises" Archibald. See how I'm calling `processResult` inside itself to set up an asynchronous loop? Writing that made me feel *very smart*. But like most "smart" code, you have to stare at it for ages to figure out what it's doing, like one of those magic-eye pictures from the 90's.
 
-
-
-我们再用异步函数来编写上面这段代码：
+Let's try that again with async functions:
 
     async function getResponseSize(url) {
       const response = await fetch(url);
       const reader = response.body.getReader();
       let result = await reader.read();
       let total = 0;
-
+    
       while (!result.done) {
         const value = result.value;
         total += value.length;
@@ -138,37 +124,31 @@ Note: 一看到“记录数据块日志”这几个字就让我感到不舒服�
         // get the next result
         result = await reader.read();
       }
-
+    
       return total;
     }
+    
 
-所有“智能”都不见了。让我大有飘飘然之感的异步循环被替换成可靠却单调乏味的 while 循环。
-但简明性得到大幅提高。未来，我们将获得[异步迭代器](https://github.com/tc39/proposal-async-iteration){: .external}，这些迭代器[会将 `while` 循环替换成 for-of 循环](https://gist.github.com/jakearchibald/0b37865637daf884943cf88c2cba1376){: .external}，从而进一步提高代码的简明性。
+All the "smart" is gone. The asynchronous loop that made me feel so smug is replaced with a trusty, boring, while-loop. Much better. In future, we'll get [async iterators](https://github.com/tc39/proposal-async-iteration){: .external}, which would [replace the `while` loop with a for-of loop](https://gist.github.com/jakearchibald/0b37865637daf884943cf88c2cba1376){: .external}, making it even neater.
 
+Note: I'm sort-of in love with streams. If you're unfamiliar with streaming, [check out my guide](https://jakearchibald.com/2016/streams-ftw/#streams-the-fetch-api){: .external}.
 
+## Other async function syntax
 
+We've seen `async function() {}` already, but the `async` keyword can be used with other function syntax:
 
-Note: 我有点偏爱卡片信息流。如果不熟悉流式传输，可以[看一看我的指南](https://jakearchibald.com/2016/streams-ftw/#streams-the-fetch-api){: .external}。
-
-
-## 其他异步函数语法
-
-我们已经见识了 `async function() {}`，但 `async` 关键字还可用于其他函数语法：
-
-
-### 箭头函数
+### Arrow functions
 
     // map some URLs to json-promises
     const jsonPromises = urls.map(async url => {
       const response = await fetch(url);
       return response.json();
     });
+    
 
-Note: `array.map(func)` 不在乎我提供给它的是不是异步函数，只把它当作一个返回 Promise 的函数来看待。
-它不会等到第一个函数执行完毕就会调用第二个函数。
+Note: `array.map(func)` doesn't care that I gave it an async function, it just sees it as a function that returns a promise. It won't wait for the first function to complete before calling the second.
 
-
-### 对象方法
+### Object methods
 
     const storage = {
       async getAvatar(name) {
@@ -176,78 +156,78 @@ Note: `array.map(func)` 不在乎我提供给它的是不是异步函数，只�
         return cache.match(`/avatars/${name}.jpg`);
       }
     };
-
+    
     storage.getAvatar('jaffathecake').then(…);
+    
 
-### 类方法
+### Class methods
 
     class Storage {
       constructor() {
         this.cachePromise = caches.open('avatars');
       }
-
+    
       async getAvatar(name) {
         const cache = await this.cachePromise;
         return cache.match(`/avatars/${name}.jpg`);
       }
     }
-
+    
     const storage = new Storage();
     storage.getAvatar('jaffathecake').then(…);
+    
 
-Note: 类构造函数以及 getter/settings 方法不能是异步的。
+Note: Class constructors and getters/setters cannot be async.
 
-## 注意！避免太过循序
+## Careful! Avoid going too sequential
 
-尽管您编写的是看似同步的代码，也一定不要错失并行执行的机会。
-
+Although you're writing code that looks synchronous, ensure you don't miss the opportunity to do things in parallel.
 
     async function series() {
-      await wait(500);
-      await wait(500);
+      await wait(500); // Wait 500ms…
+      await wait(500); // …then wait another 500ms.
       return "done!";
     }
+    
 
-以上代码执行完毕需要 1000 毫秒，再看看这段代码：
+The above takes 1000ms to complete, whereas:
 
     async function parallel() {
-      const wait1 = wait(500);
-      const wait2 = wait(500);
-      await wait1;
-      await wait2;
+      const wait1 = wait(500); // Start a 500ms timer asynchronously…
+      const wait2 = wait(500); // …meaning this timer happens in parallel.
+      await wait1; // Wait 500ms for the first timer…
+      await wait2; // …by which time this timer has already finished.
       return "done!";
     }
+    
 
-…以上代码只需 500 毫秒就可执行完毕，因为两个 wait 是同时发生的。让我们看一个实例…
+…the above takes 500ms to complete, because both waits happen at the same time. Let's look at a practical example…
 
+### Example: Outputting fetches in order
 
-### 示例：按顺序输出获取的数据
+Say we wanted to fetch a series URLs and log them as soon as possible, in the correct order.
 
-假定我们想获取一系列网址，并尽快按正确顺序将它们记录到日志中。
-
-
-*深呼吸* - 以下是使用 Promise 编写的代码：
+*Deep breath* - here's how that looks with promises:
 
     function logInOrder(urls) {
       // fetch all the URLs
       const textPromises = urls.map(url => {
         return fetch(url).then(response => response.text());
       });
-
+    
       // log them in order
       textPromises.reduce((chain, textPromise) => {
         return chain.then(() => textPromise)
           .then(text => console.log(text));
       }, Promise.resolve());
     }
+    
 
-是的，没错，我使用 `reduce` 来链接 Promise 序列。我是不是*很智能*。
-但这种有点*很智能*的编码还是不要为好。
+Yeah, that's right, I'm using `reduce` to chain a sequence of promises. I'm *so smart*. But this is a bit of *so smart* coding we're better off without.
 
-不过，如果使用异步函数改写以上代码，又容易让代码变得*过于循序*：
+However, when converting the above to an async function, it's tempting to go *too sequential*:
 
-
-<span class="compare-worse">不推荐的编码方式</span> - 过于循序
+<span class="compare-worse">Not recommended</span> - too sequential
 
     async function logInOrder(urls) {
       for (const url of urls) {
@@ -255,12 +235,11 @@ Note: 类构造函数以及 getter/settings 方法不能是异步的。
         console.log(await response.text());
       }
     }
+    
 
-代码简洁得多，但我的第二次获取要等到第一次获取读取完毕才能开始，以此类推。
-其执行效率要比并行执行获取的 Promise 示例低得多。
-幸运的是，还有一种理想的中庸之道：
+Looks much neater, but my second fetch doesn't begin until my first fetch has been fully read, and so on. This is much slower than the promises example that performs the fetches in parallel. Thankfully there's an ideal middle-ground:
 
-<span class="compare-better">推荐的编码方式</span> - 可读性强、并行效率高
+<span class="compare-better">Recommended</span> - nice and parallel
 
     async function logInOrder(urls) {
       // fetch all the URLs in parallel
@@ -268,79 +247,62 @@ Note: 类构造函数以及 getter/settings 方法不能是异步的。
         const response = await fetch(url);
         return response.text();
       });
-
+    
       // log them in sequence
       for (const textPromise of textPromises) {
         console.log(await textPromise);
       }
     }
+    
 
-在本例中，以并行方式获取和读取网址，但将“智能”的
-`reduce` 部分替换成标准单调乏味但可读性强的 for 循环。
+In this example, the URLs are fetched and read in parallel, but the "smart" `reduce` bit is replaced with a standard, boring, readable for-loop.
 
-## 浏览器支持与解决方法
+## Browser support & workarounds
 
-在写作本文时，Chrome 55 中默认情况下启用异步函数，但它们在所有主流浏览器中正处于开发阶段：
+At time of writing, async functions are enabled by default in Chrome, Edge, Firefox, and Safari.
 
+### Workaround - Generators
 
-* Edge - [在 14342+ 编译版本中隐藏在一个标志后](https://developer.microsoft.com/en-us/microsoft-edge/platform/status/asyncfunctions/)
-* Firefox - [开发中](https://bugzilla.mozilla.org/show_bug.cgi?id=1185106)
-* Safari - [开发中](https://bugs.webkit.org/show_bug.cgi?id=156147)
+If you're targeting browsers that support generators (which includes [the latest version of every major browser](http://kangax.github.io/compat-table/es6/#test-generators){:.external} ) you can sort-of polyfill async functions.
 
-### 解决方法 - 生成器
+[Babel](https://babeljs.io/){: .external} will do this for you, [here's an example via the Babel REPL](https://goo.gl/0Cg1Sq){: .external}
 
-如果目标是支持生成器的浏览器（其中包括[每一个主流浏览器的最新版本](http://kangax.github.io/compat-table/es6/#test-generators){:.external}），可以通过 polyfill 使用异步函数。
+- note how similar the transpiled code is. This transformation is part of [Babel's es2017 preset](http://babeljs.io/docs/plugins/preset-es2017/){: .external}.
 
+Note: Babel REPL is fun to say. Try it.
 
-
-[Babel](https://babeljs.io/){: .external} 可以为您实现此目的，[以下是通过 Babel REPL 实现的示例](https://goo.gl/0Cg1Sq){: .external}
-
-- 注意到转译的代码有多相似了吧。这一转换是 [Babel es2017 预设](http://babeljs.io/docs/plugins/preset-es2017/){: .external}的一部分。
-
-
-Note: Babel REPL 说起来很有趣。试试就知道。
-
-我建议采用转译方法，因为目标浏览器支持异步函数后，直接将其关闭即可，但如果*实在*不想使用转译器，可以亲自试用一下 [Babel 的 polyfill](https://gist.github.com/jakearchibald/edbc78f73f7df4f7f3182b3c7e522d25){: .external}。
-
-
-
-原本的异步函数代码：
+I recommend the transpiling approach, because you can just turn it off once your target browsers support async functions, but if you *really* don't want to use a transpiler, you can take [Babel's polyfill](https://gist.github.com/jakearchibald/edbc78f73f7df4f7f3182b3c7e522d25){: .external} and use it yourself. Instead of:
 
     async function slowEcho(val) {
       await wait(1000);
       return val;
     }
+    
 
-…如果使用 [polyfill](https://gist.github.com/jakearchibald/edbc78f73f7df4f7f3182b3c7e522d25){: .external}，就需要这样编写：
-
+…you'd include [the polyfill](https://gist.github.com/jakearchibald/edbc78f73f7df4f7f3182b3c7e522d25){: .external} and write:
 
     const slowEcho = createAsyncFunction(function*(val) {
       yield wait(1000);
       return val;
     });
+    
 
-请注意，需要将生成器 (`function*`) 传递给 `createAsyncFunction`，并使用 `yield` 来替代 `await`。
-其他方面的工作方式是相同的。
+Note that you have to pass a generator (`function*`) to `createAsyncFunction`, and use `yield` instead of `await`. Other than that it works the same.
 
-### 解决方法 - 再生器
+### Workaround - regenerator
 
-如果目标是旧版浏览器，Babel 还可转译生成器，让您能在版本低至 IE8 的浏览器上使用异步函数。
-为此，您需要 [Babel 的 es2017 预设](http://babeljs.io/docs/plugins/preset-es2017/){: .external}*和* [es2015 预设](http://babeljs.io/docs/plugins/preset-es2015/){: .external}。
+If you're targeting older browsers, Babel can also transpile generators, allowing you to use async functions all the way down to IE8. To do this you need [Babel's es2017 preset](http://babeljs.io/docs/plugins/preset-es2017/){: .external} *and* the [es2015 preset](http://babeljs.io/docs/plugins/preset-es2015/){: .external}.
 
+The [output is not as pretty](https://goo.gl/jlXboV), so watch out for code-bloat.
 
+## Async all the things!
 
-[输出不够美观](https://goo.gl/jlXboV)，因此要注意避免发生代码膨胀。
+Once async functions land across all browsers, use them on every promise-returning function! Not only do they make your code tidier, but it makes sure that function will *always* return a promise.
 
+I got really excited about async functions [back in 2014](https://jakearchibald.com/2014/es7-async-functions/){: .external}, and it's great to see them land, for real, in browsers. Whoop!
 
-## 全面异步化！
+## Feedback {: .hide-from-toc }
 
-一旦异步函数登陆所有浏览器，就在每一个返回 Promise 的函数上尽情使用吧！
-它们不但能让代码更加整洁美观，还能确保该函数*始终*都能返回 Promise。
+{% include "web/_shared/helpful.html" %}
 
-
-我真正热衷于使用异步函数的历史可以[追溯到 2014 年](https://jakearchibald.com/2014/es7-async-functions/){: .external}，看到它们登陆浏览器即将成真，真是棒极了。
-
-啊呜！
-
-
-{# wf_devsite_translation #}
+<div class="clearfix"></div>
