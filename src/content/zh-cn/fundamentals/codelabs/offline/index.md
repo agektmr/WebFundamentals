@@ -1,270 +1,285 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description:学习如何将服务工作线程集成到现有应用内，以使应用能够离线工作。
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Learn how to integrate a service worker into an existing application to make the application work offline.
 
-{# wf_updated_on: 2016-11-09 #}
-{# wf_published_on: 2016-01-01 #}
+{# wf_auto_generated #} {# wf_updated_on: 2018-07-03 #} {# wf_published_on: 2016-01-01 #}
 
-
-# 在网络应用中添加服务工作线程和离线功能 {: .page-title }
+# Adding a Service Worker and Offline into your Web App {: .page-title }
 
 {% include "web/_shared/contributors/paulkinlan.html" %}
 
+## Overview
 
+![3ec8737c20a475df.png](img/3ec8737c20a475df.png)
 
-## 概览
+In this codelab, you learn how to integrate a service worker into an existing application to make the application work offline. The application is called [Air Horner](https://airhorner.com). Click the horn and it makes a sound.
 
+#### What you'll learn
 
+* How to add a basic service worker to an existing project.
+* How to simulate offline mode and inspect and debug a service worker with Chrome DevTools.
+* A simple offline caching strategy.
 
-![9246b0abd8d860da.png](img/9246b0abd8d860da.png)
+#### What you'll need
 
-在此代码实验室中，您将学习如何将服务工作线程集成到现有应用内，以使应用能够离线工作。该应用名为 [Air Horner](https://airhorner.com)。点击喇叭就会发声。
+* Chrome 52 or above.
+* A basic understanding of [Promises](/web/fundamentals/getting-started/primers/promises), Git, and Chrome DevTools.
+* The sample code.
+* A text editor.
+* A local web server. If you want to use the web server described in this codelab, you need Python installed on your command line.
 
-#### 您将学习的内容
+## Get the sample code
 
-* 如何向现有项目添加基础服务工作线程。
-* 如何使用 Chrome DevTools 模拟离线模式以及检查和调试服务工作线程。
-* 一种简单的离线缓存策略。
-
-#### 您需具备的条件
-
-* Chrome 52 或更高版本。
-* 对  [Promises](/web/fundamentals/getting-started/primers/promises)、Git 和 Chrome DevTools 的基本了解。
-* 示例代码。
-* 文本编辑器。
-* 本地网络服务器。如果您想要使用此代码实验室中所述的网络服务器，则需要在命令行中安装 Python。
-
-
-## 获取示例代码
-
-
-
-通过 SSH 从命令行克隆 GitHub 存储区。
+Clone the GitHub repository from the command line over SSH:
 
     $ git clone git@github.com:GoogleChrome/airhorn.git
+    
 
-或 HTTPS：
+Or HTTPS:
 
     $ git clone https://github.com/GoogleChrome/airhorn.git
+    
 
+## Run the sample app
 
-## 运行应用示例
+First, let's see what the finished sample app looks like (hint: it's amazing).
 
-
-
-首先，我们先看看应用示例的最终样子（提示：太奇妙了）。 
-
-通过查看 `master` 分支确保您位于正确的（最终）分支。
+Make sure you are on the correct (final) branch by checking out the `master` branch.
 
     $ git checkout master
+    
 
-从本地网络服务器运行网站。您可以使用任意网络服务器，但对于此代码实验室的其他部分，我们假定您在端口 3000 上使用的是 Python 的 `SimpleHTTPServer`，以便从 `localhost:3000` 中运行应用。
+Run the site from a local web server. You can use any web server, but for the rest of this codelab we'll assume that you're using Python's `SimpleHTTPServer` on port 3000, so the app will be available from `localhost:3000`.
 
     $ cd app
     $ python -m SimpleHTTPServer 3000
+    <aside class="key-point">
 
-在 Chrome 中打开网站。您会看到：![9246b0abd8d860da.png](img/9246b0abd8d860da.png)
+<p>This repository has one main folder <strong>"app"</strong>. This folder contains the static assets (HTML, CSS, and JavaScript) that you will use for this project.</p>
 
+</aside> 
 
-## 测试应用
+Open up the site in Chrome. You should see: ![3ec8737c20a475df.png](img/3ec8737c20a475df.png)
 
+## Test the app
 
+Click the horn. It should make a sound.
 
-点击喇叭，应能发声。
+Now, you're going to simulate going offline using Chrome DevTools.
 
-现在，您可以使用 Chrome DevTools 模拟离线模式了。
-
-打开 DevTools，转至 __Application__ 面板，然后启用 __Offline __ 复选框。在下面的屏幕截图中，鼠标悬停在复选框上。 
+Open DevTools, go to the **Application** panel, and enable the **Offline** checkbox. In the screenshot below the mouse is hovering over the checkbox.
 
 ![479219dc5f6ea4eb.png](img/479219dc5f6ea4eb.png)
 
-点击复选框后，请注意 __Network __ 面板标签旁边的警告图标（带有感叹号的黄色三角形）。这表示您处于离线状态。 
+After clicking the checkbox note the warning icon (yellow triangle with exclamation mark) next to the **Network** panel tab. This indicates that you're offline.
 
-如需证明您处于离线模式，请转至  [https://google.com](https://google.com)。您会看到 Chrome 的“there is no Internet connection”错误消息。 
+To prove that you're offline, go to <https://google.com>. You should see Chrome's "there is no Internet connection" error message.
 
-现在，返回到应用中。尽管您处于离线状态，页面应仍然能够完全重新加载。您应仍然能够使用喇叭。
+Now, go back to your app. Although you're offline, the page should still fully reload. You should be able to use the horn still.
 
-它能够离线工作的原因就是此 代码实验室的基础：通过服务工作线程提供离线支持。
+The reason this works offline is the basis of this codelab: offline support with service worker.
 
+## Build the starter app
 
-## 构建初学者应用
+You are now going to remove all offline support from the application and you are going to learn how to use a service worker to add the offline support back into the application
 
-
-
-您现在将要删除应用中的所有离线支持，学习如何使用服务工作线程重新将离线支持添加到应用中
-
-请查看应用的“断开”版本，此版本未实现服务工作线程。
+Check out the "broken" version of the app that does not have the service worker implemented.
 
     $ git checkout code-lab
+    
 
-返回到 DevTools 的 __Application __ 面板，禁用 __Offline __ 复选框，以便重新返回在线状态。
+Go back to the **Application** panel of DevTools and disable the **Offline** checkbox, so that you're back online.
 
-运行页面。应用应能如期运行。
+Run the page. The app should work as expected.
 
-现在，使用 DevTools 重新模拟离线模式（通过在 __Application __ 面板中启用 __Offline __ 复选框）。__注意！如果您不是非常了解服务工作线程，则会看到一些异常行为。
+Now, use DevTools to simulate offline mode again (by enabling the **Offline** checkbox in the **Application** panel). **Heads up!** If you don't know much about service workers, you're about to see some unexpected behavior.
 
-您可能会看到什么？因为您处于离线状态，并且这个版本的应用没有服务工作线程，您将看到 Chrome 中显示典型的“there is no Internet connection”错误消息。
+What do you expect to see? Well, because you're offline and because this version of the app has no service worker, you'd expect to see the typical "there is no Internet connection" error message from Chrome.
 
-但您实际看到的是...功能完备的离线应用！
+But what you actually see is... a fully-functional offline app!
 
-![9246b0abd8d860da.png](img/9246b0abd8d860da.png)
+![3ec8737c20a475df.png](img/3ec8737c20a475df.png)
 
-这是怎么回事？回想一下您在开始此代码实验室时的情景，您尝试了应用的完整版本。当您运行那个版本时，应用实际上安装了服务工作线程。现在，在您每次运行应用时，服务工作线程都会自动运行。一旦 `localhost:3000` 等作用域（您将会在下一部分中了解有关作用域的更多内容）中安装了服务工作线程，服务工作线程会在您每次访问作用域时自动启动，除非您以编程方式或手动将其删除。 
+What happened? Well, recall that when you began this codelab, you tried out the completed version of the app. When you ran that version, the app actually installed a service worker. That service worker is now automatically running every time that you run the app. Once a service worker is installed to a scope such as `localhost:3000` (you'll learn more about scope in the next section), that service worker automatically starts up every time that you access the scope, unless you programmatically or manually delete it.
 
-如需修复这一问题，请转至 DevTools 的 __Application __ 面板，点击 __Service Workers __ 选项卡，然后点击 __Unregister __ 按钮。在下面的屏幕截图中，鼠标悬停在按钮上。 
+To fix this, go to the **Application** panel of DevTools, click on the **Service Workers** tab, and then click the **Unregister** button. In the screenshot below the mouse is hovering over the button.
 
 ![837b46360756810a.png](img/837b46360756810a.png)
 
-现在，在您重新加载网站之前，请确保您仍然在使用 DevTools 模拟离线模式。重新加载页面，应会如期显示“there is no Internet connection”错误消息。
+Now, before you reload the site, make sure that you're still using DevTools to simulate offline mode. Reload the page, and it should show you the "there is no Internet connection" error message as expected.
 
 ![da11a350ed38ad2e.png](img/da11a350ed38ad2e.png)
 
+## Register a service worker on the site
 
-## 在网站上注册服务工作线程
+Now it's time to add offline support back into the app. This consists of two steps:
 
+1. Create a JavaScript file that will be the service worker.
+2. Tell the browser to register the JavaScript file as the "service worker".
 
+First, create a blank file called `sw.js` and place it in the `/app` folder.<aside class="key-point">
 
-现在，可以将离线支持重新添加到应用中。这个过程由两个步骤组成：
+<p><strong>The location of the service worker is important! </strong>For security reasons, a service worker can only control the pages that are in its same directory or its subdirectories. This means that if you place the service worker file in a scripts directory it will only be able to interact with pages in the scripts directory or below.</p>
 
-1. 创建一个将作为服务工作线程的 JavaScript 文件。
-2. 指示浏览器将此 JavaScript 文件注册为“服务工作线程”。
+</aside> 
 
-首先，创建一个名为 `sw.js` 的空白文件，然后将其放入 `/app` 文件夹。 
+Now open `index.html` and add the following code to the bottom of `<body>`.
 
-现在打开 `index.html`，并将以下代码添加到 `<body>` 底部。
+    <script>
+    if('serviceWorker' in navigator) {
+      navigator.serviceWorker
+               .register('/sw.js')
+               .then(function() { console.log("Service Worker Registered"); });
+    }
+    </script>
+    
 
-```
-<script>
-if('serviceWorker' in navigator) {
-  navigator.serviceWorker
-           .register('/sw.js')
-           .then(function() { console.log("Service Worker Registered"); });
-}
-</script>
-```
+The script checks if the browser supports service workers. If it does, then it registers our currently blank file `sw.js` as the service worker, and then logs to the Console.
 
-脚本会检查浏览器是否支持服务工作线程。如果不支持，它会将我们当前使用的空白文件 `sw.js` 注册为服务工作线程，然后记录到控制台。
-
-在重新运行网站之前，返回到 DevTools，查看  __Application __面板的 __Service Workers __ 标签。此标签当前应为空，表示网站没有安装服务工作线程。 
+Before you run your site again, go back to DevTools and look at the **Service Workers** tab of the **Application** panel. It should currently be empty, meaning the site has no service workers installed.
 
 ![37d374c4b51d273.png](img/37d374c4b51d273.png)
 
-确保已停用 DevTools 中的 __Offline __ 复选框。重新加载页面。在加载页面时，您可以看到服务工作线程已经完成注册。
+Make sure that the **Offline** checkbox in DevTools is disabled. Reload your page again. As the page loads, you can see that a service worker is registered.
 
 ![b9af9805d4535bd3.png](img/b9af9805d4535bd3.png)
 
-在 __Source __ 标签旁边，您可以看到已注册的服务工作线程源代码的链接。 
+Next to the **Source** label you can see a link to the source code of the registered service worker.
 
 ![3519a5068bc773ea.png](img/3519a5068bc773ea.png)
 
-如果您想要检查当前为页面安装的服务工作线程，请点击链接。这将会在 DevTools 的 __Sources __ 面板中为您显示服务工作线程的源代码。例如，现在点击链接，您会看到一个空文件。 
+If you ever want to inspect the currently-installed service worker for a page, click on the link. This will show you the source code of the service worker in the **Sources** panel of DevTools. For example, click on the link now, and you should see an empty file.
 
 ![dbc14cbb8ca35312.png](img/dbc14cbb8ca35312.png)
 
+## Install the site assets
 
-## 安装网站资产
+With the service worker registered, the first time a user hits the page an `install` event is triggered. This event is where you want to cache your page assets.
 
+Add the following code to sw.js.
 
+    importScripts('/cache-polyfill.js');
+    
+    
+    self.addEventListener('install', function(e) {
+     e.waitUntil(
+       caches.open('airhorner').then(function(cache) {
+         return cache.addAll([
+           '/',
+           '/index.html',
+           '/index.html?homescreen=1',
+           '/?homescreen=1',
+           '/styles/main.css',
+           '/scripts/main.min.js',
+           '/sounds/airhorn.mp3'
+         ]);
+       })
+     );
+    });
+    
 
-注册服务工作线程后，当用户首次点击页面时，会触发 `install` 事件。此事件就是您要缓存页面资产的地方。
+The first line adds the Cache polyfill. This polyfill is already included in the repository. We need to use the polyfill because the Cache API is not yet fully supported in all browsers. Next comes the `install` event listener. The `install` event listener opens the `caches` object and then populates it with the list of resources that we want to cache. One important thing about the `addAll` operation is that it's all or nothing. If one of the files is not present or fails to be fetched, the entire `addAll` operation fails. A good application will handle this scenario.
 
-将以下代码添加到 sw.js。
+The next step is to program our service worker to return the intercept the requests to any of these resources and use the `caches` object to return the locally stored version of each resource.
 
-```
-importScripts('/cache-polyfill.js');
+<
 
+aside markdown="1" class="key-point">
 
-self.addEventListener('install', function(e) {
- e.waitUntil(
-   caches.open('airhorner').then(function(cache) {
-     return cache.addAll([
-       '/',
-       '/index.html',
-       '/index.html?homescreen=1',
-       '/?homescreen=1',
-       '/styles/main.css',
-       '/scripts/main.min.js',
-       '/sounds/airhorn.mp3'
-     ]);
-   })
- );
-});
-```
+<h4>Frequently Asked Questions</h4>
 
-第一行会添加缓存 polyfill。此 polyfill 已经添加到存储区。我们需要使用 polyfill 是因为 Cache API 尚未在所有浏览器中得到完全支持。接下来是 `install` 事件侦听器。`install` 事件侦听器可以打开 `caches` 对象，然后使用我们要缓存的资源列表进行填充。关于 `addAll` 操作的一个重要事情就是要么全部添加，要么全部不添加。如果其中有一个文件不存在或无法抓取，整个 `addAll` 操作将会失败。合格的应用将会处理这种情况。
+<ul>
+  
+<li>Where is the polyfill?</li>
+<li><a href="https://github.com/coonsta/cache-polyfill">https://github.com/coonsta/cache-polyfill</a> </li>
+<li>Why do I need to polyfill?</li>
+<li>Currently Chrome and other browsers don't yet fully support the <code>addAll</code> method (<strong>note:</strong> Chrome 46 will be compliant).</li>
+<li>Why do you have ?homescreen=1</li>
+  
+  <li>
+    
+<p>URLs with query string parameters are treated as individual URLs and need to be cached separately.</p>
+</aside>
+  </li>
+</ul>
 
-下一步是对服务工作线程编程，以将任意资源的请求返回给拦截，并使用 `caches` 对象返回每个资源的本地存储版本。
+## Intercept the web page requests
 
+One powerful feature of service workers is that, once a service worker controls a page, it can intercept every request that the page makes and decide what to do with the request. In this section you are going to program your service worker to intercept requests and return the cached versions of assets, rather than going to the network to retrieve them.
 
-## 拦截网页请求
+The first step is to attach an event handler to the `fetch` event. This event is triggered for every request that is made.
 
+Add the following code to the bottom of your `sw.js` to log the requests made from the parent page.
 
+    self.addEventListener('fetch', function(event) {
+     console.log(event.request.url);
+    });
+    
 
-服务工作线程的一个强大的功能就是，一旦它控制页面，就可以拦截页面发出的每个请求，并确定对请求执行的操作。在本部分中，您将对服务工作线程进行编程，以拦截请求并返回缓存版本的资产，而不是到网络上检索这些资产。
+Let's test this out. **Heads up!** You're about to see some more unexpected service worker behavior.
 
-第一步是将一个事件处理程序附加到 `fetch` 事件。发出的每个请求都会触发此事件。
-
-将以下代码添加到 `sw.js` 的底部，以便记录父页面发出的请求。
-
-我们来测试一下这个功能。__注意！__您将会看到更加异常的服务工作线程行为。 
-
-打开 DevTools，转至 __Application__ 面板。应停用 __Offline __复选框。按 `Esc` 键以打开 DevTools 窗口底部的 __Console __抽屉。您的 DevTools 窗口应类似于以下屏幕截图：
+Open DevTools and go to the **Application** panel. The **Offline** checkbox should be disabled. Press the `Esc` key to open the **Console** drawer at the bottom of your DevTools window. Your DevTools window should look similar to the following screenshot:
 
 ![c96de824be6852d7.png](img/c96de824be6852d7.png)
 
-现在重新加载页面并查看 DevTools 窗口。首先，我们预期能看到记录到控制台中的大量请求，但没有看到。其次，在 __Service Worker __窗格中，我们可以看到 __Status __已发生更改：
+Reload your page now and look at the DevTools window again. For one, we're expecting to see a bunch of requests logged to the Console, but that's not happening. For two, in the **Service Worker** pane we can see that the **Status** has changed:
 
 ![c7cfb6099e79d5aa.png](img/c7cfb6099e79d5aa.png)
 
-在 __Status __中，有一个新的服务工作线程正等待激活。这就是包含我们刚才所做更改的新的服务工作线程。因此，出于某种原因，我们以前安装的旧的服务工作线程（空白文件）仍然在控制页面。如果您点击 __Source __旁边的 `sw.js` 链接，便可验证旧的服务工作线程仍然在运行中。 
+In the **Status** there's a new service worker that's waiting to activate. That must be the new service worker that includes the changes that we just made. So, for some reason, the old service worker that we installed (which was just a blank file) is still controlling the page. If you click on the `sw.js` link next to **Source** you can verify that the old service worker is still running.<aside class="key-point">
 
-如需修复这种不便，请启用 __Update on reload__ 复选框。
+<p>This behavior is by design. Check out  <a href="/web/fundamentals/primers/service-worker/update-a-service-worker">Update a Service Worker</a> to learn more about the service worker lifecycle.</p>
+
+</aside> 
+
+To fix this inconvenience, enable the **Update on reload** checkbox.
 
 ![26f2ae9a805bc69b.png](img/26f2ae9a805bc69b.png)
 
-启用此复选框后，DevTools 会始终在每个页面重新加载时更新服务工作线程。这在主动开发服务工作线程时非常有用。
+When this checkbox is enabled, DevTools always updates the service worker on every page reload. This is very useful when actively developing a service worker.
 
-现在重新加载页面，就会看到系统安装了新的服务工作线程，并且正在将请求网址记录到控制器，如预期一样。
+Reload the page now and you can see that a new service worker is installed and that the request URLs are being logged to the Console, as expected.
 
 ![53c23650b131143a.png](img/53c23650b131143a.png)
 
-现在，您需要确定使用这些请求要完成的任务。默认情况下，如果您未进行任何设置，请求会传递到网络，系统会将响应返回到网页。
+Now you need to decide what to do with all of those requests. By default, if you don't do anything, the request is passed to the network and the response is returned to the web page.
 
-要使应用离线工作，如果缓存中存在请求，我们需要从中获取请求。
+To make your application work offline you need to pull the request from the cache, if it is available.
 
-请更新您的抓取事件侦听器，以匹配以下代码。
+Update your fetch event listener to match the code below.
 
-`event.respondWith()` 方法会让浏览器评估未来事件的结果。`caches.match(event.request)` 会获取触发抓取事件的当前网络请求，在缓存中寻找匹配的资源。匹配通过查找网址字符串执行。`match` 方法会返回可解析的 promise，即使未在缓存中找到相关文件。这意味着您可以选择要执行的操作。在您的简单案例中，如果未找到文件，您会想要从网络中 `fetch` 它，然后将其返回到浏览器。
+    self.addEventListener('fetch', function(event) {
+     console.log(event.request.url);
+    
+     event.respondWith(
+       caches.match(event.request).then(function(response) {
+         return response || fetch(event.request);
+       })
+     );
+    });
+    
 
-这是最简单的情况，还有许多其他缓存情境。例如，您可以增量方式缓存之前未缓存请求的所有响应，以便以后从缓存返回这些响应。 
+The `event.respondWith()` method tells the browser to evaluate the result of the event in the future. `caches.match(event.request)` takes the current web request that triggered the fetch event and looks in the cache for a resource that matches. The match is performed by looking at the URL string. The `match` method returns a promise that resolves even if the file is not found in the cache. This means that you get a choice about what you do. In your simple case, when the file is not found, you simply want to `fetch` it from the network and return it to the browser.
 
+This is the simplest case; there are many other caching scenarios. For example, you could incrementally cache all responses for previously uncached requests, so in the future they are all returned from the cache.
 
-## 恭喜！
+## Congratulations!
 
+You now have offline support. Reload your page while still online to update your service worker to the latest version, and then use DevTools to go into offline mode. Reload your page again, and you should have a fully-functional offline air horn!
 
+#### What we've covered
 
-现在您获得离线支持了。在您处于在线状态时重新加载页面，将服务工作线程更新为最新版本，然后使用 DevTools 转至离线模式。重新加载页面，就可以拥有功能完备的离线汽笛了！
+* How to add a basic service worker to an existing project.
+* How to use Chrome DevTools to simulate offline mode and to inspect and debug service workers.
+* A simple offline caching strategy.
 
-#### 我们已经阐述的内容
+#### Next Steps
 
-* 如何向现有项目添加基础服务工作线程。
-* 如何使用 Chrome DevTools 模拟离线模式以及检查和调试服务工作线程。
-* 一种简单的离线缓存策略。
+* Learn how to easily add robust [offline support with Polymer offline elements](https://codelabs.developers.google.com/codelabs/sw-precache/index.html?index=..%2F..%2Findex#0)
+* Explore more [advanced caching techniques](https://jakearchibald.com/2014/offline-cookbook/)
 
-#### 后续步骤
+#### Learn More
 
-* 了解如何轻松添加功能强大的[具有 Polymer 离线元素的离线支持](https://codelabs.developers.google.com/codelabs/sw-precache/index.html?index=..%2F..%2Findex#0)
-* 探索更多[高级缓存技巧](https://jakearchibald.com/2014/offline-cookbook/)
+* [Introduction to service worker](/web/fundamentals/primers/service-worker/)
 
-#### 了解详情
+## Found an issue, or have feedback? {: .hide-from-toc }
 
-*  [服务工作线程简介](/web/fundamentals/primers/service-worker/)
-
-
-
-
-
-## 发现问题，或者有反馈？{: .hide-from-toc }
-立即提交[问题](https://github.com/googlesamples/io2015-codelabs/issues)，帮助我们让代码实验室更加强大。谢谢！
-
-{# wf_devsite_translation #}
+Help us make our code labs better by submitting an [issue](https://github.com/googlesamples/io2015-codelabs/issues) today. And thanks!
