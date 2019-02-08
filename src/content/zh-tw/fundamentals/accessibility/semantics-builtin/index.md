@@ -1,154 +1,90 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description:語義和輔助技術簡介
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Introduction to semantics and assistive technology
 
+{# wf_blink_components: Blink>Accessibility #} {# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2016-10-04 #}
 
-{# wf_updated_on:2016-10-04 #}
-{# wf_published_on:2016-10-04 #}
+# Introduction to Semantics {: .page-title }
 
-# 語義簡介 {: .page-title }
+{% include "web/_shared/contributors/megginkearney.html" %} {% include "web/_shared/contributors/dgash.html" %} {% include "web/_shared/contributors/aliceboxhall.html" %}
 
-{% include "web/_shared/contributors/megginkearney.html" %}
-{% include "web/_shared/contributors/dgash.html" %}
-{% include "web/_shared/contributors/aliceboxhall.html" %}
+You've seen how to make a site accessible to users who can't use a mouse or pointing device &mdash; whether due to physical impairment, a technology issue, or personal preference &mdash; by addressing keyboard-only use. While it requires some care and thought, it's not a huge amount of work if you plan it from the beginning. Once that basic work is done, you're a long way down the path to a fully accessible and more polished site.
 
+In this lesson, we'll build on that work and get you thinking about other accessibility factors, such as how to build websites to support [users like Victor Tsaran](/web/fundamentals/accessibility/#understanding-users-diversity), who can't see the screen.
 
+First, we'll get some background on *assistive technology*, the general term for tools like screen readers that help users with impairments that can keep them from accessing information.
 
-您已經通過解決只能使用鍵盤問題了解了如何讓無法使用鼠標或指控設備（無論是因爲身體缺陷、技術問題還是個人偏好）的用戶訪問網站。如果從一開始就進行規劃，這項工作儘管需要一定的良苦用心，工作量並不大。完成這項基礎工作後，還需要付出艱苦的努力才能打造出更加精良並且能夠完全無障礙訪問的網站。
+Next, we'll look at some general user experience concepts, and build on those to take a deeper dive into the experience of users of assistive technology.
 
+Finally, we'll see how to use HTML effectively to create a good experience for these users, and how it overlaps quite a bit with the way we addressed focus earlier.
 
-在這節課中，我們將在這項工作的基礎上發動您思考其他無障礙因素，例如如何讓構建的網站能夠支持 [Victor Tsaran 之類](/web/fundamentals/accessibility/#understanding-users-diversity)看不到屏幕的用戶。
+## Assistive technology
 
+*Assistive technology* is an umbrella term for devices, software, and tools that help any person with a disability complete a task. In the broadest sense this could be something low-tech like a crutch for walking or a magnifying glass for reading, or something high-tech like a robotic arm or image recognition software on a smartphone.
 
+![assistive technology examples including crutch magnifying glass and robotic
+prosthesis](imgs/assistive-tech1.png)
 
+Assistive technology can include something as general as browser zoom, or as specific as a custom-designed game controller. It can be a separate physical device like a braille display, or be implemented completely in software like voice control. It can be built-in to the operating system like some screen readers, or it can be an add-on like a Chrome extension.
 
-首先，我們將瞭解一些有關*輔助技術*的背景信息，該技術泛指屏幕閱讀器之類的工具，這些工具能夠幫助身體有缺陷的用戶更方便地獲取信息。
+![more assistive technology examples including browser zoom braille display and
+voice control](imgs/assistive-tech2.png)
 
+The line between assistive technology and technology in general is blurry; after all, all technology is meant to assist people with some task or another. And technologies can often move into and out of the "assistive" category.
 
+For example, one of the earliest commercial speech synthesis products was a talking calculator for the blind. Now speech synthesis is all over the place, from driving directions to virtual assistants. Conversely, technology that was originally general-purpose often finds an assistive use. For example, people with low vision may use their smartphone's camera zoom to get a better look at something small in the real world.
 
-其次，我們將瞭解一些常規用戶體驗概念，並以這些概念爲基礎更深入地瞭解輔助技術用戶的體驗。
+In the context of web development, we must consider a diverse range of technologies. People may interact with your website using a screen reader or braille display, with a screen magnifier, via voice control, using a switch device, or with some other form of assistive technology that adapts the page's default interface to create a more specific interface that they can use.
 
+Many of these assistive technologies rely on *programmatically expressed semantics* to create an accessible user experience, and that's what most of this lesson is about. But before we can explain programmatically expressed semantics, we need to talk a bit about *affordances*.
 
-最後，我們將瞭解如何有效利用 HTML 爲這些用戶打造良好體驗，以及爲什麼說它與我們之前闡述的焦點有頗多共性。
+## Affordances
 
+When we use a man-made tool or device, we typically look to its form and design to give us an idea of what it does and how it works. An *affordance* is any object that offers, or affords, its user the opportunity to perform an action. The better the affordance is designed, the more obvious or intuitive its use.
 
+A classic example is a kettle or teapot. You can easily recognize that you should pick it up by the handle, not the spout, even if you've never seen a teapot before.
 
-## 輔助技術
+![a teapot with handle and spout](imgs/teapot.png)
 
-*輔助技術*是一個涵蓋性術語，泛指有助於任何殘障人士完成任務的設備、軟件和工具。
-從最廣泛的意義上講，它可以指助行柺杖或閱讀用放大鏡等低科技物品，也可以指機械臂或智能手機上的圖片識別軟件等高科技元素。
+That's because the affordance is similar to those you have seen on many other objects -- watering pots, beverage pitchers, coffee mugs, and so on. You probably *could* pick up the pot by the spout, but your experience with similar affordances tells you the handle is the better option.
 
+In graphical user interfaces, affordances represent actions we can take, but they can be ambiguous because there is no physical object to interact with. GUI affordances are thus specifically designed to be unambiguous: buttons, check boxes, and scroll bars are meant to convey their usage with as little training as possible.
 
+For example, you might paraphrase the use of some common form elements (affordances) like this:
 
+- Radio buttons &mdash; "I can choose one of these options."
+- Check box &mdash; "I can choose 'yes' or 'no' to this option."
+- Text field &mdash; "I can type something into this area."
+- Dropdown &mdash; "I can open this element to display my options."
 
-![包括柺杖、放大鏡和機械假肢在內的輔助技術示例](imgs/assistive-tech1.png)
+You are able to draw conclusions about these elements *only because you can see them*. Naturally, someone who can't see the visual clues provided by an element can't comprehend its meaning or intuitively grasp the value of the affordance. So we must make sure that the information is expressed flexibly enough to be accessed by assistive technology that can construct an alternative interface to suit its user's needs.
 
+This non-visual exposure of an affordance's use is called its *semantics*.
 
-輔助技術可以包括瀏覽器縮放這樣寬泛的概念，也可以包括自定義設計遊戲控制器這樣具體的物品。
-它可以是盲文顯示器之類獨立的物理設備，也可以完全實現在語音控制之類的軟件中。它可以內置於某些屏幕閱讀器之類的操作系統，也可以插件（比如 Chrome 擴展程序）形式存在。
+## Screen readers
 
+One popular type of assistive technology is the *screen reader*, a program that enables visually impaired people to use computers by reading screen text aloud in a generated voice. The user can control what is read by moving the cursor to a relevant area with the keyboard.
 
-![包括瀏覽器縮放、盲文顯示器和語音控制在內的其他輔助技術示例](imgs/assistive-tech2.png)
+We asked [Victor Tsaran](/web/fundamentals/accessibility/#understanding-users-diversity) to explain how, as a blind person, he accesses the web using a the built-in screen reader on OS X, called VoiceOver. See [this video](https://www.youtube.com/watch?v=QW_dUs9D1oQ) of Victor using VoiceOver.
 
+Now, it's your turn to try using a screen reader. Here is a page with *ChromeVox Lite*, a minimal but functioning screen reader written in JavaScript. The screen is purposefully blurred to simulate a low-vision experience and force the user to complete the task with a screen reader. Of course, you'll need to use the Chrome browser for this exercise.
 
-輔助技術與一般意義上的技術之間界限模糊，畢竟所有技術都旨在協助人們完成某項任務。
-技術被歸入和移出“輔助”類別的情況可能會經常發生。
+[ChromeVox lite demo page](http://udacity.github.io/ud891/lesson3-semantics-built-in/02-chromevox-lite/)
 
+You can use the control panel at the bottom of the screen to control the screen reader. This screen reader has very minimal functionality, but you can explore the content using the `Previous` and `Next` buttons, and you can click things using the `Click` button.
 
-例如，盲人用發音計算器是最早商用的語音合成產品之一。
-現在，語音合成產品已隨處可見，從行車路線指引到虛擬助手，無所不有。
-另一方面，原來的通用技術也往往會開發出輔助用途。
-例如，弱視人羣可以利用其智能手機的相機變焦功能看清現實世界中較小的物體。
+Try using this page with ChromeVox lite enabled to get a feel for screen reader use. Think about the fact that a screen reader (or other assistive technology) actually creates a complete alternate user experience for the user based on the programmatically expressed semantics. Instead of a visual interface, the screen reader provides an audible interface.
 
+Notice how the screen reader tells you some information about each interface element. You should expect a well-designed reader to tell you all, or at least most, of the following information about the elements it encounters.
 
+- The element's *role* or type, if it is specified (it should be).
+- The element's *name*, if it has one (it should).
+- The element's *value*, if it has one (it may or may not).
+- The element's *state*, e.g., whether it is enabled or disabled (if applicable).
 
-在網絡開發環境中，我們必須考慮採用種類多樣的技術。
-人們在與您的網站進行交互時使用的可能是屏幕閱讀器或盲文顯示器、屏幕放大器、語音控制、開關設備或某種其他形式的輔助技術，這些技術可以對網頁的默認界面進行調整，形成一個他們可以使用的更具體界面。
+The screen reader is able to construct this alternate UI because the native elements contain built-in accessibility metadata. Just as the rendering engine uses the native code to construct a visual interface, the screen reader uses the metadata in the DOM nodes to construct an accessible version, something like this.
 
+![a screen reader uses the DOM to create accessible
+nodes](imgs/nativecodetoacc.png)
 
+## Feedback {: #feedback }
 
-
-其中的許多輔助技術都依賴*以編程方式表示的語義*來打造無障礙用戶體驗，而這也正是本節課的主要內容。但我們需要簡要介紹一下*功能可見性*，然後才能對以編程方式表示的語義加以說明。
-
-
-## 功能可見性
-
-當我們使用人造工具或設備時，通常通過其形狀和設計來了解其功能和使用方法。
-*功能可見性*是指任何提供或給予其用戶操作執行機會的對象。功能可見性設計得越好，用途就越明顯或越直觀。
-
-
-
-水壺或茶壺就是典型的例子。即使您以前從未見過茶壺，也能輕易發現，拎起茶壺時應握着手柄而不是壺嘴。
-
-
-
-![帶手柄和壺嘴的茶壺](imgs/teapot.png)
-
-這是因爲其功能可見性與您在噴壺、飲料罐、咖啡杯等許多其他物體上見過的類似。
-握着壺嘴多半*也能*拎起茶壺，但您在類似功能可見性上的經驗告訴您，手柄是更好的選擇。
-
-
-
-在圖形界面中，功能可見性表示我們可以執行的操作，但它們可能模棱兩可，因爲並不存在可以進行交互的物理對象。
-因此，GUI 功能可見性專門設計爲具有明確含義：按鈕、複選框和滾動條旨在通過儘可能少的訓練傳遞其用途信息。
-
-
-
-
-例如，您可以像下面這樣用淺顯的語言解釋某些常見表單元素（功能可見性）的用途：
-
-
- - 單選按鈕：“我可以選擇其中一個選項。”
- - 複選框：“我可以選擇‘是’或‘否’使用此選項。”
- - 文本字段：“我可以在此區域內鍵入內容。”
- - 下拉列表：“我可以打開此元素以顯示我的選項。”
-
-您之所以能夠就這些元素得出結論，*完全是因爲您能看到它們*。
-看不到元素提供的視覺提示的人自然無法理解其含義或直觀領會功能可見性價值。因此我們必須確保信息的表達方式足夠靈活，可以讓輔助技術根據用戶需要構建一個替代性界面，在該界面中向用戶傳遞信息。
-
-
-
-
-
-這種非視覺的功能可見性用途公開稱爲它的*語義*。
-
-## 屏幕閱讀器
-
-一種流行的輔助技術是“屏幕閱讀器”，視力殘障人士可以利用該程序以合成語音朗讀屏幕上的文字，從而達到使用計算機的目的。用戶可以通過使用鍵盤將光標移至相關區域來控制閱讀的內容。
-
-
-我們請 [Victor Tsaran](/web/fundamentals/accessibility/#understanding-users-diversity) 來說明，作爲一個盲人，他是如何利用 OS X 上名爲 VoiceOver 的內置屏幕閱讀器訪問網絡的。請觀看[這段視頻](https://www.youtube.com/watch?v=QW_dUs9D1oQ)，其中包含 Victor 使用 VoiceOver 的過程。
-
-
-現在，輪到您嘗試使用屏幕閱讀器了。以下網頁啓用了 *ChromeVox Lite*，這個使用 JavaScript 編寫的屏幕閱讀器只具有最基本的功能，但可以正常使用。
-屏幕有意做了模糊化處理以模擬弱視體驗，迫使用戶使用屏幕閱讀器來完成任務。當然，您在完成這項練習時需要使用 Chrome 瀏覽器。
-
-
-[ChromeVox Lite 演示頁面](http://udacity.github.io/ud891/lesson3-semantics-built-in/02-chromevox-lite/)
-
-您可以利用屏幕底部的控制面板來控制屏幕閱讀器。
-這個屏幕閱讀器雖然只具有非常基本的功能，但您可以利用 `Previous` 和 `Next` 按鈕探索頁面內容，並且可以使用 `Click` 按鈕點擊內容。
-
-
-
-試着利用這個啓用了 ChromeVox Lite 的網頁體驗使用屏幕閱讀器的感覺。
-想想看，屏幕閱讀器（或其他輔助技術）實際上是根據以編程方式表示的語義爲用戶打造一種完全替代性的用戶體驗。屏幕閱讀器提供聽覺界面來替代視覺界面。
-
-
-請注意屏幕閱讀器如何告訴您有關各界面元素的某些信息。
-精心設計的閱讀器應能將有關其遇到的元素的以下全部或至少大部分信息告訴您。
-
-
- - 元素的*角色*或類型，如果已指定（應予指定）。
- - 元素的*名稱*，如果有名稱（應有）。
- - 元素的*值*，如果有值（不一定有）。
- - 元素的*狀態*，例如已啓用還是已禁用（若適用）。
-
-
-屏幕閱讀器之所以能夠構建這一替代性 UI，是因爲原生元素包含內置無障礙元數據。
-正如渲染引擎會使用原生代碼來構建視覺界面，屏幕閱讀器則會使用 DOM 節點中的元數據來構建一個無障礙版本，其結構與下圖所示類似：
-
-![一個使用 DOM 來創建無障礙節點的屏幕閱讀器](imgs/nativecodetoacc.png)
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
