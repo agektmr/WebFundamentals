@@ -1,97 +1,45 @@
-project_path: /web/fundamentals/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: 确保 Service Worker 发挥最佳性能。
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Ensure you're getting the best performance out of your service worker implementation.
 
-{# wf_updated_on: 2019-02-06 #}
-{# wf_published_on: 2017-09-21 #}
-{# wf_blink_components: Blink>ServiceWorker #}
+{# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2017-09-21 #} {# wf_blink_components: Blink>ServiceWorker #}
 
-# 高性能 Service Worker 加载 {: .page-title }
+# High-performance service worker loading {: .page-title }
 
 {% include "web/_shared/contributors/jeffposnick.html" %}
 
-为网页应用添加 [Service Worker](/web/fundamentals/getting-started/primers/service-workers) 可以显著改善性能，即使遵循所有的[传统浏览器缓存最佳做法](/web/fundamentals/performance/optimizing-content-efficiency/http-caching)也无法获得这样的裨益。
-但是，为了优化加载时间，应遵循几项最佳做法。
- 下列提示可确保 Service Worker 发挥最佳性能。
+Adding a [service worker](/web/fundamentals/getting-started/primers/service-workers) to your web app can offer significant performance benefits, going beyond what's possible even when following all the [traditional browser caching best practices](/web/fundamentals/performance/optimizing-content-efficiency/http-caching). But there are a few best practices to follow in order to optimize your load times. The following tips will ensure you're getting the best performance out of your service worker implementation.
 
+## First, what are navigation requests?
 
-## 首先了解什么是导航请求？
+Navigation requests are (tersely) defined in the [Fetch specification](https://fetch.spec.whatwg.org/#navigation-request) as: *A navigation [request](https://fetch.spec.whatwg.org/#concept-request) is a request whose [destination](https://fetch.spec.whatwg.org/#concept-request-destination) is "`document`".* While technically correct, that definition lacks nuance, and it undersells the importance of navigations on your web app's performance. Colloquially, a navigation request takes place whenever you enter a URL in your browser's location bar, interact with
+<code><a href="https://developer.mozilla.org/en-US/docs/Web/API/Window/location">window.location</a></code>, or visit a link from one web page to another. Putting an `<iframe>` on a page will also lead to a navigation request for the `<iframe>`'s `src`.
 
-在 [Fetch
-规范](https://fetch.spec.whatwg.org/#navigation-request)中，将导航请求简洁地定义为：<em>导航[请求](https://fetch.spec.whatwg.org/#concept-request)是[目的地](https://fetch.spec.whatwg.org/#concept-request-destination)为“<code>document</code>”的请求。
-</em> 这个定义在技术上正确无误，但缺少细节，而且低估了导航对于网页应用性能的重要性。
- 通俗地说，每当您在浏览器的地址栏中输入网址、与
-<code>[window.location](https://developer.mozilla.org/en-US/docs/Web/API/Window/location)</code> 交互，或者从一个网页访问指向另一网页的链接时，就会执行导航请求。
- 在页面上放置 `<iframe>`
-也会产生针对 `<iframe>` 的 `src` 的导航请求。
+Note: [Single page applications](https://en.wikipedia.org/wiki/Single-page_application), relying on the [History API](https://developer.mozilla.org/en-US/docs/Web/API/History_API) and in-place DOM modifications, tend to avoid navigation requests when switching from view to view. But the initial request in a browser's session for a single page app is still a navigation.
 
-注：依赖 [History API](https://developer.mozilla.org/en-US/docs/Web/API/History_API)
-和原地 DOM 修改的[单页面应用](https://en.wikipedia.org/wiki/Single-page_application)在视图之间切换时，往往会避免导航请求。
- 但是，在浏览器会话中，针对单页面应用的初始请求仍为导航。
+While your web app might make many other [subresource requests](https://fetch.spec.whatwg.org/#subresource-request) in order to display all its contents—for elements like scripts, images, or styles—it's the HTML in the navigation response that's responsible for kicking off all the other requests. Any delays in the response for the initial navigation request will be painfully obvious to your users, as they're left staring at a blank screen for an indeterminate period of time.
 
+Note: [HTTP/2 server push](/web/fundamentals/performance/http2/#server_push) adds a wrinkle here, as it allows subresource responses to be returned without additional latency, alongside the navigation response. But any delays in establishing the connection to the remote server will also lead to delays the data being pushed down to the client.
 
-虽然网页应用可能会发出许多其他[子资源请求](https://fetch.spec.whatwg.org/#subresource-request)以便显示其所有内容（例如，脚本、图像或样式等元素），但却是导航响应中的 HTML 负责启动所有其他请求。
- 用户能够明显看到初始导航请求的任何响应延迟，而且在此过程中，用户只能盯着空白的屏幕，而不确定需要等待多长时间。
+Traditional [caching best practices](/web/fundamentals/performance/optimizing-content-efficiency/http-caching#top_of_page), the kind that rely on HTTP `Cache-Control` headers and not a service worker, require [going to the network each navigation](/web/fundamentals/performance/optimizing-content-efficiency/http-caching#invalidating_and_updating_cached_responses), to ensure that all of the subresource URLs are fresh. The holy grail for web performance is to get all the benefits of aggressively cached subresources, *without* requiring a navigation request that's dependent on the network. With a properly configured service worker tailored to your site's specific architecture, that's now possible.
 
+## For best performance, bypass the network for navigations
 
+The biggest impact of adding a service worker to your web application comes from responding to navigation requests without waiting on the network. The best-case-scenario for connecting to a web server is likely to take orders of magnitude longer than it would take to read locally cached data. In scenarios where a client's connection is less than ideal—basically, anything on a mobile network—the amount of time it takes to get back the first byte of data from the network can easily outweigh the total time it would take to render the full HTML.
 
-注：[HTTP/2 服务器推送](/web/fundamentals/performance/http2/#server_push)在此时会发挥作用，允许子资源响应随导航响应一起返回，而没有额外的延迟。
- 但是，在与远程服务器建立连接期间出现的任何延迟也会导致延迟将数据推送到客户端。
+Choosing the right cache-first service worker implementation largely depends on your site's architecture.
 
+### Streaming composite responses
 
+If your HTML can naturally be split into smaller pieces, with a static header and footer along with a middle portion that varies depending on the request URL, then handling navigations using a streamed response is ideal. You can compose the response out of individual pieces that are each cached separately. Using streams ensures that the initial portion of the response is exposed to the client as soon as possible, giving it a head start on parsing the HTML and making any additional subresource requests.
 
-传统的[缓存最佳做法](/web/fundamentals/performance/optimizing-content-efficiency/http-caching#top_of_page)依赖于 HTTP `Cache-Control` 标头而非 Service Worker，并且要求[每次导航都访问网络](/web/fundamentals/performance/optimizing-content-efficiency/http-caching#invalidating_and_updating_cached_responses)，以确保所有子资源网址均为最新。
- 提高网页性能的诀窍在于获得积极缓存子资源的所有裨益，而*不*需要执行依赖于网络的导航请求。
- 现在利用根据您网站的特定架构定制且配置正确的 Service Worker，可以实现这个目标。
+The "[Stream Your Way to Immediate Responses](/web/updates/2016/06/sw-readablestreams)" article provides a basic overview of this approach, but for real-world examples and demos, Jake Archibald's "[2016 - the year of web streams](https://jakearchibald.com/2016/streams-ftw/)" is the definitive guide.
 
+Note: For some web apps, there's no avoiding the network when responding to a navigation request. Maybe the HTML for each URL on your site depends on data from a content management system, or maybe your site uses varying layouts and doesn't fit into a generic, application shell structure. Service workers still open the door for improvements over the *status quo* for loading your HTML. Using streams, you can respond to navigation requests immediately with a common, cached chunk of HTML—perhaps your site's full `<head>` and some initial `<body>` elements—while still loading the rest of the HTML, specific to a given URL, from the network.
 
+### Caching static HTML
 
-## 为实现最佳性能，绕过网络进行导航
+If you've got a simple web app that relies entirely on a set of static HTML documents, then you're in luck: your path to avoiding the network is straightforward. You need a service worker that responds to navigations with previously cached HTML, and that also includes non-blocking logic for keeping that HTML up-to-date as your site evolves.
 
-在响应导航请求时不必等待网络，这就是向网页应用程序添加 Service Worker 的最大影响。
- 与读取本地缓存的数据相比，即使是在最好的情况下，连接到网络服务器所花费的时间也可能要多几个数量级。
- 在客户端连接不太理想（基本上，移动网络上的一切均如此）的情况下，从网络返回第一个字节的数据所花费的时间很容易超过渲染整个 HTML 所需的总时间。
-
-
-
-
-
-选择适当的缓存优先 Service Worker 在很大程度上取决于您的网站架构。
-
-
-### 流式传输组合响应
-
-如果您的 HTML 可以自然拆分为多个较小的部分，每个部分都有静态页眉和页脚以及根据请求网址不同而异的中间部分，那么使用流式响应来处理导航最为理想。
- 您可以将单独缓存的各个部分的响应组合到一起。
- 使用数据流可确保初始响应部分尽快公开给客户端，以让其提前解析 HTML 并提出任何其他子资源请求。
-
-
-
-
-“[执行流式传输以立即获得响应](/web/updates/2016/06/sw-readablestreams)”一文提供针对这种方法的基本概述，但要获得现实的示例和演示，请参阅 Jake Archibald 的“[2016 - 网络数据流之年](https://jakearchibald.com/2016/streams-ftw/)”权威指南。
-
-
-
-
-注：对于部分网页应用来说，响应导航请求时无法绕开网络。
- 这可能是因为网站上每个网址的 HTML 都依赖于来自某内容管理系统的数据，或者网站使用不同的布局，无法融入到通用的应用 Shell 结构中。
- 此外，Service Worker 还打开了通往改善 HTML 加载*现状*的大门。
-您可以通过使用数据流，使用缓存的公共 HTML 块（可能是网站的完整 `<head>` 和某些初始
-`<body>` 元素）来立即响应导航请求，同时从网络加载专属于给定网址的其余 HTML。
-
-
-
-### 缓存静态 HTML
-
-如果您有完全依赖于一组静态 HTML
-文档的简单网页应用，那么您绕开网络的方法十分简单。
- 您需要一个通过先前缓存的 HTML 来响应导航的 Service Worker，其应同时包括非拦截逻辑，以使该 HTML 随网站发展而及时更新。
-
-
-
-其中一种方法是，使用实现
-[stale-while-revalidate 策略](/web/fundamentals/instant-and-offline/offline-cookbook/#stale-while-revalidate)的 Service Worker `fetch` 处理程序来处理导航请求，如下所示：
-
+One approach is to use a service worker `fetch` handler that implements a [stale-while-revalidate policy](/web/fundamentals/instant-and-offline/offline-cookbook/#stale-while-revalidate) for navigation requests, like so:
 
 ```js
 self.addEventListener('fetch', event => {
@@ -99,7 +47,7 @@ self.addEventListener('fetch', event => {
     // See /web/fundamentals/getting-started/primers/async-functions
     // for an async/await primer.
     event.respondWith(async function() {
-      // Optional:Normalize the incoming URL by removing query parameters.
+      // Optional: Normalize the incoming URL by removing query parameters.
       // Instead of https://example.com/page?key=value,
       // use https://example.com/page when reading and writing to the cache.
       // For static HTML documents, it's unlikely your query parameters will
@@ -127,21 +75,13 @@ self.addEventListener('fetch', event => {
 });
 ```
 
-另一种方法是使用 [Workbox](https://workboxjs.org/) 等工具，该工具连接到网页应用的构建过程以生成一个 Service Worker，而该 Service Worker 负责处理所有静态资源（而不仅限于 HTML 文档）的缓存、以缓存优先方式提供这些资源，以及使这些资源保持及时更新。
+Another approach is to use a tool like [Workbox](https://workboxjs.org/), which hooks into your web app's build process to generate a service worker that handles caching all of your static resources (not just HTML documents), serving them cache-first, and keeping them up to date.
 
+### Using an Application Shell
 
+If you have an existing single page application, then the [application shell architecture](/web/fundamentals/architecture/app-shell) is straightforward to implement. There's a clear-cut strategy for handling navigation requests without relying on the network: each navigation request, regardless of the specific URL, is fulfilled with a cached copy of a generic "shell" of an HTML document. The shell includes everything needed to bootstrap the single page application, and client-side routing logic can then render the content specific to the request's URL.
 
-
-### 使用应用 Shell
-
-对于现有的单页面应用，实现[应用 Shell 架构](/web/fundamentals/architecture/app-shell)十分简单。
- 您可使用明确的策略，在不依赖于网络的情况下处理导航请求：以缓存的 HTML 文档通用“Shell”来执行每个导航请求，而不考虑具体网址。
- 该 Shell 包括引导单页面应用所需的所有内容，然后客户端路由逻辑可以渲染请求网址特定的内容。
-
-
-
-手动编写的相应 Service Worker `fetch` 处理程序类似如下：
-
+Written by hand, the corresponding service worker `fetch` handler would look something like:
 
 ```js
 // Not shown: install and activate handlers to keep app-shell.html
@@ -155,23 +95,15 @@ self.addEventListener('fetch', event => {
 });
 ```
 
-[Workbox](https://workboxjs.org/) 在这方面也有帮助，可以确保缓存且及时更新
-`app-shell.html`，并且提供[辅助工具](https://workboxjs.org/reference-docs/latest/module-workbox-sw.Router.html#registerNavigationRoute)，以缓存的 Shell 响应导航请求。
+[Workbox](https://workboxjs.org/) can also help here, both by ensuring your `app-shell.html` is cached and kept up to date, as well as providing [helpers](https://workboxjs.org/reference-docs/latest/module-workbox-sw.Router.html#registerNavigationRoute) for responding to navigation requests with the cached shell.
 
+## ⚠️ Performance gotchas
 
+If you can't respond to navigations using cached data, but you need a service worker for other functionality—like providing [offline fallback content](/web/fundamentals/instant-and-offline/offline-cookbook/#generic-fallback), or [handling push notifications](/web/fundamentals/getting-started/codelabs/push-notifications/) —then you're in an awkward situation. If you don't take specific precautions, you could end up taking a performance hit when you add in your service worker. But by steering clear of these gotchas, you'll be on solid ground.
 
-## ⚠️ 性能问题
+### Never use a "passthrough" fetch handler
 
-当您无法使用缓存的数据来响应导航，但需要 Service
-Worker 以实现其他功能（例如，提供[离线回退内容](/web/fundamentals/instant-and-offline/offline-cookbook/#generic-fallback)或[处理推送通知](/web/fundamentals/getting-started/codelabs/push-notifications/)）时，您即处于尴尬的境地。
- 如果不采取具体预防措施，那么添加 Service Worker 后，也会出现性能问题。
-但是，避开这些问题，您就能稳扎稳打。
-
-### 切勿使用“直通式”提取处理程序
-
-如果您仅将 Service Worker 用于推送通知，您可能会误认为必须进行以下操作或将其视为空操作：
-
-
+If you're using a service worker just for push notifications, you might mistakenly think that the following is either required, or will just be treated as a no-op:
 
 ```js
 // Don't do this!
@@ -180,32 +112,16 @@ self.addEventListener('fetch', event => {
 });
 ```
 
-此类“直通式”提取处理程序存在隐患，因为网页应用中的一切都会继续正常工作，但是每次提出网络请求时都会产生短暂的延迟。
- 启动尚未运行的 Service Worker 会产生开销，而将响应从 Service Worker 传递到提出请求的客户端也会产生开销。
+This type of "passthrough" fetch handler is insidious, since everything will continue to work in your web application, but you'll end up introducing a small latency hit whenever a network request is made. There's overhead involved in starting up a service worker if it's not already running, and there's also overhead in passing the response from the service worker to the client that made the request.
 
+If your service worker doesn't contain a `fetch` handler at all, some browsers will make note of that and [not bother starting up the service worker](https://github.com/w3c/ServiceWorker/issues/718) whenever there's a network request.
 
+### Use navigation preload when appropriate
 
+There are scenarios in which you *need* a `fetch` handler to use a caching strategy for certain subresources, but your architecture makes it impossible to respond to navigation requests. Alternatively, you might be okay with using cached data in your navigation response, but you still want to make a network request for fresh data to swap in after the page has loaded.
 
-如果 Service Worker 完全不包含 `fetch` 处理程序，某些浏览器会记下这一点，而且每当提出网络请求时也[不会启动 Service Worker](https://github.com/w3c/ServiceWorker/issues/718)。
+A feature known as [Navigation Preload](https://developer.mozilla.org/en-US/docs/Web/API/NavigationPreloadManager) is relevant for both of those use cases. It can mitigate the delays that a service worker that didn't respond to navigations might otherwise introduce. It can also be used for "out of band" requests for fresh data that could then be used by client-side code after the page has loaded. The "[Speed up Service Worker with Navigation Preloads](/web/updates/2017/02/navigation-preload)" article has all the details you'd need to configure your service worker accordingly.
 
-
-
-
-### 适时使用导航预加载功能
-
-在某些情况下，您*需要* `fetch` 处理程序以将缓存策略用于特定的子资源，但架构不允许响应导航请求。
- 或者，您可以接受在导航响应中使用缓存的数据，但仍然想提出网络请求以获取新数据，从而在页面加载后换入数据。
-
-
-
-[导航预加载](https://developer.mozilla.org/en-US/docs/Web/API/NavigationPreloadManager)功能适用于上述两个用例。
- 这项功能可以减少未响应导航的
-Service Worker 本来会产生的延迟。 此外，这项功能也可用于执行“带外”请求以获取新数据，而这些数据可以在页面加载后供客户端代码使用。
- “[利用导航预加载加快 Service Worker 的速度](/web/updates/2017/02/navigation-preload)”一文中提供您相应配置 Service Worker 所需的所有详细信息。
-
-
-
-
-## 反馈 {: #feedback }
+## Feedback {: #feedback }
 
 {% include "web/_shared/helpful.html" %}
