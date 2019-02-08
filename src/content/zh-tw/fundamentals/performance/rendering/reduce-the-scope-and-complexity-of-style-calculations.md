@@ -1,114 +1,103 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: 透過新增和移除元素、變更屬性、類別，或透過動畫來變更 DOM ，都會導致瀏覽器重新計算元素樣式 -- 在許多情況下 -- 為網頁或部分網頁執行版面配置 (或自動重排) 。 這個過程叫做已運算樣式計算。
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: JavaScript is often the trigger for visual changes. Sometimes that's directly through style manipulations, and sometimes it's calculations that will result in visual changes, like searching or sorting some data. Badly-timed or long-running JavaScript can be a common cause of performance issues, and you should look to minimize its impact where you can.
 
-{# wf_updated_on: 2015-03-19 #}
-{# wf_published_on: 2000-01-01 #}
+{# wf_updated_on: 2018-08-17 #} {# wf_published_on: 2015-03-20 #} {# wf_blink_components: Blink>CSS #}
 
-# 減少樣式計算的範圍與複雜性 {: .page-title }
+# Reduce the Scope and Complexity of Style Calculations {: .page-title }
 
 {% include "web/_shared/contributors/paullewis.html" %}
 
+Changing the DOM, through adding and removing elements, changing attributes, classes, or through animation, will all cause the browser to recalculate element styles and, in many cases, layout (or reflow) the page, or parts of it. This process is called *computed style calculation*.
 
-透過新增和移除元素、變更屬性、類別，或透過動畫來變更 DOM ，都會導致瀏覽器重新計算元素樣式 -- 在許多情況下 -- 為網頁或部分網頁執行版面配置 (或自動重排) 。 這個過程叫做<em>已運算樣式計算</em>。
+The first part of computing styles is to create a set of matching selectors, which is essentially the browser figuring out which classes, pseudo-selectors and IDs apply to any given element.
+
+The second part of the process involves taking all the style rules from the matching selectors and figuring out what final styles the element has. In Blink (Chrome and Opera's rendering engine) these processes are, today at least, roughly equivalent in cost:
+
+> Roughly 50% of the time used to calculate the computed style for an element is used to match selectors, and the other half of the time is used for constructing the RenderStyle (computed style representation) from the matched rules. Rune Lillesveen, Opera / [Style Invalidation in Blink](https://docs.google.com/document/d/1vEW86DaeVs4uQzNFI5R-_xS9TcS1Cs_EUsHRSgCHGu8/view)
 
 ### TL;DR {: .hide-from-toc }
-- 降低您的選取器的複雜性；使用以類別為中心的方法，例如 BEM。
-- 降低樣式計算必須計算的元素數目。
 
+* Reduce the complexity of your selectors; use a class-centric methodology like BEM.
+* Reduce the number of elements on which style calculation must be calculated.
 
-運算樣式的第一部分是建立一組符合的選取器 -- 這本質上是指瀏覽器要弄明白哪些類別、虛擬選取器和 ID 適用於任何特定的元素。
+## Reduce the complexity of your selectors
 
-這一過程的第二部分涉及從符合的選取器取得所有樣式規則，並弄清楚元素具有什麼最終樣式。 在 Blink 中 (Chrome和 Opera 的轉譯引擎)，這些過程就時下而言，至少在成本上大致相當：
-
-<div class="quote" style="margin-top: 30px;">
-  <div class="container">
-    <blockquote>用於計算元素的已運算樣式的大約 50% 時間，會用來比對選取器，而另一半的時間則用於從符合的規則，建構 RenderStyle (已運算樣式的呈現)。
-    <p>Rune Lillesveen, Opera / <a href="https://docs.google.com/document/d/1vEW86DaeVs4uQzNFI5R-_xS9TcS1Cs_EUsHRSgCHGu8/edit">Blink 中的樣式無效判定</a></p>
-    </blockquote>
-  </div>
-</div>
-
-
-## 降低您的選取器的複雜性
-
-在最簡單的案例中，您僅以一個類別，參照您 CSS 中的一個元素：
-
+In the simplest case you reference an element in your CSS with just a class:
 
     .title {
       /* styles */
     }
     
 
-但是，在任何專案成長的同時，這可能會導致更複雜的 CSS，結果您可能會看到如下的選取器：
-
+But, as any project grows, it will likely result in more complex CSS, such that you may end up with selectors that look like this:
 
     .box:nth-last-child(-n+1) .title {
       /* styles */
     }
     
 
-若想要知道樣式有套用的必要性，瀏覽器必須詢問「這個元素所帶的標題類別的父項，會剛好是帶有方塊類別的第 -n +1 個子項元素嗎？」要弄清楚這個問題 _可能_ 要花很多時間，視使用的選取器和討論中的瀏覽器而定。 反之，選取器的預期行為可變更為一個類別：
-
+In order to know that the styles need to apply the browser has to effectively ask “is this an element with a class of title which has a parent who happens to be the minus nth child plus 1 element with a class of box?” Figuring this out *can* take a lot of time, depending on the selector used and the browser in question. The intended behavior of the selector could instead be changed to a class:
 
     .final-box-title {
       /* styles */
     }
     
 
-您大可質疑類別名稱的問題，但對瀏覽器而言，這項工作變得簡單多了。 在前一版中，例如若要知道該元素是同類型的最後一個，瀏覽器必須先知道所有其他元素的一切，以及是否有任何將成為第 n 個最後子項的元素緊接其後，但這個過程的成本可能大幅高於只要類別符合，就配對選取器給元素的做法。
+You can take issue with the name of the class, but the job just got a lot simpler for the browser. In the previous version, in order to know, for example, that the element is the last of its type, the browser must first know everything about all the other elements and whether the are any elements that come after it that would be the nth-last-child, which is potentially a lot more expensive than simply matching up the selector to the element because its class matches.
 
-## 降低樣式化的元素數目 
- 另一項效能考量 -- 通常是 _許多樣式更新的更重要因素_ -- 則是當元素變更時，所必須執行的驚人工作量。
+## Reduce the number of elements being styled
 
-一般來說，計算元素的已運算樣式的最糟情況成本，等於元素數目乘以選取器數目，因為每個元素需要針對每個樣式至少檢查一次，以查看它是否符合。
+Another performance consideration, which is typically *the more important factor for many style updates*, is the sheer volume of work that needs to be carried out when an element changes.
 
-Note: 過去的情況是，如果您變更了類別 -- 例如 -- 本文元素，網頁中的所有子項將需要重新計算已運算樣式。 還好現在已非這種情況；反之，某些瀏覽器會保留每個元素獨特的少數規則集合；若是變更，就會重新計算該元素的樣式。 那代表取決於元素在樹狀結構中的位置，以及變更的對象，元素可能會或不會需要重新計算。
+In general terms, the worst case cost of calculating the computed style of elements is the number of elements multiplied by the selector count, because each element needs to be at least checked once against every style to see if it matches.
 
-樣式計算經常可以直接鎖定於幾個元素，而不必將一整個網頁判定無效。 在最新瀏覽器中，這往往不會帶來什麽問題，因為瀏覽器不一定需要檢查可能受變更影響的所有元素。 在另一方面，較舊的瀏覽器，不一定已針對這樣的任務進行最佳化。 您應該儘可能 **降低無效判定的元素數目**。
+Note: It used to be the case that if you changed a class on -- say -- the body element, that all the children in the page would need to have their computed styles recalculated. Thankfully that is no longer the case; some browsers instead maintain a small collection of rules unique to each element that, if changed, cause the element’s styles to be recalculated. That means that an element may or may not need to be recalculated depending on where it is in the tree, and what specifically got changed.
 
-Note: 如果您有研究 Web Components 的話，值得注意的是此處的樣式計算稍有不同，因預設樣式不會越過 Shadow DOM 的邊界，而且範圍侷限於個別元件，而非整體樹狀結構。 然而總體來看，同樣的概念仍然適用：帶較簡單規則的較小樹狀結構，比大型樹狀結構或複雜規則的處理效率更高。
+Style calculations can often be targeted to a few elements directly rather than invalidating the page as a whole. In modern browsers this tends to be much less of an issue, because the browser doesn’t necessarily need to check all the elements potentially affected by a change. Older browsers, on the other hand, aren’t necessarily as optimized for such tasks. Where you can you should **reduce the number of invalidated elements**.
 
-## 測量您的樣式重新計算成本 
- 測量樣式重新計算成本的最簡單且最好的方法是使用 Chrome DevTools 的「時間軸」模式。 若要開始，開啟 DevTools、前往「時間軸」標籤、點擊「錄製」，並與你的網站互動。 當停止錄製時，您會看到如下圖所示。
+Note: If you’re into Web Components it’s worth noting that style calculations here are a little different, since by default styles do not cross the Shadow DOM boundary, and are scoped to individual components rather than the tree as a whole. Overall, however, the same concept still applies: smaller trees with simpler rules are more efficiently processed than large trees or complex rules.
 
-<img src="images/reduce-the-scope-and-complexity-of-style-calculations/long-running-style.jpg"  alt="DevTools 顯示長時間執行的樣式計算。">
+## Measure your Style Recalculation Cost
 
-頂部的長條表示每秒畫面，如您見到長條位在較低線之上 -- 60fps 線 -- 那麼您則有長時間執行的畫面。
+The easiest and best way to measure the cost of style recalculations is to use Chrome DevTools’ Timeline mode. To begin, open DevTools, go to the Timeline tab, hit record and interact with your site. When you stop recording you’ll see something like the image below.
 
-<img src="images/reduce-the-scope-and-complexity-of-style-calculations/frame-selection.jpg"  alt="在 Chrome DevTools 中放大問題區域。">
+<img src="images/reduce-the-scope-and-complexity-of-style-calculations/long-running-style.jpg"  alt="DevTools showing long-running style calculations." />
 
-如果您在如捲動的某個互動中遇到長時間執行的畫面，或某個其他互動，那麼這就值得進一步審查。
+The strip at the top indicates frames per second, and if you see bars going above the lower line, the 60fps line, then you have long running frames.
 
-如上述情況，如果您有一個很大的紫色區塊，按一下錄製，您就會得到更多的詳細資料。
+<img src="images/reduce-the-scope-and-complexity-of-style-calculations/frame-selection.jpg"  alt="Zooming in on a trouble area in Chrome DevTools." />
 
-<img src="images/reduce-the-scope-and-complexity-of-style-calculations/style-details.jpg"  alt="取得長時間執行樣式計算的詳細資訊。">
+If you have a long running frame during some interaction like scrolling, or some other interaction, then it bears further scrutiny.
 
-在這次擷取中，出現了花費剛超過 18ms 的長時間執行「重新計算樣式」事件，而它剛好在捲動時發生，造成體驗中出現明顯的顫動。
+If you have a large purple block, as in the case the above, click the record to get more details.
 
-如果您按一下事件本身，您可以得到一呼叫堆疊，它會指明您 JavaScript 中觸發此樣式變更的地方。 此外，您還會取得受變化影響的元素數目 (在此例中，剛好超過 400 個元素)，以及執行樣式計算的所費時間。 您可以使用此資訊，開始試圖為您的程式碼找到修正。
+<img src="images/reduce-the-scope-and-complexity-of-style-calculations/style-details.jpg"  alt="Getting the details of long-running style calculations." />
 
-## 使用區塊、元素、修改器 
- 像 [BEM (區塊、元素、修改器)](https://bem.info/){: .external } 之類的編碼方法，其實會塑造出符合以上效能的選取器，因為它會建議任何事物都要有單一類別，並在您需要階層之處，這也能塑造於類別名稱之內：
+In this grab there is a long-running Recalculate Style event that is taking just over 18ms, and it happens to be taking place during a scroll, causing a noticeable judder in the experience.
 
+If you click the event itself you are given a call stack, which pinpoints the place in your JavaScript that is responsible for triggering the style change. In addition to that, you also get the number of elements that have been affected by the change (in this case just over 400 elements), and how long it took to perform the style calculations. You can use this information to start trying to find a fix in your code.
+
+## Use Block, Element, Modifier
+
+Approaches to coding like [BEM (Block, Element, Modifier)](https://bem.info/){: .external } actually bake in the selector matching performance benefits above, because it recommends that everything has a single class, and, where you need hierarchy, that gets baked into the name of the class as well:
 
     .list { }
     .list__list-item { }
     
 
-如果您需要某個修改器，如同在上例中當我們想要為最後子項做些特別處理時，您可以如以下將之加入：
-
+If you need some modifier, like in the above where we want to do something special for the last child, you can add that like so:
 
     .list__list-item--last-child {}
     
 
-如果您正在尋找好方法來組織您的 CSS，BEM 真的是很好的起點， 無論是從結構的觀點而言，或是因為樣式查詢的簡化之故。
+If you’re looking for a good way to organize your CSS, BEM is a really good starting point, both from a structure point-of-view, but also because of the simplifications of style lookup.
 
-如果您不喜歡 BEM，仍有其他方法可處理您的 CSS，但效能考量必須和方案的便利性一起評估。
+If you don’t like BEM, there are other ways to approach your CSS, but the performance considerations should be assessed alongside the ergonomics of the approach.
 
-## 資源
+## Resources
 
-* [Blink 中的樣式無效判定](https://docs.google.com/document/d/1vEW86DaeVs4uQzNFI5R-_xS9TcS1Cs_EUsHRSgCHGu8/edit)
-  *[BEM (區塊、元素、修改器)](https://bem.info/){: .external }
+* [Style invalidation in Blink](https://docs.google.com/document/d/1vEW86DaeVs4uQzNFI5R-_xS9TcS1Cs_EUsHRSgCHGu8/edit)
+* [BEM (Block, Element, Modifier)](https://bem.info/){: .external }
 
+## Feedback {: #feedback }
 
+{% include "web/_shared/helpful.html" %}
