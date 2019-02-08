@@ -1,79 +1,64 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description:为您反复使用的命令行任务设置快捷方式。如果您发现自己在命令行中反复键入相同的内容，这将为您带来很大方便。
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Set up shortcuts for the command line tasks you use over and over again. If you find yourself typing the same thing in your command line repeatedly, this will alleviate that.
 
-{# wf_updated_on:2015-04-13 #}
-{# wf_published_on:2014-09-24 #}
+{# wf_updated_on: 2015-04-13 #} {# wf_published_on: 2014-09-24 #}
 
-# 设置命令行快捷方式 {: .page-title }
+# Set Up Command Line Shortcuts {: .page-title }
 
-{% include "web/_shared/contributors/megginkearney.html" %}
-{% include "web/_shared/contributors/mattgaunt.html" %}
+{% include "web/_shared/contributors/megginkearney.html" %} {% include "web/_shared/contributors/mattgaunt.html" %}
 
-为您反复使用的命令行任务设置快捷方式。如果您发现自己在命令行中反复键入相同的内容，这将为您带来很大方便。
-
+Set up shortcuts for the command line tasks you use over and over again. If you find yourself typing the same thing in your command line repeatedly, this will alleviate that.
 
 ### TL;DR {: .hide-from-toc }
-- 掌控命令行；创建易于记住和可快速键入的别名。
-- 尝试保存、分享 Github 点文件，并同步您的命令行快捷方式。
 
+- Make the command line work for you; create aliases that are easy to remember and fast to type.
+- Give Github dotfiles a try to save, share and sync up your command line shortcuts.
 
-## 如何设置
+## How to set them up
 
-创建命令行快捷方式最简单的方法就是将常见命令的别名添加至 bashrc 文件。
-在 Mac 或 Linux 上：
+The easiest way to create command-line shortcuts is to add aliases for common commands to your bashrc file. On Mac or Linux:
 
-1. 从命令行任意位置，键入：
-
+1. From the command line anywhere, type:
+    
         open -a 'Sublime Text' ~/.bashrc
+        
 
-2. 添加新别名，例如：
-
+2. Add a new alias, for example:
+    
         alias master='git checkout master'
+        
 
-3. 任何时候当您位于带 git repo 的目录时，都可以运行命令 `master`，它将为您检查主分支。
+3. Anytime you are in a directory with a git repo, you can run the command `master` and it will checkout the master branch for you.
 
+Note: See these instructions for [setting up Windows aliases](https://msdn.microsoft.com/en-us/library/windows/desktop/ms682057(v=vs.85).aspx).
 
-Note: 请参阅[设置 Windows 别名](https://msdn.microsoft.com/en-us/library/windows/desktop/ms682057(v=vs.85).aspx)的说明。
+## Shortcuts we recommend
 
-
-## 我们推荐的快捷方式
-
-您可能会发现以下几个快捷方式比较有用。
+These are a few commands that you may find useful.
 
 <table class="responsive">
   <thead>
     <tr>
-      <th colspan="2" data-th="Command">命令和别名</th>
+      <th colspan="2" data-th="Command">Command &amp; Alias</th>
     </tr>
   </thead>
   <tbody>
     <tr>
-      <td data-th="Command">打开您的编辑器</td>
+      <td data-th="Command">Open your editor</td>
       <td data-th="Alias"><code>alias st='open -a "Sublime Text"'</code></td>
     </tr>
     <tr>
-      <td data-th="Command">启动服务器</td>
+      <td data-th="Command">Launch a server</td>
       <td data-th="Alias"><code>alias server="python -m SimpleHTTPServer"</code></td>
     </tr>
     <tr>
-      <td data-th="Command">转到您通常在其中工作的目录</td>
+      <td data-th="Command">Go to a directory you commonly work in</td>
       <td data-th="Alias"><code>alias p="cd ~/projects"</code></td>
     </tr>
   </tbody>
 </table>
 
+## Save, share and sync your shortcuts
 
-## 保存、分享和同步您的快捷方式
+Store your shortcuts and dot files on Github. The major gain with this is your shortcuts can be shared across devices and they are always backed up.
 
-在 Github 上保存您的快捷方式和点文件。主要好处是可以在各个设备之间分享快捷方式，而且始终可以备份快捷方式。
-
-
-Github 还创建了一个[点文件专用页面](https://dotfiles.github.io/){: .external }，Chrome 团队的许多人都复制了 [Mathias Bynens 的点文件](https://github.com/mathiasbynens/dotfiles)。
-
-
-
-
-
-
-{# wf_devsite_translation #}
+Github even created a [dedicated page for dotfiles](https://dotfiles.github.io/){: .external } and quite a few of the Chrome Team have forked [Mathias Bynens' dotfiles](https://github.com/mathiasbynens/dotfiles).
