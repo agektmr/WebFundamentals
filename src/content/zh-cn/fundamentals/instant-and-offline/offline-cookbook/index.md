@@ -1,54 +1,32 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml
 
-{# wf_updated_on: 2017-10-06 #}
-{# wf_published_on:2014-12-09 #}
+{# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2014-12-09 #} {# wf_blink_components: N/A #}
 
-# 离线指南 {: .page-title }
+# The Offline Cookbook {: .page-title }
 
 {% include "web/_shared/contributors/jakearchibald.html" %}
 
-使用 AppCache 可为我们提供支持内容离线工作的几种模式。
-如果这些正是您需要的模式，那么恭喜您，您赢了 AppCache 彩票大奖（头奖依然无人认领），剩下的人仍蜷缩在一个角落里[来回摇晃](http://alistapart.com/article/application-cache-is-a-douchebag)。
+When AppCache arrived on the scene it gave us a couple of patterns to make content work offline. If those were the patterns you needed, congratulations, you won the AppCache lottery (the jackpot remains unclaimed), but the rest of us were left huddled in a corner [rocking back & forth](http://alistapart.com/article/application-cache-is-a-douchebag).
 
+With [ServiceWorker](/web/fundamentals/getting-started/primers/service-workers) we gave up trying to solve offline, and gave developers the moving parts to go solve it themselves. It gives you control over caching and how requests are handled. That means you get to create your own patterns. Let's take a look at a few possible patterns in isolation, but in practice you'll likely use many of them in tandem depending on URL & context.
 
+All code examples work today in Chrome & Firefox, unless otherwise noted. For full details on service worker support, see ["Is Service Worker Ready?"](https://jakearchibald.github.io/isserviceworkerready/).
 
+For a working demo of some of these patterns, see [Trained-to-thrill](https://jakearchibald.github.io/trained-to-thrill/), and [this video](https://www.youtube.com/watch?v=px-J9Ghvcx4) showing the performance impact.
 
-对于 [ServiceWorker][sw_primer]，我们放弃了尝试解决离线问题，并为开发者提供了灵活组件让他们自行解决此问题。
-您可以通过 ServiceWorker 控制缓存和处理请求的方式。
-这意味着您可以创建自己的模式。
-我们看一下隔离环境中的几个可行模式，但在实践中，您可能会根据网址和上下文以串联方式使用其中的多个模式。
+## The cache machine - when to store resources
 
+[ServiceWorker](/web/fundamentals/getting-started/primers/service-workers) lets you handle requests independently from caching, so we'll look at them separately. First up, caching, when should it be done?
 
+### On install - as a dependency {: #on-install-as-dependency }
 
-除非另有说明，目前，所有代码示例都可以在 Chrome 和 Firefox 中运行。如需有关服务工作线程支持的完整详情，请参阅[“服务工作线程是否已就绪”?][is_sw_ready]。
+<img src="images/cm-on-install-dep.png" />
 
+ServiceWorker gives you an `install` event. You can use this to get stuff ready, stuff that must be ready before you handle other events. While this happens any previous version of your ServiceWorker is still running & serving pages, so the things you do here mustn't disrupt that.
 
-对于其中部分模式的运行演示，请查看 [Trained-to-thrill][ttt]，以及展示性能影响的[视频](https://www.youtube.com/watch?v=px-J9Ghvcx4)。
+**Ideal for:** CSS, images, fonts, JS, templates… basically anything you'd consider static to that "version" of your site.
 
-
-
-## 缓存计算机 - 何时存储资源
-
-您可以通过 [ServiceWorker][sw_primer] 独立地从缓存处理请求，我们来单独看一下它们。
-首先，应在什么时候进行缓存？
-
-
-### 安装时 - 以依赖项形式 {: #on-install-as-dependency }
-
-<img src="images/cm-on-install-dep.png">
-
-ServiceWorker 为您提供一个 `install` 事件。您可以使用该事件做好准备，即处理其他事件之前必须完成的操作。
-在进行这些操作时，任何以前版本的 ServiceWorker 仍在运行和提供页面，因此您在此处进行的操作一定不能干扰它们。
-
-
-
-**适合于：** CSS、图像、字体、JS、模板等，基本上囊括了您视为网站“版本”的静态内容的任何对象。
-
-
-如果未能提取上述对象，将使您的网站完全无法运行，对应的本机应用会将这些对象包含在初始下载中。
-
-
+These are things that would make your site entirely non-functional if they failed to fetch, things an equivalent native-app would make part of the initial download.
 
     self.addEventListener('install', function(event) {
       event.waitUntil(
@@ -63,24 +41,19 @@ ServiceWorker 为您提供一个 `install` 事件。您可以使用该事件做�
         })
       );
     });
+    
 
-`event.waitUntil` 选取一个 promise 以定义安装时长和安装是否成功。
-如果 promise 拒绝，则安装被视为失败，并舍弃这个 ServiceWorker （如果一个较旧的版本正在运行，它将保持不变）。`caches.open` 和 `cache.addAll` 将返回 promise。如果其中有任一资源获取失败，则 `cache.addAll` 调用将拒绝。
+`event.waitUntil` takes a promise to define the length & success of the install. If the promise rejects, the installation is considered a failure and this ServiceWorker will be abandoned (if an older version is running, it'll be left intact). `caches.open` and `cache.addAll` return promises. If any of the resources fail to fetch, the `cache.addAll` call rejects.
 
+On [trained-to-thrill](https://jakearchibald.github.io/trained-to-thrill/) I use this to [cache static assets](https://github.com/jakearchibald/trained-to-thrill/blob/3291dd40923346e3cc9c83ae527004d502e0464f/www/static/js-unmin/sw/index.js#L3).
 
-在 [trained-to-thrill][ttt] 上，我使用此方法[缓存静态资源](https://github.com/jakearchibald/trained-to-thrill/blob/3291dd40923346e3cc9c83ae527004d502e0464f/www/static/js-unmin/sw/index.js#L3)。
+### On install - not as a dependency {: #on-install-not }
 
+<img src="images/cm-on-install-not.png" />
 
+Similar to above, but won't delay install completing and won't cause installation to fail if caching fails.
 
-### 安装时 - 不是以依赖项的形式{: #on-install-not }
-
-<img src="images/cm-on-install-not.png">
-
-与上述相似，但如果缓存失败，既不会延迟安装也不会导致安装失败。
-
-
-**适合于：** 不是即刻需要的大型资源，如用于游戏较高级别的资源。
-
+**Ideal for:** Bigger resources that aren't needed straight away, such as assets for later levels of a game.
 
     self.addEventListener('install', function(event) {
       event.waitUntil(
@@ -94,25 +67,19 @@ ServiceWorker 为您提供一个 `install` 事件。您可以使用该事件做�
         })
       );
     });
+    
 
-我们不会将级别 11-20 的 `cache.addAll` promise 传递回 `event.waitUntil`，因此，即使它失败，游戏在离线状态下仍然可用。当然，您必须考虑到可能缺少这些级别的情况，并且如果缺少，则重新尝试缓存它们。
+We're not passing the `cache.addAll` promise for levels 11-20 back to `event.waitUntil`, so even if it fails, the game will still be available offline. Of course, you'll have to cater for the possible absence of those levels & reattempt caching them if they're missing.
 
+The ServiceWorker may be killed while levels 11-20 download since it's finished handling events, meaning they won't be cached. In future we plan to add a background downloading API to handle cases like this, and larger downloads such as movies.
 
-当级别 11-20 进行下载时，ServiceWorker 可能会终止，因为它已完成处理事件，意味着它们将不会被缓存。
-将来，我们计划添加一个后台下载 API 以处理此类情况和较大文件下载，如电影。
+### On activate {: #on-activate }
 
+<img src="images/cm-on-activate.png" />
 
+**Ideal for:** Clean-up & migration.
 
-### 激活时 {: #on-activate }
-
-<img src="images/cm-on-activate.png">
-
-**适合于：** 清理和迁移。
-
-在新的 ServiceWorker 已安装并且未使用以前版本的情况下，新 ServiceWorker 将激活，并且您将获得一个 `activate` 事件。
-由于旧版本退出，此时非常适合处理 IndexedDB 中的架构迁移和删除未使用的缓存。
-
-
+Once a new ServiceWorker has installed & a previous version isn't being used, the new one activates, and you get an `activate` event. Because the old version is out of the way, it's a good time to handle schema migrations in IndexedDB and also delete unused caches.
 
     self.addEventListener('activate', function(event) {
       event.waitUntil(
@@ -129,29 +96,23 @@ ServiceWorker 为您提供一个 `install` 事件。您可以使用该事件做�
         })
       );
     });
+    
 
-在激活期间，`fetch` 等其他事件会放置在一个队列中，因此长时间激活可能会阻止页面加载。
-尽可能让您的激活简洁，仅针对旧版本处于活动状态时无法执行的操作使用它。
+During activation, other events such as `fetch` are put into a queue, so a long activation could potentially block page loads. Keep your activation as lean as possible, only use it for things you *couldn't* do while the old version was active.
 
+On [trained-to-thrill](https://jakearchibald.github.io/trained-to-thrill/) I use this to [remove old caches](https://github.com/jakearchibald/trained-to-thrill/blob/3291dd40923346e3cc9c83ae527004d502e0464f/www/static/js-unmin/sw/index.js#L17).
 
+### On user interaction {: #on-user-interaction }
 
-在 [trained-to-thrill][ttt] 上，我使用此方法[移除旧缓存](https://github.com/jakearchibald/trained-to-thrill/blob/3291dd40923346e3cc9c83ae527004d502e0464f/www/static/js-unmin/sw/index.js#L17)。
+<img src="images/cm-on-user-interaction.png" />
 
+**Ideal for:** If the whole site can't be taken offline, you may allow the user to select the content they want available offline. E.g. a video on something like YouTube, an article on Wikipedia, a particular gallery on Flickr.
 
-### 用户交互时{: #on-user-interaction }
-
-<img src="images/cm-on-user-interaction.png">
-
-**适合于：** 如果整个网站无法离线工作，您可以允许用户选择他们需要离线可用的内容。
-例如，YouTube 上的某个视频、维基百科上的某篇文章、Flickr 上的某个特定图库。
-
-
-为用户提供一个“Read later”或“Save for offline”按钮。在点击该按钮后，从网络获取您需要的内容并将其置于缓存中。
-
+Give the user a "Read later" or "Save for offline" button. When it's clicked, fetch what you need from the network & pop it in the cache.
 
     document.querySelector('.cache-article').addEventListener('click', function(event) {
       event.preventDefault();
-
+    
       var id = this.dataset.articleId;
       caches.open('mysite-article-' + id).then(function(cache) {
         fetch('/get-article-urls?id=' + id).then(function(response) {
@@ -163,25 +124,19 @@ ServiceWorker 为您提供一个 `install` 事件。您可以使用该事件做�
         });
       });
     });
+    
 
-[caches API][caches_api] 可通过页面以及服务工作线程获取，这意味着您不需要通过服务工作线程向缓存添加内容。
+The [caches API](https://developer.mozilla.org/en-US/docs/Web/API/Cache) is available from pages as well as service workers, meaning you don't need to involve the service worker to add things to the cache.
 
+### On network response {: #on-network-response }
 
+<img src="images/cm-on-network-response.png" />
 
+**Ideal for:** Frequently updating resources such as a user's inbox, or article contents. Also useful for non-essential content such as avatars, but care is needed.
 
-### 网络响应时 {: #on-network-response }
+If a request doesn't match anything in the cache, get it from the network, send it to the page & add it to the cache at the same time.
 
-<img src="images/cm-on-network-response.png">
-
-**适合于：** 频繁更新诸如用户收件箱或文章内容等资源。
-同时适用于不重要的资源，如头像，但需要谨慎处理。
-
-
-如果请求的资源与缓存中的任何资源均不匹配，则从网络中获取，将其发送到页面同时添加到缓存中。
-
-
-如果您针对一系列网址执行此操作，如头像，那么您需要谨慎，不要使源的存储变得臃肿，如果用户需要回收磁盘空间，您不会想成为主要候选对象。请确保将缓存中不再需要的项目删除。
-
+If you do this for a range of URLs, such as avatars, you'll need to be careful you don't bloat the storage of your origin — if the user needs to reclaim disk space you don't want to be the prime candidate. Make sure you get rid of items in the cache you don't need any more.
 
     self.addEventListener('fetch', function(event) {
       event.respondWith(
@@ -195,24 +150,19 @@ ServiceWorker 为您提供一个 `install` 事件。您可以使用该事件做�
         })
       );
     });
+    
 
-为留出充足的内存使用空间，每次您只能读取一个响应/请求的正文。
-在上面的代码中，[`.clone()`](https://fetch.spec.whatwg.org/#dom-request-clone) 用于创建可单独读取的额外副本。
+To allow for efficient memory usage, you can only read a response/request's body once. In the code above, [`.clone()`](https://fetch.spec.whatwg.org/#dom-request-clone) is used to create additional copies that can be read separately.
 
-
-
-在 [trained-to-thrill][ttt] 上，我使用此方法[缓存 Flickr 图像](https://github.com/jakearchibald/trained-to-thrill/blob/3291dd40923346e3cc9c83ae527004d502e0464f/www/static/js-unmin/sw/index.js#L109)。
-
+On [trained-to-thrill](https://jakearchibald.github.io/trained-to-thrill/) I use this to [cache Flickr images](https://github.com/jakearchibald/trained-to-thrill/blob/3291dd40923346e3cc9c83ae527004d502e0464f/www/static/js-unmin/sw/index.js#L109).
 
 ### Stale-while-revalidate {: #stale-while-revalidate }
 
-<img src="images/cm-stale-while-revalidate.png">
+<img src="images/cm-stale-while-revalidate.png" />
 
-**适合于：** 频繁更新最新版本并非必需的资源。
-头像属于此类别。
+**Ideal for:** Frequently updating resources where having the very latest version is non-essential. Avatars can fall into this category.
 
-如果有可用的缓存版本，则使用该版本，但下次会获取更新。
-
+If there's a cached version available, use it, but fetch an update for next time.
 
     self.addEventListener('fetch', function(event) {
       event.respondWith(
@@ -227,40 +177,31 @@ ServiceWorker 为您提供一个 `install` 事件。您可以使用该事件做�
         })
       );
     });
+    
 
-这与 HTTP 的 [stale-while-revalidate](https://www.mnot.net/blog/2007/12/12/stale) 非常相似。
+This is very similar to HTTP's [stale-while-revalidate](https://www.mnot.net/blog/2007/12/12/stale).
 
+### On push message {: #on-push-message }
 
-### 推送消息时 {: #on-push-message }
+<img src="images/cm-on-push.png" />
 
-<img src="images/cm-on-push.png">
+The [Push API](/web/fundamentals/push-notifications) is another feature built on top of ServiceWorker. This allows the ServiceWorker to be awoken in response to a message from the OS's messaging service. This happens even when the user doesn't have a tab open to your site, only the ServiceWorker is woken up. You request permission to do this from a page & the user will be prompted.
 
-[Push API](/web/fundamentals/push-notifications) 是基于 ServiceWorker 构建的另一个功能。
-该 API 允许唤醒 ServiceWorker 以响应来自操作系统消息传递服务的消息。即使用户没有为您的网站打开标签，也会如此，仅唤醒 ServiceWorker。
-您从页面请求执行此操作的权限，用户将收到提示。
+**Ideal for:** Content relating to a notification, such as a chat message, a breaking news story, or an email. Also infrequently changing content that benefits from immediate sync, such as a todo list update or a calendar alteration.
 
-
-**适合于：** 与通知相关的内容，如聊天消息、突发新闻或电子邮件。
-同时可用于频繁更改受益于立即同步的内容，如待办事项更新或日历更改。
 <div class="video-wrapper">
   <iframe class="devsite-embedded-youtube-video" data-video-id="0i7YdSEQI1w"
           data-autohide="1" data-showinfo="0" frameborder="0" allowfullscreen>
   </iframe>
 </div>
 
-常见的最终结果是出现一个通知，在点按该通知时，打开/聚焦一个相关页面，但在进行此操作前一定要先更新缓存。
+The common final outcome is a notification which, when tapped, opens/focuses a relevant page, but updating caches before this happens is *extremely* important. The user is obviously online at the time of receiving the push message, but they may not be when they finally interact with the notification, so making this content available offline is important. The Twitter native app, which is for the most part an excellent example of offline-first, gets this a bit wrong.
 
-很明显，用户在收到推送通知是处于在线状态，但是，当他们最终与通知交互时可能已经离线，因此，因此，允许离线访问此内容非常重要。Twitter 本机应用在大多数情况下都是非常好的离线优先例子，但在这点上却有点问题。
-
-
-
-如果没有网络连接，Twitter 无法提供与推送消息相关的内容。
-不过，点按通知会移除通知，从而使用户获取的信息将比点按通知前少。
-不要这样做！
+Without a connection, Twitter fails to provide the content relating to the push message. Tapping it does remove the notification however, leaving the user with less information than before they tapped. Don't do this!
 
 <div style="clear:both;"></div>
 
-在显示通知之前，以下代码将更新缓存：
+This code updates caches before showing a notification:
 
     self.addEventListener('push', function(event) {
       if (event.data.text() == 'new-email') {
@@ -279,7 +220,7 @@ ServiceWorker 为您提供一个 `install` 事件。您可以使用该事件做�
         );
       }
     });
-
+    
     self.addEventListener('notificationclick', function(event) {
       if (event.notification.tag == 'new-email') {
         // Assume that all of the resources needed to render
@@ -288,21 +229,15 @@ ServiceWorker 为您提供一个 `install` 事件。您可以使用该事件做�
         new WindowClient('/inbox/');
       }
     });
+    
 
+### On background-sync {: #on-background-sync }
 
-### 后台同步时 {: #on-background-sync }
+<img src="images/cm-on-bg-sync.png" />
 
-<img src="images/cm-on-bg-sync.png">
+[Background sync](/web/updates/2015/12/background-sync) is another feature built on top of ServiceWorker. It allows you to request background data synchronization as a one-off, or on an (extremely heuristic) interval. This happens even when the user doesn't have a tab open to your site, only the ServiceWorker is woken up. You request permission to do this from a page & the user will be prompted.
 
-Dogfood：后台同步在 Chrome stable 中尚不稳定。
-
-[后台同步](/web/updates/2015/12/background-sync)是基于 ServiceWorker 构建的另一个功能。它允许您一次性或按（非常具有启发性的）间隔请求后台数据同步。
-即使用户没有为您的网站打开标签，也会如此，仅唤醒 ServiceWorker。您从页面请求执行此操作的权限，用户将收到提示。
-
-
-**适合于：** 非紧急更新，特别那些定期进行的更新，每次更新都发送一个推送通知会显得太频繁，如社交时间表或新闻文章。
-
-
+**Ideal for:** Non-urgent updates, especially those that happen so regularly that a push message per update would be too frequent, such as social timelines or news articles.
 
     self.addEventListener('sync', function(event) {
       if (event.id == 'update-leaderboard') {
@@ -313,16 +248,13 @@ Dogfood：后台同步在 Chrome stable 中尚不稳定。
         );
       }
     });
+    
 
+## Cache persistence {: #cache-persistence }
 
-## 缓存持久化 {: #cache-persistence }
+Your origin is given a certain amount of free space to do what it wants with. That free space is shared between all origin storage: LocalStorage, IndexedDB, Filesystem, and of course Caches.
 
-为您的源提供特定量的可用空间以执行它需要的操作。该可用空间可在所有源存储之间共享。
-LocalStorage、IndexedDB、Filesystem，当然还有 Caches。
-
-
-您获取的空间容量未指定，其因设备和存储条件而异。
-您可以通过以下代码了解您已获得多少空间容量：
+The amount you get isn't spec'd, it will differ depending on device and storage conditions. You can find out how much you've got via:
 
     navigator.storageQuota.queryInfo("temporary").then(function(info) {
       console.log(info.quota);
@@ -330,14 +262,11 @@ LocalStorage、IndexedDB、Filesystem，当然还有 Caches。
       console.log(info.usage);
       // Result: <used data in bytes>
     });
+    
 
-不过，与所有浏览器存储一样，如果设备出现存储压力，浏览器将随时舍弃这些空间。
-遗憾的是，浏览器无法区分您想要不惜任何代价保留的电影和您不太关心的游戏之间有什么不同。
+However, like all browser storage, the browser is free to throw it away if the device becomes under storage pressure. Unfortunately the browser can't tell the different between those movies you want to keep at all costs, and the game you don't really care about.
 
-
-
-为解决此问题，建议使用 API [`requestPersistent`](https://storage.spec.whatwg.org/){: .external }：
-
+To work around this, there's a proposed API, [`requestPersistent`](https://storage.spec.whatwg.org/){: .external }:
 
     // From a page:
     navigator.storage.requestPersistent().then(function(granted) {
@@ -345,64 +274,51 @@ LocalStorage、IndexedDB、Filesystem，当然还有 Caches。
         // Hurrah, your data is here to stay!
       }
     });
+    
 
-当然，用户必须授予权限。让用户参与此流程非常重要，因为现在我们可以预期用户会控制删除。如果用户的设备出现存储压力，而且清除不重要的数据没能解决问题，那么用户需要凭判断力决定保留哪些项目以及移除哪些项目。
+Of course, the user has to grant permission. Making the user part of this flow is important, as we can now expect them to be in control of deletion. If their device comes under storage pressure, and clearing non-essential data doesn't solve it, the user gets to make a judgment call on which items to keep and remove.
 
+For this to work, it requires operating systems to treat "durable" origins as equivalent to native apps in their breakdowns of storage usage, rather than reporting the browser as a single item.
 
+## Serving Suggestions - responding to requests {: #serving-suggestions }
 
+It doesn't matter how much caching you do, the ServiceWorker won't use the cache unless you tell it when & how. Here are a few patterns for handling requests:
 
+### Cache only {: #cache-only }
 
-为实现此目的，需要操作系统将“持久化”源等同于其存储使用空间细分中的本机应用，而不是作为单个项目报告给浏览器。
+<img src="images/ss-cache-only.png" />
 
-
-
-
-## 提供建议 - 响应请求 {: #serving-suggestions }
-
-无论您缓存多少内容 ServiceWorker 都不会使用缓存，除非您指示它在何时使用缓存以及如何使用。
-以下是用于处理请求的几个模式：
-
-
-### 仅缓存 {: #cache-only }
-
-<img src="images/ss-cache-only.png">
-
-**适合于：** 您认为属于该“版本”网站静态内容的任何资源。您应在安装事件中缓存这些资源，以便您可以依靠它们。
-
-
+**Ideal for:** Anything you'd consider static to that "version" of your site. You should have cached these in the install event, so you can depend on them being there.
 
     self.addEventListener('fetch', function(event) {
       // If a match isn't found in the cache, the response
       // will look like a connection error
       event.respondWith(caches.match(event.request));
     });
+    
 
-…尽管通常您不需要以特殊方式处理此情况，但[缓存、回退到网络](#cache-falling-back-to-network)涵盖了此内容。
+…although you don't often need to handle this case specifically, [Cache, falling back to network](#cache-falling-back-to-network) covers it.
 
+### Network only {: #network-only }
 
-### 仅网络 {: #network-only }
+<img src="images/ss-network-only.png" />
 
-<img src="images/ss-network-only.png">
-
-**适合于：** 没有相应离线资源的对象，如 analytics pings、non-GET 请求。
-
+**Ideal for:** Things that have no offline equivalent, such as analytics pings, non-GET requests.
 
     self.addEventListener('fetch', function(event) {
       event.respondWith(fetch(event.request));
       // or simply don't call event.respondWith, which
       // will result in default browser behaviour
     });
+    
 
-…尽管通常您不需要以特殊方式处理此情况例，但[缓存、回退到网络](#cache-falling-back-to-network)涵盖了此内容。
+…although you don't often need to handle this case specifically, [Cache, falling back to network](#cache-falling-back-to-network) covers it.
 
+### Cache, falling back to network {: #cache-falling-back-to-network }
 
-### 缓存、回退到网络 {: #cache-falling-back-to-network }
+<img src="images/ss-falling-back-to-network.png" />
 
-<img src="images/ss-falling-back-to-network.png">
-
-**适合于：** 如果您以离线优先的方式进行构建，这将是您处理大多数请求的方式。
-根据传入请求而定，其他模式会有例外。
-
+**Ideal for:** If you're building offline-first, this is how you'll handle the majority of requests. Other patterns will be exceptions based on the incoming request.
 
     self.addEventListener('fetch', function(event) {
       event.respondWith(
@@ -411,23 +327,20 @@ LocalStorage、IndexedDB、Filesystem，当然还有 Caches。
         })
       );
     });
+    
 
-其针对缓存中的资源为您提供“仅缓存”行为，而对于未缓存的资源则提供“仅网络”行为（其包含所有 non-GET 请求，因为它们无法缓存）。
+This gives you the "Cache only" behaviour for things in the cache and the "Network only" behaviour for anything not-cached (which includes all non-GET requests, as they cannot be cached).
 
+### Cache & network race {: #cache-and-network-race }
 
+<img src="images/ss-cache-and-network-race.png" />
 
-### 缓存和网络竞态 {: #cache-and-network-race }
+**Ideal for:** Small assets where you're chasing performance on devices with slow disk access.
 
-<img src="images/ss-cache-and-network-race.png">
-
-**适合于：** 小型资源，可用于改善磁盘访问缓慢的设备的性能。
-
-
-在硬盘较旧、具有病毒扫描程序且互联网连接很快这几种情形相结合的情况下，从网络获取资源比访问磁盘更快。不过，如果在用户设备上具有相关内容时访问网络会浪费流量，请记住这一点。
-
+With some combinations of older hard drives, virus scanners, and faster internet connections, getting resources from the network can be quicker than going to disk. However, going to the network when the user has the content on their device can be a waste of data, so bear that in mind.
 
     // Promise.race is no good to us because it rejects if
-    // a promise rejects before fulfilling.Let's make a proper
+    // a promise rejects before fulfilling. Let's make a proper
     // race function:
     function promiseAny(promises) {
       return new Promise((resolve, reject) => {
@@ -440,7 +353,7 @@ LocalStorage、IndexedDB、Filesystem，当然还有 Caches。
           .catch(() => reject(Error("All failed")));
       });
     };
-
+    
     self.addEventListener('fetch', function(event) {
       event.respondWith(
         promiseAny([
@@ -449,23 +362,17 @@ LocalStorage、IndexedDB、Filesystem，当然还有 Caches。
         ])
       );
     });
+    
 
+### Network falling back to cache {: #network-falling-back-to-cache }
 
-### 网络回退到缓存 {: #network-falling-back-to-cache }
+<img src="images/ss-network-falling-back-to-cache.png" />
 
-<img src="images/ss-network-falling-back-to-cache.png">
+**Ideal for:** A quick-fix for resources that update frequently, outside of the "version" of the site. E.g. articles, avatars, social media timelines, game leader boards.
 
-**适合于：** 快速修复（在该“版本”的网站外部）频繁更新的资源。
-例如，文章、头像、社交媒体时间表、游戏排行榜。
+This means you give online users the most up-to-date content, but offline users get an older cached version. If the network request succeeds you'll most-likely want to [update the cache entry](#on-network-response).
 
-
-这意味着您为在线用户提供最新内容，但离线用户会获得较旧的缓存版本。
-如果网络请求成功，您可能需要[更新缓存条目](#on-network-response)。
-
-
-不过，此方法存在缺陷。如果用户的网络时断时续或很慢，他们只有在网络出现故障后才能获得已存在于设备上的完全可接受的内容。这需要花很长的时间，并且会导致令人失望的用户体验。
-请查看下一个模式，[缓存然后访问网络](#cache-then-network)，以获得更好的解决方案。
-
+However, this method has flaws. If the user has an intermittent or slow connection they'll have to wait for the network to fail before they get the perfectly acceptable content already on their device. This can take an extremely long time and is a frustrating user experience. See the next pattern, [Cache then network](#cache-then-network), for a better solution.
 
     self.addEventListener('fetch', function(event) {
       event.respondWith(
@@ -474,41 +381,34 @@ LocalStorage、IndexedDB、Filesystem，当然还有 Caches。
         })
       );
     });
+    
 
-### 缓存然后访问网络{: #cache-then-network }
+### Cache then network {: #cache-then-network }
 
-<img src="images/ss-cache-then-network.png">
+<img src="images/ss-cache-then-network.png" />
 
-**适合于：** 频繁更新的内容。例如，文章、社交媒体时间表、游戏排行榜。
+**Ideal for:** Content that updates frequently. E.g. articles, social media timelines, game leaderboards.
 
+This requires the page to make two requests, one to the cache, one to the network. The idea is to show the cached data first, then update the page when/if the network data arrives.
 
-这需要页面进行两次请求，一次是请求缓存，另一次是请求访问网络。
-该想法是首先显示缓存的数据，然后在网络数据到达时更新页面。
+Sometimes you can just replace the current data when new data arrives (e.g. game leaderboard), but that can be disruptive with larger pieces of content. Basically, don't "disappear" something the user may be reading or interacting with.
 
+Twitter adds the new content above the old content & adjusts the scroll position so the user is uninterrupted. This is possible because Twitter mostly retains a mostly-linear order to content. I copied this pattern for [trained-to-thrill](https://jakearchibald.github.io/trained-to-thrill/) to get content on screen as fast as possible, but still display up-to-date content once it arrives.
 
-有时候，当新数据（例如，游戏排行榜）到达时，您可以只替换当前数据，但是具有较大的内容时将导致数据中断。从根本上讲，不要使用户正在读取或交互的内容“消失”。
-
-
-Twitter 在旧内容上添加新内容，并调整滚动位置，以便用户不会感觉到间断。
-这是可能的，因为 Twitter 通常会保持使内容最具线性特性的顺序。
-我为 [trained-to-thrill][ttt] 复制了此模式，以尽快获取屏幕上的内容，但当它出现时仍会显示最新内容。
-
-
-
-**页面中的代码：**
+**Code in the page:**
 
     var networkDataReceived = false;
-
+    
     startSpinner();
-
+    
     // fetch fresh data
     var networkUpdate = fetch('/data.json').then(function(response) {
       return response.json();
     }).then(function(data) {
       networkDataReceived = true;
-      updatePage();
+      updatePage(data);
     });
-
+    
     // fetch cached data
     caches.match('/data.json').then(function(response) {
       if (!response) throw Error("No data");
@@ -522,11 +422,11 @@ Twitter 在旧内容上添加新内容，并调整滚动位置，以便用户不
       // we didn't get cached data, the network is our last hope:
       return networkUpdate;
     }).catch(showErrorMessage).then(stopSpinner);
+    
 
+**Code in the ServiceWorker:**
 
-**ServiceWorker 中的代码：**
-
-我们始终访问网络并随时更新缓存。
+We always go to the network & update a cache as we go.
 
     self.addEventListener('fetch', function(event) {
       event.respondWith(
@@ -538,24 +438,17 @@ Twitter 在旧内容上添加新内容，并调整滚动位置，以便用户不
         })
       );
     });
+    
 
-Note: 上述代码在 Chrome 中还不可用，我们还没有向页面公开 `fetch` 和 `caches`（[ticket #1](https://code.google.com/p/chromium/issues/detail?id=436770)、[ticket #2](https://code.google.com/p/chromium/issues/detail?id=439389)）。
+In [trained-to-thrill](https://jakearchibald.github.io/trained-to-thrill/) I worked around this by using [XHR instead of fetch](https://github.com/jakearchibald/trained-to-thrill/blob/3291dd40923346e3cc9c83ae527004d502e0464f/www/static/js-unmin/utils.js#L3), and abusing the Accept header to tell the ServiceWorker where to get the result from ([page code](https://github.com/jakearchibald/trained-to-thrill/blob/3291dd40923346e3cc9c83ae527004d502e0464f/www/static/js-unmin/index.js#L70), [ServiceWorker code](https://github.com/jakearchibald/trained-to-thrill/blob/3291dd40923346e3cc9c83ae527004d502e0464f/www/static/js-unmin/sw/index.js#L61)).
 
-在 [trained-to-thrill][ttt] 中，我解决了此问题，方法是使用 [XHR 而不是获取](https://github.com/jakearchibald/trained-to-thrill/blob/3291dd40923346e3cc9c83ae527004d502e0464f/www/static/js-unmin/utils.js#L3)，滥用 Accept 标头以通知 ServiceWorker 在哪里获取来自（[页面代码](https://github.com/jakearchibald/trained-to-thrill/blob/3291dd40923346e3cc9c83ae527004d502e0464f/www/static/js-unmin/index.js#L70)、[ServiceWorker 代码](https://github.com/jakearchibald/trained-to-thrill/blob/3291dd40923346e3cc9c83ae527004d502e0464f/www/static/js-unmin/sw/index.js#L61)）的结果。
+### Generic fallback {: #generic-fallback }
 
+<img src="images/ss-generic-fallback.png" />
 
+If you fail to serve something from the cache and/or network you may want to provide a generic fallback.
 
-
-
-### 常规回退{: #generic-fallback }
-
-<img src="images/ss-generic-fallback.png">
-
-如果您未能从缓存和/或网络提供一些资源，您可能需要提供一个常规回退。
-
-
-**适合于：** 次要图像，如头像、失败的 POST 请求、“Unavailable while offline”页面。
-
+**Ideal for:** Secondary imagery such as avatars, failed POST requests, "Unavailable while offline" page.
 
     self.addEventListener('fetch', function(event) {
       event.respondWith(
@@ -572,28 +465,25 @@ Note: 上述代码在 Chrome 中还不可用，我们还没有向页面公开 `f
         })
       );
     });
+    
 
-您回退到的项目可能是一个[安装依赖项](#on-install-as-dependency)。
+The item you fallback to is likely to be an [install dependency](#on-install-as-dependency).
 
-如果您的页面正在发布电子邮件，您的 ServiceWorker 可能回退以在 IDB 的发件箱中存储电子邮件并进行响应，让用户知道发送失败，但数据已成功保存。
-
-
+If your page is posting an email, your ServiceWorker may fall back to storing the email in an IDB 'outbox' & respond letting the page know that the send failed but the data was successfully retained.
 
 ### ServiceWorker-side templating {: #serviceworker-side-templating }
 
-<img src="images/ss-sw-side-templating.png">
+<img src="images/ss-sw-side-templating.png" />
 
-**适合于：** 无法缓存其服务器响应的页面。
+**Ideal for:** Pages that cannot have their server response cached.
 
-[在服务器上渲染页面可提高速度](https://jakearchibald.com/2013/progressive-enhancement-is-faster/)，但这意味着会包括在缓存中没有意义的状态数据，例如，“Logged in as…”。如果您的页面由 ServiceWorker 控制，您可能会转而选择请求 JSON 数据和一个模板，并进行渲染。
-
-
+[Rendering pages on the server makes things fast](https://jakearchibald.com/2013/progressive-enhancement-is-faster/), but that can mean including state data that may not make sense in a cache, e.g. "Logged in as…". If your page is controlled by a ServiceWorker, you may instead choose to request JSON data along with a template, and render that instead.
 
     importScripts('templating-engine.js');
-
+    
     self.addEventListener('fetch', function(event) {
-      var requestURL = new URL(event.request);
-
+      var requestURL = new URL(event.request.url);
+    
       event.respondWith(
         Promise.all([
           caches.match('/article-template.html').then(function(response) {
@@ -605,7 +495,7 @@ Note: 上述代码在 Chrome 中还不可用，我们还没有向页面公开 `f
         ]).then(function(responses) {
           var template = responses[0];
           var data = responses[1];
-
+    
           return new Response(renderTemplate(template, data), {
             headers: {
               'Content-Type': 'text/html'
@@ -614,25 +504,23 @@ Note: 上述代码在 Chrome 中还不可用，我们还没有向页面公开 `f
         })
       );
     });
+    
 
+## Putting it together
 
-## 总结
+You don't have to pick one of these methods, you'll likely use many of them depending on request URL. For example, [trained-to-thrill](https://jakearchibald.github.io/trained-to-thrill/) uses:
 
-您不必选择上述的某一个方法，您可能会根据请求网址使用其中的多个方法。
-例如，[trained-to-thrill][ttt] 使用：
+* [Cache on install](#on-install-as-dependency), for the static UI and behaviour
+* [Cache on network response](#on-network-response), for the Flickr images and data
+* [Fetch from cache, falling back to network](#cache-falling-back-to-network), for most requests
+* [Fetch from cache, then network](#cache-then-network), for the Flickr search results
 
-
-* [在安装时缓存](#on-install-as-dependency)，适用于静态 UI 和行为
-* [在网络进行响应时缓存](#on-network-response)，适用于 Flickr 图像和数据
-* [从缓存获取、回退到网络](#cache-falling-back-to-network)，适用于大多数请求
-* [从缓存获取，然后访问网络](#cache-then-network)，适用于 Flickr 搜索结果
-
-看看请求，决定要采取的措施：
+Just look at the request and decide what to do:
 
     self.addEventListener('fetch', function(event) {
       // Parse the URL:
       var requestURL = new URL(event.request.url);
-
+    
       // Handle requests to a particular host specifically
       if (requestURL.hostname == 'api.example.com') {
         event.respondWith(/* some combination of patterns */);
@@ -662,7 +550,7 @@ Note: 上述代码在 Chrome 中还不可用，我们还没有向页面公开 `f
           return;
         }
       }
-
+    
       // A sensible default pattern
       event.respondWith(
         caches.match(event.request).then(function(response) {
@@ -670,36 +558,38 @@ Note: 上述代码在 Chrome 中还不可用，我们还没有向页面公开 `f
         })
       );
     });
+    
 
-…您将获得图片。
+…you get the picture.
 
+## Feedback {: .hide-from-toc }
 
-### 参考 {: hide-from-toc }
-…可爱的图标：
+{% include "web/_shared/helpful.html" %}
 
-* [代码](http://thenounproject.com/term/code/17547/){: .external }，由 buzzyrobot 提供
-* [日历](http://thenounproject.com/term/calendar/4672/){: .external }，由 Scott Lewis 提供
-* [网络](http://thenounproject.com/term/network/12676/){: .external }，由 Ben Rizzo 提供
-* [SD](http://thenounproject.com/term/sd-card/6185/)，由 Thomas Le Bas 提供
-* [CPU](http://thenounproject.com/term/cpu/72043/){: .external }，由 iconsmind.com 提供
-* [垃圾桶](http://thenounproject.com/term/trash/20538/){: .external }，由 trasnik 提供
-* [通知](http://thenounproject.com/term/notification/32514/){: .external }，由 @daosme 提供
-* [布局](http://thenounproject.com/term/layout/36872/){: .external }，由 Mister Pixel 提供
-* [云](http://thenounproject.com/term/cloud/2788/){: .external }，由 P.J. Onori 提供
+<div class="clearfix"></div>
 
-同时感谢 [Jeff Posnick](https://twitter.com/jeffposnick) 在我点击“publish”之前找出了许多明显的错误。
+### Credits {: hide-from-toc }
 
+…for the lovely icons:
 
-###  深入阅读
-* [ServiceWorker - 简介][sw_primer]
-* [ServiceWorker 是否已就绪？][is_sw_ready] - 跟踪主要浏览器的实现状态
-* [JavaScript Promises - 简介](/web/fundamentals/getting-started/primers/promises) -promise 指南
+* [Code](http://thenounproject.com/term/code/17547/){: .external } by buzzyrobot
+* [Calendar](http://thenounproject.com/term/calendar/4672/){: .external } by Scott Lewis
+* [Network by](http://thenounproject.com/term/network/12676/){: .external } Ben Rizzo
+* [SD](http://thenounproject.com/term/sd-card/6185/) by Thomas Le Bas
+* [CPU](http://thenounproject.com/term/cpu/72043/){: .external } by iconsmind.com
+* [Trash](http://thenounproject.com/term/trash/20538/){: .external } by trasnik
+* [Notification](http://thenounproject.com/term/notification/32514/){: .external } by @daosme
+* [Layout](http://thenounproject.com/term/layout/36872/){: .external } by Mister Pixel
+* [Cloud](http://thenounproject.com/term/cloud/2788/){: .external } by P.J. Onori
 
+And thanks to [Jeff Posnick](https://twitter.com/jeffposnick) for catching many howling errors before I hit "publish".
 
-[ttt]: https://jakearchibald.github.io/trained-to-thrill/
-[is_sw_ready]: https://jakearchibald.github.io/isserviceworkerready/
-[sw_primer]: /web/fundamentals/getting-started/primers/service-workers
-[caches_api]: https://developer.mozilla.org/en-US/docs/Web/API/Cache
+### Further reading
 
+* [ServiceWorkers - an Introduction](/web/fundamentals/getting-started/primers/service-workers)
+* [Is ServiceWorker ready?](https://jakearchibald.github.io/isserviceworkerready/) - track the implementation status across the main browsers
+* [JavaScript Promises - an Introduction](/web/fundamentals/getting-started/primers/promises) - guide to promises
 
-{# wf_devsite_translation #}
+## Feedback {: #feedback }
+
+{% include "web/_shared/helpful.html" %}
