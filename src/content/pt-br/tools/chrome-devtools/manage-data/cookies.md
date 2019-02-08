@@ -1,102 +1,86 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Inspecione e exclua cookies pelo painel Application.
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Inspect and delete cookies from the Application panel.
 
-{# wf_updated_on: 2016-07-28 #}
-{# wf_published_on: 2015-04-13 #}
+{# wf_updated_on: 2018-07-27 #} {# wf_published_on: 2015-04-13 #} {# wf_blink_components: Platform>DevTools #}
 
-# Inspecionar e excluir cookies {: .page-title }
+# Inspect and Delete Cookies {: .page-title }
 
 {% include "web/_shared/contributors/kaycebasques.html" %}
 
-Inspecione e exclua cookies pelo
-painel <strong>Application</strong>.
+Inspect and delete cookies from the
+<strong>Application</strong> panel.
 
-![painel cookies](imgs/cookies.png)
-
+![cookies pane](imgs/cookies.png)
 
 ### TL;DR {: .hide-from-toc }
-- Visualize informações detalhadas sobre um cookie, como nome, valor, domínio e tamanho, entre outras.
-- Exclua um único cookie, cookies de um determinado domínio ou todos os cookies de todos os domínios.
 
+* View detailed information about a cookie, such as its name, value, domain, size, and more.
+* Delete a single cookie, cookies from a selected domain, or all cookies from all domains.
 
-## Visão geral {:#cookies}
+## Overview {:#cookies}
 
-Use o painel **Cookies** para visualizar e excluir cookies. Não é possível modificar os valores dos
-cookies.
+Use the **Cookies** pane to view and delete cookies. You cannot modify cookie values.
 
-![painel cookies][cookies]
+![cookies pane](/web/tools/chrome-devtools/manage-data/imgs/cookies.png)
 
-Os cookies são listados por domínio. Isto inclui o principal documento e todos
-os quadros aninhados. Selecionar um destes "grupos de quadro" exibe todos os cookies de 
-todos os recursos e quadros desse grupo. Há duas consequências deste
-agrupamento que você deve conhecer:
+Cookies are listed by domain. This includes the main document as well as all nested frames. Selecting one of these “frame groups” displays all cookies, for all resources, for all frames in that group. There are two consequences of this grouping to be aware of:
 
-* Cookies de diferentes domínios podem aparecer no mesmo grupo de quadros.
-* O mesmo cookie pode aparecer em diversos grupos de quadros.
+* Cookies from different domains may appear in the same frame group.
+* The same cookie may appear in several frame groups.
 
-[cookies]: /web/tools/chrome-devtools/manage-data/imgs/cookies.png
+## Fields {:#fields}
 
-## Campos {:#fields}
-
-Os campos a seguir são fornecidos para cada cookie:
+The following fields are provided for each cookie:
 
 <table class="responsive">
   <thead>
     <tr>
-      <th colspan="2">Campo do cookie &amp; Descrição</th>
+      <th colspan="2">Cookie Field &amp; Description</th>
     </tr>
   </thead>
   <tbody>
         <tr>
       <td data-th="Cookie Field">Name</td>
-      <td data-th="Description">O nome do cookie.</td>
+      <td data-th="Description">The cookie's name.</td>
     </tr>
     <tr>
       <td data-th="Cookie Field">Value</td>
-      <td data-th="Description">O valor do cookie.</td>
+      <td data-th="Description">The cookie's value.</td>
     </tr>
     <tr>
       <td data-th="Cookie Field">Domain</td>
-      <td data-th="Description">O domínio do cookie.</td>
+      <td data-th="Description">The cookie's domain.</td>
     </tr>
     <tr>
       <td data-th="Cookie Field">Path</td>
-      <td data-th="Description">O caminho do cookie.</td>
+      <td data-th="Description">The cookie's path.</td>
     </tr>
     <tr>
       <td data-th="Cookie Field">Expires / Maximum Age</td>
-      <td data-th="Description">O tempo de expiração, ou duração máxima, do cookie. Para cookies de sessão, este campo sempre deve ser "Session".</td>
+      <td data-th="Description">The cookie's expiration time, or maximum age. For session cookies, this field is always "Session".</td>
     </tr>
     <tr>
       <td data-th="Cookie Field">Size</td>
-      <td data-th="Description">O tamanho do cookie em bytes.</td>
+      <td data-th="Description">The cookie's size in bytes.</td>
     </tr>
     <tr>
       <td data-th="Cookie Field">HTTP</td>
-      <td data-th="Description">Se presente, indica que os cookies devem ser usados somente com HTTP e que o JavaScript não pode ser modificado.</td>
+      <td data-th="Description">If present, indicates that cookies should be used only over HTTP, and JavaScript modification is not allowed.</td>
     </tr>
     <tr>
       <td data-th="Cookie Field">Secure</td>
-      <td data-th="Description">Se presente, indica que a comunicação deste cookie deve ocorrer por uma transmissão criptografada.</td>
+      <td data-th="Description">If present, indicates that communication for this cookie must be over an encrypted transmission.</td>
     </tr>
   </tbody>
 </table>
 
-## Excluir cookies {:#delete}
+## Delete cookies {:#delete}
 
-Você pode excluir cookies de várias formas:
+There are a few ways you can delete cookies:
 
-* Selecione um cookie e pressione o botão **delete** 
-  (![botão delete][delete]{:.inline}) para excluir apenas esse cookie.
-* Pressione o botão **clear** (![botão clear][cos]{:.inline}) para excluir todos
-  os cookies do grupo de quadros especificado.
-* Clique com o botão direito no valor **Domain** de um cookie e selecione **Clear all
-  from "..."** (onde **"..."** é o nome do domínio) para excluir todos os cookies
-  desse domínio.
+* Select a cookie and press the **delete** button (![delete button](imgs/delete.png){:.inline}) to delete just that cookie.
+* Press the **clear** button (![clear button](imgs/clear-object-store.png){:.inline}) to delete all cookies for the specified frame group.
+* Right-click on the **Domain** value of a cookie and select **Clear all from "..."** (where **"..."** is the name of the domain) to delete all cookies from that domain.
 
-[delete]: imgs/delete.png
-[cos]: imgs/clear-object-store.png
+## Feedback {: #feedback }
 
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
