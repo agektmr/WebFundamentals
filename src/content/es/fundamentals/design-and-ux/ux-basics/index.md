@@ -1,382 +1,221 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Una guía paso a paso sobre los aspectos básicos del diseño de la experiencia del usuario.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: A step-by-step guide to the basics of UX design.
 
-{# wf_updated_on: 2016-10-01 #}
-{# wf_published_on: 2016-10-01 #}
+{# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2016-10-01 #} {# wf_blink_components: N/A #}
 
-# Aspectos básicos de la experiencia del usuario {: .page-title }
+# Basics of UX {: .page-title }
 
 {% include "web/_shared/contributors/mustafa.html" %}
 
-En este artículo, se presenta un flujo de trabajo que permite que los equipos, los creadores de productos, las startups y
-las empresas creen un proceso sólido y significativo para desarrollar una mejor experiencia del
-usuario para los clientes. Puedes usar las diferentes partes del proceso
-por separado, pero idealmente funcionan mejor como una serie de pasos.
+This article introduces a workflow that can help teams, products, startups and companies create a robust and meaningful process for developing a better user experience for their customers. You could use different parts of the process separately but they ideally work best as a series of steps.
 
-El contenido de esta guía se basa en gran medida en la metodología de sprint de diseño que utilizan diferentes
-equipos de Google para solucionar y resolver desafíos, como por ejemplo, el
-[vehículo automático](https://www.google.com/selfdrivingcar/ "Self Driving Car"){:target="_blank" .external}
-y el [Proyecto Loon](https://www.solveforx.com/loon/ "Project Loon"){:target="_blank" .external}.
+This guide borrows heavily from the Design Sprint methodology that multiple teams across Google use to troubleshoot and solve challenges such as the [Self Driving Car](https://www.google.com/selfdrivingcar/ "Self Driving Car"){:target="_blank" .external} and [Project Loon](https://www.solveforx.com/loon/ "Project Loon"){:target="_blank" .external}.
 
-### Diamante doble
+### Double Diamond
 
-Este flujo de trabajo se basa en lo que, en los círculos de experiencia del usuario, denominamos diamante doble, concepto que popularizó
-el [Consejo de Diseño Británico](https://www.designcouncil.org.uk/ "British Design Council"){:target="_blank" .external}.
-Según este concepto, el equipo diverge para comprender una idea por medio de la investigación y, luego,
-converge para definir el desafío y diverge para bosquejarlo de manera individual. Luego, comparte las
-ideas, decide cuál es la mejor manera de avanzar y realiza pruebas y validaciones.
+This flow work is based on what we in UX circles call the double diamond, made popular by the [British Design Council](https://www.designcouncil.org.uk/ "British Design Council"){:target="_blank" .external}, where your team diverges to understand an idea through research and then converges to define the challenge, diverges to sketch it individually, share the ideas, decide on what the best way forward is, test and validate.
 
 <figure>
-  <img src="images/double-diamond.png" alt="Entre las fases de un proyecto, se encuentran las siguientes: comprender, definir, divergir, decidir, crear un prototipo y validar.">
-  <figcaption>En el modelo de proceso de diseño de “diamante doble” presentado por el Consejo de Diseño Británico, los pasos incluyen estas fases de un proyecto: <em>comprender</em>, <em>definir</em>, <em>divergir</em>, <em>decidir</em>, <em>crear un prototipo</em> y <em>validar</em>.</figcaption>
+  <img src="images/double-diamond.png" alt="Phases of a project include; Understand, Define, Diverge, Decide, Prototype and Validate">
+  <figcaption>The 'double diamond' design process model pioneered by the British Design Council, the steps involve these phases of a project; <em>Understand</em>, <em>Define</em>, <em>Diverge</em>, <em>Decide</em>, <em>Prototype</em> and <em>Validate</em>.</figcaption>
 </figure>
 
-## Preparar el camino
+## Setting the stage
 
-En primer lugar, se debe comenzar con el desafío subyacente en cuestión y redactarlo a modo de
-propuesta. Debes preguntarte: “¿Cuál es el problema que estoy intentando
-resolver?”.  La declaración del desafío es el resumen del proyecto
-e incluye el objetivo.
+First thing is to start with the underlying challenge at hand and write it out like a proposal, asking yourself, “what is the problem I’m actually trying to solve?”. The challenge statement is the brief you are setting for the project that includes your goal.
 
-Este desafío puede estar relacionado con una función de un producto existente que necesita mejorarse
-o con un producto completamente nuevo. Cualquiera sea tu tarea, simplemente ajusta
-el léxico para que coincida con el objetivo que intentas alcanzar. La declaración debe estar
-relacionada con los objetivos de tu equipo, concentrarse en el público y ser inspiradora y concisa.
+This challenge could be for an existing product feature that needs to be refined or a completely new product altogether. Whatever your task may be, simply adjust the language to fit the goal you are trying to achieve. A statement should be tied to your team goals, focused on your audience, inspiring and concise.
 
-A continuación, se presentan algunos ejemplos de productos de la vida real con los que he trabajado
-antes:
+These are some real life examples of products that I have worked on in the past;
 
-* diseñar un sistema para administrar el tratamiento y la atención de seguimiento de pacientes con
-  pie equinovaro;
+- Design a system to manage the treatment and follow-up care of patients with clubfoot.
 
-* crear una app que simplifique los sistemas financieros complejos y reduzca su complejidad
-  a los aspectos imprescindibles;
+- Create an app that simplifies complex financial systems and pare them down to the essentials.
 
-* diseñar una app para dispositivos móviles coherente que funcione en distintas plataformas sin sacrificar
-  la marca.
+- Design a consistent mobile app across different platforms without sacrificing the brand.
 
-### Actualización de la declaración del desafío
+### Updating your challenge statement
 
-Una vez que hayas redactado varias opciones del objetivo, preséntalo ante tu equipo para
-alcanzar un consenso. Puedes incluir una fecha límite para que el equipo
-se concentre en el problema. Con los conceptos agregados, la lista anterior podría
-mejorarse de la siguiente manera:
+Once you have written several variations of the goal, present it to your team to get a consensus. You may want to include a deadline as this will help the team focus on the problem. So with the added adjustments, the list above could be:
 
-* diseñar un sistema para administrar el tratamiento y la atención de seguimiento de niños
-  menores de 2 años con pie equinovaro para su lanzamiento en el primer trimestre de este año;
-* crear una app financiera simple que te permita comprar y vender acciones con solo tocar
-  un botón sin conocimiento previo del mundo financiero, para su lanzamiento inicial en
-  julio de 2017;
-* producir una guía de diseño que sea flexible para diferentes plataformas y posicione
-  la marca de la empresa de manera eficaz en cada plataforma hacia finales del año.
+- Design a system to manage the treatment and follow-up care of children under the age of 2 with clubfoot for launch in Q1 this year.
+- Create a simple financial app that allows you to buy and sell shares at the tap of a button without prior knowledge of the financial world, with initial launch on July 2017.
+- Produce a design guide that is flexible across multiple platforms and positions the company's brand effectively on each platform by the end of this year.
 
-Cuando la declaración del desafío esté lista, colócala en un lugar prominente
-de manera que puedas verla mientras trabajas. Deberás consultarla
-constantemente y, tal vez, incluso actualizarla o modificarla durante el proyecto.
+When the challenge statement is finished, display it in a prominent place so that you can see it while you work. You will need to refer back to it constantly, perhaps even updating or modifying it throughout your project.
 
-## Validación del problema
+## Validating the problem
 
-El próximo paso es investigar el desafío y aprender sobre el problema. Debes
-descubrir si la comprensión del problema por parte de tu equipo es válida.
-Muy a menudo, analizamos los problemas desde nuestro propio punto de vista, lo cual es peligroso,
-ya que la mayoría de nosotros somos en realidad usuarios avanzados de tecnología y, de hecho, representamos una minoría de
-usuarios. Somos una voz minoritaria y podemos pensar que algo
-es un problema cuando, en realidad, no lo es.
+The next step is to research the challenge and learn about the problem. What you need to discover is whether your team's understanding of the problem is valid. Quite often we look at problems from our own point of view, which is dangerous as most of us in tech are actually power users and are in fact a minority of users. We are a vocal minority and can be fooled into thinking something is actually a problem when it isn’t.
 
-Existen varios métodos para recopilar datos a fin de validar el desafío. Cada uno
-depende de tu equipo y de si cuentas con acceso a los usuarios. El objetivo es
-comprender mejor el problema en cuestión.
+There are various methods of collecting data to validate the challenge. Each one depends on your team and if you have access to users. The objective is to have a better understanding of the problem at hand.
 
-### Entrevistas internas con las partes interesadas
+### Internal interviews with stakeholders
 
 <figure>
-  <img src="images/stakeholder-interviews.jpg" class="attempt-right" alt="Las entrevistas con las partes interesadas pueden tener un carácter informativo a fin de descubrir las percepciones dentro de una empresa o un equipo.">
-  <figcaption>Las entrevistas con las partes interesadas pueden tener un carácter informativo a fin de descubrir las percepciones dentro de una empresa o un equipo.</figcaption>
+  <img src="images/stakeholder-interviews.jpg" class="attempt-right" alt="Interviews with stakeholders can be informative for discovering insights across a company or team.">
+  <figcaption>Interviews with stakeholders can be informative for discovering insights across a company or team.</figcaption>
 </figure>
 
-El proceso de entrevistas incluye entrevistar a cada miembro del equipo y parte interesada
-de la empresa, desde el área de marketing hasta el área de cuentas. De esta forma, podrás conocer la opinión de estas personas
-acerca de cuáles son los desafíos reales y cuáles podrían ser las posibles soluciones.
-Cuando hablo de soluciones, no me refiero a soluciones técnicas, sino a
-cuál sería el escenario de mejor caso y el objetivo final para la empresa o el producto.
-Por ejemplo, teniendo en cuenta los desafíos anteriores, “tener un software para administración de casos de pie equinovaro en el 80% de las
-instalaciones médicas hacia finales del año” sería un excelente objetivo para cumplir.
+The interviewing process involves interviewing each team member and stakeholder at your company, from marketing to accounts. This will help you find what they think the real challenges are and what they think potential solutions could be. When I say solution I am not speaking about technical solutions here, but rather what would be the best case scenario and end goal for the company or product. For example using the challenges above “having our clubfoot software in 80% of medical facilities by the end of the year” would be a great goal to aim for.
 
-Hay una advertencia. Este método de validación es el menos favorecido ya que
-impide el análisis y la colaboración entre los miembros del equipo, lo que posiblemente cree una atmósfera
-aislada en una organización. Sin embargo, puede proporcionar cierta información valiosa
-sobre los clientes y el desafío de diseño que, de otra manera, podrías no conocer.
+There is one caveat. This method of validation is the least favoured as it prevents team discussion and collaboration, potentially creating a siloed atmosphere in an organization. Nevertheless it can yield some good information about the clients and the design challenge that you could otherwise miss.
 
-### Charlas breves
+### Lightning talks
 
 <figure>
-  <img src="images/lightning-talks.jpg" alt="Se trata de una presentación muy breve que dura solo unos pocos minutos.">
-  <figcaption>Se trata de una presentación muy breve que dura solo unos pocos minutos.</figcaption>
+  <img src="images/lightning-talks.jpg" alt="A lightning talk is a very short presentation lasting only a few minutes.">
+  <figcaption>A lightning talk is a very short presentation lasting only a few minutes.</figcaption>
 </figure>
 
-Esto es similar a las entrevistas internas, pero en este caso reúnes a todas las
-partes interesadas en una misma habitación. Luego, eliges a cinco o seis de esas partes interesadas
-(marketing, ventas, diseño, cuentas, investigación, etc.) para que den una charla. Cada presentación
-se debe centrar en el desafío desde la perspectiva de dichas personas durante un período máximo de 10 minutos.
-Los temas que deben analizar en las presentaciones son los siguientes:
+This is similar to the internal interviews, but this time you get every stakeholder into a single room. Then you Elect five or six of those stakeholders (marketing, sales, design, accounts, research etc.) to give a talk, each focusing on the challenge from their perspective for a maximum of 10 minutes. The topics they must cover in their presentation should be:
 
-* objetivos de la empresa;
-* desafíos del proyecto desde su punto de vista (pueden ser aspectos técnicos,
-  investigación, creación de diseños, etc.);
-* investigación sobre el usuario que estés realizando actualmente.
+- Goals of the business
+- Challenges of the project from their point of view (these could be technical, research gathering, design creation etc..)
+- User research that you have currently
 
-Deja 5 minutos al final para preguntas y selecciona a una persona para que tome notas
-durante esta etapa. Una vez que hayas terminado, deberías actualizar el desafío para reflejar los
-nuevos aprendizajes. El objetivo es recolectar una lista de acciones que puedan impulsar una
-función o un flujo que te ayude a lograr tu objetivo con respecto a los productos.
+Leave 5 minutes at the end for questions, with an elected person taking notes throughout. Once you are done you might want to update the challenge to reflect new learnings. The goal is to collect a list of bullet points that can drive a feature or flow that helps your achieve your products goal.
 
-### Entrevistas con los usuarios
-<figure>
-  <img src="images/user-interviews.jpg" class="attempt-right" alt="Las entrevistas con los usuarios representan una excelente forma de conocer los puntos débiles de una persona en una tarea determinada.">
-  <figcaption>Las entrevistas con los usuarios representan una excelente forma de conocer los puntos débiles de una persona en una tarea determinada.</figcaption>
-</figure>
-
-Tal vez sea la mejor forma de conocer acerca del camino, los puntos débiles
-y el flujo del usuario. Programa al menos cinco entrevistas de este tipo; puedes llevar a cabo más
-entrevistas si tienes la posibilidad. Entre los tipos de preguntas que debes hacerles, se incluyen las siguientes:
-
-- ¿Cómo realizan una tarea existente? Por ejemplo, supongamos que debes resolver el
-  desafío de la app financiera anterior. En ese caso, podrías preguntarles: “¿Cómo compras acciones
-  en la actualidad?”.
-- ¿Qué aspectos de este flujo les gustan?
-- ¿Qué aspectos de este flujo no les gustan?
-- ¿Qué productos similares usa actualmente el usuario?
-    *  ¿Qué les gusta?
-    *  ¿Qué no les gusta?
-- Si tuvieran una varita mágica y pudieran cambiar un aspecto de este proceso, ¿cuál
-  sería?
-
-La idea de la entrevista es que el usuario hable acerca de los desafíos que
-enfrenta. No se trata de un momento de análisis en el que puedas participar; por lo tanto, debes hablar
-lo menos posible. Esto sucede incluso cuando un usuario deja de hablar. Siempre espera un
-momento, ya que podría estar recogiendo ideas. Te sorprenderías al ver cuánto
-habla una persona luego de haber detenido el discurso durante algunos segundos.
-
-Toma notas durante la entrevista y, si es posible, graba la conversación para poder
-capturar cualquier información que no hayas retenido. El objetivo es comparar el desafío con
-las ideas que recopiles en la entrevista con el usuario. ¿Se alinean? ¿Obtuviste algún dato que
-te permita actualizar la declaración de tu desafío?
-
-### Investigación etnográfica de campo
+### User interviews
 
 <figure>
-  <img src="images/field-interviews.jpg" class="attempt-right" alt="Ver a los usuarios en su entorno natural es una excelente forma de comprender cómo resuelven sus propios desafíos.">
-  <figcaption>Ver a los usuarios en su entorno natural es una excelente forma de comprender cómo resuelven sus propios desafíos.</figcaption>
+  <img src="images/user-interviews.jpg" class="attempt-right" alt="User interviews are a great way to learn about a persons pain points in any given task.">
+  <figcaption>User interviews are a great way to learn about a person's pain points in any given task.</figcaption>
 </figure>
 
-Se trata de observar al usuario en el campo, en un contexto, mientras realiza
-alguna tarea, como hacer las compras, ir a trabajar,
-enviar mensajes de SMS, etc. El motivo es que, en algunos casos, las personas te dirán
-lo que creen que deseas escuchar. Pero, si observas a los usuarios mientras realizan acciones y
-tareas por sí solos, puedes obtener datos reveladores. Básicamente, se trata de observar sin
-interferir, tomando nota de aquellos aspectos que les resultan simples o difíciles y de aquellos
-aspectos que no tuvieron en cuenta. El objetivo es sumergirte en el entorno del usuario para
-comprender mejor los puntos débiles que enfrenta.
+This is perhaps the best way of learning about the user's journey, pain points, and flow. Arrange at least five user interviews, more if you have access to them. The sorts of questions you ask them should include:
 
-Por lo general, esta técnica incluye llevar a cabo determinadas tareas durante un período más prolongado y
-exige la participación de un investigador para que guíe esta parte del proyecto. Sin embargo, es quizás la técnica
-más relevadora, ya que te permite estudiar a un grupo de personas en
-su entorno natural.
+- How do they complete an existing task? For example, say you want to solve the challenge for the financial app above, you could ask them “how do you buy shares and stocks at the moment?”
+- What do they like about this flow?
+- What do they dislike about this flow?
+- What similar products does the user currently use? 
+    - What do they like?
+    - What do they dislike?
+- If they had a magic wand and could change one thing about this process what would it be?
 
-### Recopilación de información
+The idea of interviewing is to get the user to speak about the challenges they have. It is not a discussion point for you, which is why you must remain as quiet as possible. This is even true when a user stops speaking, always wait a moment as they could be gathering their thoughts. You would be surprised at how much someone will continue to speak after they have stopped for a few seconds.
 
-Una vez que hayas completado la fase de aprendizaje de tu proyecto, debes analizar
-tu desafío una última vez. ¿Estás bien encaminado? ¿Hay algo que
-debas ajustar? Anota toda la información que hayas obtenido y agrúpala en
-categorías. Estos datos podrían convertirse en la base de una función o un flujo, según
-el problema que estés solucionando. Además, podrían utilizarse para actualizar y revisar el
-desafío.
+Take notes throughout and if possible record the conversation to help you capture anything you might have missed. The goal is to compare the challenge to the user insights that you gather. Do they align? Did you learn anything that helps you update your challenge statement?
 
-Una vez que tengas suficientes comentarios e ideas, es hora de aplicar dicho conocimiento para
-crear un mapa del proyecto.
-
-## Mapa del proyecto
-
-El problema que estás intentando solucionar, por lo general, está compuesto por diferentes tipos de
-personas (o participantes), cada uno con una participación distinta en el flujo del proyecto. Según la información
-obtenida, debes crear una lista de los posibles participantes. Puede ser un tipo de usuario o
-persona interesada; por ejemplo, “un médico que ofrece tratamiento para el pie equinovaro”, “un paciente que tiene
-pie equinovaro”, “una persona que cuida a un paciente”, etc. Escribe el nombre de cada participante
-en el margen izquierdo de una hoja de papel o en una
-pizarra (si tienes acceso a una). En el margen derecho, escribe los objetivos de cada participante.
-
-Finalmente, para cada participante, escribe la cantidad de pasos necesarios para que
-puedan alcanzar el objetivo. Por ejemplo, en el caso de un “médico que ofrece tratamiento para el pie equinovaro”, el objetivo sería
-“curar a un paciente con dicha afección”; por lo tanto, los pasos serían “registrar al paciente
-en el sistema”, “crear un plan médico para el paciente”, “crear un ciclo de revisión de la
-afección médica” y “realizar procedimientos médicos”.
+### Ethnographic field research
 
 <figure>
-  <img src="images/project-map.jpg" alt="Los mapas de proyecto permiten trazar los pasos principales para cada usuario o participante de un flujo.">
-  <figcaption>Los mapas de proyecto permiten trazar los pasos principales para cada usuario o participante de un flujo.</figcaption>
+  <img src="images/field-interviews.jpg" class="attempt-right" alt="Seeing users in their natural environment is a great way to understand how they solve their own challenges.">
+  <figcaption>Seeing users in their natural environment is a great way to understand how they solve their own challenges.</figcaption>
 </figure>
 
-El resultado es un mapa de proyecto con los principales pasos del proceso. Considéralo como
-una descripción general del proyecto sin demasiados detalles. Además, les permite a los miembros del equipo
-determinar si el mapa coincide con la declaración del desafío. Más adelante, cuando desgloses
-cada paso, conocerás más detalles. Sin embargo, por ahora, un mapa de proyecto te ofrece un
-análisis de alto nivel de los pasos que un usuario deberá realizar para alcanzar el objetivo final.
+This is where you observe the user in the field, in context while doing something like how they do their shopping, how they travel to work, how they send SMS messages etc.. The reason is in some cases people will tell you what they think you want to hear. But if you watch users perform actions and tasks on their own it can be insightful. Basically you are observing without interfering, noting things which they find easy or difficult and things they may have missed. The goal is to immerse yourself in the user's environment to better empathize with their pain points.
 
-## Contorno reticular y guion gráfico
+This technique usually involves some work done over a longer period of time and requires a researcher to lead this part of the project. But it is perhaps the most insightful as you get to see a group of people that you are studying in their natural environments.
 
-### Método Crazy 8s
+### Gathering it altogether
 
-Para esto, recomiendo un método denominado Crazy 8s que incluye doblar una hoja de
-papel dos veces de manera que se obtengan ocho paneles. Luego, en cada panel, dibujas
-una idea conforme a toda la información que obtuviste hasta el momento. Tendrás diez minutos para
-elaborar ideas a fin de llenar los ocho paneles. Si se asignan más de 20
-minutos para esto, es posible que comiences a posponer la tarea, te sirvas un café, revises los correos electrónicos,
-charles con tu equipo de manera general y, fundamentalmente, evites realizar el trabajo. Debes
-crear una sensación de urgencia en este paso, ya que te impulsa a trabajar rápidamente
-y de forma más eficiente.
+Once you have completed the learnings phase of your project you need to take one last look at your challenge. Are you on the right path? Is there anything you need to adjust? Write down all of the things you have learnt and group them into categories. These could become the basis of a feature or a flow, depending on the problem you are solving. They could also be used to update and revise the challenge.
 
-Si estás trabajando en equipo, pídele a cada participante que use su propio papel con ocho paneles. En este
-proceso, tu cerebro comenzará a funcionar y reflexionarás acerca del desafío.
-Por lo general, el esbozo será un contorno reticular de diseño de interfaz.
+Once you have enough feedback and insight it is time to apply that knowledge to creating a project map.
 
-Luego, tú y los miembros de tu equipo deberán presentar las ideas ante el grupo.
-Todos deberán explicar cada una de las ocho ideas en detalle y por qué eligieron un
-camino específico. Recuérdale a cada miembro del equipo que debe usar la información obtenida para
-justificar las ideas. Una vez que todos hayan presentado sus ideas, es momento de votar
-cuál es la mejor. Cada persona recibe dos puntos adhesivos y puede votar por cualquier idea. Pueden
-darle ambos votos a la misma idea si realmente les gusta.
+## Project Map
 
+The problem you are trying to solve is usually made up of different types of people (or players), each with a stake in the project's flow. Based on your learnings you need to list out the possible players. It could be a user type or stakeholder, for example, “a doctor who treats clubfoot”, “a patient who has clubfoot”, “a care giver who looks after patient”, etc.. Write down each player on a the left hand side of a sheet of paper or if you have access to one, on a whiteboard. On the right hand side write each player's goals.
+
+Finally for each player, write down the number of steps required for them to reach their goal. For example for "a doctor who treats clubfoot” the goal would be “cure a patient with clubfoot”, so the steps could be “register the patient in the system”, “start them on medical a plan”, “create a review cycle of their medical health” and “perform medical procedure”.
+
+<figure>
+  <img src="images/project-map.jpg" alt="Project maps plot out the main steps for each user or player in a flow">
+  <figcaption>Project maps plot out the main steps for each user or player in a flow.</figcaption>
+</figure>
+
+The result is a project map with the main steps in the process. Think of it as an overview of the project without too many details. It also lets team members judge whether the map matches the challenge statement. Later, when you break down each step, there will be more details. But for now a project map gives you a high level breakdown of the steps a user will take to complete their end goal.
+
+## Wireframing and storyboarding
+
+### Crazy 8s
+
+For this, I recommend a method called crazy 8s that involves folding a piece of paper twice over so that you have eight panels. Then in each panel you draw out an idea based on all that you have learnt so far. Give yourself ten minutes to come up with ideas to fill all eight panels. If you give yourself more than 20 minutes you may start to procrastinate, go make yourself a coffee, check email, have a general chat with your team and essentially avoid doing the work. You want to create a sense of urgency in this step as it forces you to work quickly and more effectively.
+
+If you are working with a team get everyone to do their own as well. This process will kick start your brain and get you thinking about the challenge. Generally the sketch will be an interface design wireframe.
+
+Afterwards, you and everyone on your team presents their ideas to the group. Everyone must explain each of their eight ideas in detail and why they chose to go down a specific path. Remind each team member to use the learnings for justification of their ideas. Once everyone has presented it's time to vote on the ideas. Each person gets two sticky dots and can vote on any idea. They can give both votes to a single idea if they really like it.
 
 <!-- <figure>
-  <img src="images/voting-ideas.jpg"   alt="Puedes utilizar notas adhesivas para plasmar ideas y votar por conceptos o esbozos en sí.">
-  <figcaption>Puedes utilizar notas adhesivas para plasmar ideas y votar por conceptos o esbozos en sí.</figcaption>
+  <img src="images/voting-ideas.jpg"   alt="You can take notes on post-its and vote on concepts or the sketches themselves">
+  <figcaption>You can take notes on post-its and vote on concepts or the sketches themselves.</figcaption>
 </figure> -->
 
-
 <figure  class="attempt-left">
-  <img src="images/crazy-8s.jpg" alt="El método Crazy 8s es una excelente forma de plasmar todas tus ideas en una misma hoja de papel".>
-  <figcaption>El método Crazy 8s es una excelente forma de plasmar todas tus ideas en una misma hoja de papel.</figcaption>
+  <img src="images/crazy-8s.jpg" alt="Crazy 8s are a great way to get all of your ideas onto one page">
+  <figcaption>Crazy 8s are a great way to get all of your ideas onto one page.</figcaption>
 </figure>
 
 <figure class="attempt-right">
-  <img src="images/detailed-wireframe.jpg"   alt="Ahora debes crear un diseño detallado según las ideas que hayas obtenido.">
-  <figcaption>Ahora debes crear un diseño detallado según las ideas que hayas obtenido.</figcaption>
+  <img src="images/detailed-wireframe.jpg"   alt="Now you need to do a detailed design based on what you have learned.">
+  <figcaption>Now you need to do a detailed design based on what you have learned.</figcaption>
 </figure>
 
 <div class="clearfix"></div>
 
-### Mejorar tu diseño
+### Refine your design
 
-Luego de la votación, toma la idea que haya recibido la mayor cantidad de votos y esboza una idea final.
-Puedes hacer uso de las demás ideas que presentaron tus colegas también.
-Tienes otros diez minutos para completar esta tarea. Una vez que hayas finalizado,
-presenta nuevamente las ideas a tu equipo y realicen una votación como la anterior.
+After the voting take the idea with the most votes and sketch out a final idea. You can borrow from the other ideas that you heard from your colleagues as well. Give yourself another ten minutes to complete this task. Once you are done, again present the ideas to your team and vote like before.
 
-### Guion gráfico de la idea
-
+### Storyboard the idea
 
 <figure>
-  <img src="images/storyboard.jpg" class="attempt-right" alt="El guion gráfico incluye la combinación de los esbozos y las ideas en un flujo integral.">
-  <figcaption>El guion gráfico incluye la combinación de los esbozos y las ideas en un flujo integral.</figcaption>
+  <img src="images/storyboard.jpg" class="attempt-right" alt="The storyboard involves combining your sketches and ideas into a comprehensive flow.">
+  <figcaption>The storyboard involves combining your sketches and ideas into a comprehensive flow.</figcaption>
 </figure>
 
-Con tu diseño a mano, es momento de crear un guion gráfico de la interacción con el usuario.
-Para este momento, ya deberías haber pensado en los diferentes pasos que realiza un
-usuario. Es bastante común incorporar los diseños de uno de tus colegas en el flujo
-también. Debes contar con un proceso paso a paso claro con algunos puntos
-donde el usuario podría divergir. Consulta nuevamente el mapa del proyecto para validar
-tu diseño con respecto al objetivo.
+With your design in hand, it's time to storyboard it's engagement with the user. By this point you should have already thought about the different steps a user takes. It's quite common to incorporate one of your colleagues' designs into the flow as well. You want to have a clear step-by-step process with some points where the user might diverge. Refer back to the project map to validate your design against the goal.
 
 <div class="clearfix"></div>
 
-## Creación de un prototipo
+## Creating a prototype
 
-La creación de un prototipo no es la fabricación del código perfecto, sino la creación de
-un producto que sea creíble cuando alguien lo use. Las herramientas utilizadas para crear un
-prototipo varían según la persona. Algunos prefieren Keynote o PowerPoint, ya que dichos programas
-te hacen pensar en el flujo y no en detalles de diseño. Puedes invertir
-tiempo en aprender a usar herramientas como Balsamiq, Marvel o Framer que pueden darte más controles
-conductuales. Cualquiera sea la herramienta que uses, asegúrate de que te permita
-concentrarte en el flujo y parezca real. Debes probar el prototipo en personas reales;
-por lo tanto, debe ser lo más creíble posible, pero, al mismo tiempo, no deberías
-invertir semanas de trabajo en su creación.
+Creating a prototype is not about molding the perfect piece of code but to make something that is believable when used by someone. Tools used to create a prototype vary from person to person. Some like Keynote or Powerpoint as it forces you to think of the flow and not design details. You might want to invest time into learning tools like Balsamiq, Marvel or Framer which can give you more behavioral controls. Whatever tool you use make sure it is one that makes you focus on the flow and looks real. You need to test the prototype on real people so it needs to be as believable as possible but at the same time it shouldn’t take weeks of work to create.
 
 <figure>
-  <img src="images/prototyping.jpg"  alt="Los prototipos deben ser lo suficientemente reales para ser creíbles.">
-  <figcaption>Los prototipos deben ser lo suficientemente reales para ser creíbles.</figcaption>
+  <img src="images/prototyping.jpg"  alt="Prototypes need to be real enough to be believable">
+  <figcaption>Prototypes need to be real enough to be believable.</figcaption>
 </figure>
 
-La creación de un prototipo es un equilibrio entre tiempo y realidad. Por lo tanto, ten cuidado de no
-acercarte demasiado a los extremos. De cualquier forma, podrías desperdiciar tiempo.
+Creating a prototype is a balance between time and realness, so be careful not to sway to much into either extreme. Either way, you could end up wasting time.
 
-## Pruebas de usabilidad en tus diseños
+## Usability-test your designs
 
-Sería ideal contar con un laboratorio de prueba. Pero, si no lo tienes, crear uno no es difícil
-siempre y cuando seas consciente de crear un entorno cómodo para
-tus usuarios que no presente distracciones. Por lo general, las pruebas incluyen la participación del usuario y de dos personas de
-tu equipo: uno toma notas y el otro hace preguntas. Un buen método es
-usar una app como Hangouts y registrar sus acciones. Esto también es práctico si
-deseas que el resto del equipo realice observaciones desde una habitación distinta. Esto puede ser bastante
-escalofriante para nosotros como creadores de apps ya que probamos nuestros diseños en un entorno real.
-Puede ser una experiencia agradable y aleccionadora a la vez.
+It's great if you have a testing lab. If you don't, creating one isn't difficult as long as you're mindful of creating a comfortable environment for your users that isn't distracting. Testing usually involves the user and two people from your team, one taking notes and the other asking questions. A good set up is to use an app like Hangouts and record their actions, this is also handy if you want the rest of the team to observe from a different room. This can be quite scary for us as app makers to do as we are seeing our designs out in the wild. It can be both a refreshing and sobering experience.
 
 <figure>
-  <img src="images/usability-testing.jpg"  alt="El guion gráfico incluye poner todos los esbozos y las ideas en un flujo integral.">
-  <figcaption>El guion gráfico incluye poner todos los esbozos y las ideas en un flujo integral.</figcaption>
+  <img src="images/usability-testing.jpg"  alt="The storyboard involves putting all of your sketches and ideas together into a comprehensive flow.">
+  <figcaption>The storyboard involves putting all of your sketches and ideas together into a comprehensive flow.</figcaption>
 </figure>
 
-### Preguntas para hacer
+### Questions to ask
 
-Cuando pruebes tu diseño, pídele al usuario que realice tareas en tu app y
-hable en voz alta y verbalice las acciones y el motivo. Suena raro pedirle esto, pero
-te permite conocer qué piensa el usuario. Trata de no interrumpir al usuario y evita
-decirle cómo debe proceder cuando se queda atascado. Simplemente pregúntale por qué eligió un
-flujo en particular cuando haya finalizado (o NO haya finalizado).
+When testing your design, ask the user to perform tasks in your app and get them to speak aloud and verbalize what they're doing and why. This is an odd thing to do but it helps you hear what they're thinking. Try not to interrupt or tell them what they should do when they get stuck. Simply ask them why they took a particular flow after they have completed (or NOT completed).
 
-Necesitas saber lo siguiente:
+What you need to find out is:
 
-- ¿Qué aspectos del prototipo le gustan?
-- ¿Qué aspectos del prototipo no le gustan?
-- ¿Cuáles son los puntos débiles?
-      * ¿Por qué funcionó un flujo?
-      * ¿Por qué no funcionó un flujo?
-- ¿Qué aspectos desearía mejorar?
-- ¿Satisfice las necesidades el flujo/diseño general?
+- What do they like about the prototype?
+- What do they dislike about the prototype?
+- What are the pain points? 
+    - Why did a flow work
+    - Why did a flow not work
+- What would they like to improve?
+- Does the overall design/flow meet their needs?
 
-## Revisión de los diseños y nueva ronda de pruebas
+## Revisit designs and another round of testing
 
-Cuentas con un prototipo en ejecución y comentarios al respecto. Ahora es momento de revisar los
-diseños y analizar qué funcionó y qué no. No tengas miedo de crear un
-guion gráfico de contorno reticular completamente nuevo y hacer un prototipo nuevo. Comenzar de nuevo puede
-servir para mejorar el flujo, en lugar de intentar mover elementos en tu prototipo anterior. Intenta
-no sentir demasiado apego por él ya que es solo un prototipo.
+You have a working prototype with feedback. Now it’s time to revise your designs, and analyze what worked and what didn’t. Don't be afraid to create a completely new wireframe storyboard and make a new prototype. Starting over can create a better flow than trying to move things on your earlier prototype. Try not to be too precious of it because it is just a prototype.
 
-Una vez que estés satisfecho con tus diseños, puedes probarlo nuevamente y mejorarlo un poco
-más. En los casos en los que el prototipo no cumplió con el objetivo de ninguna manera, podrías
-pensar que el proyecto fue un fracaso. En la práctica, no fue así. Es probable que hayas destinado
-menos tiempo de desarrollo que el que hubieras necesitado si, en realidad, hubieras creado el diseño. Además, tienes más información acerca
-de los aspectos que le gustan realmente al usuario. En el área de los sprints de diseño, seguimos la filosofía
-de que ganas o aprendes. Por lo tanto, no te sientes culpable si la idea
-no funcionó según lo planificado.
+Once you are happy with your designs you can test it again and refine it some more. In cases where the prototype didn’t hit the mark at all, well you might think the project has failed. In actual fact it hasn’t. You've likely spent less development time than if you had actually built the design and you know more bout what user's actually like. With design sprints we have a philosophy where you either win or you learn, so don’t beat yourself up too much if the idea didn't work as planned.
 
-## ¡Hazlo!
+## Make it!
 
-Has probado tus ideas. Al usuario le gustan. Las partes interesadas pusieron mucho de sí
-porque participaron desde el comienzo. Llegó el momento de crear el
-producto. En este momento, deberías tener una idea clara de lo que se debe hacer y cuáles son las
-prioridades de la experiencia. En cada paso del proyecto, puedes
-introducir pruebas de usabilidad para validar tu trabajo y mantenerte en el
-camino correcto.
+You have tested your ideas. The user likes them. The stakeholders are invested because they've been involved since the beginning. Now it's time to make the thing. By now you should have a clear idea of what needs to be made and what the priorities of the experience are. At each milestone of the project you may want to introduce usability testing to help validate your work and keeping you on track.
 
-Es imposible enfatizar cuán importante es obtener la mayor cantidad de información posible antes de
-destinar mucho trabajo, tiempo y energía a una idea que podría no ser
-la solución correcta.
+I can’t stress how important it is to find out as much as possible before you commit to a lot of work, time and energy on something that might not be the right solution.
 
-Este artículo debería ofrecerte nociones básicas sobre el concepto de experiencia del usuario y su importancia. La
-experiencia del usuario no debe considerarse como un concepto exclusivo del rol de diseñador o
-investigador. En realidad, es responsabilidad de todos los involucrados en un proyecto,
-por lo que recomendaría participar activamente en cada oportunidad.
+This article should now give you a basic grounding in UX and its importance. UX isn’t something that should be looked upon as a role for a designer or researcher. It is actually the responsibility of everyone involved in a project so I would recommend involvement at every opportunity.
 
+## Feedback {: #feedback }
 
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
