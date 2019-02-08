@@ -1,29 +1,26 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Jumlah data yang telah diunduh aplikasi terus meningkat dari waktu ke waktu. Untuk menghasilkan kinerja terbaik, Anda harus mengoptimalkan pengiriman data semaksimal mungkin.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: The amount of data downloaded by apps continues to increase over time. To deliver great performance you must optimize data delivery as much as possible.
 
+{# wf_updated_on: 2018-08-17 #} {# wf_published_on: 2014-03-31 #} {# wf_blink_components: Blink>Network #}
 
-{# wf_updated_on: 2015-10-05 #}
-{# wf_published_on: 2014-03-31 #}
-
-# Mengoptimalkan Efisiensi Materi {: .page-title }
+# Optimizing Content Efficiency {: .page-title }
 
 {% include "web/_shared/contributors/ilyagrigorik.html" %}
 
-Aplikasi web kita terus berkembang dalam cakupan, ambisi, dan fungsionalitasnya -- hal ini menggembirakan. Akan tetapi, upaya yang tak surut menuju web yang lebih kaya mendorong tren lain: jumlah data yang diunduh oleh setiap aplikasi terus meningkat secara stabil. Untuk memperoleh kinerja terbaik kita perlu mengoptimalkan setiap dan masing-masing byte!
+Our web applications continue to grow in their scope, ambition, and functionality -- that's a good thing. However, the relentless march toward a richer web is driving another trend: the amount of data downloaded by each application continues to increase at a steady pace. To deliver great performance we need to optimize delivery of each and every byte!
 
-Seperti apa aplikasi web modern? [Arsip HTTP](http://httparchive.org/){: .external } bisa membantu kita menjawab pertanyaan ini. Proyek ini melacak bagaimana web dibangun dengan merayapi situs terpopuler secara berkala (lebih dari 300.000 situs dari daftar Alexa Top 1M) dan merekam serta mengumpulkan analisis mengenai jumlah sumber daya, tipe materi, dan metadata lainnya untuk masing-masing destinasi.
+What does a modern web application look like? [HTTP Archive](http://httparchive.org/){: .external } can help us answer this question. The project tracks how the web is built by periodically crawling the most popular sites (300,000+ from the Alexa Top 1M list) and recording and aggregating analytics on the number of resources, content types, and other metadata for each individual destination.
 
-<img src="images/http-archive-trends.png"  alt="Tren Arsip HTTP">
+<img src="images/http-archive-trends.png"  alt="HTTP Archive trends" />
 
 <table class="">
+  
 <colgroup><col span="1"><col span="1"><col span="1"><col span="1"></colgroup>
 <thead>
   <tr>
     <th></th>
-    <th>Persentil ke-50</th>
-    <th>Persentil ke-75</th>
-    <th>Persentil ke-90</th>
+    <th>50th percentile</th>
+    <th>75th percentile</th>
+    <th>90th percentile</th>
   </tr>
 </thead>
 <tr>
@@ -33,10 +30,10 @@ Seperti apa aplikasi web modern? [Arsip HTTP](http://httparchive.org/){: .extern
   <td data-th="90%">54 KB</td>
 </tr>
 <tr>
-  <td data-th="type">Gambar</td>
+  <td data-th="type">Images</td>
   <td data-th="50%">528 KB</td>
-  <td data-th="75%">1.213 KB</td>
-  <td data-th="90%">2.384 KB</td>
+  <td data-th="75%">1213 KB</td>
+  <td data-th="90%">2384 KB</td>
 </tr>
 <tr>
   <td data-th="type">JavaScript</td>
@@ -51,26 +48,27 @@ Seperti apa aplikasi web modern? [Arsip HTTP](http://httparchive.org/){: .extern
   <td data-th="90%">108 KB</td>
 </tr>
 <tr>
-  <td data-th="type">Lainnya</td>
+  <td data-th="type">Other</td>
   <td data-th="50%">282 KB</td>
   <td data-th="75%">308 KB</td>
   <td data-th="90%">353 KB</td>
 </tr>
 <tr>
   <td data-th="type"><strong>Total</strong></td>
-  <td data-th="50%"><strong>1.054 KB</strong></td>
-  <td data-th="75%"><strong>1.985 KB</strong></td>
-  <td data-th="90%"><strong>3.486 KB</strong></td>
+  <td data-th="50%"><strong>1054 KB</strong></td>
+  <td data-th="75%"><strong>1985 KB</strong></td>
+  <td data-th="90%"><strong>3486 KB</strong></td>
 </tr>
 </table>
 
-Data di atas merekam tren pertumbuhan jumlah byte yang diunduh untuk destinasi web populer antara Januari 2013 dan Januari 2014. Tentu saja, tidak setiap situs tumbuh pada laju yang sama atau membutuhkan jumlah data yang sama, sehingga alasan mengapa kami menyoroti kuantil berbeda di dalam distribusi ini: Ke-50 (median), ke-75, dan ke-90.
+The above data captures the trend in growth of number of downloaded bytes for popular destinations on the web between January 2013 and January 2014. Of course, not every site grows at the same rate or requires the same amount of data, hence the reason why we are highlighting the different quantiles within the distribution: 50th (median), 75th, and 90th.
 
-Situs median di awal 2014 terdiri dari 75 permintaan yang jumlah totalnya adalah 1.054 KB dari total byte yang ditransfer, dan total jumlah byte (dan permintaan) telah tumbuh pada laju yang stabil di sepanjang tahun sebelumnya. Angka ini sebenarnya sama sekali tidak mengagetkan, namun membawa implikasi kinerja penting: ya, kecepatan internet memang semakin cepat, namun peningkatan kecepatan ini memiliki laju berbeda di setiap negara, dan banyak pengguna masih tunduk pada pembatasan data dan skema pengukuran yang mahal - terutama di perangkat seluler.
+A median site at the beginning of 2014 is composed of 75 requests that add up to 1054 KB of total transferred bytes, and the total number of bytes (and requests) has grown at a steady pace throughout the previous year. This by itself should not be all that surprising, but it does carry important performance implications: yes, internet speeds are getting faster, but they are getting faster at different rates in different countries, and many users are still subject to data caps and expensive metered plans - especially on mobile.
 
-Tidak seperti aplikasi desktop, aplikasi web tidak membutuhkan proses pemasangan terpisah: masukkan saja URL-nya maka kita sudah menjalankannya -- itulah fitur kunci dari web. Akan tetapi untuk mewujudkan hal ini **kita sering kali harus mengambil lusinan, bahkan ratusan, sumber daya berbeda, yang besarnya semua bisa hingga beberapa megabyte data dan harus disatukan dalam ratusan milidetik untuk memfasilitasi pengalaman web instan yang kita harapkan.**
+Unlike their desktop counterparts, web applications do not require a separate installation process: enter the URL and we are up and running -- that’s a key feature of the web. However, to make this happen **we often have to fetch dozens, and sometime hundreds, of various resources, all of which can add up to megabytes of data and must come together in hundreds of milliseconds to facilitate the instant web experience we are aiming for.**
 
-Mencapai pengalaman web instan dengan mempertimbangkan semua keharusan ini bukanlah hal yang mudah, itulah mengapa mengoptimalkan efisiensi materi sangat penting: meniadakan unduhan tak perlu, mengoptimalkan enkode transfer dari setiap sumber daya melalui berbagai teknik kompresi, dan pemanfaatan cache jika memungkinkan untuk meniadakan unduhan yang tak perlu.
+Achieving an instant web experience in light of these requirements is no small feat, which is why optimizing content efficiency is critical: eliminating unnecessary downloads, optimizing transfer encoding of each resource through various compression techniques, and leveraging caching whenever possible to eliminate redundant downloads.
 
+## Feedback {: #feedback }
 
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
