@@ -1,31 +1,19 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description:默认 DOM 顺序的重要性
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: The importance of the default DOM order
 
+{# wf_blink_components: Blink>Accessibility #} {# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2016-10-04 #}
 
-{# wf_updated_on: 2016-10-04 #}
-{# wf_published_on: 2016-10-04 #}
+# DOM Order Matters {: .page-title }
 
-# DOM 顺序至关重要 {: .page-title }
+{% include "web/_shared/contributors/megginkearney.html" %} {% include "web/_shared/contributors/dgash.html" %} {% include "web/_shared/contributors/robdodson.html" %}
 
-{% include "web/_shared/contributors/megginkearney.html" %}
-{% include "web/_shared/contributors/dgash.html" %}
-{% include "web/_shared/contributors/robdodson.html" %}
+Working with native elements is a great way to learn about focus behavior because they are automatically inserted into the tab order based on their position in the DOM.
 
-
-
-使用原生元素对了解焦点行为极有帮助，因为是根据这些元素在 DOM 中的位置自动将它们插入跳格顺序的。
-
-
-
-例如，您可能有三个 button 元素，在 DOM 中依次排列。
-按 `Tab` 时焦点会按顺序跳至每个按钮。试着点击下面的代码块以移动焦点导航的起点，然后按 `Tab` 在按钮之间循环移动焦点。
-
-
+For example, you might have three button elements, one after the other in the DOM. Pressing `Tab` focuses each button in order. Try clicking the code block below to move the focus navigation start point, then press `Tab` to move focus through the buttons.
 
     <button>I Should</button>
     <button>Be Focused</button>
     <button>Last!</button>
+    
 
 {% framebox height="80px" %}
 <button>I Should</button>
@@ -33,16 +21,12 @@ description:默认 DOM 顺序的重要性
 <button>Last!</button>
 {% endframebox %}
 
-不过，必须注意的是，如果使用 CSS，可能会出现 DOM 中存在的顺序与屏幕上出现的顺序不同的情况。
-例如，如果使用 `float` 之类的 CSS 属性将一个按钮右移，按钮却是以不同顺序出现在屏幕上。但由于它们在 DOM 中的顺序保持不变，因此跳格顺序同样保持不变。
-当用户在页面中循环跳格时，按钮并不是按直观顺序获得焦点。
-试着点击下面的代码块以移动焦点导航的起点，然后按 `Tab` 在按钮之间循环移动焦点。
-
-
+However, it's important to note that, using CSS, it's possible to have things exist in one order in the DOM but appear in a different order on screen. For example, if you use a CSS property like `float` to move one button to the right, the buttons appear in a different order on screen. But, because their order in the DOM remains the same, so does their tab order. When the user tabs through the page, the buttons gain focus in a non-intuitive order. Try clicking on the code block below to move the focus navigation start point, then press `Tab` to move focus through the buttons.
 
     <button style="float: right">I Should</button>
     <button>Be Focused</button>
     <button>Last!</button>
+    
 
 {% framebox height="80px" %}
 <button style="float: right;">I Should</button>
@@ -50,39 +34,27 @@ description:默认 DOM 顺序的重要性
 <button>Last!</button>
 {% endframebox %}
 
-利用 CSS 更改元素在屏幕上的视觉位置时要小心。这可能使跳格顺序看似随机般地四处乱跳，令依赖键盘的用户感到困惑。因此，Web AIM 检查清单[在第 1.3.2 节](http://webaim.org/standards/wcag/checklist#sc1.3.2){: .external }规定，由代码顺序决定的读取和导航顺序应直观并合乎逻辑。
+Be careful when changing the visual position of elements on screen using CSS. This can cause the tab order to jump around, seemingly at random, confusing users who rely on the keyboard. For this reason, the Web AIM checklist states [in section 1.3.2](http://webaim.org/standards/wcag/checklist#sc1.3.2){: .external } that the reading and navigation order, as determined by code order, should be logical and intuitive.
 
+As a rule, try tabbing through your pages every so often just to make sure you haven't accidentally messed up the tab order. It's a good habit to adopt, and one that doesn't require much effort.
 
+## Offscreen content
 
+What if you have content that isn't currently displayed, yet still needs to be in the DOM, such as a responsive side-nav? When you have elements like this that receive focus when they're off screen, it can seem as if the focus is disappearing and reappearing as the user tabs through the page &mdash; clearly an undesirable effect. Ideally, we should prevent the panel from gaining focus when it's off screen, and only allow it to be focused when the user can interact with it.
 
-一般来说，应时常试着在页面中循环跳格，这完全是为了确保您没有无意中弄乱了跳格顺序。
-这是个值得养成的好习惯，并且也不会增加多少工作量。
+![an offscreen slide-in panel can steal focus](imgs/slide-in-panel.png)
 
+Sometimes you need to do a bit of detective work to figure out where focus has gone. You can use `document.activeElement` from the console to figure out which element is currently focused.
 
-## 屏幕外内容
-如果有当前并未显示但仍需包含在 DOM 中的内容（例如自适应侧边导航），该怎么办？
-如果您有这种位于屏幕之外时获得焦点的元素，当用户在页面中循环跳格时，看起来就好像焦点消失后又再次出现，这显然不是您想要的效果。理想情况下，我们应该防止面板在位于屏幕之外时获得焦点，只允许它在用户可以与其进行交互时获得焦点。
+Once you know which off screen element is being focused, you can set it to `display: none` or `visibility: hidden`, and then set it back to `display:
+block` or `visibility: visible` before showing it to the user.
 
+![a slide-in panel set to display none](imgs/slide-in-panel2.png)
 
+![a slide-in panel set to display block](imgs/slide-in-panel3.png)
 
-![一个可能会偷走焦点的屏幕外滑入式面板](imgs/slide-in-panel.png)
+In general, we encourage developers to tab through their sites before each publish to see that the tab order doesn't disappear or jump out of a logical sequence. If it does, you should make sure you are appropriately hiding offscreen content with `display: none` or `visibility: hidden`, or that you rearrange elements' physical positions in the DOM so they are in a logical order.
 
-有时，您需要做点侦探工作才能搞清楚焦点的下落。
-可以利用控制台中的 `document.activeElement` 来了解当前获得焦点的元素。
+## Feedback {: #feedback }
 
-
-知道哪一个屏幕外元素获得了焦点后，就可以将其设置为 `display: none` 或 `visibility: hidden`，然后恢复其原来的设置 `display: block` 或 `visibility: visible`，最后再显示给用户。
-
-
-
-![设置为不显示任何内容的滑入式面板](imgs/slide-in-panel2.png)
-
-![设置为显示区块的滑入式面板](imgs/slide-in-panel3.png)
-
-一般而言，我们鼓励开发者在每次发布前在网站上循环跳格，确保跳格顺序不会消失或不按逻辑顺序地乱跳。如果存在问题，则应确保使用 `display: none` 或 `visibility: hidden` 正确隐藏了屏幕外内容，或者重新安排元素在 DOM 中的物理位置，使它们按逻辑顺序排列。
-
-
-
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
