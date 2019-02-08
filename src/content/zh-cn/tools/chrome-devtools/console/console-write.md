@@ -1,54 +1,44 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description:控制台日志是一种可以检查您的页面或应用所进行操作的强大方式。我们将先了解 console.log()，然后再探索其他高级用途。
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Console logging is a powerful way to inspect what your page or application does. Let's start with console.log() and explore other advanced usage.
 
-{# wf_updated_on: 2018-04-06 #}
-{# wf_published_on: 2015-04-13 #}
+{# wf_updated_on: 2018-07-27 #} {# wf_published_on: 2015-04-13 #} {# wf_blink_components: Platform>DevTools #}
 
-# 诊断并记录到控制台中 {: .page-title }
+# Diagnose and Log to Console {: .page-title }
 
-{% include "web/_shared/contributors/pbakaus.html" %}
-{% include "web/_shared/contributors/megginkearney.html" %}
-{% include "web/_shared/contributors/flaviocopes.html" %}
-控制台日志是一种可以检查您的页面或应用所进行操作的强大方式。我们将先了解 console.log()，然后再探索其他高级用途。
-
+{% include "web/_shared/contributors/pbakaus.html" %} {% include "web/_shared/contributors/megginkearney.html" %} {% include "web/_shared/contributors/flaviocopes.html" %} Console logging is a powerful way to inspect what your page or application does. Let's start with console.log() and explore other advanced usage.
 
 ### TL;DR {: .hide-from-toc }
-- 使用 <a href=''/web/tools/chrome-devtools/debug/console/console-reference#consolelogobject--object-''>console.log()</a> 进行基本记录
-- 使用 <a href=''/web/tools/chrome-devtools/debug/console/console-reference#consoleerrorobject--object-''>console.error()</a> 和 <a href=''/web/tools/chrome-devtools/debug/console/console-reference#consolewarnobject--object-''>console.warn()</a> 显示引入注目的消息
-- 使用 <a href=''/web/tools/chrome-devtools/debug/console/console-reference#consolegroupobject-object-''>console.group()</a> 和 <a href=''/web/tools/chrome-devtools/debug/console/console-reference#consolegroupend''>console.groupEnd()</a> 对相关消息进行分组，避免混乱
-- 使用 <a href=''/web/tools/chrome-devtools/debug/console/console-reference#consoleassertexpression-object''>console.assert()</a> 显示条件性错误消息
 
+- Use [console.log()](/web/tools/chrome-devtools/console/console-reference#log) for basic logging
+- Use [console.error()](/web/tools/chrome-devtools/debug/console/console-reference#error) and [console.warn()](/web/tools/chrome-devtools/debug/console/console-reference#warn) for eye-catching stuff
+- Use [console.group()](/web/tools/chrome-devtools/debug/console/console-reference#group) and [console.groupEnd()](/web/tools/chrome-devtools/debug/console/console-reference#groupend) to group related messages and avoid clutter
+- Use [console.assert()](/web/tools/chrome-devtools/debug/console/console-reference#assert) to show conditional error messages
 
-## 写入控制台
+## Writing to the console
 
-使用 <a href="/web/tools/chrome-devtools/debug/console/console-reference#consolelogobject--object-">console.log()</a> 方法可以向控制台进行任何基本记录。此方法采用一个或多个表达式作为参数，并将其当前值写入控制台，从而将多个参数级联到一个由空格分隔的行中。
+Use the [console.log()](/web/tools/chrome-devtools/debug/console/console-reference#consolelogobject--object-) method for any basic logging to the console. It takes one or more expressions as parameters and writes their current values to the console, concatenating multiple parameters into a space-delimited line.
 
-在您的 JavaScript 中执行下面一行代码：
-
+Executing this line of code in your JavaScript:
 
     console.log("Node count:", a.childNodes.length, "and the current time is:", Date.now());
     
 
-将在控制台中输出以下内容：
-![记录多个](images/console-write-log-multiple.png)
+Will output this in the Console: ![Log Multiple](images/console-write-log-multiple.png)
 
-## 自动填充命令 {:#autocomplete}
+## Autocompleting commands {:#autocomplete}
 
-在控制台中键入内容时，控制台将自动显示与您已键入文字匹配的相关方法的自动填充下拉菜单。其中包括您已经执行的前几个命令。
+When you type in the Console, the Console automatically displays an autocomplete dropdown menu of relevant methods that match the text that you have already typed. This includes previous commands that you executed.
 
-![自动填充的示例](images/autocomplete.png)
+![example of autocomplete](images/autocomplete.png)
 
-## 组织控制台输出 {:#organizing}
+## Organizing Console output {:#organizing}
 
-### 将消息组织到一起
+### Group messages together
 
-您可以使用组命令将相关输出组织到一起。[`console.group()`](./console-reference#consolegroupobject-object-) 命令采用一个字符串参数设置组名称。在您的 JavaScript 中调用此命令后，控制台会开始将所有后续输出都组织到一起。
+You can group related output together with the group commands. The [`console.group()`](./console-reference#consolegroupobject-object-) command takes a single string parameter to set the name of the group. After calling it in your JavaScript, the console will begin to group all subsequent output together.
 
-要结束分组，您只需要在完成后调用 [`console.groupEnd()`](./console-reference#consolegroupend)。
+To end the grouping you only need to call [`console.groupEnd()`](./console-reference#consolegroupend) when you're done.
 
-示例输入：
-
+Example input:
 
     var user = "jsmith", authenticated = false;
     console.group("Authentication phase");
@@ -60,15 +50,13 @@ description:控制台日志是一种可以检查您的页面或应用所进行�
     console.groupEnd();
     
 
-示例输出：
-![简单的控制台组输出](images/console-write-group.png)
+Example output: ![Simple console group output](images/console-write-group.png)
 
-#### 嵌套组
+#### Nested groups
 
-日志组也可以彼此嵌套。同时以小片段查看较大的组时，嵌套组非常有用。
+Log groups may also nest within each other. This is useful to see a large group in smaller pieces at a time.
 
-下面的示例显示了登录流程身份验证阶段的日志组：
-
+This example shows a log group for the authentication phase of a login process:
 
     var user = "jsmith", authenticated = true, authorized = true;
     // Top-level group
@@ -88,13 +76,11 @@ description:控制台日志是一种可以检查您的页面或应用所进行�
     console.log("A group-less log trace.");
     
 
-下面是控制台中的嵌套组输出：
-![简单的控制台组输出](images/console-write-nestedgroup.png)
+And here's the nested groups output in the console: ![Simple console group output](images/console-write-nestedgroup.png)
 
-#### 自动折叠组
+#### Auto-collapsing groups
 
-大量使用组时，即时查看所有信息可能不是非常有用。这些情况下，您可以通过调用 [`console.groupCollapsed()`](./console-reference#consolegroupcollapsedobject-object-) 而不是 `console.group()` 的方式自动折叠组：
-
+When using groups heavily, it can be very useful to not see everything as it happens. For these times you can automatically collapse groups by calling [`console.groupCollapsed()`](./console-reference#consolegroupcollapsedobject-object-) instead of `console.group()`:
 
     console.groupCollapsed("Authenticating user '%s'", user);
     if (authenticated) {
@@ -103,17 +89,15 @@ description:控制台日志是一种可以检查您的页面或应用所进行�
     console.groupEnd();
     
 
-groupCollapsed() 输出：
-![初始处于折叠状态的组](images/console-write-groupcollapsed.png)
+groupCollapsed() output: ![Initially collapsed group](images/console-write-groupcollapsed.png)
 
-## 错误和警告
+## Errors and warnings
 
-错误和警告的作用与正常日志的作用相同。唯一的区别是 `error()` 和 `warn()` 的样式引人注目。
+Errors and warnings act the same way as normal logging. The only difference is `error()` and `warn()` have styles to bring attention to them.
 
 ### console.error()
 
-[`console.error()`](./console-reference#consoleerrorobject--object-) 方法会显示红色图标和红色消息文本：
-
+The [`console.error()`](./console-reference#consoleerrorobject--object-) method displays a red icon along with red message text:
 
     function connectToServer() {
         console.error("Error: %s (%i)", "Server is  not responding",500);
@@ -121,91 +105,84 @@ groupCollapsed() 输出：
     connectToServer();
     
 
-转变为
+turns into
 
-![错误示例输出](images/console-write-error-server-not-resp.png)
+![Error example output](images/console-write-error-server-not-resp.png)
 
 ### console.warn()
 
-[`console.warn()`](./console-reference#consolewarnobject--object-) 方法会显示一个黄色警告图标和相应的消息文本：
-
+The [`console.warn()`](./console-reference#consolewarnobject--object-) method displays a yellow warning icon with the message text:
 
     if(a.childNodes.length < 3 ) {
         console.warn('Warning! Too few nodes (%d)', a.childNodes.length);
     }
     
 
-转变为
+turns into
 
-![警告示例](images/console-write-warning-too-few-nodes.png)
+![Warn example](images/console-write-warning-too-few-nodes.png)
 
-## 断言
+## Assertions
 
-[`console.assert()`](./console-reference#consoleassertexpression-object) 方法可以仅在其第一个参数为 `false` 时有条件地显示错误字符串（其第二个参数）。
+The [`console.assert()`](./console-reference#consoleassertexpression-object) method conditionally displays an error string (its second parameter) only if its first parameter evaluates to `false`.
 
-### 简单的断言及其显示方式
+### A simple assertion and how it displays
 
-下面的代码仅会在属于 `list` 元素的子节点数大于 500 时在控制台中显示一条错误消息。
+The following code will cause an error message in the console only if the number of child nodes belonging to the `list` element is greater than 500.
 
-
-    console.assert(list.childNodes.length < 500, "Node count is > 500");
+    console.assert(list.childNodes.length <= 500, "Node count is > 500");
     
 
-断言失败在控制台中的显示方式：
-![断言失败](images/console-write-assert-failed.png)
+How an assertion failure displays in the console: ![Assertion failed](images/console-write-assert-failed.png)
 
-## 字符串替代和格式设置
+## String substitution and formatting
 
-传递到任何记录方法的第一个参数可能包含一个或多个格式说明符。格式说明符由一个 `%` 符号与后面紧跟的一个字母组成，字母指示应用到值的格式。字符串后面的参数会按顺序应用到占位符。
+The first parameter passed to any of the logging methods may contain one or more format specifiers. A format specifier consists of a `%` symbol followed by a letter that indicates the formatting that applies to the value. The parameters following the string apply to the placeholders in order.
 
-下面的示例使用字符串和数字格式说明符来将值插入到输出字符串中。您将在控制台中看到“Sam has 100 points”。
+The following example uses the string and digit formatters to insert values into the output string. You will see "Sam has 100 points" in the console.
 
     console.log("%s has %d points", "Sam", 100);
+    
 
-格式说明符的完整列表为：
+The full list of format specifiers is:
 
-| 说明符 | 输出                                                                            |
-|-----------|:----------------------------------------------------------------------------------|
-| %s        | 将值格式化为字符串                                                     |
-| %i 或 %d  | 将值格式化为整型                                                   |
-| %f        | 将值格式化为浮点值                                       |
-| %o        | 将值格式化为可扩展 DOM 元素。如同在 Elements 面板中显示的一样     |
-| %O        | 将值格式化为可扩展 JavaScript 对象                              |
-| %c        | 将 CSS 样式规则应用到第二个参数指定的输出字符串 |
+| Specifier | Output                                                                            |
+| --------- |:--------------------------------------------------------------------------------- |
+| %s        | Formats the value as a string                                                     |
+| %i or %d  | Formats the value as an integer                                                   |
+| %f        | Formats the value as a floating point value                                       |
+| %o        | Formats the value as an expandable DOM element. As seen in the Elements panel     |
+| %O        | Formats the value as an expandable JavaScript object                              |
+| %c        | Applies CSS style rules to the output string as specified by the second parameter |
 
-本示例使用数字说明符设置 `document.childNodes.length` 的值的格式。同时使用浮点说明符设置 `Date.now()` 的值的格式。
+This example uses the digit specifier to format the value of `document.childNodes.length`. It also uses the floating point specifier to format the value of `Date.now()`.
 
-代码：
-
+The code:
 
     console.log("Node count: %d, and the time is %f.", document.childNodes.length, Date.now());
     
 
-上一个代码示例的输出：
-![示例替代输出](images/console-write-log-multiple.png)
+The output of the previous code sample: ![Example substitution output](images/console-write-log-multiple.png)
 
-### 使用 CSS 设置控制台输出的样式
+### Styling console output with CSS
 
-利用 CSS 格式说明符，您可以自定义控制台中的显示。使用说明符启动字符串，并设置为您希望的样式，作为第二个参数。
+The CSS format specifier allows you to customize the display in the console. Start the string with the specifier and give the style you wish to apply as the second parameter.
 
-
-尝试使用下面的代码：
-
+Try this code:
 
     console.log("%cThis will be formatted with large, blue text", "color: blue; font-size: x-large");
     
 
-..将您的日志输出设置为蓝色的大字体：
+..to make your log output large and blue:
 
-![设置了格式的字符串](images/console-write-format-string.png)
+![Formatted string](images/console-write-format-string.png)
 
-### 将 DOM 元素格式化为 JavaScript 对象
+### Formatting DOM elements as JavaScript objects
 
-默认情况下，DOM 元素将以其 HTML 的表示的形式记录到控制台中，不过有时，您希望以 JavaScript 对象的形式访问 DOM 元素并检查其属性。为此，您可以使用 `%O` 字符串说明符（参见上文），也可以使用 `console.dir` 达到同样的效果： 
+By default, DOM elements are logged into the console as representation of their HTML, but sometimes you want to access the DOM element as JavaScript object and inspect its properties. You can use the `%O` string specifier to do that (see above), or use `console.dir` to achieve the same:
 
-![使用 dir() 记录元素](images/dir-element.png)
+![Logging an element using dir()](images/dir-element.png)
 
+## Feedback {: #feedback }
 
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
