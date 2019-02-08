@@ -1,28 +1,26 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: De hoeveelheid gegevens die door elke app wordt gedownload, blijft gestaag toenemen. Om geweldige inhoud te kunnen blijven leveren, moeten we elke byte optimaliseren.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: The amount of data downloaded by apps continues to increase over time. To deliver great performance you must optimize data delivery as much as possible.
 
-{# wf_updated_on: 2014-04-28 #}
-{# wf_published_on: 2014-03-31 #}
+{# wf_updated_on: 2018-08-17 #} {# wf_published_on: 2014-03-31 #} {# wf_blink_components: Blink>Network #}
 
-# Inhoudsefficiëntie optimaliseren {: .page-title }
+# Optimizing Content Efficiency {: .page-title }
 
 {% include "web/_shared/contributors/ilyagrigorik.html" %}
 
-Onze internetapplicaties krijgen een steeds groter bereik, grotere ambitie en meer functies, en dat is goed. Met een steeds rijker internet ontstaat echter ook een andere trend: de hoeveelheid gegevens die door elke app wordt gedownload, wordt almaar groter. Om geweldige inhoud te kunnen blijven leveren, moeten we elke byte optimaliseren.
+Our web applications continue to grow in their scope, ambition, and functionality -- that's a good thing. However, the relentless march toward a richer web is driving another trend: the amount of data downloaded by each application continues to increase at a steady pace. To deliver great performance we need to optimize delivery of each and every byte!
 
+What does a modern web application look like? [HTTP Archive](http://httparchive.org/){: .external } can help us answer this question. The project tracks how the web is built by periodically crawling the most popular sites (300,000+ from the Alexa Top 1M list) and recording and aggregating analytics on the number of resources, content types, and other metadata for each individual destination.
 
-Hoe ziet een moderne internetapplicatie eruit? [HTTP Archive](http://httparchive.org/){: .external } kan ons hierbij helpen. Dit project monitort internet door regelmatig de populairste websites (meer dan 300.000 sites uit de lijst van Alexa Top 1M) te crawlen en analysegegevens te verzamelen over het aantal hulpbronnen, inhoudstypen en andere metadata voor elke pagina.
+<img src="images/http-archive-trends.png"  alt="HTTP Archive trends" />
 
-<img src="images/http-archive-trends.png" class="center" alt="Trends opgesteld door HTTP Archive">
-
-<table>
+<table class="">
+  
+<colgroup><col span="1"><col span="1"><col span="1"><col span="1"></colgroup>
 <thead>
   <tr>
     <th></th>
-    <th>50e percentiel</th>
-    <th>75e percentiel</th>
-    <th>90e percentiel</th>
+    <th>50th percentile</th>
+    <th>75th percentile</th>
+    <th>90th percentile</th>
   </tr>
 </thead>
 <tr>
@@ -32,7 +30,7 @@ Hoe ziet een moderne internetapplicatie eruit? [HTTP Archive](http://httparchive
   <td data-th="90%">54 KB</td>
 </tr>
 <tr>
-  <td data-th="type">Afbeeldingen</td>
+  <td data-th="type">Images</td>
   <td data-th="50%">528 KB</td>
   <td data-th="75%">1213 KB</td>
   <td data-th="90%">2384 KB</td>
@@ -50,25 +48,27 @@ Hoe ziet een moderne internetapplicatie eruit? [HTTP Archive](http://httparchive
   <td data-th="90%">108 KB</td>
 </tr>
 <tr>
-  <td data-th="type">Overig</td>
+  <td data-th="type">Other</td>
   <td data-th="50%">282 KB</td>
   <td data-th="75%">308 KB</td>
   <td data-th="90%">353 KB</td>
 </tr>
 <tr>
-  <td data-th="type"><strong>Totaal</strong></td>
+  <td data-th="type"><strong>Total</strong></td>
   <td data-th="50%"><strong>1054 KB</strong></td>
   <td data-th="75%"><strong>1985 KB</strong></td>
   <td data-th="90%"><strong>3486 KB</strong></td>
 </tr>
 </table>
 
-Bovenstaande gegevens geven de groeitrend weer van het aantal gedownloade bytes voor populaire bestemmingen op internet tussen januari 2013 en januari 2014. Niet elke site groeit even snel of gebruikt evenveel gegevens, daarom hebben we de verschillende aantallen weergegeven als percentiel van de gegevensdistributie: het 50e (mediaan), 75e en 90e.
+The above data captures the trend in growth of number of downloaded bytes for popular destinations on the web between January 2013 and January 2014. Of course, not every site grows at the same rate or requires the same amount of data, hence the reason why we are highlighting the different quantiles within the distribution: 50th (median), 75th, and 90th.
 
-Een site op mediaan-niveau bestaat aan het begin van 2014 uit 75 verzoeken die corresponderen met 1054 KB totale, overgedragen bytes, en het totale aantal bytes (en verzoeken) is gedurende het voorgaande jaar gestaag toegenomen. Dit is geen grote verrassing, maar heeft wel enkele belangrijke gevolgen: hoewel internetproviders sneller internet leveren, is de beschikbare snelheid en bandbreedte niet in elk land even groot en hebben veel gebruikers te maken met gegevenslimieten en dure abonnementen, vooral voor mobiel internet.
+A median site at the beginning of 2014 is composed of 75 requests that add up to 1054 KB of total transferred bytes, and the total number of bytes (and requests) has grown at a steady pace throughout the previous year. This by itself should not be all that surprising, but it does carry important performance implications: yes, internet speeds are getting faster, but they are getting faster at different rates in different countries, and many users are still subject to data caps and expensive metered plans - especially on mobile.
 
-Internetapplicaties hoeven, in tegenstelling tot applicaties op pc`s, niet geïnstalleerd te worden. U hoeft slechts de URL in te typen om de website te bekijken. Dit is een belangrijk voordeel van internet. Om dit te bereiken, **moeten we echter vaak tientallen, soms honderden verschillende hulpbronnen ophalen, waarvoor we meerdere megabytes aan gegevens moeten downloaden. Dit moet in honderdsten van milliseconden gebeuren als we de website snel willen laden.**
+Unlike their desktop counterparts, web applications do not require a separate installation process: enter the URL and we are up and running -- that’s a key feature of the web. However, to make this happen **we often have to fetch dozens, and sometime hundreds, of various resources, all of which can add up to megabytes of data and must come together in hundreds of milliseconds to facilitate the instant web experience we are aiming for.**
 
-Er zijn heel wat processen nodig om een internetpagina snel te laden en daarom is het belangrijk om de inhoudsefficiëntie te optimaliseren: overbodige downloads verwijderen, de codering van elke hulpbron optimaliseren via verschillende compressiemethoden en gebruikmaken van gegevens in het cachegeheugen om overbodige downloads te vermijden.
+Achieving an instant web experience in light of these requirements is no small feat, which is why optimizing content efficiency is critical: eliminating unnecessary downloads, optimizing transfer encoding of each resource through various compression techniques, and leveraging caching whenever possible to eliminate redundant downloads.
 
+## Feedback {: #feedback }
 
+{% include "web/_shared/helpful.html" %}
