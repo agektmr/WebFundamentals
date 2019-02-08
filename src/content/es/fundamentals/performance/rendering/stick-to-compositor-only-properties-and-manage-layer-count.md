@@ -1,99 +1,93 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Composición hace referencia al proceso en el que las partes pintadas de la página se unen para mostrarlas en la pantalla.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Compositing is where the painted parts of the page are put together for displaying on screen.
 
-{# wf_updated_on: 2017-07-12 #}
-{# wf_published_on: 2015-03-20 #}
+{# wf_updated_on: 2018-08-17 #} {# wf_published_on: 2015-03-20 #} {# wf_blink_components: Blink>Compositing #}
 
-# Limítate solo a las propiedades del compositor y administra el recuento de capas {: .page-title }
+# Stick to Compositor-Only Properties and Manage Layer Count {: .page-title }
 
 {% include "web/_shared/contributors/paullewis.html" %}
 
-Composición hace referencia al proceso en el que las partes pintadas de la página se unen para 
-mostrarlas en la pantalla.
+Compositing is where the painted parts of the page are put together for displaying on screen.
 
-En esta área, hay dos factores claves que afectan el rendimiento de la página: la cantidad de capas del compositor que deben administrarse y las propiedades que usas para las animaciones.
+There are two key factors in this area that affect page performance: the number of compositor layers that need to be managed, and the properties that you use for animations.
 
 ### TL;DR {: .hide-from-toc }
 
-* Limítate a los cambios de transform y opacity para tus animaciones.
-* Promueve elementos en movimiento con `will-change` o `translateZ`.
-* Evita usar en exceso las reglas de promoción; las capas requieren memoria y administración.
+* Stick to transform and opacity changes for your animations.
+* Promote moving elements with `will-change` or `translateZ`.
+* Avoid overusing promotion rules; layers require memory and management.
 
-## Usa los cambios de transform y opacity para las animaciones
+## Use transform and opacity changes for animations
 
-En la versión con mejor rendimiento de la canalización de píxeles se evitan tanto el diseño como la pintura, y solo se necesitan cambios en la composición:
+The best-performing version of the pixel pipeline avoids both layout and paint, and only requires compositing changes:
 
-<img src="images/stick-to-compositor-only-properties-and-manage-layer-count/frame-no-layout-paint.jpg"  alt="Canalización de píxeles sin diseño ni pintura.">
+<img src="images/stick-to-compositor-only-properties-and-manage-layer-count/frame-no-layout-paint.jpg"  alt="The pixel pipeline with no layout or paint." />
 
-Para lograrlo, debes limitarte a las propiedades de cambio que pueden controlarse únicamente mediante el compositor. En la actualidad, esto se aplica solo a dos propiedades: **`transforms`** y **`opacity`**:
+In order to achieve this you will need to stick to changing properties that can be handled by the compositor alone. Today there are only two properties for which that is true - `transform`s and `opacity`:
 
-<img src="images/stick-to-compositor-only-properties-and-manage-layer-count/safe-properties.jpg"  alt="Propiedades que puedes animar sin activar diseño ni pintura.">
+<img src="images/stick-to-compositor-only-properties-and-manage-layer-count/safe-properties.jpg"  alt="The properties you can animate without triggering layout or paint." />
 
-La advertencia respecto del uso de `transform`s y `opacity` es que el elemento en el cual cambiarás estas propiedades debe encontrarse en _su propia capa del compositor_. Para poder crear una capa, debes promover el elemento. Hablaremos de esto a continuación.
+The caveat for the use of `transform`s and `opacity` is that the element on which you change these properties should be on *its own compositor layer*. In order to make a layer you must promote the element, which we will cover next.
 
-Note: Si te preocupa no poder limitar las animaciones a estas propiedades, consulta el [principio FLIP](https://aerotwist.com/blog/flip-your-animations), que puede ayudarte a reasignar las animaciones a los cambios de las propiedades transforms y opacity desde propiedades más costosas.
+Note: If you’re concerned that you may not be able to limit your animations to just those properties, take a look at the [FLIP principle](https://aerotwist.com/blog/flip-your-animations), which may help you remap animations to changes in transforms and opacity from more expensive properties.
 
-## Promueve los elementos que desees animar
+## Promote elements that you plan to animate
 
-Como se mencionó en la sección “[Simplifica la complejidad de la pintura y reduce las áreas de pintura](simplify-paint-complexity-and-reduce-paint-areas)”, debes promover los elementos que desees animar (dentro de lo razonable, evitando los excesos) a su propia capa:
-
+As we mentioned in the “[Simplify paint complexity and reduce paint areas](simplify-paint-complexity-and-reduce-paint-areas)” section, you should promote elements that you plan to animate (within reason, don’t overdo it!) to their own layer:
 
     .moving-element {
       will-change: transform;
     }
+    
 
-
-Como alternativa, en el caso de los navegadores anteriores o aquellos que no sean compatibles con will-change:
-
+Or, for older browsers, or those that don’t support will-change:
 
     .moving-element {
       transform: translateZ(0);
     }
+    
 
+This gives the browser the forewarning that changes are incoming and, depending on what you plan to change, the browser can potentially make provisions, such as creating compositor layers.
 
-De este modo, se notifica de antemano al navegador sobre la introducción de cambios y, según lo que desees modificar, es posible que este aplique medidas; por ejemplo, la creación de capas del compositor.
+## Manage layers and avoid layer explosions
 
-## Administra las capas y evita las explosiones de capas
-
-Puede resultar tentador, al saber que las capas suelen contribuir al rendimiento, promover todos los elementos de tu página con algo como lo siguiente:
-
+It’s perhaps tempting, then, knowing that layers often help performance, to promote all the elements on your page with something like the following:
 
     * {
       will-change: transform;
       transform: translateZ(0);
     }
+    
 
+Which is a roundabout way of saying that you’d like to promote every single element on the page. The problem here is that every layer you create requires memory and management, and that’s not free. In fact, on devices with limited memory the impact on performance can far outweigh any benefit of creating a layer. Every layer’s textures needs to be uploaded to the GPU, so there are further constraints in terms of bandwidth between CPU and GPU, and memory available for textures on the GPU.
 
-Esta es una forma indirecta de indicar que desearías promover cada elemento de la página. El problema es que cada capa que crees requerirá memoria y administración, y eso tiene consecuencias. De hecho, en los dispositivos con memoria limitada, el impacto en el rendimiento puede suponer un desequilibrio negativo contra cualquier beneficio que suponga la creación de una capa. Todas las texturas de las capas se deben cargar en la GPU, por lo que hay aún más restricciones con respecto al ancho de banda entre la CPU y la GPU, y a la memoria disponible para texturas en la GPU.
+Warning: Do not promote elements unnecessarily.
 
-Warning: No promuevas elementos innecesariamente.
-
-## Usa Chrome DevTools para comprender las capas de tu app
+## Use Chrome DevTools to understand the layers in your app
 
 <div class="attempt-right">
   <figure>
-    <img src="images/stick-to-compositor-only-properties-and-manage-layer-count/paint-profiler.jpg" alt="Activación y desactivación de la generación de perfiles de pintura en Chrome DevTools.">
+    <img src="images/stick-to-compositor-only-properties-and-manage-layer-count/paint-profiler.jpg" alt="The toggle for the paint profiler in Chrome DevTools.">
   </figure>
 </div>
 
-Para poder comprender las capas de tu aplicación y la razón por la cual un elemento posee una capa, debes habilitar el generador de perfiles Paint Profiler en Timeline de Chrome DevTools:
+To get an understanding of the layers in your application, and why an element has a layer you must enable the Paint profiler in Chrome DevTools’ Timeline:
 
 <div style="clear:both;"></div>
 
-Cuando se active esta herramienta, debes iniciar una grabación. Cuando la grabación haya finalizado, podrás hacer clic en cada uno de los marcos, que se encuentran entre las barras de marcos por segundos y los detalles:
+With this switched on you should take a recording. When the recording has finished you will be able to click individual frames, which is found between the frames-per-second bars and the details:
 
-<img src="images/stick-to-compositor-only-properties-and-manage-layer-count/frame-of-interest.jpg"  alt="Un fotograma para el cual el desarrollador desea generar un perfil.">
+<img src="images/stick-to-compositor-only-properties-and-manage-layer-count/frame-of-interest.jpg"  alt="A frame the developer is interested in profiling." />
 
-Si haces clic aquí, aparecerá una nueva opción en los detalles: la pestaña Layer.
+Clicking on this will provide you with a new option in the details: a layer tab.
 
-<img src="images/stick-to-compositor-only-properties-and-manage-layer-count/layer-tab.jpg"  alt="Botón de la pestaña Layer en Chrome DevTools.">
+<img src="images/stick-to-compositor-only-properties-and-manage-layer-count/layer-tab.jpg"  alt="The layer tab button in Chrome DevTools." />
 
-A través de esta opción, se generará una nueva vista que te permitirá hacer una panorámica, analizar y acercar todas las capas durante ese fotograma, y se mostrarán los motivos por los cuales se creó cada una.
+This option will bring up a new view that allows you to pan, scan and zoom in on all the layers during that frame, along with reasons that each layer was created.
 
-<img src="images/stick-to-compositor-only-properties-and-manage-layer-count/layer-view.jpg"  alt="Vista de capa en Chrome DevTools.">
+<img src="images/stick-to-compositor-only-properties-and-manage-layer-count/layer-view.jpg"  alt="The layer view in Chrome DevTools." />
 
-Si usas esta vista, podrás realizar un seguimiento de la cantidad de capas que tienes. Si demoras mucho tiempo en la composición durante acciones críticas para el rendimiento, como el desplazamiento o las transiciones (debes intentar hacerlo en un plazo aproximado de **4 a 5 ms**), puedes usar esta información para saber cuántas capas tienes y por qué se crearon, y, a partir de allí, administrar el recuento de capas en tu app.
+Using this view you can track the number of layers you have. If you’re spending a lot time in compositing during performance-critical actions like scrolling or transitions (you should aim for around **4-5ms**), you can use the information here to see how many layers you have, why they were created, and from there manage layer counts in your app.
 
+## Feedback {: #feedback }
 
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
