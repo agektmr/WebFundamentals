@@ -1,54 +1,50 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description:Web Starter Kit 是多設備開發的樣板文件和工具
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Web Starter Kit is boilerplate and tooling for multi-device development
 
-{# wf_published_on:2015-01-01 #}
-{# wf_updated_on:2016-09-12 #}
+{# wf_published_on: 2015-01-01 #} {# wf_updated_on: 2017-07-24 #}
 
 # Web Starter Kit {: .page-title }
 
-[下載 Web Starter Kit（測試版）](https://github.com/google/web-starter-kit/releases/latest){: .button .button-primary }
+Warning: Web Starter Kit is no longer supported.
 
-## 什麼是 Web Starter Kit？
+[Download Web Starter Kit (beta)](https://github.com/google/web-starter-kit/releases/latest){: .button .button-primary }
 
-[Web Starter Kit](https://github.com/google/web-starter-kit) 是用於 Web 開發的樣板文件。在多臺設備上構建卓越體驗並且[以性能爲導向](#web-performance)的工具。幫助您遵循 Google 的[網頁基礎知識](/web/fundamentals/)中介紹的最佳做法，以便保持工作效率。爲行業的專業人士和新來者提供一個堅實的起點。
+## What is Web Starter Kit?
 
-### 功能
+[Web Starter Kit](https://github.com/google/web-starter-kit) is an opinionated boilerplate for web development. Tools for building a great experience across many devices and [performance oriented](#web-performance). Helping you to stay productive following the best practices outlined in Google's [Web Fundamentals](/web/fundamentals/). A solid starting point for both professionals and newcomers to the industry.
 
-| 功能                                | 摘要                                                                                                                                                                                                                                                     |
-|----------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-|自適應樣板文本 | 針對跨屏網頁優化的自適應樣板文本。由 [Material Design Lite](http://getmdl.io) 提供技術支持。您可以使用這個工具或者 [basic.html](https://github.com/google/web-starter-kit/blob/master/app/basic.html) 從頭開始。                          |
-| Sass 支持                           | 輕鬆將 [Sass](http://sass-lang.com/) 彙編到 CSS 中，可以支持變量、混合類以及更多。（生產時運行 `gulp serve` 或 `gulp`）                                                                                                      |
-| 性能優化               | 縮小並連接 JavaScript、CSS、HTML 和圖像來幫您精簡頁面。（運行 `gulp` 以便向 `/dist` 中創建經過優化的項目版本）                                                                                                |
-| 代碼錯誤分析               | JavaScript 代碼錯誤分析是通過 [ESLint](http://eslint.org)（用於識別和報告 JavaScript 中的模式的可插拔代碼分析工具）完成的。Web Starter Kit 使用的 ESLint 具有 [eslint-config-google](https://github.com/google/eslint-config-google)，視圖遵循 Google JavaScript 風格指南。                                                                                                |
-| 通過 Babel 6.0 支持 ES2015                    | 可選的 ES2015 支持（使用 [Babel](https://babeljs.io/){: .external }）。爲了啓用 ES2015 支持，請刪除 (https://github.com/google/web-starter-kit/blob/master/.babelrc) 文件中的 `"only": "gulpfile.babel.js",` 這一行。ES2015 源代碼將自動轉譯爲 ES5，以提供廣泛的瀏覽器支持。  |
-| 內置的 HTTP 服務器                   | 內置的服務器可在您開發和迭代時在本地預覽網站                                                                                                                                                                            |
-| 實時瀏覽器重新加載                 | 在進行任何編輯後實時重新加載瀏覽器，無需擴展程序。（運行 `gulp serve` 並編輯您的文件）                                                                                                                           |
-| 跨設備同步           | 當您編輯項目時在多臺設備上同步點擊、滾動、形成和實時重新加載。由 [BrowserSync](http://browsersync.io) 提供技術支持。（運行 `gulp serve` 並打開網絡中其他設備上提供的 IP）                       |
-| 離線支持                     | 由於我們已經完成了[服務工作線程](/web/fundamentals/getting-started/primers/service-workers)[預先緩存](https://github.com/google/web-starter-kit/blob/master/gulpfile.babel.js#L226)，將 `dist` 部署到 HTTPS 域中的網站可以獲得離線支持。這一步可以通過 [sw-precache](https://github.com/GoogleChrome/sw-precache/) 實現。                                                                                                                                              |
-| PageSpeed Insights                     | 顯示您的網站在移動設備和臺式機上運行性能的網頁性能指標（運行 `gulp pagespeed`）                                                                                                                                                    |
+### Features
 
-## 快速入門
+| Feature                      | Summary                                                                                                                                                                                                                                                                                                                                                    |
+| ---------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Responsive boilerplate       | A responsive boilerplate optimized for the multi-screen web. Powered by [Material Design Lite](http://getmdl.io). You're free to use either this or a completely clean-slate via [basic.html](https://github.com/google/web-starter-kit/blob/master/app/basic.html).                                                                                       |
+| Sass support                 | Compile [Sass](http://sass-lang.com/) into CSS with ease, bringing support for variables, mixins and more. (Run `gulp serve` or `gulp` for production)                                                                                                                                                                                                     |
+| Performance optimization     | Minify and concatenate JavaScript, CSS, HTML and images to help keep your pages lean. (Run `gulp` to create an optimized version of your project to `/dist`)                                                                                                                                                                                               |
+| Code Linting                 | JavaScript code linting is done using [ESLint](http://eslint.org) - a pluggable linter tool for identifying and reporting on patterns in JavaScript. Web Starter Kit uses ESLint with [eslint-config-google](https://github.com/google/eslint-config-google), which tries to follow the Google JavaScript style guide.                                     |
+| ES2015 via Babel 6.0         | Optional ES2015 support using [Babel](https://babeljs.io/){: .external }. To enable ES2015 support remove the line `"only": "gulpfile.babel.js",` in the [.babelrc](https://github.com/google/web-starter-kit/blob/master/.babelrc) file. ES2015 source code will be automatically transpiled to ES5 for wide browser support.                             |
+| Built-in HTTP Server         | A built-in server for previewing your site locally while you develop and iterate                                                                                                                                                                                                                                                                           |
+| Live Browser Reloading       | Reload the browser in real-time anytime an edit is made without the need for an extension. (Run `gulp serve` and edit your files)                                                                                                                                                                                                                          |
+| Cross-device Synchronization | Synchronize clicks, scrolls, forms and live-reload across multiple devices as you edit your project. Powered by [BrowserSync](http://browsersync.io). (Run `gulp serve` and open up the IP provided on other devices on your network)                                                                                                                      |
+| Offline support              | Thanks to our baked in [Service Worker](/web/fundamentals/getting-started/primers/service-workers) [pre-caching](https://github.com/google/web-starter-kit/blob/master/gulpfile.babel.js#L226), sites deploying `dist` to a HTTPS domain will enjoy offline support. This is made possible by [sw-precache](https://github.com/GoogleChrome/sw-precache/). |
+| PageSpeed Insights           | Web performance metrics showing how well your site performs on mobile and desktop (Run `gulp pagespeed`)                                                                                                                                                                                                                                                   |
 
-[下載](https://github.com/google/web-starter-kit/releases/latest)工具包或者克隆[這個](https://github.com/google/web-starter-kit)存儲區並根據 `app` 目錄中包含的內容進行構建。
+## Quickstart
 
+[Download](https://github.com/google/web-starter-kit/releases/latest) the kit or clone [the](https://github.com/google/web-starter-kit) repository and build on what is included in the `app` directory.
 
+There are two HTML starting points, from which you can choose:
 
-您有兩個 HTML 起點可以選擇：
+* `index.html` - the default starting point, containing Material Design layout.
+* `basic.html` - no layout, but still includes our minimal mobile best-practices
 
-- `index.html` - 默認起點，包含 Material Design 佈局。
-- `basic.html` - 無佈局，但仍包含我們最低限度的移動最佳做法
+Be sure to look over the [installation docs](https://github.com/google/web-starter-kit/blob/master/docs/install.md) to verify your environment is prepared to run WSK. Once you have verified that your system can run WSK, check out the [commands](https://github.com/google/web-starter-kit/blob/master/docs/commands.md) available to get started.
 
-請務必參閱[安裝文檔](https://github.com/google/web-starter-kit/blob/master/docs/install.md)，驗證您的環境是否已準備好運行 WSK。驗證您的系統可以運行 WSK 後，請檢查可用的[命令](https://github.com/google/web-starter-kit/blob/master/docs/commands.md)以便開始使用。
+## Web Performance
 
+Web Starter Kit strives to give you a high performance starting point out of the box. Our median Web Page Test [scores](http://www.webpagetest.org/result/151201_VW_XYC/){: .external } for the default template have a [Speed Index](https://sites.google.com/a/webpagetest.org/docs/using-webpagetest/metrics/speed-index) of ~1100 (1000 is ideal) and a repeat-visit Speed Index of ~550 thanks to Service Worker precaching.
 
-## 網頁性能
+## Browser Support
 
-Web Starter Kit 努力爲您提供開箱即用的高性能起點。我們的默認模板的中值網頁測試[得分](http://www.webpagetest.org/result/151201_VW_XYC/){: .external }[速度指數](https://sites.google.com/a/webpagetest.org/docs/using-webpagetest/metrics/speed-index) 爲 ~1100（1000 爲理想值），重複訪問速度指數爲 ~550，這一切都得益於服務工作線程預先緩存。 
-
-## 瀏覽器支持
-
-目前，我們致力於爲以下瀏覽器的兩個最新版本提供官方支持：
+At present, we officially aim to support the last two versions of the following browsers:
 
 * Chrome
 * Edge
@@ -57,32 +53,27 @@ Web Starter Kit 努力爲您提供開箱即用的高性能起點。我們的默�
 * Opera
 * Internet Explorer 9+
 
-這並不是說 Web Starter Kit 不能在比上述版本舊的瀏覽器中使用，僅僅表示我們關注的重點是確保上述瀏覽器中的佈局卓越。
+This is not to say that Web Starter Kit cannot be used in browsers older than those reflected, but merely that our focus will be on ensuring our layouts work great in the above.
 
-## 故障排除
+## Troubleshooting
 
-如果您在安裝或運行這些工具時遇到問題，請查看我們的[問題排查](https://github.com/google/web-starter-kit/wiki/Troubleshooting)指南，然後提出[問題](https://github.com/google/web-starter-kit/issues)。我們非常樂意與您討論問題的解決辦法。
+If you find yourself running into issues during installation or running the tools, please check our [Troubleshooting](https://github.com/google/web-starter-kit/wiki/Troubleshooting) guide and then open an [issue](https://github.com/google/web-starter-kit/issues). We would be happy to discuss how they can be solved.
 
-## 僅限樣板文本選項
+## A Boilerplate-only Option
 
-如果您不願意使用我們的任何工具，請從項目中刪除以下文件：`package.json`、`gulpfile.babel.js`、`.jshintrc` 和 `.travis.yml`。您現在可以安全地選擇使用具有備用構建系統或不具備任何構建系統的樣板文本了。
+If you would prefer not to use any of our tooling, delete the following files from the project: `package.json`, `gulpfile.babel.js`, `.jshintrc` and `.travis.yml`. You can now safely use the boilerplate with an alternative build-system or no build-system at all if you choose.
 
-## 文檔和訣竅
+## Docs and Recipes
 
-* [文件附錄](https://github.com/google/web-starter-kit/blob/master/docs/file-appendix.md) - 這裏的不同文件是幹什麼用的？
-* [使用 Material Design Lite 的 Sass](https://github.com/google/web-starter-kit/blob/master/docs/mdl-sass.md) - 如何使 MDL 的 Sass 與 WSK 結合使用。
-* [部署指南](https://github.com/google/web-starter-kit/blob/master/docs/deploy.md) - 可供 Firebase、Google App Engine 和其他服務使用。
-* [Gulp 訣竅](https://github.com/gulpjs/gulp/tree/master/docs/recipes) - 官方的 Gulp 訣竅目錄包括您可以添加到項目中的不同工作流程的綜合指南。
+* [File Appendix](https://github.com/google/web-starter-kit/blob/master/docs/file-appendix.md) - What do the different files here do?
+* [Using Material Design Lite's Sass](https://github.com/google/web-starter-kit/blob/master/docs/mdl-sass.md) - how to get MDL's Sass working with WSK
+* [Deployment guides](https://github.com/google/web-starter-kit/blob/master/docs/deploy.md) - available for Firebase, Google App Engine and other services.
+* [Gulp recipes](https://github.com/gulpjs/gulp/tree/master/docs/recipes) - the official Gulp recipes directory includes a comprehensive list of guides for different workflows you can add to your project.
 
-## 靈感
+## Inspiration
 
-Web Starter Kit 的靈感來源於[移動設備 HTML5 樣板文件](https://html5boilerplate.com/mobile/){: .external }以及 Yeoman 的 [generator-gulp-webapp](https://github.com/yeoman/generator-webapp)，並且在開發的過程中採用了這兩個項目的貢獻者的意見。我們的[常見問題解答](https://github.com/google/web-starter-kit/wiki/FAQ)試圖回答有關項目的常見問題。
+Web Starter Kit is inspired by [Mobile HTML5 Boilerplate](https://html5boilerplate.com/mobile/){: .external } and Yeoman's [generator-gulp-webapp](https://github.com/yeoman/generator-webapp), having taken input from contributors to both projects during development. Our [FAQs](https://github.com/google/web-starter-kit/wiki/FAQ) attempt to answer commonly asked questions about the project.
 
+## Learn More
 
-## 瞭解詳情
-
-如需瞭解詳細信息、查看代碼，提交問題或參與其中，請查看我們在 [https://github.com/google/web-starter-kit](https://github.com/google/web-starter-kit) 上提供的 Git 存儲區
-
-
-
-{# wf_devsite_translation #}
+To learn more, see the code, submit an issue, or to get involved, check out our Git repo at <https://github.com/google/web-starter-kit>
