@@ -1,151 +1,142 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: 透過網路取得內容的做法不僅緩慢，成本也很高：大型回應需要在用戶端和伺服器之間進行多次往返通訊，因此拖延了瀏覽器可以使用及處理內容的時間，同時也增加了訪客的行動數據傳輸費用。因此，如果能夠快取及重複使用先前取得的資源，對於將效能最佳化將是非常關鍵的一環。
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Caching and reusing previously fetched resources is a critical aspect of optimizing for performance.
 
-{# wf_updated_on: 2014-01-04 #}
-{# wf_published_on: 2013-12-31 #}
+{# wf_updated_on: 2018-08-17 #} {# wf_published_on: 2013-12-31 #} {# wf_blink_components: Blink>Network #}
 
-# HTTP 快取 {: .page-title }
+# HTTP Caching {: .page-title }
 
 {% include "web/_shared/contributors/ilyagrigorik.html" %}
 
+Fetching something over the network is both slow and expensive. Large responses require many roundtrips between the client and server, which delays when they are available and when the browser can process them, and also incurs data costs for the visitor. As a result, the ability to cache and reuse previously fetched resources is a critical aspect of optimizing for performance.
 
+The good news is that every browser ships with an implementation of an HTTP cache. All you need to do is ensure that each server response provides the correct HTTP header directives to instruct the browser on when and for how long the browser can cache the response.
 
-透過網路取得內容的做法不僅緩慢，成本也很高：大型回應需要在用戶端和伺服器之間進行多次往返通訊，因此拖延了瀏覽器可以使用及處理內容的時間，同時也增加了訪客的行動數據傳輸費用。因此，如果能夠快取及重複使用先前取得的資源，對於將效能最佳化將是非常關鍵的一環。
+Note: If you are using a WebView to fetch and display web content in your application, you might need to provide additional configuration flags to ensure that the HTTP cache is enabled, its size is set to a reasonable number to match your use case, and the cache is persisted. Check the platform documentation and confirm your settings.
 
+<img src="images/http-request.png"  alt="HTTP request" />
 
+When the server returns a response, it also emits a collection of HTTP headers, describing its content-type, length, caching directives, validation token, and more. For example, in the above exchange, the server returns a 1024-byte response, instructs the client to cache it for up to 120 seconds, and provides a validation token ("x234dff") that can be used after the response has expired to check if the resource has been modified.
 
-好消息是每個瀏覽器都內建了 HTTP 快取！ 我們所要做的就是，確保每個伺服器回應都提供正確的 HTTP 標題指令，以指示瀏覽器快取回應的時機和時限。
-
-Note: 如果在應用程式中使用 Webview 來擷取及顯示網頁內容，可能需要提供額外的配置旗標，以確保啟用 HTTP 快取，並根據用途設定合理的快取大小，同時也可延長快取的效期。請查看平台文件並確認您的設定！
-
-<img src="images/http-request.png" class="center" alt="HTTP 請求">
-
-伺服器傳回回應時，還會發出一組 HTTP 標題，用來描述內容類型、長度、快取指令、驗證權杖等。舉例來說，在上圖的交流中，伺服器傳回了一個 1024 位元組的回應，指示用戶端快取回應長達 120 秒，並提供驗證權杖 (「x234dff」)，在回應過期之後，可以用來驗證資源是否遭到修改。
-
-
-## 使用 ETag 驗證快取的回應
+## Validating cached responses with ETags
 
 ### TL;DR {: .hide-from-toc }
-- 伺服器透過 ETag HTTP 標題傳遞驗證權杖
-- 您可以透過驗證權杖進行高效率的資源更新檢查：如果資源未變更，則不會傳輸任何資料。
 
+* The server uses the ETag HTTP header to communicate a validation token.
+* The validation token enables efficient resource update checks: no data is transferred if the resource has not changed.
 
-讓我們假設在首次擷取資源 120 秒之後，瀏覽器又對該資源發出新請求。首先，瀏覽器會檢查本地快取並找到之前的回應，但很可惜這個回應現在已經「過期」，無法再使用。此時，瀏覽器也可以直接發出新請求以獲得新的完整回應，但是這樣做效率較低。如果資源未曾變更，我們就沒有理由再去下載已存在於快取中的相同位元組。
+Assume that 120 seconds have passed since the initial fetch and the browser has initiated a new request for the same resource. First, the browser checks the local cache and finds the previous response. Unfortunately, the browser can't use the previous response because the response has now expired. At this point, the browser could dispatch a new request and fetch the new full response. However, that’s inefficient because if the resource hasn't changed, then there's no reason to download the same information that's already in cache!
 
-這就是 ETag 標題中指定的驗證權杖所要解決的問題：伺服器會產生並傳回一個隨機權杖，通常是檔案內容的雜湊值或者其他指紋碼。用戶端不必瞭解指紋碼是如何產生的，只需要在下一個請求中將其傳送給伺服器：如果指紋碼仍然一致，說明資源未被修改，我們就可以跳過下載步驟。
+That’s the problem that validation tokens, as specified in the ETag header, are designed to solve. The server generates and returns an arbitrary token, which is typically a hash or some other fingerprint of the contents of the file. The client doesn't need to know how the fingerprint is generated; it only needs to send it to the server on the next request. If the fingerprint is still the same, then the resource hasn't changed and you can skip the download.
 
-<img src="images/http-cache-control.png" class="center" alt="HTTP Cache-Control 示例">
+<img src="images/http-cache-control.png"  alt="HTTP Cache-Control example" />
 
-在上面的例子中，用戶端自動在「If-None-Match」HTTP 請求標題中提供 ETag 權杖，伺服器針對目前的資源檢查權杖，如果未被修改過，則傳回「304 Not Modified」回應，告訴瀏覽器快取中的回應未被修改過，可以再延用 120 秒。請注意，我們不必再次下載回應，因此這可節省時間和頻寬。
+In the preceding example, the client automatically provides the ETag token in the "If-None-Match" HTTP request header. The server checks the token against the current resource. If the token hasn't changed, the server returns a "304 Not Modified" response, which tells the browser that the response it has in cache hasn't changed and can be renewed for another 120 seconds. Note that you don't have to download the response again, which saves time and bandwidth.
 
-網路開發人員應如何利用高效率的重新驗證機制？ 瀏覽器代替我們完成了所有的工作：自動檢測是否已指定了驗證權杖，並會將驗證權杖附加到發出的請求上，根據從伺服器收到的回應，在必要時更新快取時間戳記。**實際上，我們唯一要做的就是確保伺服器提供必要的 ETag 權杖：查看伺服器文件中是否有必要的設定旗標。**
+As a web developer, how do you take advantage of efficient revalidation? The browser does all the work on our behalf. The browser automatically detects if a validation token has been previously specified, it appends the validation token to an outgoing request, and it updates the cache timestamps as necessary based on the received response from the server. **The only thing left to do is to ensure that the server is providing the necessary ETag tokens. Check your server documentation for the necessary configuration flags.**
 
-Note: 提示：HTML5 Boilerplate 專案包含了所有主流伺服器的<a href='https://github.com/h5bp/server-configs'>設定檔範例</a>，並且為每個配置旗標和設定都提供了詳細的備註：請在清單中找到您喜歡的伺服器，尋找適合的設定，然後複製/確認您的伺服器配置了推薦的設定。
-
+Note: Tip: The HTML5 Boilerplate project contains [sample configuration files](https://github.com/h5bp/server-configs) for all the most popular servers with detailed comments for each configuration flag and setting. Find your favorite server in the list, look for the appropriate settings, and copy/confirm that your server is configured with the recommended settings.
 
 ## Cache-Control
 
 ### TL;DR {: .hide-from-toc }
-- 每個資源都可以透過 Cache-Control HTTP 標題來定義專屬的快取策略
-- Cache-Control 指令負責管控可快取回應的使用者、條件和快取時限
 
+* Each resource can define its caching policy via the Cache-Control HTTP header.
+* Cache-Control directives control who can cache the response, under which conditions, and for how long.
 
-最好的請求是不必與伺服器進行通訊的請求：透過回應的本機複本，我們可以避免所有的網路延遲以及傳輸資料的數據連線成本。有鑑於此，HTTP 規範允許伺服器傳回[一系列不同的 Cache-Control 指令](http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.9){: .external}，控制瀏覽器或者其他中繼快取如何快取某個回應以及快取的期限。
+From a performance optimization perspective, the best request is a request that doesn't need to communicate with the server: a local copy of the response allows you to eliminate all network latency and avoid data charges for the data transfer. To achieve this, the HTTP specification allows the server to return [Cache-Control directives](http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.9) that control how, and for how long, the browser and other intermediate caches can cache the individual response.
 
-Note: Cache-Control 標題的定義詳列於 HTTP/1.1 規範中，取代了之前用來定義回應快取策略的標題 (例如 Expires)。現今所有的瀏覽器都支援 Cache-Control，因此我們有這個標題就夠了。
+Note: The Cache-Control header was defined as part of the HTTP/1.1 specification and supersedes previous headers (for example, Expires) used to define response caching policies. All modern browsers support Cache-Control, so that's all you need.
 
-<img src="images/http-cache-control-highlight.png" class="center" alt="HTTP Cache-Control 示例">
+<img src="images/http-cache-control-highlight.png"  alt="HTTP Cache-Control example" />
 
-### "no-cache" 和 "no-store"
+### "no-cache" and "no-store"
 
-「no-cache」表示必須先與伺服器確認傳回的回應是否已變更，然後才能使用該回應來滿足後續對同一個網址的請求。因此，如果存在合適的驗證權杖 (ETag)，no-cache 會發起往返通訊來驗證快取的回應，如果資源沒有任何變更，即可避免下載步驟。
+"no-cache" indicates that the returned response can't be used to satisfy a subsequent request to the same URL without first checking with the server if the response has changed. As a result, if a proper validation token (ETag) is present, no-cache incurs a roundtrip to validate the cached response, but can eliminate the download if the resource has not changed.
 
-相較之下，「no-store」更加簡單，直接禁止瀏覽器和所有中繼快取儲存傳回的任何回應版本，例如包含個人隱私資料或銀行資料的回應。每次使用者請求該資產時，都會向伺服器發送一個請求，而且每次都會下載完整的回應。
+By contrast, "no-store" is much simpler. It simply disallows the browser and all intermediate caches from storing any version of the returned response&mdash;for example, one containing private personal or banking data. Every time the user requests this asset, a request is sent to the server and a full response is downloaded.
 
-###「public」和「private」
+### "public" vs. "private"
 
-如果回應標記為「public」，即使具備關聯的 HTTP 認證，甚至回應狀態碼無法正常快取，回應也可以供使用者快取。在大多數情況下，「public」並不是必要項目，因為明確的快取資訊 (例如「max-age」) 已表示
-回應可供快取。
+If the response is marked as "public", then it can be cached, even if it has HTTP authentication associated with it, and even when the response status code isn't normally cacheable. Most of the time, "public" isn't necessary, because explicit caching information (like "max-age") indicates that the response is cacheable anyway.
 
-另一方面，瀏覽器可以快取「private」回應，但是通常只開放給單一使用者快取，因此不允許任何中繼快取對其進行快取，例如使用者瀏覽器可以快取包含使用者私人資訊的 HTML 網頁，但是 CDN 不能快取。
+By contrast, the browser can cache "private" responses. However, these responses are typically intended for a single user, so an intermediate cache is not allowed to cache them. For example, a user's browser can cache an HTML page with private user information, but a CDN can't cache the page.
 
 ### "max-age"
 
-這個指令指定從目前請求開始，允許擷取的回應重複使用的最長時間 (單位為秒)，例如「max-age=60」表示回應可以再快取及重複使用 60 秒。
+This directive specifies the maximum time in seconds that the fetched response is allowed to be reused from the time of the request. For example, "max-age=60" indicates that the response can be cached and reused for the next 60 seconds.
 
-## 定義最佳 Cache-Control 政策
+## Defining optimal Cache-Control policy
 
-<img src="images/http-cache-decision-tree.png" class="center" alt="快取決策樹">
+<img src="images/http-cache-decision-tree.png"  alt="Cache decision tree" />
 
-還在為您的應用程式所使用的特定資源或一組資源煩惱嗎？快按照上面的決策樹確定這些資源的最佳快取策略。在理想情況下，您的目標應該是可在用戶端長時間快取最多的回應，並且為每個回應提供驗證權杖，讓重新驗證流程以高效率完成。
+Follow the decision tree above to determine the optimal caching policy for a particular resource, or a set of resources, that your application uses. Ideally, you should aim to cache as many responses as possible on the client for the longest possible period, and provide validation tokens for each response to enable efficient revalidation.
 
-<table>
+<table class="responsive">
+  
 <thead>
   <tr>
-    <th width="30%">Cache-Control 指令</th>
-    <th>說明</th>
+    <th colspan="2">Cache-Control directives &amp; Explanation</th>
   </tr>
 </thead>
 <tr>
   <td data-th="cache-control">max-age=86400</td>
-  <td data-th="說明">瀏覽器和任何中繼快取都可以快取回應 (如果是 "public") 長達一天 (60 秒 x 60 分 x 24 小時)</td>
+  <td data-th="explanation">Response can be cached by browser and any intermediary caches (that is, it's "public") for up to 1 day (60 seconds x 60 minutes x 24 hours).</td>
 </tr>
 <tr>
   <td data-th="cache-control">private, max-age=600</td>
-  <td data-th="說明">用戶端瀏覽器最長只能快取回應 10 分鐘 (60 秒 x 10 分)</td>
+  <td data-th="explanation">Response can be cached by the client’s browser only for up to 10 minutes (60 seconds x 10 minutes).</td>
 </tr>
 <tr>
   <td data-th="cache-control">no-store</td>
-  <td data-th="說明">不允許快取回應，每個請求必須擷取完整的回應。</td>
+  <td data-th="explanation">Response is not allowed to be cached and must be fetched in full on every request.</td>
 </tr>
 </table>
 
-根據 HTTP Archive 指出，在排名最高的 300,000 個網站中 (Alexa 排名)，[幾乎有半數的下載回應其實都可供瀏覽器快取] (http://httparchive.org/trends.php#maxage0){: .external}，對於重複性網頁瀏覽量和造訪來說，這可省下相當可觀的成本！ 當然，這並不表示您的特定應用程式有 50% 的資源可以快取：有些網站可以快取 90% 以上的資源， 而有些網站則因為包含許多私人或具時效性的資料，根本無法快取。
+According to HTTP Archive, among the top 300,000 sites (by Alexa rank), the browser can cache [nearly half of all the downloaded responses](http://httparchive.org/trends.php#maxage0), which is a huge savings for repeat pageviews and visits. Of course, that doesn’t mean that your particular application can cache 50% of the resources. Some sites can cache more than 90% of their resources, while other sites might have a lot of private or time-sensitive data that can’t be cached at all.
 
-**審查您的網頁，確定哪些資源可供快取，並確認這些資源可傳回正確的 Cache-Control 和 ETag 標題。**
+**Audit your pages to identify which resources can be cached and ensure that they return appropriate Cache-Control and ETag headers.**
 
-
-## 作廢及更新已快取的回應
+## Invalidating and updating cached responses
 
 ### TL;DR {: .hide-from-toc }
-- 在資源「過期」之前，將一直使用本地快取的回應
-- 透過將檔案內容指紋碼嵌入網址，我們可以強制使用者端更新到新版的回應
-- 為了獲得最佳效能，每個應用程式需要定義專屬的快取階層
 
+* Locally cached responses are used until the resource "expires."
+* Embedding a file content fingerprint in the URL enables you to force the client to update to a new version of the response.
+* Each application needs to define its own cache hierarchy for optimal performance.
 
-瀏覽器發出的所有 HTTP 請求會先傳送到瀏覽器的快取，以查看其中是否已快取了可滿足請求的有效回應。如果有相符的回應，就會直接從快取中讀取回應，藉此避免了網路延遲以及傳輸過程產生的行動數據傳輸費用。**不過，如果我們希望更新或作廢已快取的回應，該怎麼辦？**
+All HTTP requests that the browser makes are first routed to the browser cache to check whether there is a valid cached response that can be used to fulfill the request. If there's a match, the response is read from the cache, which eliminates both the network latency and the data costs that the transfer incurs.
 
-舉例來說，假設我們已經告訴訪客快取 CSS 樣式表最長不要超過 24 小時  (max-age=86400)，但是設計人員剛剛提交了一個更新，而我們希望所有使用者都能使用。我們該如何通知所有訪客快取的 CSS 副本已過時，需要更新快取？ 這是一個棘手的問題。實際上，至少在不變更資源網址的情況下，我們做不到。
+**However, what if you want to update or invalidate a cached response?** For example, suppose you've told your visitors to cache a CSS stylesheet for up to 24 hours (max-age=86400), but your designer has just committed an update that you'd like to make available to all users. How do you notify all the visitors who have what is now a "stale" cached copy of your CSS to update their caches? You can't, at least not without changing the URL of the resource.
 
-瀏覽器快取回應後，在快取的版本過期以前都會一直使用 (這個行為是由 max-age 或者 expires 指定的)，或者直到因為某些原因從快取中刪除，例如使用者清除了瀏覽器快取。因此，在建構網頁時，各個使用者可能使用的檔案版本都不同；剛剛擷取該資源的使用者將使用新版本，而曾經快取舊版本 (但是依然有效) 的使用者將繼續使用舊版本的回應。
+After the browser caches the response, the cached version is used until it's no longer fresh, as determined by max-age or expires, or until it is evicted from cache for some other reason&mdash; for example, the user clearing their browser cache. As a result, different users might end up using different versions of the file when the page is constructed: users who just fetched the resource use the new version, while users who cached an earlier (but still valid) copy use an older version of its response.
 
-**所以，我們如何才能魚和熊掌兼得，同時達成用戶端快取和快速更新？** 很簡單，在資源內容變更時，我們可以變更資源的網址，強制使用者下載新回應。一般來說，只要在檔案名稱中嵌入檔案的指紋碼或版本號碼，例如 style.**x234dff**.css 即可。
+**How do you get the best of both worlds: client-side caching and quick updates?** You change the URL of the resource and force the user to download the new response whenever its content changes. Typically, you do this by embedding a fingerprint of the file, or a version number, in its filename&mdash;for example, style.**x234dff**.css.
 
-<img src="images/http-cache-hierarchy.png" class="center" alt="快取階層">
+<img src="images/http-cache-hierarchy.png"  alt="Cache hierarchy" />
 
-藉由為每個資源定義快取策略的功能，我們可以定義「快取階層」。如此一來，不但可以控制每個回應的快取時間，還可以控制訪客看到新版本的速度。讓我們一起分析上面的示例：
+The ability to define per-resource caching policies allows you to define "cache hierarchies" that allow you to control not only how long each is cached for, but also how quickly visitors see new versions. To illustrate this, analyze the above example:
 
-* HTML 標記為「no-cache」，這表示瀏覽器在每次請求時都會重新驗證文件，如果內容變更，就會擷取最新版本。同時，在 HTML 標記中，我們在 CSS 和 JavaScript 資源的網址中嵌入指紋碼：如果這些檔案的內容變更，網頁的 HTML 也會隨之變更，並將下載 HTML 回應的新副本。
-* 允許瀏覽器和中繼快取 (例如 CDN) 快取 CSS，期限設定為 1 年。請注意，我們可以放心使用 1 年的「遠期期限」，因為我們在檔案名稱中嵌入了檔案指紋碼：如果 CSS 更新，網址也會隨之變更。
-* JavaScript 期限也設定為 1 年，但是被標記為「private」，也許是因為其中包含了不適合 CDN 快取的使用者私人資料。
-* 快取圖片時不包含版本或唯一指紋碼，期限設定為 1 天。
+* The HTML is marked with "no-cache", which means that the browser always revalidates the document on each request and fetches the latest version if the contents change. Also, within the HTML markup, you embed fingerprints in the URLs for CSS and JavaScript assets: if the contents of those files change, then the HTML of the page changes as well and a new copy of the HTML response is downloaded.
+* The CSS is allowed to be cached by browsers and intermediate caches (for example, a CDN), and is set to expire in 1 year. Note that you can use the "far future expires" of 1 year safely because you embed the file fingerprint in its filename: if the CSS is updated, the URL changes as well.
+* The JavaScript is also set to expire in 1 year, but is marked as private, perhaps because it contains some private user data that the CDN shouldn’t cache.
+* The image is cached without a version or unique fingerprint and is set to expire in 1 day.
 
-混合使用 ETag、Cache-Control 和唯一網址，我們可以提供最佳的方案，例如較長的期限，控制可以快取回應的位置，以及視需要隨時更新。
+The combination of ETag, Cache-Control, and unique URLs allows you to deliver the best of all worlds: long-lived expiration times, control over where the response can be cached, and on-demand updates.
 
-## 快取檢查表
+## Caching checklist
 
-天底下沒有所謂的最佳快取策略。根據您的流量模式、提供的資料類型以及應用特定的資料更新要求，您必須定義及設置每個資源最適合的設定和整體的「快取階層」。
+There's no one best cache policy. Depending on your traffic patterns, type of data served, and application-specific requirements for data freshness, you must define and configure the appropriate per-resource settings, as well as the overall "caching hierarchy."
 
-在定義快取策略時，請記住下列技巧和方法：
+Some tips and techniques to keep in mind as you work on caching strategy:
 
-1. **使用一致的網址：**如果您在不同的網址上提供相同的內容，將會多次取得及儲存該內容。提示：請注意[網址區分大小寫](http://www.w3.org/TR/WD-html40-970708/htmlweb.html)！
-2. **確認伺服器提供驗證權杖 (ETag)：**透過驗證權杖，如果伺服器上的資源未曾變更，就不必傳輸相同的位元組。
-3. **確定中繼快取可以快取哪些資源：**對所有使用者的回應完全相同的資源很適合由 CDN 或其他中繼快取進行快取。
-4. **確定每個資源的最佳快取效期：**不同的資源可能有不同的更新要求。審查並確定每個資源適合的 max-age。
-5. **確定網站的最佳快取階層：**對 HTML 文件組合使用包含內容指紋碼的資源網址以及短時間或 no-cache 的效期，可以控制用戶端取得更新的速度。
-6. **更新內容最小化：**有些資源的更新頻率比其他資源高。如果資源的特定部分 (例如 JavaScript 函式或一組 CSS 樣式) 會經常更新，請考慮將其程式碼當做單獨的檔案提供。如此一來，每次擷取更新時，剩餘內容 (例如不會頻繁更新的程式庫程式碼) 可以從快取中擷取，讓需要下載的內容量降到最低。
+* **Use consistent URLs:** if you serve the same content on different URLs, then that content will be fetched and stored multiple times. Tip: note that [URLs are case sensitive](http://www.w3.org/TR/WD-html40-970708/htmlweb.html).
+* **Ensure that the server provides a validation token (ETag):** validation tokens eliminate the need to transfer the same bytes when a resource has not changed on the server.
+* **Identify which resources can be cached by intermediaries:** those with responses that are identical for all users are great candidates to be cached by a CDN and other intermediaries.
+* **Determine the optimal cache lifetime for each resource:** different resources may have different freshness requirements. Audit and determine the appropriate max-age for each one.
+* **Determine the best cache hierarchy for your site:** the combination of resource URLs with content fingerprints and short or no-cache lifetimes for HTML documents allows you to control how quickly the client picks up updates.
+* **Minimize churn:** some resources are updated more frequently than others. If there is a particular part of a resource (for example, a JavaScript function or a set of CSS styles) that is often updated, consider delivering that code as a separate file. Doing so allows the remainder of the content (for example, library code that doesn't change very often), to be fetched from cache and minimizes the amount of downloaded content whenever an update is fetched.
 
+## Feedback {: .hide-from-toc }
 
+{% include "web/_shared/helpful.html" %}
 
-
+<div class="clearfix"></div>
