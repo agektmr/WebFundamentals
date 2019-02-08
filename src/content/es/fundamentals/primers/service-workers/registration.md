@@ -1,204 +1,99 @@
-project_path: /web/fundamentals/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Recomendaciones para saber cuándo registrar un service worker.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Best practices for timing your service worker registration.
 
-{# wf_updated_on: 2019-02-06 #}
-{# wf_published_on: 2016-11-28 #}
-{# wf_blink_components: Blink>ServiceWorker #}
+{# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2016-11-28 #} {# wf_blink_components: Blink>ServiceWorker #}
 
-# Registro de los service workers {: .page-title }
+# Service Worker Registration {: .page-title }
 
 {% include "web/_shared/contributors/jeffposnick.html" %}
 
-Los [service
-workers](/web/fundamentals/getting-started/primers/service-workers)
-pueden acelerar considerablemente las visitas repetidas a tu app web, pero debes seguir ciertos
-pasos para que la instalación inicial del service worker no degrade la experiencia de la primera
-visita del usuario.
+[Service workers](/web/fundamentals/getting-started/primers/service-workers) can meaningfully speed up repeat visits to your web app, but you should take steps to ensure that a service worker's initial installation doesn't degrade a user's first-visit experience.
 
-Por lo general, esperar hasta que se cargue la página inicial para
-[registrar](https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorkerContainer/register)
-el service worker brindará la mejor experiencia de usuario, sobre todo de
-aquellos que utilicen dispositivos móviles con conexiones de red más lentas.
+Generally, deferring service worker [registration](https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorkerContainer/register) until after the initial page has loaded will provide the best experience for users, especially those on mobile devices with slower network connections.
 
-## Modelo convencional de registros
+## Common registration boilerplate
 
-Si ya estás familiarizado con los service workers, es probable que ya conozcas
-texto similar a este:
+If you've ever read about service workers, you've probably come across boilerplate substantially similar to the following:
 
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('/service-worker.js');
     }
+    
 
-Es probable que esté acompañado de algunas instrucciones de `console.log()` o de
-[código](https://github.com/GoogleChrome/sw-precache/blob/master/demo/app/js/service-worker-registration.js#L20)
-que detecta la actualización de un registro de service worker anterior, para que los
-usuarios sepan que hay que actualizar la página. Pero son solo pequeñas variaciones de las pocas líneas del
-código modelo.
+This might sometimes be accompanied by a few `console.log()` statements, or [code](https://github.com/GoogleChrome/sw-precache/blob/master/demo/app/js/service-worker-registration.js#L20) that detects an update to a previous service worker registration, as a way of letting users know to refresh the page. But those are just minor variations on the standard few lines of code.
 
-¿Existen entonces variaciones de `navigator.serviceWorker.register`? ¿Existen recomendaciones
-que haya que seguir? No debería sorprender (dado que el artículo no termina
-aquí) que la respuesta es "¡sí!".
+So, is there any nuance to `navigator.serviceWorker.register`? Are there any best practices to follow? Not surprisingly (given that this article doesn't end right here), the answer to both is "yes!"
 
-## La primera visita del usuario
+## A user's first visit
 
-Pensemos en la primera visita del usuario a la app web. Todavía no hay ningún service worker
-y el navegador no tiene forma de saber si se instalará
-uno.
+Let's consider a user's first visit to a web app. There's no service worker yet, and the browser has no way of knowing in advance whether there will be a service worker that is eventually installed.
 
-Como programador, tu prioridad debe ser que el navegador obtenga
-rápidamente el mínimo conjunto de recursos críticos que sean necesarios para mostrar una página
-interactiva. El elemento que demore este proceso será enemigo de cualquier
-experiencia fluida e interactiva.
+As a developer, your priority should be to make sure that the browser quickly gets the minimal set of critical resources needed to display an interactive page. Anything that slows down retrieving those responses is the enemy of a speedy time-to-interactive experience.
 
-Ahora supongamos que durante la descarga de JavaScript o de las imágenes que
-tu página necesita representar, el navegador decide iniciar un proceso o subproceso en
-segundo plano (para no explayarnos tanto, supongamos que es un subproceso). Supongamos que
-tu máquina no es muy potente; es el tipo de teléfono celular
-con poca potencia que la mayoría de las personas usan como dispositivo principal. La ejecución
-de este subproceso adicional agrega cargas al tiempo de CPU y a la memoria, recursos que tu
-navegador usaría para representar la página web.
+Now imagine that in the process of downloading the JavaScript or images that your page needs to render, your browser decides to start a background thread or process (for the sake of brevity, we'll assume it's a thread). Assume that you're not on a beefy desktop machine, but rather the type of underpowered mobile phone that much of the world considers their primary device. Spinning up this extra thread adds contention for CPU time and memory that your browser might otherwise spend on rendering an interactive web page.
 
-Es probable que los subprocesos en segundo plano que estén inactivos no marquen mucha diferencia. ¿Pero qué
-ocurre si el proceso no está inactivo y, en su lugar, decide que también comenzará
-a descargar recursos de la red? Cualquier preocupación sobre cargas en el CPU o la
-memoria será secundaria en comparación con los problemas de ancho de banda limitado
-que tienen muchos dispositivos móviles. El ancho de banda es un bien preciado, así que no descargues recursos secundarios al mismo tiempo, ya que debilitarás
-los recursos críticos.
+An idle background thread is unlikely to make a significant difference. But what if that thread isn't idle, but instead decides that it's also going to start downloading resources from the network? Any concern about CPU or memory contention should take a backseat to worries about the limited bandwidth available to many mobile devices. Bandwidth is precious, so don't undermine critical resources by downloading secondary resources at the same time.
 
-Lo que quiero decir es que si ejecutas un nuevo proceso de service worker para descargar
-y almacenar en caché recursos en segundo plano, es posible que vaya en contra de tu objetivo: proporcionar
-la experiencia más rápida e interactiva durante la primera visita del usuario
-a tu sitio.
+All of this is to say that spinning up a new service worker thread to download and cache resources in the background can work against your goal of providing the shortest time-to-interactive experience the first time a user visits your site.
 
-## Cómo mejorar el modelo
+## Improving the boilerplate
 
-La solución es controlar el inicio del service worker. Para eso, se debe elegir cuándo realizar una llamada a
-`navigator.serviceWorker.register()`. Una regla simple es demorar
-el registro hasta después de que se ejecute el <code>[load
-event](https://developer.mozilla.org/en-US/docs/Web/API/GlobalEventHandlers/onload)</code>
-en <code>window</code>:
+The solution is to control start of the service worker by choosing when to call `navigator.serviceWorker.register()`. A simple rule of thumb would be to delay registration until after the `<a href="https://developer.mozilla.org/en-US/docs/Web/API/GlobalEventHandlers/onload">load
+event</a>` fires on `window`, like so:
 
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', function() {
         navigator.serviceWorker.register('/service-worker.js');
       });
     }
+    
 
-Pero el momento adecuado de iniciar el registro del service worker también puede depender
-de lo que haga tu app web inmediatamente después de que se carga. Por ejemplo, la [app web de Google
-I/O 2016](https://events.google.com/io2016/) muestra una pequeña animación
-antes de pasar a la pantalla principal. Nuestro equipo
-[descubrió](/web/showcase/2016/iowa2016) que si se ejecuta
-el registro del service worker durante la animación, los dispositivos móviles de gama baja pueden
-tener problemas. En lugar de brindar una mala experiencia a los usuarios,
-[demoramos](https://github.com/GoogleChrome/ioweb2016/blob/8cfa27261f9d07fe8a5bb7d228bd3f35dfc9a91e/app/scripts/helper/elements.js#L42)
-el registro del service worker hasta después de la animación, cuando
-es más probable que el navegador tenga unos segundos libres.
+But the right time to kick off the service worker registration can also depend on what your web app is doing right after it loads. For example, the [Google I/O 2016 web app](https://events.google.com/io2016/) features a short animation before transitioning to the main screen. Our team [found](/web/showcase/2016/iowa2016) that kicking off the service worker registration during the animation could lead to jankiness on low-end mobile devices. Rather than giving users a poor experience, we [delayed](https://github.com/GoogleChrome/ioweb2016/blob/8cfa27261f9d07fe8a5bb7d228bd3f35dfc9a91e/app/scripts/helper/elements.js#L42) service worker registration until after the animation, when the browser was most likely to have a few idle seconds.
 
-Asimismo, si tu app web usa un marco de trabajo que realiza configuraciones adicionales
-después de cargar la página, busca un evento específico del marco que indique cuándo termina
-la tarea.
+Similarly, if your web app uses a framework that performs additional setup after the page has loaded, look for a framework-specific event that signals when that work is done.
 
-## Visitas posteriores
+## Subsequent visits
 
-Hasta ahora, hablamos de la experiencia durante la primera visita. ¿Pero cómo afecta
-la demora del registro del service worker a visitas posteriores de tu sitio?
-Aunque sorprenda a más de uno, no debería afectarlas de ningún modo.
+We've been focusing on the first visit experience up until now, but what impact does delayed service worker registration have on repeat visits to your site? While it might surprise some folks, there shouldn't be any impact at all.
 
-Cuando se registra un service worker, pasa por los [eventos de ciclo de vida](/web/fundamentals/instant-and-offline/service-worker/lifecycle) `install` y
-`activate`.
-Cuando se activa el service worker, puede gestionar los eventos `fetch` en cualquier
-visita posterior a tu app web. El service worker se inicia *antes* de que se realice
-la solicitud a cualquier página de su ámbito. Si lo piensas, tiene
-mucho sentido. Si el service worker existente no estuviese funcionando antes de
-visitar la página, no podría realizar los eventos `fetch` para las solicitudes de
-navegación.
+When a service worker is registered, it goes through the `install` and `activate` [lifecycle events](/web/fundamentals/instant-and-offline/service-worker/lifecycle). Once a service worker is activated, it can handle `fetch` events for any subsequent visits to your web app. The service worker starts *before* the request for any pages under its scope is made, which makes sense when you think about it. If the existing service worker weren't already running prior to visiting a page, it wouldn't have a chance to fulfill `fetch` events for navigation requests.
 
-Por lo tanto, si hay un service worker activo, no importa cuándo realizas una llamada a
-`navigator.serviceWorker.register()` o, de hecho, no importa *si lo llamas o no*.
-A menos que cambies la URL de la secuencia de comandos del service worker,
-`navigator.serviceWorker.register()` será un elemento
-[no-op](https://en.wikipedia.org/wiki/NOP) en las visitas posteriores. El momento de
-la llamada es irrelevante.
+So once there's an active service worker, it doesn't matter when you call `navigator.serviceWorker.register()`, or in fact, *whether you call it at all*. Unless you change the URL of the service worker script, `navigator.serviceWorker.register()` is effectively a [no-op](https://en.wikipedia.org/wiki/NOP) during subsequent visits. When it's called is irrelevant.
 
-## Razones para realizar el registro más temprano
+## Reasons to register early
 
-¿En qué escenarios tiene sentido
-registrar el service worker apenas sea posible? Uno que se me viene a la mente es cuando tu service worker usa
-<code>[clients.claim()](https://developer.mozilla.org/en-US/docs/Web/API/Clients/claim)</code>
-para controlar la página durante la primera visita y este
-realiza un [almacenamiento en caché
-en tiempo de ejecución](/web/fundamentals/instant-and-offline/offline-cookbook/#on-network-response)
-de forma agresiva dentro de su controlador de <code>fetch</code>. En este caso, hay
-una ventaja de activar el service worker lo antes posible: para
-llenar su caché en tiempo de ejecución con recursos que podrían ser útiles más adelante. Si
-tu app web hace uso de este mecanismo, vale la pena tomarse un tiempo para
-asegurarse de que el controlador de <code>install</code> del service worker no solicite
-recursos que compitan por ancho de banda con las solicitudes de la página principal.
+Are there any scenarios in which registering your service worker as early as possible makes sense? One that comes to mind is when your service worker uses
+<code><a href="https://developer.mozilla.org/en-US/docs/Web/API/Clients/claim">clients.claim()</a></code>
+to take control of the page during the first visit, and the service worker aggressively performs [runtime caching](/web/fundamentals/instant-and-offline/offline-cookbook/#on-network-response) inside of its `fetch` handler. In that situation, there's an advantage to getting the service worker active as quickly as possible, to try to populate its runtime caches with resources that might come in handy later. If your web app falls into this category, it's worth taking a step back to make sure that your service worker's `install` handler doesn't request resources that fight for bandwidth with the main page's requests.
 
-## Cómo realizar pruebas
+## Testing things out
 
-Una buena forma de simular una primera visita es abrir la app web en una [ventana de
-incógnito de
-Chrome](https://support.google.com/chromebook/answer/95464?co=GENIE.Platform%3DDesktop)
-y analizar el tráfico de red en [DevTools de
-Chrome](/web/tools/chrome-devtools/). Como programador
-web, probablemente cargas una instancia local de tu app web decenas y decenas de veces
-al día. Sin embargo, si visitas nuevamente tu sitio cuando ya hay un
-service worker y las cachés están completas, no obtienes la misma experiencia
-que un usuario nuevo y es fácil pasar por alto cualquier problema potencial.
+A great way to simulate a first visit is to open your web app in a [Chrome Incognito window](https://support.google.com/chromebook/answer/95464?co=GENIE.Platform%3DDesktop), and look at the network traffic in [Chrome's DevTools](/web/tools/chrome-devtools/). As a web developer, you probably reload a local instance of your web app dozens and dozens of times a day. But by revisiting your site when there's already a service worker and fully populated caches, you don't get the same experience that a new user would get, and it's easy to ignore a potential problem.
 
-Aquí se describe un ejemplo con la diferencia que puede
-marcar el momento del registro: Ambas capturas de pantalla se toman cuando se visita una [app de
-ejemplo](https://github.com/GoogleChrome/sw-precache/tree/master/app-shell-demo)
-en modo incógnito con limitación de red para simular una conexión lenta.
+Here's an example illustrating the difference that registration timing could make. Both screenshots are taken while visiting a [sample app](https://github.com/GoogleChrome/sw-precache/tree/master/app-shell-demo) in Incognito mode using network throttling to simulate a slow connection.
 
-![Tráfico de red con registro temprano.](images/early-registration.png
-"Network traffic with early registration.")
+![Network traffic with early registration.](images/early-registration.png "Network traffic with early registration.")
 
-La imagen anterior muestra el tráfico de red cuando se modificó la muestra
-para realizar el registro del service worker lo antes posible. Puedes ver
-las solicitudes de almacenamiento previo en caché (las entradas con [ícono
-de engranaje](http://stackoverflow.com/questions/33590378/status-code200-ok-from-serviceworker-in-chrome-network-devtools/33655173#33655173)
-que provienen del controlador de `install` del service worker)
-mezcladas con las solicitudes de otros recursos necesarios para mostrar la página.
+The screenshot above reflects the network traffic when the sample was modified to perform service worker registration as soon as possible. You can see precaching requests (the entries with the [gear icon](http://stackoverflow.com/questions/33590378/status-code200-ok-from-serviceworker-in-chrome-network-devtools/33655173#33655173) next to them, originating from the service worker's `install` handler) interspersed with requests for the other resources needed to display the page.
 
-![Tráfico de red con registro tardío.](images/late-registration.png
-"Network traffic with late registration.")
+![Network traffic with late registration.](images/late-registration.png "Network traffic with late registration.")
 
+In the screenshot above, service worker registration was delayed until after the page had loaded. You can see that the precaching requests don't start until all the resources have been fetched from the network, eliminating any contention for bandwidth. Moreover, because some of the items we're precaching are already in the browser's HTTP cache—the items with `(from disk cache)` in the Size column—we can populate the service worker's cache without having to go to the network again.
 
-En la captura de pantalla anterior, se demoró el registro del service worker hasta después de cargar
-la página. Puedes ver que las solicitudes de almacenamiento previo en caché no comienzan hasta
-que se obtienen todos los recursos de la red. De esta forma, se elimina cualquier problema de
-ancho de banda. Además, dado que algunos de los elementos que almacenamos previamente en caché ya se encuentran
-en la caché HTTP del navegador (los elementos con `(from disk cache)` en la columna
-"Size"), podemos llenar la caché del service worker sin recurrir nuevamente a la
-red.
+Bonus points if you run this sort of test from an actual, low-end device on a real mobile network. You can take advantage of Chrome's [remote debugging capabilities](/web/tools/chrome-devtools/remote-debugging/) to attach an Android phone to your desktop machine via USB, and ensure that the tests you're running actually reflect the real-world experience of many of your users.
 
-Ganas puntos adicionales si realizas este tipo de prueba en un dispositivo móvil de gama baja y una
-red móvil real. Puedes aprovechar las [capacidades de
-depuración remota](/web/tools/chrome-devtools/remote-debugging/)
-que ofrece Chrome para conectar un teléfono Android a tu máquina de escritorio vía USB y asegurarte de que las
-pruebas que realizas reflejan la experiencia verdadera de muchos de tus
-usuarios.
+## Conclusion
 
-## Conclusión
+To summarize, making sure that your users have the best first-visit experience should be a top priority. Delaying service worker registration until after the page has loaded during the initial visit can help ensure that. You'll still get all the benefits of having a service worker for your repeat visits.
 
-En resumen, asegurarte de que los usuarios tengan la mejor experiencia durante la primera visita
-debe ser una prioridad. Si demoras el registro del service worker hasta que
-se cargue la página durante la primera visita, es posible que te sea más fácil cumplir con esta prioridad. Seguirás
-aprovechando todos los beneficios de tener un service worker para las visitas posteriores.
-
-A continuación, se muestra una forma simple y directa que puedes usar para asegurarte de que el registro inicial del service worker
-se realice después de la carga de la primera página.
+A straightforward way to ensure to delay your service worker's initial registration until after the first page has loaded is to use the following:
 
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', function() {
         navigator.serviceWorker.register('/service-worker.js');
       });
     }
+    
 
-## Comentarios {: #feedback }
+## Feedback {: #feedback }
 
 {% include "web/_shared/helpful.html" %}
