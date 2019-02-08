@@ -1,36 +1,28 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description:使用 table() 方法比較類似的數據對象。
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Compare similar data objects using the table() method.
 
-{# wf_updated_on:2015-05-11 #}
-{# wf_published_on:2015-04-13 #}
+{# wf_updated_on: 2018-07-27 #} {# wf_published_on: 2015-04-13 #} {# wf_blink_components: Platform>DevTools #}
 
-# 比較類似的數據對象 {: .page-title }
+# Compare Similar Data Objects {: .page-title }
 
-{% include "web/_shared/contributors/megginkearney.html" %}
-{% include "web/_shared/contributors/pbakaus.html" %}
-使用 table() 方法查看結構化的數據和比較數據對象。
+{% include "web/_shared/contributors/megginkearney.html" %} {% include "web/_shared/contributors/pbakaus.html" %} View structured data and compare data objects using the table() method.
 
-使用 `table()` 方法，您可以輕鬆地查看包含類似數據的對象和數組。調用時，此方法將提取對象的屬性並創建一個標頭。行數據則來自每個索引的屬性值。
+The `table()` method provides an easy way to view objects and arrays that include similar data. When called, it will take the properties of an object and create a header. The row data then comes from each index's properties value.
 
+## Basic example: Logging an array of objects
 
-## 基本示例：記錄對象數組
-
-在最基本的形式中，您只需要一個由具有相同屬性的多個對象組成的數組，`table()` 命令將執行剩餘操作：
-
+In it's most basic form, all you need is an array with a bunch of objects that have the same properties, and the `table()` command will do the rest:
 
     console.table([{a:1, b:2, c:3}, {a:"foo", b:false, c:undefined}]);
     console.table([[1,2,3], [2,3,4]]);
     
-  
-這將輸出：
 
-![控制檯表格顯示](images/table-arrays.png)
+This will output:
 
-## 高級示例：記錄特定的屬性
+![console table display](images/table-arrays.png)
 
-可以使用 `table()` 的第二個參數記錄更多高級對象。定義一個包含您希望顯示的屬性字符串的數組，如下所示：
+## Advanced example: Logging specific properties
 
+The second parameter to `table()` can be used to log more advanced objects. Define an array containing the property strings you wish to display, like so:
 
     function Person(firstName, lastName, age) {
       this.firstName = firstName;
@@ -47,11 +39,10 @@ description:使用 table() 方法比較類似的數據對象。
     console.table(family, ["firstName", "lastName", "age"]);
     
 
-這將輸出以下內容：
+This will output the following:
 
-![包含表格對象的控制檯輸出](images/table-people-objects.png)
+![console output with table objects](images/table-people-objects.png)
 
+## Feedback {: #feedback }
 
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
