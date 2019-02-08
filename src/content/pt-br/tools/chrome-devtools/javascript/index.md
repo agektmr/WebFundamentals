@@ -1,19 +1,14 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Aprenda a usar o Chrome DevTools para encontrar e corrigir bugs de JavaScript.
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Learn how to use Chrome DevTools to find and fix JavaScript bugs.
 
-{# wf_blink_components: Platform>DevTools #}
-{# wf_updated_on: 2019-02-06 #}
-{# wf_published_on: 2017-01-04 #}
+{# wf_blink_components: Platform>DevTools #} {# wf_updated_on: 2018-07-27 #} {# wf_published_on: 2017-01-04 #}
 
 {% include "web/tools/chrome-devtools/_shared/styles.html" %}
 
-# Primeiros passos com a depuração do JavaScript no Chrome DevTools {: .page-title }
+# Get Started with Debugging JavaScript in Chrome DevTools {: .page-title }
 
 {% include "web/_shared/contributors/kaycebasques.html" %}
 
-Este tutorial ensina os fluxos de trabalho básicos para depuração de qualquer problema de JavaScript no DevTools.
-Continue lendo ou assista à versão em vídeo deste tutorial logo abaixo.
+This tutorial teaches you the basic workflow for debugging any JavaScript issue in DevTools. Read on, or watch the video version of this tutorial, below.
 
 <div class="video-wrapper-full-width">
   <iframe class="devsite-embedded-youtube-video" data-video-id="H0XScE08hy8"
@@ -21,78 +16,56 @@ Continue lendo ou assista à versão em vídeo deste tutorial logo abaixo.
   </iframe>
 </div>
 
+## Step 1: Reproduce the bug {: #reproduce }
 
-## Etapa 1: reproduzir o bug. {: #reproduce }
+Finding a series of actions that consistently reproduces a bug is always the first step to debugging.
 
-Encontrar uma série de ações que reproduzam consistentemente um bug é sempre o primeiro passo
-para a depuração.
+1. Click **Open Demo**. The demo opens in a new tab.
+    
+    <a href="https://googlechrome.github.io/devtools-samples/debug-js/get-started"
+   target="devtools"
+   rel="noopener noreferrer"> <button>Open Demo</button> </a>
 
-1. Clique em **Open Demo**. A demonstração abrirá em uma nova guia.
+2. Enter `5` in the **Number 1** text box.
 
-     <a href="https://googlechrome.github.io/devtools-samples/debug-js/get-started"
-       target="devtools"
-       rel="noopener noreferrer">
-       <button>Open Demo</button>
-     </a>
+3. Enter `1` in the **Number 2** text box.
+4. Click **Add Number 1 and Number 2**. The label below the button says `5 + 1 = 51`. The result should be `6`. This is the bug you're going to fix.
+    
+    <figure> 
+    
+    ![The result of 5 + 1 is 51. It should be 6.](imgs/bug.png) <figcaption> **Figure 1**. The result of 5 + 1 is 51. It should be 6. </figcaption> </figure>
 
-1. Insira `5` na caixa de texto **Number 1**.
-1. Insira `1` na caixa de texto **Number 2**.
-1. Clique em **Add Number 1 and Number 2**. A etiqueta abaixo do botão informa `5 + 1 = 51`. O resultado
-   deveria ser `6`. Esse é o bug que você corrigirá.
+## Step 2: Get familiar with the Sources panel UI {: #sources-ui }
 
-     <figure>
-       <img src="imgs/bug.png"
-         alt="O resultado de 5 + 1 é 51. Deveria ser 6."/>
-       <figcaption>
-         <b>Imagem 1</b>. O resultado de 5 + 1 é 51. Deveria ser 6.
-       </figcaption>
-     </figure>
+DevTools provides a lot of different tools for different tasks, such as changing CSS, profiling page load performance, and monitoring network requests. The **Sources** panel is where you debug JavaScript.
 
-## Etapa 2: familiarizar-se com a IU do painel Sources {: #sources-ui }
+1. Open DevTools by pressing <kbd>Command</kbd>+<kbd>Option</kbd>+<kbd>I</kbd> (Mac) or <kbd>Control</kbd>+<kbd>Shift</kbd>+<kbd>I</kbd> (Windows, Linux). This shortcut opens the **Console** panel.
+    
+    <figure> 
+    
+    ![The Console panel.](imgs/console.png) <figcaption> **Figure 2**. The **Console** panel </figcaption> </figure>
+2. Click the **Sources** tab.
+    
+    <figure> 
+    
+    ![The Sources panel.](imgs/sources.png) <figcaption> **Figure 3**. The **Sources** panel </figcaption> </figure>
 
-O DevTools fornece diversas ferramentas para tarefas diferentes, como alteração de CSS, criação de perfil de desempenho
-de carregamento de página e monitoramento de solicitações de rede. O painel **Sources** é onde você depura
-o JavaScript.
-
-1. Abra o DevTools pressionando <kbd>Command</kbd>+<kbd>Option</kbd>+<kbd>I</kbd> (Mac)
-   ou   <kbd>Control</kbd>+<kbd>Shift</kbd>+<kbd>I</kbd> (Windows, Linux). Esse atalho abre o painel
-   **Console**.
-
-     <figure>
-       <img src="imgs/console.png" alt="O painel Console."/>
-       <figcaption>
-         <b>Imagem 2</b>. <b>O painel</b> Console.
-       </figcaption>
-     </figure>
-
-1. Clique na guia **Sources**.
-
-     <figure>
-       <img src="imgs/sources.png" alt="O painel Sources."/>
-       <figcaption>
-         <b>Imagem 3</b>. O <b>painel</b> Sources
-       </figcaption>
-     </figure>
-
-A IU do painel **Sources** tem 3 partes:
+The **Sources** panel UI has 3 parts:
 
 <figure>
-  <img src="imgs/sources-annotated.png" alt="As três partes da IU do painel Sources."/>
+  <img src="imgs/sources-annotated.png" alt="The 3 parts of the Sources panel UI."/>
   <figcaption>
-    <b>Imagem 4</b>. As três partes da <b>IU do painel</b> Sources
- </figcaption>
+    <b>Figure 4</b>. The 3 parts of the <b>Sources</b> panel UI
+  </figcaption>
 </figure>
 
-1. O painel **File Navigator**. Todo arquivo solicitado pela página é listado aqui.
-2. O painel **Code Editor**. Após selecionar um arquivo no painel **File Navigator**, os conteúdos
-   desse arquivo são exibidos aqui.
-3. O painel **JavaScript Debugging**. Várias ferramentas para inspecionar o JavaScript da página. Se
-   sua janela do DevTools estiver ampliada, esse painel é exibido à direita do painel **Code Editor**.
+1. The **File Navigator** pane. Every file that the page requests is listed here.
+2. The **Code Editor** pane. After selecting a file in the **File Navigator** pane, the contents of that file are displayed here.
+3. The **JavaScript Debugging** pane. Various tools for inspecting the page's JavaScript. If your DevTools window is wide, this pane is displayed to the right of the **Code Editor** pane.
 
-## Etapa 3: pausar o código com um ponto de interrupção {: #event-breakpoint }
+## Step 3: Pause the code with a breakpoint {: #event-breakpoint }
 
-Um método comum para depurar problemas desse tipo é inserir várias instruções `console.log()`
-no código, para inspecionar valores durante a execução do script. Por exemplo:
+A common method for debugging a problem like this is to insert a lot of `console.log()` statements into the code, in order to inspect values as the script executes. For example:
 
 <pre class="prettyprint">function updateLabel() {
   var addend1 = getNumber1();
@@ -104,245 +77,137 @@ no código, para inspecionar valores durante a execução do script. Por exemplo
   label.textContent = addend1 + ' + ' + addend2 + ' = ' + sum;
 }</pre>
 
-O método `console.log()` pode dar conta do trabalho, mas **pontos de interrupção** são mais rápidos.
-Um ponto de interrupção permite pausar o código no meio da execução e examinar todos os valores
-naquele momento. Os pontos de interrupção têm algumas vantagens sobre o método `console.log()`:
+The `console.log()` method may get the job done, but **breakpoints** can get it done faster. A breakpoint lets you pause your code in the middle of its execution, and examine all values at that moment in time. Breakpoints have a few advantages over the `console.log()` method:
 
-* Com o `console.log()`, você precisa abrir o código-fonte manualmente, encontrar o código relevante,
- inserir as instruções `console.log()` e recarregar a página para ver as mensagens
- no Console. Com os pontos de interrupção, você pode pausar no código relevante sem mesmo saber como
- o código está estruturado.
-* Nas suas instruções `console.log()`, você precisa especificar exatamente cada valor que quer
- inspecionar. Com os pontos de interrupção, o DevTools exibe para você os valores de todas as variáveis naquele momento,
- em tempo real. Às vezes existem variáveis afetando seu código que você não percebeu.
+* With `console.log()`, you need to manually open the source code, find the relevant code, insert the `console.log()` statements, and then reload the page in order to see the messages in the Console. With breakpoints, you can pause on the relevant code without even knowing how the code is structured.
+* In your `console.log()` statements you need to explicitly specify each value that you want to inspect. With breakpoints, DevTools shows you the values of all variables at that moment in time. Sometimes there are variables affecting your code that you're not even aware of.
 
-Resumindo, os pontos de interrupção podem ajudar você a encontrar e a consertar bugs mais rapidamente do que o método `console.log()`.
+In short, breakpoints can help you find and fix bugs faster than the `console.log()` method.
 
-Se você der um passo atrás e pensar em como o aplicativo funciona, pode chegar à conclusão de
-que a soma incorreta (`5 + 1 = 51`) é calculada no listener de eventos `click` que está
-associado ao botão **Add Number 1 and Number 2**. Dessa forma, você provavelmente quer pausar
-o código próximo ao tempo no qual o listener `click` é executado. O **Event Listener Breakpoints**
-permite que você faça exatamente isso:
+If you take a step back and think about how the app works, you can make an educated guess that the incorrect sum (`5 + 1 = 51`) gets computed in the `click` event listener that's associated to the **Add Number 1 and Number 2** button. Therefore, you probably want to pause the code around the time that the `click` listener executes. **Event Listener Breakpoints** let you do exactly that:
 
-1. No painel **JavaScript Debugging**, clique em **Event Listener Breakpoints** para expandir a
-   seção. O DevTools revela uma lista de categorias de evento expansíveis, como o **Animation** e o
-   **Clipboard**.
-1. Ao lado da categoria de evento **Mouse**, clique em **Expand** ![Expandir
- o ícone](/web/tools/chrome-devtools/images/expand.png){: .devtools-inline}.
-   O DevTools revela uma lista de eventos de mouse, como o **click** e o **mousedown**. Há uma caixa de seleção
-   ao lado de cada evento.
-1. Marque a caixa de seleção **click**. O DevTools agora está configurado para pausar automaticamente quando *qualquer*
-   listener de evento `click` for executado.
+1. In the **JavaScript Debugging** pane, click **Event Listener Breakpoints** to expand the section. DevTools reveals a list of expandable event categories, such as **Animation** and **Clipboard**.
+2. Next to the **Mouse** event category, click **Expand** ![Expand
+icon](/web/tools/chrome-devtools/images/expand.png){: .devtools-inline}. DevTools reveals a list of mouse events, such as **click** and **mousedown**. Each event has a checkbox next to it.
+3. Check the **click** checkbox. DevTools is now set up to automatically pause when *any* `click` event listener executes.
+    
+    <figure> 
+    
+    ![The click checkbox is enabled.](imgs/get-started-click-breakpoint.png) <figcaption> **Figure 5**. The **click** checkbox is enabled </figcaption> </figure>
+4. Back on the demo, click **Add Number 1 and Number 2** again. DevTools pauses the demo and highlights a line of code in the **Sources** panel. DevTools should be paused on this line of code:
+    
+    
+    
+    <pre class="prettyprint">function onClick() {</pre>
+    If you're paused on a different line of code, press **Resume Script Execution** ![Resume
+ Script Execution](/web/tools/chrome-devtools/images/resume-script-execution.png){:.cdt-inl} until you're paused on the correct line.
+    
+    <aside class="note"> **Note**: If you paused on a different line, you have a browser extension that registers a `click` event listener on every page that you visit. You were paused in the extension's `click` listener. If you use Incognito Mode to \[browse in private\]\[incognito\], which disables all extensions, you can see that you pause on the correct line of code every time. </aside>
 
+**Event Listener Breakpoints** are just one of many types of breakpoints available in DevTools. It's worth memorizing all the different types, because each type ultimately helps you debug different scenarios as quickly as possible. See [Pause Your Code With Breakpoints](/web/tools/chrome-devtools/javascript/breakpoints) to learn when and how to use each type.
 
-     <figure>
-       <img src="imgs/get-started-click-breakpoint.png"
-         alt="A caixa de seleção click está ativada."/>
-       <figcaption>
-         <b>Imagem 5</b>. A caixa de seleção <b>click</b> está ativada
-       </figcaption>
-     </figure>
+## Step 4: Step through the code {: #code-stepping }
 
-   
-1. De volta à demonstração, clique novamente em **Add Number 1 and Number 2** O DevTools
-   pausa a demonstração e destaca uma linha de código no painel **Sources**.
-   O DevTools deve estar pausado nesta linha de código:
+One common cause of bugs is when a script executes in the wrong order. Stepping through your code enables you to walk through your code's execution, one line at a time, and figure out exactly where it's executing in a different order than you expected. Try it now:
 
-     <pre class="prettyprint">function onClick() {</pre>
+1. On the **Sources** panel of DevTools, click **Step into next function call** ![Step into next function call](/web/tools/chrome-devtools/images/step-into.png){:.devtools-inline} to step through the execution of the `onClick()` function, one line at a time. DevTools highlights the following line of code:
+    
+    
+    
+    <pre class="prettyprint">if (inputsAreEmpty()) {</pre>
+2. Click **Step over next function call** ![Step over next function
+call](/web/tools/chrome-devtools/images/step-over.png){:.devtools-inline}. DevTools executes `inputsAreEmpty()` without stepping into it. Notice how DevTools skips a few lines of code. This is because `inputsAreEmpty()` evaluated to false, so the `if` statement's block of code didn't execute.
 
-     Se você está pausado em uma linha de código diferente, pressione **Resume Script Execution** ![Retomar
-     a execução do script][resume]{:.cdt-inl} até que você esteja pausado na linha correta.
+That's the basic idea of stepping through code. If you look at the code in `get-started.js`, you can see that the bug is probably somewhere in the `updateLabel()` function. Rather than stepping through every line of code, you can use another type of breakpoint to pause the code closer to the probable location of the bug.
 
-     <aside class="note">
-       **Observação**: se tiver pausado em uma linha diferente, você tem uma extensão de navegador que
-       registra um listener de evento `click` em cada página que você visita. Você ficou pausado no
-       listener `click` da extensão. Se usar o modo de navegação anônima [navegador no
-       privado][incognito], que desativa todas as extensões, você pode ver que pausou
-       todas as vezes na linha de código correta.
-     </aside>
+## Step 5: Set a line-of-code breakpoint {: #line-breakpoint }
 
-[incognito]: https://support.google.com/chrome/answer/95464
+Line-of-code breakpoints are the most common type of breakpoint. When you've got a specific line of code that you want to pause on, use a line-of-code breakpoint:
 
-O **Event Listener Breakpoints** é apenas um dos vários tipos de pontos de interrupção disponíveis no DevTools.
-Vale a pena memorizar todos os tipos diferentes, porque cada tipo ajuda você a depurar
-cenários diferentes da maneira mais rápida possível. Veja [Pausar o código com pontos de interrupção][breakpoints]
-para saber quando e como usar cada tipo.
+1. Look at the last line of code in `updateLabel()`:
+    
+    
+    
+    <pre class="prettyprint">label.textContent = addend1 + ' + ' + addend2 + ' = ' + sum;</pre>
+2. To the left of the code you can see the line number of this particular line of code, which is **32**. Click on **32**. DevTools puts a blue icon on top of **32**. This means that there is a line-of-code breakpoint on this line. DevTools now always pauses before this line of code is executed.
 
-[resume]: /web/tools/chrome-devtools/images/resume-script-execution.png
-[breakpoints]: /web/tools/chrome-devtools/javascript/breakpoints
+3. Click **Resume script execution** ![Resume script
+execution](/web/tools/chrome-devtools/images/resume-script-execution.png){:.devtools-inline}. The script continues executing until it reaches line 32. On lines 29, 30, and 31, DevTools prints out the values of `addend1`, `addend2`, and `sum` to the right of each line's semi-colon.
+    
+    <figure> 
+    
+    ![DevTools pauses on the line-of-code breakpoint on line 32.](imgs/line-of-code-breakpoint.png) <figcaption> **Figure 6**. DevTools pauses on the line-of-code breakpoint on line 32 </figcaption> </figure>
 
-## Etapa 4: percorrer o código {: #code-stepping }
+## Step 6: Check variable values {: #check-values }
 
-Uma causa comum de bugs é a execução de um script na
-ordem errada. Percorrer o código permite que você acompanhe a execução dele,
-uma linha de cada vez, e descubra exatamente onde
-ele está sendo executado em ordem diferente da esperada. Experimente agora:
+The values of `addend1`, `addend2`, and `sum` look suspicious. They're wrapped in quotes, which means that they're strings. This is a good hypothesis for the explaining the cause of the bug. Now it's time to gather more information. DevTools provides a lot of tools for examining variable values.
 
-1. No painel **Sources** do DevTools, clique em **Step into next function
-   call** ![Entrar na chamada de função][into]{:.devtools-inline} para percorrer
-   a execução da função `onClick()` uma linha por vez.
-   O DevTools destaca esta linha de código:
+### Method 1: The Scope pane {: #scope }
 
-     <pre class="prettyprint">if (inputsAreEmpty()) {</pre>
-
-1. Clique em **Step over next function call** ![Pular para a próxima chamada
-   de função][over]{:.devtools-inline}. O DevTools executa `inputsAreEmpty()`
-   sem entrar na função para acompanhamento. Observe como o DevTools pula algumas linhas de código.
-   Isso ocorre porque `inputsAreEmpty()` foi avaliado como falso, portanto, o bloco de código da instrução `if`
-   não foi executado.
-
-Essa é a ideia básica de percorrer o código. Se observar o código em
-`get-started.js`, você verá que o bug está provavelmente na
-função`updateLabel()`. Em vez de acompanhar cada linha de código,
-você pode usar outro tipo de ponto de interrupção para pausar o código mais perto do
-local do bug.
-
-[into]: /web/tools/chrome-devtools/images/step-into.png
-[over]: /web/tools/chrome-devtools/images/step-over.png
-
-## Etapa 5: definir um ponto de interrupção da linha de código {: #line-breakpoint }
-
-Os pontos de interrupção de linha de código são o tipo mais comum de ponto de interrupção. Quando
-você quiser pausar em uma linha de código específica, use um
-ponto de interrupção de linha de código.
-
-1. Veja a última linha de código em `updateLabel()`:
-
-     <pre class="prettyprint">label.textContent = addend1 + ' + ' + addend2 + ' = ' + sum;</pre>
-
-1. À esquerda do código, você pode ver o número da linha dessa
-   linha de código específica, que é **32**. Clique em **32**. O DevTools deixa o ícone
-   do **32** azul. Isso significa que há um ponto de interrupção de linha de código nessa linha.
-   O DevTools sempre faz uma pausa antes que essa linha de código seja executada.
-1. Clique em **Resume script execution** ![Retomar a execução do
-   script][resume]{:.devtools-inline}. O script continua a execução
-   até alcançar a linha 32. Nas linhas 29, 30, e 31, o DevTools exibe os valores de
-   `addend1`, `addend2` e `sum` à direita do ponto e vírgula de cada linha.
-
-     <figure>
-       <img src="imgs/line-of-code-breakpoint.png"
-         alt="O DevTools pausa no ponto de interrupção da linha de código sobre a linha 32."/>
-       <figcaption>
-         <b>Imagem 6</b>. O DevTools pausa no ponto de interrupção da linha de código na linha 32.
-       </figcaption>
-     </figure>
-
-## Etapa 6: conferir valores das variáveis {: #check-values }
-
-Os valores do `addend1`, `addend2` e `sum` parecem suspeitos. Eles estão entre aspas, o que
-significa que são strings. Essa é uma boa hipótese para explicar a causa do bug.
-Agora é hora de reunir mais informações. O DevTools fornece muitas ferramentas para examinar os valores das
-variáveis.
-
-### Método 1: o painel Scope {: #scope }
-
-Quando você está pausado em uma linha de código, o painel **Scope** exibe para você qual o local e as variáveis globais
-atualmente definidas, juntamente com o valor de cada variável. Ele também exibe variáveis de fechamento,
-quando é o caso. Clique duas vezes sobre o valor de uma variável para editá-lo. Quando você não está pausado sobre uma linha de
-código, o painel **Scope** fica vazio.
+When you're paused on a line of code, the **Scope** pane shows you what local and global variables are currently defined, along with the value of each variable. It also shows closure variables, when applicable. Double-click a variable value to edit it. When you're not paused on a line of code, the **Scope** pane is empty.
 
 <figure>
   <img src="imgs/scope-pane.png"
-    alt="O painel Scope."/>
+    alt="The Scope pane."/>
   <figcaption>
-    <b>Imagem 7</b>. O painel <b>Scope</b>
- </figcaption>
+    <b>Figure 7</b>. The <b>Scope</b> pane
+  </figcaption>
 </figure>
 
-### Método 2: Watch Expressions {: #watch-expressions }
+### Method 2: Watch Expressions {: #watch-expressions }
 
-A guia **Watch Expressions** permite que você monitore os valores de variáveis ao longo do tempo.
-Como o nome indica, o Watch Expressions não é limitado apenas a variáveis. Você
-pode armazenar qualquer expressão JavaScript válida em uma Watch Expression. Experimente agora:
+The **Watch Expressions** tab lets you monitor the values of variables over time. As the name implies, Watch Expressions aren't just limited to variables. You can store any valid JavaScript expression in a Watch Expression. Try it now:
 
-1. Clique na guia **Watch**.
-1. Clique em **Add Expression** ![Adicionar expressão][add]{:.devtools-inline}.
-1. Digite `typeof sum`.
-1. Pressione <kbd>Enter</kbd>. O DevTools exibe `typeof sum: "string"`. O valor
-   à direita dos dois pontos é o resultado da Watch Expression.
+1. Click the **Watch** tab.
+2. Click **Add Expression** ![Add Expression](/web/tools/chrome-devtools/javascript/imgs/add-expression.png){:.devtools-inline}.
+3. Type `typeof sum`.
+4. Press <kbd>Enter</kbd>. DevTools shows `typeof sum: "string"`. The value to the right of the colon is the result of your Watch Expression.
+    
+    <figure> 
+    
+    ![The Watch Expression pane.](imgs/get-started-watch-expression.png) <figcaption> **Figure 8**. The Watch Expression pane (bottom-right), after creating the `typeof sum` Watch Expression. If your DevTools window is large, the Watch Expression pane is on the right, above the **Event Listener Breakpoints** pane. </figcaption> </figure>
 
-     <figure>
-       <img src="imgs/get-started-watch-expression.png"
-         alt="O painel Watch Expression."/>
-       <figcaption>
-         <b>Imagem 8</b>. O painel Watch Expression pane (canto inferior direito) após a
-         criação da Watch Expression <code>typeof sum</code>.
-         Se a janela do DevTools for grande, o painel Watch Expression estará localizado
-         à direita, acima do painel <b>Event Listener Breakpoints</b>.
-       </figcaption>
-     </figure>
+As suspected, `sum` is being evaluated as a string, when it should be a number. You've now confirmed that this is the cause of the bug.
 
-Como previsto, `sum` está sendo avaliado como string em vez de
-número. Esse é o motivo do bug.
+### Method 3: The Console {: #console }
 
-### Método 3: o Console {: #console }
+In addition to viewing `console.log()` messages, you can also use the Console to evaluate arbitrary JavaScript statements. In terms of debugging, you can use the Console to test out potential fixes for bugs. Try it now:
 
-Além da visualização de mensagens `console.log()`, você também pode usar o Console para avaliar
-instruções arbitrárias do JavaScript. Com relação às depurações, você pode usar o console para testar
-potenciais correções de bugs. Experimente agora:
+1. If you don't have the Console drawer open, press <kbd>Escape</kbd> to open it. It opens at the bottom of your DevTools window.
+2. In the Console, type `parseInt(addend1) + parseInt(addend2)`. This statement works because you are paused on a line of code where `addend1` and `addend2` are in scope.
+3. Press <kbd>Enter</kbd>. DevTools evaluates the statement and prints out `6`, which is the result you expect the demo to produce.
+    
+    <figure> 
+    
+    ![The Console drawer, after evaluating parseInt(addend1) + parseInt(addend2).](imgs/get-started-console.png) <figcaption> **Figure 9**. The Console drawer, after evaluating `parseInt(addend1) + parseInt(addend2)`. </figcaption> </figure>
 
-1. Se você não estiver com a gaveta Console aberta, pressione <kbd>Escape</kbd> para
-   abri-la. Ela será aberta na parte inferior da janela do DevTools.
-1. No Console, digite `parseInt(addend1) + parseInt(addend2)`. Essa instrução funciona porque você
-   está pausado em uma linha onde `addend1` e `addend2` estão no escopo.
-1. Pressione <kbd>Enter</kbd>. O DevTools avalia a instrução e exibe
-   `6`, que é o resultado esperado da demonstração.
+## Step 7: Apply a fix {: #apply-fix }
 
-     <figure>
-       <img src="imgs/get-started-console.png"
-         alt="A gaveta Console, após avaliar parseInt(addend1) + parseInt(addend2)."/>
-       <figcaption>
-         <b>Imagem 9</b>. A gaveta Console, após avaliar
-         <code>parseInt(addend1) + parseInt(addend2)</code>.
-       </figcaption>
-     </figure>
+You've found a fix for the bug. All that's left is to try out your fix by editing the code and re-running the demo. You don't need to leave DevTools to apply the fix. You can edit JavaScript code directly within the DevTools UI. Try it now:
 
-[add]: /web/tools/chrome-devtools/javascript/imgs/add-expression.png
+1. Click **Resume script execution** ![Resume script
+execution](/web/tools/chrome-devtools/images/resume-script-execution.png){:.devtools-inline}.
+2. In the **Code Editor**, replace line 31, `var sum = addend1 + addend2`, with `var sum = parseInt(addend1) + parseInt(addend2)`.
+3. Press <kbd>Command</kbd>+<kbd>S</kbd> (Mac) or <kbd>Control</kbd>+<kbd>S</kbd> (Windows, Linux) to save your change.
+4. Click **Deactivate breakpoints** ![Deactivate
+breakpoints](/web/tools/chrome-devtools/images/deactivate-breakpoints-button.png){:.devtools-inline}. It changes blue to indicate that it's active. While this is set, DevTools ignores any breakpoints you've set.
+5. Try out the demo with different values. The demo now calculates correctly.
 
-## Etapa 7: aplicar uma correção {: #apply-fix }
+Caution: This workflow only applies a fix to the code that is running in your browser. It won't fix the code for all users that visit your page. To do that, you need to fix the code that's on your servers.
 
-Você encontrou uma correção para o bug. Agora, só resta testar a
-correção editando o código e executando novamente a demonstração. Não é
-necessário sair do DevTools para aplicar a correção. Você pode editar o código JavaScript diretamente
-na IU do DevTools. Experimente agora:
+## Next steps {: #next-steps }
 
-1. Clique em **Resume script execution** ![Retomar a execução do
-   script][resume]{:.devtools-inline}.
-1. No **Code Editor**, substitua a linha 31, `var sum = addend1 + addend2`, por
-   `var sum = parseInt(addend1) + parseInt(addend2)`.
-1. Pressione <kbd>Command</kbd>+<kbd>S</kbd> (Mac) ou
-   <kbd>Control</kbd>+<kbd>S</kbd> (Windows, Linux) para salvar sua alteração.
-1. Clique em **Deactivate breakpoints** ![Desativar
-   pontos de interrupção][deactivate]{:.devtools-inline}. Ele é alterado para a cor azul, indicando
-   que está ativo. Enquanto essa configuração for mantida, o DevTools ignorará todos os pontos de interrupção
-   definidos.
-1. Teste a demonstração com valores diferentes. A demonstração agora realiza o cálculo corretamente.
+Congratulations! You now know how to make the most of Chrome DevTools when debugging JavaScript. The tools and methods you learned in this tutorial can save you countless hours.
 
-Atenção: esse fluxo de trabalho é aplicável apenas a correções de código executado no seu navegador.
-Ela não se aplica ao código executado por todos os usuários que visitam sua página. Para fazer isso, você precisa corrigir o
-código que está nos seus servidores.
+This tutorial only showed you two ways to set breakpoints. DevTools offers many other ways, including:
 
-[deactivate]: /web/tools/chrome-devtools/images/deactivate-breakpoints-button.png
+* Conditional breakpoints that are only triggered when the condition that you provide is true.
+* Breakpoints on caught or uncaught exceptions.
+* XHR breakpoints that are triggered when the requested URL matches a substring that you provide.
 
-## Próximas etapas {: #next-steps }
+See [Pause Your Code With Breakpoints](/web/tools/chrome-devtools/javascript/breakpoints) to learn when and how to use each type.
 
-Parabéns! Você sabe como aproveitar ao máximo o Chrome DevTools para depurar
-JavaScript. As ferramentas e os métodos que você aprendeu neste tutorial podem economizar horas incalculáveis.
-
-Este tutorial mostrou apenas duas formas de definir pontos de interrupção. O DevTools oferece muitas
-outras formas, incluindo:
-
-* Pontos de interrupção condicionais, acionados somente quando a condição fornecida
- for verdadeira.
-* Pontos de interrupção em exceções capturadas ou não capturadas.
-* Pontos de interrupção XHR, acionados quando o URL selecionado corresponder a
- uma substring informada.
-
-Veja [Pausar o código com pontos de interrupção](/web/tools/chrome-devtools/javascript/breakpoints) para
-saber quando e como usar cada tipo.
-
-Há alguns controles de acompanhamento de código que não foram explicados neste tutorial. Veja [Percorrer
-linha de código](/web/tools/chrome-devtools/javascript/reference#stepping) para saber mais.
+There's a couple of code stepping controls that weren't explained in this tutorial. See [Step over line of code](/web/tools/chrome-devtools/javascript/reference#stepping) to learn more.
 
 ## Feedback {: #feedback }
 
