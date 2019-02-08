@@ -1,338 +1,115 @@
-project_path: /web/fundamentals/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Gracias a la proliferación de dispositivos móviles y redes, cada vez más personas usan la Web. A medida que crece esta base de usuarios, también lo hace la importancia que tiene el buen rendimiento. En este artículo, descubrirás por qué el rendimiento es importante, y aprenderás qué puedes hacer para que la Web sea más rápida para todos.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Thanks to mobile device and network proliferation, more people are using the web than ever before. As this user base grows, performance is more important than ever. In this article, find out why performance matters, and learn what you can do to make the web faster for everyone.
 
-{# wf_updated_on: 2019-02-06 #}
-{# wf_published_on: 2018-03-08 #}
-{# wf_blink_components: N/A #}
+{# wf_updated_on: 2018-10-04 #} {# wf_published_on: 2018-03-08 #} {# wf_blink_components: N/A #}
 
-# Por qué es importante el rendimiento {: .page-title }
+# Why Performance Matters {: .page-title }
 
 {% include "web/_shared/contributors/jeremywagner.html" %}
 
-En nuestra búsqueda compartida de lograr que la red haga cada vez más cosas, nos encontramos con un
-problema común: el rendimiento. Los sitios tienen más funciones
-que nunca. Tanto es así, que muchos tienen dificultades para lograr un nivel de
-rendimiento elevado en una variedad de dispositivos y condiciones de red.
+In our shared pursuit to push the web to do more, we're running into a common problem: performance. Sites have more features than ever before. So much so, that many sites now struggle to achieve a high level of performance across a variety of network conditions and devices.
 
-Los problemas de rendimiento varían. En el mejor de los casos, crean pequeñas demoras que solo resultan
-levemente molestas para los usuarios. En el peor de los casos, hacen que tu sitio sea completamente inaccesible o
-no responda a las entradas del usuario (o ambos).
+Performance issues vary. At best, they create small delays that are only briefly annoying to your users. At worst, they make your site completely inaccessible, unresponsive to user input, or both.
 
-## El rendimiento como herramienta para retener a los usuarios
+## Performance is about retaining users
 
-Queremos que los usuarios encuentren lo que buscan al interactuar con lo que desarrollamos. Si es un
-blog, queremos que las personas lean las publicaciones. Si es una tienda en línea, queremos que
-compren cosas. Si es una red social, queremos que
-interactúen entre ellos.
+We want users to interact meaningfully with what we build. If it's a blog, we want people to read posts. If it's an online store, we want them to buy stuff. If it's a social network, we want them to interact with each other.
 
-El rendimiento juega un papel importantísimo en el éxito de cualquier actividad en línea. A continuación, presentamos algunos
-casos de éxito que muestran cómo los sitios con rendimiento elevado logran atraer y retener a los usuarios mejor que
-aquellos que presentan un rendimiento inferior:
+Performance plays a major role in the success of any online venture. Here are some case studies that show how high-performing sites engage and retain users better than low-performing ones:
 
-- [Pinterest aumentó el tráfico del motor de búsqueda y la cantidad de registros en un 15 %][pinterest] cuando
-  redujo el tiempo de espera percibido en un 40 %.
-- [COOK aumentó la conversión en un 7 %, redujo el índice de rebote en un 7 % y aumentó
-  la cantidad de páginas por sesión en un 10 %][COOK] cuando redujeron el tiempo promedio de carga de página en 850
-  milisegundos.
+- [Pinterest increased search engine traffic and sign-ups by 15%](https://medium.com/@Pinterest_Engineering/driving-user-growth-with-performance-improvements-cfc50dafadd7) when they reduced perceived wait times by 40%.
+- [COOK increased conversions by 7%, decreased bounce rates by 7%, and increased pages per session by 10%](https://www.nccgroup.trust/uk/about-us/resources/cook-real-user-monitoring-case-study/?style=Website+Performance&resources=Case+Studies) when they reduced average page load time by 850 milliseconds.
 
-[pinterest]: https://medium.com/@Pinterest_Engineering/driving-user-growth-with-performance-improvements-cfc50dafadd7
-[COOK]: https://www.nccgroup.trust/uk/about-us/resources/cook-real-user-monitoring-case-study/?style=Website+Performance&resources=Case+Studies
+Here are a couple case studies where low performance had a negative impact on business goals:
 
-Aquí presentamos algunos casos de éxito en los que un bajo rendimiento afectó negativamente los objetivos
-comerciales:
+- [The BBC found they lost an additional 10% of users](https://www.creativebloq.com/features/how-the-bbc-builds-websites-that-scale) for every additional second their site took to load.
+- [DoubleClick by Google found 53% of mobile site visits were abandoned](https://www.doubleclickbygoogle.com/articles/mobile-speed-matters/) if a page took longer than 3 seconds to load.
 
-- [La BBC determinó que perdía un 10 % adicional de usuarios][BBC] por cada segundo adicional
-  que el sitio tardaba en cargarse.
-- [DoubleClick de Google determinó que un 53 % de las visitas a sitios móviles se abandonaban][DoubleClick] si una página
-  tardaba más de 3 segundos en cargarse.
+In the same DoubleClick by Google study cited above, it was found that sites loading within 5 seconds had 70% longer sessions, 35% lower bounce rates, and 25% higher ad viewability than sites taking nearly four times longer at 19 seconds. To get a rough idea of how your site's performance compares with your competitors, [check out the Speed Scorecard tool](https://www.thinkwithgoogle.com/feature/mobile/).<figure> 
 
-[BBC]: https://www.creativebloq.com/features/how-the-bbc-builds-websites-that-scale
-[DoubleClick]: https://www.doubleclickbygoogle.com/articles/mobile-speed-matters/
+<img srcset="images/speed-scorecard-2x.png 2x, images/speed-scorecard-1x.png 1x"
+src="images/speed-scorecard-1x.png" alt="A screenshot of the Speed Scorecard
+tool, comparing performance across four popular news outlets." /> <figcaption>**Figure 1**. Speed Scorecard comparing the performance of four competing sites using Chrome UX Report data from 4G network users in the United States.</figcaption> </figure> 
 
-En este mismo estudio de DoubleClick de Google, se
-determinó que los sitios que se cargan dentro de los 5 segundos tenían sesiones un 70 % más largas, índices de rebote un 35 %
-más bajos y una visualización de anuncios un 25 % mayor que en sitios que tardaban casi cuatro veces
-más en cargarse (19 segundos). Para tener una idea general de cómo se compara el rendimiento de tu sitio
-con el de tus competidores, [consulta la herramienta
-Speed Scorecard](https://www.thinkwithgoogle.com/feature/mobile/).
+## Performance is about improving conversions
 
-<figure>
-  <img srcset="images/speed-scorecard-2x.png 2x, images/speed-scorecard-1x.png 1x"
-src="images/speed-scorecard-1x.png" alt="Captura de pantalla de la herramienta
-Speed Scorecard en la que se compara el rendimiento de cuatro sitios de noticias populares.">
-  <figcaption><b>Figura 1</b>. Comparación hecha en Speed Scorecard del rendimiento de cuatro
-sitios competidores usando datos de Chrome UX Report de usuarios de redes 4G en Estados
-Unidos.</figcaption>
-</figure>
+Retaining users is crucial to improving conversions. Slow sites have a negative impact on revenue, and the opposite is also true. Here are some examples of how performance has played a role in making businesses more (or less) profitable:
 
-## El rendimiento para mejorar conversiones
+- For Mobify, [every 100ms decrease in homepage load speed worked out to a **1.11% increase** in session-based conversion, yielding an average annual revenue increase of **nearly $380,000**](http://resources.mobify.com/2016-Q2-mobile-insights-benchmark-report.html). Additionally, a 100ms decrease in checkout page load speed amounted to a **1.55% increase** in session-based conversion, which in turn yielded an average annual revenue increase of **nearly $530,000**.
+- DoubleClick found [publishers whose sites loaded within five seconds earned up to **twice as much ad revenue** than sites loading within 19 seconds](https://www.doubleclickbygoogle.com/articles/mobile-speed-matters/).
+- [When AutoAnything reduced page load time by half, they saw **a boost of 12-13% in sales**](https://www.digitalcommerce360.com/2010/08/19/web-accelerator-revs-conversion-and-sales-autoanything/).
 
-La retención de usuarios es crucial para mejorar las conversiones. Los sitios lentos
-afectan negativamente los ingresos, y viceversa. A continuación, hay algunos
-ejemplos que muestran cómo el rendimiento ha tenido un papel fundamental en hacer que las empresas sean más (o
-menos) rentables:
+If you run a business on the web, performance is crucial. If your site's user experience is fast and responsive to user input, it can only serve you well. To see how performance could potentially affect your revenue, check out the [Impact Calculator](https://www.thinkwithgoogle.com/feature/mobile/) tool.<figure> 
 
-- Para Mobify, [cada reducción de 100 ms en la velocidad de carga de su página principal generó un **aumento del
-1,11 %** en la conversión basada en sesión, lo que generó un aumento promedio de ingresos
-anuales de **casi
-$380 000**](http://resources.mobify.com/2016-Q2-mobile-insights-benchmark-report.html).
-Asimismo, una reducción de 100 ms en la velocidad de carga de la página de finalización de la compra representó un **aumento
-del 1,55 %** en la conversión basada en sesión, que a su vez representó un aumento promedio de los
-ingresos anuales de **casi $530 000**.
-- DoubleClick descubrió que [los publicadores cuyos sitios se cargaban en cinco segundos o menos generaban hasta
-el **doble de ingresos por anuncios** que los sitios que tardaban hasta 19
-segundos en cargarse](https://www.doubleclickbygoogle.com/articles/mobile-speed-matters/).
-- [Cuando AutoAnything redujo el tiempo de carga de páginas a la mitad, **sus ventas aumentaron entre un 12 y 13 %**](https://www.digitalcommerce360.com/2010/08/19/web-accelerator-revs-conversion-and-sales-autoanything/).
+<img srcset="images/impact-calculator-2x.png 2x, images/impact-calculator-1x.png
+1x" src="images/impact-calculator-1x.png" alt="A screenshot of the Impact
+Calculator, estimating how much revenue a site could stand to gain if
+performance improvements are made." /> <figcaption>**Figure 2**. The Impact Calculator estimates how much revenue you stand to gain by improving site performance.</figcaption> </figure> 
 
-Si usas la Web para realizar actividades comerciales, el rendimiento es crucial. Si la experiencia
-de tu sitio es rápida y con buena respuesta a las entradas del usuario, saldrás beneficiado. Para
-ver cómo el rendimiento podría afectar tus ingresos, usa la herramienta [Impact
-Calculator](https://www.thinkwithgoogle.com/feature/mobile/).
+## Performance is about the user experience
 
-<figure>
-  <img srcset="images/impact-calculator-2x.png 2x, images/impact-calculator-1x.png
-1x" src="images/impact-calculator-1x.png" alt="Captura de pantalla de Impact
-Calculator, donde se estiman los ingresos que un sitio podría ganar si
-se hicieran mejoras en el rendimiento.">
-  <figcaption><b>Figura 2</b>. Impact Calculator estima los
-ingresos que podrías ganar si mejoraras el rendimiento de tu sitio.</figcaption>
-</figure>
+When you navigate to a URL, you do so from any number of potential starting points. Depending on a number of conditions, such as connection quality and the device you're using, your experience could be quite different from another user's.<figure> 
 
-## El rendimiento para mejorar la experiencia del usuario
+![A comparison of two filmstrip reels
+of a page loading. The first shows a page loading on a slow connection, while
+the second shows the same page loading on a fast connection.](images/speed-comparison.png) <figcaption>**Figure 3**. A comparison of page load on a very slow connection (top) versus a faster connection (bottom).</figcaption> </figure> 
 
-Cuando visitas una URL, lo haces desde una variedad de lugares de origen
-potenciales. En función de una serie de
-condiciones, como la calidad de conexión y el dispositivo que usas, tu
-experiencia podría ser muy distinta de la de otro usuario.
+As a site begins to load, there's a period of time where users wait for content to appear. Until this happens, there's no user experience to speak of. This lack of an experience is fleeting on fast connections. On slower connections, however, users are forced to wait. Users may experience more problems as page resources slowly trickle in.
 
-<figure>
-  <img src="images/speed-comparison.png" alt="Comparación de dos carretes de tiras de imágenes
-de una página que se está cargando. El primer caso muestra la página cargándose con una conexión lenta, mientras que
-el segundo muestra la misma página cargándose con una conexión rápida.">
-  <figcaption><b>Figura 3</b>. Comparación de la carga de una página con una conexión muy lenta
-(arriba) y una más rápida (abajo).</figcaption>
-</figure>
+Performance is a foundational aspect of good user experiences. When sites ship a lot of code, browsers must use megabytes of the user's data plan in order to download the code. Mobile devices have limited CPU power and memory. They often get overwhelmed with what we might consider a small amount of unoptimized code. This creates poor performance which leads to unresponsiveness. Knowing what we know about human behavior, users will only tolerate low performing applications for so long before abandoning them. If you want to know more about how to assess your site's performance and find opportunities for improvement, check out [*How to Think About Speed Tools*](/web/fundamentals/performance/speed-tools/).<figure> 
 
-Cuando un sitio web comienza a cargarse, hay un período durante el cual los usuarios deben esperar a que
-el contenido aparezca. Hasta que esto ocurra, no se puede hablar de la experiencia del usuario. Esta ausencia
-de experiencia es fugaz con conexiones rápidas. Con conexiones más lentas,
-sin embargo, los usuarios se ven obligados a esperar. Los usuarios pueden tener más problemas porque
-los recursos de la página se reciben muy lentamente.
+<img srcset="images/lighthouse-2x.png 2x, images/lighthouse-1x.png 1x"
+src="images/lighthouse-1x.png" alt="Page performance overview as seen in
+Lighthouse." /> <figcaption>**Figure 4**. Page performance overview as seen in [Lighthouse](/web/tools/lighthouse/).</figcaption> </figure> 
 
-El rendimiento es un aspecto fundamental de
-una buena experiencia del usuario. Cuando los sitios envían mucho código, los navegadores deben usar megabytes
-del plan de datos del usuario para descargarlo. Los dispositivos móviles tienen capacidad de procesamiento
-de CPU y memoria limitados. Con frecuencia, se ven afectados por lo que podría considerarse
-una pequeña cantidad de código no optimizado. Esto genera un rendimiento deficiente que conduce
-a la falta de respuesta. Teniendo en cuenta lo que sabemos sobre el comportamiento de los seres humanos, los usuarios
-tolerarán aplicaciones con rendimiento bajo durante poco tiempo antes de abandonarlas.
-Si deseas obtener más información acerca de
-cómo evaluar el rendimiento de tu sitio y encontrar oportunidades para mejorarlo,
-consulta las [_Consideraciones acerca de herramientas de velocidad_](/web/fundamentals/performance/speed-tools/).
+## Performance is about people
 
-<figure>
-  <img srcset="images/lighthouse-2x.png 2x, images/lighthouse-1x.png 1x"
-src="images/lighthouse-1x.png" alt="Descripción general del rendimiento de páginas en
-Lighthouse.">
-  <figcaption><b>Figura 4</b>. Descripción general del rendimiento de páginas en <a
-href="/web/tools/lighthouse/">Lighthouse</a>.</figcaption>
-</figure>
+Poorly performing sites and applications can also pose real costs for the people who use them.
 
-## El rendimiento y las personas
+[As mobile users continue to make up a larger portion of internet users worldwide](http://gs.statcounter.com/platform-market-share/desktop-mobile-tablet), it's important to bear in mind that many of these users access the web through mobile LTE, 4G, 3G and even 2G networks. As Ben Schwarz of Calibre points out in [this study of real world performance](https://building.calibreapp.com/beyond-the-bubble-real-world-performance-9c991dcd5342), the cost of prepaid data plans is decreasing, which in turn is making access to the internet more affordable in places where it once wasn't. Mobile devices and internet access are no longer luxuries. They are common tools necessary to navigate and function in an increasingly interconnected world.
 
-Los sitios y las aplicaciones con rendimiento bajo también pueden representar costos reales para las
-personas que los usan.
+[Total page size has been steadily increasing since at least 2011](http://beta.httparchive.org/reports/state-of-the-web#bytesTotal), and the trend appears to be continuing. As the typical page sends more data, users must replenish their metered data plans more often, which costs them money.
 
-[Como los usuarios móviles son una porción considerable de las personas que utilizan Internet
-en todo el mundo](http://gs.statcounter.com/platform-market-share/desktop-mobile-tablet),
-es importante tener en cuenta que muchos de estos usuarios acceden a la Web a través de
-redes móviles LTE, 4G, 3G e incluso 2G. Como Ben Schwarz de Calibre indica
-en [este estudio de rendimiento en el
-mundo real](https://building.calibreapp.com/beyond-the-bubble-real-world-performance-9c991dcd5342),
-el costo de los planes de datos prepagos está bajando, lo que hace que el uso de
-Internet sea más accesible en lugares donde antes no lo era. Los dispositivos
-móviles y el acceso a Internet ya no son lujos.
-Son herramientas comunes necesarias para navegar y funcionar en un mundo cada vez más
-interconectado.
+In addition to saving your users money, fast and lightweight user experiences can also prove crucial for users in crisis. Public resources such as hospitals, clinics, and crisis centers have online resources that give users important and specific information that they need during a crisis. [While design is pivotal in presenting important information efficiently in stressful moments](https://aneventapart.com/news/post/eric-meyer-designing-for-crisis), the importance of delivering this information fast can't be understated. It's part of our job.
 
-[El tamaño total de las páginas viene aumentando de manera constante desde al menos
-2011](http://beta.httparchive.org/reports/state-of-the-web#bytesTotal), y la
-tendencia parece continuar. Con el aumento de la cantidad de datos que envía una página cualquiera, los usuarios
-deben recargar sus planes de datos medidos con más frecuencia, lo que les cuesta dinero.
+## Where to go from here
 
-Además de hacerles ahorrar dinero a tus usuarios, una experiencia rápida y ligera
-también puede ser crucial para aquellas personas en crisis. Los recursos públicos como hospitales,
-clínicas y centros de atención tienen recursos en línea que brindan a los usuarios información importante
-y específica que podrían necesitar durante una crisis. [Si bien el diseño
-es fundamental al presentar información relevante de manera eficaz en momentos
-difíciles](https://aneventapart.com/news/post/eric-meyer-designing-for-crisis),
-no se debe subestimar la importancia de publicar estos datos con rapidez.
-Es parte de nuestro trabajo.
+While the lists below may seem daunting, understand you don't need to do *all* of these things to improve the performance of your site. They are just starting points, so don't feel overwhelmed! *Anything* you can do to improve performance will be helpful to your users.
 
-## Lo que vendrá
+### Mind what resources you send
 
-Si bien las siguientes listas pueden parecer abrumadoras, no es
-necesario que hagas _todas_ estas cosas para mejorar el rendimiento de tu
-sitio. Son simplemente puntos por los que puedes empezar, así que no te desanimes.
-_Cualquiera_ de estas cosas que hagas para mejorar el rendimiento será útil para tus usuarios.
+An effective method of building high performance applications is to [audit *what* resources you send to users](/web/fundamentals/performance/optimizing-content-efficiency/eliminate-downloads). While the [Network panel in Chrome DevTools](/web/tools/chrome-devtools/network-performance/) does a fantastic job of summarizing all the resources used on a given page, it can be daunting to know where to start if you haven't considered performance until now. Here are a few suggestions:
 
-### Sé consciente de los recursos que envías
+- If you use Bootstrap or Foundation to build your UI, ask yourself if they're necessary. Such abstractions add heaps of CSS the browser must download, parse, and apply to a page, all before your site-specific CSS enters the picture. [Flexbox](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Flexible_Box_Layout) and [Grid](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Grid_Layout) are superb at creating both simple and complex layouts with relatively little code. [Because CSS is a render blocking resource](/web/fundamentals/performance/critical-rendering-path/render-blocking-css), the overhead of a CSS framework can delay rendering significantly. You can speed up your rendering by removing unnecessary overhead whenever possible.
+- JavaScript libraries are convenient, but not always necessary. Take jQuery for example: Element selection has been greatly simplified thanks to methods like [`querySelector`](https://developer.mozilla.org/en-US/docs/Web/API/Document/querySelector) and [`querySelectorAll`](https://developer.mozilla.org/en-US/docs/Web/API/Document/querySelectorAll). Event binding is easy with [`addEventListener`](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener). [`classList`](https://developer.mozilla.org/en-US/docs/Web/API/Element/classList), [`setAttribute`](https://developer.mozilla.org/en-US/docs/Web/API/Element/setAttribute), and [`getAttribute`](https://developer.mozilla.org/en-US/docs/Web/API/Element/getAttribute) offer easy ways of working with classes and element attributes. If you must use a library, research for leaner alternatives. For example, [Zepto](http://zeptojs.com/) is a smaller jQuery alternative, and [Preact](https://preactjs.com/) is a much smaller alternative to React.
+- Not all websites need to be single page applications (SPAs), as they often make extensive use of JavaScript. [JavaScript is the most expensive resource we serve on the web byte for byte](https://medium.com/dev-channel/the-cost-of-javascript-84009f51e99e), as it must not only be downloaded, but parsed, compiled and executed as well. For example, news and blog sites with optimized front end architecture can perform well as traditional multipage experiences. Particularly if [HTTP caching](/web/fundamentals/performance/optimizing-content-efficiency/http-caching) is configured properly, and optionally, if a [service worker](/web/fundamentals/primers/service-workers/) is used.
 
-Un método eficaz de desarrollar aplicaciones de buen rendimiento es [auditar
-_qué_ recursos envías a tus
-usuarios](/web/fundamentals/performance/optimizing-content-efficiency/eliminate-downloads).
-Si bien el [panel de red de Chrome DevTools](/web/tools/chrome-devtools/network-performance/)
-resume muy bien los recursos que se usan en una página específica, puede resultar abrumador entender
-por dónde empezar si no has considerado el rendimiento hasta ahora. He aquí algunas
-sugerencias:
+### Mind how you send resources
 
-- Si usas Bootstrap o Foundation para desarrollar la IU, pregúntate si son
-necesarios. Estas abstracciones agregan mucho código CSS que el navegador debe descargar, analizar
-y aplicar a una página, todo ello antes de que el código CSS específico del sitio
-entre en juego.
-[Flexbox](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Flexible_Box_Layout)
-y [Grid](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Grid_Layout) son
-excelentes para crear diseños simples y complejos con relativamente poco código.
-[Como CSS es un recurso de bloqueo
-de representación](/web/fundamentals/performance/critical-rendering-path/render-blocking-css),
-la sobrecarga de un marco de trabajo CSS puede retrasar la representación de forma significativa. Puedes
-acelerar la representación si eliminas la sobrecarga innecesaria cada vez que sea posible.
-- Las bibliotecas de JavaScript son convenientes, pero no siempre necesarias. Toma a jQuery como
-ejemplo: La selección de elementos se ha simplificado mucho gracias a métodos como
-[`querySelector`](https://developer.mozilla.org/en-US/docs/Web/API/Document/querySelector)
-y
-[`querySelectorAll`](https://developer.mozilla.org/en-US/docs/Web/API/Document/querySelectorAll).
-La vinculación de eventos es fácil de implementar con
-[`addEventListener`](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener).
-[`classList`](https://developer.mozilla.org/en-US/docs/Web/API/Element/classList),
-[`setAttribute`](https://developer.mozilla.org/en-US/docs/Web/API/Element/setAttribute)
-y
-[`getAttribute`](https://developer.mozilla.org/en-US/docs/Web/API/Element/getAttribute)
-ofrecen maneras sencillas para trabajar con clases y atributos de elementos. Si necesitas usar
-una biblioteca, investiga para encontrar alternativas más eficientes. Por ejemplo,
-[Zepto](http://zeptojs.com/) es una alternativa de menor tamaño que jQuery y
-[Preact](https://preactjs.com/) es una alternativa mucho más pequeña que React.
-- No todos los sitios web tienen que ser aplicaciones de una sola página (SPA), y con frecuencia hacen
-mucho uso de JavaScript. [JavaScript es el recurso más costoso de publicar
-en la Web byte por
-byte](https://medium.com/dev-channel/the-cost-of-javascript-84009f51e99e), ya que
-no solo se debe descargar el código, sino que además se lo debe analizar, compilar y ejecutar. Por
-ejemplo, los sitios de noticias y blogs con arquitectura front-end optimizada pueden tener un rendimiento
-tan bueno como el de las experiencias tradicionales multipágina. En particular, si [el almacenamiento en
-caché de HTTP](/web/fundamentals/performance/optimizing-content-efficiency/http-caching)
-está bien configurado y, de manera opcional, si se usa un [service
-worker](/web/fundamentals/primers/service-workers/).
+Efficient delivery is vital to building fast user experiences.
 
-### Sé consciente de cómo envías recursos
+- [Migrate to HTTP/2](/web/fundamentals/performance/http2/). HTTP/2 addresses many performance problems inherent in HTTP/1.1, such as concurrent request limits and the lack of header compression.
+- [Download resources earlier using resource hints](/web/fundamentals/performance/resource-prioritization). `rel=preload` is one such resource hint that allows early fetches of critical resources before the browser would otherwise discover them. [This can have a pronounced positive effect](https://medium.com/reloading/preload-prefetch-and-priorities-in-chrome-776165961bbf#0106) on page rendering and lowering [Time to Interactive](/web/tools/lighthouse/audits/time-to-interactive) when used judiciously. [`rel=preconnect` is another resource hint that can mask the latency of opening new connections for resources hosted on third party domains](https://www.igvita.com/2015/08/17/eliminating-roundtrips-with-preconnect/).
+- Modern sites ship [a *lot* of JavaScript](http://httparchive.org/trends.php#bytesJS&reqJS) [and CSS](http://httparchive.org/trends.php#bytesCSS&reqCSS) on average. It was common to bundle styles and scripts into large bundles in HTTP/1 environments. This was done because a large amount of requests was detrimental to performance. This is no longer the case now that HTTP/2 is on the scene, as multiple, simultaneous requests are cheaper. [Consider using code splitting in webpack](https://webpack.js.org/guides/code-splitting/) to limit the amount of scripts downloaded to only what is needed by the current page or view. Separate your CSS into smaller template or component-specific files, and only include those resources where they're likely to be used.
 
-La publicación eficiente es vital para el desarrollo de experiencias de usuario rápidas.
+### Mind how much data you send
 
-- [Migración a HTTP/2](/web/fundamentals/performance/http2/). HTTP/2 soluciona muchos
-problemas de rendimiento inherentes de HTTP/1.1, como límites de solicitudes concurrentes y
-la no comprensión de encabezados.
-- [Descarga recursos de manera anticipada mediante
-sugerencias](/web/fundamentals/performance/resource-prioritization). `rel=preload` es
-una de estas sugerencias de recursos que permite obtener recursos críticos antes de lo que
-el navegador detectaría. [Esto puede tener un efecto positivo
-muy marcado](https://medium.com/reloading/preload-prefetch-and-priorities-in-chrome-776165961bbf#0106)
-en la representación de la página y la reducción del [tiempo de
-carga](/web/tools/lighthouse/audits/time-to-interactive) cuando se lo usa
-con buen criterio. [`rel=preconnect` es otra sugerencia de recursos que puede enmascarar la
-latencia de la apertura de nuevas conexiones para recursos alojados en dominios de
-terceros](https://www.igvita.com/2015/08/17/eliminating-roundtrips-with-preconnect/).
-- Los sitios modernos envían [mucho_código
-JavaScript](http://httparchive.org/trends.php#bytesJS&reqJS) [y
-CSS](http://httparchive.org/trends.php#bytesCSS&reqCSS) por lo general. Era común
-agrupar estilos y secuencias de comandos en conjuntos de mayor tamaño en entornos HTTP/1.
-Esto se hacía porque tener una gran cantidad de solicitudes perjudicaba del rendimiento.
-Este ya no es el caso ahora que está HTTP/2, ya que es menos costoso el uso de
-varias solicitudes simultáneas. [Considera usar fraccionamiento de código en
-webpack](https://webpack.js.org/guides/code-splitting/) para limitar la cantidad de
-secuencias de comandos descargadas a la que se necesita para la página o vista actual. Separa el
-código CSS en archivos de plantilla o específicos de componentes que sean de menor tamaño e incluye solo
-los recursos donde sea probable que se los use.
+Here are some suggestions for limiting *how much* data you send:
 
-### Sé consciente de la cantidad de datos que envías
+- [Minify text assets](/web/fundamentals/performance/optimizing-content-efficiency/optimize-encoding-and-transfer#minification_preprocessing_context-specific_optimizations). Minification is the removal of unnecessary whitespace, comments and other content in text-based resources. It significantly reduces the amount of data you send to users without impacting functionality. [Use uglification in JavaScript](https://www.npmjs.com/package/uglifyjs) to get more savings through shortening variable and method names. Since SVG is a text-based image format, [it can be optimized with SVGO](https://github.com/svg/svgo).
+- [Configure your server to compress resources](/web/fundamentals/performance/optimizing-content-efficiency/optimize-encoding-and-transfer). Compression drastically reduces the amount of data you send to users, *especially* text assets. GZIP is a popular option, but [Brotli compression can go further](https://www.smashingmagazine.com/2016/10/next-generation-server-compression-with-brotli/). Understand, however, that compression is *not* a catch-all for performance woes: Some file formats which are implicitly compressed (e.g., JPEG, PNG, GIF, WOFF, et cetera) don't respond to compression because they're already compressed.
+- [Optimize images](/web/fundamentals/performance/optimizing-content-efficiency/automating-image-optimization/) to ensure your site sends as little image data as possible. [Since images make up a large portion of the average per-page payload on the web](http://httparchive.org/trends.php#bytesImg&reqImg), image optimization represents a uniquely large opportunity to boost performance.
+- If you have time, consider serving alternative image formats. [WebP](/speed/webp/) enjoys reasonably [broad browser support](https://caniuse.com/#feat=webp), and uses less data than JPEG and PNG while keeping visual quality high. [JPEG XR is another alternative format](https://jpeg.org/jpegxr/index.html) supported in IE and Edge offering similar savings.
+- [Deliver images responsively](https://developer.mozilla.org/en-US/docs/Learn/HTML/Multimedia_and_embedding/Responsive_images). The huge diversity of devices and their screens presents a tremendous opportunity to improve performance by sending images that are the best fit for the screens that view them. In the simplest use cases, you can add an [`srcset` attribute](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/img#attr-srcset) to an `<img>` element to specify an array of images the browser can choose from. On the more complex side of things, you can use `<picture>` to help the browser choose the most optimal format (e.g., WebP over JPEG or PNG), or serve altogether different treatments of images for different screen sizes.
+- [Use video instead of animated GIFs](/web/fundamentals/performance/optimizing-content-efficiency/replace-animated-gifs-with-video/). Animated GIFs are *massive*. Videos of similar quality are *far* smaller, often by 80% or so. If your site makes heavy use of animated GIFs, this is probably the most impactful thing you can do to improve loading performance.
+- [Client hints](http://httpwg.org/http-extensions/client-hints.html) can tailor resource delivery based on current network conditions and device characteristics. The `DPR`, `Width` and `Viewport-Width` headers can help you [deliver the best images for a device using server-side code *and* deliver less markup](/web/updates/2015/09/automating-resource-selection-with-client-hints). The `Save-Data` header can help you [deliver lighter application experiences for users who are specifically asking you to do so](/web/updates/2016/02/save-data).
+- The [`NetworkInformation` API](https://developer.mozilla.org/en-US/docs/Web/API/NetworkInformation) exposes information about the user's network connection. This information can be used to modify application experiences for users on slower networks.
 
-Las siguientes son algunas sugerencias para limitar la _cantidad_ de datos que envías:
+For a more holistic guide on improving performance, check out our writeup on [the RAIL performance model](/web/fundamentals/performance/rail), which focuses on improving both load time and application responsiveness. [Our PRPL pattern guide is also an excellent resource](/web/fundamentals/performance/prpl-pattern/) for improving the performance of modern single page applications.
 
-- [Minifica los recursos
-de texto](/web/fundamentals/performance/optimizing-content-efficiency/optimize-encoding-and-transfer#minification_preprocessing_context-specific_optimizations).
-La minificación es la eliminación del espacio en blanco, los comentarios y otro
-contenido innecesario en recursos basados en texto. Reduce de forma significativa la cantidad de datos que
-envías a los usuarios sin afectar la funcionalidad. [Usa la uglificación en
-JavaScript](https://www.npmjs.com/package/uglifyjs) para generar más ahorros
-al acortar los nombres de variables y métodos. Como SVG es un formato de imagen
-basado en texto, [se lo puede optimizar con SVGO](https://github.com/svg/svgo).
-- [Configura tu servidor para comprimir
-recursos](/web/fundamentals/performance/optimizing-content-efficiency/optimize-encoding-and-transfer).
-La compresión reduce de forma drástica la cantidad de datos que envías a los usuarios,
-_especialmente_ en el caso de recursos de texto. GZIP es una opción popular, pero la [compresión de Brotli puede ir
-más allá](https://www.smashingmagazine.com/2016/10/next-generation-server-compression-with-brotli/).
-Sin embargo, debes comprender que la compresión _no_ es una solución mágica para los problemas de rendimiento:
-Algunos formatos de archivo que tienen compresión intrínseca (p. ej., JPEG, PNG, GIF, WOFF,
-etc.) no responden a la compresión porque ya están comprimidos.
-- [Optimiza
-las imágenes](/web/fundamentals/performance/optimizing-content-efficiency/automating-image-optimization/)
-para asegurarte de que tu sitio envíe la menor cantidad posible de datos de imagen. [Como las imágenes representan
-una porción grande de la carga útil promedio por página en la
-Web](http://httparchive.org/trends.php#bytesImg&reqImg), la optimización de las imágenes
-es una oportunidad inigualable de mejorar el rendimiento.
-- Si tienes tiempo, considera publicar formatos de imagen alternativos.
-[WebP](/speed/webp/) goza de una [compatibilidad razonablemente amplia
-con navegadores](https://caniuse.com/#feat=webp) y utiliza menos datos que JPEG y PNG
-a la vez que conserva una calidad visual elevada. [JPEG XR es otro
-formato alternativo](https://jpeg.org/jpegxr/index.html) compatible con IE y Edge
-que ofrece ahorros similares.
-- [Entrega imágenes
-de manera receptiva](https://developer.mozilla.org/en-US/docs/Learn/HTML/Multimedia_and_embedding/Responsive_images).
-La enorme diversidad de dispositivos y sus pantallas representa una oportunidad
-excelente a fin de mejorar el rendimiento al enviar imágenes que sean óptimas para
-las pantallas en donde se las visualiza. En el más simples de los casos de uso, puedes agregar un [atributo
-`srcset`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/img#attr-srcset)
-a un elemento `<img>` para especificar una matriz de imágenes de entre las cuales el navegador puede elegir.
-Como algo más complejo, puedes usar `<picture>` para ayudar al navegador a
-elegir el formato óptimo (p. ej., WebP por sobre JPEG o PNG) o bien publicar
-tratamientos completamente distintos de imágenes para tamaños de pantalla diferentes.
-- [Usa video en lugar de
-GIF animados](/web/fundamentals/performance/optimizing-content-efficiency/replace-animated-gifs-with-video/).
-Los GIF animados son _enormes_. Los videos de calidad similar son _mucho_ más pequeños,
-generalmente un 80 %. Si tu sitio utiliza bastantes GIF animados, probablemente
-esto sea lo mejor que puedas hacer para mejorar el rendimiento de carga.
-- Las [sugerencias de cliente](http://httpwg.org/http-extensions/client-hints.html) pueden
-adaptar la entrega de recursos en función de las condiciones de red actuales y las características del
-dispositivo. Los encabezados `DPR`, `Width` y `Viewport-Width` te pueden ayudar a
-[entregar las mejores imágenes para un dispositivo mediante código desde el servidor _y_ utilizar
-menos lenguaje de marcado](/web/updates/2015/09/automating-resource-selection-with-client-hints).
-El encabezado `Save-Data` puede ayudarte a [entregar experiencias de aplicación más livianas para
-los usuarios que específicamente te lo pidan](/web/updates/2016/02/save-data).
-- La [`NetworkInformation`
-API](https://developer.mozilla.org/en-US/docs/Web/API/NetworkInformation)
-expone información acerca de la conexión de red del usuario. Esta información se puede
-usar a fin de modificar la experiencia de la aplicación para aquellos usuarios cuyas redes son más lentas.
+If you're excited to learn more about performance and how to make your site faster, browse through our performance documentation for guides on a variety of topics. We're constantly adding new guides and updating existing ones, so keep coming back!
 
-Para consultar una guía más integral sobre cómo mejorar el rendimiento, consulta nuestro artículo sobre
-[el modelo de rendimiento RAIL](/web/fundamentals/performance/rail), que se enfoca
-en mejorar tanto el tiempo de carga como la capacidad de respuesta de la aplicación. [Nuestra guía sobre el patrón PRPL
-también es un gran
-recurso](/web/fundamentals/performance/prpl-pattern/) para mejorar el
-rendimiento de aplicaciones de una sola página moderna.
+*Special thanks to [Addy Osmani](/web/resources/contributors/addyosmani), [Jeff Posnick](/web/resources/contributors/jeffposnick), [Matt Gaunt](/web/resources/contributors/mattgaunt), [Philip Walton](/web/resources/contributors/philipwalton), [Vinamrata Singal](/web/resources/contributors/vinamratasingal), [Daniel An](https://www.thinkwithgoogle.com/marketing-resources/data-measurement/mobile-page-speed-new-industry-benchmarks/), and [Pete LePage](/web/resources/contributors/petelepage) for their extensive feedback in improving and launching this resource!*
 
-Si te entusiasma el tema y quieres leer más acerca del rendimiento y cómo hacer que tu sitio
-sea más rápido, explora nuestra documentación sobre rendimiento para obtener guías acerca de una variedad de
-temas. Agregamos constantemente nuevas guías y actualizamos las existentes, así que
-regresa con frecuencia.
-
-_Agradecemos especialmente a [Addy Osmani](/web/resources/contributors/addyosmani), [Jeff
-Posnick](/web/resources/contributors/jeffposnick), [Matt
-Gaunt](/web/resources/contributors/mattgaunt), [Philip
-Walton](/web/resources/contributors/philipwalton), [Vinamrata
-Singal](/web/resources/contributors/vinamratasingal), [Daniel
-An](https://www.thinkwithgoogle.com/marketing-resources/data-measurement/mobile-page-speed-new-industry-benchmarks/)
-y [Pete LePage](/web/resources/contributors/petelepage) por sus comentarios
-detallados para mejorar y publicar este recurso._
-
-## Comentarios {: #feedback }
+## Feedback {: #feedback }
 
 {% include "web/_shared/helpful.html" %}
