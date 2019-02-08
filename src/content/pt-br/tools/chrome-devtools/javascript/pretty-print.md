@@ -1,26 +1,23 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Transforme seu JavaScript em um formulário mais legível clicando no ícone Pretty-Print no Chrome DevTools.
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Transform your JavaScript into a more readable form by clicking the Pretty-Print icon in Chrome DevTools.
 
-{# wf_updated_on: 2016-02-21 #}
-{# wf_published_on: 2015-04-13 #}
+{# wf_updated_on: 2018-07-27 #} {# wf_published_on: 2015-04-13 #} {# wf_blink_components: Platform>DevTools #}
 
-# Deixe o JavaScript bonito {: .page-title }
+# Make JavaScript Look Pretty {: .page-title }
 
-{% include "web/_shared/contributors/megginkearney.html" %}
-{% include "web/_shared/contributors/kaycebasques.html" %}
+{% include "web/_shared/contributors/megginkearney.html" %} {% include "web/_shared/contributors/kaycebasques.html" %}
 
-Ao visualizar um script no painel **Sources**, clique no ícone **Pretty-Print**
-![o ícone pretty-print](imgs/prettyprint-icon.png){:.inline} 
-para transformar um script reduzido em um formato mais legível.
+Warning: This page is deprecated. See [Make a minified file readable](reference#format) for up-to-date information.
 
-Veja como um script reduzido ficaria no painel **Sources**:
+When viewing a script in the **Sources** panel, click the **Pretty-Print** ![the pretty-print icon](imgs/prettyprint-icon.png){:.inline} icon to transform a minified script into a more human-readable form.
 
-![um script reduzido](imgs/pretty-print-off.jpg)
+Here is how a minified script might look in the **Sources** panel:
 
-Veja como o mesmo script ficaria após clicar no ícone **Pretty-Print**:
+![a minified script](imgs/pretty-print-off.jpg)
 
-![um script reduzido após o pretty-print](imgs/pretty-print-on.jpg)
+Here is how the same script looks after clicking the **Pretty-Print** icon:
 
+![a minified script after pretty print](imgs/pretty-print-on.jpg)
 
-{# wf_devsite_translation #}
+## Feedback {: #feedback }
+
+{% include "web/_shared/helpful.html" %}
