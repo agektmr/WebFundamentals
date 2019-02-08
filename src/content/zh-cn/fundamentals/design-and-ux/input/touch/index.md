@@ -1,11 +1,8 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description:从手机到桌面设备的屏幕，使用触摸屏的设备越来越多。应用应该以直观而又优雅的方式响应触摸动作。
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Touchscreens are available on more and more devices, from phones up to desktop screens. Your app should respond to their touch in intuitive and beautiful ways.
 
-{# wf_updated_on: 2014-01-06 #}
-{# wf_published_on: 2014-01-01 #}
+{# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2014-01-01 #} {# wf_blink_components: Blink>Input #}
 
-# 为网站添加触摸功能 {: .page-title }
+# Add Touch to Your Site {: .page-title }
 
 {% include "web/_shared/contributors/mattgaunt.html" %}
 
@@ -15,453 +12,357 @@ description:从手机到桌面设备的屏幕，使用触摸屏的设备越来�
   </iframe>
 </div>
 
-从手机到桌面设备的屏幕，使用触摸屏的设备越来越多。
-当用户选择与应用的 UI 进行交互时，应用应该以直观的方式响应其触摸动作。
-
+Touchscreens are available on more and more devices, ranging from phones to desktop screens. When your users choose to interact with your UI, your app should respond to their touch in intuitive ways.
 
 <div class="clearfix"></div>
 
-## 响应元素状态
+## Respond to element states
 
-您是否有过这样的经历：触摸或点按网页上的某个元素时怀疑网站是否真的检测到了您的触摸动作？
+Have you ever touched or clicked an element on a web page and questioned whether the site actually detected it?
 
+Simply altering the color of an element as users touch or interact with parts of your UI gives a basic reassurance that your site is working. Not only does this alleviate frustration, it can also give a snappy and responsive feel.
 
-只需在用户触摸 UI 元素或与其进行交互时改变元素的颜色，用户就能基本确认网站处于工作状态。
-这样做不仅能减轻用户的失望感，还能让其觉得网站敏捷并且响应迅速。
-
-
-DOM 元素可继承下列任何状态：default、focus、hover 和 active。
-要在上述每一种状态下改变 UI，我们需要对下列伪类 `:hover`、`:focus` 和 `:active` 应用样式，如下所示：
-
+DOM elements can inherit any of the following states: default, focus, hover and active. To change our UI for each of these states, we need to apply styles to the following pseudo classes `:hover`, `:focus` and `:active` as shown below:
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/design-and-ux/input/touch/_code/states-example.html" region_tag="btnstates" adjust_indentation="auto" %}
 </pre>
 
-[试一下](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/input/touch/states-example.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/input/touch/states-example.html){: target="_blank" .external }
 
-![说明以不同颜色代表不同按钮状态的图像](images/button-states.png)
+![Image illustrating different colors for button
+states](images/button-states.png)
 
-在大多数移动浏览器上，系统会在用户点按某个元素后对其应用 *hover* 和/或 *focus* 状态。
+On most mobile browsers *hover* and/or *focus* states will apply to an element after it's been tapped.
 
+Consider carefully what styles you set and how they will look to the user after they finish their touch.
 
-请认真考虑所设置的样式以及用户完成触摸后会看到的外观。
+Note: Anchor tags and buttons may have different behavior in different browsers, so assume in some cases **hover** will remain and in others **focus** will remain.
 
+### Suppressing default browser styles
 
-Note: 定位标记和按钮在不同浏览器中可能有不同的行为，因此可以假定在某些情况下保持 **hover** 状态，在其他情况下保持 **focus** 状态。
+Once you add styles for the different states, you'll notice that most browsers implement their own styles in response to a user’s touch. This is largely because when mobile devices first launched, a number of sites didn’t have styling for the `:active` state. As a result, many browsers added additional highlight color or style to give the user feedback.
 
-
-
-### 禁止默认浏览器样式
-
-为不同状态添加样式后，您会注意到大多数浏览器在响应用户触摸时实现的是其自己的样式。
-这主要是因为当移动设备首次发布时，许多网站还没有适用于 `:active` 状态的样式设置。因此，许多浏览器添加了额外的突出显示颜色或样式来向用户提供反馈。
-
-
-大多数浏览器使用 `outline` CSS 属性在某个元素获得焦点时在其周围显示一个圆环。
-可以使用以下代码禁止该样式：
+Most browsers use the `outline` CSS property to display a ring around an element when an element is focused. You can suppress it with:
 
     .btn:focus {
       outline: 0;
-
+    
       // Add replacement focus styling here (i.e. border)
     }
+    
 
-Safari 和 Chrome 添加的点按突出显示颜色可使用 `-webkit-tap-highlight-color` CSS 属性阻止：
-
+Safari and Chrome add a tap highlight color which can be prevented with the `-webkit-tap-highlight-color` CSS property:
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/design-and-ux/input/touch/_code/states-example.html" region_tag="webkit-specific" adjust_indentation="auto" %}
 </pre>
 
-[试一下](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/input/touch/states-example.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/input/touch/states-example.html){: target="_blank" .external }
 
-Windows Phone 上的 Internet Explorer 也有类似行为，但可通过元标记禁止：
-
+Internet Explorer on Windows Phone has a similar behavior, but is suppressed via a meta tag:
 
     <meta name="msapplication-tap-highlight" content="no">
+    
 
-Firefox 有两个副作用需要处理。
+Firefox has two side effects to handle.
 
-`-moz-focus-inner` 伪类，它会在可触摸元素上添加一个轮廓，可通过设置 `border: 0` 将轮廓移除。
+The `-moz-focus-inner` pseudo class, which adds an outline on touchable elements, you can remove by setting `border: 0`.
 
-
-在 Firefox 上使用 `<button>` 元素时，系统会对该元素应用渐变，可通过设置 `background-image: none` 移除该效果。
-
+If you are using a `<button>` element on Firefox, you get a gradient applied, which you can remove by setting `background-image: none`.
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/design-and-ux/input/touch/_code/states-example.html" region_tag="ff-specific" adjust_indentation="auto" %}
 </pre>
 
-[试一下](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/input/touch/states-example.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/input/touch/states-example.html){: target="_blank" .external }
 
-Note: 请仅在有对应 `:hover`、`:active` 和 `:focus` 的伪类时禁止上面提到的默认样式！
+Caution: Only suppress the default styles mentioned above if you have pseudo classes for `:hover`, `:active` and `:focus`!
 
+### Disabling user-select
 
-### 停用用户选择
+When you're creating your UI there may be scenarios where you want users to interact with your elements but you want to suppress the default behavior of selecting text on long press or dragging a mouse over your UI.
 
-当您创建 UI 时，在某些情况下您可能希望用户在与 UI 元素进行交互时禁止长按 UI 或将鼠标拖动到 UI 上时选择文本的默认行为。
-
-
-
-可以通过 `user-select` CSS 属性实现此目的，但要注意的是，如果用户*需要*选择元素中的文本，在内容上施加这种限制会令其**极其**恼怒。因此务必要小心谨慎地使用。
-
-
-
+You can do this with the `user-select` CSS property, but beware that doing this on content can be **extremely** infuriating for users if they *want* to select the text in the element. So make sure you use it with caution and sparingly.
 
     user-select: none;
+    
 
-## 实现自定义手势
+## Implement custom gestures
 
-如果您想到了一个网站自定义交互和手势创意，需要牢记两个主题：
+If you have an idea for custom interactions and gestures for your site, there are two topics to keep in mind:
 
+1. How to support all browsers.
+2. How to keep your frame rate high.
 
-1. 如何支持所有浏览器。
-1. 如何保持较高的帧率。
+In this article, we'll look at exactly these topics covering the API's we need to support to hit all browsers and then cover how we use these events efficiently.
 
+Depending on what you would like your gesture to do, you likely want the user to interact with one element at a time *or* you'll want them to be able to interact with multiple elements at the same time.
 
-在本文中，我们关注的正是这些主题，它们先是介绍成功登陆所有浏览器所需支持的 API，然后介绍如何高效地使用这些事件。
+Caution: Don't forget that some users will want keyboard input and users running assistive technology on a touchscreen device may not be able to perform gestures because they're intercepted / consumed by the assistive technology.
 
+We are going to look at two examples in this article, both demonstrating support for all browsers and how to keep the frame rate high.
 
+![Example GIF of touch on document](images/touch-document-level.gif){: .attempt-right }
 
-根据您希望手势具有的功能，您可能希望用户一次只与一个元素进行交互，*也*可能希望他们能同时与多个元素进行交互。
+The first example will allow the user to interact with one element. In this case you might want all touch events to be given to that one element, as long as the gesture initially started on the element itself. For example, moving a finger off the swipe-able element can still control the element.
 
-
-
-Note: 别忘了，一些用户需要键盘输入，并且在触摸屏设备上运行辅助技术的用户可能因手势被辅助技术拦截/使用而无法执行手势。
-
-
-
-
-在本文中，我们将研究两个示例，它们都展示了如何支持所有浏览器，以及如何保持较高的帧率。
-
-
-![文档触摸 GIF 演示](images/touch-document-level.gif){: .attempt-right }
-
-第一个示例允许用户与一个元素进行交互。在此情况下，您可能希望所有触摸事件都提供给这一个元素，只要手势最初始于元素本身。例如，将手指移动到可滑动元素之外仍可控制元素。
-
-
-这很有用处，因为它给用户带来了极大的灵活性，但会给用户与 UI 的交互方式施加限制。
-
+This is useful as it provides a great deal of flexibility for the user, but enforces a restriction on how the user can interact with your UI.
 
 <div class="clearfix"></div>
 
-![元素触摸 GIF 演示](images/touch-element-level.gif){: .attempt-right }
+![Example GIF of touch on element](images/touch-element-level.gif){: .attempt-right }
 
-不过，如果您希望用户能够同时与多个元素进行交互（利用多点触控），则应仅限触摸特定元素。
+If, however, you expect users to interact with multiple elements at the same time (using multi-touch), you should restrict the touch to the specific element.
 
-
-
-这对用户而言更为灵活，但会让操纵 UI 的逻辑复杂化，应对用户错误的弹性下降。
-
+This is more flexible for users, but complicates the logic for manipulating the UI and is less resilient to user error.
 
 <div class="clearfix"></div>
 
-### 添加事件侦听器
+### Add event listeners
 
-在 Chrome（版本 55 及更高版本）、Internet Explorer 和 Edge 中，`PointerEvents` 是建议的自定义手势实现方法。
+In Chrome (version 55 and later), Internet Explorer & Edge, `PointerEvents` are the recommended approach for implementing custom gestures.
 
+In other browsers `TouchEvents` and `MouseEvents` are the correct approach.
 
-在其他浏览器中，`TouchEvents` 和 `MouseEvents` 是正确的方法。
+The great feature of `PointerEvents` is that it merges multiple types of input, including mouse, touch and pen events, into one set of callbacks. The events to listen for are `pointerdown`, `pointermove`, `pointerup` and `pointercancel`.
 
-`PointerEvents` 的一大特色是，它将包括鼠标、触摸和触控笔事件在内的多种输入类型合并成一个回调集。需要侦听的事件是 `pointerdown`、`pointermove`、`pointerup` 和 `pointercancel`。
+The equivalents in other browsers are `touchstart`, `touchmove`, `touchend` and `touchcancel` for touch events and if you wanted to implement the same gesture for mouse input you'd need to implement `mousedown`, `mousemove`, and `mouseup`.
 
+If you have questions about which events to use, check out this table of [Touch, mouse and pointer events](#touch-mouse-and-pointer-events)).
 
-其他浏览器中的对应项是 `touchstart`、`touchmove`、`touchend` 和 `touchcancel` 触摸事件，如果想为鼠标输入实现相同的手势，则需实现 `mousedown`、`mousemove` 和 `mouseup`。
+Using these events requires calling the `addEventListener()` method on a DOM element, along with the name of an event, a callback function and a boolean. The boolean determines whether you should catch the event before or after other elements have had the opportunity to catch and interpret the events. (`true` means you want the event before other elements.)
 
-
-
-
-如果对需要使用的事件有疑问，可以看一看这个[触摸、鼠标和指针事件](#touch-mouse-and-pointer-events)表。
-
-
-使用这些事件需要对 DOM 元素调用 `addEventListener()` 方法，使用的参数为事件名称、回调函数和一个布尔值。布尔值决定是否应在其他元素有机会捕获并解释事件之前或之后捕获事件。（`true` 表示想要先于其他元素捕获事件。）
-
-
-
-
-
-下面这个示例侦听的是交互的开始。
+Here's an example of listening for the start of an interaction.
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/design-and-ux/input/touch/_code/touch-demo-1.html" region_tag="addlisteners" adjust_indentation="auto" %}
 </pre>
 
-[试一下](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/input/touch/touch-demo-1.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/input/touch/touch-demo-1.html){: target="_blank" .external }
 
-Note: 由于 API 采用了特殊设计，PointerEvents 只需单个 `pointerdown` 事件便可同时处理鼠标和触摸事件。
+Note: Because of the design of the API, PointerEvents only need a single `pointerdown` event to handle both mouse and touch events.
 
+#### Handle single-element interaction
 
-#### 处理单元素交互
+In the short snippet of code above we only added the starting event listener for mouse events. The reason for this is that mouse events will only trigger when the cursor is hovering *over* the element the event listener is added to.
 
-在上面这段简短的代码中，我们只添加了鼠标事件的开始事件侦听器。
-其原因是，只有当光标悬停在添加了事件侦听器的元素*之上*时，才会触发鼠标事件。
+`TouchEvents` will track a gesture after it's started regardless of where the touch occurs and `PointerEvents` will track events regardless of where the touch occurs after we call `setPointerCapture` on a DOM element.
 
+For mouse move and end events we add the event listeners *in* the gesture start method and add the listeners to the document, meaning it can track the cursor until the gesture is complete.
 
-当我们对 DOM 元素调用 `setPointerCapture` 时，TouchEvents 将在手势开始后对其进行追踪，无论触摸发生在什么位置；PointerEvents 将追踪事件，无论触摸发生在什么位置。
+The steps taken to implement this are:
 
+1. Add all TouchEvent and PointerEvent listeners. For MouseEvents add **only** the start event.
+2. Inside the start gesture callback, bind the mouse move and end events to the document. This way all mouse events are received regardless of whether the event occurs on the original element or not. For PointerEvents we need to call `setPointerCapture()` on our original element to receive all further events. Then handle the start of the gesture.
+3. Handle the move events.
+4. On the end event, remove the mouse move and end listeners from the document and end the gesture.
 
-
-对于鼠标移动和结束事件，我们在手势开始方法*中*添加了事件侦听器，并向文档添加了侦听器，这意味着它可以追踪光标，直至手势完成。
-
-
-
-实现以上操作的步骤如下：
-
-1. 添加所有 TouchEvent 和 PointerEvent 侦听器。对于 MouseEvents，**只**添加开始事件。
-1. 在开始手势回调内，将鼠标移动和结束事件绑定到文档。这样便可接收所有鼠标事件，无论事件是否发生在原始元素上。
-对于 PointerEvents，我们需要对原始元素调用 `setPointerCapture()` 来接收所有进一步的事件。然后处理手势开始。
-1. 处理移动事件。
-1. 发生结束事件时，从文档中移除鼠标移动和结束侦听器并结束手势。
-
-
-以下代码段中的 `handleGestureStart()` 方法向文档添加了移动和结束事件：
-
+Below is a snippet of our `handleGestureStart()` method which adds the move and end events to the document:
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/design-and-ux/input/touch/_code/touch-demo-1.html" region_tag="handle-start-gesture" adjust_indentation="auto" %}
 </pre>
 
-[试一下](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/input/touch/touch-demo-1.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/input/touch/touch-demo-1.html){: target="_blank" .external }
 
-我们添加的结束回调是 `handleGestureEnd()`，当手势完成时，这个回调会从文档中移除移动和结束事件侦听器并释放指针捕获，如下所示：
-
-
+The end callback we add is `handleGestureEnd()`, which removes the move and end event listeners from the document and releases the pointer capture when the gesture has finished like so:
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/design-and-ux/input/touch/_code/touch-demo-1.html" region_tag="handle-end-gesture" adjust_indentation="auto" %}
 </pre>
 
-[试一下](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/input/touch/touch-demo-1.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/input/touch/touch-demo-1.html){: target="_blank" .external }
 
-<div class="attempt-left">  <p>通过按照这种模式向文档添加移动事件，当用户开始与某个元素进行交互并将手势移动到该元素之外时，无论鼠标移动到页面上的什么位置，我们仍可收到鼠标移动事件，因为收到的事件来自文档。</p>
+<div class="attempt-left">
+  <p>By following this pattern of adding the move event to the document, if the
+  user starts interacting with an element and moves their gesture outside of
+  the element, we'll continue to get mouse movements regardless of where they
+  are on the page, because the events are being received from the document.</p>
 
+  <p>This diagram shows what the touch events are doing as we add the
+  move and end events to the document once a gesture begins.</p>
+</div>
 
-
-
-
-  <p>此图显示了手势开始后我们向文档添加移动和结束事件时触摸事件的行为。</p></div>
-
-
-
-![在 `touchstart` 中将触摸事件绑定到文档的插图](images/scroll-bottleneck.gif)
-
+![Illustrating binding touch events to document in
+<code>touchstart</code>](images/scroll-bottleneck.gif)
 
 <div class="clearfix"></div>
 
-### 高效响应触摸动作
+### Responding to touch efficiently
 
-既然已经完成了对开始和结束事件的处理，我们可以实际响应触摸事件了。
+Now that we have the start and end events taken care of we can actually respond to the touch events.
 
+For any of the start and move events, you can easily extract `x` and `y` from an event.
 
-对于任何开始和移动事件，均可轻松地从事件中提取 `x` 和 `y`。
-
-
-下例通过检查 `targetTouches` 是否存在来检查事件是否来自 `TouchEvent`。
-如果存在，则从第一次触摸提取 `clientX` 和 `clientY`。如果事件是 `PointerEvent` 或 `MouseEvent`，则直接从事件本身提取 `clientX` 和 `clientY`。
-
-
-
+The following example checks whether the event is from a `TouchEvent` by checking if `targetTouches` exists. If it does, then it extracts the `clientX` and `clientY` from the first touch. If the event is a `PointerEvent` or `MouseEvent` it extracts `clientX` and `clientY` directly from the event itself.
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/design-and-ux/input/touch/_code/touch-demo-2.html" region_tag="extract-xy" adjust_indentation="auto" %}
 </pre>
 
-[试一下](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/input/touch/touch-demo-2.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/input/touch/touch-demo-2.html){: target="_blank" .external }
 
-`TouchEvent` 有三个包含触摸数据的列表：
+A `TouchEvent` has three lists containing touch data:
 
-* `touches`：屏幕上所有当前触摸的列表，无论它们在什么 DOM 元素之中。
-* `targetTouches`：当前事件所绑定的 DOM 元素触摸列表。
-* `changedTouches`：因发生变化而导致事件触发的触摸列表。
+* `touches`: list of all current touches on the screen, regardless of DOM element they are on.
+* `targetTouches`: list of touches currently on the DOM element the event is bound to.
+* `changedTouches`: list of touches which changed resulting in the event being fired.
 
+In most cases, `targetTouches` gives you everything you need and want. (For more info on these lists see [Touch lists](#touch-lists)).
 
-在大多数情况下，`targetTouches` 便可满足您的所有需求。（如需了解有关这些列表的详细信息，请参阅[触摸列表](#touch-lists)）。
+#### Use requestAnimationFrame
 
+Since the event callbacks are fired on the main thread, we want to run as little code as possible in the callbacks for our events, keeping our frame rate high and preventing jank.
 
-#### 使用 requestAnimationFrame
+Using `requestAnimationFrame()` we have an opportunity to update the UI just before the browser is intending to draw a frame and will help us move some work out of our event callbacks.
 
-由于事件回调是在主线程上触发，因此我们需要在事件回调中运行尽可能少的代码，从而保持较高的帧率和防止出现卡顿。
+If you are unfamiliar with `requestAnimationFrame()`, you can [learn more here](/web/fundamentals/performance/rendering/optimize-javascript-execution#use-requestanimationframe-for-visual-changes).
 
+A typical implementation is to save the `x` and `y` coordinates from the start and move events and request an animation frame inside the move event callback.
 
-
-使用 `requestAnimationFrame()` 可以让我们有机会在浏览器正想要绘制帧之前更新 UI，并且有助于减轻事件回调的工作负荷。
-
-
-
-如果您不熟悉 `requestAnimationFrame()`，可以[在此处了解详情](/web/fundamentals/performance/rendering/optimize-javascript-execution#use-requestanimationframe-for-visual-changes)。
-
-
-一种典型的实现是，保存来自开始和移动事件的 `x` 和 `y` 坐标，然后在移动事件回调内请求动画帧。
-
-
-
-在演示中，我们将初始触摸位置存储在 `handleGestureStart()` 中（查找 `initialTouchPos`）：
+In our demo, we store the initial touch position in `handleGestureStart()` (look for `initialTouchPos`):
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/design-and-ux/input/touch/_code/touch-demo-1.html" region_tag="handle-start-gesture" adjust_indentation="auto" %}
 </pre>
 
-`handleGestureMove()` 方法先存储其事件的位置，然后在必要时请求动画帧，并以回调形式传入 `onAnimFrame()` 函数：
-
-
+The `handleGestureMove()` method stores the position of it's event before requesting an animation frame if we need to, passing in our `onAnimFrame()` function as the callback:
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/design-and-ux/input/touch/_code/touch-demo-1.html" region_tag="handle-move" adjust_indentation="auto" %}
 </pre>
 
-`onAnimFrame` 值是一个函数，被调用时会改变我们的 UI，使其四处移动。
-将此函数传入 `requestAnimationFrame()` 的目的是指示浏览器在其即将更新页面（即对页面绘制任何更改）时调用该函数。
+The `onAnimFrame` value is a function that when called, changes our UI to move it around. By passing this function into `requestAnimationFrame()`, we tell the browser to call it just before it's about to update the page (i.e. paint any changes to the page).
 
+In the `handleGestureMove()` callback we initially check if `rafPending` is false, which indicates if `onAnimFrame()` has been called by `requestAnimationFrame()` since the last move event. This means we only have one `requestAnimationFrame()` waiting to run at any one time.
 
-
-在 `handleGestureMove()` 回调中，我们首先检查 `rafPending` 是否为 false，这表示最后一个移动事件后 `requestAnimationFrame()` 是否调用过 `onAnimFrame()`。这意味着，在同一时间等待运行的 `requestAnimationFrame()` 只有一个。
-
-
-执行 `onAnimFrame()` 回调时，我们在想要移动的任何元素上设置变换，然后将 `rafPending` 更新为 `false`，从而让下一个触摸事件能够请求新的动画帧。
-
-
+When our `onAnimFrame()` callback is executed, we set the transform on any elements we want to move before updating `rafPending` to `false`, allowing the the next touch event to request a new animation frame.
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/design-and-ux/input/touch/_code/touch-demo-1.html" region_tag="on-anim-frame" adjust_indentation="auto" %}
 </pre>
 
-### 利用触摸操作控制手势
+### Control gestures using touch actions
 
-CSS 属性 `touch-action` 用于控制元素的默认触摸行为。
-我们的示例使用 `touch-action: none` 来防止浏览器在用户触摸时执行任何操作，从而拦截所有触摸事件。
-
-
+The CSS property `touch-action` allows you to control the default touch behavior of an element. In our examples, we use `touch-action: none` to prevent the browser from doing anything with a users' touch, allowing us to intercept all of the touch events.
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/design-and-ux/input/touch/_code/touch-demo-1.html" region_tag="touch-action-example" adjust_indentation="auto" %}
 </pre>
 
-使用 `touch-action: none` 的影响颇为巨大，因为它会阻止所有默认的浏览器行为。
-在许多情况下，采用下面其中一个解决方案是更好的选择。
+Using `touch-action: none` is somewhat a nuclear option as it prevents all the default browser behaviors. In many cases one of the options below is a better solution.
 
+`touch-action` allows you to disable gestures implemented by a browser. For example, IE10+ supports a double-tap to zoom gesture. By setting a touch-action of `manipulation` you prevent the default double-tap behavior.
 
-`touch-action` 可停用浏览器实现的手势。例如，IE10 以上版本支持点按两次执行缩放手势。
-将 touch-action 设置为 `manipulation` 可以阻止点按两次的默认行为。
+This allows you to implement a double-tap gesture yourself.
 
-
-
-这样您就可以自行实现点按两次手势。
-
-下面列出了常用的 touch-action 值：
+Below is a list of commonly used touch-action values:
 
 <table class="responsive">
   <thead>
     <tr>
-      <th colspan="2">触摸操作参数</th>
+      <th colspan="2">Touch Action Parameters</th>
     </tr>
   </thead>
   <tbody>
     <tr>
       <td data-th="Property"><code>touch-action: none</code></td>
-      <td data-th="Description">浏览器将不处理触摸交互。
-</td>
+      <td data-th="Description">No touch interactions will be handled by
+      the browser.</td>
     </tr>
     <tr>
       <td data-th="Property"><code>touch-action: pinch-zoom</code></td>
-      <td data-th="Description">像  `touch-action: none` 一样停用所有浏览器交互（
- `pinch-zoom` 除外，该交互仍由浏览器处理。
- </td>
+      <td data-th="Description">Disables all browser interactions like
+      `touch-action: none` apart from `pinch-zoom`, which is still handled by
+      the browser.</td>
     </tr>
     <tr>
       <td data-th="Property"><code>touch-action: pan-y pinch-zoom</code></td>
-      <td data-th="Description">处理 JavaScript 中的水平滚动，而
-不停用垂直滚动或双指张合缩放（例如图像轮播）。</td>
+      <td data-th="Description">Handle horizontal scrolls in JavaScript without
+      disabling vertical scrolling or pinch-zooming (eg. image carousels).</td>
     </tr>
     <tr>
       <td data-th="Property"><code>touch-action: manipulation</code></td>
-      <td data-th="Description">停用点按两次手势，可避免浏览器的任何点按延迟。
-将滚动和双指张合缩放交由浏览器处理。</td>
+      <td data-th="Description">Disables double-tap gesture which avoids any
+      click delay by the browser. Leaves scrolling and pinch-zoom up to the
+      browser.</td>
     </tr>
   </tbody>
 </table>
 
+## Supporting older versions of IE
 
-## 支持较旧版本 IE
+If you want to support IE10, you'll need to handle vendor prefixed versions of `PointerEvents`.
 
-如果想支持 IE10，需要处理加有供应商前缀的 `PointerEvents` 版本。
+To check for support of `PointerEvents` you'd typically look for `window.PointerEvent`, but in IE10, you'd look for `window.navigator.msPointerEnabled`.
 
+The event names with vendor prefixes are: 'MSPointerDown', 'MSPointerUp' and 'MSPointerMove'.
 
-
-要检查对 `PointerEvents` 的支持情况，一般需要查找 `window.PointerEvent`，但在 IE10 中，则要查找 `window.navigator.msPointerEnabled`。
-
-
-
-带供应商前缀的事件名称如下：'MSPointerDown'、'MSPointerUp' 和 'MSPointerMove'。
-
-
-下例展示的是如何检查支持情况和切换事件名称。
-
+The example below shows you how to check for support and switch the event names.
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/design-and-ux/input/touch/_code/touch-demo-1.html" region_tag="pointereventsupport" adjust_indentation="auto" %}
 </pre>
 
-如需了解详细信息，可以看看这篇[来自 Microsoft 的更新文章](https://msdn.microsoft.com/en-us/library/dn304886(v=vs.85).aspx)。
+For more information, checkout this [updates article from Microsoft](https://msdn.microsoft.com/en-us/library/dn304886(v=vs.85).aspx).
 
+## Reference
 
-##  引用
-
-### 对应不同触摸状态的伪类
+### Pseudo classes for touch states
 
 <table>
   <thead>
     <tr>
-      <th>类</th>
-      <th>示例</th>
-      <th>说明</th>
+      <th>Class</th>
+      <th>Example</th>
+      <th>Description</th>
     </tr>
   </thead>
   <tbody>
     <tr>
       <td data-th="Class">:hover</td>
-      <td data-th="Example"><img alt="处于按下状态的按钮" src="images/btn-hover-state.png"></td>
+      <td data-th="Example"><img alt="Button in Pressed State" src="images/btn-hover-state.png"></td>
       <td data-th="Description">
-        当光标放置于某个元素上面时进入该状态。
-        悬停时的 UI 变化有助于鼓励用户与元素进行交互。
+        Entered when a cursor is placed over an element.
+        Changes in the UI on hover are helpful to encourage users to interact
+        with elements.
       </td>
     </tr>
     <tr>
       <td data-th="Class">:focus</td>
       <td data-th="Example">
-        <img alt="处于焦点状态的按钮
-" src="images/btn-focus-state.png">
+        <img alt="Button with Focus State" src="images/btn-focus-state.png">
       </td>
       <td data-th="Description">
-        当用户按 Tab 在页面上的各个元素间导航时进入该状态。focus 状态可让用户了解当前正在与其进行交互的是哪一个元素；还可让用户轻松地利用键盘浏览 UI。
+        Entered when the user tabs through elements on a page. The focus state
+        allows the user to know what element they are currently interacting
+        with; also allows users to navigate your UI easily using a keyboard.
       </td>
     </tr>
     <tr>
       <td data-th="Class">:active</td>
       <td data-th="Example">
-        <img alt="处于按下状态的按钮" src="images/btn-pressed-state.png">
+        <img alt="Button in Pressed State" src="images/btn-pressed-state.png">
       </td>
       <td data-th="Description">
-        当选定某个元素时（例如，当用户正点击或触摸某个元素时）进入该状态。
+        Entered when an element is being selected, for
+        example, when a user is clicking or touching an element.
       </td>
     </tr>
   </tbody>
 </table>
 
+The definitive touch events reference can be found here: [w3 Touch Events](http://www.w3.org/TR/touch-events/).
 
+### Touch, mouse, and pointer events
 
-可以在这里找到权威的触摸事件参考资料：[w3 Touch Events](http://www.w3.org/TR/touch-events/)。
-
-
-### 触摸、鼠标和指针事件
-
-这些事件是为应用新增手势的构建基块：
-
+These events are the building blocks for adding new gestures into your application:
 
 <table class="responsive">
   <thead>
     <tr>
-      <th colspan="2">触摸、鼠标和指针事件</th>
+      <th colspan="2">Touch, Mouse, Pointer Events</th>
     </tr>
   </thead>
   <tbody>
@@ -472,7 +373,8 @@ CSS 属性 `touch-action` 用于控制元素的默认触摸行为。
         <code>pointerdown</code>
       </td>
       <td data-th="Description">
-        这是在手指第一次触摸某个元素或用户按住鼠标时调用的事件。
+        This is called when a finger first touches an element or when the
+        user clicks down on the mouse.
       </td>
     </tr>
     <tr>
@@ -482,7 +384,8 @@ CSS 属性 `touch-action` 用于控制元素的默认触摸行为。
         <code>pointermove</code>
       </td>
       <td data-th="Description">
-        这是用户在屏幕上移动手指或使用鼠标拖动时调用的事件。
+        This is called when the user moves their finger across the screen or
+        drags with the mouse.
       </td>
     </tr>
     <tr>
@@ -492,7 +395,8 @@ CSS 属性 `touch-action` 用于控制元素的默认触摸行为。
         <code>pointerup</code>
       </td>
       <td data-th="Description">
-       这是用户将手指从屏幕上抬起或松开鼠标时调用的事件。
+        This is called when the user lifts their finger off of the screen
+        or releases the mouse.
       </td>
     </tr>
     <tr>
@@ -501,63 +405,68 @@ CSS 属性 `touch-action` 用于控制元素的默认触摸行为。
         <code>pointercancel</code>
       </td>
       <td data-th="Description">
-        这是浏览器取消触摸手势时调用的事件。例如，
-        用户触摸某个网络应用后切换标签。
+        This is called when the browser cancels the touch gestures. For example,
+        a user touch a web app and then change tabs.
       </td>
     </tr>
   </tbody>
 </table>
 
-### 触摸列表
+### Touch lists
 
-每个触摸事件都包括三个列表属性：
+Each touch event includes three list attributes:
 
 <table class="responsive">
   <thead>
     <tr>
-      <th colspan="2">触摸事件属性</th>
+      <th colspan="2">Touch Event Attributes</th>
     </tr>
   </thead>
   <tbody>
     <tr>
       <td data-th="Attribute"><code>touches</code></td>
       <td data-th="Description">
-        屏幕上的所有当前触摸列表，无论正在触摸的是哪些元素。
+        List of all current touches on the screen, regardless of elements
+        being touched.
       </td>
     </tr>
     <tr>
       <td data-th="Attribute"><code>targetTouches</code></td>
       <td data-th="Description">
-        在作为当前事件目标的元素上开始的触摸列表。
-        例如，如果您绑定到 <code>&lt;button&gt;</code>，
-       您将只获取该按钮上的当前触摸。如果绑定到文档，则可获得文档上的所有当前触摸。
+        List of touches that started on the element that is the target of
+        the current event. For example, if you bind to a <code>&lt;button&gt;</code>,
+        you'll only get touches currently on that button. If you bind to the
+        document, you'll get all touches currently on the document.
       </td>
     </tr>
     <tr>
       <td data-th="Attribute"><code>changedTouches</code></td>
       <td data-th="Description">
-        因发生更改而导致事件触发的触摸列表：
+        List of touches which changed resulting in the event being fired:
         <ul>
           <li>
-            对于 <code>
+            For the <code>
             <a href="http://www.w3.org/TR/touch-events/#dfn-touchstart">
             touchstart</a></code>
-            事件 -- 随当前事件刚刚激活的触摸点列表。
+            event-- list of the touch points that just became active with the
+            current event.
           </li>
           <li>
-            对于 <code>
+            For the <code>
             <a href="http://www.w3.org/TR/touch-events/#dfn-touchmove">
             touchmove</a></code>
-            事件 -- 最后一个事件后发生过移动的触摸点列表。
+            event-- list of the touch points that have moved since the last
+            event.
           </li>
           <li>
-            对于 <code>
+            For the <code>
             <a href="http://www.w3.org/TR/touch-events/#dfn-touchend">
             touchend</a></code>
-            和 <code>
+            and <code>
             <a href="http://www.w3.org/TR/touch-events/#dfn-touchcancel">
             touchcancel</a></code>
-            事件 -- 刚从表面上移除的触摸点列表。
+            events-- list of the touch points that have just been removed
+            from the surface.
           </li>
         </ul>
       </td>
@@ -565,28 +474,22 @@ CSS 属性 `touch-action` 用于控制元素的默认触摸行为。
   </tbody>
 </table>
 
-### 在 iOS 上启用 active 状态支持
+### Enabling active state support on iOS
 
-遗憾的是，iOS 上的 Safari 默认情况下不应用 *active* 状态，要将它启用，您需要向 *document body* 或每个元素添加一个 `touchstart` 事件侦听器。
+Unfortunately, Safari on iOS does not apply the *active* state by default, to get it working you need to add a `touchstart` event listener to the *document body* or to each element.
 
+You should do this behind a user agent test so it's only run on iOS devices.
 
-
-此操作应在 User Agent 测试之后进行，这样它就只能运行在 iOS 设备上。
-
-向 body 添加触摸开始的优点是可以应用于 DOM 中的所有元素，但这可能会在滚动页面时带来性能问题。
-
-
+Adding a touch start to the body has the advantage of applying to all elements in the DOM, however this may have performance issues when scrolling the page.
 
     window.onload = function() {
       if(/iP(hone|ad)/.test(window.navigator.userAgent)) {
         document.body.addEventListener('touchstart', function() {}, false);
       }
     };
+    
 
-
-替代方案是向页面中的所有可交互元素添加触摸开始侦听器，从而缓解部分性能问题。
-
-
+The alternative is to add the touch start listeners to all the interactable elements in the page, alleviating some of the performance concerns.
 
     window.onload = function() {
       if(/iP(hone|ad)/.test(window.navigator.userAgent)) {
@@ -597,6 +500,8 @@ CSS 属性 `touch-action` 用于控制元素的默认触摸行为。
         }
       }
     };
+    
 
+## Feedback {: #feedback }
 
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
