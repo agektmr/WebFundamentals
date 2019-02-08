@@ -1,152 +1,142 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Iets via het netwerk ophalen kost tijd en geld: zoekopdrachten met veel resultaten leveren veel verkeer op tussen client en server, wat vertragingen kan veroorzaken tijdens verwerking in de browser en tevens tot datakosten kan leiden voor gebruikers. Om dit proces te optimaliseren, is het essentieel dat eerder opgehaalde hulpbronnen in het cachegeheugen worden opgeslagen en opnieuw worden gebruikt.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Caching and reusing previously fetched resources is a critical aspect of optimizing for performance.
 
+{# wf_updated_on: 2018-08-17 #} {# wf_published_on: 2013-12-31 #} {# wf_blink_components: Blink>Network #}
 
-{# wf_updated_on: 2014-01-04 #}
-{# wf_published_on: 2013-12-31 #}
-
-# HTTP-caching {: .page-title }
+# HTTP Caching {: .page-title }
 
 {% include "web/_shared/contributors/ilyagrigorik.html" %}
 
+Fetching something over the network is both slow and expensive. Large responses require many roundtrips between the client and server, which delays when they are available and when the browser can process them, and also incurs data costs for the visitor. As a result, the ability to cache and reuse previously fetched resources is a critical aspect of optimizing for performance.
 
+The good news is that every browser ships with an implementation of an HTTP cache. All you need to do is ensure that each server response provides the correct HTTP header directives to instruct the browser on when and for how long the browser can cache the response.
 
-Iets via het netwerk ophalen kost tijd en geld: zoekopdrachten met veel resultaten leveren veel verkeer op tussen client en server, wat vertragingen kan veroorzaken tijdens verwerking in de browser en tevens tot datakosten kan leiden voor gebruikers. Om dit proces te optimaliseren, is het essentieel dat eerder opgehaalde hulpbronnen in het cachegeheugen worden opgeslagen en opnieuw worden gebruikt.
+Note: If you are using a WebView to fetch and display web content in your application, you might need to provide additional configuration flags to ensure that the HTTP cache is enabled, its size is set to a reasonable number to match your use case, and the cache is persisted. Check the platform documentation and confirm your settings.
 
+<img src="images/http-request.png"  alt="HTTP request" />
 
+When the server returns a response, it also emits a collection of HTTP headers, describing its content-type, length, caching directives, validation token, and more. For example, in the above exchange, the server returns a 1024-byte response, instructs the client to cache it for up to 120 seconds, and provides a validation token ("x234dff") that can be used after the response has expired to check if the resource has been modified.
 
-Elke browser beschikt over een implementatie van een HTTP-cache. We hoeven er alleen voor te zorgen dat elke keer dat een server een antwoord verstuurt, dit de juiste HTTP-header bevat met aanwijzingen over hoe lang de browser het antwoord kan opslaan in het cachegeheugen.
-
-Note: Als u een Webview gebruikt om inhoud van internet in uw applicatie weer te geven, zijn er mogelijk extra configuratiestappen nodig om HTTP-caching in te schakelen, de omvang van het cachegeheugen te bepalen en om in te stellen hoe lang de gegevens worden bewaard. Raadpleeg de documentatie voor het betreffende platform en controleer uw instellingen.
-
-<img src="images/http-request.png" class="center" alt="HTTP-verzoek">
-
-Wanneer de server dit verzoek beantwoordt, stuurt deze tevens een aantal HTTP-headers die informatie bevatten over het type inhoud, de lengte, instructies voor het cachegeheugen, validatietoken en meer. In bovenstaand voorbeeld stuurt de server een antwoord van 1024 bytes, instrueert de client om dit antwoord gedurende 120 seconden in het cachegeheugen op te slaan en verstrekt de server een validatietoken (`x234dff`) dat na vervallen van het antwoord kan worden gebruikt om te controleren of de hulpbron is gewijzigd.
-
-
-## Antwoorden in het cachegeheugen valideren met ETags
+## Validating cached responses with ETags
 
 ### TL;DR {: .hide-from-toc }
-- Validatietoken wordt door de server gecommuniceerd via de HTTP-header ETag
-- Validatietoken maakt efficiënte updatecontroles voor hulpbronnen mogelijk: geen gegevensoverdracht wanneer de hulpbron niet is gewijzigd.
 
+* The server uses the ETag HTTP header to communicate a validation token.
+* The validation token enables efficient resource update checks: no data is transferred if the resource has not changed.
 
-Laten we ervan uitgaan dat er 120 seconden zijn verstreken sinds ons eerste verzoek en dat de browser een nieuw verzoek voor dezelfde hulpbron heeft verstuurd. De browser controleert eerst het lokale cachegeheugen en vindt het eerste antwoord. Omdat het antwoord is `vervallen` kan het niet meer worden gebruikt. De browser kan nu een nieuw verzoek versturen en het volledige antwoord ophalen, maar als de hulpbron niet is gewijzigd, is het overbodig om dezelfde bytes die zich in het cachegeheugen bevinden nogmaals te downloaden.
+Assume that 120 seconds have passed since the initial fetch and the browser has initiated a new request for the same resource. First, the browser checks the local cache and finds the previous response. Unfortunately, the browser can't use the previous response because the response has now expired. At this point, the browser could dispatch a new request and fetch the new full response. However, that’s inefficient because if the resource hasn't changed, then there's no reason to download the same information that's already in cache!
 
-Om dit te voorkomen zijn validatietokens ontworpen. Deze maken deel uit van de ETag-header. De server genereert een willekeurig token, meestal een hash of een andere vingerafdruk van de inhoud van het bestand, en verstuurt deze. Het is voor de client niet van belang hoe de vingerafdruk is gemaakt. De client hoeft deze bij het volgende verzoek slechts te versturen aan de server: als de vingerafdruk dezelfde is, is de hulpbron niet gewijzigd en hoeft het antwoord niet opnieuw te worden gedownload.
+That’s the problem that validation tokens, as specified in the ETag header, are designed to solve. The server generates and returns an arbitrary token, which is typically a hash or some other fingerprint of the contents of the file. The client doesn't need to know how the fingerprint is generated; it only needs to send it to the server on the next request. If the fingerprint is still the same, then the resource hasn't changed and you can skip the download.
 
-<img src="images/http-cache-control.png" class="center" alt="Voorbeeld HTTP Cache-Control">
+<img src="images/http-cache-control.png"  alt="HTTP Cache-Control example" />
 
-In bovenstaand voorbeeld verstrekt de client de ETag bij het verzoek automatisch in de HTTP-header `If-None-Match`, vergelijkt de server het token met de huidige hulpbron en stuurt het antwoord `304 Not Modified` terug. Hieruit maakt de browser op dat het antwoord in het cachegeheugen niet is gewijzigd en gedurende 120 seconden vernieuwd kan worden. We hoeven het antwoord nu niet nog eens te downloaden. Dit bespaart tijd en bandbreedte.
+In the preceding example, the client automatically provides the ETag token in the "If-None-Match" HTTP request header. The server checks the token against the current resource. If the token hasn't changed, the server returns a "304 Not Modified" response, which tells the browser that the response it has in cache hasn't changed and can be renewed for another 120 seconds. Note that you don't have to download the response again, which saves time and bandwidth.
 
-Hoe maakt u als webontwikkelaar gebruik van efficiënte revalidatie? De browser doet al het werk voor ons: de browser detecteert automatisch of een validatietoken al eerder is gepecificeerd, koppelt het aan een uitgaand verzoek en werkt de tijdstempels in het cachegeheugen bij op basis van het ontvangen antwoord van de server. **Het enige dat wij nog moeten doen, is garanderen dat de server de benodigde ETags verstrekt. Raadpleeg de serverdocumentatie voor de vereiste configuratiestappen.**
+As a web developer, how do you take advantage of efficient revalidation? The browser does all the work on our behalf. The browser automatically detects if a validation token has been previously specified, it appends the validation token to an outgoing request, and it updates the cache timestamps as necessary based on the received response from the server. **The only thing left to do is to ensure that the server is providing the necessary ETag tokens. Check your server documentation for the necessary configuration flags.**
 
-Note: Tip: het project HTML5 Boilerplate bevat <a href='https://github.com/h5bp/server-configs'>voorbeelden van configuratiebestanden</a> voor de meest gebruikte servers met gedetailleerde beschrijvingen voor elke configuratiestap. Zoek de gewenste server op in de lijst en neem de vermelde instellingen over op uw server, zodat deze is geconfigureerd met de aanbevolen instellingen.
-
+Note: Tip: The HTML5 Boilerplate project contains [sample configuration files](https://github.com/h5bp/server-configs) for all the most popular servers with detailed comments for each configuration flag and setting. Find your favorite server in the list, look for the appropriate settings, and copy/confirm that your server is configured with the recommended settings.
 
 ## Cache-Control
 
 ### TL;DR {: .hide-from-toc }
-- Het cachebeleid voor elke hulpbron kan worden ingesteld via de HTTP-header Cache-Control
-- De configuratie van Cache-Control bepaalt wie het antwoord van de server kan opslaan in het cachegeheugen, onder welke voorwaarden en hoe lang de gegevens worden bewaard
 
+* Each resource can define its caching policy via the Cache-Control HTTP header.
+* Cache-Control directives control who can cache the response, under which conditions, and for how long.
 
-Het beste verzoek is een verzoek waarvoor niet met de server hoeft te worden gecommuniceerd: een lokaal opgeslagen antwoord voorkomt netwerkvertragingen en datakosten voor de gegevensoverdracht. Om dit te realiseren, staat de HTTP-specificatie toe dat de server [een aantal verschillende Cache-Control-instructies] (http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.9) terugstuurt die bepalen hoe en hoe lang dit specifieke antwoord door de browser of de tussenopslag in het cachegeheugen mag worden bewaard.
+From a performance optimization perspective, the best request is a request that doesn't need to communicate with the server: a local copy of the response allows you to eliminate all network latency and avoid data charges for the data transfer. To achieve this, the HTTP specification allows the server to return [Cache-Control directives](http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.9) that control how, and for how long, the browser and other intermediate caches can cache the individual response.
 
-Note: De header Cache-Control is onderdeel van de specificaties voor HTTP/1.1. Deze header vervangt voorgaande headers (bijv. Expires) die worden gebruikt in het cachebeleid voor antwoorden. Alle moderne browsers ondersteunen Cache-Control, dus dit is de enige header die we nodig hebben.
+Note: The Cache-Control header was defined as part of the HTTP/1.1 specification and supersedes previous headers (for example, Expires) used to define response caching policies. All modern browsers support Cache-Control, so that's all you need.
 
-<img src="images/http-cache-control-highlight.png" class="center" alt="Voorbeeld HTTP Cache-Control">
+<img src="images/http-cache-control-highlight.png"  alt="HTTP Cache-Control example" />
 
-### `no-cache` en `no-store`
+### "no-cache" and "no-store"
 
-`no-cache` geeft aan dat een teruggestuurd antwoord pas kan worden gebruikt voor een volgend verzoek naar dezelfde URL wanneer eerst op de server wordt gecontroleerd of het antwoord is gewijzigd. Wanneer een geschikt validatietoken (ETag) aanwezig is, wordt het antwoord dat zich in het cachegeheugen bevindt vergeleken met de gegevens op de server. De download wordt gestaakt indien het antwoord niet is gewijzigd.
+"no-cache" indicates that the returned response can't be used to satisfy a subsequent request to the same URL without first checking with the server if the response has changed. As a result, if a proper validation token (ETag) is present, no-cache incurs a roundtrip to validate the cached response, but can eliminate the download if the resource has not changed.
 
-`no-store` werkt een stuk eenvoudiger: de browser en de tussenopslag mogen geen enkele versie van het antwoord opslaan in het cachegeheugen. Dit kan bijvoorbeeld het geval zijn voor een antwoord dat persoonlijke gegevens of bankgegevens bevat. Elke keer dat de gebruiker om dit item verzoekt, wordt een verzoek verstuurd naar de server en wordt opnieuw een volledig antwoord gedownload.
+By contrast, "no-store" is much simpler. It simply disallows the browser and all intermediate caches from storing any version of the returned response&mdash;for example, one containing private personal or banking data. Every time the user requests this asset, a request is sent to the server and a full response is downloaded.
 
-### `public` en `private`
+### "public" vs. "private"
 
-Als een antwoord is gemarkeerd als `public`, kan het worden opgeslagen in het cachegeheugen, zelfs als HTTP-verificatie is vereist en zelfs wanneer de statuscode van het antwoord normaal gsproken niet kan worden opgeslagen in het cachegeheugen. In de meeste gevallen is `public` niet nodig, omdat expliciete cache-informatie (als `max-age`) al aangeeft
-dat het antwoord kan worden opgeslagen in het cachegeheugen.
+If the response is marked as "public", then it can be cached, even if it has HTTP authentication associated with it, and even when the response status code isn't normally cacheable. Most of the time, "public" isn't necessary, because explicit caching information (like "max-age") indicates that the response is cacheable anyway.
 
-Antwoorden die zijn gemarkeerd als `private` kunnen door de browser worden opgeslagen in het cachegeheugen, maar zijn meestal bedoeld voor een individuele gebruiker en mogen daarom niet door tussenopslag worden opgeslagen. Dit is bijvoorbeeld het geval bij een HTML-pagina met gebruikersinformatie die wel door de browser van de gebruiker kan worden opgeslagen, maar niet door een CDN.
+By contrast, the browser can cache "private" responses. However, these responses are typically intended for a single user, so an intermediate cache is not allowed to cache them. For example, a user's browser can cache an HTML page with private user information, but a CDN can't cache the page.
 
-### `max-age`
+### "max-age"
 
-Dit is een instructie voor de maximale periode in seconden dat het opgehaalde antwoord opnieuw mag worden gebruikt vanaf het moment dat het werd opgevraagd. `max-age=60` geeft bijvoorbeeld aan dat het antwoord gedurende de volgende 60 seconden in het cachegeheugen mag worden opgeslagen en opnieuw mag worden gebruikt.
+This directive specifies the maximum time in seconds that the fetched response is allowed to be reused from the time of the request. For example, "max-age=60" indicates that the response can be cached and reused for the next 60 seconds.
 
-## Het optimale Cache-Control-beleid bepalen
+## Defining optimal Cache-Control policy
 
-<img src="images/http-cache-decision-tree.png" class="center" alt="Beslissingenboom cachegeheugen">
+<img src="images/http-cache-decision-tree.png"  alt="Cache decision tree" />
 
-Gebruik de bovenstaande beslissingenboom om het optimale cachebeleid voor een bepaalde hulpbron of een verzameling hulpbronnen te bepalen die door uw applicatie wordt of worden gebruikt. De ideale strategie is om zoveel mogelijk antwoorden zo lang mogelijk op de client op te slaan en voor elk antwoord een validatietoken te verstrekken voor efficiënte revalidatie.
+Follow the decision tree above to determine the optimal caching policy for a particular resource, or a set of resources, that your application uses. Ideally, you should aim to cache as many responses as possible on the client for the longest possible period, and provide validation tokens for each response to enable efficient revalidation.
 
-<table>
+<table class="responsive">
+  
 <thead>
   <tr>
-    <th width="30%">Cache-Control-instructies</th>
-    <th>Uitleg</th>
+    <th colspan="2">Cache-Control directives &amp; Explanation</th>
   </tr>
 </thead>
 <tr>
   <td data-th="cache-control">max-age=86400</td>
-  <td data-th="uitleg">Antwoord kan door de browser en de tussenopslag worden opgeslagen (d.w.z. het is `public`) gedurende maximaal 1 dag (60 seconden x 60 minuten x 24 uur)</td>
+  <td data-th="explanation">Response can be cached by browser and any intermediary caches (that is, it's "public") for up to 1 day (60 seconds x 60 minutes x 24 hours).</td>
 </tr>
 <tr>
   <td data-th="cache-control">private, max-age=600</td>
-  <td data-th="uitleg">Antwoord kan gedurende maximaal 10 minuten (60 seconden x 10 minuten) door de browser van de client worden opgeslagen</td>
+  <td data-th="explanation">Response can be cached by the client’s browser only for up to 10 minutes (60 seconds x 10 minutes).</td>
 </tr>
 <tr>
   <td data-th="cache-control">no-store</td>
-  <td data-th="uitleg">Antwoord mag niet worden opgeslagen en moet bij ieder verzoek opnieuw volledig worden opgehaald.</td>
+  <td data-th="explanation">Response is not allowed to be cached and must be fetched in full on every request.</td>
 </tr>
 </table>
 
-Volgens HTTP Archive kan voor de 300.000 grootste websites (op basis van de rangschikking door Alexa) [bijna de helft van alle gedownloade antwoorden in het cachegeheugen worden opgeslagen](http://httparchive.org/trends.php#maxage0) door de browser, wat een enorme besparing inhoudt voor herhaaldelijke paginaweergaven en -bezoeken. Dat betekent niet dat 50% van de hulpbronnen op uw applicatie in het cachegeheugen kunnen worden opgeslagen: sommige sites kunnen meer dan 90% van hun hulpbronnen opslaan, andere sites bevatten veel persoonlijke of tijdgevoelige gegevens die helemaal niet kunnen worden opgeslagen.
+According to HTTP Archive, among the top 300,000 sites (by Alexa rank), the browser can cache [nearly half of all the downloaded responses](http://httparchive.org/trends.php#maxage0), which is a huge savings for repeat pageviews and visits. Of course, that doesn’t mean that your particular application can cache 50% of the resources. Some sites can cache more than 90% of their resources, while other sites might have a lot of private or time-sensitive data that can’t be cached at all.
 
-**Beoordeel welke hulpbronnen op uw pagina`s in het cachegeheugen kunnen worden opgeslagen en controleer of deze correcte Cache-Control- en ETag-headers terugsturen.**
+**Audit your pages to identify which resources can be cached and ensure that they return appropriate Cache-Control and ETag headers.**
 
-
-## Antwoorden in het cachegeheugen ongeldig maken en bijwerken
+## Invalidating and updating cached responses
 
 ### TL;DR {: .hide-from-toc }
-- Lokaal opgeslagen zoekopdrachten worden gebruikt totdat de hulpbron 'vervalt'
-- We kunnen een vingerafdruk voor de bestandsinhoud in de URL integreren, waardoor de client wordt gedwongen om het antwoord bij te werken
-- Voor optimale resultaten moet voor elke applicatie een eigen cache-hiërarchie worden ingesteld
 
+* Locally cached responses are used until the resource "expires."
+* Embedding a file content fingerprint in the URL enables you to force the client to update to a new version of the response.
+* Each application needs to define its own cache hierarchy for optimal performance.
 
-Alle HTTP-verzoeken door de browser worden eerst naar de cache van de browser doorgestuurd waar gecontroleerd wordt of er een geldig antwoord in het cachegeheugen aanwezig is dat kan worden gebruikt. Als een overeenkomst wordt gevonden, wordt het antwoord uit de cache gelezen, waardoor netwerkvertraging en datakosten voor de gegevensoverdracht worden omzeild. **Wat als we een antwoord in het cachegeheugen willen bijwerken of ongeldig willen maken?**
+All HTTP requests that the browser makes are first routed to the browser cache to check whether there is a valid cached response that can be used to fulfill the request. If there's a match, the response is read from the cache, which eliminates both the network latency and the data costs that the transfer incurs.
 
-Laten we er bijvoorbeeld van uitgaan dat we onze bezoekers hebben geïnstrueerd om een CSS-stylesheet gedurende 24 uur (max-age=86400) in het cachegeheugen op te slaan, maar onze ontwikkelaar zojuist een update heeft geüpload die we graag aan alle gebruikers beschikbaar stellen. Hoe stellen we al onze bezoekers ervan op de hoogte dat ze hun oude cachegeheugen van onze CSS dienen bij te werken? Het is een strikvraag: dat is niet mogelijk, ten minste niet zonder de URL van de hulpbron te wijzigen.
+**However, what if you want to update or invalidate a cached response?** For example, suppose you've told your visitors to cache a CSS stylesheet for up to 24 hours (max-age=86400), but your designer has just committed an update that you'd like to make available to all users. How do you notify all the visitors who have what is now a "stale" cached copy of your CSS to update their caches? You can't, at least not without changing the URL of the resource.
 
-Wanneer het antwoord door de browser in het cachegeheugen is opgeslagen, wordt deze opgeslagen versie gebruikt tot deze niet meer actueel is op basis van max-age of vervalt, of tot deze om een andere reden uit het cachegeheugen wordt verwijderd, bijvoorbeeld wanneer de gebruiker het cachegeheugen van de browser wist. Hierdoor kan het voorkomen dat verschillende gebruikers verschillende versies van het bestand gebruiken: gebruikers die de hulpbron net hebben opgevraagd, beschikken over de nieuwste versie, terwijl gebruikers die het antwoord eerder hebben opgehaald een oudere (maar nog steeds geldige) versie gebruiken.
+After the browser caches the response, the cached version is used until it's no longer fresh, as determined by max-age or expires, or until it is evicted from cache for some other reason&mdash; for example, the user clearing their browser cache. As a result, different users might end up using different versions of the file when the page is constructed: users who just fetched the resource use the new version, while users who cached an earlier (but still valid) copy use an older version of its response.
 
-**Hoe krijgen we het beste van beide kanten: opslaan in het cachegeheugen bij de client en snelle updates?** We kunnen eenvoudigweg de URL van de hulpbron wijzigen en de gebruiker dwingen om het nieuwe antwoord te downloaden indien de inhoud is gewijzigd. Dit wordt meestal bereikt door een vingerafdruk van het bestand of een versienummer in de bestandsnaam te integreren, bijvoorbeeld:**x234dff**.css.
+**How do you get the best of both worlds: client-side caching and quick updates?** You change the URL of the resource and force the user to download the new response whenever its content changes. Typically, you do this by embedding a fingerprint of the file, or a version number, in its filename&mdash;for example, style.**x234dff**.css.
 
-<img src="images/http-cache-hierarchy.png" class="center" alt="Cache-hiërarchie">
+<img src="images/http-cache-hierarchy.png"  alt="Cache hierarchy" />
 
-Aangezien we afzonderlijk cachebeleid voor elke hulpbron kunnen instellen, kunnen we cache-hiërarchieën instellen waardoor we niet alleen kunnen bepalen hoe lang gegevens voor elke hulpbron mogen worden opgeslagen, maar ook hoe snel nieuwe versies zichtbaar zijn voor bezoekers. Laten we bovenstaand voorbeeld analyseren:
+The ability to define per-resource caching policies allows you to define "cache hierarchies" that allow you to control not only how long each is cached for, but also how quickly visitors see new versions. To illustrate this, analyze the above example:
 
-* De HTML is gemarkeerd als `no-cache`, wat betekent dat de browser het document bij elk verzoek opnieuw valideert en de nieuwste versie van de inhoud downloadt indien deze is gewijzigd. Daarnaast integreren we in de HTML vingerafdrukken in de URL`s voor CSS- en JavaScript-items: als de inhoud van deze bestanden wordt gewijzigd, wordt ook de HTML van de pagina gewijzigd en wordt een nieuwe versie van het HTML-antwoord gedownload.
-* De CSS mag door browsers en tussenopslag (bijv. een CDN) in het cachegeheugen worden opgeslagen en vervalt na 1 jaar. We kunnen voor de markering `far future expires` 1 jaar gebruiken, omdat we de vingerafdruk in de bestandsnaam integreren: als de CSS wordt bijgewerkt, wordt ook de URL gewijzigd.
-* Het JavaScript vervalt ook na 1 jaar, maar is gemarkeerd als `private`, bijvoorbeeld omdat het om persoonlijke gebruikersgegevens gaat die niet door de CDN mogen worden opgeslagen.
-* De afbeelding wordt zonder versienummer of vingerafdruk in het cachegeheugen opgeslagen en vervalt na 1 dag.
+* The HTML is marked with "no-cache", which means that the browser always revalidates the document on each request and fetches the latest version if the contents change. Also, within the HTML markup, you embed fingerprints in the URLs for CSS and JavaScript assets: if the contents of those files change, then the HTML of the page changes as well and a new copy of the HTML response is downloaded.
+* The CSS is allowed to be cached by browsers and intermediate caches (for example, a CDN), and is set to expire in 1 year. Note that you can use the "far future expires" of 1 year safely because you embed the file fingerprint in its filename: if the CSS is updated, the URL changes as well.
+* The JavaScript is also set to expire in 1 year, but is marked as private, perhaps because it contains some private user data that the CDN shouldn’t cache.
+* The image is cached without a version or unique fingerprint and is set to expire in 1 day.
 
-Dankzij de combinatie van ETag, Cache-Control en unieke URL`s kunnen we de beste aspecten combineren: lange vervalperiodes, controle over de locatie waar het antwoord kan worden opgeslagen en snelle updates.
+The combination of ETag, Cache-Control, and unique URLs allows you to deliver the best of all worlds: long-lived expiration times, control over where the response can be cached, and on-demand updates.
 
-## Cache-checklist
+## Caching checklist
 
-Er bestaat geen cachebeleid dat in alle gevallen het beste is. U moet voor elke hulpbron de juiste instellingen en de algehele cache-hiërarchie bepalen aan de hand van uw verkeerspatronen, het type gegevens dat wordt verstuurd en vereisten voor behoud van de actualiteit van de gegevens.
+There's no one best cache policy. Depending on your traffic patterns, type of data served, and application-specific requirements for data freshness, you must define and configure the appropriate per-resource settings, as well as the overall "caching hierarchy."
 
-Enkele tips en technieken waarmee u rekening kunt houden wanneer u uw cachestrategie bepaalt:
+Some tips and techniques to keep in mind as you work on caching strategy:
 
-1. **Gebruik consistente URL`s:** als u op verschillende URL`s dezelfde inhoud beheert, wordt deze inhoud meermaals opgehaald en opgeslagen. Tip: [URL`s zijn hoofdlettergevoelig](http://www.w3.org/TR/WD-html40-970708/htmlweb.html){: .external }.
-2. **Zorg ervoor dat de server een validatietoken (ETag) vertrekt:** dankzij validatietokens hoeven dezelfde bytes niet opnieuw te worden verstuurd indien een hulpbron niet is gewijzigd op de server.
-3. **Bepaal welke hulpbronnen door tussenopslag kunnen worden opgeslagen:** hulpbronnen met antwoorden die hetzelfde zijn voor alle gebruikers kunnen worden opgeslagen door een CDN of andere tussenopslag.
-4. **Bepaal de optimale cacheperiode voor elke hulpbron:** deze kan voor elke hulpbron anders zijn. Controleer en bepaal de juiste `max-age` voor elke hulpbron.
-5. **Bepaal de beste cache-hiërarchie voor uw site:** dankzij de combinatie van hulpbron-URL`s met vingerafdrukken van de inhoud en korte of `no-cache` periodes voor HTML-documenten kunt u beheren hoe snel de client over updates kan beschikken.
-6. **Beperk overbodig downloaden tot een minimum:** sommige hulpbronnen worden vaker bijgewerkt dan andere. Wanneer een bepaald onderdeel van een hulpbron (bijv. JavaScript-functionaliteit of SCC-stylesheets) vaak worden bijgewerkt, kunt u ervoor kiezen die specifieke code apart te leveren. Hierdoor kan de rest van de inhoud (bijv. bibliotheekcode die slechts zelden wordt gewijzigd) uit het cachegeheugen worden opgehaald en beperkt u de hoeveelheid gedownloade inhoud wanneer een update wordt opgehaald.
+* **Use consistent URLs:** if you serve the same content on different URLs, then that content will be fetched and stored multiple times. Tip: note that [URLs are case sensitive](http://www.w3.org/TR/WD-html40-970708/htmlweb.html).
+* **Ensure that the server provides a validation token (ETag):** validation tokens eliminate the need to transfer the same bytes when a resource has not changed on the server.
+* **Identify which resources can be cached by intermediaries:** those with responses that are identical for all users are great candidates to be cached by a CDN and other intermediaries.
+* **Determine the optimal cache lifetime for each resource:** different resources may have different freshness requirements. Audit and determine the appropriate max-age for each one.
+* **Determine the best cache hierarchy for your site:** the combination of resource URLs with content fingerprints and short or no-cache lifetimes for HTML documents allows you to control how quickly the client picks up updates.
+* **Minimize churn:** some resources are updated more frequently than others. If there is a particular part of a resource (for example, a JavaScript function or a set of CSS styles) that is often updated, consider delivering that code as a separate file. Doing so allows the remainder of the content (for example, library code that doesn't change very often), to be fetched from cache and minimizes the amount of downloaded content whenever an update is fetched.
 
+## Feedback {: .hide-from-toc }
 
+{% include "web/_shared/helpful.html" %}
 
-
+<div class="clearfix"></div>
