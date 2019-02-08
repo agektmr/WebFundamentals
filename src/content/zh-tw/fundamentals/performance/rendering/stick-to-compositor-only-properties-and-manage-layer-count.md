@@ -1,62 +1,56 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: 合成是指組合網頁上的繪製部分，以用於在螢幕上顯示。
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Compositing is where the painted parts of the page are put together for displaying on screen.
 
-{# wf_updated_on: 2015-03-19 #}
-{# wf_published_on: 2000-01-01 #}
+{# wf_updated_on: 2018-08-17 #} {# wf_published_on: 2015-03-20 #} {# wf_blink_components: Blink>Compositing #}
 
-# 堅守純合成器屬性和管理圖層數目 {: .page-title }
+# Stick to Compositor-Only Properties and Manage Layer Count {: .page-title }
 
 {% include "web/_shared/contributors/paullewis.html" %}
 
+Compositing is where the painted parts of the page are put together for displaying on screen.
 
-合成是指組合網頁上的繪製部分，以用於在螢幕上顯示。
+There are two key factors in this area that affect page performance: the number of compositor layers that need to be managed, and the properties that you use for animations.
 
 ### TL;DR {: .hide-from-toc }
-- 針對您的動畫，堅守變形和透明度變更。
-- 以 will-change 或 translateZ 將移動元素升階。
-- 避免過度使用升階規則；圖層需要記憶體和管理。
 
+* Stick to transform and opacity changes for your animations.
+* Promote moving elements with `will-change` or `translateZ`.
+* Avoid overusing promotion rules; layers require memory and management.
 
-此領域存在影響網頁效能的兩項關鍵因素：需要加以管理的合成器層數目，以及您針對動畫使用的屬性。
+## Use transform and opacity changes for animations
 
-##針對動畫使用變形和透明度變更 
- 表現最佳的像素管道版本會避免版面配置和繪製，並只需要合成變更：
+The best-performing version of the pixel pipeline avoids both layout and paint, and only requires compositing changes:
 
-<img src="images/stick-to-compositor-only-properties-and-manage-layer-count/frame-no-layout-paint.jpg"  alt="無版面配置或繪製的像素管道。">
+<img src="images/stick-to-compositor-only-properties-and-manage-layer-count/frame-no-layout-paint.jpg"  alt="The pixel pipeline with no layout or paint." />
 
-為實現此目標，您需要堅守只需合成器即可處理的變更屬性。 時下只有兩個屬性才是真的：**變形** 和 **透明度**：
+In order to achieve this you will need to stick to changing properties that can be handled by the compositor alone. Today there are only two properties for which that is true - `transform`s and `opacity`:
 
-<img src="images/stick-to-compositor-only-properties-and-manage-layer-count/safe-properties.jpg"  alt="您可以不觸發版面配置或繪製而動畫處理的屬性。">
+<img src="images/stick-to-compositor-only-properties-and-manage-layer-count/safe-properties.jpg"  alt="The properties you can animate without triggering layout or paint." />
 
-使用變形和透明度需要注意的是，您變更這些屬性的所在元素應該要在 _它本身的合成器層上_。 要製作合成器層，您必須將元素升階，這部分我們將在稍後討論。
+The caveat for the use of `transform`s and `opacity` is that the element on which you change these properties should be on *its own compositor layer*. In order to make a layer you must promote the element, which we will cover next.
 
-Note: 如果擔心可能無法限制動畫只使用這些屬性，請看看 [FLIP 原則](https://aerotwist.com/blog/flip-your-animations)，這可能幫助您將動畫從開銷更大的屬性重新映射為變形和透明度的更改。
+Note: If you’re concerned that you may not be able to limit your animations to just those properties, take a look at the [FLIP principle](https://aerotwist.com/blog/flip-your-animations), which may help you remap animations to changes in transforms and opacity from more expensive properties.
 
-## 將您計畫動畫處理的元素升階
+## Promote elements that you plan to animate
 
-正如我們在「[簡化繪製複雜性和減少繪製區域](simplify-paint-complexity-and-reduce-paint-areas)」一節中提到，您應升階您計畫動畫處理的元素 (要合理，不要過火！) 至它們本身的層：
-
+As we mentioned in the “[Simplify paint complexity and reduce paint areas](simplify-paint-complexity-and-reduce-paint-areas)” section, you should promote elements that you plan to animate (within reason, don’t overdo it!) to their own layer:
 
     .moving-element {
       will-change: transform;
     }
     
 
-或針對較舊的瀏覽器，或不支援 will-change 的瀏覽器：
-
+Or, for older browsers, or those that don’t support will-change:
 
     .moving-element {
       transform: translateZ(0);
     }
     
 
-這會向瀏覽器提供即將送入變更的預警，並且視您計畫變更的對象而定，瀏覽器可以進行佈建預備 ，例如建立合成器層。
+This gives the browser the forewarning that changes are incoming and, depending on what you plan to change, the browser can potentially make provisions, such as creating compositor layers.
 
-## 管理層，並避免層爆炸
+## Manage layers and avoid layer explosions
 
-知道層經常有助於效能之後，用以下設計將您網頁上所有元素升階的想法，或許相當誘人：
-
+It’s perhaps tempting, then, knowing that layers often help performance, to promote all the elements on your page with something like the following:
 
     * {
       will-change: transform;
@@ -64,28 +58,36 @@ Note: 如果擔心可能無法限制動畫只使用這些屬性，請看看 [FLI
     }
     
 
-這是「您會想將網頁上每一元素都升階」的婉轉說法。 此處的問題在於您建立的每一層都需要記憶體與管理，這可不是免費的。 事實上，在記憶體有限的裝置上，其對效能的影響可能遠大於建立層的任何好處。 每一層的紋理必須上載至 GPU，所以 CPU 和 GPU 的頻寬及 GPU 紋理的可用記憶體，都存在著進一步的限制。
+Which is a roundabout way of saying that you’d like to promote every single element on the page. The problem here is that every layer you create requires memory and management, and that’s not free. In fact, on devices with limited memory the impact on performance can far outweigh any benefit of creating a layer. Every layer’s textures needs to be uploaded to the GPU, so there are further constraints in terms of bandwidth between CPU and GPU, and memory available for textures on the GPU.
 
-Warning: 簡而言之，**不要非必要地將元素升階**。
+Warning: Do not promote elements unnecessarily.
 
-## 使用 Chrome DevTools，以瞭解您應用程式中的層
+## Use Chrome DevTools to understand the layers in your app
 
-要瞭解您應用程式中的層，以及元素具有一個層的原因，您必須在 Chrome DevTools 的 Timeline 中，啟用繪製分析工具：
+<div class="attempt-right">
+  <figure>
+    <img src="images/stick-to-compositor-only-properties-and-manage-layer-count/paint-profiler.jpg" alt="The toggle for the paint profiler in Chrome DevTools.">
+  </figure>
+</div>
 
-<img src="images/stick-to-compositor-only-properties-and-manage-layer-count/paint-profiler.jpg"  alt="Chrome DevTools 的繪製分析工具切換">
+To get an understanding of the layers in your application, and why an element has a layer you must enable the Paint profiler in Chrome DevTools’ Timeline:
 
-開啟繪製分析工具後，您應進行一段錄製。 錄製完畢後，您將能夠點擊個別畫面 -- 這可以在每秒畫面列和詳細資料之間找到：
+<div style="clear:both;"></div>
 
-<img src="images/stick-to-compositor-only-properties-and-manage-layer-count/frame-of-interest.jpg"  alt="開發人員在分析中感興趣的一個畫面">
+With this switched on you should take a recording. When the recording has finished you will be able to click individual frames, which is found between the frames-per-second bars and the details:
 
-按一下這個，即可在詳細資料中提供您一個新選項：層標籤。
+<img src="images/stick-to-compositor-only-properties-and-manage-layer-count/frame-of-interest.jpg"  alt="A frame the developer is interested in profiling." />
 
-<img src="images/stick-to-compositor-only-properties-and-manage-layer-count/layer-tab.jpg"  alt="Chrome DevTools 中的層標籤按鈕。">
+Clicking on this will provide you with a new option in the details: a layer tab.
 
-此選項將叫出一個新檢視，讓您可針對該畫面中的所有層進行平移、掃描和放大，並提供每一層建立的原因。
+<img src="images/stick-to-compositor-only-properties-and-manage-layer-count/layer-tab.jpg"  alt="The layer tab button in Chrome DevTools." />
 
-<img src="images/stick-to-compositor-only-properties-and-manage-layer-count/layer-view.jpg"  alt="Chrome DevTools 中的層檢視。">
+This option will bring up a new view that allows you to pan, scan and zoom in on all the layers during that frame, along with reasons that each layer was created.
 
-使用此檢視，您可以追蹤您擁有的層數目。 如果您在例如捲動或轉換等效能關鍵行為期間，花了很多時間在合成上 (以約 **4-5ms** 為目標)，您可以使用此處的資訊來查看您有多少層、其建立的原因，並從那裡管理您應用程式中的層數目。
+<img src="images/stick-to-compositor-only-properties-and-manage-layer-count/layer-view.jpg"  alt="The layer view in Chrome DevTools." />
 
+Using this view you can track the number of layers you have. If you’re spending a lot time in compositing during performance-critical actions like scrolling or transitions (you should aim for around **4-5ms**), you can use the information here to see how many layers you have, why they were created, and from there manage layer counts in your app.
 
+## Feedback {: #feedback }
+
+{% include "web/_shared/helpful.html" %}
