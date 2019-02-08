@@ -1,38 +1,25 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description:“网站不使用应用缓存”Lighthouse 审查的参考文档。
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Reference documentation for the "Avoids Application Cache" Lighthouse audit.
 
-{# wf_updated_on: 2017-01-04 #}
-{# wf_published_on: 2017-01-04 #}
+{# wf_updated_on: 2018-07-23 #} {# wf_published_on: 2017-01-04 #} {# wf_blink_components: N/A #}
 
-# 网站不使用应用缓存 {: .page-title }
+# Avoids Application Cache {: .page-title }
 
-## 为什么说此审查非常重要{: #why }
+## Overview {: #overview }
 
-应用缓存（也称为 AppCache）已[弃用][deprecated]。
+Application Cache, also known as AppCache, is [deprecated](https://html.spec.whatwg.org/multipage/browsers.html#offline).
 
-[deprecated]: https://html.spec.whatwg.org/multipage/browsers.html#offline
+## Recommendations {: #recommendations }
 
-## 如何通过此审查{: #how }
+Consider using the service worker [Cache API](https://developer.mozilla.org/en-US/docs/Web/API/Cache) instead.
 
-考虑使用服务工作线程 [Cache API][API]。
+To help migrate from AppCache to service workers, consider the [sw-appcache-behavior](https://github.com/GoogleChrome/sw-appcache-behavior) library. This library generates a service-worker-based implementation of the behavior defined in an AppCache manifest.
 
-为帮助您从 AppCache 迁移到服务工作线程，请考虑使用 [sw-appcache-behavior][sw-appcache-behavior] 内容库。
-此内容库将针对 AppCache 清单中定义的行为生成一个基于服务工作线程的实现。
+See the [URL Responds With a 200 When Offline](http-200-when-offline) audit reference for more resources on using service workers to make your site work offline.
 
+## More information {: #more-info }
 
+The audit passes if no AppCache manifest is detected.
 
-有关使用服务工作线程为网站提供离线支持的更多资源，请参阅[处于离线状态时访问网址返回 200](http-200-when-offline) 审查参考。
+## Feedback {: #feedback }
 
-
-
-[API]: https://developer.mozilla.org/en-US/docs/Web/API/Cache
-
-[sw-appcache-behavior]: https://github.com/GoogleChrome/sw-appcache-behavior
-
-{% include "web/tools/lighthouse/audits/implementation-heading.html" %}
-
-如果未检测到 AppCache 清单，则表示通过了审查。
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
