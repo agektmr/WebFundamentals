@@ -1,140 +1,102 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description:使用 Chrome DevTools CPU 分析器識別開銷大的函數。
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Identify expensive functions using the Chrome DevTools CPU Profiler.
 
-{# wf_updated_on:2016-03-30 #}
-{# wf_published_on:2015-04-13 #}
+{# wf_updated_on: 2018-07-27 #} {# wf_published_on: 2015-04-13 #} {# wf_blink_components: Platform>DevTools #}
 
-# 加速執行 JavaScript {: .page-title }
+# Speed Up JavaScript Execution {: .page-title }
 
-{% include "web/_shared/contributors/kaycebasques.html" %}
-{% include "web/_shared/contributors/megginkearney.html" %}
+{% include "web/_shared/contributors/kaycebasques.html" %} {% include "web/_shared/contributors/megginkearney.html" %}
 
-使用 Chrome DevTools CPU 分析器識別開銷大的函數。
+Identify expensive functions using the Chrome DevTools CPU Profiler.
 
-
-![CPU 分析](imgs/cpu-profile.png)
-
+![CPU profile](imgs/cpu-profile.png)
 
 ### TL;DR {: .hide-from-toc }
-- 使用 CPU 分析器準確地記錄調用了哪些函數和每個函數花費的時間。
-- 將您的配置文件可視化爲火焰圖。
 
+* Record exactly which functions were called and how long each took with the CPU Profiler.
+* Visualize your profiles as a flame chart.
 
-## 記錄 CPU 分析 {:#record-profile}
+## Record a CPU profile {:#record-profile}
 
-如果您在 JavaScript 中注意到出現卡頓，請收集 JavaScript CPU 分析。CPU 分析會顯示執行時間花費在頁面中哪些函數上。
+If you’re noticing jank in your JavaScript, collect a JavaScript CPU profile. CPU profiles show where execution time is spent in your page’s functions.
 
+1. Go to the **Profiles** panel of DevTools.
+2. Select the **Collect JavaScript CPU Profile** radio button.
+3. Press **Start**. 
+4. Depending on what you are trying to analyze, you can either reload the page, interact with the page, or just let the page run.
+5. Press the **Stop** button when you are finished. 
 
-1. 轉到 DevTools 的 **Profiles** 面板。
-2. 選擇 **Collect JavaScript CPU Profile** 單選按鈕。
-3. 按 **Start**。
-4. 根據您要分析的內容不同，可以重新加載頁面、與頁面交互，或者只是讓頁面運行。
-5. 完成後，按 **Stop** 按鈕。
- 
+You can also use the [Command Line API](/web/tools/chrome-devtools/debug/command-line/command-line-reference#profilename-and-profileendname) to record and group profiles from the command line.
 
-您也可以使用 [Command Line API][profile] 對命令行產生的分析進行記錄和分組。
+## View CPU profile {:#view-profile}
 
+When you finish recording, DevTools automatically populates the Profile panel with the data from your recording.
 
-[profile]: /web/tools/chrome-devtools/debug/command-line/command-line-reference#profilename-and-profileendname
+The default view is **Heavy (Bottom Up)**. This view enables you to see which functions had the most impact on performance and examine the calling paths to those functions.
 
-## 查看 CPU 分析 {:#view-profile}
+### Change sort order {:#sort}
 
-完成記錄後，DevTools 會使用記錄的數據自動填充 Profile 面板。
- 
+To change the sorting order, click on the dropdown menu next to the **focus selected function** icon (![focus selected function icon](imgs/focus.png){:.inline}) and then choose one of the following options:
 
-默認視圖爲 **Heavy (Bottom Up)**。此視圖讓您可以看到哪些函數對性能影響最大並能夠檢查這些函數的調用路徑。
+**Chart**. Displays a chronological flame chart of the recording.
 
- 
+![flame chart](imgs/flamechart.png)
 
-### 更改排序順序 {:#sort}
+**Heavy (Bottom Up)**. Lists functions by impact on performance and enables you to examine the calling paths to the functions. This is the default view.
 
-要更改排序順序，請點擊 **focus selected function** 圖標 (![focus selected function 圖標](imgs/focus.png){:.inline}) 旁的下拉菜單，然後選擇下列選項中的一項：
+![heavy chart](imgs/heavy.png)
 
+**Tree (Top Down)**. Shows an overall picture of the calling structure, starting at the top of the call stack.
 
+![tree chart](imgs/tree.png)
 
+### Exclude functions {:#exclude}
 
-**Chart**。顯示記錄按時間順序排列的火焰圖。
+To exclude a function from your CPU profile, click on it to select it and then press the **exclude selected function** icon (![exclude function icon](imgs/exclude.png){:.inline}). The caller of the excluded function is charged with the excluded function's total time.
 
-![火焰圖](imgs/flamechart.png)
+Click the **restore all functions** icon (![restore all functions icon](imgs/restore.png){:.inline}) to restore all excluded functions back into the recording.
 
-**Heavy (Bottom Up)**。按照函數對性能的影響列出函數，讓您可以檢查函數的調用路徑。
-這是默認視圖。 
+## View CPU profile as Flame Chart {:#flame-chart}
 
-![大型圖表](imgs/heavy.png)
+The Flame Chart view provides a visual representation of the CPU profile over time.
 
-**Tree (Top Down)**。顯示調用結構的總體狀況，從調用堆棧的頂端開始。
- 
+After [recording a CPU profile](#record-profile), view the recording as a flame chart by [changing the sort order](#sort) to **Chart**.
 
-![樹狀圖](imgs/tree.png)
+![Flamechart view](imgs/flamechart.png)
 
-### 排除函數{:#exclude}
+The flame chart is split into two parts:
 
-要從您的 CPU 分析中排除函數，請點擊以選擇該函數，然後按 **exclude selected function** 圖標 (![exclude function 圖標](imgs/exclude.png){:.inline})。
+1. **Overview**. A birds-eye view of the entire recording. The height of the bars correspond to the depth of the call stack. So, the higher the bar, the deeper the call stack.
 
-已排除函數的調用方由排除函數的總時間管理。
+2. **Call Stacks**. This is an in-depth view of the functions that were called during the recording. The horizontal axis is time and vertical axis is the call stack. The stacks are organized top-down. So, the function on top called the one below it, and so on.
+    
+    Functions are colored randomly. There is no correlation to the colors used in the other panels. However, functions are always colored the same across invocations so that you can see patterns of executions.
 
+![annotated flame chart](imgs/annotated-cpu-flame.png)
 
-點擊 **restore all functions** 圖標 (![restore all functions 圖標](imgs/restore.png){:.inline}) 可以將所有排除的函數恢復到記錄中。
+A tall call stack is not necessarily significant, it just means that a lot of functions were called. But a wide bar means that a call took a long time to complete. These are candidates for optimization.
 
+### Zoom in on specific parts of recording {:#zoom}
 
+Click, hold, and drag your mouse left and right across the overview to zoom in on particular parts of the call stack. After you zoom, the call stack automatically displays the portion of the recording that you've selected.
 
-## 以火焰圖形式查看 CPU 分析 {:#flame-chart}
+![flame chart zoomed](imgs/benchmark-zoom.png)
 
-火焰圖視圖直觀地表示了一段時間內的 CPU 分析。
+### View function details {:#flame-chart-function-details}
 
+Click on a function to view its definition in the **Sources** panel.
 
-[記錄 CPU 分析](#record-profile)後，[更改排序順序](#sort)爲 **Chart**，以便以火焰圖形式查看記錄。
+Hover over a function to display its name and timing data. The following information is provided:
 
+* **Name**. The name of the function.
+* **Self time**. How long it took to complete the current invocation of the function, including only the statements in the function itself, not including any functions that it called.
+* **Total time**. The time it took to complete the current invocation of this function and any functions that it called.
+* **URL**. The location of the function definition in the form of `file.js:100` where `file.js` is the name of the file where the function is defined and `100` is the line number of the definition.
+* **Aggregated self time**. Aggregate time for all invocations of the function across the recording, not including functions called by this function.
+* **Aggregated total time**. Aggregate total time for all invocations of the function, including functions called by this function.
+* **Not optimized**. If the profiler has detected a potential optimization for the function it lists it here.
 
-![Flamechart 視圖](imgs/flamechart.png)
+![viewing functions details in flame chart](imgs/details.png)
 
-火焰圖分爲以下兩部分：
+## Feedback {: #feedback }
 
-1. **概覽**。整個記錄的鳥瞰圖。
-   條的高度與調用堆棧的深度相對應。
-所以，欄越高，調用堆棧越深。 
-
-2. **調用堆棧**。這裏可以詳細深入地查看記錄過程中調用的函數。
-橫軸是時間，縱軸是調用堆棧。
-堆棧由上而下組織。所以，上面的函數調用它下面的函數，以此類推。
- 
-
-   函數的顏色隨機，與其他面板中使用的顏色無關。
-不過，函數的顏色在調用過程中始終保持一致，以便您瞭解執行的模式。
- 
-
-![帶標註的火焰圖](imgs/annotated-cpu-flame.png)
-
-高調用堆棧不一定很重要，只是表示調用了大量的函數。
-但寬條表示調用需要很長時間完成。
-這些需要優化。 
-
-### 在記錄的特定部分上放大 {:#zoom}
-
-在概覽中點擊、按住並左右拖動鼠標，可放大調用堆棧的特定部分。
-縮放後，調用堆棧會自動顯示您選定的記錄部分。
-
-
-![縮放過的火焰圖](imgs/benchmark-zoom.png)
-
-### 查看函數詳情 {:#flame-chart-function-details}
-
-點擊函數可在 **Sources** 面板中查看其定義。
-
-將鼠標懸停在函數上可顯示其名稱和計時數據。提供的信息如下：
- 
-
-*  **Name**。函數的名稱。
-*  **Self time**。完成函數當前的調用所需的時間，僅包含函數本身的聲明，不包含函數調用的任何函數。
-*  **Total time**。完成此函數和其調用的任何函數當前的調用所需的時間。
-*  **URL**。形式爲 `file.js:100` 的函數定義的位置，其中 `file.js` 是定義函數的文件名稱，`100` 是定義的行號。
-*  **Aggregated self time**。記錄中函數所有調用的總時間，不包含此函數調用的函數。
-*  **Aggregated total time**。函數所有調用的總時間，不包含此函數調用的函數。
-*  **Not optimized**。如果分析器已檢測出函數存在潛在的優化，會在此處列出。
-
-
-![在火焰圖中查看函數詳情](imgs/details.png)
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
