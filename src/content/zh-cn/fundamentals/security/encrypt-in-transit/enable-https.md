@@ -1,61 +1,53 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description:在服务器上启用 HTTPS 对于确保网页安全非常重要。
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Enabling HTTPS on your servers is critical to securing your webpages.
 
-{# wf_updated_on: 2018-02-12 #}
-{# wf_published_on: 2015-03-27 #}
+{# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2015-03-27 #} {# wf_blink_components: Blink>SecurityFeature,Internals>Network>SSL #}
 
-# 在服务器上启用 HTTPS {: .page-title }
+# Enabling HTTPS on Your Servers {: .page-title }
 
-{% include "web/_shared/contributors/chrispalmer.html" %}
-{% include "web/_shared/contributors/mattgaunt.html" %}
+{% include "web/_shared/contributors/chrispalmer.html" %} {% include "web/_shared/contributors/mattgaunt.html" %}
 
 ### TL;DR {: .hide-from-toc }
 
-* 创建一个 2048 位 RSA 公钥/私钥对。
-* 生成一个嵌入您的公钥的证书签名请求 (CSR)
-* 将 CSR 与证书颁发机构 (CA) 共享以接收最终证书或证书链。
-* 将最终证书安装在非网络可访问的位置，例如 `/etc/ssl`（Linux 和 Unix）或 IIS 需要它的位置 (Windows)。
+* Create a 2048-bit RSA public/private key pair.
+* Generate a certificate signing request (CSR) that embeds your public key.
+* Share your CSR with your Certificate Authority (CA) to receive a final certificate or a certificate chain.
+* Install your final certificate in a non-web-accessible place such as `/etc/ssl` (Linux and Unix) or wherever IIS requires it (Windows).
 
-## 生成密钥和证书签名请求
+## Generating keys and certificate signing requests
 
-此部分使用 openssl 命令行程序（大部分 Linux、BSD 和 Mac OS X 系统均附带此程序）来生成私钥/公钥和 CSR。
+This section uses the openssl command-line program, which comes with most Linux, BSD, and Mac OS X systems, to generate private/public keys and a CSR.
 
+### Generate a public/private key pair
 
+Let's start by generating a 2,048-bit RSA key pair. A smaller key, such as 1,024 bits, is insufficiently resistant to brute-force guessing attacks. A larger key, such as 4,096 bits, is overkill. Over time, key sizes increase as computer processing gets cheaper. 2,048 is currently the sweet spot.
 
-### 生成一个公钥/私钥对
-
-我们首先生成一个 2048 位 RSA 密钥对。较短的密钥，如 1024 位，不足以抵御暴力猜测攻击。
-较长的密钥，如 4096 位，则有点过度。
-长远来看，随着计算机处理开销降低，密钥长度会增加。
-目前 2048 是最佳长度。
-
-用于生成 RSA 密钥对的命令为：
+The command to generate the RSA key pair is:
 
     openssl genrsa -out www.example.com.key 2048
+    
 
-这将生成以下输出：
+This gives the following output:
 
     Generating RSA private key, 2048 bit long modulus
     .+++
     .......................................................................................+++
     e is 65537 (0x10001)
+    
 
-### 生成证书签名请求
+### Generate a certificate signing request
 
-在此步骤中，您将公钥和有关贵组织及网站的信息嵌入到证书签名请求（或 CSR）中。
-*openssl* 命令以交互方式要求您提供所需的元数据。
+In this step, you embed your public key and information about your organization and your website into a certificate signing request or CSR. The *openssl* command interactively asks you for the required metadata.
 
-
-运行以下命令：
+Running the following command:
 
     openssl req -new -sha256 -key www.example.com.key -out www.example.com.csr
+    
 
-系统将输出以下内容：
+Outputs the following:
 
     You are about to be asked to enter information that will be incorporated
     into your certificate request
-
+    
     What you are about to enter is what is called a Distinguished Name or a DN.
     There are quite a few fields but you can leave some blank
     For some fields there will be a default value,
@@ -69,17 +61,19 @@ description:在服务器上启用 HTTPS 对于确保网页安全非常重要。
     Team
     Common Name (e.g. server FQDN or YOUR name) []:www.example.com
     Email Address []:webmaster@example.com
-
+    
     Please enter the following 'extra' attributes
     to be sent with your certificate request
     A challenge password []:
     An optional company name []:
+    
 
-为确保 CSR 的有效性，请运行以下命令：
+To ensure the validity of the CSR, run this command:
 
     openssl req -text -in www.example.com.csr -noout
+    
 
-响应结果应如下所示：
+And the response should look like this:
 
     Certificate Request:
         Data:
@@ -101,250 +95,183 @@ description:在服务器上启用 HTTPS 对于确保网页安全非常重要。
              5f:05:f3:71:d5:f7:b7:b6:dc:17:cc:88:03:b8:87:29:f6:87:
              2f:7f:00:49:08:0a:20:41:0b:70:03:04:7d:94:af:69:3d:f4:
              ...
+    
 
-### 将 CSR 提交给证书颁发机构
+### Submit your CSR to a certificate authority
 
-对于不同的证书颁发机构 (CA)，需要使用不同的方法将 CSR 发送给他们。
-这些方法可能包括在其网站上使用表单、以电子邮件或其他方式发送 CSR。
-一些 CA（或其经销商）甚至可能将其中部分或全部流程自动化（在某些情况下，包括密钥对和 CSR 的生成）。
+Different certificate authorities (CAs) require different methods for sending them your CSRs. Methods may include using a form on their website, sending the CSR by email, or something else. Some CAs (or their resellers) may even automate some or all of the process (including, in some cases, key pair and CSR generation).
 
+Send the CA to your CSR, and follow their instructions to receive your final certificate or certificate chain.
 
+Different CAs charge different amounts of money for the service of vouching for your public key.
 
-将 CSR 发送给 CA 并按照他们的说明接收最终证书或证书链。
+There are also options for mapping your key to more than one DNS name, including several distinct names (e.g. all of example.com, www.example.com, example.net, and www.example.net) or "wildcard" names such as \*.example.com.
 
+For example, one CA currently offers these prices:
 
-对于为您的公钥进行证实的服务，不同 CA 的收费将有所不同。
+* Standard: $16/year, valid for example.com and www.example.com.
+* Wildcard: $150/year, valid for example.com and \*.example.com.
 
+At these prices, wildcard certificates are economical when you have more than 9 subdomains; otherwise, you can just buy one or more single-name certificates. (If you have more than, say, five subdomains, you might find a wildcard certificate more convenient when you come to enable HTTPS on your servers.)
 
-还可以选择将密钥映射到多个 DNS 名称，包括多个独立名称（例如 example.com、www.example.com、example.net 和 www.example.net 的全部）或“通配符”名称（例如 \*.example.com）。
+Note: Keep in mind that in wildcard certificates the wildcard applies to only one DNS label. A certificate good for \*.example.com will work for foo.example.com and bar.example.com, but _not_ for foo.bar.example.com.
 
+Copy the certificates to all your front-end servers in a non-web-accessible place such as `/etc/ssl` (Linux and Unix) or wherever IIS (Windows) requires them.
 
+## Enable HTTPS on your servers
 
-例如，某个 CA 目前提供以下价格：
+Enabling HTTPS on your servers is a critical step in providing security for your web pages.
 
-* 标准：16 美元/年，适用于 example.com 和 www.example.com。
-* 通配符：150 美元/年，适用于 example.com 和 \*.example.com。
+* Use Mozilla's Server Configuration tool to set up your server for HTTPS support.
+* Regularly test your site with the Qualys' handy SSL Server Test and ensure you get at least an A or A+.
 
-按这些价格，当您有 9 个以上子域名时，通配符证书比较划算；您也可以只购买一个或多个单名称证书。
-（例如，如果您有五个以上子域名，在服务器上启用 HTTPS 时，您可能发现通配符证书更方便。）
+At this point, you must make a crucial operations decision. Choose one of the following:
 
+* Dedicate a distinct IP address to each hostname your web server serves content from.
+* Use name-based virtual hosting.
 
+If you have been using distinct IP addresses for each hostname, you can easily support both HTTP and HTTPS for all clients.
 
-Note: 记住，在通配符证书中，通配符只适用于一个 DNS 标签。对 \*.example.com 有效的证书将对 foo.example.com 和 bar.example.com 有效，但对于 foo.bar.example.com 无效。
+However, most site operators use name-based virtual hosting to conserve IP addresses and because it's more convenient in general. The problem with IE on Windows XP and Android earlier than 2.3 is that they do not understand [Server Name Indication](https://en.wikipedia.org/wiki/Server_Name_Indication){: .external} (SNI), which is crucial for HTTPS name-based virtual hosting.
 
-将证书复制到所有前端服务器的非网络可访问位置，例如 `/etc/ssl`（Linux 和 Unix）或 IIS 需要它们的位置 (Windows)。
+Someday—hopefully soon—clients that don't support SNI will be replaced with modern software. Monitor the user agent string in your request logs to know when enough of your user population has migrated to modern software. (You can decide what your threshold is; perhaps &lt; 5%, or &lt; 1%.)
 
+If you don't already have HTTPS service available on your servers, enable it now (without redirecting HTTP to HTTPS; see below). Configure your web server to use the certificates you bought and installed. You might find [Mozilla's handy configuration generator](https://mozilla.github.io/server-side-tls/ssl-config-generator/){: .external} useful.
 
-## 在服务器上启用 HTTPS
+If you have many hostnames/subdomains, they each need to use the right certificate.
 
-在服务器上启用 HTTPS 是确保网页安全的关键一步。
+Warning: If you've already completed these steps, but are using HTTPS for the sole purpose of redirecting clients back to HTTP, stop doing that now. See the next section to make sure HTTPS and HTTP work smoothly.
 
-* 使用 Mozilla 的服务器配置工具来设置服务器以支持 HTTPS。
-* 定期使用 Qualys 便捷的 SSL 服务器测试来测试网站，并确保得分至少为 A 或 A+。
+Note: Ultimately you should redirect HTTP requests to HTTPS and use HTTP Strict Transport Security (HSTS). However, this is not the right stage in the migration process to do that; see “Redirect HTTP To HTTPS” and “Turn On Strict Transport Security And Secure Cookies.”
 
-此时，您必须做出关键的操作决定。选择下列其中一项：
+Now, and throughout your site's lifetime, check your HTTPS configuration with [Qualys' handy SSL Server Test](https://www.ssllabs.com/ssltest/){: .external }. Your site should score an A or A+; treat anything that causes a lower grade as a bug. (Today's A is tomorrow's B, because attacks against algorithms and protocols are always improving!)
 
-* 给为网络服务器提供内容的每个主机名指定一个独立的 IP 地址。
-* 使用基于名称的虚拟托管。
+## Make intrasite URLs relative
 
-如果您一直针对每个主机名使用独立的 IP 地址，则可以轻松地让所有客户端支持 HTTP 和 HTTPS。
+Now that you are serving your site on both HTTP and HTTPS, things need to work as smoothly as possible, regardless of protocol. An important factor is using relative URLs for intrasite links.
 
+Make sure intrasite URLs and external URLs are agnostic to protocol; that is, make sure you use relative paths or leave out the protocol like `//example.com/something.js`.
 
-但是，大多数网站运营商使用基于名称的虚拟托管以节约 IP 地址，另一个原因是这样通常更方便。
-Windows XP 上的 IE 和 2.3 版以前的 Android 的问题是，它们不理解[服务器名称指示](https://en.wikipedia.org/wiki/Server_Name_Indication){: .external} (SNI)，而这对 HTTPS 基于名称的虚拟托管非常重要。
+A problem arises when you serve a page via HTTPS that includes HTTP resources, known as [mixed content](/web/fundamentals/security/prevent-mixed-content/what-is-mixed-content). Browsers warn users that the full strength of HTTPS has been lost. In fact, in the case of active mixed content (script, plug-ins, CSS, iframes), browsers often simply won't load or execute the content at all, resulting in a broken page. And remember, it's perfectly OK to include HTTPS resources in an HTTP page.
 
+Key Point: See [Fixing Mixed Content](/web/fundamentals/security/prevent-mixed-content/fixing-mixed-content) for more details about ways to fix and prevent mixed content.
 
+Additionally, when you link to other pages in your site, users could get downgraded from HTTPS to HTTP.
 
+These problems happen when your pages include fully-qualified, intrasite URLs that use the *http://* scheme.
 
-将来有一天（希望很快），不支持 SNI 的客户端将被现代软件代替。
-监控请求日志中的 User Agent 字符串，以了解何时已有足够的用户迁移到现代软件。
-（您可以决定您的阈值；可能是 &lt; 5%，或 &lt; 1%。）
+<span class="compare-worse">Not recommended</span> — We recommend you avoid using fully qualified intrasite URLs.
 
+<pre class="prettyprint">&lt;h1>Welcome To Example.com&lt;/h1>
+&lt;script src="<b>http://</b>example.com/jquery.js">&lt;/script>
+&lt;link rel="stylesheet" href="<b>http://</b>assets.example.com/style.css"/>
+&lt;img src="<b>http://</b>img.example.com/logo.png"/>;
+&lt;p>A &lt;a href="<b>http://</b>example.com/2014/12/24/">new post on cats!&lt;/a>&lt;/p>
+</pre>
 
-如果您的服务器上还没有 HTTPS 服务，请立即启用（无需将 HTTP 重定向到 HTTPS；参见下文）。
-配置网络服务器以使用您购买并安装的证书。
-您可能发现 [Mozilla 便捷的配置生成器](https://mozilla.github.io/server-side-tls/ssl-config-generator/){: .external}很有用。
+In other words, make intrasite URLs as relative as possible: either protocol-relative (lacking a protocol, starting with `//example.com`) or host-relative (starting with just the path, like `/jquery.js`).
 
+<span class="compare-better">Recommended</span> — We recommend that you use relative intrasite URLs.
 
+<pre class="prettyprint">&lt;h1>Welcome To Example.com&lt;/h1>
+&lt;script src="<b>/jquery.js</b>">&lt;/script>
+&lt;link href="<b>/styles/style.css</b>" rel="stylesheet"/>
+&lt;img src="<b>/images/logo.png</b>"/>;
+&lt;p>A &lt;a href="<b>/2014/12/24/</b>">new post on cats!&lt;/a>&lt;/p>
+</pre>
 
+<span class="compare-better">Recommended</span> — Or, you can use protocol-relative intrasite URLs.
 
-如果您有许多主机名/子域名，它们每个都需要使用正确的证书。
+<pre class="prettyprint">&lt;h1>Welcome To Example.com&lt;/h1>
+&lt;script src="<b>//example.com/jquery.js</b>">&lt;/script>
+&lt;link href="<b>//assets.example.com/style.css</b>" rel="stylesheet"/>
+&lt;img src="<b>//img.example.com/logo.png</b>"/>;
+&lt;p>A &lt;a href="<b>//example.com/2014/12/24/</b>">new post on cats!&lt;/a>&lt;/p>
+</pre>
 
+<span class="compare-better">Recommended</span> — We recommend that you use HTTP**S** URLs for intersite URLs (where possible).
 
-Caution: 如果您已完成上述步骤，但您使用 HTTPS 仅仅是为了将客户端重定向回 HTTP，那么，请马上停止这么做。参考下一部分以确保 HTTPS 和 HTTP 顺畅工作。
+<pre class="prettyprint">&lt;h1>Welcome To Example.com&lt;/h1>
+&lt;script src="/jquery.js">&lt;/script>
+&lt;link href="/styles/style.css" rel="stylesheet"/>
+&lt;img src="/images/logo.png"/>;
+&lt;p>A &lt;a href="/2014/12/24/">new post on cats!&lt;/a>&lt;/p>
+&lt;p>Check out this &lt;a href="<b>https://foo.com/</b>">other cool site.&lt;/a>&lt;/p>
+</pre>
 
-Note: 最终，您应将 HTTP 请求重定向到 HTTPS 并使用 HTTP 严格传输安全 (HSTS)。不过，现在不是向这种做法进行迁移的合适阶段；请参考“将 HTTP 重定向到 HTTPS”和“打开严格传输安全和安全 Cookie”。
+Do this with a script, not by hand. If your site’s content is in a database, test your script on a development copy of your database. If your site’s content consists of simple files, test your script on a development copy of the files. Push the changes to production only after the changes pass QA, as normal. You can use [Bram van Damme’s script](https://github.com/bramus/mixed-content-scan) or something similar to detect mixed content in your site.
 
-现在，以及您网站的整个生命周期中，使用 [Qualys 便捷的 SSL 服务器测试](https://www.ssllabs.com/ssltest/){: .external }来检查您的 HTTPS 配置。
-您的网站得分应为 A 或 A+；将导致等级较低的任何因素均视为错误。（今天的 A 在明天会变成 B，因为针对算法和协议的攻击始终在改进！）
+When linking to other sites (as opposed to including resources from them), don’t change the protocol since you don’t have control over how those sites operate.
 
+Success: To make migration smoother for large sites, we recommend protocol-relative URLs. If you are not sure whether you can fully deploy HTTPS yet, forcing your site to use HTTPS for all sub-resources may backfire. There is likely to be a period of time in which HTTPS is new and weird for you, and the HTTP site must still work as well as ever. Over time, you’ll complete the migration and lock in HTTPS (see the next two sections).
 
+If your site depends on scripts, images, or other resources served from a third party, such as a CDN or jquery.com, you have two options:
 
+* Use protocol-relative URLs for these resources. If the third party does not serve HTTPS, ask them to. Most already do, including jquery.com.
+* Serve the resources from a server that you control, and which offers both HTTP and HTTPS. This is often a good idea anyway, because then you have better control over your site's appearance, performance, and security. In addition, you don't have to trust a third party, which is always nice.
 
-## 使站内网址变成相对网址
+Note: Keep in mind that you also need to change intrasite URLs in your stylesheets, JavaScript, redirect rules, `<link>` tags, and CSP declarations, not just in the HTML pages.
 
-由于您的网站同时运行 HTTP 和 HTTPS，不管哪种协议，都应当尽可能顺畅运行。
-一个重要的因素是对站内链接使用相对网址。
+## Redirect HTTP to HTTPS
 
+You need to put a [canonical link](https://support.google.com/webmasters/answer/139066) at the head of your page to tell search engines that HTTPS is the best way to get to your site.
 
-确保站内网址和外部网址与协议无关；即确保使用相对路径或省去协议，例如 `//example.com/something.js`。
+Set `<link rel="canonical" href="https://…"/>` tags in your pages. This helps search engines determine the best way to get to your site.
 
-当您通过 HTTPS 提供一个包括 HTTP 资源的页面（称为[混合内容](/web/fundamentals/security/prevent-mixed-content/what-is-mixed-content)）时会出现问题。
-浏览器将警告用户，已失去 HTTPS 的全部能力。事实上，如果是主动混合内容（脚本、插件、CSS、iframe），则浏览器通常根本不会加载或执行此内容，从而导致页面残缺。
+## Turn on Strict Transport Security and secure cookies
 
-Note: 在 HTTP 页面中包括 HTTPS 资源完全没问题。
+At this point, you are ready to "lock in" the use of HTTPS.
 
-此外，当您链接到您网站中的其他页面时，用户可能从 HTTPS 降级为 HTTP。
+* Use HTTP Strict Transport Security (HSTS) to avoid the cost of the 301 redirect.
+* Always set the Secure flag on cookies.
 
+First, use [Strict Transport Security](https://en.wikipedia.org/wiki/HTTP_Strict_Transport_Security) to tell clients that they should always connect to your server via HTTPS, even when following an `http://` reference. This defeats attacks such as [SSL Stripping](http://www.thoughtcrime.org/software/sslstrip/){: .external }, and also avoids the round-trip cost of the `301 redirect` that we enabled in [Redirect HTTP to HTTPS](#redirect-http-to-https).
 
-当您的页面包括了使用 *http://* 架构的完全限定站内网址时，会出现这些问题。
+Note: Clients that have noted your site as a known HSTS Host are likely to <a href="https://tools.ietf.org/html/rfc6797#section-12.1"><i>hard-fail</i> if your site ever has an error in its TLS configuration</a> (such as an expired certificate). HSTS is explicitly designed this way to ensure that network attackers cannot trick clients into accessing the site without HTTPS. Do not enable HSTS until you are certain that your site operation is robust enough to avoid ever deploying HTTPS with certificate validation errors.
 
+Turn on HTTP Strict Transport Security (HSTS) by setting the `Strict-Transport-Security` header. [OWASP's HSTS page has links to instructions](https://www.owasp.org/index.php/HTTP_Strict_Transport_Security) for various server software.
 
-<p><span class="compare-worse">不建议的做法</span> — 我们不建议使用完全限定站内网址。</p>
+Most web servers offer a similar ability to add custom headers.
 
-    <h1>Welcome To Example.com</h1>
-    <script src="http://example.com/jquery.js"></script>
-    <link rel="stylesheet" href="http://assets.example.com/style.css"/>
-    <img src="http://img.example.com/logo.png"/>;
-    <p>Read this nice <a href="http://example.com/2014/12/24/">new
-    post on cats!</a></p>
-    <p>Check out this <a href="http://foo.com/">other cool
-    site.</a></p>
+Note: `max-age` is measured in seconds. You can start with low values and gradually increase the `max-age` as you become more comfortable operating an HTTPS-only site.
 
-换句话说，使站内网址尽可能是相对地址：协议相对（省去协议，以 `//example.com` 开头）或主机相对（以相对路径开头，例如 `/jquery.js`）。
+It is also important to make sure that clients never send cookies (such as for authentication or site preferences) over HTTP. For example, if a user's authentication cookie were to be exposed in plain text, the security guarantee of their entire session would be destroyed—even if you have done everything else right!
 
-<p><span class="compare-better">建议做法</span> — 我们建议您使用协议相对站内网址。</p>
+Therefore, change your web application to always set the Secure flag on cookies that it sets. [This OWASP page explains how to set the Secure flag](https://www.owasp.org/index.php/SecureFlag) in several application frameworks. Every application framework has a way to set the flag.
 
-    <h1>Welcome To Example.com</h1>
-    <script src="//example.com/jquery.js"></script>
-    <link rel="stylesheet" href="//assets.example.com/style.css"/>
-    <img src="//img.example.com/logo.png"/>;
-    <p>Read this nice <a href="//example.com/2014/12/24/">new
-    post on cats!</a></p>
-    <p>Check out this <a href="http://foo.com/">other cool
-    site.</a></p>
+Most web servers offer a simple redirect feature. Use `301 (Moved Permanently)` to indicate to search engines and browsers that the HTTPS version is canonical, and redirect your users to the HTTPS version of your site from HTTP.
 
-<p><span class="compare-better">建议做法</span> — 我们建议您使用相对站内网址。</p>
+## Migration concerns
 
-    <h1>Welcome To Example.com</h1>
-    <script src="/jquery.js"></script>
-    <link rel="stylesheet" href="//assets.example.com/style.css"/>
-    <img src="//img.example.com/logo.png"/>;
-    <p>Read this nice <a href="/2014/12/24/">new
-    post on cats!</a></p>
-    <p>Check out this <a href="http://foo.com/">other cool
-    site.</a></p>
+Many developers have legitimate concerns about migrating from HTTP to HTTPS. The Google Webmasters Team has some [excellent guidance](https://plus.google.com/+GoogleWebmasters/posts/eYmUYvNNT5J) available.
 
-通过脚本实现，而不是手动操作。如果网站内容在数据库中，则在数据库的开发副本中测试您的脚本。
-如果网站内容由简单文件组成，则要在文件的开发副本中测试您的脚本。
-像平常一样，只有在更改通过 QA 后，才会将更改推送到生产平台中。可以使用 [Bram van Damme 的脚本](https://github.com/bramus/mixed-content-scan)或类似脚本来检测网站中的混合内容。
+### Search ranking
 
-在链接到其他网站（而不是包括其他网站的资源）时，请勿更改协议，因为您不能控制这些网站的运行方式。
+Google uses [HTTPS as a positive search quality indicator](https://googlewebmastercentral.blogspot.com/2014/08/https-as-ranking-signal.html). Google also publishes a guide for [how to transfer, move, or migrate your site](https://support.google.com/webmasters/topic/6029673) while maintaining its search rank. Bing also publishes [guidelines for webmasters](http://www.bing.com/webmaster/help/webmaster-guidelines-30fba23a).
 
+### Performance
 
+When the content and application layers are well-tuned (see [Steve Souders' books](https://stevesouders.com/){: .external } for great advice), the remaining TLS performance concerns are generally small, relative to the overall cost of the application. Additionally, you can reduce and amortize those costs. (For great advice on TLS optimization and generally, see [High Performance Browser Networking](https://hpbn.co/) by Ilya Grigorik.) See also Ivan Ristic's [OpenSSL Cookbook](https://www.feistyduck.com/books/openssl-cookbook/) and [Bulletproof SSL And TLS](https://www.feistyduck.com/books/bulletproof-ssl-and-tls/).
 
-Success: 为确保大型网站的迁移更顺利，我们建议采用协议相对网址。如果您还不确定是否能够完全部署 HTTPS，则强制网站的所有子资源使用 HTTPS 可能会弄巧成拙。可能会有一段时间，您对 HTTPS 觉得新奇，并且 HTTP 网站仍必须像往常一样运行。但从长远看，您将完成迁移并锁定 HTTPS（请参考接下来两个部分）。
+In some cases, TLS can *improve* performance, mostly as a result of making HTTP/2 possible. Chris Palmer gave a talk on [HTTPS and HTTP/2 performance at Chrome Dev Summit 2014](/web/shows/cds/2014/tls-all-the-things).
 
-如果网站依赖第三方（例如 CDN、jquery.com）提供的脚本、图像或其他资源，则有两个选择：
+### Referer headers
 
+When users follow links from your HTTPS site to other HTTP sites, user agents don't send the Referer header. If this is a problem, there are several ways to solve it:
 
-* 对这些资源使用协议相对网址。如果该第三方不提供 HTTPS，请求他们提供。
-大多数已经提供，包括 jquery.com。
-* 从您控制的并且同时提供 HTTP 和 HTTPS 的服务器上提供资源。
-这通常是个好点子，因为您可以更好地控制网站的外观、性能和安全。
-此外，您不必信任第三方，尽管他们总是很不错。
+* The other sites should migrate to HTTPS. If referee sites can complete the [Enable HTTPS on your servers](#enable-https-on-your-servers) section of this guide, you can change links in your site to theirs from `http://` to `https://`, or you can use protocol-relative links.
+* To work around a variety of problems with Referer headers, use the new [Referrer Policy standard](http://www.w3.org/TR/referrer-policy/#referrer-policy-delivery-meta).
 
+Because search engines are migrating to HTTPS, in the future you are likely see *more* Referer headers when you migrate to HTTPS.
 
-Note: 请记住，您还需要更改样式表、JavaScript、重定向规则、`<link>` 标记和 CSP 声明中的站内网址，而不仅是 HTML 页面。
+Caution: According to the [HTTP RFC](https://tools.ietf.org/html/rfc2616#section-15.1.3), clients **SHOULD NOT** include a Referer header field in a (non-secure) HTTP request if the referring page is transferred with a secure protocol.
 
-## 将 HTTP 重定向到 HTTPS
+### Ad revenue
 
-您需要在页面的最前面放一个[规范链接](https://support.google.com/webmasters/answer/139066)，以告诉搜索引擎 HTTPS 是访问您网站的最佳方法。
+Site operators that monetize their site by showing ads want to make sure that migrating to HTTPS does not reduce ad impressions. But due to mixed content security concerns, an HTTP `<iframe>` doesn't work in an HTTPS page. There is a tricky collective action problem here: until advertisers publish over HTTPS, site operators cannot migrate to HTTPS without losing ad revenue; but until site operators migrate to HTTPS, advertisers have little motivation to publish HTTPS.
 
-在页面中设置 `<link rel="canonical" href="https://…"/>` 标记。这样可帮助搜索引擎确定访问您网站的最佳方法。
+Advertisers should at least offer ad service via HTTPS (such as by completing the "Enable HTTPS on your servers" section on this page. Many already do. You should ask advertisers that do not serve HTTPS at all to at least start. You may wish to defer completing [Make IntraSite URLs relative](#make-intrasite-urls-relative) until enough advertisers interoperate properly.
 
+## Feedback {: #feedback }
 
-## 打开严格传输安全和安全 Cookie
-
-此时，您已准备好“锁定”使用 HTTPS。
-
-* 使用 HTTP 严格传输安全 (HSTS) 来避免 301 重定向产生的开销。
-* 始终在 Cookie 上设置安全标记。
-
-首先，使用[严格传输安全](https://en.wikipedia.org/wiki/HTTP_Strict_Transport_Security)来告诉客户端，它们始终应通过 HTTPS 来连接您的服务器，即使在访问 `http://` 引用时也是如此。
-
-这样可挫败 [SSL 剥离](http://www.thoughtcrime.org/software/sslstrip/){: .external } 之类的攻击，还能避免我们在[将 HTTP 重定向到 HTTPS](#redirect-http-to-https)时启用的 `301 redirect` 产生的往返开销。
-
-
-
-
-Note: 如果您的网站在其传输层安全协议 (TLS) 配置中出现过错误（例如过期证书），则已将您的网站注明为已知 HSTS 主机的客户端可能出现<a href="https://tools.ietf.org/html/rfc6797#section-12.1"><i>硬故障</i></a>。通过此方式显式设计 HSTS 可确保网络攻击者无法欺骗客户端访问没有 HTTPS 的网站。在确认您的网站运营足够可靠之前，不要启用 HSTS，以避免部署 HTTPS 时总是出现证书验证错误。
-
-通过设置 `Strict-Transport-Security` 标头来打开 HTTP 严格传输安全 (HSTS)。[OWASP 的 HSTS 页面有说明链接](https://www.owasp.org/index.php/HTTP_Strict_Transport_Security)，提供了针对各种服务器软件的说明。
-
-大多数网络服务器提供相似的功能来添加自定义标头。
-
-Note: `max-age` 的计算单位为秒。您可以从较小的值开始，并随着您越来越熟练自如地运营纯 HTTPS 网站而逐步增加 `max-age`。
-
-还要务必确保客户端从不通过 HTTP 发送 Cookie（例如用于身份验证或网站偏好）。
-例如，如果用户的身份验证 Cookie 将在明文中暴露，则其整个会话的安全保障将被破坏 — 即使其他的一切都正确无误！
-
-
-
-
-因此，更改您的网络应用，以便始终在其设置的 Cookie 上设置安全标记。[此 OWASP 网页解释了如何在多个应用框架中设置安全标记](https://www.owasp.org/index.php/SecureFlag)。
-每个应用框架都采用一种方法来设置此标记。
-
-大多数网络服务器都提供一种简单的重定向功能。使用 `301 (Moved Permanently)` 来告诉搜索引擎和浏览器，此 HTTPS 版本是规范的，并将用户从 HTTP 重定向到网站的 HTTPS 版本。
-
-
-## 迁移问题
-
-对于从 HTTP 迁移到 HTTPS，许多开发者有着合情合理的顾虑。Google 网站站长团队提供了一些[非常好的指导](https://plus.google.com/+GoogleWebmasters/posts/eYmUYvNNT5J)。
-
-
-### 搜索排名
-
-Google 使用 [HTTPS 用作肯定性的搜索质量指标](https://googlewebmastercentral.blogspot.com/2014/08/https-as-ranking-signal.html)。Google 还发布一个指南，说明在维护其搜索排名时[如何传输、移动或迁移您的网站](https://support.google.com/webmasters/topic/6029673)。
-
-
-Bing 也发布了[网站站长指南](http://www.bing.com/webmaster/help/webmaster-guidelines-30fba23a)。
-
-
-### 性能
-
-当内容和应用层优化得当时（请参考 [Steve Souders 的论著](https://stevesouders.com/){: .external }以获取很好的建议），相对于应用的总体开销而言，其余的传输层安全协议 (TLS) 性能问题一般都是小问题。此外，您可以减少和分摊那些开销。
-（如需 TLS 优化建议和一般建议，请参考 IlyaGrigorik 撰写的[高性能浏览器网络](https://hpbn.co/)。）
-另请参考 Ivan Ristic 的 [OpenSSL 手册](https://www.feistyduck.com/books/openssl-cookbook/)和 [SSL 和 TLS 的防弹衣](https://www.feistyduck.com/books/bulletproof-ssl-and-tls/)。
-
-在某些情况下，TLS 可以提高性能，主要是可以采用 HTTP/2 所带来的结果。
-Chris Palmer [在 Chrome 开发峰会 2014 上做过一个演讲，讨论 HTTPS 和 HTTP/2 的性能](/web/shows/cds/2014/tls-all-the-things)。
-
-### 引用站点标头
-
-当用户从您的 HTTPS 网站链接到其他 HTTP 网站时，User Agent 不会发送引用站点标头。如果这是个问题，有多种方法可解决：
-
-
-* 其他网站应迁移到 HTTPS。如果被引用网站可以完成本指南中的[在服务器上启用 HTTPS](#enable-https-on-your-servers) 部分，则可以将您网站中指向他们网站的链接从 `http://` 更改为 `https://`，或可以使用协议相对链接。
-* 为解决引用站点标头的各种问题，可使用新的[引用站点政策标准](http://www.w3.org/TR/referrer-policy/#referrer-policy-delivery-meta)。
-
-由于各搜索引擎正在迁移到 HTTPS，将来，当您迁移到 HTTPS 时，可能会看到更多的引用站点标头。
-
-Caution: 根据 [HTTP RFC](https://tools.ietf.org/html/rfc2616#section-15.1.3)，如果引用页面是通过安全协议传输的，则客户端**不能**在（非安全）HTTP 请求中包括引用站点标头字段。
-
-### 广告收入
-
-通过展示广告来赚钱的网站运营商希望确保迁移到 HTTPS 不会降低广告曝光量。
-但是，由于混合内容的安全问题，HTTP `<iframe>` 在 HTTPS 页面中不起作用。
-这里就存在一个棘手的集体行动问题：在广告商通过 HTTPS 发布广告之前，网站运营商无法在不损失广告收入的情况下迁移到 HTTPS；但是在网站运营商迁移到 HTTPS 之前，广告商没有动力来通过 HTTPS 发布广告。
-
-
-
-
-广告商至少应通过 HTTPS 提供广告服务（例如完成本页面中的“在服务器上启用 HTTPS”部分）。
-许多广告商已经这样做了。您应当请求完全不提供 HTTPS 的广告商至少开始提供 HTTPS。
-
-您可能希望推迟完成[使站内网址变成相对网址](#make-intrasite-urls-relative)，直到有足够数量的广告商能正常地互操作。
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
