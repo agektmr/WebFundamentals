@@ -1,45 +1,29 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description:“網站在其自身的腳本中不使用 console.time()”Lighthouse 審查的參考文檔。
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Reference documentation for the "Avoids console.time() In Its Own Scripts" Lighthouse audit.
 
-{# wf_updated_on: 2016-12-01 #}
-{# wf_published_on: 2016-12-01 #}
+{# wf_updated_on: 2018-07-23 #} {# wf_published_on: 2016-12-01 #} {# wf_blink_components: N/A #}
 
-# 網站在其自身的腳本中不使用 console.time() {: .page-title }
- 
-## 爲什麼說此審查非常重要 {: #why }
+# Avoids console.time() In Its Own Scripts {: .page-title }
 
-如果您使用 `console.time()` 測量頁面的性能，請考慮改用 User Timing API。
-其優勢包括：
+## Overview {: #overview }
 
-* 高分辨率時間戳。
-* 可導出的計時數據。
-* 與 Chrome DevTools Timeline 相集成。在 Timeline 錄製期間調用 User Timing 函數 `performance.measure()` 時，DevTools 自動將此測量結果添加到 Timeline 的結果中，如以下屏幕截圖中的 `my custom measurement` 標籤中所示。
+If you're using `console.time()` to measure your page's performance, consider using the User Timing API instead. Benefits include:
 
+* High-resolution timestamps.
+* Exportable timing data.
+* Integration with the Chrome DevTools Timeline. When the User Timing function `performance.measure()` is called during a Timeline recording, DevTools automatically adds the measurement to the Timeline's results, as shown in the `my custom measurement` label in the screenshot below.
 
+![User Timing measurement in Chrome DevTools Timeline](/web/tools/lighthouse/images/user-timing-measurement-in-devtools.png)
 
+## Recommendations {: #recommendations }
 
-![Chrome DevTools Timeline 中的 User Timing 測量結果][timeline]
+In your report, Lighthouse lists every instance of `console.time()` that it finds under **URLs**. Replace each of these calls with `performance.mark()`. If you want to measure the time that has elapsed between two marks, use `performance.measure()`.
 
-[timeline]: /web/tools/lighthouse/images/user-timing-measurement-in-devtools.png
+See [User Timing API: Understanding Your Web App](https://www.html5rocks.com/en/tutorials/webperformance/usertiming/) to learn how to use the API.
 
-## 如何通過此審查 {: #how }
+## More information {: #more-info }
 
-在您的報告中，Lighthouse 列出了其在 **URLs** 下找到的 `console.time()` 的每個實例。
-將每個調用替換爲 `performance.mark()`。如果您要測量在兩個標記之間經過的時間，則使用 `performance.measure()`。
+Lighthouse reports every instance of `console.time()` that it finds from scripts that are on the same host as the page. Scripts from other hosts are excluded, because Lighthouse assumes that you don't have control over these scripts. So, there may be other scripts using `console.time()` on your page, but these won't show up in your Lighthouse report.
 
+## Feedback {: #feedback }
 
-
-請參閱 [User Timing API：瞭解您的網絡應用][html5rocks]以瞭解如何使用此 API。
-
-
-[html5rocks]: https://www.html5rocks.com/en/tutorials/webperformance/usertiming/
-
-{% include "web/tools/lighthouse/audits/implementation-heading.html" %}
-
-Lighthouse 報告它從與頁面位於同一主機的腳本中發現的 `console.time()` 的每個實例。
-來自其他主機的腳本被排除在外，因爲 Lighthouse 假定您不能控制這些腳本。因此，您的頁面上可能有使用 `console.time()` 的其他腳本，但這些腳本不會顯示在您的 Lighthouse 報告中。
-
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
