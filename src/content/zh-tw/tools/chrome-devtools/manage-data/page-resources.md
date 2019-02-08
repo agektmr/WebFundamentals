@@ -1,74 +1,57 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description:按框架、網域、類型或其他條件組織資源。
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Organize resources by frame, domain, type, or other criteria.
 
-{# wf_updated_on:2016-07-28 #}
-{# wf_published_on:2015-04-13 #}
+{# wf_updated_on: 2018-07-27 #} {# wf_published_on: 2015-04-13 #} {# wf_blink_components: Platform>DevTools #}
 
-# 檢查資源 {: .page-title }
+# Inspect Resources {: .page-title }
 
 {% include "web/_shared/contributors/kaycebasques.html" %}
 
-按框架、網域、類型或其他條件組織資源。
-
-
+Organize resources by frame, domain, type, or other criteria.
 
 ### TL;DR {: .hide-from-toc }
-- 使用 <strong>Application</strong> 面板的 <strong>Frames</strong> 窗格可以按框架組織資源。
-- 您也可以在 <strong>Sources</strong> 面板中停用 <strong>Group by folder</strong> 選項，按框架查看資源。
-- 要按網域和文件夾查看資源，請使用 <strong>Sources</strong> 面板。
-- 在 <strong>Network</strong> 面板中按名稱或其他條件過濾資源。
 
+* Use the **Frames** pane of the **Application** panel to organize resources by frame.
+* You can also view resources by frame from the **Sources** panel by disabling the **group by folder** option.
+* To view resources by domain and folder, use the **Sources** panel.
+* Filter resources by name or other criteria in the **Network** panel.
 
-## 按框架組織資源 {: #frames}
+## Organize resources by frame {:#frames}
 
-使用 **Application** 面板的 **Frames** 窗格可以按框架組織頁面的資源。
+Use the **Frames** pane on the **Application** panel for a frame-organized representation of your page's resources.
 
+![frames detail](/web/tools/chrome-devtools/manage-data/imgs/frames.png)
 
-![框架詳情][frames]
+* The top-level (`top` in the screenshot above) is the main document.
+* Below that (e.g. `widget2` in the screenshot above) are subframes of the main document. Expand one of these subframes to view the resources originating from that frame.
+* Below the subframes are the images, scripts, and other resources of the main document.
+* Last is the main document itself.
 
-* 頂層（上面屏幕截圖中的 `top`）是主文檔。
-* 在這下方（例如上面屏幕截圖中的 `widget2`）是主文檔的子框架。
-展開一個子框架可以查看源自該框架的資源。
+Click on a resource to view a preview of it.
 
-* 子框架下方是圖像、腳本，以及主文檔的其他資源。
+Right-click on a resource to view it in the **Network** panel, open it in a new tab, copy its URL, or save it.
 
-* 最後是主文檔本身。
+![view resource](/web/tools/chrome-devtools/manage-data/imgs/resource.png)
 
-點擊資源可以查看其預覽。
+You can also view resources by frame in the **Sources** panel, by clicking on the overflow menu in the navigator and disabling the **Group by folder** option to stop grouping resources by folder.
 
-右鍵點擊資源可以在 **Network** 面板中查看、將其在新標籤中打開、複製其網址或將其保存。
+![group by folder option](imgs/group-by-folder.png)
 
+The resources will be listed by frame only.
 
-![查看資源][resource]
+![no folders](imgs/no-folders.png)
 
-通過在 **Sources** 面板中點擊導航器中的溢出菜單並停用 **Group by folder** 選項以停止按文件夾分組資源，您也可以按框架查看資源。
+## Organize resources by domain and folder {:#sources}
 
+To view resources organized by domain and directory, use the **Sources** panel.
 
+![sources panel](imgs/sources.png)
 
-![Group by folder 分組](imgs/group-by-folder.png)
+## Filter resources by name, type, or other criteria {:#filter}
 
-資源將僅按框架列示。
-
-![無文件夾](imgs/no-folders.png)
-
-[frames-pane]: /web/tools/chrome-devtools/manage-data/imgs/frames-pane.png
-[frames]: /web/tools/chrome-devtools/manage-data/imgs/frames.png
-[resource]: /web/tools/chrome-devtools/manage-data/imgs/resource.png
-
-## 按網域和文件夾組織資源 {:#sources}
-
-要查看按網域和目錄組織的資源，請使用 **Sources** 面板。
-
-
-![Sources 面板](imgs/sources.png)
-
-## 按名稱、類型或其他條件過濾資源 {:#filter}
-
-使用 **Network** 面板可以按名稱、類型和一系列其他條件過濾資源。
-參閱下面的指南瞭解詳情。
+Use the **Network** panel to filter resources by name, type, and a whole range of other criteria. Check out the guide below to learn more.
 
 {# include shared/related_guides.liquid inline=true list=page.related-guides.filter #}
 
+## Feedback {: #feedback }
 
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
