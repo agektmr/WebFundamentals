@@ -1,45 +1,40 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description:为项目选择合适的缓动，无论是缓入、缓出还是缓入缓出。或许还可使用弹跳方式获取更多乐趣！
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Choose the appropriate easing for your project, whether that's easing in, out, or both. Maybe even use bounces for extra fun!
 
-{# wf_updated_on: 2016-08-23 #}
-{# wf_published_on: 2014-08-08 #}
+{# wf_blink_components: Blink>Animation #} {# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2014-08-08 #}
 
-# 选择合适的缓动 {: .page-title }
+# Choosing the Right Easing {: .page-title }
 
 {% include "web/_shared/contributors/paullewis.html" %}
 
-前面已经讨论了可在动画中实现缓动的各种选项，您应当在项目中使用哪种？您的动画应采用哪种持续时间？
+Having discussed the various options available for easing in animations, what kind should you use in your projects, and what kind of durations should your animations have?
 
 ### TL;DR {: .hide-from-toc }
-* 为 UI 元素使用缓出动画；Quintic 缓出是一个非常好（虽然比较快速）的缓动。
-* 一定要使用动画持续时间；缓出和缓入应为 200 毫秒 - 500 毫秒，而弹跳和弹性缓动的持续时间应更长，为 800 毫秒 - 1200 毫秒。
 
+* Use ease-out animations for UI elements; a Quintic ease-out is a very nice, albeit quick, ease.
+* Be sure to use the animation duration; ease-outs and ease-ins should be 200ms-500ms, whereas bounces and elastic eases should clock in a longer duration of 800ms-1200ms.
 
-<img src="images/quintic-ease-out-markers.png" alt="Quintic 缓出动画的曲线。" style="max-width: 300px" class="attempt-right"/>
+<img src="images/quintic-ease-out-markers.png" alt="A Quintic ease-out animation curve" style="max-width: 300px" class="attempt-right" />
 
-一般来说，**缓出**将是正确的选择，当然也是很好的默认选择。它开头较快，使动画有反应快速的感觉，这一点很受欢迎，但在结尾有一个不错的减速。
+Generally speaking, an **ease-out** will be the right call, and certainly a good default. It is quick to start, giving your animations a feeling of responsiveness, which is desirable, but with a nice slowdown at the end.
 
-除了在 CSS 中通过 `ease-out` 关键字指定的公式之外，还有一组知名的缓出公式，它们按其“攻击性”排列。想要快速的缓出效果，请考虑 [Quintic 缓出](http://easings.net/#easeOutQuint)。
+There is a group of well-known ease-out equations beyond the one specified with the `ease-out` keyword in CSS, which range in their "aggressiveness." For a fast ease-out effect, consider a [Quintic ease-out](http://easings.net/#easeOutQuint).
 
+[See a Quintic ease-out animation](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/animations/box-move-quintic-ease-out.html){: target="_blank" .external }
 
-[查看 Quintic 缓出动画](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/animations/box-move-quintic-ease-out.html){: target="_blank" .external }
+Other easing equations, particularly bounces or elastic eases, should be used sparingly, and only when it’s appropriate to your project. There are few things that bring a user out of an experience like a jarring animation. If your project isn’t intended to be fun, then don’t have elements bouncing around the UI. Conversely, if you’re creating a site that is supposed to be lighthearted, then by all means use bounces!
 
-其他缓动公式应谨慎使用，特别是弹跳或弹性缓动，并且仅在适合于项目时才使用。很少有东西会像不协调的动画那样让用户体验很差。如果您的项目不是为了追求乐趣，那么就无需使元素在 UI 周围进行弹跳。相反，如果您将要创建一个轻松欢乐的网站，那么请务必使用弹跳！
+Play around with eases, see which ones match your project’s personality, and go from there. For a full list of easing types, along with demos, see [easings.net](http://easings.net).
 
-试试各种缓动，看看哪些与项目的个性匹配，然后以此为起点。关于缓动类型的完整列表及其演示，请参阅 [easings.net](http://easings.net)。
+## Pick the right animation duration
 
-## 选择合适的动画持续时间
+It is important that any animation added to your project has the correct duration. Too short and the animation will feel aggressive and sharp; too long and it will be obstructive and annoying.
 
-给项目添加的任何动画均须有正确的持续时间。若太短，动画让人感觉有攻击性和突然；若太长，则让人觉得很卡和讨厌。
+* **Ease-outs: around 200ms-500ms**. This gives the eye a chance to see the animation, but it doesn’t feel obstructive.
+* **Ease-ins: around 200ms-500ms**. Bear in mind that it will jolt at the end, and no amount of timing changes will soften that impact.
+* **Bounce or elastic effects: around 800ms-1200ms**. You need to allow time for the elastic or bounce effect to "settle." Without this extra time, the elastic bouncing part of the animation will be aggressive and unpleasant to the eye.
 
-* **缓出：约 200 毫秒 - 500 毫秒**。这让眼睛有机会看到动画，但不会觉得卡顿。
-* **缓入：约 200 毫秒 - 500 毫秒**。请记住，它在结尾将晃动，没有时间量变化将缓和这种影响。
-* **弹跳或弹性效果：约 800 毫秒 - 1200 毫秒**。您需要留出时间让弹性或弹跳效果“停下”。若没有这点额外时间，动画的弹性跳动部分看上去比较有攻击性，让人感觉不舒服。
+Of course, these are just guidelines. Experiment with your own eases and choose what feels right for your projects.
 
-当然，这些只是指导原则。用您自己的缓动做试验，然后选择觉得适合于项目的缓动。
+## Feedback {: #feedback }
 
-
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
