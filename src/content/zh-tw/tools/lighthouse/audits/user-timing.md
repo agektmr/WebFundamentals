@@ -1,33 +1,25 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description:“User Timing 標記和測量結果”Lighthouse 審查的參考文檔。
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Reference documentation for the "User Timing Marks and Measures" Lighthouse audit.
 
-{# wf_updated_on:2016-10-06 #}
-{# wf_published_on:2016-10-06 #}
+{# wf_updated_on: 2018-07-23 #} {# wf_published_on: 2016-10-06 #} {# wf_blink_components: N/A #}
 
-# User Timing 標記和測量結果 {: .page-title }
+# User Timing Marks and Measures {: .page-title }
 
-## 爲什麼說此審查非常重要 {: #why }
+## Overview {: #overview }
 
-您可以通過 User Timing API 測量您的應用的 JavaScript 性能。基本思路是您決定您要優化的腳本部分，然後使用 User Timing API 測量腳本的這些部分。從此處，您可以使用此 API 訪問來自 JavaScript 的結果，或在您的 [Chrome DevTools Timeline 錄製](/web/tools/chrome-devtools/evaluate-performance/timeline-tool)上查看它們。
+The User Timing API enables you to measure your app's JavaScript performance. The basic idea is that you decide which parts of your scripts you want to optimize, and then you instrument those parts of your scripts with the User Timing API. From there, you can access the results from JavaScript using the API, or view them on your [Chrome DevTools Timeline Recordings](/web/tools/chrome-devtools/evaluate-performance/timeline-tool).
 
+## Recommendations {: #recommendations }
 
+This audit is not structured as a "pass" or "fail" test. It's just an opportunity to discover a useful API that can aid you in measuring your app's performance. The score that Lighthouse reports for this audit corresponds to the number of User Timing Marks and Measures that it finds in your app.
 
-## 如何通過此審查 {: #how }
+When your app does include User Timing Marks and Measures, you'll see these Marks and Measures in your Lighthouse report.
 
-此審查不採用“通過”或“未通過”測試這種結構。它只是讓您有機會發現可幫助您測量應用性能的實用性 API。Lighthouse 針對此審查報告的分數與它在您的應用中發現的 User Timing 標記和測量結果的數量相對應。
+Check out [User Timing API](https://www.html5rocks.com/en/tutorials/webperformance/usertiming/) for an introduction on using the User Timing API to measure your app's JavaScript performance.
 
+## More information {: #more-info }
 
-如果您的應用包含 User Timing 標記和測量結果，您將在您的 Lighthouse 報告中看到這些標記和測量結果。
+Lighthouse extracts User Timing data from Chrome's Trace Event Profiling Tool.
 
+## Feedback {: #feedback }
 
-有關使用 User Timing API 測量應用的 JavaScript 性能的簡介，請查看 [User Timing API](https://www.html5rocks.com/en/tutorials/webperformance/usertiming/)。
-
-
-
-{% include "web/tools/lighthouse/audits/implementation-heading.html" %}
-
-Lighthouse 從 Chrome 的 Trace Event Profiling Tool 中提取 User Timing 數據。
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
