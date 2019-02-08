@@ -1,58 +1,55 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: CSS wordt standaard behandeld als een weergaveblokkerende bron. Dit betekent dat de browser wacht met het weergeven van de verwerkte inhoud totdat het CSSOM is opgebouwd. Zorg dat uw CSS bondig is, lever het zo snel mogelijk en gebruik mediatypen en -query's om de weergave te deblokkeren.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: By default CSS is treated as a render blocking resource. Learn how to prevent it from blocking rendering.
 
-{# wf_updated_on: 2014-09-17 #}
-{# wf_published_on: 2014-03-31 #}
+{# wf_updated_on: 2018-08-17 #} {# wf_published_on: 2014-03-31 #} {# wf_blink_components: Blink>CSS #}
 
-# Weergaveblokkerende CSS {: .page-title }
+# Render Blocking CSS {: .page-title }
 
 {% include "web/_shared/contributors/ilyagrigorik.html" %}
 
+By default, CSS is treated as a render blocking resource, which means that the browser won't render any processed content until the CSSOM is constructed. Make sure to keep your CSS lean, deliver it as quickly as possible, and use media types and queries to unblock rendering.
 
-CSS wordt standaard behandeld als een weergaveblokkerende bron. Dit betekent dat de browser wacht met het weergeven van de verwerkte inhoud totdat het CSSOM is opgebouwd. Zorg dat uw CSS bondig is, lever het zo snel mogelijk en gebruik mediatypen en -query's om de weergave te deblokkeren.
-
-
-
-In het vorige gedeelte zagen we dat het kritieke weergavepad zowel de DOM- als de CSSOM-boomstructuur nodig heeft om de weergaveboomstructuur te kunnen opbouwen. Dit zorgt voor een groot gevolg voor de prestatie: **zowel HTML als CSS zijn weergaveblokkerende bronnen.** De HTML is voor de hand liggend, aangezien we zonder het DOM niets hebben om weer te geven, maar het CSS is misschien minder duidelijk. Wat zou er gebeuren als we proberen een gewone pagina weer te geven zonder een weergaveblokkering op CSS?
+In the [render tree construction](render-tree-construction) we saw that the critical rendering path requires both the DOM and the CSSOM to construct the render tree. This creates an important performance implication: **both HTML and CSS are render blocking resources.** The HTML is obvious, since without the DOM we would not have anything to render, but the CSS requirement may be less obvious. What would happen if we try to render a typical page without blocking rendering on CSS?
 
 ### TL;DR {: .hide-from-toc }
-- CSS wordt standaard behandeld als een weergaveblokkerende bron.
-- Mediatypen en -query's maken het mogelijk om bepaalde CSS-bronnen te markeren als niet-weergaveblokkerend.
-- Alle CSS-bronnen, onafhankelijk van blokkerend of niet-blokkerend gedrag, worden gedownload door de browser.
 
+* By default, CSS is treated as a render blocking resource.
+* Media types and media queries allow us to mark some CSS resources as non-render blocking.
+* The browser downloads all CSS resources, regardless of blocking or non-blocking behavior.
 
-<figure class="attempt-left">
-  <img class="center" src="images/nytimes-css-device.png" alt="New York Times met CSS">
-  <figcaption>New York Times met CSS</figcaption>
-</figure>
-<figure class="attempt-right">
-  <img src="images/nytimes-nocss-device.png" alt="New York Times zonder CSS">
-  <figcaption>New York Times zonder CSS (FOUC, flash of unstyled content)</figcaption>
-</figure>
+<div class="attempt-left">
+  <figure>
+    <img src="images/nytimes-css-device.png" alt="NYTimes with CSS">
+    <figcaption>The New York Times with CSS</figcaption>
+  </figure>
+</div>
 
-De bovenstaande voorbeelden van de New York Times met en zonder CSS demonstreren waarom de weergave wordt geblokkeerd totdat het CSS beschikbaar is: zonder CSS is de pagina in feite onbruikbaar. Het voorbeeld rechts wordt zelfs vaak `FOUC` of `Flash of Unstyled Content` (flits met niet-opgemaakte inhoud) genoemd. De browser blokkeert daarom de weergave totdat zowel het DOM als het CSSOM beschikbaar zijn.
+<div class="attempt-right">
+  <figure>
+    <img src="images/nytimes-nocss-device.png" alt="NYTimes without CSS">
+    <figcaption>The New York Times without CSS (FOUC)</figcaption>
+  </figure>
+</div>
 
-> **_CSS is een weergaveblokkerende bron: zorg dat u deze zo snel mogelijk bij de gebruiker krijgt om de tijd tot de eerste weergave te optimaliseren._**
+<div style="clear:both;"></div>
 
-Maar wat zou er gebeuren als bepaalde CSS-stijlen alleen onder bepaalde voorwaarden worden gebruikt, bijvoorbeeld alleen wanneer de pagina wordt afgedrukt of wanneer de pagina wordt geprojecteerd op een grote monitor? Het zou fijn zijn als de weergave niet op deze bronnen zou blokkeren.
+The above example, showing the NYTimes website with and without CSS, demonstrates why rendering is blocked until CSS is available\---without CSS the page is relatively unusable. The experience on the right is often referred to as a "Flash of Unstyled Content" (FOUC). The browser blocks rendering until it has both the DOM and the CSSOM.
 
-Mogelijk kan je deze gevallen aanpakken met CSS media types en mediaquery's.
+> ***CSS is a render blocking resource. Get it to the client as soon and as quickly as possible to optimize the time to first render.***
 
+However, what if we have some CSS styles that are only used under certain conditions, for example, when the page is being printed or being projected onto a large monitor? It would be nice if we didn’t have to block rendering on these resources.
+
+CSS "media types" and "media queries" allow us to address these use cases:
 
     <link href="style.css" rel="stylesheet">
     <link href="print.css" rel="stylesheet" media="print">
     <link href="other.css" rel="stylesheet" media="(min-width: 40em)">
     
 
-Een [mediaquery](/web/fundamentals/design-and-ux/responsive/#use-media-queries) bestaat uit een mediatype en nul of meer expressies die de voorwaarden van bepaalde mediafuncties controleren. Onze eerste stijlbladdefiniëring biedt bijvoorbeeld geen enkel mediatype of -query, daarom is het van toepassing in alle gevallen: dat wil zeggen dat het altijd weergaveblokkerend is. Het tweede stijlblad is alleen van toepassing wanneer de inhoud wordt afgedrukt (misschien wilt u hiervoor een andere opmaak of een ander lettertype gebruiken). Hierdoor hoeft het stijlblad de weergave van de pagina niet te blokkeren wanneer dit stijlblad voor het eerst wordt geladen. Tot slot biedt de laatste stijlbladdefiniëring een `mediaquery` die wordt uitgevoerd door de browser: als de voorwaarden overeenkomen, blokkeert de browser de weergave totdat het stijlblad is gedownload en verwerkt.
+A [media query](../../design-and-ux/responsive/#use-css-media-queries-for-responsiveness) consists of a media type and zero or more expressions that check for the conditions of particular media features. For example, our first stylesheet declaration doesn't provide a media type or query, so it applies in all cases; that is to say, it is always render blocking. On the other hand, the second stylesheet declaration applies only when the content is being printed\---perhaps you want to rearrange the layout, change the fonts, and so on, and hence this stylesheet declaration doesn't need to block the rendering of the page when it is first loaded. Finally, the last stylesheet declaration provides a "media query," which is executed by the browser: if the conditions match, the browser blocks rendering until the style sheet is downloaded and processed.
 
-Door het gebruik van mediaquery's kan de presentatie van een pagina op bepaalde gebruiksgevallen worden aangepast, zoals afdrukken of weergeven. Daarnaast zorgen mediaquery's ervoor dat de weergave wordt aangepast aan bepaalde dynamische voorwaarden, zoals een andere schermstand, een aanpaste grootte en andere wijzigingen. **Wanneer u uw stijlbladitems definieert, moet u goed op de mediatypen en -query's letten, aangezien deze een grote invloed hebben op het kritieke weergavepad.**
+By using media queries, we can tailor our presentation to specific use cases, such as display versus print, and also to dynamic conditions such as changes in screen orientation, resize events, and more. **When declaring your style sheet assets, pay close attention to the media type and queries; they greatly impact critical rendering path performance.**
 
-{# include shared/related_guides.liquid inline=true list=page.related-guides.media-queries #}
-
-Laten we een aantal praktijkvoorbeelden bekijken:
-
+Let's consider some hands-on examples:
 
     <link href="style.css"    rel="stylesheet">
     <link href="style.css"    rel="stylesheet" media="all">
@@ -60,12 +57,13 @@ Laten we een aantal praktijkvoorbeelden bekijken:
     <link href="print.css"    rel="stylesheet" media="print">
     
 
-* De eerste definiëring is weergaveblokkerend en wordt onder alle voorwaarden toegepast.
-* De tweede definiëring is ook weergaveblokkerend: `all` is het standaardtype en als u geen type opgeeft, wordt dit onvoorwaardelijk ingesteld op `all`. Dus de eerste en de tweede definiëringen zijn feitelijk hetzelfde.
-* De derde definiëring heeft een dynamische mediaquery, die wordt beoordeeld wanneer de pagina wordt geladen. Afhankelijk van de stand van het apparaat wanneer de pagina wordt geladen, kan portrait.css wel of niet weergaveblokkerend zijn.
-* De laatste definiëring wordt alleen toegepast wanneer de pagina wordt afgedrukt, dus is dit niet weergaveblokkerend wanneer de pagina voor het eerst wordt geladen in de browser.
+* The first declaration is render blocking and matches in all conditions.
+* The second declaration is also render blocking: "all" is the default type so if you don’t specify any type, it’s implicitly set to "all". Hence, the first and second declarations are actually equivalent.
+* The third declaration has a dynamic media query, which is evaluated when the page is loaded. Depending on the orientation of the device while the page is loading, portrait.css may or may not be render blocking.
+* The last declaration is only applied when the page is being printed so it is not render blocking when the page is first loaded in the browser.
 
-Let er tot slot op dat `weergaveblokkerend` alleen verwijst naar of de browser de initiële weergave van de pagina stopt bij die bron. Het CSS-items wordt altijd door de browser gedownload, maar met een lagere prioriteit voor een niet-blokkerende bron.
+Finally, note that "render blocking" only refers to whether the browser has to hold the initial rendering of the page on that resource. In either case, the browser still downloads the CSS asset, albeit with a lower priority for non-blocking resources.
 
+## Feedback {: #feedback }
 
-
+{% include "web/_shared/helpful.html" %}
