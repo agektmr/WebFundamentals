@@ -1,44 +1,25 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: '페이지 로드 시 위치정보를 자동 요청하지 않는 페이지' Lighthouse 감사의 참조 문서입니다.
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Reference documentation for the "Avoids Requesting The Geolocation Permission On Page Load" Lighthouse audit.
 
-{# wf_updated_on: 2016-11-30 #}
-{# wf_published_on: 2016-11-30 #}
+{# wf_updated_on: 2018-07-23 #} {# wf_published_on: 2016-11-30 #} {# wf_blink_components: N/A #}
 
-# 페이지 로드 시 위치정보를 자동 요청하지 않는 페이지  {: .page-title }
+# Avoids Requesting The Geolocation Permission On Page Load {: .page-title }
 
-## 감사가 중요한 이유 {: #why }
+## Overview {: #overview }
 
-사용자는 페이지 로드 시 자동으로 위치를 요청하는 페이지를 신뢰하지 않거나
-이러한 페이지에 혼란을 느낍니다. 페이지 로드 시 사용자 위치를 자동으로 요청하지 않고
-요청을 사용자 동작(예: 'Find Stores Near Me' 버튼 누르기)과 연결합니다.
- 동작이 사용자 위치의 필요성을 명확하고 명시적으로
-표현해야 합니다.
+Users are mistrustful of or confused by pages that automatically request their location on page load. Rather than automatically requesting a user's location on page load, tie the request to a user's gesture, such as a tapping a "Find Stores Near Me" button. Make sure that the gesture clearly and explicitly expresses the need for the user's location.
 
-## 감사를 통과하는 방법 {: #how }
+## Recommendations {: #recommendations }
 
-Lighthouse는 **URLs**에서 코드가 사용자 위치를 요청하는 줄과 열 번호를
-보고합니다. 이 호출을 제거하고
-요청을 사용자 동작과 연결하세요. 
+Under **URLs**, Lighthouse reports the line and column numbers where your code is requesting the user's location. Remove these calls, and tie the requests to user gestures instead.
 
-사용자 위치를 요청하는 모범 사례 목록은 [책임감 있게 권한 요청][ask]을 참조하세요.
+See [Ask permission responsibly](/web/fundamentals/native-hardware/user-location/#ask_permission_responsibly) for a list of best practices when requesting a user's location.
 
+## More information {: #more-info }
 
-[ask]: /web/fundamentals/native-hardware/user-location/#ask_permission_responsibly
+If geolocation permission was already granted to a page before Lighthouse's audit, Lighthouse cannot determine if the page requests the user's location on page load. Reset the permissions and run Lighthouse again. See [Change website permissions](https://support.google.com/chrome/answer/6148059) for more help.
 
-{% include "web/tools/lighthouse/audits/implementation-heading.html" %}
+Lighthouse collects the JavaScript that was executed on page load. If this code contains calls to `geolocation.getCurrentPosition()` or `geolocation.watchPosition()`, and geolocation permission was not already granted, then the user's location was requested.
 
-Lighthouse 감사 전에 이미 위치정보 권한이 페이지에 부여되었다면
-Lighthouse는 페이지 로드 시 사용자 권한을 요청했는지
-알아낼 수 없습니다. 권한을 재설정하고 Lighthouse를 다시 실행하세요. 자세한 내용은
-[웹사이트 권한 변경][help]을 참조하세요.
+## Feedback {: #feedback }
 
-Lighthouse는 페이지 로드 시 실행된 자바스크립트를 수집합니다. 이 코드에
-`geolocation.getCurrentPosition()` 또는
-`geolocation.watchPosition()` 호출이 포함되어 있다면 위치정보 권한이 아직 부여되지 않은 상태이고
-그 다음에 사용자 위치를 요청한 것입니다.
-
-[help]: https://support.google.com/chrome/answer/6148059
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
