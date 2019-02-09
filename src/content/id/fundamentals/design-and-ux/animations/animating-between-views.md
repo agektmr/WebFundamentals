@@ -1,49 +1,46 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Pelajari cara menganimasikan antar dua tampilan dalam aplikasi Anda.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Learn how to animate between two views in your apps.
 
-{# wf_updated_on: 2016-08-23 #}
-{# wf_published_on: 2014-08-08 #}
+{# wf_blink_components: Blink>Animation #} {# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2014-08-08 #}
 
-# Menganimasikan Antar Tampilan {: .page-title }
+# Animating Between Views {: .page-title }
 
 {% include "web/_shared/contributors/paullewis.html" %}
 
-Sering kali, Anda ingin memindahkan pengguna di antara tampilan dalam aplikasi, apakah itu dari daftar untuk tampilan terperinci, atau menampilkan navigasi bilah sisi. Animasi antara tampilan-tampilan ini menjaga pengguna tetap terlibat dan menambahkan kesan lebih hidup untuk proyek Anda.
+Often, you want to move users between views in your application, whether that's from a list to a details view, or show a sidebar navigation. Animations between these views keep the user engaged and add even more life to your projects.
 
 ### TL;DR {: .hide-from-toc }
-* Gunakan transisi untuk berpindah antar tampilan; hindari menggunakan `left`, `top`, atau properti lainnya yang memicu layout.
-* Pastikan bahwa setiap animasi yang Anda gunakan cepat dan berdurasi pendek.
-* Pertimbangkan bagaimana animasi dan layout Anda berubah ketika ukuran layar semakin besar; apa yang bekerja dengan baik pada layar yang lebih kecil, mungkin akan terlihat aneh ketika digunakan pada desktop.
 
-Bagaimana transisi tampilan ini terlihat dan berperilaku akan bergantung pada tipe tampilan yang Anda hadapi. Misalnya, menganimasikan overlay modal di atas tampilan sebaiknya terlihat berbeda dibandingkan transisi antara tampilan daftar dan tampilan detail.
+* Use translations to move between views; avoid using `left`, `top`, or any other property that triggers layout.
+* Ensure that any animations you use are snappy and the durations are kept short.
+* Consider how your animations and layouts change as the screen sizes go up; what works for a smaller screen may look odd when used in a desktop context.
 
-Berhasil: Cobalah untuk mempertahankan 60fps bagi semua animasi Anda. Dengan begitu, pengguna tidak akan melihat animasi yang tersendat yang mengganggu pengalaman mereka. Pastikan bahwa setiap elemen animasi memiliki `will-change` yang disetel untuk apa pun yang telah Anda rencanakan untuk diubah sebelum animasi dimulai. Untuk melihat transisi, kami sarankan agar Anda menggunakan `will-change: transform`.
+What these view transitions look and behave like depends on the type of views you’re dealing with. For example, animating a modal overlay on top of a view should be a different experience from transitioning between a list and details view.
 
-## Gunakan terjemahan untuk berpindah di antara tampilan
+Success: Try to maintain 60fps for all of your animations. That way, your users won't see stuttering animations that interfere with their experience. Ensure that any animating element has `will-change` set for anything you plan to change well ahead of the animation starting. For view transitions, it’s highly likely you will want to use `will-change: transform`.
+
+## Use translations to move between views
 
 <div class="attempt-left">
   <figure>
-    <img src="images/view-translate.gif" alt="Menerjemahkan di antara dua tampilan" />
+    <img src="images/view-translate.gif" alt="Translating between two views" />
   </figure>
 </div>
 
-Untuk mempermudah, asumsikan bahwa ada dua tampilan: tampilan daftar dan tampilan detail. Saat pengguna mengetuk daftar item dalam tampilan daftar, tampilan detail bergeser ke dalam, dan tampilan daftar bergeser ke luar.
+To make life easier, assume that there are two views: a list view and a details view. As the user taps a list item inside the list view, the details view slides in, and the list view slides out.
 
 <div style="clear:both;"></div>
 
 <div class="attempt-right">
   <figure>
-    <img src="images/container-two-views.svg" alt="Hierarki tampilan." />
+    <img src="images/container-two-views.svg" alt="View hierarchy." />
   </figure>
 </div>
 
-Untuk memperoleh efek ini, Anda membutuhkan kontainer bagi kedua tampilan tersebut dengan `overflow: hidden` yang telah disetel di situ. Dengan begitu dua tampilan tersebut bisa berdampingan di dalam kontainer tanpa menampilkan bilah gulir horizontal, dan setiap tampilan bisa bergeser dari sisi-ke-sisi ketika diperlukan.
+To achieve this effect, you need a container for both views that has `overflow: hidden` set on it. That way, the two views can both be inside the container side-by-side without showing any horizontal scrollbars, and each view can slide side-to-side inside the container as needed.
 
 <div style="clear:both;"></div>
 
-CSS untuk kontainer adalah:
-
+The CSS for the container is:
 
     .container {
       width: 100%;
@@ -53,8 +50,7 @@ CSS untuk kontainer adalah:
     }
     
 
-Posisi kontainer ditetapkan sebagai `relative`. Ini berarti bahwa setiap tampilan di dalam kontainer bisa diposisikan ke sudut kiri atas dan kemudian diubah dengan transformasi. Pendekatan ini lebih menguntungkan untuk kinerja daripada menggunakan properti `left` (karena hal itu memicu layout dan paint), dan biasanya lebih mudah untuk dirasionalisasi.
-
+The position of the container is set as `relative`. This means that each view inside it can be positioned absolutely to the top left corner and then moved around with transforms. This approach is better for performance than using the `left` property (because that triggers layout and paint), and is typically easier to rationalize.
 
     .view {
       width: 100%;
@@ -69,8 +65,7 @@ Posisi kontainer ditetapkan sebagai `relative`. Ini berarti bahwa setiap tampila
     }
     
 
-Menambahkan `transition` pada properti `transform` memberikan efek geser yang bagus. Untuk memberikan nuansa yang bagus, gunakan kurva `cubic-bezier` khusus, yang kita bahas dalam [Panduan Easing Khusus](custom-easing).
-
+Adding a `transition` on the `transform` property provides a nice slide effect. To give it a nice feel, it’s using a custom `cubic-bezier` curve, which we discussed in the [Custom Easing guide](custom-easing).
 
     .view {
       /* Prefixes are needed for Safari and other WebKit-based browsers */
@@ -79,8 +74,7 @@ Menambahkan `transition` pada properti `transform` memberikan efek geser yang ba
     }
     
 
-Tampilan di luar layar harus diterjemahkan ke kanan, sehingga tampilan detail harus dipindahkan:
-
+The view that is offscreen should be translated to the right, so in this case the details view needs to be moved:
 
     .details-view {
       -webkit-transform: translateX(100%);
@@ -88,8 +82,7 @@ Tampilan di luar layar harus diterjemahkan ke kanan, sehingga tampilan detail ha
     }
     
 
-Sekarang sedikit JavaScript diperlukan untuk menangani kelas. Ini mengalihkan kelas-kelas yang sesuai pada tampilan.
-
+Now a small amount of JavaScript is necessary to handle the classes. This toggles the appropriate classes on the views.
 
     var container = document.querySelector('.container');
     var backButton = document.querySelector('.back-button');
@@ -112,8 +105,7 @@ Sekarang sedikit JavaScript diperlukan untuk menangani kelas. Ini mengalihkan ke
     backButton.addEventListener('click', onViewChange);
     
 
-Akhirnya, kita tambahkan deklarasi CSS untuk kelas-kelas tersebut.
-
+Finally, we add the CSS declarations for those classes.
 
     .view-change .list-view {
       -webkit-transform: translateX(-100%);
@@ -125,27 +117,25 @@ Akhirnya, kita tambahkan deklarasi CSS untuk kelas-kelas tersebut.
       transform: translateX(0);
     }
     
-[Cobalah](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/animations/inter-view-animation.html){: target="_blank" .external }
 
-Anda bisa meluaskan ini untuk menutupi beberapa tampilan, namun konsep dasarnya harus tetap sama; setiap tampilan tak-terlihat harus di luar layar dan ditampilkan ketika diperlukan, dan tampilan aktif pada layar harus dialihkan keluar.
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/animations/inter-view-animation.html){: target="_blank" .external }
 
-Perhatian: Membuat hierarki semacam ini dalam lintas-browser bisa sangat menantang. Misalnya, iOS membutuhkan properti CSS tambahan, <code>-webkit-overflow-scrolling: touch</code>, untuk "mengaktifkan kembali" fling scrolling, tetapi Anda tidak bisa mengontrol sumbunya, seperti yang bisa dilakukan dengan properti overflow standar. Pastikan untuk menguji implementasinya pada berbagai perangkat!
+You could expand this to cover multiple views, and the basic concept should remain the same; each non-visible view should be offscreen and brought on as needed, and the currently onscreen view should be moved off.
 
-Selain transisi antar tampilan, teknik ini juga bisa diterapkan ke elemen geser-masuk lainnya, seperti elemen navigasi bilah sisi. Satu-satunya perbedaan adalah bahwa Anda tidak perlu memindahkan tampilan lainnya.
+Caution: Making this kind of hierarchy in a cross-browser way can be challenging. For example, iOS requires an additional CSS property, `-webkit-overflow-scrolling: touch`, to "reenable" fling scrolling, but you don’t get to control which axis that’s for, as you can with the standard overflow property. Be sure to test your implementation across a range of devices!
 
-## Pastikan bahwa animasi Anda berjalan pada layar yang lebih besar
+In addition to transitioning between views, this technique can also be applied to other slide-in elements, like sidebar navigation elements. The only real difference is that you shouldn’t need to move the other views.
+
+## Ensure that your animation works with larger screens
 
 <div class="attempt-right">
   <figure>
-    <img src="images/container-two-views-ls.svg" alt="Hierarki tampilan pada layar besar." />
+    <img src="images/container-two-views-ls.svg" alt="View hierarchy on a large screen." />
   </figure>
 </div>
 
-Pada layar yang lebih besar, Anda harus selalu menampilkan tampilan daftar bukan menghilangkannya, dan menggeser pada tampilan detail dari sisi sebelah kanan. Ini hampir sama dengan menangani tampilan navigasi.
+For a larger screen, you should keep the list view around all the time rather than removing it, and slide on the details view from the right-hand side. It’s pretty much the same as dealing with a navigation view.
 
+## Feedback {: #feedback }
 
-
-
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
