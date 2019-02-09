@@ -1,37 +1,24 @@
-project_path: /web/_project.yaml
-book_path: /web/updates/_book.yaml
-description: Use Puppeteer to launch Chromium with DevTools features enabled.
-{% include "web/_shared/machine-translation-start.html" %}
+project_path: /web/_project.yaml book_path: /web/updates/_book.yaml description: Use Puppeteer to launch Chromium with DevTools features enabled.
 
-{# wf_updated_on: 2018-10-30 #}
-{# wf_published_on: 2018-01-22 #}
-{# wf_tags: devtools #}
-{# wf_featured_image: /web/updates/images/generic/chrome-devtools.png #}
-{# wf_featured_snippet: Use Puppeteer to launch Chromium with DevTools features enabled. #}
-{# wf_blink_components: Platform>DevTools, Internals>Headless #}
+{# wf_updated_on: 2018-03-05 #} {# wf_published_on: 2018-01-22 #} {# wf_tags: devtools #} {# wf_featured_image: /web/updates/images/generic/chrome-devtools.png #} {# wf_featured_snippet: Use Puppeteer to launch Chromium with DevTools features enabled. #} {# wf_blink_components: Platform>DevTools, Internals>Headless #}
 
 {% include "web/tools/chrome-devtools/_shared/styles.html" %}
 
-# デベロッパーツールを開くことなく、デベロッパーツールの機能を使用して {: .page-title }
+# Using DevTools Features Without Opening DevTools {: .page-title }
 
 {% include "web/_shared/contributors/kaycebasques.html" %}
 
-「DevToolsの機能Xが本当に好きですが、DevToolsを閉じると機能が停止しますが、DevToolsが閉じても機能Xを実行するにはどうしたらいいですか？
+I commonly see questions along the lines of "I really like feature X of DevTools, but it stops working when I close DevTools. How do I keep feature X running even when DevTools is closed?"
 
-短い答えは、おそらくできないことです。
+The short answer is: you probably can't.
 
-ただし、Chromiumを起動し、リモートデバッグクライアントを開き、 [Chrome DevTools Protocol][CDP]{:.external}明示的に開くことなく（ [Chrome DevTools Protocol][CDP]{:.external}経由で）好きなDevTools機能をオンにする[Puppeteer][puppeteer]{:.external}スクリプトを一緒にハックすることができます。
+However, you *can* hack together a [Puppeteer](https://github.com/GoogleChrome/puppeteer){:.external} script that launches Chromium, opens a remote debugging client, then turns on the DevTools feature that you like (via the [Chrome DevTools Protocol](https://chromedevtools.github.io/devtools-protocol/){:.external}), without ever explicitly opening DevTools.
 
-[puppeteer]: https://github.com/GoogleChrome/puppeteer
-[CDP]: https://chromedevtools.github.io/devtools-protocol/
-
-たとえば、以下のスクリプトでは、 [FPS Meter][FPS]が開かない場合でも、ビューポートの右上に[FPS Meter][FPS]をオーバーレイすることができます。
-
-[FPS]: /web/tools/chrome-devtools/evaluate-performance/reference#fps-meter
+For example, the script below lets me overlay the [FPS Meter](/web/tools/chrome-devtools/evaluate-performance/reference#fps-meter) over the top-right of the viewport, even though DevTools never opens, as you can see in the video below.
 
     // Node.js version: 8.9.4
     const puppeteer = require('puppeteer'); // version 1.0.0
-
+    
     (async () => {
       // Prevent Puppeteer from showing the "Chrome is being controlled by automated test
       // software" prompt, but otherwise use Puppeteer's default args.
@@ -46,6 +33,7 @@ description: Use Puppeteer to launch Chromium with DevTools features enabled.
       await devtoolsProtocolClient.send('Overlay.setShowFPSCounter', { show: true });
       await page.goto('https://developers.google.com/web/tools/chrome-devtools');
     })();
+    
 
 <style>
   video { width: 100%; }
@@ -55,21 +43,12 @@ description: Use Puppeteer to launch Chromium with DevTools features enabled.
   <source src="https://storage.googleapis.com/webfundamentals-assets/updates/2018/01/devtools.mp4">
 </video>
 
-これは、DevToolsの多くの機能のうちの1つで、Chrome DevToolsプロトコル経由でアクセスすることができます。
+This is just one of many, many DevTools features that you can potentially access via the Chrome DevTools Protocol.
 
-一般的な提案:DevToolsプロトコルクライアントの作成に頼る前に、 [Puppeteer API][API]{:.external}チェックしてください。 Puppeteerはすでに、 [code coverage][coverage]{:.external}や[intercepting **Console** messages][console]{:.external}などのDevToolsの多くの機能に専用のAPIを備えています。
+A general suggestion: check out the [Puppeteer API](https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md){:.external} before resorting to creating a DevTools Protocol client. Puppeteer already has dedicated APIs for many DevTools features, such as [code coverage](https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md#class-coverage){:.external} and [intercepting **Console** messages](https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md#event-console){:.external}.
 
-[API]: https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md
-[coverage]: https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md#class-coverage
-[console]: https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md#event-console
+If you need help accessing a DevTools feature via Puppeteer, [ask a question on Stack Overflow](https://stackoverflow.com/questions/ask?tags=google-chrome-devtools,puppeteer){:.external}.
 
-Puppeteer、 [ask a question on Stack Overflow][SO]{:.external}介してDevTools機能にアクセスするための助けが必要な場合。
-
-あなたはデベロッパーツールプロトコルを使用する人形遣いスクリプトを誇示したい場合は、でお問い合わせをつぶやき[@ChromeDevTools][twitter]{:.external} 。
-
-[SO]: https://stackoverflow.com/questions/ask?tags=google-chrome-devtools,puppeteer
-[twitter]: https://twitter.com/chromedevtools
+If you want to show off a Puppeteer script that makes use of the DevTools Protocol, tweet us at [@ChromeDevTools](https://twitter.com/chromedevtools){:.external}.
 
 {% include "web/_shared/rss-widget-updates.html" %}
-
-{% include "web/_shared/translation-end.html" %}
