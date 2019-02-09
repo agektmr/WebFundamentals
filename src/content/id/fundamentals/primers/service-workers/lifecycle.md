@@ -1,41 +1,37 @@
-project_path: /web/fundamentals/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Sebuah pendalaman mengenai daur hidup pekerja layanan.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: A deep-dive into the service worker lifecycle.
 
-{# wf_updated_on: 2019-02-06 #}
-{# wf_published_on: 2016-09-29 #}
-{# wf_blink_components: Blink>ServiceWorker #}
+{# wf_updated_on: 2018-12-05 #} {# wf_published_on: 2016-09-29 #} {# wf_blink_components: Blink>ServiceWorker #}
 
-# Daur Hidup Pekerja Layanan {: .page-title }
+# The Service Worker Lifecycle {: .page-title }
 
 {% include "web/_shared/contributors/jakearchibald.html" %}
 
-Daur hidup pekerja layanan adalah bagian yang paling rumit. Jika Anda tidak tahu apa yang harus dilakukan dan apa manfaatnya, maka hal ini bisa terasa berat bagi Anda. Namun setelah Anda mengetahui cara kerjanya, Anda bisa menghasilkan update yang mulus dan tidak kentara untuk pengguna, dengan memadukan yang aspek terbaik dari web dan pola asli.
+The lifecycle of the service worker is its most complicated part. If you don't know what it's trying to do and what the benefits are, it can feel like it's fighting you. But once you know how it works, you can deliver seemless, unobtrusive updates to users, mixing the best of web and native patterns.
 
-Ini merupakan penjelasan mendalam, namun poin-poin di awal setiap bagian hampir semua membahas hal yang perlu Anda ketahui.
+This is a deep dive, but the bullets at the start of each section cover most of what you need to know.
 
-## Maksud
+## The intent
 
-Intent dari daur hidup adalah untuk:
+The intent of the lifecycle is to:
 
-* Memungkinkan pengutamaan offline.
-* Memungkinkan pekerja layanan baru melakukan penyiapan mandiri tanpa mengganggu pekerja layanan saat ini.
-* Memastikan halaman dalam cakupan dikontrol oleh pekerja layanan yang sama (atau tanpa pekerja layanan) seluruhnya.
-* Memastikan hanya ada satu versi yang dijalankan untuk situs Anda pada satu waktu.
+* Make offline-first possible.
+* Allow a new service worker to get itself ready without disrupting the current one.
+* Ensure an in-scope page is controlled by the same service worker (or no service worker) throughout.
+* Ensure there's only one version of your site running at once.
 
-Poin terakhir merupakan hal yang sangat penting. Tanpa pekerja layanan, pengguna bisa memuat satu tab ke situs Anda, kemudian membuka tab lain nanti. Hal ini bisa mengakibatkan dua versi situs Anda dijalankan pada waktu yang sama. Terkadang hal ini boleh terjadi, namun jika Anda sedang berurusan dengan penyimpanan, Anda bisa dengan mudah mengakibatkan dua tab memiliki opini sangat berbeda mengenai cara keduanya menangani penyimpanan bersama. Hal ini bisa mengakibatkan error, atau lebih buruk lagi, kehilangan data.
+That last one is pretty important. Without service workers, users can load one tab to your site, then later open another. This can result in two versions of your site running at the same time. Sometimes this is ok, but if you're dealing with storage you can easily end up with two tabs having very different opinions on how their shared storage should be managed. This can result in errors, or worse, data loss.
 
-Perhatian: Pengguna sangat tidak suka kehilangan data. Hal itu akan menyebabkan mereka sangat bersedih.
+Caution: Users actively dislike data loss. It causes them great sadness.
 
-## Pekerja layanan pertama
+## The first service worker
 
-Secara singkat:
+In brief:
 
-* Peristiwa `install` adalah peristiwa pertama yang diambil pekerja layanan, dan ini hanya terjadi sekali.
-* Sebuah promise diteruskan ke `installEvent.waitUntil()` yang akan menunjukkan durasi serta keberhasilan atau kegagalan penginstalan.
-* Pekerja layanan tidak akan menerima peristiwa seperti `fetch` dan `push` sebelum berhasil menyelesaikan penginstalan dan menjadi "aktif".
-* Secara default, pengambilan oleh halaman tidak akan melalui pekerja layanan kecuali jika permintaan halaman itu sendiri melalui pekerja layanan. Jadi Anda perlu memuat ulang halaman untuk melihat pengaruh dari pekerja layanan.
-* `clients.claim()` bisa menggantikan default ini, dan mengambil kontrol atas halaman yang tidak dikontrol.
+* The `install` event is the first event a service worker gets, and it only happens once.
+* A promise passed to `installEvent.waitUntil()` signals the duration and success or failure of your install.
+* A service worker won't receive events like `fetch` and `push` until it successfully finishes installing and becomes "active".
+* By default, a page's fetches won't go through a service worker unless the page request itself went through a service worker. So you'll need to refresh the page to see the effects of the service worker.
+* `clients.claim()` can override this default, and take control of non-controlled pages. 
 
 <style>
   .framebox-container-container {
@@ -56,21 +52,23 @@ Secara singkat:
     filter: drop-shadow(0 6px 4px rgba(0,0,0,0.2));
   }
 </style>
+
+ 
+
 <div class="framebox-container-container">
-<div class="framebox-container">
-{% framebox height="100%" %}
-<link href="https://fonts.googleapis.com/css?family=Just+Another+Hand" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/TweenLite.min.js"
-  integrity="sha384-al3qvxiX1jQs5ZPPnL8UubdkVRFveHNxF3ZNTbMXFxd8JBFwMIq8BVaVOW/CEUKB"
-  crossorigin="anonymous" defer>
+  <div class="framebox-container">
+    {% framebox height="100%" %} 
+    
+    <link href="https://fonts.googleapis.com/css?family=Just+Another+Hand" rel="stylesheet" />
+    
+<script src="https://www.gstatic.com/external_hosted/gsap/v1_18_0/TweenLite.min.js"
+  defer>
 </script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/TimelineLite.min.js"
-  integrity="sha384-fw2pCo41nKTwSnKUUxW43cI1kDLRw2qLaZQR2ZEQnh1s6xM6pP3H+SbM/Ehm6uI7"
-  crossorigin="anonymous" defer></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/plugins/CSSPlugin.min.js"
-  integrity="sha384-yn7MLKNpLL+YDD9r3YvNFKEBhs/bzA4i51f28+h6KCYsZIhbif9+JcdK/lZOlnEY"
-  crossorigin="anonymous" defer></script>
-<style>
+ <script src="https://www.gstatic.com/external_hosted/gsap/v1_18_0/TimelineLite.min.js"
+  defer></script>
+ <script src="https://www.gstatic.com/external_hosted/gsap/v1_18_0/plugins/CSSPlugin.min.js"
+  defer></script>
+ <style>
 .lifecycle-diagram {
   width: 100%;
   height: auto;
@@ -113,21 +111,7 @@ Secara singkat:
   opacity: 0;
 }
 </style>
-<svg class="lifecycle-diagram" style="display:none">
-  <defs>
-    <g id="diagram-static">
-      <text y="6.7" x="14.5" class="label">Menginstal</text><text y="6.7" x="81.1" class="label">Aktif</text><circle r="14" cy="25.8" cx="14.5" class="state-placeholder"/><circle r="14" cy="25.8" cx="47.8" class="state-placeholder"/><circle r="14" cy="25.8" cx="81.2" class="state-placeholder"/>
-    </g>
-    <g id="diagram-page">
-      <path d="M 191.3,0 12.8,0 C 5.8,0 0,5.7 0,12.8 L 0,167 c 0,7.2 5.7,13 12.8,13 l 178.5,0 c 7,0 12.8,-5.8 12.8,-13 l 0,-154 C 204,6 198.7,0.2 191.6,0.2 Z M 11,11 c 0.5,-0.5 1,-0.7 1.8,-0.8 l 178.5,0 c 0.7,0 1.3,0.3 1.8,0.8 0.8,0.5 1,1 1,1.8 l 0,13.5 -184.1,0 0,-13.5 c 0,-0.7 0.3,-1.3 0.8,-1.8 z m 182,158 c -0.4,0.4 -1,0.7 -1.7,0.7 l -178.5,0 c -0.7,0 -1.3,-0.3 -1.8,-0.8 -0.5,-0.8 -0.8,-1.4 -0.8,-2 l 0,-130.4 183.6,0 0,130.5 c 0,0.8 -0.2,1.4 -0.7,2 z" />
-      <path d="m 26.5,18.6 c 0,2.8 -2.3,5 -5,5 -3,0 -5.2,-2.2 -5.2,-5 0,-3 2.2,-5.2 5,-5.2 3,0 5.2,2.3 5.2,5.2 z m 15.2,0 c 0,2.8 -2.3,5 -5,5 -3,0 -5.2,-2.2 -5.2,-5 0,-3 2.3,-5.2 5,-5.2 3,0 5.2,2.3 5.2,5.2 z m 15.3,0 c 0,2.8 -2.3,5 -5.2,5 -2.8,0 -5,-2.2 -5,-5 0,-3 2.2,-5.2 5,-5.2 3,0 5.2,2.3 5.2,5.2 z m -5.2,111 102.7,0 0,10.4 -102.7,0 0,-10.3 z m 0,-16.8 102.7,0 0,10.2 -102.7,0 0,-10 z M 52,96 l 45.4,0 0,10.2 -45.4,0 0,-10.2 z m 0,-17 45.4,0 0,10.3 -45.4,0 0,-10.3 z m 0,-16.8 45.6,0 0,10.3 -45.6,0 0,-10.3 z m 100.2,1.3 -45.4,0 0,42 45.4,0 0,-42 z m -10.2,31.8 -25,0 0,-21.5 25,0 0,21.5 z" />
-    </g>
-    <path id="diagram-sw" d="m 19.43,12.98 c 0.04,-0.32 0.07,-0.64 0.07,-0.98 0,-0.34 -0.03,-0.66 -0.07,-0.98 l 2.11,-1.65 c 0.19,-0.15 0.24,-0.42 0.12,-0.64 l -2,-3.46 C 19.54,5.05 19.27,4.97 19.05,5.05 l -2.49,1 C 16.04,5.65 15.48,5.32 14.87,5.07 L 14.49,2.42 C 14.46,2.18 14.25,2 14,2 L 10,2 C 9.75,2 9.54,2.18 9.51,2.42 L 9.13,5.07 C 8.52,5.32 7.96,5.66 7.44,6.05 l -2.49,-1 C 4.72,4.96 4.46,5.05 4.34,5.27 l -2,3.46 C 2.21,8.95 2.27,9.22 2.46,9.37 l 2.11,1.65 C 4.53,11.34 4.5,11.67 4.5,12 c 0,0.33 0.03,0.66 0.07,0.98 l -2.11,1.65 c -0.19,0.15 -0.24,0.42 -0.12,0.64 l 2,3.46 c 0.12,0.22 0.39,0.3 0.61,0.22 l 2.49,-1 c 0.52,0.4 1.08,0.73 1.69,0.98 l 0.38,2.65 C 9.54,21.82 9.75,22 10,22 l 4,0 c 0.25,0 0.46,-0.18 0.49,-0.42 l 0.38,-2.65 c 0.61,-0.25 1.17,-0.59 1.69,-0.98 l 2.49,1 c 0.23,0.09 0.49,0 0.61,-0.22 l 2,-3.46 c 0.12,-0.22 0.07,-0.49 -0.12,-0.64 L 19.43,12.98 Z M 12,15.5 c -1.93,0 -3.5,-1.57 -3.5,-3.5 0,-1.93 1.57,-3.5 3.5,-3.5 1.93,0 3.5,1.57 3.5,3.5 0,1.93 -1.57,3.5 -3.5,3.5 z"/>
-    <g id="diagram-refresh"><circle id="page-action-circle" cx="81.2" cy="58.1" r="3.5" fill="#fff" stroke="#000" stroke-width=".5"/><path d="M82.76 56.48c-.4-.4-.97-.66-1.6-.66-1.23 0-2.23 1-2.23 2.24 0 1.24 1 2.25 2.24 2.25 1.05 0 1.92-.7 2.17-1.68h-.58c-.23.66-.86 1.13-1.6 1.13-.92 0-1.67-.76-1.67-1.7 0-.92.74-1.67 1.67-1.67.47 0 .88.2 1.2.5l-.92.9h1.97v-1.96l-.66.66z"/></g>
-    <g id="diagram-close"><use xlink:href="#page-action-circle"/><path id="path5062" d="M83 56.58l-.37-.37-1.46 1.47-1.45-1.46-.37.38 1.46 1.46-1.45 1.46.37.36 1.45-1.45 1.46 1.46.37-.36-1.46-1.46z"/></g>
-  </defs>
-</svg>
-<svg class="lifecycle-diagram register" viewBox="0 0 96.9 73"><rect ry="15.8" y="10" x="65.4" height="63" width="31.6" class="controlled"/><use xlink:href="#diagram-static"/><g transform="matrix(1.1187 0 0 1.1187 1.078 12.408)" class="cog cog-new"><use height="10" width="10" xlink:href="#diagram-sw"/></g><use transform="matrix(.09532 0 0 .09532 71.44 48.39)" xlink:href="#diagram-page" width="10" height="10" class="diagram-page"/><path d="M78.6 47.7c-1-6-2-11.6-1.6-17" class="fetch"/><path d="M83 47.5c1.4-5.4 3.3-10.8 2.4-16.2" class="fetch"/><path d="M75.7 47c-2.3-6.3-3.2-12.5-2-18.2" class="fetch"/><path d="M89.5 29.5c.3 6-.4 12-4 18" class="fetch"/><path d="M75.4 30.3c0 4-1 6 2 17.2" class="fetch"/><path d="M86.6 31C88 37 86 42 84 47.4" class="fetch"/><g class="refresh-rotator"><use xlink:href="#diagram-refresh" class="diagram-refresh"/></g></svg>
+ <svg class="lifecycle-diagram" style="display:none"> <defs> <g id="diagram-static"> <text y="6.7" x="14.5" class="label">Installing</text><text y="6.7" x="81.1" class="label">Active</text><circle r="14" cy="25.8" cx="14.5" class="state-placeholder"/><circle r="14" cy="25.8" cx="47.8" class="state-placeholder"/><circle r="14" cy="25.8" cx="81.2" class="state-placeholder"/> </g> <g id="diagram-page"> <path d="M 191.3,0 12.8,0 C 5.8,0 0,5.7 0,12.8 L 0,167 c 0,7.2 5.7,13 12.8,13 l 178.5,0 c 7,0 12.8,-5.8 12.8,-13 l 0,-154 C 204,6 198.7,0.2 191.6,0.2 Z M 11,11 c 0.5,-0.5 1,-0.7 1.8,-0.8 l 178.5,0 c 0.7,0 1.3,0.3 1.8,0.8 0.8,0.5 1,1 1,1.8 l 0,13.5 -184.1,0 0,-13.5 c 0,-0.7 0.3,-1.3 0.8,-1.8 z m 182,158 c -0.4,0.4 -1,0.7 -1.7,0.7 l -178.5,0 c -0.7,0 -1.3,-0.3 -1.8,-0.8 -0.5,-0.8 -0.8,-1.4 -0.8,-2 l 0,-130.4 183.6,0 0,130.5 c 0,0.8 -0.2,1.4 -0.7,2 z" /> <path d="m 26.5,18.6 c 0,2.8 -2.3,5 -5,5 -3,0 -5.2,-2.2 -5.2,-5 0,-3 2.2,-5.2 5,-5.2 3,0 5.2,2.3 5.2,5.2 z m 15.2,0 c 0,2.8 -2.3,5 -5,5 -3,0 -5.2,-2.2 -5.2,-5 0,-3 2.3,-5.2 5,-5.2 3,0 5.2,2.3 5.2,5.2 z m 15.3,0 c 0,2.8 -2.3,5 -5.2,5 -2.8,0 -5,-2.2 -5,-5 0,-3 2.2,-5.2 5,-5.2 3,0 5.2,2.3 5.2,5.2 z m -5.2,111 102.7,0 0,10.4 -102.7,0 0,-10.3 z m 0,-16.8 102.7,0 0,10.2 -102.7,0 0,-10 z M 52,96 l 45.4,0 0,10.2 -45.4,0 0,-10.2 z m 0,-17 45.4,0 0,10.3 -45.4,0 0,-10.3 z m 0,-16.8 45.6,0 0,10.3 -45.6,0 0,-10.3 z m 100.2,1.3 -45.4,0 0,42 45.4,0 0,-42 z m -10.2,31.8 -25,0 0,-21.5 25,0 0,21.5 z" /> </g> <path id="diagram-sw" d="m 19.43,12.98 c 0.04,-0.32 0.07,-0.64 0.07,-0.98 0,-0.34 -0.03,-0.66 -0.07,-0.98 l 2.11,-1.65 c 0.19,-0.15 0.24,-0.42 0.12,-0.64 l -2,-3.46 C 19.54,5.05 19.27,4.97 19.05,5.05 l -2.49,1 C 16.04,5.65 15.48,5.32 14.87,5.07 L 14.49,2.42 C 14.46,2.18 14.25,2 14,2 L 10,2 C 9.75,2 9.54,2.18 9.51,2.42 L 9.13,5.07 C 8.52,5.32 7.96,5.66 7.44,6.05 l -2.49,-1 C 4.72,4.96 4.46,5.05 4.34,5.27 l -2,3.46 C 2.21,8.95 2.27,9.22 2.46,9.37 l 2.11,1.65 C 4.53,11.34 4.5,11.67 4.5,12 c 0,0.33 0.03,0.66 0.07,0.98 l -2.11,1.65 c -0.19,0.15 -0.24,0.42 -0.12,0.64 l 2,3.46 c 0.12,0.22 0.39,0.3 0.61,0.22 l 2.49,-1 c 0.52,0.4 1.08,0.73 1.69,0.98 l 0.38,2.65 C 9.54,21.82 9.75,22 10,22 l 4,0 c 0.25,0 0.46,-0.18 0.49,-0.42 l 0.38,-2.65 c 0.61,-0.25 1.17,-0.59 1.69,-0.98 l 2.49,1 c 0.23,0.09 0.49,0 0.61,-0.22 l 2,-3.46 c 0.12,-0.22 0.07,-0.49 -0.12,-0.64 L 19.43,12.98 Z M 12,15.5 c -1.93,0 -3.5,-1.57 -3.5,-3.5 0,-1.93 1.57,-3.5 3.5,-3.5 1.93,0 3.5,1.57 3.5,3.5 0,1.93 -1.57,3.5 -3.5,3.5 z"/> <g id="diagram-refresh"><circle id="page-action-circle" cx="81.2" cy="58.1" r="3.5" fill="#fff" stroke="#000" stroke-width=".5"/><path d="M82.76 56.48c-.4-.4-.97-.66-1.6-.66-1.23 0-2.23 1-2.23 2.24 0 1.24 1 2.25 2.24 2.25 1.05 0 1.92-.7 2.17-1.68h-.58c-.23.66-.86 1.13-1.6 1.13-.92 0-1.67-.76-1.67-1.7 0-.92.74-1.67 1.67-1.67.47 0 .88.2 1.2.5l-.92.9h1.97v-1.96l-.66.66z"/></g> <g id="diagram-close"><use xlink:href="#page-action-circle"/><path id="path5062" d="M83 56.58l-.37-.37-1.46 1.47-1.45-1.46-.37.38 1.46 1.46-1.45 1.46.37.36 1.45-1.45 1.46 1.46.37-.36-1.46-1.46z"/></g> </defs> </svg> <svg class="lifecycle-diagram register" viewbox="0 0 96.9 73"><rect ry="15.8" y="10" x="65.4" height="63" width="31.6" class="controlled"/><use xlink:href="#diagram-static"/><g transform="matrix(1.1187 0 0 1.1187 1.078 12.408)" class="cog cog-new"><use height="10" width="10" xlink:href="#diagram-sw"/></g><use transform="matrix(.09532 0 0 .09532 71.44 48.39)" xlink:href="#diagram-page" width="10" height="10" class="diagram-page"/><path d="M78.6 47.7c-1-6-2-11.6-1.6-17" class="fetch"/><path d="M83 47.5c1.4-5.4 3.3-10.8 2.4-16.2" class="fetch"/><path d="M75.7 47c-2.3-6.3-3.2-12.5-2-18.2" class="fetch"/><path d="M89.5 29.5c.3 6-.4 12-4 18" class="fetch"/><path d="M75.4 30.3c0 4-1 6 2 17.2" class="fetch"/><path d="M86.6 31C88 37 86 42 84 47.4" class="fetch"/><g class="refresh-rotator"><use xlink:href="#diagram-refresh" class="diagram-refresh"/></g></svg> 
 
 <script>
   document.addEventListener("DOMContentLoaded", function() {
@@ -200,127 +184,125 @@ Secara singkat:
     }
   });
 </script>
-{% endframebox %}
-</div>
+ {% endframebox %}
+  </div>
 </div>
 
-Perhatikan HTML ini:
+Take this HTML:
 
     <!DOCTYPE html>
-    Sebuah gambar akan muncul di sini dalam waktu 3 detik:
+    An image will appear here in 3 seconds:
     <script>
       navigator.serviceWorker.register('/sw.js')
         .then(reg => console.log('SW registered!', reg))
         .catch(err => console.log('Boo!', err));
-
+    
       setTimeout(() => {
         const img = new Image();
         img.src = '/dog.svg';
         document.body.appendChild(img);
       }, 3000);
     </script>
+    
 
-HTML mendaftarkan pekerja layanan dan menambahkan gambar anjing setelah 3 detik.
+It registers a service worker, and adds image of a dog after 3 seconds.
 
-Inilah pekerja layanan tersebut, `sw.js`:
+Here's its service worker, `sw.js`:
 
     self.addEventListener('install', event => {
       console.log('V1 installing…');
-
+    
       // cache a cat SVG
       event.waitUntil(
         caches.open('static-v1').then(cache => cache.add('/cat.svg'))
       );
     });
-
+    
     self.addEventListener('activate', event => {
       console.log('V1 now ready to handle fetches!');
     });
-
+    
     self.addEventListener('fetch', event => {
       const url = new URL(event.request.url);
-
+    
       // serve the cat SVG from the cache if the request is
       // same-origin and the path is '/dog.svg'
       if (url.origin == location.origin && url.pathname == '/dog.svg') {
         event.respondWith(caches.match('/cat.svg'));
       }
     });
+    
 
-Pekerja layanan menyimpan cache gambar kucing, dan menyajikannya jika ada permintaan untuk `/dog.svg`. Akan tetapi, jika Anda [menjalankan contoh di atas](https://cdn.rawgit.com/jakearchibald/80368b84ac1ae8e229fc90b3fe826301/raw/ad55049bee9b11d47f1f7d19a73bf3306d156f43/){: .external }, Anda akan melihat anjing saat pertama kali memuat halaman. Klik muat ulang, dan Anda akan melihat gambar kucing tersebut.
+It caches an image of a cat, and serves it whenever there's a request for `/dog.svg`. However, if you [run the above example](https://cdn.rawgit.com/jakearchibald/80368b84ac1ae8e229fc90b3fe826301/raw/ad55049bee9b11d47f1f7d19a73bf3306d156f43/){: .external }, you'll see a dog the first time you load the page. Hit refresh, and you'll see the cat.
 
-Note: Kucing adalah lebih baik daripada anjing. Keduanya memang *demikian*.
+Note: Cats are better than dogs. They just *are*.
 
-### Cakupan dan kontrol
+### Scope and control
 
-Cakupan default pendaftaran pekerja layanan `./` dibandingkan URL skrip. Berarti, jika Anda mendaftarkan pekerja layanan di `//example.com/foo/bar.js`, maka akan memiliki cakupan default `//example.com/foo/`.
+The default scope of a service worker registration is `./` relative to the script URL. This means if you register a service worker at `//example.com/foo/bar.js` it has a default scope of `//example.com/foo/`.
 
-Kita menyebutnya halaman, pekerja, dan pekerja bersama berupa `clients`. Pekerja layanan hanya bisa mengontrol klien yang berada dalam cakupan. Setelah klien "dikontrol", pengambilannya akan melalui pekerja layanan dalam cakupan. Anda bisa mendeteksi jika klien dikontrol lewat `navigator.serviceWorker.controller` yang akan berupa nol atau instance pekerja layanan.
+We call pages, workers, and shared workers `clients`. Your service worker can only control clients that are in-scope. Once a client is "controlled", its fetches go through the in-scope service worker. You can detect if a client is controlled via `navigator.serviceWorker.controller` which will be null or a service worker instance.
 
-### Download, uraikan, dan jalankan
+### Download, parse, and execute
 
-Pekerja layanan pertama Anda akan didownload jika Anda memanggil `.register()` Jika skrip Anda gagal mendownload, menguraikan, atau membuang error dalam eksekusi pertamanya, promise register akan menolak, dan pekerja layanan akan dihapus.
+Your very first service worker downloads when you call `.register()`. If your script fails to download, parse, or throws an error in its initial execution, the register promise rejects, and the service worker is discarded.
 
-Chrome DevTools menampilkan error di konsol, dan di bagian pekerja layanan pada tab aplikasi:
+Chrome's DevTools shows the error in the console, and in the service worker section of the application tab:<figure> 
 
-<figure>
-  <img src="images/register-fail.png" class="browser-screenshot" alt="Error yang ditampilkan di tab DevTools pada pekerja layanan"/>
-</figure>
+<img src="images/register-fail.png" class="browser-screenshot" alt="Error displayed in service worker DevTools tab" /> </figure> 
 
-### Instal
+### Install
 
-Peristiwa pertama yang diambil pekerja layanan adalah `install`. Penginstalan akan dipicu begitu pekerja layanan dieksekusi, dan hanya dipanggil sekali per pekerja layanan. Jika Anda mengubah skrip pekerja layanan, browser akan menganggapnya sebagai pekerja layanan yang berbeda, dan akan mendapatkan peristiwa `install` sendiri. Saya akan membahas [update secara detail nanti](#updates).
+The first event a service worker gets is `install`. It's triggered as soon as the worker executes, and it's only called once per service worker. If you alter your service worker script the browser considers it a different service worker, and it'll get its own `install` event. I'll cover [updates in detail later](#updates).
 
-Peristiwa `install` adalah kesempatan Anda untuk men-cache segala sesuatu yang Anda butuhkan sebelum dapat mengontrol klien. Promise yang Anda teruskan ke `event.waitUntil()` memungkinkan browser mengetahui kapan Anda selesai menginstal, dan apakah penginstalan itu berhasil.
+The `install` event is your chance to cache everything you need before being able to control clients. The promise you pass to `event.waitUntil()` lets the browser know when your install completes, and if it was successful.
 
-Jika promise Anda ditolak, ini menandakan penginstalan gagal, dan browser membuang pekerja layanan. Itu tidak akan pernah mengontrol klien. Ini berarti kita tidak bisa mengandalkan "cat.svg" yang ada di cache dalam peristiwa `fetch`. Ini adalah dependensi.
+If your promise rejects, this signals the install failed, and the browser throws the service worker away. It'll never control clients. This means we can't rely on "cat.svg" being present in the cache in our `fetch` events. It's a dependency.
 
-### Aktifkan
+### Activate
 
-Setelah pekerja layanan Anda siap mengontrol klien dan menangani peristiwa fungsional seperti `push` dan `sync`, Anda akan mendapatkan peristiwa `activate`. Namun itu tidak berarti halaman yang disebut `.register()` akan dikontrol.
+Once your service worker is ready to control clients and handle functional events like `push` and `sync`, you'll get an `activate` event. But that doesn't mean the page that called `.register()` will be controlled.
 
-Saat pertama Anda memuat [demo](https://cdn.rawgit.com/jakearchibald/80368b84ac1ae8e229fc90b3fe826301/raw/ad55049bee9b11d47f1f7d19a73bf3306d156f43/){: .external }, walaupun `dog.svg` telah lama diminta setelah pekerja layanan diaktifkan, itu tidak menangani permintaan tersebut, dan Anda tetap melihat gambar anjing. Default-nya adalah *konsistensi*, jika halaman dimuat tanpa pekerja layanan, tidak ada yang akan menjadi sub-resourcenya. Jika Anda memuat [demo](https://cdn.rawgit.com/jakearchibald/80368b84ac1ae8e229fc90b3fe826301/raw/ad55049bee9b11d47f1f7d19a73bf3306d156f43/){: .external } untuk kedua kalinya (dengan kata lain, muat ulang halaman), itu akan dikontrol. Halaman dan gambar akan melalui peristiwa `fetch`, dan Anda akan melihat kucing sebagai gantinya.
+The first time you load [the demo](https://cdn.rawgit.com/jakearchibald/80368b84ac1ae8e229fc90b3fe826301/raw/ad55049bee9b11d47f1f7d19a73bf3306d156f43/){: .external }, even though `dog.svg` is requested long after the service worker activates, it doesn't handle the request, and you still see the image of the dog. The default is *consistency*, if your page loads without a service worker, neither will its subresources. If you load [the demo](https://cdn.rawgit.com/jakearchibald/80368b84ac1ae8e229fc90b3fe826301/raw/ad55049bee9b11d47f1f7d19a73bf3306d156f43/){: .external } a second time (in other words, refresh the page), it'll be controlled. Both the page and the image will go through `fetch` events, and you'll see a cat instead.
 
 ### clients.claim
 
-Anda bisa mengontrol klien yang tidak dikontrol dengan memanggil `clients.claim()` dalam pekerja layanan setelah itu diaktifkan.
+You can take control of uncontrolled clients by calling `clients.claim()` within your service worker once it's activated.
 
-Inilah [variasi demodi atas](https://cdn.rawgit.com/jakearchibald/80368b84ac1ae8e229fc90b3fe826301/raw/df4cae41fa658c4ec1fa7b0d2de05f8ba6d43c94/){: .external } yang memanggil `clients.claim()` dalam peristiwa `activate`-nya. Anda *seharusnya* akan melihat gambar kucing untuk pertama kali. Saya katakan "seharusnya", karena ini adalah sesuatu yang sensitif terhadap waktu. Anda hanya akan melihat kucing jika pekerja layanan diaktifkan dan `clients.claim()` berlaku sebelum gambar berusaha dimuat.
+Here's [a variation of the demo above](https://cdn.rawgit.com/jakearchibald/80368b84ac1ae8e229fc90b3fe826301/raw/df4cae41fa658c4ec1fa7b0d2de05f8ba6d43c94/){: .external } which calls `clients.claim()` in its `activate` event. You *should* see a cat the first time. I say "should", because this is timing sensitive. You'll only see a cat if the service worker activates and `clients.claim()` takes effect before the image tries to load.
 
-Jika Anda menggunakan pekerja layanan untuk memuat halaman secara berbeda dengan halaman yang dimuat melalui jaringan, `clients.claim()` akan mengganggu, karena pekerja layanan Anda akan mengakhiri kontrol atas beberapa klien yang telah dimuat tanpa pekerja layanan.
+If you use your service worker to load pages differently than they'd load via the network, `clients.claim()` can be troublesome, as your service worker ends up controlling some clients that loaded without it.
 
-Note: Saya mengetahui banyak orang termasuk `clients.claim()` sebagai boilerplate, namun saya jarang melakukannya sendiri. Ini hanya benar-benar penting pada saat pemuatan pertama, dan karena adanya penyempurnaan progresif, halaman biasanya bekerja dengan baik tanpa pekerja layanan sekalipun.
+Note: I see a lot of people including `clients.claim()` as boilerplate, but I rarely do so myself. It only really matters on the very first load, and due to progressive enhancement the page is usually working happily without service worker anyway.
 
-## Mengupdate pekerja layanan {: #updates}
+## Updating the service worker {: #updates}
 
-Secara singkat:
+In brief:
 
-* Update dipicu:
-    * Pada navigasi ke halaman dalam-cakupan.
-    * Pada peristiwa fungsional seperti `push` dan `sync`, kecuali jika ada pemeriksaan update dalam 24 jam sebelumnya.
-    * Pada pemanggilan `.register()` *hanya jika* URL pekerja layanan telah berubah.
-* Sebagian besar browser, termasuk [Chrome 68 dan yang lebih baru](/web/updates/2018/06/fresher-sw), secara default mengabaikan pemeriksaan header ketika memeriksa update skrip pekerja layanan terdaftar. Browser masih menghargai header caching ketika mengambil resource yang dimuat di dalam pekerja layanan melalui `importScripts()`. Anda dapat mengganti perilaku default ini dengan mengatur opsi [`updateViaCache`](/web/updates/2018/06/fresher-sw#updateviacache) saat mendaftarkan pekerja layanan Anda.
-* Pekerja layanan Anda dianggap diupdate jika berbeda sedikit saja dengan pekerja layanan yang sudah dimiliki browser. (Kita memperluasnya dengan menyertakan juga skrip/modul yang telah diimpor.)
-* Pekerja layanan yang telah diupdate diluncurkan bersama yang sudah ada, dan mendapatkan peristiwa `install`-nya sendiri.
-* Jika pekerja layanan baru Anda memiliki kode status bukan OK (misalnya, 404), gagal menguraikan, membuang error selama eksekusi, atau ditolak selama penginstalan, pekerja layanan baru akan dibuang, namun yang ada saat ini akan tetap aktif.
-* Setelah berhasil diinstal, pekerja layanan yang telah diupdate akan `wait` hingga pekerja layanan yang ada tidak mengontrol klien sama sekali. (Perhatikan, klien akan tumpang tindih selama pemuatan ulang.)
-* `self.skipWaiting()` mencegah proses menunggu, yang berarti pekerja layanan akan diaktifkan begitu selesai diinstal.
+* An update is triggered if any of the following happens: 
+    * A navigation to an in-scope page.
+    * A functional events such as `push` and `sync`, unless there's been an update check within the previous 24 hours.
+    * Calling `.register()` *only if* the service worker URL has changed. However, you should [avoid changing the worker URL](#avoid-url-change).
+* Most browsers, including [Chrome 68 and later](/web/updates/2018/06/fresher-sw), default to ignoring caching headers when checking for updates of the registered service worker script. They still respect caching headers when fetching resources loaded inside a service worker via `importScripts()`. You can override this default behavior by setting the [`updateViaCache`](/web/updates/2018/06/fresher-sw#updateviacache) option when registering your service worker.
+* Your service worker is considered updated if it's byte-different to the one the browser already has. (We're extending this to include imported scripts/modules too.)
+* The updated service worker is launched alongside the existing one, and gets its own `install` event.
+* If your new worker has a non-ok status code (for example, 404), fails to parse, throws an error during execution, or rejects during install, the new worker is thrown away, but the current one remains active.
+* Once successfully installed, the updated worker will `wait` until the existing worker is controlling zero clients. (Note that clients overlap during a refresh.)
+* `self.skipWaiting()` prevents the waiting, meaning the service worker activates as soon as it's finished installing.
 
 <div class="framebox-container-container">
-<div class="framebox-container">
-{% framebox height="100%" %}
-<link href="https://fonts.googleapis.com/css?family=Just+Another+Hand" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/TweenLite.min.js"
-  integrity="sha384-al3qvxiX1jQs5ZPPnL8UubdkVRFveHNxF3ZNTbMXFxd8JBFwMIq8BVaVOW/CEUKB"
-  crossorigin="anonymous" defer>
+  <div class="framebox-container">
+    {% framebox height="100%" %} 
+    
+    <link href="https://fonts.googleapis.com/css?family=Just+Another+Hand" rel="stylesheet" />
+    
+<script src="https://www.gstatic.com/external_hosted/gsap/v1_18_0/TweenLite.min.js" defer>
 </script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/TimelineLite.min.js"
-  integrity="sha384-fw2pCo41nKTwSnKUUxW43cI1kDLRw2qLaZQR2ZEQnh1s6xM6pP3H+SbM/Ehm6uI7"
-  crossorigin="anonymous" defer></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/plugins/CSSPlugin.min.js"
-  integrity="sha384-yn7MLKNpLL+YDD9r3YvNFKEBhs/bzA4i51f28+h6KCYsZIhbif9+JcdK/lZOlnEY"
-  crossorigin="anonymous" defer></script>
-<style>
+ <script src="https://www.gstatic.com/external_hosted/gsap/v1_18_0/TimelineLite.min.js" defer>
+</script>
+ <script src="https://www.gstatic.com/external_hosted/gsap/v1_18_0/plugins/CSSPlugin.min.js" defer>
+</script>
+ <style>
 .lifecycle-diagram {
   width: 100%;
   height: auto;
@@ -363,21 +345,7 @@ Secara singkat:
   opacity: 0;
 }
 </style>
-<svg class="lifecycle-diagram" style="display:none">
-  <defs>
-    <g id="diagram-static">
-      <text y="6.7" x="14.5" class="label">Menginstal</text><text y="6.7" x="81.1" class="label">Aktif</text><circle r="14" cy="25.8" cx="14.5" class="state-placeholder"/><circle r="14" cy="25.8" cx="47.8" class="state-placeholder"/><circle r="14" cy="25.8" cx="81.2" class="state-placeholder"/>
-    </g>
-    <g id="diagram-page">
-      <path d="M 191.3,0 12.8,0 C 5.8,0 0,5.7 0,12.8 L 0,167 c 0,7.2 5.7,13 12.8,13 l 178.5,0 c 7,0 12.8,-5.8 12.8,-13 l 0,-154 C 204,6 198.7,0.2 191.6,0.2 Z M 11,11 c 0.5,-0.5 1,-0.7 1.8,-0.8 l 178.5,0 c 0.7,0 1.3,0.3 1.8,0.8 0.8,0.5 1,1 1,1.8 l 0,13.5 -184.1,0 0,-13.5 c 0,-0.7 0.3,-1.3 0.8,-1.8 z m 182,158 c -0.4,0.4 -1,0.7 -1.7,0.7 l -178.5,0 c -0.7,0 -1.3,-0.3 -1.8,-0.8 -0.5,-0.8 -0.8,-1.4 -0.8,-2 l 0,-130.4 183.6,0 0,130.5 c 0,0.8 -0.2,1.4 -0.7,2 z" />
-      <path d="m 26.5,18.6 c 0,2.8 -2.3,5 -5,5 -3,0 -5.2,-2.2 -5.2,-5 0,-3 2.2,-5.2 5,-5.2 3,0 5.2,2.3 5.2,5.2 z m 15.2,0 c 0,2.8 -2.3,5 -5,5 -3,0 -5.2,-2.2 -5.2,-5 0,-3 2.3,-5.2 5,-5.2 3,0 5.2,2.3 5.2,5.2 z m 15.3,0 c 0,2.8 -2.3,5 -5.2,5 -2.8,0 -5,-2.2 -5,-5 0,-3 2.2,-5.2 5,-5.2 3,0 5.2,2.3 5.2,5.2 z m -5.2,111 102.7,0 0,10.4 -102.7,0 0,-10.3 z m 0,-16.8 102.7,0 0,10.2 -102.7,0 0,-10 z M 52,96 l 45.4,0 0,10.2 -45.4,0 0,-10.2 z m 0,-17 45.4,0 0,10.3 -45.4,0 0,-10.3 z m 0,-16.8 45.6,0 0,10.3 -45.6,0 0,-10.3 z m 100.2,1.3 -45.4,0 0,42 45.4,0 0,-42 z m -10.2,31.8 -25,0 0,-21.5 25,0 0,21.5 z" />
-    </g>
-    <path id="diagram-sw" d="m 19.43,12.98 c 0.04,-0.32 0.07,-0.64 0.07,-0.98 0,-0.34 -0.03,-0.66 -0.07,-0.98 l 2.11,-1.65 c 0.19,-0.15 0.24,-0.42 0.12,-0.64 l -2,-3.46 C 19.54,5.05 19.27,4.97 19.05,5.05 l -2.49,1 C 16.04,5.65 15.48,5.32 14.87,5.07 L 14.49,2.42 C 14.46,2.18 14.25,2 14,2 L 10,2 C 9.75,2 9.54,2.18 9.51,2.42 L 9.13,5.07 C 8.52,5.32 7.96,5.66 7.44,6.05 l -2.49,-1 C 4.72,4.96 4.46,5.05 4.34,5.27 l -2,3.46 C 2.21,8.95 2.27,9.22 2.46,9.37 l 2.11,1.65 C 4.53,11.34 4.5,11.67 4.5,12 c 0,0.33 0.03,0.66 0.07,0.98 l -2.11,1.65 c -0.19,0.15 -0.24,0.42 -0.12,0.64 l 2,3.46 c 0.12,0.22 0.39,0.3 0.61,0.22 l 2.49,-1 c 0.52,0.4 1.08,0.73 1.69,0.98 l 0.38,2.65 C 9.54,21.82 9.75,22 10,22 l 4,0 c 0.25,0 0.46,-0.18 0.49,-0.42 l 0.38,-2.65 c 0.61,-0.25 1.17,-0.59 1.69,-0.98 l 2.49,1 c 0.23,0.09 0.49,0 0.61,-0.22 l 2,-3.46 c 0.12,-0.22 0.07,-0.49 -0.12,-0.64 L 19.43,12.98 Z M 12,15.5 c -1.93,0 -3.5,-1.57 -3.5,-3.5 0,-1.93 1.57,-3.5 3.5,-3.5 1.93,0 3.5,1.57 3.5,3.5 0,1.93 -1.57,3.5 -3.5,3.5 z"/>
-    <g id="diagram-refresh"><circle id="page-action-circle" cx="81.2" cy="58.1" r="3.5" fill="#fff" stroke="#000" stroke-width=".5"/><path d="M82.76 56.48c-.4-.4-.97-.66-1.6-.66-1.23 0-2.23 1-2.23 2.24 0 1.24 1 2.25 2.24 2.25 1.05 0 1.92-.7 2.17-1.68h-.58c-.23.66-.86 1.13-1.6 1.13-.92 0-1.67-.76-1.67-1.7 0-.92.74-1.67 1.67-1.67.47 0 .88.2 1.2.5l-.92.9h1.97v-1.96l-.66.66z"/></g>
-    <g id="diagram-close"><use xlink:href="#page-action-circle"/><path id="path5062" d="M83 56.58l-.37-.37-1.46 1.47-1.45-1.46-.37.38 1.46 1.46-1.45 1.46.37.36 1.45-1.45 1.46 1.46.37-.36-1.46-1.46z"/></g>
-  </defs>
-</svg>
-<svg class="lifecycle-diagram update" viewBox="0 0 96.9 73"><rect ry="15.8" y="10" x="65.4" height="63" width="31.6" class="controlled"/><use xlink:href="#diagram-static"/><text x="47.7" y="6.7" class="label">Menunggu</text><g transform="matrix(1.1187 0 0 1.1187 1.078 12.408)" class="cog cog-new"><use height="10" width="10" xlink:href="#diagram-sw"/></g><g transform="matrix(1.1187 0 0 1.1187 67.745 12.408)" class="cog cog-old"><use xlink:href="#diagram-sw" width="10" height="10"/></g><use transform="matrix(.09532 0 0 .09532 71.44 48.39)" xlink:href="#diagram-page" width="10" height="10" class="diagram-page"/><path d="M78.6 47.7c-1-6-2-11.6-1.6-17" class="fetch"/><path d="M83 47.5c1.4-5.4 3.3-10.8 2.4-16.2" class="fetch"/><path d="M75.7 47c-2.3-6.3-3.2-12.5-2-18.2" class="fetch"/><path d="M89.5 29.5c.3 6-.4 12-4 18" class="fetch"/><path d="M75.4 30.3c0 4-1 6 2 17.2" class="fetch"/><path d="M86.6 31C88 37 86 42 84 47.4" class="fetch"/><g class="refresh-rotator"><use xlink:href="#diagram-refresh" class="diagram-refresh"/></g><use xlink:href="#diagram-close" class="diagram-close"/></svg>
+ <svg class="lifecycle-diagram" style="display:none"> <defs> <g id="diagram-static"> <text y="6.7" x="14.5" class="label">Installing</text><text y="6.7" x="81.1" class="label">Active</text><circle r="14" cy="25.8" cx="14.5" class="state-placeholder"/><circle r="14" cy="25.8" cx="47.8" class="state-placeholder"/><circle r="14" cy="25.8" cx="81.2" class="state-placeholder"/> </g> <g id="diagram-page"> <path d="M 191.3,0 12.8,0 C 5.8,0 0,5.7 0,12.8 L 0,167 c 0,7.2 5.7,13 12.8,13 l 178.5,0 c 7,0 12.8,-5.8 12.8,-13 l 0,-154 C 204,6 198.7,0.2 191.6,0.2 Z M 11,11 c 0.5,-0.5 1,-0.7 1.8,-0.8 l 178.5,0 c 0.7,0 1.3,0.3 1.8,0.8 0.8,0.5 1,1 1,1.8 l 0,13.5 -184.1,0 0,-13.5 c 0,-0.7 0.3,-1.3 0.8,-1.8 z m 182,158 c -0.4,0.4 -1,0.7 -1.7,0.7 l -178.5,0 c -0.7,0 -1.3,-0.3 -1.8,-0.8 -0.5,-0.8 -0.8,-1.4 -0.8,-2 l 0,-130.4 183.6,0 0,130.5 c 0,0.8 -0.2,1.4 -0.7,2 z" /> <path d="m 26.5,18.6 c 0,2.8 -2.3,5 -5,5 -3,0 -5.2,-2.2 -5.2,-5 0,-3 2.2,-5.2 5,-5.2 3,0 5.2,2.3 5.2,5.2 z m 15.2,0 c 0,2.8 -2.3,5 -5,5 -3,0 -5.2,-2.2 -5.2,-5 0,-3 2.3,-5.2 5,-5.2 3,0 5.2,2.3 5.2,5.2 z m 15.3,0 c 0,2.8 -2.3,5 -5.2,5 -2.8,0 -5,-2.2 -5,-5 0,-3 2.2,-5.2 5,-5.2 3,0 5.2,2.3 5.2,5.2 z m -5.2,111 102.7,0 0,10.4 -102.7,0 0,-10.3 z m 0,-16.8 102.7,0 0,10.2 -102.7,0 0,-10 z M 52,96 l 45.4,0 0,10.2 -45.4,0 0,-10.2 z m 0,-17 45.4,0 0,10.3 -45.4,0 0,-10.3 z m 0,-16.8 45.6,0 0,10.3 -45.6,0 0,-10.3 z m 100.2,1.3 -45.4,0 0,42 45.4,0 0,-42 z m -10.2,31.8 -25,0 0,-21.5 25,0 0,21.5 z" /> </g> <path id="diagram-sw" d="m 19.43,12.98 c 0.04,-0.32 0.07,-0.64 0.07,-0.98 0,-0.34 -0.03,-0.66 -0.07,-0.98 l 2.11,-1.65 c 0.19,-0.15 0.24,-0.42 0.12,-0.64 l -2,-3.46 C 19.54,5.05 19.27,4.97 19.05,5.05 l -2.49,1 C 16.04,5.65 15.48,5.32 14.87,5.07 L 14.49,2.42 C 14.46,2.18 14.25,2 14,2 L 10,2 C 9.75,2 9.54,2.18 9.51,2.42 L 9.13,5.07 C 8.52,5.32 7.96,5.66 7.44,6.05 l -2.49,-1 C 4.72,4.96 4.46,5.05 4.34,5.27 l -2,3.46 C 2.21,8.95 2.27,9.22 2.46,9.37 l 2.11,1.65 C 4.53,11.34 4.5,11.67 4.5,12 c 0,0.33 0.03,0.66 0.07,0.98 l -2.11,1.65 c -0.19,0.15 -0.24,0.42 -0.12,0.64 l 2,3.46 c 0.12,0.22 0.39,0.3 0.61,0.22 l 2.49,-1 c 0.52,0.4 1.08,0.73 1.69,0.98 l 0.38,2.65 C 9.54,21.82 9.75,22 10,22 l 4,0 c 0.25,0 0.46,-0.18 0.49,-0.42 l 0.38,-2.65 c 0.61,-0.25 1.17,-0.59 1.69,-0.98 l 2.49,1 c 0.23,0.09 0.49,0 0.61,-0.22 l 2,-3.46 c 0.12,-0.22 0.07,-0.49 -0.12,-0.64 L 19.43,12.98 Z M 12,15.5 c -1.93,0 -3.5,-1.57 -3.5,-3.5 0,-1.93 1.57,-3.5 3.5,-3.5 1.93,0 3.5,1.57 3.5,3.5 0,1.93 -1.57,3.5 -3.5,3.5 z"/> <g id="diagram-refresh"><circle id="page-action-circle" cx="81.2" cy="58.1" r="3.5" fill="#fff" stroke="#000" stroke-width=".5"/><path d="M82.76 56.48c-.4-.4-.97-.66-1.6-.66-1.23 0-2.23 1-2.23 2.24 0 1.24 1 2.25 2.24 2.25 1.05 0 1.92-.7 2.17-1.68h-.58c-.23.66-.86 1.13-1.6 1.13-.92 0-1.67-.76-1.67-1.7 0-.92.74-1.67 1.67-1.67.47 0 .88.2 1.2.5l-.92.9h1.97v-1.96l-.66.66z"/></g> <g id="diagram-close"><use xlink:href="#page-action-circle"/><path id="path5062" d="M83 56.58l-.37-.37-1.46 1.47-1.45-1.46-.37.38 1.46 1.46-1.45 1.46.37.36 1.45-1.45 1.46 1.46.37-.36-1.46-1.46z"/></g> </defs> </svg> <svg class="lifecycle-diagram update" viewbox="0 0 96.9 73"><rect ry="15.8" y="10" x="65.4" height="63" width="31.6" class="controlled"/><use xlink:href="#diagram-static"/><text x="47.7" y="6.7" class="label">Waiting</text><g transform="matrix(1.1187 0 0 1.1187 1.078 12.408)" class="cog cog-new"><use height="10" width="10" xlink:href="#diagram-sw"/></g><g transform="matrix(1.1187 0 0 1.1187 67.745 12.408)" class="cog cog-old"><use xlink:href="#diagram-sw" width="10" height="10"/></g><use transform="matrix(.09532 0 0 .09532 71.44 48.39)" xlink:href="#diagram-page" width="10" height="10" class="diagram-page"/><path d="M78.6 47.7c-1-6-2-11.6-1.6-17" class="fetch"/><path d="M83 47.5c1.4-5.4 3.3-10.8 2.4-16.2" class="fetch"/><path d="M75.7 47c-2.3-6.3-3.2-12.5-2-18.2" class="fetch"/><path d="M89.5 29.5c.3 6-.4 12-4 18" class="fetch"/><path d="M75.4 30.3c0 4-1 6 2 17.2" class="fetch"/><path d="M86.6 31C88 37 86 42 84 47.4" class="fetch"/><g class="refresh-rotator"><use xlink:href="#diagram-refresh" class="diagram-refresh"/></g><use xlink:href="#diagram-close" class="diagram-close"/></svg> 
 
 <script>
   document.addEventListener("DOMContentLoaded", function() {
@@ -478,23 +446,23 @@ Secara singkat:
     }
   });
 </script>
-{% endframebox %}
-</div>
+ {% endframebox %}
+  </div>
 </div>
 
-Anggaplah kita mengubah skrip pekerja layanan untuk merespons dengan gambar kuda, bukan kucing:
+Let's say we changed our service worker script to respond with a picture of a horse rather than a cat:
 
     const expectedCaches = ['static-v2'];
-
+    
     self.addEventListener('install', event => {
       console.log('V2 installing…');
-
+    
       // cache a horse SVG into a new cache, static-v2
       event.waitUntil(
         caches.open('static-v2').then(cache => cache.add('/horse.svg'))
       );
     });
-
+    
     self.addEventListener('activate', event => {
       // delete any caches that aren't in expectedCaches
       // which will get rid of static-v1
@@ -510,146 +478,147 @@ Anggaplah kita mengubah skrip pekerja layanan untuk merespons dengan gambar kuda
         })
       );
     });
-
+    
     self.addEventListener('fetch', event => {
       const url = new URL(event.request.url);
-
+    
       // serve the horse SVG from the cache if the request is
       // same-origin and the path is '/dog.svg'
       if (url.origin == location.origin && url.pathname == '/dog.svg') {
         event.respondWith(caches.match('/horse.svg'));
       }
     });
+    
 
-Note: Saya tidak memiliki opini yang kuat mengenai kuda. [Lihat demo di atas](https://cdn.rawgit.com/jakearchibald/80368b84ac1ae8e229fc90b3fe826301/raw/ad55049bee9b11d47f1f7d19a73bf3306d156f43/index-v2.html){: .external }. Anda seharusnya tetap melihat gambar kucing. Inilah alasannya...
+Note: I have no strong opinions on horses.
 
-### Instal.
+[Check out a demo of the above](https://cdn.rawgit.com/jakearchibald/80368b84ac1ae8e229fc90b3fe826301/raw/ad55049bee9b11d47f1f7d19a73bf3306d156f43/index-v2.html){: .external }. You should still see an image of a cat. Here's why…
 
-Perhatikan, saya telah mengubah nama cache dari `static-v1` menjadi `static-v2`. Ini berarti saya bisa menyiapkan cache baru tanpa menimpa apa yang ada di cache saat ini, yang masih digunakan oleh pekerja layanan lama.
+### Install
 
-Pola ini akan membuat cache versi tertentu, semacam aset yang akan dibundel oleh aplikasi asli bersama file yang dapat dieksekusi. Anda mungkin juga memiliki cache yang bukan versi tertentu, misalnya `avatars`.
+Note that I've changed the cache name from `static-v1` to `static-v2`. This means I can set up the new cache without overwriting things in the current one, which the old service worker is still using.
 
-### Menunggu
+This patterns creates version-specific caches, akin to assets a native app would bundle with its executable. You may also have caches that aren't version specific, such as `avatars`.
 
-Setelah berhasil menginstalnya, pekerja layanan yang telah diupdate akan menunda aktivasi hingga pekerja layanan yang ada tidak lagi mengontrol klien. Keadaan ini disebut "menunggu", dan inilah cara browser memastikan bahwa hanya ada satu versi pekerja layanan yang berjalan dalam satu waktu.
+### Waiting
 
-Jika Anda menjalankan [demo yang telah diupdate](https://cdn.rawgit.com/jakearchibald/80368b84ac1ae8e229fc90b3fe826301/raw/ad55049bee9b11d47f1f7d19a73bf3306d156f43/index-v2.html){: .external }, Anda seharusnya tetap melihat gambar kucing, karena pekerja layanan V2 belum diaktifkan. Anda dapat melihat pekerja layanan baru menunggu di tab "Penerapan" pada DevTools:
+After it's successfully installed, the updated service worker delays activating until the existing service worker is no longer controlling clients. This state is called "waiting", and it's how the browser ensures that only one version of your service worker is running at a time.
 
-<figure>
-  <img src="images/waiting.png" class="browser-screenshot" alt="DevTools menampilkan pekerja layanan baru yang sedang menunggu"/>
-</figure>
+If you ran [the updated demo](https://cdn.rawgit.com/jakearchibald/80368b84ac1ae8e229fc90b3fe826301/raw/ad55049bee9b11d47f1f7d19a73bf3306d156f43/index-v2.html){: .external }, you should still see a picture of a cat, because the V2 worker hasn't yet activated. You can see the new service worker waiting in the "Application" tab of DevTools:<figure> 
 
-Bahkan jika Anda hanya memiliki satu tab dibuka ke demo, pemuatan ulang halaman tidak cukup untuk memungkinkan versi baru mengambil alih. Ini berdasarkan bagaimana navigasi browser berfungsi. Jika Anda mengarahkan, halaman saat ini tidak akan hilang hingga header respons diterima, dan bahkan halaman saat ini mungkin tetap dibuka jika respons memiliki header `Content-Disposition`. Karena tumpang tindih ini, pekerja layanan saat ini selalu mengontrol klien selama pemuatan ulang.
+<img src="images/waiting.png" class="browser-screenshot" alt="DevTools showing new service worker waiting" /> </figure> 
 
-Untuk mendapatkan update, tutup atau arahkan semua tab dengan menggunakan pekerja layanan saat ini. Maka, jika Anda [mengarahkan ke demo lagi](https://cdn.rawgit.com/jakearchibald/80368b84ac1ae8e229fc90b3fe826301/raw/ad55049bee9b11d47f1f7d19a73bf3306d156f43/index-v2.html){: .external }, Anda akan melihat gambar kuda.
+Even if you only have one tab open to the demo, refreshing the page isn't enough to let the new version take over. This is due to how browser navigations work. When you navigate, the current page doesn't go away until the response headers have been received, and even then the current page may stay if the response has a `Content-Disposition` header. Because of this overlap, the current service worker is always controlling a client during a refresh.
 
-Pola ini serupa dengan cara update Chrome. Update pada hasil download Chrome dilatar belakang, namun tidak diterapkan hingga Chrome dimulai ulang. Pada saat ini, Anda bisa tetap menggunakan versi saat ini tanpa kendala. Akan tetapi, hal ini menjengkelkan selama pengembangan, namun DevTools memiliki cara untuk membuatnya lebih mudah, yang akan saya bahas [nanti dalam artikel ini](#devtools).
+To get the update, close or navigate away from all tabs using the current service worker. Then, when you [navigate to the demo again](https://cdn.rawgit.com/jakearchibald/80368b84ac1ae8e229fc90b3fe826301/raw/ad55049bee9b11d47f1f7d19a73bf3306d156f43/index-v2.html){: .external }, you should see the horse.
 
-### Aktifkan
+This pattern is similar to how Chrome updates. Updates to Chrome download in the background, but don't apply until Chrome restarts. In the mean time, you can continue to use the current version without disruption. However, this is a pain during development, but DevTools has ways to make it easier, which I'll cover [later in this article](#devtools).
 
-Ini akan aktif setelah pekerja layanan yang lama hilang, dan pekerja layanan baru dapat mengontrol klien. Inilah waktu yang ideal untuk melakukan hal-hal yang tidak bisa Anda lakukan saat pekerja layanan lama sedang digunakan, misalnya melakukan migrasi database dan mengosongkan cache.
+### Activate
 
-Dalam demo di atas, saya memelihara daftar cache yang saya harapkan akan ada, dan dalam peristiwa `activate` saya menghilangkan yang lainnya, yang akan membuang cache `static-v1` lama.
+This fires once the old service worker is gone, and your new service worker is able to control clients. This is the ideal time to do stuff that you couldn't do while the old worker was still in use, such as migrating databases and clearing caches.
 
-Perhatian: Anda tidak boleh mengupdate dari versi sebelumnya. Pekerja layanan mungkin memiliki banyak versi lama.
+In the demo above, I maintain a list of caches that I expect to be there, and in the `activate` event I get rid of any others, which removes the old `static-v1` cache.
 
-Jika Anda meneruskan promise ke `event.waitUntil()` akan menjadi buffering peristiwa fungsional (`fetch`, `push`, `sync` dll.) hingga promise teratasi. Jadi, jika peristiwa `fetch` Anda dipicu, aktivasi akan selesai sepenuhnya.
+Caution: You may not be updating from the previous version. It may be a service worker many versions old.
 
-Perhatian: Cache Storage API adalah "penyimpanan asal" (seperti localStorage, dan IndexedDB). Jika Anda menjalankan banyak situs pada asal yang sama (misalnya, `yourname.github.io/myapp`), berhati-hatilah agar Anda tidak menghapus cache untuk situs Anda yang lainnya. Untuk menghindarinya, berikan awalan yang unik pada nama cache Anda pada situs saat ini, misalnya `myapp-static-v1`, dan jangan sentuh cache kecuali jika memulai dengan `myapp-`.
+If you pass a promise to `event.waitUntil()` it'll buffer functional events (`fetch`, `push`, `sync` etc.) until the promise resolves. So when your `fetch` event fires, the activation is fully complete.
 
-### Lewati tahap menunggu
+Caution: The cache storage API is "origin storage" (like localStorage, and IndexedDB). If you run many sites on the same origin (for example, `yourname.github.io/myapp`), be careful that you don't delete caches for your other sites. To avoid this, give your cache names a prefix unique to the current site, eg `myapp-static-v1`, and don't touch caches unless they begin with `myapp-`.
 
-Tahap menunggu berarti Anda hanya menjalankan satu versi situs saat itu, namun jika tidak membutuhkan fitur itu, Anda bisa mengaktifkan pekerja layanan baru lebih dini dengan memanggil `self.skipWaiting()`.
+### Skip the waiting phase
 
-Ini menyebabkan pekerja layanan Anda menyingkirkan pekerja layanan yang saat ini aktif dan mengaktifkannya sendiri begitu memasuki tahap menunggu (atau segera jika sudah dalam tahap menunggu). Ini *tidak* menyebabkan pekerja layanan Anda melewati penginstalan, hanya sedang menunggu.
+The waiting phase means you're only running one version of your site at once, but if you don't need that feature, you can make your new service worker activate sooner by calling `self.skipWaiting()`.
 
-Hal ini tidak begitu penting jika Anda memanggil `skipWaiting()`, asalkan pemanggilan dilakukan selama menunggu atau sebelum menunggu. Sudah cukup umum memanggilnya dalam peristiwa `install`:
+This causes your service worker to kick out the current active worker and activate itself as soon as it enters the waiting phase (or immediately if it's already in the waiting phase). It *doesn't* cause your worker to skip installing, just waiting.
+
+It doesn't really matter when you call `skipWaiting()`, as long as it's during or before waiting. It's pretty common to call it in the `install` event:
 
     self.addEventListener('install', event => {
       self.skipWaiting();
-
+    
       event.waitUntil(
         // caching etc
       );
     });
+    
 
-Namun, Anda mungkin perlu memanggilnya sebagai hasil `postMessage()` ke pekerja layanan. Anda mungkin perlu interaksi pengguna berikut `skipWaiting()`.
+But you may want to call it as a results of a `postMessage()` to the service worker. As in, you want to `skipWaiting()` following a user interaction.
 
-[Inilah demo yang menggunakan `skipWaiting()`](https://cdn.rawgit.com/jakearchibald/80368b84ac1ae8e229fc90b3fe826301/raw/ad55049bee9b11d47f1f7d19a73bf3306d156f43/index-v3.html){: .external }. Anda seharusnya akan melihat gambar sapi tanpa harus mengarahkan navigasi ke lain. Seperti `clients.claim()` menjadi sebuah pertandingan, jadi Anda hanya akan melihat sapi jika pekerja layanan baru mengambil, menginstal, dan mengaktifkan sebelum halaman berusaha memuat gambar.
+[Here's a demo that uses `skipWaiting()`](https://cdn.rawgit.com/jakearchibald/80368b84ac1ae8e229fc90b3fe826301/raw/ad55049bee9b11d47f1f7d19a73bf3306d156f43/index-v3.html){: .external }. You should see a picture of a cow without having to navigate away. Like `clients.claim()` it's a race, so you'll only see the cow if the new service worker fetches, installs and activates before the page tries to load the image.
 
-Perhatian: `skipWaiting()` berarti pekerja layanan baru Anda mungkin saja mengontrol halaman yang telah dimuat bersama versi lama. Ini berarti sebagian pengambilan halaman akan ditangani oleh pekerja layanan yang lama, namun pekerja layanan baru akan menangani pengambilan selanjutnya. Jika ini akan merusak hal lain, jangan gunakan `skipWaiting()`.
+Caution: `skipWaiting()` means that your new service worker is likely controlling pages that were loaded with an older version. This means some of your page's fetches will have been handled by your old service worker, but your new service worker will be handling subsequent fetches. If this might break things, don't use `skipWaiting()`.
 
-### Update manual
+### Manual updates
 
-Sebagaimana disebutkan sebelumnya, browser akan memeriksa update secara otomatis setelah peristiwa fungsional dan navigasi, namun Anda juga bisa memicunya secara manual:
+As I mentioned earlier, the browser checks for updates automatically after navigations and functional events, but you can also trigger them manually:
 
     navigator.serviceWorker.register('/sw.js').then(reg => {
       // sometime later…
       reg.update();
     });
+    
 
-Jika Anda memperkirakan pengguna akan menggunakan situs dalam waktu lama tanpa memuat ulang, Anda mungkin perlu memanggil `update()` dengan interval (misalnya setiap jam).
+If you expect the user to be using your site for a long time without reloading, you may want to call `update()` on an interval (such as hourly).
 
-### Hindari mengubah URL skrip pekerja layanan
+### Avoid changing the URL of your service worker script {: #avoid-url-change}
 
-Jika Anda telah membaca [postingan saya tentang praktik terbaik dalam cache](https://jakearchibald.com/2016/caching-best-practices/){: .external }, Anda dapat mempertimbangkan untuk memberikan setiap versi URL unik pekerja layanan Anda. **Jangan lakukan ini!** Ini biasanya praktik buruk bagi pekerja layanan, cukup update script di lokasi saat ini.
+If you've read [my post on caching best practices](https://jakearchibald.com/2016/caching-best-practices/){: .external }, you may consider giving each version of your service worker a unique URL. **Don't do this!** This is usually bad practice for service workers, just update the script at its current location.
 
-Ini akan menghadapkan Anda pada masalah seperti ini:
+It can land you with a problem like this:
 
-1. `index.html` mendaftarkan `sw-v1.js` sebagai pekerja layanan.
-1. `sw-v1.js` men-cache and menayangkan `index.html` sehingga itu bekerja offline terlebih dahulu.
-1. Anda mengupdate `index.html` sehingga itu mendaftarkan `sw-v2.js` baru dan mengkilap Anda.
+1. `index.html` registers `sw-v1.js` as a service worker.
+2. `sw-v1.js` caches and serves `index.html` so it works offline-first.
+3. You update `index.html` so it registers your new and shiny `sw-v2.js`.
 
-Jika Anda melakukan hal di atas, pengguna tidak akan mendapatkan `sw-v2.js`, karena `sw-v1.js` menyajikan versi lama `index.html` dari cache-nya. Anda menempatkan diri pada posisi di mana Anda perlu mengupdate pekerja layanan agar dapat mengupdatenya. Ew.
+If you do the above, the user never gets `sw-v2.js`, because `sw-v1.js` is serving the old version of `index.html` from its cache. You've put yourself in a position where you need to update your service worker in order to update your service worker. Ew.
 
-Akan tetapi, untuk [demo di atas](https://cdn.rawgit.com/jakearchibald/80368b84ac1ae8e229fc90b3fe826301/raw/ad55049bee9b11d47f1f7d19a73bf3306d156f43/index-v2.html){: .external }, saya *telah* mengubah URL pekerja layanan. Oleh karena itu, demi demo ini, Anda bisa beralih antar versi. Ini bukan sesuatu yang akan saya lakukan di produksi.
+However, for [the demo above](https://cdn.rawgit.com/jakearchibald/80368b84ac1ae8e229fc90b3fe826301/raw/ad55049bee9b11d47f1f7d19a73bf3306d156f43/index-v2.html){: .external }, I *have* changed the URL of the service worker. This is so, for the sake of the demo, you can switch between the versions. It isn't something I'd do in production.
 
-## Memudahkan pengembangan {: #devtools}
+## Making development easy {: #devtools}
 
-Daur hidup pekerja layanan dibuat dengan mempertimbangkan pengguna, namun selama pengembangan ini agak menjengkelkan. Syukurlah ada beberapa fitur untuk membantu:
+The service worker lifecycle is built with the user in mind, but during development it's a bit of a pain. Thankfully there are a few tools to help out:
 
-### Update saat memuat ulang
+### Update on reload
 
-Ini adalah favorit saya.
+This one's my favourite.<figure> 
 
-<figure>
-  <img src="images/update-on-reload.png" class="browser-screenshot" alt="DevTools menampilkan 'update pada pemuatan ulang'"/>
-</figure>
+<img src="images/update-on-reload.png" class="browser-screenshot" alt="DevTools showing 'update on reload'" /> </figure> 
 
-Ini mengubah daur hidup menjadi mudah digunakan developer. Setiap navigasi akan:
+This changes the lifecycle to be developer-friendly. Each navigation will:
 
-1. Mengambil ulang pekerja layanan.
-1. Menginstalnya sebagai versi baru meskipun itu byte-identik, artinya peristiwa `install` Anda berjalan dan cache Anda diupdate.
-1. Melewati fase menunggu sehingga pekerja layanan baru diaktifkan.
-1. Menavigasikan halaman. Ini berarti Anda akan mendapatkan update pada setiap navigasi (termasuk pemuatan ulang) tanpa harus memuat ulang atau menutup tab.
+1. Refetch the service worker.
+2. Install it as a new version even if it's byte-identical, meaning your `install` event runs and your caches update.
+3. Skip the waiting phase so the new service worker activates.
+4. Navigate the page.
 
-### Lewati proses menunggu
+This means you'll get your updates on each navigation (including refresh) without having to reload twice or close the tab.
 
-<figure>
-  <img src="images/skip-waiting.png" class="browser-screenshot" alt="DevTools menampilkan 'lewati proses menunggu'"/>
-</figure>
+### Skip waiting<figure> 
 
-Jika Anda memiliki pekerja layanan yang sedang menunggu, Anda bisa memilih "lewati proses menunggu" di DevTools untuk segera mengembangkannya menjadi "aktif".
+<img src="images/skip-waiting.png" class="browser-screenshot" alt="DevTools showing 'skip waiting'" /> </figure> 
 
-### Ganti muat ulang
+If you have a worker waiting, you can hit "skip waiting" in DevTools to immediately promote it to "active".
 
-Jika Anda memaksa muat ulang halaman (ganti muat ulang) ini akan melewati pekerja layanan sama sekali. Ini tidak akan dikontrol. Fitur ini ada dalam spesifikasi, sehingga akan berfungsi di browser lain yang mendukung pekerja layanan.
+### Shift-reload
 
-## Menangani update
+If you force-reload the page (shift-reload) it bypasses the service worker entirely. It'll be uncontrolled. This feature is in the spec, so it works in other service-worker-supporting browsers.
 
-Pekerja layanan didesain sebagai bagian dari [web yang dapat diperluas](https://extensiblewebmanifesto.org/){: .external }. Gagasannya adalah karena kita, sebagai developer browser, mengakui bahwa kita tidak lebih baik dalam hal pengembangan web dibandingkan developer web. Dan dengan demikian, kita seharusnya tidak menyediakan API tingkat tinggi sempit yang mengatasi masalah tertentu dengan menggunakan pola yang *kita* sukai, dan sebagai gantinya memberi Anda akses ke pusat browser dan memungkinkan Anda melakukannya sesuka hati, dengan cara yang terbaik bagi para pengguna *Anda*.
+## Handling updates
 
-Jadi, untuk memungkinkan banyak pola sebisa mungkin, daur update keseluruhan dapat diamati:
+The service worker was designed as part of the [extensible web](https://extensiblewebmanifesto.org/){: .external }. The idea is that we, as browser developers, acknowledge that we are not better at web development than web developers. And as such, we shouldn't provide narrow high-level APIs that solve a particular problem using patterns *we* like, and instead give you access to the guts of the browser and let you do it how you want, in a way that works best for *your* users.
+
+So, to enable as many patterns as we can, the whole update cycle is observable:
 
     navigator.serviceWorker.register('/sw.js').then(reg => {
       reg.installing; // the installing worker, or undefined
       reg.waiting; // the waiting worker, or undefined
       reg.active; // the active worker, or undefined
-
+    
       reg.addEventListener('updatefound', () => {
         // A wild service worker has appeared in reg.installing!
         const newWorker = reg.installing;
-
+    
         newWorker.state;
         // "installing" - the install event has fired, but not yet complete
         // "installed"  - install complete
@@ -657,23 +626,24 @@ Jadi, untuk memungkinkan banyak pola sebisa mungkin, daur update keseluruhan dap
         // "activated"  - fully active
         // "redundant"  - discarded. Either failed install, or it's been
         //                replaced by a newer version
-
+    
         newWorker.addEventListener('statechange', () => {
           // newWorker.state has changed
         });
       });
     });
-
+    
     navigator.serviceWorker.addEventListener('controllerchange', () => {
       // This fires when the service worker controlling this page
       // changes, eg a new worker has skipped waiting and become
       // the new active worker.
     });
+    
 
-## Anda berhasil!
+## You survived!
 
-Fiuh! Ada banyak sekali teori teknis. Tetap ikuti dalam beberapa minggu ke depan karena kita akan mendalami beberapa penerapan praktis dari hal tersebut di atas.
+Phew! That was a lot of technical theory. Stay tuned in the coming weeks where we'll dive into some practical applications of the above.
 
-## Masukan {: #feedback }
+## Feedback {: #feedback }
 
 {% include "web/_shared/helpful.html" %}
