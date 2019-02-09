@@ -1,228 +1,148 @@
-project_path: /web/fundamentals/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Il layout è dove il browser calcola le informazioni geometriche degli elementi: la loro dimensione e posizione nella pagina. Ogni elemento avrà informazioni di dimensionamento esplicite o implicite basate sul CSS che è stato usato, il contenuto dell'elemento o un elemento genitore. Il processo si chiama Layout in Chrome.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Layout is where the browser figures out the geometric information for elements: their size and location in the page. Each element will have explicit or implicit sizing information based on the CSS that was used, the contents of the element, or a parent element. The process is called Layout in Chrome.
 
-# Evita i layout grandi, complessi e schiaccianti {: .page-title}
+# Avoid Large, Complex Layouts and Layout Thrashing {: .page-title }
 
-{# wf_updated_on: 2017-11-29 #}
-{# wf_published_on: 2015-03-20 #}
+{# wf_updated_on: 2018-08-17 #} {# wf_published_on: 2015-03-20 #} {# wf_blink_components: Blink>Layout #}
 
 {% include "web/_shared/contributors/paullewis.html" %}
 
-Il layout è dove il browser calcola le informazioni geometriche degli elementi:
-la loro dimensione e posizione nella pagina. Ogni elemento avrà informazioni di
-dimensionamento esplicite o implicite basate sul CSS che è stato usato, il
-contenuto dell'elemento o un elemento genitore. Il processo si chiama Layout in
-Chrome, Opera, Safari e Internet Explorer. In Firefox si chiama Reflow, ma
-effettivamente il processo è lo stesso.
+Layout is where the browser figures out the geometric information for elements: their size and location in the page. Each element will have explicit or implicit sizing information based on the CSS that was used, the contents of the element, or a parent element. The process is called Layout in Chrome, Opera, Safari, and Internet Explorer. In Firefox it’s called Reflow, but effectively the process is the same.
 
-Analogamente ai calcoli di stile, le preoccupazioni immediate per i costi di
-layout sono:
+Similarly to style calculations, the immediate concerns for layout cost are:
 
-1. Il numero di elementi che richiedono il layout.
-2. La complessità di questi layout.
+1. The number of elements that require layout.
+2. The complexity of those layouts.
 
 ### TL;DR {: .hide-from-toc }
 
-- Il layout è normalmente applicato a tutto il documento.
-- Il numero di elementi DOM influirà sulle prestazioni; dovresti evitare di
-attivare il layout laddove possibile.
-- Valutare le prestazioni del modello di layout; la nuova Flexbox è in genere
-più veloce dei precedenti modelli di layout Flexbox o basati su float.
-- Evita i layout sincroni forzati e schiaccianti; leggere i valori di stile
-quindi apportare modifiche allo stile.
+* Layout is normally scoped to the whole document.
+* The number of DOM elements will affect performance; you should avoid triggering layout wherever possible.
+* Assess layout model performance; new Flexbox is typically faster than older Flexbox or float-based layout models.
+* Avoid forced synchronous layouts and layout thrashing; read style values then make style changes.
 
-## Evita il layout dove possibile
+## Avoid layout wherever possible
 
-Quando si modificano gli stili, il browser verifica se una delle modifiche
-richiede il calcolo del layout ed aggiorna l'albero di rendering . Le modifiche
-alle "proprietà geometriche", come larghezza, altezza, sinistra o in alto
-richiedono tutte il layout.
+When you change styles the browser checks to see if any of the changes require layout to be calculated, and for that render tree to be updated. Changes to “geometric properties”, such as widths, heights, left, or top all require layout.
 
-```
-.box {
-  width: 20px;
-  height: 20px;
-}
+    .box {
+      width: 20px;
+      height: 20px;
+    }
+    
+    /**
+     * Changing width and height
+     * triggers layout.
+     */
+    .box--expanded {
+      width: 200px;
+      height: 350px;
+    }
+    
 
-/**
- * Changing width and height
- * triggers layout.
- */
-.box--expanded {
-  width: 200px;
-  height: 350px;
-}
-```
+**Layout is almost always scoped to the entire document.** If you have a lot of elements, it’s going to take a long time to figure out the locations and dimensions of them all.
 
-**Il layout è quasi sempre applicato all'intero documento.** Se hai molti
-elementi ci vorrà molto tempo per capire le posizioni e le dimensioni di tutti.
+If it’s not possible to avoid layout then the key is to once again use Chrome DevTools to see how long it’s taking, and determine if layout is the cause of a bottleneck. Firstly, open DevTools, go to the Timeline tab, hit record and interact with your site. When you stop recording you’ll see a breakdown of how your site performed:
 
-Se non è possibile evitare il layout la chiave è ancora una volta utilizzare
-Chrome DevTools per vedere quanto tempo richiede e determinare se il layout è la
-causa di un collo di bottiglia. In primo luogo apri DevTools, vai alla scheda
-Timeline, premi record e interagisci con il tuo sito. Quando interrompi la
-registrazione vedrai un'analisi del rendimento del tuo sito:
+![DevTools showing a long time in Layout](images/avoid-large-complex-layouts-and-layout-thrashing/big-layout.jpg)
 
-<img
-src="images/avoid-large-complex-layouts-and-layout-thrashing/big-layout.jpg"
-alt="DevTools showing a long time in Layout">
+When digging into the frame in the above example, we see that over 20ms is spent inside layout, which, when we have 16ms to get a frame on screen in an animation, is far too high. You can also see that DevTools will tell you the tree size (1,618 elements in this case), and how many nodes were in need of layout.
 
-Quando entri nel merito del frame dell'esempio sopra, vediamo che oltre 20 ms
-vengono spesi all'interno del layout il che, quando abbiamo 16 ms per ottenere
-un frame sullo schermo in un'animazione, è troppo alto. Puoi anche vedere che
-DevTools ti dirà la dimensione dell'albero (in questo caso 1.618 elementi) e
-quanti nodi necessitano di layout.
+Note: Want a definitive list of which CSS properties trigger layout, paint, or composite? Check out [CSS Triggers](https://csstriggers.com).
 
-Note: vuoi un elenco definitivo di quali proprietà CSS attivano il layout, lil
-paint o la composizione? Scopri i [trigger CSS](https://csstriggers.com) .
+## Use flexbox over older layout models
 
-## Usa la flexbox su vecchi modelli di layout
+The web has a range of layout models, some being more widely supported than others. The oldest CSS layout model allows us to position elements on screen relatively, absolutely, and by floating elements.
 
-Il web ha una gamma di modelli di layout alcuni dei quali sono più ampiamente
-supportati di altri. Il più vecchio modello di layout CSS ci consente di
-posizionare gli elementi sullo schermo in maniera relativa, assoluta e con
-elementi fluttuanti.
+The screenshot below shows the layout cost when using floats on 1,300 boxes. It is, admittedly, a contrived example, because most applications will use a variety of means to position elements.
 
-Lo screenshot qui sotto mostra il costo del layout quando si usano float su
-1.300 box. È certamente un esempio forzato perché la maggior parte delle
-applicazioni utilizzerà diversi mezzi per posizionare gli elementi.
+![Using floats as layout](images/avoid-large-complex-layouts-and-layout-thrashing/layout-float.jpg)
 
-<img
-src="images/avoid-large-complex-layouts-and-layout-thrashing/layout-float.jpg"
-alt="Using floats as layout">
+If we update the sample to use Flexbox, a more recent addition to the web platform, we get a different picture:
 
-Se aggiorniamo l'esempio per utilizzare Flexbox, un'aggiunta più recente alla
-piattaforma web, otteniamo un'immagine diversa:
+![Using flexbox as layout](images/avoid-large-complex-layouts-and-layout-thrashing/layout-flex.jpg)
 
-<img
-src="images/avoid-large-complex-layouts-and-layout-thrashing/layout-flex.jpg"
-alt="Using flexbox as layout">
+Now we spend far less time (3.5ms vs 14ms in this case) in layout for the *same number of elements* and the same visual appearance. It’s important to remember that for some contexts you may not be able to choose Flexbox, since it’s [less widely supported than floats](http://caniuse.com/#search=flexbox), but where you can you should at least investigate the layout model’s impact on your performance, and go with the one that minimizes the cost of performing it.
 
-Ora passiamo molto meno tempo (3,5 ms vs 14 ms in questo caso) nel layout per lo
-*stesso numero di elementi* e lo stesso aspetto visivo. È importante ricordare
-che in alcuni contesti potresti non essere in grado di scegliere Flexbox dal
-momento che è [meno supportato rispetto ai
-float](http://caniuse.com/#search=flexbox)  ma dove puoi, investiga sull'impatto
-del modello di layout sul tuo rendimento e cerca di utilizzare quello che
-minimizza il costo di esecuzione.
+In any case, whether you choose Flexbox or not, you should still **try and avoid triggering layout altogether** during high pressure points of your application!
 
-In ogni caso, indipendentemente dal fatto che tu scelga Flexbox o meno dovresti
-comunque **provare ad evitare di attivare il layout del tutto** durante i punti
-di alta pressione della tua applicazione!
+## Avoid forced synchronous layouts
 
-## Evita layout forzati sincroni
+Shipping a frame to screen has this order:
 
-La consegna di un frame sullo schermo segue questo ordine:
+![Using flexbox as layout](images/avoid-large-complex-layouts-and-layout-thrashing/frame.jpg)
 
-<img src="images/avoid-large-complex-layouts-and-layout-thrashing/frame.jpg"
-alt="Using flexbox as layout">
+First the JavaScript runs, *then* style calculations, *then* layout. It is, however, possible to force a browser to perform layout earlier with JavaScript. It is called a **forced synchronous layout**.
 
-Prima viene eseguito JavaScript, *quindi* calcoli di stile, *quindi il* layout.
-Tuttavia è possibile forzare un browser ad eseguire il layout prima del
-JavaScript. Si chiama **layout forzato sincrono** .
+The first thing to keep in mind is that as the JavaScript runs all the old layout values from the previous frame are known and available for you to query. So if, for example, you want to write out the height of an element (let’s call it “box”) at the start of the frame you may write some code like this:
 
-La prima cosa da tenere a mente è che quando JavaScript viene eseguito tutti i
-vecchi valori di layout del frame precedente sono noti e disponibili per la
-query. Quindi se ad esempio vuoi scrivere l'altezza di un elemento (chiamiamolo
-"box") all'inizio del frame puoi scrivere un codice come questo:
+    // Schedule our function to run at the start of the frame.
+    requestAnimationFrame(logBoxHeight);
+    
+    function logBoxHeight() {
+      // Gets the height of the box in pixels and logs it out.
+      console.log(box.offsetHeight);
+    }
+    
 
-```
-// Schedule our function to run at the start of the frame.
-requestAnimationFrame(logBoxHeight);
+Things get problematic if you’ve changed the styles of the box *before* you ask for its height:
 
-function logBoxHeight() {
-  // Gets the height of the box in pixels and logs it out.
-  console.log(box.offsetHeight);
-}
-```
+    function logBoxHeight() {
+    
+      box.classList.add('super-big');
+    
+      // Gets the height of the box in pixels
+      // and logs it out.
+      console.log(box.offsetHeight);
+    }
+    
 
-Le cose diventano problematiche se hai cambiato gli stili della scatola *prima*
-di chiederne l'altezza:
+Now, in order to answer the height question, the browser must *first* apply the style change (because of adding the `super-big` class), and *then* run layout. Only then will it be able to return the correct height. This is unnecessary and potentially expensive work.
 
-```
-function logBoxHeight() {
+Because of this you should always batch your style reads and do them first (where the browser can use the previous frame’s layout values) and then do any writes:
 
-  box.classList.add('super-big');
+Done correctly the above function would be:
 
-  // Gets the height of the box in pixels
-  // and logs it out.
-  console.log(box.offsetHeight);
-}
-```
+    function logBoxHeight() {
+      // Gets the height of the box in pixels
+      // and logs it out.
+      console.log(box.offsetHeight);
+    
+      box.classList.add('super-big');
+    }
+    
 
-Ora per rispondere alla domanda di altezza il browser deve *prima* applicare il
-cambiamento di stile (a causa dell'aggiunta della classe `super-big` ) e
-*quindi* eseguire il layout. Solo allora sarà in grado di restituire l'altezza
-corretta. Questo è un lavoro non necessario e potenzialmente costoso.
+For the most part you shouldn’t need to apply styles and then query values; using the last frame’s values should be sufficient. Running the style calculations and layout synchronously and earlier than the browser would like are potential bottlenecks, and not something you will typically want to do.
 
-Per questo motivo devi sempre raggruppare le letture di stile ed eseguirle prima
-(in cui il browser può utilizzare i valori di layout del frame precedente) e
-successivamente eseguire qualsiasi scrittura:
+## Avoid layout thrashing
 
-Realizzata correttamente la funzione di cui sopra sarebbe:
+There’s a way to make forced synchronous layouts even worse: *do lots of them in quick succession*. Take a look at this code:
 
-```
-function logBoxHeight() {
-  // Gets the height of the box in pixels
-  // and logs it out.
-  console.log(box.offsetHeight);
+    function resizeAllParagraphsToMatchBlockWidth() {
+    
+      // Puts the browser into a read-write-read-write cycle.
+      for (var i = 0; i < paragraphs.length; i++) {
+        paragraphs[i].style.width = box.offsetWidth + 'px';
+      }
+    }
+    
 
-  box.classList.add('super-big');
-}
-```
+This code loops over a group of paragraphs and sets each paragraph’s width to match the width of an element called “box”. It looks harmless enough, but the problem is that each iteration of the loop reads a style value (`box.offsetWidth`) and then immediately uses it to update the width of a paragraph (`paragraphs[i].style.width`). On the next iteration of the loop, the browser has to account for the fact that styles have changed since `offsetWidth` was last requested (in the previous iteration), and so it must apply the style changes, and run layout. This will happen on *every single iteration!*.
 
-Per la maggior parte non è necessario applicare gli stili e quindi eseguire
-query sui valori; usare i valori dell'ultimo frame dovrebbe essere sufficiente.
-Eseguendo i calcoli di stile e il layout in modo sincrono e precedente rispetto
-al browser desidererebbero essere potenziali colli di bottiglia, e non qualcosa
-che in genere vorresti fare.
+The fix for this sample is to once again *read* then *write* values:
 
-## Evita layout schiaccianti
+    // Read.
+    var width = box.offsetWidth;
+    
+    function resizeAllParagraphsToMatchBlockWidth() {
+      for (var i = 0; i < paragraphs.length; i++) {
+        // Now write.
+        paragraphs[i].style.width = width + 'px';
+      }
+    }
+    
 
-C'è un modo per rendere i layout sincroni forzati ancora peggiori: *farne molti
-in rapida successione* . Dai un'occhiata a questo codice:
+If you want to guarantee safety you should check out [FastDOM](https://github.com/wilsonpage/fastdom), which automatically batches your reads and writes for you, and should prevent you from triggering forced synchronous layouts or layout thrashing accidentally.
 
-```
-function resizeAllParagraphsToMatchBlockWidth() {
+## Feedback {: #feedback }
 
-  // Puts the browser into a read-write-read-write cycle.
-  for (var i = 0; i < paragraphs.length; i++) {
-    paragraphs[i].style.width = box.offsetWidth + 'px';
-  }
-}
-```
-
-Questo codice scorre su un gruppo di paragrafi e imposta la larghezza di ogni
-paragrafo in modo che corrisponda alla larghezza di un elemento chiamato "box".
-Sembra abbastanza innocuo, ma il problema è che ogni iterazione del ciclo legge
-un valore di stile ( `box.offsetWidth` ) e quindi lo usa immediatamente per
-aggiornare la larghezza di un paragrafo ( `paragraphs[i].style.width` ). Alla
-successiva iterazione del ciclo, il browser deve tenere conto del fatto che gli
-stili sono cambiati dall'ultima richiesta di `offsetWidth` (nella precedente
-iterazione), e quindi deve applicare le modifiche allo stile ed eseguire il
-layout. Questo accadrà su *ogni singola iterazione!* .
-
-La correzione per questo esempio è di *leggere* un'altra volta quindi *scrivere*
-i valori:
-
-```
-// Read.
-var width = box.offsetWidth;
-
-function resizeAllParagraphsToMatchBlockWidth() {
-  for (var i = 0; i < paragraphs.length; i++) {
-    // Now write.
-    paragraphs[i].style.width = width + 'px';
-  }
-}
-```
-
-Se si desidera garantire la sicurezza è necessario verificare che
-[FastDOM](https://github.com/wilsonpage/fastdom) esegua automaticamente il batch
-delle letture e delle scritture per voi e dovrebbe impedire
-[all'utente](https://github.com/wilsonpage/fastdom) di attivare accidentalmente
-layout sincroni forzati o schiaccianti.
-
-Translated by
-{% include "web/_shared/contributors/lucaberton.html" %}
+{% include "web/_shared/helpful.html" %}
