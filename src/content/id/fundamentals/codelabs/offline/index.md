@@ -1,271 +1,285 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Pelajari cara mengintegrasikan service worker ke aplikasi yang ada untuk membuat aplikasi itu bekerja offline.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Learn how to integrate a service worker into an existing application to make the application work offline.
 
-{# wf_updated_on: 2016-11-09 #}
-{# wf_published_on: 2016-01-01 #}
+{# wf_auto_generated #} {# wf_updated_on: 2018-07-03 #} {# wf_published_on: 2016-01-01 #}
 
-
-# Menambahkan Service Worker dan Offline ke Aplikasi Web Anda {: .page-title }
+# Adding a Service Worker and Offline into your Web App {: .page-title }
 
 {% include "web/_shared/contributors/paulkinlan.html" %}
 
+## Overview
 
+![3ec8737c20a475df.png](img/3ec8737c20a475df.png)
 
-## Ringkasan
+In this codelab, you learn how to integrate a service worker into an existing application to make the application work offline. The application is called [Air Horner](https://airhorner.com). Click the horn and it makes a sound.
 
+#### What you'll learn
 
+* How to add a basic service worker to an existing project.
+* How to simulate offline mode and inspect and debug a service worker with Chrome DevTools.
+* A simple offline caching strategy.
 
-![9246b0abd8d860da.png](img/9246b0abd8d860da.png)
+#### What you'll need
 
-Dalam codelab ini, Anda mempelajari cara mengintegrasikan service worker ke aplikasi yang sudah ada agar aplikasi bisa bekerja secara offline. Aplikasi ini disebut  [AirHorner](https://airhorner.com). Klik terompet dan itu akan bersuara.
+* Chrome 52 or above.
+* A basic understanding of [Promises](/web/fundamentals/getting-started/primers/promises), Git, and Chrome DevTools.
+* The sample code.
+* A text editor.
+* A local web server. If you want to use the web server described in this codelab, you need Python installed on your command line.
 
-#### Apa yang akan Anda pelajari
+## Get the sample code
 
-* Cara menambahkan service worker dasar ke proyek yang sudah ada.
-* Cara menyimulasikan mode offline dan memeriksa serta men-debug service worker dengan Chrome DevTools.
-* Strategi caching offline sederhana.
-
-#### Apa yang Anda butuhkan
-
-* Chrome 52 atau di atasnya.
-* Pemahaman dasar tentang  [Promises](/web/fundamentals/getting-started/primers/promises), Git, dan Chrome DevTools.
-* Kode contoh.
-* Editor teks.
-* Server web lokal. Jika Anda ingin menggunakan server web yang dijelaskan dalam codelab ini, Anda harus memasang Python pada baris perintah.
-
-
-## Mendapatkan kode contoh
-
-
-
-Membuat duplikat repositori GitHub dari baris perintah melalui SSH:
+Clone the GitHub repository from the command line over SSH:
 
     $ git clone git@github.com:GoogleChrome/airhorn.git
+    
 
-Atau HTTPS:
+Or HTTPS:
 
     $ git clone https://github.com/GoogleChrome/airhorn.git
+    
 
+## Run the sample app
 
-## Menjalankan contoh aplikasi
+First, let's see what the finished sample app looks like (hint: it's amazing).
 
-
-
-Pertama, mari kita lihat seperti apa contoh aplikasi yang sudah selesai (petunjuk: itu menakjubkan). 
-
-Pastikan Anda berada di cabang yang benar (final) dengan memeriksa cabang `master`.
+Make sure you are on the correct (final) branch by checking out the `master` branch.
 
     $ git checkout master
+    
 
-Jalankan situs dari server web lokal.  Anda bisa menggunakan setiap server web, namun untuk codelab selanjutnya kita akan berasumsi bahwa Anda menggunakan `SimpleHTTPServer` Python pada port 3000, sehingga aplikasi akan tersedia dari `localhost:3000`.
+Run the site from a local web server. You can use any web server, but for the rest of this codelab we'll assume that you're using Python's `SimpleHTTPServer` on port 3000, so the app will be available from `localhost:3000`.
 
     $ cd app
     $ python -m SimpleHTTPServer 3000
+    <aside class="key-point">
 
-Bukalah situs di Chrome. Anda akan melihat: ![9246b0abd8d860da.png](img/9246b0abd8d860da.png)
+<p>This repository has one main folder <strong>"app"</strong>. This folder contains the static assets (HTML, CSS, and JavaScript) that you will use for this project.</p>
 
+</aside> 
 
-## Menguji aplikasi
+Open up the site in Chrome. You should see: ![3ec8737c20a475df.png](img/3ec8737c20a475df.png)
 
+## Test the app
 
+Click the horn. It should make a sound.
 
-Klik terompet. Itu akan bersuara.
+Now, you're going to simulate going offline using Chrome DevTools.
 
-Sekarang, Anda akan menyimulasikan secara offline menggunakan Chrome DevTools.
-
-Buka DevTools, masuk ke panel __Application__, dan aktifkan kotak centang __Offline __. Dalam tangkapan layar di bawah, mouse diarahkan ke atas kotak centang. 
+Open DevTools, go to the **Application** panel, and enable the **Offline** checkbox. In the screenshot below the mouse is hovering over the checkbox.
 
 ![479219dc5f6ea4eb.png](img/479219dc5f6ea4eb.png)
 
-Setelah mengeklik kotak centang, perhatikan ikon peringatan (segitiga kuning dengan tanda seru) di sebelah tab panel __Network __. Ini menunjukkan bahwa Anda offline. 
+After clicking the checkbox note the warning icon (yellow triangle with exclamation mark) next to the **Network** panel tab. This indicates that you're offline.
 
-Untuk membuktikan bahwa Anda offline, buka  [https://google.com](https://google.com). Anda akan melihat pesan kesalahan "there is no Internet connection" dari Chrome. 
+To prove that you're offline, go to <https://google.com>. You should see Chrome's "there is no Internet connection" error message.
 
-Sekarang, kembali ke aplikasi Anda. Meskipun Anda offline, laman seharusnya masih bisa dimuat ulang sepenuhnya. Anda tetap bisa menggunakan terompet.
+Now, go back to your app. Although you're offline, the page should still fully reload. You should be able to use the horn still.
 
-Alasan ini berfungsi offline adalah dasar dari codelab ini: dukungan offline dengan service worker.
+The reason this works offline is the basis of this codelab: offline support with service worker.
 
+## Build the starter app
 
-## Membangun aplikasi starter
+You are now going to remove all offline support from the application and you are going to learn how to use a service worker to add the offline support back into the application
 
-
-
-Anda sekarang akan membuang semua dukungan offline dari aplikasi dan Anda akan mempelajari cara menggunakan service worker untuk menambahkan dukungan offline kembali ke dalam aplikasi
-
-Lihat versi "rusak" dari aplikasi yang tidak mengimplementasikan service worker.
+Check out the "broken" version of the app that does not have the service worker implemented.
 
     $ git checkout code-lab
+    
 
-Kembali ke panel __Application __DevTools dan nonaktifkan kotak centang __Offline __, sehingga Anda kembali online.
+Go back to the **Application** panel of DevTools and disable the **Offline** checkbox, so that you're back online.
 
-Jalankan halaman. Aplikasi akan bekerja sesuai harapan.
+Run the page. The app should work as expected.
 
-Sekarang, gunakan DevTools untuk menyimulasikan lagi mode offline (dengan mengaktifkan kotak centang __Offline __di panel __Application __). __Bersiaplah!__ Bila Anda tidak tahu banyak tentang service worker, Anda akan melihat beberapa perilaku yang tidak diharapkan.
+Now, use DevTools to simulate offline mode again (by enabling the **Offline** checkbox in the **Application** panel). **Heads up!** If you don't know much about service workers, you're about to see some unexpected behavior.
 
-Apa yang bisa Anda lihat? Nah, karena Anda offline dan karena versi aplikasi ini tidak memiliki service worker, Anda akan melihat pesan kesalahan khas "there is no Internet connection" dari Chrome.
+What do you expect to see? Well, because you're offline and because this version of the app has no service worker, you'd expect to see the typical "there is no Internet connection" error message from Chrome.
 
-Tapi yang Anda lihat adalah... aplikasi offline yang berfungsi secara penuh!
+But what you actually see is... a fully-functional offline app!
 
-![9246b0abd8d860da.png](img/9246b0abd8d860da.png)
+![3ec8737c20a475df.png](img/3ec8737c20a475df.png)
 
-Apa yang terjadi? Nah, ingat bahwa ketika Anda memulai codelab ini, Anda mencoba versi aplikasi lengkap. Ketika Anda menjalankan versi itu, aplikasi sebenarnya memasang service worker. Sekarang service worker itu berjalan secara otomatis setiap kali Anda menjalankan aplikasi. Setelah service worker dipasang ke dalam cakupan seperti `localhost:3000` (Anda akan mengetahui selengkapnya tentang cakupan pada bagian berikutnya), service worker secara otomatis dijalankan setiap kali Anda mengakses cakupan tersebut, kecuali Anda menghapusnya secara terprogram atau manual. 
+What happened? Well, recall that when you began this codelab, you tried out the completed version of the app. When you ran that version, the app actually installed a service worker. That service worker is now automatically running every time that you run the app. Once a service worker is installed to a scope such as `localhost:3000` (you'll learn more about scope in the next section), that service worker automatically starts up every time that you access the scope, unless you programmatically or manually delete it.
 
-Untuk memperbaiki ini, masuk ke panel __Application __DevTools, klik tab __Service Workers __, kemudian klik tombol __Unregister __. Dalam tangkapan layar di bawah, mouse diarahkan ke atas tombol. 
+To fix this, go to the **Application** panel of DevTools, click on the **Service Workers** tab, and then click the **Unregister** button. In the screenshot below the mouse is hovering over the button.
 
 ![837b46360756810a.png](img/837b46360756810a.png)
 
-Sekarang, sebelum memuat ulang situs, pastikan bahwa Anda masih menggunakan DevTools untuk menyimulasikan mode offline. Muat ulang laman tersebut, dan itu akan menampilkan pesan kesalahan "there is no Internet connection" seperti yang diduga.
+Now, before you reload the site, make sure that you're still using DevTools to simulate offline mode. Reload the page, and it should show you the "there is no Internet connection" error message as expected.
 
 ![da11a350ed38ad2e.png](img/da11a350ed38ad2e.png)
 
+## Register a service worker on the site
 
-## Mendaftarkan service worker pada situs
+Now it's time to add offline support back into the app. This consists of two steps:
 
+1. Create a JavaScript file that will be the service worker.
+2. Tell the browser to register the JavaScript file as the "service worker".
 
+First, create a blank file called `sw.js` and place it in the `/app` folder.<aside class="key-point">
 
-Sekarang saatnya menambahkan kembali dukungan offline ke aplikasi. Ini terdiri dari dua langkah:
+<p><strong>The location of the service worker is important! </strong>For security reasons, a service worker can only control the pages that are in its same directory or its subdirectories. This means that if you place the service worker file in a scripts directory it will only be able to interact with pages in the scripts directory or below.</p>
 
-1. Buat file JavaScript yang akan menjadi service worker.
-2. Perintahkan browser untuk mendaftarkan file JavaScript sebagai "service worker".
+</aside> 
 
-Pertama, buat file kosong bernama `sw.js` dan tempatkan di folder `/app`. 
+Now open `index.html` and add the following code to the bottom of `<body>`.
 
-Sekarang buka `index.html` dan tambahkan kode berikut ke bagian bawah `<body>`.
+    <script>
+    if('serviceWorker' in navigator) {
+      navigator.serviceWorker
+               .register('/sw.js')
+               .then(function() { console.log("Service Worker Registered"); });
+    }
+    </script>
+    
 
-```
-<script>
-if('serviceWorker' in navigator) {
-  navigator.serviceWorker
-           .register('/sw.js')
-           .then(function() { console.log("Service Worker Registered"); });
-}
-</script>
-```
+The script checks if the browser supports service workers. If it does, then it registers our currently blank file `sw.js` as the service worker, and then logs to the Console.
 
-Skrip akan memeriksa bila browser mendukung service worker. Jika memang mendukung, maka itu mendaftarkan file kita yang saat ini kosong `sw.js` sebagai service worker, kemudian melakukan log ke Konsol.
-
-Sebelum menjalankan situs Anda lagi, kembali ke DevTools dan lihat tab __Service Workers __dari panel __Application __. Saat ini seharusnya itu kosong, yang berarti bahwa tidak ada service worker yang dipasang pada situs tersebut. 
+Before you run your site again, go back to DevTools and look at the **Service Workers** tab of the **Application** panel. It should currently be empty, meaning the site has no service workers installed.
 
 ![37d374c4b51d273.png](img/37d374c4b51d273.png)
 
-Pastikan kotak centang __Offline __ di DevTools dinonaktifkan. Muat ulang lagi laman Anda. Saat laman memuat, Anda bisa melihat bahwa sebuah service worker telah didaftarkan.
+Make sure that the **Offline** checkbox in DevTools is disabled. Reload your page again. As the page loads, you can see that a service worker is registered.
 
 ![b9af9805d4535bd3.png](img/b9af9805d4535bd3.png)
 
-Di sebelah label __Source __Anda bisa melihat tautan ke kode sumber dari service worker yang didaftarkan. 
+Next to the **Source** label you can see a link to the source code of the registered service worker.
 
 ![3519a5068bc773ea.png](img/3519a5068bc773ea.png)
 
-Bila Anda ingin memeriksa service worker yang saat ini dipasang di laman, klik pada tautan. Ini akan menunjukkan kepada Anda kode sumber dari service worker di panel __Sources __ dari DevTools. Misalnya, klik sekarang pada tautan, dan Anda akan melihat file kosong. 
+If you ever want to inspect the currently-installed service worker for a page, click on the link. This will show you the source code of the service worker in the **Sources** panel of DevTools. For example, click on the link now, and you should see an empty file.
 
 ![dbc14cbb8ca35312.png](img/dbc14cbb8ca35312.png)
 
+## Install the site assets
 
-## Memasang aset situs
+With the service worker registered, the first time a user hits the page an `install` event is triggered. This event is where you want to cache your page assets.
 
+Add the following code to sw.js.
 
+    importScripts('/cache-polyfill.js');
+    
+    
+    self.addEventListener('install', function(e) {
+     e.waitUntil(
+       caches.open('airhorner').then(function(cache) {
+         return cache.addAll([
+           '/',
+           '/index.html',
+           '/index.html?homescreen=1',
+           '/?homescreen=1',
+           '/styles/main.css',
+           '/scripts/main.min.js',
+           '/sounds/airhorn.mp3'
+         ]);
+       })
+     );
+    });
+    
 
-Dengan service worker telah didaftarkan, saat pertama kali pengguna membuka laman sebuah kejadian `install` dipicu. Kejadian ini adalah saat untuk meng-cache aset laman Anda.
+The first line adds the Cache polyfill. This polyfill is already included in the repository. We need to use the polyfill because the Cache API is not yet fully supported in all browsers. Next comes the `install` event listener. The `install` event listener opens the `caches` object and then populates it with the list of resources that we want to cache. One important thing about the `addAll` operation is that it's all or nothing. If one of the files is not present or fails to be fetched, the entire `addAll` operation fails. A good application will handle this scenario.
 
-Tambahkan kode berikut ke sw.js.
+The next step is to program our service worker to return the intercept the requests to any of these resources and use the `caches` object to return the locally stored version of each resource.
 
-```
-importScripts('/cache-polyfill.js');
+<
 
+aside markdown="1" class="key-point">
 
-self.addEventListener('install', function(e) {
- e.waitUntil(
-   caches.open('airhorner').then(function(cache) {
-     return cache.addAll([
-       '/',
-       '/index.html',
-       '/index.html?homescreen=1',
-       '/?homescreen=1',
-       '/styles/main.css',
-       '/scripts/main.min.js',
-       '/sounds/airhorn.mp3'
-     ]);
-   })
- );
-});
-```
+<h4>Frequently Asked Questions</h4>
 
-Baris pertama menambahkan polyfill Cache. Polyfill ini sudah termasuk dalam repositori. Kita harus menggunakan polyfill karena Cache API belum sepenuhnya didukung di semua browser. Berikutnya adalah event listener `install`. Event listener `install` membuka objek `caches` dan kemudian mengisinya dengan daftar sumber daya yang ingin kita cache. Satu yang perlu diperhatikan dari operasi `addAll` adalah bahwa operasi ini bersifat semua atau tidak sama sekali. Bila salah satu file tidak ada atau gagal diambil, seluruh operasi `addAll` akan gagal. Aplikasi yang baik akan mengatasi skenario ini.
+<ul>
+  
+<li>Where is the polyfill?</li>
+<li><a href="https://github.com/coonsta/cache-polyfill">https://github.com/coonsta/cache-polyfill</a> </li>
+<li>Why do I need to polyfill?</li>
+<li>Currently Chrome and other browsers don't yet fully support the <code>addAll</code> method (<strong>note:</strong> Chrome 46 will be compliant).</li>
+<li>Why do you have ?homescreen=1</li>
+  
+  <li>
+    
+<p>URLs with query string parameters are treated as individual URLs and need to be cached separately.</p>
+</aside>
+  </li>
+</ul>
 
-Langkah berikutnya adalah memprogram service worker kita untuk mengembalikan cegatan permintaan ke setiap sumber daya ini dan menggunakan objek `caches` untuk mengembalikan versi yang disimpan secara lokal dari masing-masing sumber daya.
+## Intercept the web page requests
 
+One powerful feature of service workers is that, once a service worker controls a page, it can intercept every request that the page makes and decide what to do with the request. In this section you are going to program your service worker to intercept requests and return the cached versions of assets, rather than going to the network to retrieve them.
 
-## Mencegat permintaan laman web
+The first step is to attach an event handler to the `fetch` event. This event is triggered for every request that is made.
 
+Add the following code to the bottom of your `sw.js` to log the requests made from the parent page.
 
+    self.addEventListener('fetch', function(event) {
+     console.log(event.request.url);
+    });
+    
 
-Salah satu fitur yang kuat dari service worker adalah bahwa, setelah service worker mengontrol laman, itu bisa mencegat setiap permintaan yang dibuat laman dan memutuskan apa yang harus dilakukan dengan permintaan tersebut. Pada bagian ini Anda akan memprogram service worker untuk mencegat permintaan dan mengembalikan versi ter-cache dari aset, daripada masuk ke jaringan untuk mengambilnya.
+Let's test this out. **Heads up!** You're about to see some more unexpected service worker behavior.
 
-Langkah pertama adalah menyematkan penangan kejadian untuk kejadian `fetch`. Kejadian ini dipicu untuk setiap permintaan yang dibuat.
-
-Tambahkan kode berikut ke bagian bawah `sw.js` Anda untuk mencatat permintaan yang dibuat dari laman induk.
-
-Mari kita menguji ini. __Bersiaplah!__ Anda akan melihat lebih banyak perilaku service worker yang tak terduga. 
-
-Buka DevTools dan masuk ke panel __Application__. Kotak centang __Offline __seharusnya dinonaktifkan. Tekan tombol `Esc` untuk membuka laci __Console __di bagian bawah jendela DevTools. Jendela DevTools Anda akan terlihat mirip dengan tangkapan layar berikut:
+Open DevTools and go to the **Application** panel. The **Offline** checkbox should be disabled. Press the `Esc` key to open the **Console** drawer at the bottom of your DevTools window. Your DevTools window should look similar to the following screenshot:
 
 ![c96de824be6852d7.png](img/c96de824be6852d7.png)
 
-Muat ulang laman Anda sekarang dan lihat lagi jendela DevTools. Kesatu, kita menduga akan melihat sekelompok permintaan di-log ke Konsol, namun itu tidak terjadi. Kedua, di panel __Service Worker __bisa kita lihat bahwa __Status __telah berubah:
+Reload your page now and look at the DevTools window again. For one, we're expecting to see a bunch of requests logged to the Console, but that's not happening. For two, in the **Service Worker** pane we can see that the **Status** has changed:
 
 ![c7cfb6099e79d5aa.png](img/c7cfb6099e79d5aa.png)
 
-Dalam __Status __ada sebuah service worker baru yang menunggu diaktifkan. Itu adalah service worker baru yang menyertakan perubahan yang baru saja kita buat. Jadi, untuk beberapa alasan, service worker lama yang kami pasang (yang hanya file kosong) masih mengontrol laman. Bila Anda mengeklik tautan `sw.js` di sebelah __Source __Anda bisa memverifikasi bahwa service worker lama masih berjalan. 
+In the **Status** there's a new service worker that's waiting to activate. That must be the new service worker that includes the changes that we just made. So, for some reason, the old service worker that we installed (which was just a blank file) is still controlling the page. If you click on the `sw.js` link next to **Source** you can verify that the old service worker is still running.<aside class="key-point">
 
-Untuk mengatasi ketidaknyamanan ini, aktifkan kotak centang __Update on reload__.
+<p>This behavior is by design. Check out  <a href="/web/fundamentals/primers/service-worker/update-a-service-worker">Update a Service Worker</a> to learn more about the service worker lifecycle.</p>
+
+</aside> 
+
+To fix this inconvenience, enable the **Update on reload** checkbox.
 
 ![26f2ae9a805bc69b.png](img/26f2ae9a805bc69b.png)
 
-Ketika kotak centang ini diaktifkan, DevTools selalu memperbarui service worker setiap kali laman dimuat ulang. Hal ini sangat berguna ketika secara aktif mengembangkan service worker.
+When this checkbox is enabled, DevTools always updates the service worker on every page reload. This is very useful when actively developing a service worker.
 
-Muat ulang laman tersebut sekarang dan Anda bisa melihat bahwa sebuah service worker baru dipasang dan URL permintaan sedang di-log ke Konsol, seperti yang diharapkan.
+Reload the page now and you can see that a new service worker is installed and that the request URLs are being logged to the Console, as expected.
 
 ![53c23650b131143a.png](img/53c23650b131143a.png)
 
-Sekarang Anda perlu memutuskan apa yang harus dilakukan dengan semua permintaan itu. Secara default, jika Anda tidak melakukan apa-apa, permintaan akan diteruskan ke jaringan dan respons dikembalikan ke laman web.
+Now you need to decide what to do with all of those requests. By default, if you don't do anything, the request is passed to the network and the response is returned to the web page.
 
-Agar aplikasi Anda bekerja secara offline, Anda harus menarik permintaan dari cache, bila tersedia.
+To make your application work offline you need to pull the request from the cache, if it is available.
 
-Perbarui event listener fetch agar cocok dengan kode di bawah ini.
+Update your fetch event listener to match the code below.
 
-Metode `event.respondWith()` memberi tahu browser untuk mengevaluasi hasil dari kejadian di masa mendatang. `caches.match(event.request)` mengambil permintaan web saat ini yang memicu kejadian fetch dan mencari dalam cache untuk sumber daya yang cocok. Pencocokan dilakukan dengan melihat string URL. Metode `match` mengembalikan promise yang terselesaikan bahkan jika file tersebut tidak ditemukan dalam cache. Ini berarti Anda mendapatkan pilihan tentang apa yang Anda lakukan. Dalam kasus sederhana, ketika file tidak ditemukan, Anda cukup `fetch` dari jaringan dan mengembalikannya ke browser.
+    self.addEventListener('fetch', function(event) {
+     console.log(event.request.url);
+    
+     event.respondWith(
+       caches.match(event.request).then(function(response) {
+         return response || fetch(event.request);
+       })
+     );
+    });
+    
 
-Ini adalah skenario paling sederhana; ada banyak skenario caching lainnya. Misalnya, Anda bisa secara bertahap meng-cache semua respons untuk permintaan sebelumnya yang belum di-cache, sehingga di kemudian hari mereka semua bisa dikembalikan dari cache. 
+The `event.respondWith()` method tells the browser to evaluate the result of the event in the future. `caches.match(event.request)` takes the current web request that triggered the fetch event and looks in the cache for a resource that matches. The match is performed by looking at the URL string. The `match` method returns a promise that resolves even if the file is not found in the cache. This means that you get a choice about what you do. In your simple case, when the file is not found, you simply want to `fetch` it from the network and return it to the browser.
 
+This is the simplest case; there are many other caching scenarios. For example, you could incrementally cache all responses for previously uncached requests, so in the future they are all returned from the cache.
 
-## Selamat!
+## Congratulations!
 
+You now have offline support. Reload your page while still online to update your service worker to the latest version, and then use DevTools to go into offline mode. Reload your page again, and you should have a fully-functional offline air horn!
 
+#### What we've covered
 
-Anda sekarang memiliki dukungan offline. Muat ulang laman Anda saat masih online untuk memperbarui service worker ke versi terbaru, kemudian gunakan DevTools untuk masuk ke mode offline. Muat ulang lagi laman Anda, dan Anda akan memiliki air horn offline yang berfungsi secara penuh!
+* How to add a basic service worker to an existing project.
+* How to use Chrome DevTools to simulate offline mode and to inspect and debug service workers.
+* A simple offline caching strategy.
 
-#### Apa yang sudah kita bahas
+#### Next Steps
 
-* Cara menambahkan service worker dasar ke proyek yang sudah ada.
-* Cara menggunakan Chrome DevTools untuk menyimulasikan mode offline dan untuk memeriksa serta men-debug service worker.
-* Strategi caching offline sederhana.
+* Learn how to easily add robust [offline support with Polymer offline elements](https://codelabs.developers.google.com/codelabs/sw-precache/index.html?index=..%2F..%2Findex#0)
+* Explore more [advanced caching techniques](https://jakearchibald.com/2014/offline-cookbook/)
 
-#### Langkah Berikutnya
+#### Learn More
 
-* Pelajari cara mudah menambahkan  [dukungan offline dengan elemen offline Polymer](https://codelabs.developers.google.com/codelabs/sw-precache/index.html?index=..%2F..%2Findex#0)
-* Jelajahi selengkapnya  [teknik caching lanjutan](https://jakearchibald.com/2014/offline-cookbook/)
+* [Introduction to service worker](/web/fundamentals/primers/service-worker/)
 
-#### Ketahui Selengkapnya
+## Found an issue, or have feedback? {: .hide-from-toc }
 
-*  [Pengantar service worker](/web/fundamentals/primers/service-worker/)
-
-
-
-
-
-## Menemukan masalah, atau memiliki masukan? {: .hide-from-toc }
-Bantu kami menjadikan code lab lebih baik dengan mengirimkan 
-[masalah](https://github.com/googlesamples/io2015-codelabs/issues) hari ini. Dan terima kasih!
-
-{# wf_devsite_translation #}
+Help us make our code labs better by submitting an [issue](https://github.com/googlesamples/io2015-codelabs/issues) today. And thanks!
