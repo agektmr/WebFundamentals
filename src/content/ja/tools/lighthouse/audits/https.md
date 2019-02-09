@@ -1,52 +1,33 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Lighthouse の監査項目「サイトを HTTPS で配信する」のリファレンス ドキュメント。
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Reference documentation for the "Uses HTTPS" Lighthouse audit.
 
-{# wf_updated_on: 2016-09-19 #}
-{# wf_published_on: 2016-09-19 #}
+{# wf_updated_on: 2018-07-23 #} {# wf_published_on: 2016-09-19 #} {# wf_blink_components: N/A #}
 
-#  サイトを HTTPS で配信する {: .page-title }
+# Uses HTTPS {: .page-title }
 
-##  監査が重要である理由 {: #why }
+## Overview {: #overview }
 
-機密データを扱わない場合でも、すべてのウェブサイトは HTTPS で保護されている必要があります。
-HTTPS は、第三者によるウェブサイトとユーザー間の通信内容の傍受および改ざんを防止します。
+All websites should be protected with HTTPS, even ones that don't handle sensitive data. HTTPS prevents intruders from tampering with or passively listening in on the communications between your site and your users.
 
+HTTPS is also a prerequisite for many new, powerful web platform features, such as taking pictures or recording audio.
 
-HTTPS 接続を使用していないと、写真撮影や録音など、ウェブ プラットフォームの強力な新機能の多くを利用することができません。
+By definition, an app cannot qualify as a progressive web app if it does not run on HTTPS. This is because many core progressive web app technologies, such as service workers, require HTTPS.
 
+For more information on why all sites should be protected with HTTPS, see [Why You Should Always Use HTTPS](/web/fundamentals/security/encrypt-in-transit/why-https).
 
-定義上、HTTPS で動作しないアプリが、Progressive Web App と見なされることはありません。
-これは、Service Worker など、多くの Progressive Web App のコア技術で、HTTPS 接続が必要であるためです。
+## Recommendations {: #recommendations }
 
+Migrate your site to HTTPS.
 
-すべてのサイトを HTTPS で保護すべき理由については、[常に HTTPS を使用する必要がある理由](/web/fundamentals/security/encrypt-in-transit/why-https)をご覧ください。
+Many hosting platforms, such as [Firebase](https://firebase.google.com/docs/hosting/){: .external } or [GitHub Pages](https://pages.github.com/){: .external }, are secure by default.
 
+If you're running your own servers and need a cheap and easy way to generate certificates, check out [Let's Encrypt](https://letsencrypt.org/){: .external }. For more help on enabling HTTPS on your servers, see the following set of docs: [Encrypting data in transit](/web/fundamentals/security/encrypt-in-transit/enable-https).
 
-##  監査に合格する方法 {: #how }
+If your page is already running on HTTPS but you're failing this audit, then you may have problems with mixed content. Mixed content is when a secure site requests an unprotected (HTTP) resource. Check out the following doc on the Chrome DevTools Security panel to learn how to debug these situations: [Understand security issues](/web/tools/chrome-devtools/debug/security).
 
-サイトを HTTPS に移行します。
+## More information {: #more-info }
 
-[Firebase](https://firebase.google.com/docs/hosting/){: .external }
-や [GitHub Pages](https://pages.github.com/){: .external } など、多くのホスティング プラットフォームは、デフォルトで安全性が確保されています。
+Lighthouse waits for an event from the Chrome Debugger Protocol indicating that the page is running on a secure connection. If the event is not heard within 10 seconds, the audit fails.
 
+## Feedback {: #feedback }
 
-サーバーを所有しており、安価で簡単に証明書を生成したい場合は、[Let's Encrypt](https://letsencrypt.org/){: .external } の内容をご覧ください。
-自身のサーバーで HTTPS
-を有効にするための詳細情報については、[送信中のデータの暗号化](/web/fundamentals/security/encrypt-in-transit/enable-https)の一連のドキュメントをご覧ください。
-
-
-すでに HTTPS で配信されているページが監査に合格しない場合は、混在コンテンツに原因がある可能性があります。
-混在コンテンツとは、安全なサイトから保護されていない（HTTP ）リソースをリクエストした際に発生する状態です。
-この問題をデバッグする方法については、Chrome DevTools の Security
-パネルにある[セキュリティの問題を理解する](/web/tools/chrome-devtools/debug/security)のドキュメントをご覧ください。
-
-
-{% include "web/tools/lighthouse/audits/implementation-heading.html" %}
-
-Lighthouse では、該当ページが安全な接続で配信されていることを示す Chrome Debugger Protocol からのイベントを待機します。
-10 秒以内にイベントが検知されなければ、監査には合格しません。
-
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
