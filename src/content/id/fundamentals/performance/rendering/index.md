@@ -1,112 +1,75 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Pengguna akan tahu jika situs dan aplikasi tidak berjalan dengan baik, jadi optimalisasi kinerja rendering sangatlah penting!
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Users notice if sites and apps don't run well, so optimizing rendering performance is crucial!
 
-{# wf_updated_on: 2017-07-12 #}
-{# wf_published_on: 2015-03-20 #}
+{# wf_updated_on: 2018-08-17 #} {# wf_published_on: 2015-03-20 #} {# wf_blink_components: Blink>Paint #}
 
-# Kinerja Rendering {: .page-title }
+# Rendering Performance {: .page-title }
 
 {% include "web/_shared/contributors/paullewis.html" %}
 
-Pengguna web saat ini
-[berharap agar laman yang mereka kunjungi akan interaktif dan berjalan mulus](https://paul.kinlan.me/what-news-readers-want/)
-dan karena itulah Anda perlu semakin memfokuskan waktu dan usaha. Laman
-tidak hanya harus cepat dimuat, namun juga berjalan dengan baik; guliran
-harus secepat gerakan jari, dan animasi serta interaksi harus sehalus sutera.
+Users of today’s web [expect that the pages they visit will be interactive and smooth](https://paul.kinlan.me/what-news-readers-want/) and that’s where you need to increasingly focus your time and effort. Pages should not only load quickly, but also run well; scrolling should be stick-to-finger fast, and animations and interactions should be silky smooth.
 
-Untuk menulis situs dan aplikasi yang berkinerja, Anda perlu memahami cara HTML, JavaScript dan CSS ditangani oleh browser, dan memastikan bahwa kode yang Anda tulis (dan kode pihak ke-3 yang disertakan) berjalan seefisien mungkin.
+To write performant sites and apps you need to understand how HTML, JavaScript and CSS is handled by the browser, and ensure that the code you write (and the other 3rd party code you include) runs as efficiently as possible.
 
-## 60 fps dan Laju Penyegaran Perangkat
+## 60fps and Device Refresh Rates
 
 <div class="attempt-right">
   <figure>
-    <img src="images/intro/response.jpg" alt="Pengguna sedang berinteraksi dengan situs web.">
+    <img src="images/intro/response.jpg" alt="User interacting with a website.">
   </figure>
 </div>
 
-Sebagian besar perangkat sekarang ini memperbarui layarnya **60 kali per detik**. Jika ada
-animasi atau transisi yang sedang berjalan, atau pengguna yang sedang menggulir laman,
-browser perlu mencocokkan laju penyegaran perangkat dan menempatkan 1 gambar baru, atau
-bingkai, untuk setiap pembaruan layar itu.
+Most devices today refresh their screens **60 times a second**. If there’s an animation or transition running, or the user is scrolling the pages, the browser needs to match the device’s refresh rate and put up 1 new picture, or frame, for each of those screen refreshes.
 
+Each of those frames has a budget of just over 16ms (1 second / 60 = 16.66ms). In reality, however, the browser has housekeeping work to do, so all of your work needs to be completed inside **10ms**. When you fail to meet this budget the frame rate drops, and the content judders on screen. This is often referred to as **jank**, and it negatively impacts the user's experience.
 
-Setiap bingkai itu memiliki alokasi waktu hanya 16 md (1 detik / 60 = 16,66 md).
-Akan tetapi, pada kenyataannya browser memiliki pekerjaan rumah untuk dilakukan, jadi semua pekerjaan
-Anda harus diselesaikan dalam waktu **10 md**. Bila Anda gagal memenuhi alokasi waktu
-ini, laju bingkai akan turun, dan materi akan bergoyang di layar. Hal ini
-sering kali disebut dengan **jank**, dan berdampak negatif pada pengalaman pengguna.
+## The pixel pipeline
 
-## Saluran piksel
+There are five major areas that you need to know about and be mindful of when you work. They are areas you have the most control over, and key points in the pixels-to-screen pipeline:
 
-Ada lima bidang utama yang perlu Anda ketahui dan ingat saat
-bekerja. Bidang-bidang itulah yang bisa Anda kontrol dan menjadi poin utama dalam
-saluran piksel-ke-layar:
+<img src="images/intro/frame-full.jpg"  alt="The full pixel pipeline" />
 
-<img src="images/intro/frame-full.jpg"  alt="Pipeline piksel penuh">
+* **JavaScript**. Typically JavaScript is used to handle work that will result in visual changes, whether it’s jQuery’s `animate` function, sorting a data set, or adding DOM elements to the page. It doesn’t have to be JavaScript that triggers a visual change, though: CSS Animations, Transitions, and the Web Animations API are also commonly used.
+* **Style calculations**. This is the process of figuring out which CSS rules apply to which elements based on matching selectors, for example, `.headline` or `.nav > .nav__item`. From there, once rules are known, they are applied and the final styles for each element are calculated.
+* **Layout**. Once the browser knows which rules apply to an element it can begin to calculate how much space it takes up and where it is on screen. The web’s layout model means that one element can affect others, for example the width of the `<body>` element typically affects its children’s widths and so on all the way up and down the tree, so the process can be quite involved for the browser.
+* **Paint**. Painting is the process of filling in pixels. It involves drawing out text, colors, images, borders, and shadows, essentially every visual part of the elements. The drawing is typically done onto multiple surfaces, often called layers.
+* **Compositing**. Since the parts of the page were drawn into potentially multiple layers they need to be drawn to the screen in the correct order so that the page renders correctly. This is especially important for elements that overlap another, since a mistake could result in one element appearing over the top of another incorrectly.
 
-* **JavaScript**. Biasanya JavaScript digunakan untuk menangani pekerjaan yang akan mengakibatkan perubahan visual, baik berupa fungsi `animate` jQuery, pengurutan set data, atau penambahan elemen DOM ke laman. Walau begitu, tidak harus JavaScript yang memicu perubahan visual: CSS Animations, Transitions, dan Web Animations API, juga umum digunakan.
-* **Penghitungan gaya**. Inilah proses untuk mengetahui aturan CSS mana yang berlaku pada suatu elemen berdasarkan pemilih kecocokan, misalnya, `.headline` atau `.nav > .nav__item`. Dari sana, begitu diketahui, aturan akan diterapkan dan gaya akhir untuk setiap elemen akan dihitung.
-* **Layout**. Setelah browser mengetahui aturan yang akan diterapkan pada elemen, browser bisa mulai menghitung banyaknya ruang diperlukan dan lokasinya di layar. Model layout web berarti satu elemen bisa memengaruhi elemen lainnya; misalnya, lebar elemen `<body>` biasanya memengaruhi lebar anaknya dan seterusnya ke atas dan ke bawah pohon tersebut, sehingga proses itu berpengaruh luas untuk browser.
-* **Menggambar**. Menggambar adalah proses pengisian piksel. Ini termasuk menggambar teks, warna, gambar, border, dan bayangan, pokoknya setiap komponen visual elemen. Menggambar biasanya dilakukan pada beberapa permukaan sekaligus, yang biasa disebut layer.
-* **Komposisi**. Karena bagian-bagian laman kemungkinan digambar ke dalam sekian banyak layer sekaligus, maka perlu digambar ke layar dalam urutan yang benar agar laman bisa di-render dengan benar. Hal ini sangat penting bagi elemen yang saling tumpang tindih, karena suatu kesalahan dapat mengakibatkan satu elemen muncul di atas elemen lain secara salah.
+Each of these parts of the pipeline represents an opportunity to introduce jank, so it's important to understand exactly what parts of the pipeline your code triggers.
 
-Masing-masing bagian pipeline ini mewakili kemungkinan munculnya jank, jadi kita perlu memahami secara persis bagian pipeline mana yang akan dipicu oleh kode Anda.
+Sometimes you may hear the term "rasterize" used in conjunction with paint. This is because painting is actually two tasks: 1) creating a list of draw calls, and 2) filling in the pixels.
 
-Kadang-kadang Anda mungkin mendengar istilah "rasterize" digunakan bersama paint.
-Ini karena menggambar sebenarnya adalah dua tugas: 1) membuat daftar panggilan
-draw, dan 2) pengisian piksel.
+The latter is called "rasterization" and so whenever you see paint records in DevTools, you should think of it as including rasterization. (In some architectures creating the list of draw calls and rasterizing are done in different threads, but that isn't something under developer control.)
 
-Yang kedua disebut "rasterisasi" jadi kapan saja melihat catatan paint di
-DevTools, Anda harus menganggapnya sebagai termasuk rasterisasi. (Di beberapa
-arsitektur, pembuatan daftar panggilan draw dan rasterisasi dilakukan di thread
-berbeda, namun hal itu tidak bisa dikontrol oleh developer.)
-
-Anda tidak harus selalu menyentuh setiap bagian saluran di setiap bingkai.
-Pada kenyataannya, ada tiga cara penyaluran _biasanya_ digunakan untuk bingkai yang
-diberikan saat Anda membuat perubahan visual, baik dengan JavaScript, CSS, maupun
-Animasi Web:
+You won’t always necessarily touch every part of the pipeline on every frame. In fact, there are three ways the pipeline *normally* plays out for a given frame when you make a visual change, either with JavaScript, CSS, or Web Animations:
 
 ### 1. JS / CSS > Style > Layout > Paint > Composite
 
-<img src="images/intro/frame-full.jpg"  alt="Pipeline piksel penuh">
+<img src="images/intro/frame-full.jpg"  alt="The full pixel pipeline" />
 
-Jika Anda mengubah properti “layout”, sehingga properti yang mengubah geometri
-elemen, seperti lebar, tinggi, atau posisinya dengan kiri atau atas, maka browser
-harus memeriksa semua elemen lainnya dan "mengubah posisi/geometri" laman. Area yang
-terpengaruh perlu digambar ulang, dan elemen hasil penggambaran akhir perlu
-disusun kembali bersama-sama.
+If you change a “layout” property, so that’s one that changes an element’s geometry, like its width, height, or its position with left or top, the browser will have to check all the other elements and “reflow” the page. Any affected areas will need to be repainted, and the final painted elements will need to be composited back together.
 
 ### 2. JS / CSS > Style > Paint > Composite
 
-<img src="images/intro/frame-no-layout.jpg" alt="Pipeline piksel tanpa layout.">
+<img src="images/intro/frame-no-layout.jpg" alt="The  pixel pipeline without layout." />
 
-Jika Anda mengubah properti “paint only”, seperti gambar latar belakang, warna teks, atau
-bayangan, yakni yang tidak memengaruhi layout laman, maka browser akan melewati
-layout, namun tetap akan menggambar.
+If you changed a “paint only” property, like a background image, text color, or shadows, in other words one that does not affect the layout of the page, then the browser skips layout, but it will still do paint.
 
 ### 3. JS / CSS > Style > Composite
 
-<img src="images/intro/frame-no-layout-paint.jpg" alt="Pipeline piksel tanpa layout atau paint.">
+<img src="images/intro/frame-no-layout-paint.jpg" alt="The pixel pipeline without layout or paint." />
 
-Jika Anda mengubah properti yang tidak memerlukan layout maupun paint, maka
-browser akan melompatinya untuk melakukan komposisi saja.
+If you change a property that requires neither layout nor paint, and the browser jumps to just do compositing.
 
-Versi akhir ini paling murah dan paling diinginkan untuk titik tekanan tinggi
-dalam daur hidup aplikasi, seperti animasi atau pengguliran.
+This final version is the cheapest and most desirable for high pressure points in an app's lifecycle, like animations or scrolling.
 
-Note: Jika Anda ingin mengetahui manakah dari ketiga versi di atas yang mengubah properti CSS yang akan dipicu, lihat [Pemicu CSS](https://csstriggers.com). Dan jika Anda ingin jalur cepat ke animasi berkinerja tinggi, bacalah bagian tentang [mengubah properti compositor-saja](stick-to-compositor-only-properties-and-manage-layer-count).
+Note: If you want to know which of the three versions above changing any given CSS property will trigger head to [CSS Triggers](https://csstriggers.com). And if you want the fast track to high performance animations, read the section on [changing compositor-only properties](stick-to-compositor-only-properties-and-manage-layer-count).
 
-Kinerja adalah seni menghindari pekerjaan, dan membuat pekerjaan yang Anda lakukan jadi
-seefisien mungkin. Umumnya, ini adalah tentang bekerja sama dengan browser, bukan
-melawannya. Perlu diingat bahwa pekerjaan yang tercantum di atas di
-saluran berbeda dalam artian biaya komputasi; sebagian tugas lebih mahal dibanding
-yang lain!
+Performance is the art of avoiding work, and making any work you do as efficient as possible. In many cases it's about working with the browser, not against it. It’s worth bearing in mind that the work listed above in the pipeline differ in terms of computational cost; some tasks are more expensive than others!
 
-Mari kita pelajari lebih jauh aneka bagian pipeline ini. Kita akan mengamati
-berbagai masalah umum serta cara mendiagnosis dan memperbaikinya.
+Let’s take a dive into the different parts of the pipeline. We’ll take a look at the common issues, as well how to diagnose and fix them.
 
 {% include "web/_shared/udacity/ud860.html" %}
 
+## Feedback {: #feedback }
 
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
