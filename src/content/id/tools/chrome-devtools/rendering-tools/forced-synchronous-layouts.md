@@ -1,141 +1,89 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Ikuti terus panduan interaktif ini untuk mempelajari cara menggunakan DevTools guna mendiagnosis layout sinkron paksa.
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Follow along with this interactive guide to learn how to use DevTools to diagnose forced synchronous layouts.
 
-{# wf_updated_on: 2017-07-12 #}
-{# wf_published_on: 2015-04-13 #}
+{# wf_updated_on: 2018-07-27 #} {# wf_published_on: 2015-04-13 #} {# wf_blink_components: Platform>DevTools #}
 
-# Mendiagnosis Layout Sinkron Paksa {: .page-title }
+# Diagnose Forced Synchronous Layouts {: .page-title }
 
-{% include "web/_shared/contributors/kaycebasques.html" %}
-{% include "web/_shared/contributors/megginkearney.html" %}
+{% include "web/_shared/contributors/kaycebasques.html" %} {% include "web/_shared/contributors/megginkearney.html" %}
 
-Pelajari cara menggunakan DevTools untuk mendiagnosis layout 
-sinkron paksa.
+Warning: This page is deprecated. See [Get Started With Analyzing Runtime Performance](/web/tools/chrome-devtools/evaluate-performance) for an up-to-date tutorial on forced synchronous layouts.
 
-Dalam panduan ini, Anda akan mempelajari cara men-debug [layout sinkron paksa][fsl] dengan 
-mengidentifikasi dan memperbaiki masalah di demo langsung.  Demo menggerakkan gambar 
-menggunakan [`requestAnimationFrame()`][raf], yang merupakan pendekatan yang disarankan untuk 
-animasi berbasis bingkai. Akan tetapi, cukup banyak jank atau sendatan di 
-animasi. Sasaran Anda adalah mengidentifikasi sebab jank dan memperbaiki masalah sehingga 
-demo berjalan mulus di 60 FPS. 
+Learn how to use DevTools to diagnose forced synchronous layouts.
 
-[fsl]: /web/fundamentals/performance/rendering/avoid-large-complex-layouts-and-layout-thrashing#avoid-forced-synchronous-layouts
+In this guide you learn how to debug [forced synchronous layouts](/web/fundamentals/performance/rendering/avoid-large-complex-layouts-and-layout-thrashing#avoid-forced-synchronous-layouts) by identifying and fixing issues in a live demo. The demo animates images using [`requestAnimationFrame()`](/web/fundamentals/performance/rendering/optimize-javascript-execution#use-requestanimationframe-for-visual-changes), which is the recommended approach for frame-based animation. However, there's a considerable amount of jank in the animation. Your goal is to identify the cause of the jank and fix the issue so that the demo runs at a silky-smooth 60 FPS.
 
-[raf]: /web/fundamentals/performance/rendering/optimize-javascript-execution#use-requestanimationframe-for-visual-changes
+## Gather data
 
+First, you need to capture data so that you can understand exactly what happens as your page runs.
 
-## Mengumpulkan data
+1. Open the [demo](https://googlesamples.github.io/web-fundamentals/tools/chrome-devtools/rendering-tools/forcedsync.html).
+2. Open the **Timeline** panel of DevTools.
+3. Enable the **JS Profile** option. When analyzing the flame chart later, this option will let you see exactly which functions were called. 
+4. Click **Start** on the page to start the animation.
+5. Click the **Record** button on the Timeline panel to start the Timeline recording. 
+6. Wait two seconds.
+7. Click the **Record** button again to stop the recording. 
 
-Pertama, Anda perlu merekam data agar bisa memahami dengan persis apa yang terjadi
-saat laman dijalankan. 
+When you are finished recording you should see something like the following on the Timeline panel.
 
-1. Buka [demo](https://googlesamples.github.io/web-fundamentals/tools/chrome-devtools/rendering-tools/forcedsync.html).
-2. Buka panel **Timeline** DevTools.
-3. Aktifkan opsi **JS Profile**. Saat menganalisis bagan api nanti, opsi
-   ini akan memungkinkan Anda melihat secara persis fungsi mana yang dipanggil.
-4. Klik **Start** di laman untuk memulai animasi.
-5. Klik tombol **Record** pada panel Timeline untuk memulai rekaman
-   Timeline.
-1. Tunggu dua detik.
-1. Klik tombol **Record** lagi untuk menghentikan rekaman. 
+![timeline recording of janky demo](imgs/demo-recording.png)
 
-Setelah selesai merekam, Anda seharusnya melihat sesuatu seperti berikut
-di panel Timeline. 
+## Identify problem
 
-![rekaman timeline demo tersendat](imgs/demo-recording.png)
+Now that you have your data, it's time to start making sense of it.
 
-## Identifikasi masalah
+At a glance, you can see in the **Summary** pane of your Timeline recording that the browser spent most of its time rendering. Generally speaking, if you can [optimize your page's layout operations](/web/tools/chrome-devtools/profile/rendering-tools/analyze-runtime#layout), you may be able to reduce time spent rendering.
 
-Sekarang setelah memiliki data, waktunya untuk memahaminya. 
+![Timeline summary](imgs/summary.png)
 
-Sekilas, Anda bisa melihat di panel **Summary** di rekaman Timeline 
-bahwa browser menghabiskan sebagian besar waktunya pada rendering. Secara umum, jika Anda
-bisa [mengoptimalkan operasi layout laman][layout], Anda mungkin bisa mengurangi
-waktu yang dihabiskan untuk rendering. 
+Now move your attention to the pink bars just below the **Overview** pane. These represent frames. Hover over them to see more information about the frame.
 
-![Rangkuman timeline](imgs/summary.png)
+![long frame](imgs/long-frame.png)
 
-Sekarang perhatikan bilah merah muda tepat di bawah panel **Overview**.
-Ini menggambarkan bingkai. Arahkan kursor ke atasnya untuk melihat informasi selengkapnya tentang
-bingkai.
+The frames are taking a long time to complete. For smooth animations you want to target 60 FPS.
 
-![bingkai panjang](imgs/long-frame.png)
+Now it's time to diagnose exactly what is wrong. Using your mouse, [zoom in](/web/tools/chrome-devtools/profile/evaluate-performance/timeline-tool#zoom) on a call stack.
 
-Bingkai memakan waktu lama untuk diselesaikan. Agar animasi berjalan mulus, sebaiknya targetkan
-60 FPS. 
+![zoomed timeline recording](imgs/zoom.png)
 
-Sekarang waktunya mendiagnosis apa yang sebenarnya salah. Dengan menggunakan mouse Anda, 
-[perbesar][zoom] tumpukan panggilan. 
+The top of the stack is an `Animation Frame Fired` event. The function that you passed to `requestAnimationFrame()` is called whenever this event is fired. Below `Animation Frame Fired` you see `Function Call`, and below that you see `update`. You can infer that a method called `update()` is the callback for `requestAnimationFrame()`.
 
-![rekaman timeline diperbesar](imgs/zoom.png)
+Note: This is where the **JS Profile** option that you enabled earlier is useful. If it was disabled, you would just see `Function Call`, followed by all the small purple events (discussed next), without details on exactly which functions were called.
 
-Bagian atas tumpukan adalah kejadian `Animation Frame Fired`. Fungsi yang Anda
-teruskan ke `requestAnimationFrame()` dipanggil setiap kali kejadian ini dipicu.
-Di bawah `Animation Frame Fired`, Anda akan melihat `Function Call`, dan di bawahnya, Anda 
-melihat `update`. Anda kini mengetahui bahwa metode yang disebut sebagai `update()` adalah callback untuk
-`requestAnimationFrame()`. 
+Now, focus your attention on all of the small purple events below the `update` event. The top part of many of these events are red. That's a warning sign. Hover over these events and you see that DevTools is warning you that your page may be a victim of forced reflow. Forced reflow is just another name for forced synchronous layouts.
 
-Note: Di sinilah opsi **JS Profile** yang Anda aktifkan tadi menjadi 
-berguna. Jika opsi ini dinonaktifkan, Anda hanya akan melihat `Function Call`, yang diikuti
-oleh semua kejadian ungu kecil (yang akan dibahas nanti), tanpa detail tentang
-fungsi mana yang sebenarnya dipanggil.
+![hovering over layout event](imgs/layout-hover.png)
 
-Sekarang, fokuskan perhatian Anda di kejadian ungu kecil di bawah kejadian `update`.
- Bagian atas beberapa kejadian ini berwarna merah. Ini adalah tanda peringatan.
-Arahkan kursor ke atas kejadian ini, maka Anda akan melihat bahwa DevTools memperingatkan Anda bahwa 
-laman Anda mungkin menjadi korban meng-ubah posisi/geometri paksa. Perubahan posisi/geometri paksa adalah nama lain dari 
-layout sinkron paksa. 
+Now it's time to take a look at the function which is causing all of the forced synchronous layouts. Click on one of the layout events to select it. In the Summary pane you should now see details about this event. Click on the link under **Layout Forced** (`update @ forcedsync.html:457`) to jump to the function definition.
 
-![mengarahkan kursor ke atas kejadian layout](imgs/layout-hover.png)
+![jump to function definition](imgs/jump.png)
 
-Sekarang waktu memeriksa fungsi yang menyebabkan semua 
-layout sinkron paksa. Klik salah satu kejadian layout untuk memilihnya.
-Di panel Summary, Anda sekarang seharusnya melihat detail tentang kejadian ini. Klik tautan
-di bawah **Layout Forced** (`update @ forcedsync.html:457`) untuk masuk ke
-definisi fungsi.
+You should now see the function definition in the **Sources** panel.
 
-![masuk ke definisi fungsi](imgs/jump.png)
+![function definition in sources panel](imgs/definition.png)
 
-Anda sekarang seharusnya melihat definisi fungsi di panel **Sources**. 
+The `update()` function is the callback handler for `requestAnimationCallback()`. The handler computes each image's `left` property based off of the image's `offsetTop` value. This forces the browser to perform a new layout immediately to make sure that it provides the correct value. Forcing a layout during every animation frame is the cause of the janky animations on the page.
 
-![definisi fungsi dalam panel sources](imgs/definition.png)
+So now that you've identified the problem, you can try to fix it directly in DevTools.
 
-Fungsi `update()` adalah penangan callback untuk 
-`requestAnimationCallback()`. Penangan menghitung setiap properti `left` gambar
-berdasarkan nilai `offsetTop` gambar. Ini memaksa browser melakukan
-layout baru segera untuk memastikan tersedianya nilai yang benar.
-Pemaksaan layout pada setiap bingkai animasi adalah penyebab tersendatnya
-animasi pada laman. 
+## Apply fix within DevTools
 
-Sekarang setelah mengidentifikasi masalah, Anda bisa mencoba memperbaikinya
-di DevTools secara langsung.
+This script is embedded in HTML, so you can't edit it via the **Sources** panel (scripts in `*.js` can be edited in the Sources panel, however).
 
-[layout]: /web/tools/chrome-devtools/profile/rendering-tools/analyze-runtime#layout
-[zoom]: /web/tools/chrome-devtools/profile/evaluate-performance/timeline-tool#zoom
+However, to test your changes, you can redefine the function in the Console. Copy and paste the function definition from the HTML file into the DevTools Console. Delete the statement that uses `offsetTop` and uncomment the one below it. Press `Enter` when you're done.
 
-## Terapkan perbaikan dalam DevTools
+![redefining the problematic function](imgs/redefinition.png)
 
-Skrip ini disematkan di HTML, sehingga Anda tidak bisa mengeditnya melalui panel **Sources**
-(akan tetapi, skrip di `*.js` bisa diedit di panel Sources). 
+Restart the animation. You can verify visually that it's much smoother now.
 
-Akan tetapi, untuk memeriksa perubahan, Anda bisa mendefinisikan ulang fungsi di Console.
-Salin dan tempelkan definisi fungsi dari file HTML ke dalam Console
-DevTools. Hapus pernyataan yang menggunakan `offsetTop` dan hapus komentar pernyataan 
-di bawahnya. Tekan `Enter` bila selesai. 
+## Verify with another recording
 
-![mendefinisikan ulang fungsi yang bermasalah](imgs/redefinition.png)
+It's always good practice to take another recording and verify that the animation truly is faster and more performant than before.
 
-Mulai ulang animasi. Anda memverifikasi secara visual bahwa animasi sekarang jauh lebih halus. 
+![timeline recording after optimization](imgs/after.png)
 
-## Memverifikasi dengan rekaman lain
+Much better.
 
-Praktik yang baik adalah mengambil rekaman lain dan memverifikasi bahwa 
-animasi benar-benar lebih cepat dan lebih andal dari sebelumnya. 
+## Feedback {: #feedback }
 
-![rekaman timeline setelah optimalisasi](imgs/after.png)
-
-Jauh lebih baik.
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
