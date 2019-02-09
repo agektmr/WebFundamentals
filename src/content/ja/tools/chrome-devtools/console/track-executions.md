@@ -1,36 +1,29 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: コンソール API を使用すると、実行時間を測定したり、文の実行回数をカウントしたりすることができます。
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Take advantage of the Console API to measure execution times and count statement executions.
 
-{# wf_updated_on:2015-05-11 #}
-{# wf_published_on:2015-04-13 #}
+{# wf_updated_on: 2018-07-27 #} {# wf_published_on: 2015-04-13 #} {# wf_blink_components: Platform>DevTools #}
 
-#  実行の測定とカウント {: .page-title }
+# Measure and count executions {: .page-title }
 
-{% include "web/_shared/contributors/megginkearney.html" %}
-{% include "web/_shared/contributors/flaviocopes.html" %}
-{% include "web/_shared/contributors/pbakaus.html" %}
+{% include "web/_shared/contributors/megginkearney.html" %} {% include "web/_shared/contributors/flaviocopes.html" %} {% include "web/_shared/contributors/pbakaus.html" %}
 
-コンソール API を使用すると、実行時間を測定したり、文の実行回数をカウントしたりすることができます。
-
+Take advantage of the Console API to measure execution times and count statement executions.
 
 ### TL;DR {: .hide-from-toc }
-- コードの実行ポイント間の経過時間を追跡するには、 <code>console.time()</code> と <code>console.timeEnd()</code> を使用します。
-- 同じ文字列が関数に渡された回数をカウントするには、 <code>console.count()</code> を使用します。
 
+- Use `console.time()` and `console.timeEnd()` to track time elapsed between code execution points.
+- Use `console.count()` to count how many times the same string is passed to a function.
 
-##  実行時間の測定
+## Measure execution times
 
-[`time()`](./console-reference#consoletimelabel) メソッドは新しいタイマーを起動し、処理に要した時間を測定する場合に便利です。マーカーの名前を文字列としてメソッドに渡します。
+The [`time()`](./console-reference#consoletimelabel) method starts a new timer and is very useful to measure how long something took. Pass a string to the method to give the marker a name.
 
-タイマーを停止するには、[`timeEnd()`](./console-reference#consoletimeendlabel) を呼び出し、イニシャライザに渡したものと同じ文字列を渡します。
+When you want to stop the timer, call [`timeEnd()`](./console-reference#consoletimeendlabel) and pass it the same string passed to the initializer.
 
-`timeEnd()` メソッドが起動すると、ラベルと経過時間がコンソールにログ出力されます。
+The console then logs the label and time elapsed when the `timeEnd()` method fires.
 
-###  基本的な例:
+### Basic example
 
-ここでは、100 万個の新しい配列の初期化を測定します。
-
+Here, we measure the initialization of a million new Arrays:
 
     console.time("Array initialize");
     var array= new Array(1000000);
@@ -40,31 +33,28 @@ description: コンソール API を使用すると、実行時間を測定し�
     console.timeEnd("Array initialize");
     
 
-コンソールの出力結果:
-![経過時間](images/track-executions-time-duration.png)
+Which outputs the following in the Console: ![Time elapsed](images/track-executions-time-duration.png)
 
-###  Timeline のタイマー
+### Timers on the Timeline
 
-`time()` の操作中に [Timeline](/web/tools/chrome-devtools/profile/evaluate-performance/timeline-tool) 記録が行われている場合は、タイムラインにもアノテーションが追加されます。これはアプリケーションの動作や、その動作がどこで発生したのかを追跡する場合に使用できます。
+When a [Timeline](/web/tools/chrome-devtools/profile/evaluate-performance/timeline-tool) recording is taking place during a `time()` operation, it annotates the timeline as well. Use it when you want to trace what your application does and where it comes from.
 
-`time()` によるタイムラインのアノテーションの例:
+How an annotation on the timeline looks from `time()`:
 
-![Timeline でのタイマーによるアノテーション](images/track-executions-time-annotation-on-timeline.png)
+![Time annotation on timeline](images/track-executions-time-annotation-on-timeline.png)
 
-###  Timeline へのマークの追加
+### Marking the Timeline
 
-*注:`timeStamp()` メソッドは、Timeline 記録が進行中の場合にのみ機能します。*
+*Note: The `timeStamp()` method only functions while a Timeline recording is in progress.*
 
-[[Timeline] パネル](/web/tools/chrome-devtools/profile/evaluate-performance/timeline-tool) には、エンジンがどこで時間を費やしたかについて包括的な概要が表示されます。[`timeStamp()`](./console-reference#consoletimestamplabel) を使用すると、コンソールから Timeline にマークを追加できます。
-この方法により、アプリケーション内のイベントを他のイベントと簡単に関連付けることができます。
+The [Timeline panel](/web/tools/chrome-devtools/profile/evaluate-performance/timeline-tool) provides a complete overview of where the engine spends time. You can add a mark to the timeline from the console with the [`timeStamp()`](./console-reference#consoletimestamplabel). This is a simple way to correlate events in your application with other events.
 
-`timeStamp()` では、Timeline の次の場所にアノテーションが追加されます。
+The `timeStamp()` annotates the Timeline in the following places:
 
-- Timeline の概要および詳細ビューに黄色の縦線が表示されます。
-- イベントのリストに記録が追加されます。
+- A yellow vertical line in the Timeline's summary and details view.
+- It adds a record to the list of events.
 
-次にサンプル コードを示します。
-
+The following example code:
 
     function AddResult(name, result) {
         console.timeStamp("Adding result");
@@ -74,16 +64,15 @@ description: コンソール API を使用すると、実行時間を測定し�
     }
     
 
-これにより、Timeline に次のようなタイムスタンプが表示されます。
+Results in the following Timeline timestamps:
 
-![タイムラインでのタイムスタンプ](images/track-executions-timestamp2.png)
+![Timestamps in the timeline](images/track-executions-timestamp2.png)
 
-##  文の実行回数のカウント
+## Counting statement executions
 
-指定された文字列とともに、同じ文字列が指定された回数をログ出力するには、`count()` メソッドを使用します。まったく同じ文が同じ行で `count()` に渡されると、回数がインクリメントされます。
+Use the `count()` method to log a provided string along with the number of times the same string has been provided. When the exact statement is given to `count()` on the same line, the number is incremented.
 
-動的コンテンツで `count()` を使用するサンプルコード:
-
+Example code of using `count()` with some dynamic content:
 
     function login(user) {
         console.count("Login called for user " + user);
@@ -102,11 +91,10 @@ description: コンソール API を使用すると、実行時間を測定し�
     login(users[0]);
     
 
-コードサンプルの出力:
+Output of the code sample:
 
-![console.count() の出力例](images/track-executions-console-count.png)
+![console.count() example output](images/track-executions-console-count.png)
 
+## Feedback {: #feedback }
 
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
