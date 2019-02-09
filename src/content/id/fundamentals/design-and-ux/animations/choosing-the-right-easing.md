@@ -1,45 +1,40 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Pilih easing yang sesuai untuk proyek Anda, apakah easing ke dalam, keluar, atau keduanya. Bahkan mungkin gunakan pantulan untuk kesenangan ekstra!
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Choose the appropriate easing for your project, whether that's easing in, out, or both. Maybe even use bounces for extra fun!
 
-{# wf_updated_on: 2016-08-23 #}
-{# wf_published_on: 2014-08-08 #}
+{# wf_blink_components: Blink>Animation #} {# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2014-08-08 #}
 
-# Memilih Easing yang Tepat {: .page-title }
+# Choosing the Right Easing {: .page-title }
 
 {% include "web/_shared/contributors/paullewis.html" %}
 
-Setelah membahas berbagai pilihan yang tersedia untuk efek easing di animasi, apa yang harus Anda pakai dalam proyek, dan berapa durasi yang sebaiknya digunakan dalam animasi Anda?
+Having discussed the various options available for easing in animations, what kind should you use in your projects, and what kind of durations should your animations have?
 
 ### TL;DR {: .hide-from-toc }
-* Gunakan animasi ease-out untuk elemen UI; ease-out Quintic adalah ease yang sangat bagus, meskipun cepat.
-* Pastikan untuk menggunakan durasi animasi; ease-out dan ease-in harus 200 md-500 md, sedangkan easing memantul dan elastis harus memiliki durasi yang lebih lama sekitar 800 md-1200 md.
 
+* Use ease-out animations for UI elements; a Quintic ease-out is a very nice, albeit quick, ease.
+* Be sure to use the animation duration; ease-outs and ease-ins should be 200ms-500ms, whereas bounces and elastic eases should clock in a longer duration of 800ms-1200ms.
 
-<img src="images/quintic-ease-out-markers.png" alt="Kurva animasi ease-out Quintic" style="max-width: 300px" class="attempt-right"/>
+<img src="images/quintic-ease-out-markers.png" alt="A Quintic ease-out animation curve" style="max-width: 300px" class="attempt-right" />
 
-Secara umum, **ease-out** adalah keputusan tepat, dan tentu saja standar yang baik. Efek ini cepat untuk dimulai, animasi Anda memberikan kesan responsif yang disukai, tetapi dengan perlambatan yang bagus di akhir.
+Generally speaking, an **ease-out** will be the right call, and certainly a good default. It is quick to start, giving your animations a feeling of responsiveness, which is desirable, but with a nice slowdown at the end.
 
-Ada grup persamaan ease-out terkemuka selain yang ditetapkan dengan kata kunci `ease-out` di CSS, yang terentang dalam "agresivitas"-nya. Untuk efek ease-out yang cepat, pertimbangkan [ease-out Quintic](http://easings.net/#easeOutQuint).
+There is a group of well-known ease-out equations beyond the one specified with the `ease-out` keyword in CSS, which range in their "aggressiveness." For a fast ease-out effect, consider a [Quintic ease-out](http://easings.net/#easeOutQuint).
 
+[See a Quintic ease-out animation](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/animations/box-move-quintic-ease-out.html){: target="_blank" .external }
 
-[Lihat animasi ease-out Quintic](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/animations/box-move-quintic-ease-out.html){: target="_blank" .external }
+Other easing equations, particularly bounces or elastic eases, should be used sparingly, and only when it’s appropriate to your project. There are few things that bring a user out of an experience like a jarring animation. If your project isn’t intended to be fun, then don’t have elements bouncing around the UI. Conversely, if you’re creating a site that is supposed to be lighthearted, then by all means use bounces!
 
-Efek easing lainnya, terutama easing memantul atau elastis tidak boleh sering digunakan, dan hanya dipakai ketika cocok untuk proyek Anda. Ada beberapa hal yang bisa menurunkan kualitas pengalaman pengguna, seperti animasi yang mengagetkan. Jika proyek Anda tidak ditujukan untuk kegembiraan, maka jangan gunakan elemen yang memantul di sekitar UI. Sebaliknya, jika Anda membuat sebuah situs yang seharusnya menggembirakan, maka tentu saja gunakan pantulan!
+Play around with eases, see which ones match your project’s personality, and go from there. For a full list of easing types, along with demos, see [easings.net](http://easings.net).
 
-Coba beberapa easing, lihat mana yang sesuai dengan sifat proyek Anda, dan kembangkan dari situ. Untuk daftar lengkap tipe easing, bersama dengan demo-nya, lihat [easings.net](http://easings.net).
+## Pick the right animation duration
 
-## Pilih durasi animasi yang cocok
+It is important that any animation added to your project has the correct duration. Too short and the animation will feel aggressive and sharp; too long and it will be obstructive and annoying.
 
-Setiap animasi yang ditambahkan ke proyek Anda harus memiliki durasi yang tepat. Animasi yang terlalu pendek akan terasa agresif dan tajam; jika terlalu lama, akan mengganggu dan menjengkelkan.
+* **Ease-outs: around 200ms-500ms**. This gives the eye a chance to see the animation, but it doesn’t feel obstructive.
+* **Ease-ins: around 200ms-500ms**. Bear in mind that it will jolt at the end, and no amount of timing changes will soften that impact.
+* **Bounce or elastic effects: around 800ms-1200ms**. You need to allow time for the elastic or bounce effect to "settle." Without this extra time, the elastic bouncing part of the animation will be aggressive and unpleasant to the eye.
 
-* **Ease-out: sekitar 200 md-500 md**. Ini memberikan kesempatan bagi pengguna untuk melihat animasi, tetapi tidak merasa terganggu.
-* **Ease-in: sekitar 200 md-500 md**. Ingat bahwa efek akan tersentak di akhir dan perubahan waktu tidak akan melembutkan dampak itu.
-* **Efek memantul atau elastis: sekitar 800 md-1200 md**. Anda harus memberikan waktu untuk efek memantul atau elastis agar "selesai." Tanpa waktu tambahan ini bagian memantul elastis dari animasi akan terlihat agresif dan tidak nyaman dilihat.
+Of course, these are just guidelines. Experiment with your own eases and choose what feels right for your projects.
 
-Tentu saja, ini hanya sekadar panduan. Lakukan percobaan dengan easing Anda sendiri dan pilih apa yang paling cocok untuk proyek Anda.
+## Feedback {: #feedback }
 
-
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
