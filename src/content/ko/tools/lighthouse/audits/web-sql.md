@@ -1,32 +1,28 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: 'Web SQL을 사용하지 않는 사이트' Lighthouse 감사의 참조 문서입니다.
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Reference documentation for the "Avoids Web SQL" Lighthouse audit.
 
-{# wf_updated_on: 2016-12-05 #}
-{# wf_published_on: 2016-12-05 #}
+{# wf_updated_on: 2018-11-30 #} {# wf_published_on: 2016-12-05 #} {# wf_blink_components: N/A #}
 
-# Web SQL을 사용하지 않는 사이트  {: .page-title }
+# Avoids Web SQL {: .page-title }
 
-## 감사가 중요한 이유 {: #why }
+<aside class="warning">
+  This audit is deprecated. See <a href="https://github.com/googlechrome/lighthouse/pull/6293"
+  class="external" rel="noopener">PR #6293</a>.
+</aside>
 
-Web SQL은 지원이 중단되었습니다. 자세한 내용은 [Web SQL 데이터베이스][spec]를 참조하세요.
+## Overview {: #overview }
 
-[spec]: https://www.w3.org/TR/webdatabase/
+The W3C stopped actively maintaining the Web SQL spec in 2010 and has no plans to maintain it any further. See [Web SQL Database](https://www.w3.org/TR/webdatabase/){: .external rel="noopener" target="_blank" }.
 
-## 감사를 통과하는 방법 {: #how }
+## Recommendations {: #recommendations }
 
-Web SQL 데이터베이스를 최신 데이터베이스(예:
-[IndexedDB][indexeddb])로 교체하세요.
+Consider replacing your Web SQL database with a modern alternative, such as [IndexedDB](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API).
 
-다른 이용 가능한 저장소 옵션은 [웹 저장소 개요][overview]를 참조하세요.
+See [Web Storage Overview](/web/fundamentals/instant-and-offline/web-storage/) for a discussion of other available storage options.
 
+## More information {: #more-info }
 
-[indexeddb]: https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API
-[overview]: /web/fundamentals/instant-and-offline/web-storage/
+Lighthouse checks if the page has a Web SQL database instance.
 
-{% include "web/tools/lighthouse/audits/implementation-heading.html" %}
+## Feedback {: #feedback }
 
-Lighthouse는 페이지에 Web SQL 데이터베이스 인스턴스가 있는지 검사합니다.
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
