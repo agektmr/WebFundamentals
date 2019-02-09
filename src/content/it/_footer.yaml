@@ -1,0 +1,71 @@
+---
+footer:
+  - 
+    promos:
+      - 
+        label: Chromium Blog
+        description: The latest news on the Chromium blog.
+        icon: https://www.gstatic.com/images/icons/material/product/2x/chrome_chromium_64dp.png
+        path: https://blog.chromium.org
+      - 
+        label: GitHub
+        description: Fork our code samples and other open-source projects.
+        path: https://github.com/googlechrome
+        icon: /site-assets/logo-github.svg
+      - 
+        label: Twitter
+        description: Connect with @ChromiumDev on Twitter.
+        icon: /site-assets/logo-twitter.svg
+        path: https://twitter.com/chromiumdev
+      - 
+        label: Videos
+        description: Check out our videos.
+        icon: https://www.gstatic.com/images/icons/material/product/2x/youtube_64dp.png
+        path: /web/shows/
+  - 
+    linkboxes:
+      - 
+        name: Key Topics
+        icon_name: star
+        contents:
+          - 
+            label: Building for Billions
+            path: /web/billions/
+          - 
+            label: Chrome Extension Docs
+            path: https://developers.chrome.com/extensions/api_index
+          - 
+            label: Developer Feedback Program
+            path: /web/feedback/
+          - 
+            label: Progressive Web Apps
+            path: /web/progressive-web-apps/
+      - 
+        name: Training and Partners
+        icon_name: school
+        contents:
+          - 
+            label: Instructor Led Training
+            path: /web/ilt/
+          - 
+            label: Web Courses at Udacity
+            path: /web/shows/udacity/
+          - 
+            label: Agencies
+            path: /web/agencies/
+      - 
+        name: Contribute
+        icon_name: bug_report
+        contents:
+          - 
+            label: File an Issue
+            path: https://github.com/google/WebFundamentals/issues
+          - 
+            label: View Page Source
+            path: https://github.com/google/WebFundamentals
+          - 
+            label: Resources
+            path: /web/resources/
+          - 
+            label: Translating
+            path: /web/resources/translations
