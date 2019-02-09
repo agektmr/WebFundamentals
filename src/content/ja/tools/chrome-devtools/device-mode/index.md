@@ -1,347 +1,366 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description:Chrome の Device Mode の仮想端末を使用して、モバイル ファーストのウェブサイトを構築します。
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Use virtual devices in Chrome's Device Mode to build mobile-first websites.
 
-{# wf_updated_on: 2019-02-06 #}
-{# wf_published_on: 2015-04-13 #}
-{# wf_blink_components: Platform>DevTools #}
+{# wf_updated_on: 2018-12-14 #} {# wf_published_on: 2015-04-13 #} {# wf_blink_components: Platform>DevTools #}
 
-[capture]: /web/tools/chrome-devtools/images/shared/capture-settings.png
-[customize]: /web/tools/chrome-devtools/images/shared/customize-and-control-devtools.png
-
-# Chrome DevTools での Device Mode によるモバイル端末のシミュレート {: .page-title }
+# Simulate Mobile Devices with Device Mode in Chrome DevTools {: .page-title }
 
 {% include "web/_shared/contributors/kaycebasques.html" %}
 
-Device Mode では、モバイル端末でサイトのページがどのように見えて機能するか、実際に近い見た目で確認できます。
+Use Device Mode to approximate how your page looks and performs on a mobile device.
 
-Device Mode は、モバイル端末のシミュレーションを行える Chrome DevTools の諸機能をまとめて呼ぶときの呼称です。
- 以下の機能が含まれます。
+Device Mode is the name for the loose collection of features in Chrome DevTools that help you simulate mobile devices. These features include:
 
-* [モバイル ビューポイントのシミュレーション](#viewport)
-* [ネットワークのスロットリング](#network)
-* [CPU のスロットリング](#cpu)
-* [位置情報のシミュレーション](#geolocation)
-* [画面の向きの設定](#orientation)
+* [Simulating a mobile viewport](#viewport)
+* [Throttling the network](#network)
+* [Throttling the CPU](#cpu)
+* [Simulating geolocation](#geolocation)
+* [Setting orientation](#orientation)
 
-## 制限事項 {: #limitations }
+## Limitations {: #limitations }
 
-Device Mode はモバイル端末におけるページのルック アンド フィールの [1 次近似][approximation]{:.external} として利用できます。
- Device Mode を使用する場合、モバイル端末でコードを実際に実行することはありません。
- ノートパソコンまたはデスクトップ パソコンからモバイル ユーザーの体験をシミュレーションします。
+Think of Device Mode as a [first-order approximation](https://en.wikipedia.org/wiki/Order_of_approximation#First-order){:.external} of how your page looks and feels on a mobile device. With Device Mode you don't actually run your code on a mobile device. You simulate the mobile user experience from your laptop or desktop.
 
-[approximation]: https://en.wikipedia.org/wiki/Order_of_approximation#First-order
+There are some aspects of mobile devices that DevTools will never be able to simulate. For example, the architecture of mobile CPUs is very different than the architecture of laptop or desktop CPUs. When in doubt, your best bet is to actually run your page on a mobile device. Use [Remote Debugging](/web/tools/chrome-devtools/remote-debugging/) to view, change, debug, and profile a page's code from your laptop or desktop while it actually runs on a mobile device.
 
-モバイル端末のある面については、DevTools でシミュレーションすることができません。 たとえば、モバイル CPU のアーキテクチャは、ノートパソコンやデスクトップ パソコンの CPU のアーキテクチャとは大きく異なります。
- 不明な点がある場合は、モバイル端末でページを実際に実行してみるのが最善です。 
-モバイル端末でページのコードが実際に実行されている間に、ノートパソコンやデスクトップ パソコンからページのコードを表示、変更、デバッグ、およびプロファイル作成するには、[Remote Debugging](/web/tools/chrome-devtools/remote-debugging/) を使用します。
+## Simulate a mobile viewport {: #viewport }
 
-
-## モバイル ビューポートのシミュレーション {: #viewport }
-
-**[Toggle Device Toolbar]** ![Toggle Device Toolbar][TDB] をクリックすると、{: .inline-icon } モバイル ビューポートをシミュレーションできる UI が開きます。
-
-
-[TDB]: /web/tools/chrome-devtools/images/shared/toggle-device-toolbar.png
+Click **Toggle Device Toolbar** ![Toggle Device Toolbar](/web/tools/chrome-devtools/images/shared/toggle-device-toolbar.png){: .inline-icon } to open the UI that enables you to simulate a mobile viewport.
 
 <figure>
   <img src="imgs/device-toolbar.png"
-       alt="Device Toolbar"/>
+       alt="The Device Toolbar."/>
   <figcaption>
-    <b>図 1</b>。 Device Toolbar
+    <b>Figure 1</b>. The Device Toolbar
   </figcaption>
 </figure>
 
-デフォルトでは、Device Toolbar は Responsive Viewport モードで開きます。 
+By default the Device Toolbar opens in Responsive Viewport Mode.
 
-### Responsive Viewport モード {: #responsive }
+### Responsive Viewport Mode {: #responsive }
 
-ハンドルをドラッグして、ビューポートのサイズを自由に変更できます。 または、幅と高さのボックスに特定の値を入力することもできます。
- **図 2** では、幅を `628` に、高さを `662` に設定しています。
-
+Drag the handles to resize the viewport to whatever dimensions you need. Or, enter specific values in the width and height boxes. In **Figure 2**, the width is set to `628` and the height is set to `662`.
 
 <figure>
   <img src="imgs/responsive-handles.png"
-       alt="Responsive Viewport モードで、ビューポートのサイズを変更するためのハンドル。"/>
+       alt="The handles for changing the viewport's dimensions when in Responsive Viewport Mode."/>
   <figcaption>
-    <b>図 2</b>。 Responsive Viewport モードで、ビューポートのサイズを変更するためのハンドル。
+    <b>Figure 2</b>. The handles for changing the viewport's dimensions when in Responsive Viewport Mode
   </figcaption>
 </figure>
 
-#### メディアクエリの表示 {: #queries }
+#### Show media queries {: #queries }
 
-ビューポートの上部にメディアクエリのブレークポイントを表示するには、**[More options]** をクリックして**[Show media queries]** を選択します。
-
+To show media query breakpoints above your viewport, click **More options** and then select **Show media queries**.
 
 <figure>
   <img src="imgs/show-media-queries.png"
        alt="Show media queries."/>
   <figcaption>
-    <b>図 3</b>。 Show media queries
+    <b>Figure 3</b>. Show media queries
   </figcaption>
 </figure>
 
-ビューポートの幅を変更するためにブレークポイントをクリックすると、ブレークポイントがトリガーされた状態になります。
+Click a breakpoint to change the viewport's width so that the breakpoint gets triggered.
 
 <figure>
   <img src="imgs/breakpoint.png"
-       alt="ビューポートの幅を変更するためにブレークポイントをクリックします。"/>
-<figcaption>
-    <b>図 4</b>。 ビューポートの幅を変更するためにブレークポイントをクリックします
-</figcaption>
+       alt="Click a breakpoint to change the viewport's width."/>
+  <figcaption>
+    <b>Figure 4</b>. Click a breakpoint to change the viewport's width
+  </figcaption>
 </figure>
 
-### モバイル端末の Viewport モード {: #device }
+#### Set the device type {: #type }
 
-特定のモバイル端末のサイズをシミュレーションするには、**[Device]** リストから端末を選択します。
+Use the **Device Type** list to simulate a mobile device or desktop device.
+
+<figure>
+  <img src="imgs/device-type.png"
+       alt="The Device Type list."/>
+  <figcaption>
+    <b>Figure 5</b>. The <b>Device Type</b> list
+  </figcaption>
+</figure>
+
+The table below describes the differences between the options. **Rendering method** refers to whether Chrome renders the page as a mobile or desktop viewport. **Cursor icon** refers to what type of cursor you see when you hover over the page. **Events fired** refers to whether the page fires `touch` or `click` events when you interact with the page.
+
+<table>
+  <tr>
+    <th>Option</th>
+    <th>Rendering method</th>
+    <th>Cursor icon</th>
+    <th>Events fired</th>
+  </tr>
+  <tr>
+    <td>Mobile</td>
+    <td>Mobile</td>
+    <td>Circle</td>
+    <td>touch</td>
+  </tr>
+  <tr>
+    <td>Mobile (no touch)</td>
+    <td>Mobile</td>
+    <td>Normal</td>
+    <td>click</td>
+  </tr>
+  <tr>
+    <td>Desktop</td>
+    <td>Desktop</td>
+    <td>Normal</td>
+    <td>click</td>
+  </tr>
+  <tr>
+    <td>Desktop (touch)</td>
+    <td>Desktop</td>
+    <td>Circle</td>
+    <td>touch</td>
+  </tr>
+</table>
+
+### Mobile Device Viewport Mode {: #device }
+
+To simulate the dimensions of a specific mobile device, select the device from the **Device** list.
 
 <figure>
   <img src="imgs/device-list.png"
-       alt="[Device] リスト。"/>
+       alt="The Device list."/>
   <figcaption>
-    <b>図 5</b>。 [Device] リスト。
+    <b>Figure 6</b>. The Device list
   </figcaption>
 </figure>
 
-#### ビューポートの画面の向きを横向きに回転する {: #landscape }
+#### Rotate the viewport to landscape orientation {: #landscape }
 
-**[Rotate]** ![Rotate](imgs/rotate.png) をクリックすると、{: .inline-icon } ビューポートの画面の向きが横向きに回転します。
+Click **Rotate** ![Rotate](imgs/rotate.png){: .inline-icon } to rotate the viewport to landscape orientation.
 
 <figure>
   <img src="imgs/landscape.png"
-       alt="横向きの画面。"/>
+       alt="Landscape orientation."/>
   <figcaption>
-    <b>図 6</b>。 横向きの画面
+    <b>Figure 7</b>. Landscape orientation
   </figcaption>
 </figure>
 
-**Device Toolbar** の幅が狭いと、**[Rotate]** ボタンが表示されなくなることに注意してください。
+Note that the **Rotate** button disappears if your **Device Toolbar** is narrow.
 
 <figure>
   <img src="imgs/device-toolbar.png"
-       alt="Device Toolbar"/>
+       alt="The Device Toolbar."/>
   <figcaption>
-    <b>図 7</b>。 Device Toolbar
+    <b>Figure 8</b>. The Device Toolbar
   </figcaption>
 </figure>
 
-[画面の向きの設定](#orientation)も参照してください。
+See also [Set orientation](#orientation).
 
-#### 端末フレームの表示 {: #frame }
+#### Show device frame {: #frame }
 
-iPhone 6 などの特定のモバイル端末の寸法にシミュレートする場合は、**[More options]** を開いて**[Show device frame]** を選択して、ビューポートの周りの物理端末フレームを表示します。
+When simulating the dimensions of a specific mobile device like an iPhone 6, open **More options** and then select **Show device frame** to show the physical device frame around the viewport.
 
-
-注: 特定の端末の端末フレームが表示されない場合は、DevTools にその特定の端末のアート情報がないのかもしれません。
-
+Note: If you don't see a device frame for a particular device, it probably means that DevTools just doesn't have art for that specific option.
 
 <figure>
   <img src="imgs/show-device-frame.png"
        alt="Show device frame."/>
   <figcaption>
-    <b>図 8</b>。 Show device frame
+    <b>Figure 9</b>. Show device frame
   </figcaption>
 </figure>
 
 <figure>
   <img src="imgs/iphone-frame.png"
-       alt="iPhone 6 の端末フレーム。"/>
+       alt="The device frame for the iPhone 6."/>
   <figcaption>
-    <b>図 9</b>。 iPhone 6 の端末フレーム
+    <b>Figure 10</b>. The device frame for the iPhone 6
   </figcaption>
 </figure>
 
-### ルーラーの表示 {: #rulers }
+#### Add a custom mobile device {: #custom }
 
-**[More options]** をクリックしてから **[Show rulers]** を選択すると、ビューポートの上部と左側にルーラーが表示されます。
- ルーラーのサイズ指定単位はピクセルです。
+To add a custom device:
+
+1. Click the **Device** list and then select **Edit**.
+    
+    <figure> 
+    
+    ![Selecting 'Edit'.](imgs/edit.png) <figcaption> **Figure 11**. Selecting **Edit** </figcaption> </figure>
+2. Click **Add custom device**.
+
+3. Enter a name, width, and height for the device. The [device pixel ratio](https://developer.mozilla.org/en-US/docs/Web/API/Window/devicePixelRatio), [user agent string](https://developer.mozilla.org/en-US/docs/Glossary/User_agent), and [device type](#type) fields are optional. The device type field is the list that is set to **Mobile** by default.
+    
+    <figure> 
+    
+    ![Creating a custom device.](imgs/add-custom-device.png) <figcaption> **Figure 12**. Creating a custom device </figcaption> </figure>
+
+### Show rulers {: #rulers }
+
+Click **More options** and then select **Show rulers** to see rulers above and to the left of your viewport. The sizing unit of the rulers is pixels.
 
 <figure>
   <img src="imgs/show-rulers.png"
        alt="Show rulers."/>
   <figcaption>
-    <b>図 10</b>。 Show rulers
+    <b>Figure 13</b>. Show rulers
   </figcaption>
 </figure>
 
 <figure>
   <img src="imgs/rulers.png"
-       alt="ビューポート上部および左側のルーラー。"/>
+       alt="Rulers above and to the left of the viewport."/>
   <figcaption>
-    <b>図 11</b>。 ビューポート上部および左側のルーラー。
+    <b>Figure 14</b>. Rulers above and to the left of the viewport
   </figcaption>
 </figure>
 
-### ビューポートのズーム {: #zoom }
+### Zoom the viewport {: #zoom }
 
-ズームインまたはズームアウトするには、**[Zoom]** リストを使用します。
+Use the **Zoom** list to zoom in or out.
 
 <figure>
   <img src="imgs/zoom-viewport.png"
-       alt="ズーム。"/>
-<figcaption> 
-    <b>図 11</b>。 ズーム
-</figcaption> 
+       alt="Zoom."/>
+  <figcaption>
+    <b>Figure 15</b>. Zoom
+  </figcaption>
 </figure>
 
-## ネットワークおよび CPU のスロットリング {: #throttle }
+## Throttle the network and CPU {: #throttle }
 
-ネットワークおよび CPU をスロットリングするには、**[Throttle]** リストから **[Mid-tier mobile]** または **[Low-end mobile]** を選択します。
-
+To throttle the network and CPU, select **Mid-tier mobile** or **Low-end mobile** from the **Throttle** list.
 
 <figure>
   <img src="imgs/throttling.png"
-       alt="[Throttle] リスト。"/>
-<figcaption>
-    <b>図 12</b>。 [Throttle] リスト。
-</figcaption>
+       alt="The Throttle list."/>
+  <figcaption>
+    <b>Figure 16</b>. The Throttle list
+  </figcaption>
 </figure>
 
-**[Mid-tier mobile]** は高速 3G をシミュレートし、CPU を通常より 4 倍低速になるようにスロットリングします。
- **[Low-end mobile]** は低速 3G をシミュレートし、CPU を通常より 6 倍低速になるようにスロットリングします。
-スロットリングは使用するノートパソコンまたはデスクトップ パソコンの通常の能力に比例したものになることを覚えておいてください。 
+**Mid-tier mobile** simulates fast 3G and throttles your CPU so that it is 4 times slower than normal. **Low-end mobile** simulates slow 3G and throttles your CPU 6 times slower than normal. Keep in mind that the throttling is relative to the normal capability of your laptop or desktop.
 
-**Device Toolbar** の幅が狭いと **[Throttle]** リストが非表示になることに注意してください。
+Note that the **Throttle** list will be hidden if your **Device Toolbar** is narrow.
 
 <figure>
   <img src="imgs/device-toolbar.png"
-       alt="Device Toolbar"/>
+       alt="The Device Toolbar."/>
   <figcaption>
-    <b>図 13</b>。 Device Toolbar
+    <b>Figure 17</b>. The Device Toolbar
   </figcaption>
 </figure>
 
-### CPU のみのスロットリング {: #cpu }
+### Throttle the CPU only {: #cpu }
 
-CPU のみをスロットリングしてネットワークはスロットリングしない場合は、**[Performance]** パネルで
-**[Capture Settings]** ![Capture Settings][capture] をクリックしてから、{:.inline-icon}**[CPU]** リストから
-**[4x slowdown]** または **[6x slowdown]** を選択します。
+To throttle the CPU only and not the network, go to the **Performance** panel, click **Capture Settings** ![Capture Settings](/web/tools/chrome-devtools/images/shared/capture-settings.png){:.inline-icon}, and then select **4x slowdown** or **6x slowdown** from the **CPU** list.
 
 <figure>
   <img src="imgs/cpu.png"
-       alt="[CPU] リスト。"/>
+       alt="The CPU list."/>
   <figcaption>
-    <b>図 14</b>。 [CPU] リスト
+    <b>Figure 18</b>. The CPU list
   </figcaption>
 </figure>
 
-### ネットワークのみのスロットリング {: #network }
+### Throttle the network only {: #network }
 
-ネットワークのみをスロットリングして CPU をスロットリングしない場合は、**[Network]** パネルで **[Throttle]** リストから **[Fast 3G]** または **[Slow 3G]** を選択します。
-
+To throttle the network only and not the CPU, go the **Network** panel and select **Fast 3G** or **Slow 3G** from the **Throttle** list.
 
 <figure>
   <img src="imgs/network.png"
-       alt="[Throttle] リスト。"/>
-<figcaption>
-    <b>図 14</b>。 [Throttle] リスト。
-</figcaption>
+       alt="The Throttle list."/>
+  <figcaption>
+    <b>Figure 19</b>. The Throttle list
+  </figcaption>
 </figure>
 
-または、<kbd>Command</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd>（Mac）または
-<kbd>Control</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd>（Windows、Linux、Chrome OS）を押してコマンド メニューを開き、`3G` と入力し、**[Enable fast 3G throttling]** 
-または
-**[Enable slow 3G throttling]** を選択します。
+Or press <kbd>Command</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd> (Mac) or 
+<kbd>Control</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd> (Windows, Linux, Chrome OS) to open the Command Menu, type `3G`, and select **Enable fast 3G throttling** or **Enable slow 3G throttling**.
 
 <figure>
   <img src="imgs/commandmenu.png"
-       alt="コマンド メニュー"/>
+       alt="The Command Menu."/>
   <figcaption>
-    <b>図 15</b>。 コマンド メニュー
+    <b>Figure 20</b>. The Command Menu
   </figcaption>
 </figure>
 
-**[Performance]** パネルからネットワーク スロットリングを設定することもできます。 **[Capture Settings]** ![Capture Settings][capture]
-をクリックし、{: .inline-icon } **[Network]** リストから **[Fast 3G]** または **[Slow 3G]** を選択します。
-
+You can also set network throttling from the **Performance** panel. Click **Capture Settings** ![Capture Settings](/web/tools/chrome-devtools/images/shared/capture-settings.png){: .inline-icon } and then select **Fast 3G** or **Slow 3G** from the **Network** list.
 
 <figure>
   <img src="imgs/network2.png"
-       alt="[Performance] パネルからのネットワーク スロットリングの設定。"/>
+       alt="Setting network throttling from the Performance panel."/>
   <figcaption>
-    <b>図 16</b>。 [Performance] パネルからのネットワーク スロットリングの設定
+    <b>Figure 21</b>. Setting network throttling from the Performance panel
   </figcaption>
 </figure>
 
-## 位置情報のオーバーライド {: #geolocation }
+## Override geolocation {: #geolocation }
 
-位置情報オーバーライド UI を開くには、**[Customize and control DevTools]**
-![Customize and control DevTools][customize] をクリックして、{: .inline-icon } **[More tools]** > **[Sensors]** の順に選択します。
-
+To open the geolocation overriding UI click **Customize and control DevTools** ![Customize and control DevTools](/web/tools/chrome-devtools/images/shared/customize-and-control-devtools.png){: .inline-icon } and then select **More tools** > **Sensors**.
 
 <figure>
   <img src="imgs/sensors.png"
        alt="Sensors"/>
   <figcaption>
-    <b>図 17</b>。 Sensors
+    <b>Figure 22</b>. Sensors
   </figcaption>
 </figure>
 
-または、<kbd>Command</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd>（Mac）または
-<kbd>Control</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd>（Windows、Linux、Chrome OS）を押してコマンド メニューを開き、`Sensors` と入力し、**[Show Sensors]**
-を選択します。
+Or press <kbd>Command</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd> (Mac) or 
+<kbd>Control</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd> (Windows, Linux, Chrome OS) to open the Command Menu, type `Sensors`, and then select **Show Sensors**.
 
 <figure>
   <img src="imgs/show-sensors.png"
        alt="Show Sensors"/>
   <figcaption>
-    <b>図 18</b>。 Show Sensors
+    <b>Figure 23</b>. Show Sensors
   </figcaption>
 </figure>
 
-**[Geolocation]** リストからいずれかのプリセットを選択したり、**[Custom location]** を選択して座標を入力したり、**[Location unavailable]** を選択して位置情報がエラー状態にある場合のページ動作をテストしたりできます。
-
-
+Select one of the presets from the **Geolocation** list, or select **Custom location** to enter your own coordinates, or select **Location unavailable** to test out how your page behaves when geolocation is in an error state.
 
 <figure>
   <img src="imgs/geolocation.png"
        alt="Geolocation"/>
-<figcaption>
-    <b>図 19</b>。 Geolocation
-</figcaption>
+  <figcaption>
+    <b>Figure 24</b>. Geolocation
+  </figcaption>
 </figure>
 
-## 画面の向きの設定 {: #orientation }
+## Set orientation {: #orientation }
 
-画面の向き UI を開くには、**[Customize and control DevTools]**
-![Customize and control DevTools][customize] をクリックして、{: .inline-icon } **[More tools]** > **[Sensors]** の順に選択します。
-
-
+To open the orientation UI click **Customize and control DevTools** ![Customize and control DevTools](/web/tools/chrome-devtools/images/shared/customize-and-control-devtools.png){: .inline-icon } and then select **More tools** > **Sensors**.
 
 <figure>
   <img src="imgs/sensors.png"
        alt="Sensors"/>
   <figcaption>
-    <b>図 20</b>。 Sensors
+    <b>Figure 25</b>. Sensors
   </figcaption>
 </figure>
 
-または、<kbd>Command</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd>（Mac）または
-<kbd>Control</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd>（Windows、Linux、Chrome OS）を押してコマンド メニューを開き、`Sensors` と入力し、**[Show Sensors]**
-を選択します。
+Or press <kbd>Command</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd> (Mac) or 
+<kbd>Control</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd> (Windows, Linux, Chrome OS) to open the Command Menu, type `Sensors`, and then select **Show Sensors**.
 
 <figure>
   <img src="imgs/show-sensors.png"
        alt="Show Sensors"/>
   <figcaption>
-    <b>図 21</b>。 Show Sensors
+    <b>Figure 26</b>. Show Sensors
   </figcaption>
 </figure>
 
-**[Orientation]** リストからいずれかのプリセットを選択するか、または **[Custom orientation]** を選択してアルファ、ベータ、およびガンマ値を設定します。
-
+Select one of the presets from the **Orientation** list or select **Custom orientation** to set your own alpha, beta, and gamma values.
 
 <figure>
   <img src="imgs/orientation.png"
        alt="Orientation"/>
-<figcaption>
-    <b>図 22</b>。 Orientation
-</figcaption>
+  <figcaption>
+    <b>Figure 27</b>. Orientation
+  </figcaption>
 </figure>
 
-## フィードバック {: #feedback }
+## Feedback {: #feedback }
 
 {% include "web/_shared/helpful.html" %}
 
-フィードバックをお送りいただくその他の方法については、[Join the DevTools community](/web/tools/chrome-devtools/#community) をご覧ください。
-
+See [Join the DevTools community](/web/tools/chrome-devtools/#community) for other ways to leave feedback.
