@@ -1,16 +1,8 @@
-project_path: /web/_project.yaml
-book_path: /web/updates/_book.yaml
-description: What's new in Chrome 64 for developers?
-{% include "web/_shared/machine-translation-start.html" %}
+project_path: /web/_project.yaml book_path: /web/updates/_book.yaml description: What's new in Chrome 64 for developers?
 
-{# wf_published_on: 2018-01-23 #}
-{# wf_updated_on: 2018-03-05 #}
-{# wf_featured_image: /web/updates/images/generic/new-in-chrome.png #}
-{# wf_tags: chrome64,new-in-chrome,observers,ux,regex,media,modules,responsive #}
-{# wf_featured_snippet: Chrome 64 adds support for ResizeObservers, which will notify you when an element’s content rectangle has changed its size. Modules can now access to host specific metadata with import.metadata The pop-up blocker gets strong and plenty more. Let’s dive in and see what’s new for developers in Chrome 64! #}
-{# wf_blink_components: N/A #}
+{# wf_published_on: 2018-01-23 #} {# wf_updated_on: 2018-03-05 #} {# wf_featured_image: /web/updates/images/generic/new-in-chrome.png #} {# wf_tags: chrome64,new-in-chrome,observers,ux,regex,media,modules,responsive #} {# wf_featured_snippet: Chrome 64 adds support for ResizeObservers, which will notify you when an element’s content rectangle has changed its size. Modules can now access to host specific metadata with import.metadata The pop-up blocker gets strong and plenty more. Let’s dive in and see what’s new for developers in Chrome 64! #} {# wf_blink_components: N/A #}
 
-# Neu in Chrome 64 {: .page-title }
+# New in Chrome 64 {: .page-title }
 
 {% include "web/_shared/contributors/petelepage.html" %}
 
@@ -22,28 +14,28 @@ description: What's new in Chrome 64 for developers?
   </iframe>
 </div>
 
-* Unterstützung für [`ResizeObservers`](#resizeobserver) , benachrichtigt Sie, wenn das Inhaltsrechteck eines Elements seine Größe geändert hat.
-* Module können jetzt mit [import.meta](#import-meta) Metadaten [import.meta](#import-meta) .
-* Die [pop-up blocker](#popup-blocker) wird stark.
-* [`window.alert()`](#window-alert) ändert nicht mehr den Fokus.
+* Support for [`ResizeObservers`](#resizeobserver), will notify you when an element’s content rectangle has changed its size.
+* Modules can now access to host specific metadata with [import.meta](#import-meta).
+* The [pop-up blocker](#popup-blocker) gets strong.
+* [`window.alert()`](#window-alert) no longer changes focus.
 
-Und es gibt [plenty more](#more) !
+And there’s [plenty more](#more)!
 
-Ich bin Pete LePage. Sehen wir uns an, was für Entwickler in Chrome 64 neu ist!
+I’m Pete LePage. Let’s dive in and see what’s new for developers in Chrome 64!
 
 <div class="clearfix"></div>
 
-Note: Möchten Sie die vollständige Liste der Änderungen sehen? Schau [Chromium source repository change list](https://chromium.googlesource.com/chromium/src/+log/63.0.3239.84..64.0.3282.140) die [Chromium source repository change list](https://chromium.googlesource.com/chromium/src/+log/63.0.3239.84..64.0.3282.140) .
+Note: Want the full list of changes? Check out the [Chromium source repository change list](https://chromium.googlesource.com/chromium/src/+log/63.0.3239.84..64.0.3282.140).
 
 ## `ResizeObserver` {: #resizeobserver }
 
-Das Nachverfolgen, wenn sich die Größe eines Elements ändert, kann ein wenig schmerzhaft sein. Wahrscheinlich verbinden Sie einen Listener mit dem `resize` Ereignis des Dokuments und `resize` dann `getBoundingClientRect` oder `getComputedStyle` . Aber beide können Layout-Thrashing verursachen.
+Tracking when an element’s size changes can be a bit of a pain. Most likely, you’ll attach a listener to the document’s `resize` event, then call `getBoundingClientRect` or `getComputedStyle`. But, both of those can cause layout thrashing.
 
-Und was, wenn das Browserfenster nicht die Größe ändert, sondern ein neues Element zum Dokument hinzugefügt wurde? Oder du hast `display: none` zu einem Element hinzugefügt? Beide können die Größe anderer Elemente innerhalb der Seite ändern.
+And what if the browser window didn’t change size, but a new element was added to the document? Or you added `display: none` to an element? Both of those can change the size of other elements within the page.
 
-`ResizeObserver` benachrichtigt Sie, wenn sich die Größe eines Elements ändert, und bietet die neue Höhe und Breite des Elements, wodurch das Risiko von Layout-Thrashing verringert wird.
+`ResizeObserver` notifies you whenever an element’s size changes, and provides the new height and width of the element, reducing the risk of layout thrashing.
 
-Wie bei anderen Beobachtern ist es ziemlich einfach, ein `ResizeObserver` Objekt zu erstellen und einen Callback an den Konstruktor zu übergeben. Der Callback erhält ein Array von `ResizeOberverEntries` - ein Eintrag pro beobachtetem Element -, das die neuen Dimensionen für das Element enthält.
+Like other Observers, using it is pretty simple, create a `ResizeObserver` object and pass a callback to the constructor. The callback will be given an array of `ResizeOberverEntries` – one entry per observed element – which contain the new dimensions for the element.
 
 ```js
 const ro = new ResizeObserver( entries => {
@@ -59,44 +51,37 @@ const ro = new ResizeObserver( entries => {
 ro.observe(someElement);
 ```
 
-Weitere Einzelheiten und Beispiele aus der [`ResizeObserver`: It's like `document.onresize` for Elements](/web/updates/2016/10/resizeobserver) Sie unter [`ResizeObserver`: It's like `document.onresize` for Elements](/web/updates/2016/10/resizeobserver) .
+Check out [`ResizeObserver`: It's like `document.onresize` for Elements](/web/updates/2016/10/resizeobserver) for more details and real world examples.
 
+## Improved Pop-up Blocker {: #popup-blocker }
 
-## Verbesserter ## -Blocker {: #popup-blocker }
+I hate tab-unders. You know them, it’s when a page opens a pop-up to some destination AND navigates the page. Usually one of them is an ad or something that you didn’t want.
 
-Ich hasse Tab-Unders. Sie kennen sie, wenn eine Seite ein Pop-up zu einem Ziel öffnet UND die Seite navigiert. Normalerweise ist einer von ihnen eine Anzeige oder etwas, das Sie nicht wollten.
-
-Ab Chrome 64 werden diese Navigationsarten blockiert, und Chrome zeigt dem Benutzer eine native Benutzeroberfläche an, mit der diese der Weiterleitung folgen können, wenn sie dies wünschen.
-
+Starting in Chrome 64, these type of navigations will be blocked, and Chrome will show some native UI to the user - allowing them to follow the redirect if they want.
 
 ## `import.meta` {: #import-meta }
 
-Wenn Sie JavaScript-Module schreiben, möchten Sie oft auf hostspezifische Metadaten über das aktuelle Modul zugreifen. Chrome 64 unterstützt jetzt die `import.meta` Eigenschaft in Modulen und macht die URL für das Modul als `import.meta.url` .
+When writing JavaScript modules, you often want access to host-specific metadata about the current module. Chrome 64 now supports the `import.meta` property within modules and exposes the URL for the module as `import.meta.url`.
 
-Dies ist sehr hilfreich, wenn Sie Ressourcen relativ zur Moduldatei im Gegensatz zum aktuellen HTML-Dokument auflösen möchten.
+This is really helpful when you want to resolve resources relative to the module file as opposed to the current HTML document.
 
+## And more! {: #more }
 
-## und mehr! {: #more }
+These are just a few of the changes in Chrome 64 for developers, of course, there’s plenty more.
 
-Dies sind nur einige der Änderungen in Chrome 64 für Entwickler, natürlich gibt es noch viel mehr.
-
-* Chrome unterstützt nun [named captures](/web/updates/2017/07/upcoming-regexp-features#named_captures) und [Unicode property  escapes](/web/updates/2017/07/upcoming-regexp-features#unicode_property_escapes) in regulären Ausdrücken.
-* Der voreingestellte `preload` Wert für `<audio>` und `<video>` Elemente lautet jetzt `metadata` . Dies bringt Chrome in Einklang mit anderen Browsern und hilft, die Bandbreite und die Ressourcennutzung zu reduzieren, indem nur die Metadaten und nicht die Medien selbst geladen werden.
-* Sie können jetzt `Request.prototype.cache` , um den Cache-Modus eines `Request` und zu bestimmen, ob es sich bei einer Anforderung um eine `Request` handelt.
-* Mit der Focus-Management-API können Sie jetzt ein Element fokussieren, ohne mit dem `preventScroll` Attribut zu scrollen.
+* Chrome now supports [named captures](/web/updates/2017/07/upcoming-regexp-features#named_captures) and [Unicode property escapes](/web/updates/2017/07/upcoming-regexp-features#unicode_property_escapes) in regular expressions.
+* The default `preload` value for `<audio>` and `<video>` elements is now `metadata`. This brings Chrome in line with other browsers and helps to reduce bandwidth and resource usage by only loading the metadata and not the media itself.
+* You can now use `Request.prototype.cache` to view the cache mode of a `Request` and determine whether a request is a reload request.
+* Using the Focus Management API, you can now focus an element without scrolling to it with the `preventScroll` attribute.
 
 ## `window.alert()` {: #window-alert }
 
-Oh, und noch eins! Das ist zwar kein &quot;Entwickler-Feature&quot;, aber es macht mich glücklich. `window.alert()` bringt keine Hintergrund-Registerkarte mehr in den Vordergrund! Stattdessen wird die Warnung angezeigt, wenn der Benutzer zu dieser Registerkarte zurückwechselt.
+Oh, and one more! While this isn’t really a ‘developer feature’, it makes me happy. `window.alert()` no longer brings a background tab to the foreground! Instead, the alert will be shown when the user switches to back to that tab.
 
-Kein zufälliges Wechseln mehr, weil etwas `window.alert` auf mich abgefeuert hat. Ich sehe dir den alten Google Kalender an.
+No more random tab switching because something fired a `window.alert` on me. I’m looking at you old Google Calendar.
 
+Be sure to [subscribe](https://goo.gl/6FP1a5) to our [YouTube channel](https://www.youtube.com/user/ChromeDevelopers/), and you’ll get an email notification whenever we launch a new video, or add our [RSS feed](/web/shows/rss.xml) to your feed reader.
 
-[subscribe](https://goo.gl/6FP1a5) Sie darauf, [subscribe](https://goo.gl/6FP1a5) zu unseren [YouTube channel](https://www.youtube.com/user/ChromeDevelopers/) , und Sie erhalten eine E-Mail-Benachrichtigung, wenn wir ein neues Video starten, oder fügen Sie unsere [RSS feed](/web/shows/rss.xml) zu Ihrem Feed-Reader.
-
-
-Ich bin Pete LePage, und sobald Chrome 65 veröffentlicht wird, bin ich hier, um Ihnen zu sagen, was ist neu in Chrome!
+I’m Pete LePage, and as soon as Chrome 65 is released, I’ll be right here to tell you -- what’s new in Chrome!
 
 {% include "web/_shared/rss-widget-updates.html" %}
-
-{% include "web/_shared/translation-end.html" %}
