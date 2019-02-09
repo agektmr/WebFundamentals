@@ -1,157 +1,135 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: ほとんどのブラウザはユーザーのマイクにアクセスできます。
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Most browsers can get access to the user's microphone.
 
-{# wf_updated_on:2016-08-22 #}
-{# wf_published_on:2016-08-23 #}
+{# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2016-08-23 #} {# wf_blink_components: Blink>GetUserMedia #}
 
-# ユーザーから音声データを取得する {: .page-title }
+# Recording Audio from the User {: .page-title }
 
 {% include "web/_shared/contributors/paulkinlan.html" %}
 
-現在、多くのブラウザには、ユーザーによる動画および音声ファイルの入力を処理する機能が備わっています。
-ただしブラウザによっては、この機能が動的に組み込まれている場合や、ユーザーの端末上にある別のアプリに処理が委ねられる場合があります。
+Many browsers now have the ability to access video and audio input from the user. However, depending on the browser it might be a full dynamic and inline experience, or it could be delegated to another app on the user's device.
 
+## Start simple and progressively
 
-##  簡単なケースから始める
+The easiest thing to do is simply ask the user for a pre-recorded file. Do this by creating a simple file input element and adding an `accept` filter that indicates we can only accept audio files, and a `capture` attribute that indicates we want to get it direct from the microphone.
 
-最も簡単な方法は、事前に録音済みのファイルをユーザーに要求することです。
-そのためには、簡単なファイル入力要素を作成して `accept` フィルタを追加し、音声ファイルのみを受け入れる（理想的にはマイクから音声ファイルを直接取得する）ことを示します。
+    <input type="file" accept="audio/*" capture>
+    
 
+This method works on all platforms. On desktop it will prompt the user to upload a file from the file system (ignoring the `capture` attribute). In Safari on iOS it will open up the microphone app, allowing you to record audio and then send it back to the web page; on Android it will give the user the choice of which app to use record the audio in before sending it back to the web page.
 
+Once the user has finished recording and they are back in the website, you need to somehow get ahold of the file data. You can get quick access by attaching an `onchange` event to the input element and then reading the `files` property of the event object.
 
-    <input type="file" accept="audio/*" capture="microphone">
+<pre class="prettyprint">&lt;input type="file" accept="audio/*" capture id="recorder">
+&lt;audio id="player" controls>&lt;/audio>
+&lt;script>
+  var recorder = document.getElementById('recorder');
+  var player = document.getElementById('player');
 
-この方法はすべてのプラットフォームで使用できます。PC の場合、ユーザーは、ファイル システムからファイルをアップロードするように求められます（`capture="microphone"` は無視されます）。
-iOS 上の Safari にこの方法を使用すると、マイクアプリが起動し、音声を録音してウェブページに送信できるようになります。Android の場合、ユーザーは音声をウェブページに送信する前に、音声の録音に使用するアプリを選択できます。
+  recorder.addEventListener('change', function(e) {
+    var file = e.target.files[0];
+    // Do something with the audio file.
+    player.src =  URL.createObjectURL(file);
+  });
+&lt;/script>
+</pre>
 
+Once you have access to the file you can do anything you want with it. For example, you can:
 
+* Attach it directly to an `<audio>` element so that you can play it
+* Download it to the user's device
+* Upload it to a server by attaching to an `XMLHttpRequest`
+* Pass it through the Web Audio API and apply filters on to it
 
+Whilst using the input element method of getting access to audio data is ubiquitous, it is the least appealing option. We really want to get access to the microphone and provide a nice experience directly in the page.
 
+## Access the microphone interactively
 
-ユーザーが録音を完了してウェブサイトに戻ったら、何らかの方法でそのファイルデータを取得する必要があります。
-ファイルにすばやくアクセスするには、`onchange` イベントを入力要素にアタッチして、イベント オブジェクトの `files` プロパティを読み取ります
+Modern browsers can have a direct line to the microphone allowing us to build experiences that are fully integrated with the web page and the user will never leave the browser.
 
+### Acquire access to the microphone
 
+We can directly access the Microphone by using an API in the WebRTC specification called `getUserMedia()`. `getUserMedia()` will prompt the user for access to their connected microphones and cameras.
 
-    <input type="file" accept="audio/*" capture="microphone" id="recorder">
-    <audio id="player" controls></audio>
-    <script>
-      var recorder = document.getElementById('recorder');
-      var player = document.getElementById('player')'
+If successful the API will return a `Stream` that will contain the data from either the camera or the microphone, and we can then either attach it to an `<audio>` element, attach it to a WebRTC stream, attach it to a Web Audio `AudioContext`, or save it using the `MediaRecorder` API.
 
-      recorder.addEventListener('change', function(e) {
-        var file = e.target.files[0]; 
-        // Do something with the audio file.
-        player.src =  URL.createObjectURL(file);
-      });
-    </script>
+To get data from the microphone we just set `audio: true` in the constraints object that is passed to the `getUserMedia()` API
 
-ファイルにアクセスできるようになると、ファイルに対してあらゆる操作を行えます。たとえば、次の操作が可能です。
+<pre class="prettyprint">&lt;audio id="player" controls>&lt;/audio>
+&lt;script>
+  var player = document.getElementById('player');
 
+  var handleSuccess = function(stream) {
+    if (window.URL) {
+      player.src = window.URL.createObjectURL(stream);
+    } else {
+      player.src = stream;
+    }
+  };
 
-* ファイルを `<audio>` 要素に直接アタッチして、ファイルを再生できるようにする
-* ファイルをユーザーの端末にダウンロードする
-* ファイルを `XMLHttpRequest` にアタッチして、サーバーにアップロードする
-* Web Audio API を介してファイルを渡し、ファイルにフィルタを適用する  
+  navigator.mediaDevices.getUserMedia({ audio: true, video: false })
+      .then(handleSuccess);
+&lt;/script>
+</pre>
 
-入力要素を使用して音声データにアクセスする方法は汎用的ですが、好ましい方法ではありません。
-理想的には、マイクにアクセスして、ページ内で適切なエクスペリエンスを直接提供する必要があります。
+If you want to choose a particular microphone you can first enumerate the available microphones.
 
+    navigator.mediaDevices.enumerateDevices().then((devices) => {
+      devices = devices.filter((d) => d.kind === 'audioinput');
+    });
+    
 
-##  マイクにインタラクティブにアクセスする
+You can then pass the deviceId that you wish to use when you call `getUserMedia`.
 
-最新のブラウザはマイクに直接アクセスできるため、ウェブページと完全に統合されたエクスペリエンスを実現できます。よって、ユーザーはブラウザから離れる必要がありません。
+    navigator.mediaDevices.getUserMedia({
+      audio: {
+        deviceId: devices[0].deviceId
+      }
+    });
+    
 
+By itself, this isn't that useful. All we can do is take the audio data and play it back.
 
+### Access the raw data from the microphone
 
-###  マイクへのアクセス権を取得する
+To access the raw data from the microphone we have to take the stream created by `getUserMedia()` and then use the Web Audio API to process the data. The Web Audio API is a simple API that takes input sources and connects those sources to nodes which can process the audio data (adjust Gain etc) and ultimately to a speaker so that the user can hear it.
 
-WebRTC 仕様の `getUserMedia()` という APIを使用すると、マイクに直接アクセスできます。`getUserMedia()` を使用する場合、接続済みのマイクまたはカメラに対するアクセス権の付与を求めるメッセージがユーザーに表示されます。
+One of the nodes that you can connect is a `ScriptProcessorNode`. This node will emit an `onaudioprocess` event every time the audio buffer is filled and you need to process it. At this point you could save the data into your own buffer and save it for later use.
 
-
-
-アクセスが許可されると、API によって、カメラまたはマイクからのデータが含まれる `Stream` が返されます。このストリームは `<audio>` 要素や Web Audio の `AudioContext` にアタッチしたり、`MediaRecorder` API を使用して保存したりできます。
-
-
-
-
-以下では、マイクからデータを取得するために、`getUserMedia()` API に渡す constraints オブジェクトで `audio: true` を指定しています。
-
-
-
-    <audio id="player" controls></audio>
-    <script>  
-      var player = document.getElementById('player');
-
-      var handleSuccess = function(stream) {
-        if (window.URL) {
-          player.src = window.URL.createObjectURL(stream);
-        } else {
-          player.src = stream;
-        }
-      };
-
-      navigator.mediaDevices.getUserMedia({ audio: true, video: false })
-          .then(handleSuccess)
-    </script>
-
-この機能だけでは、音声データを取得して再生することしかできないため、あまり便利ではありません。
-
-
-###  マイクの未加工データにアクセスする
-
-マイクの未加工データにアクセスするには、`getUserMedia()` で作成されたストリームを取得し、Web Audio API を使用してそのデータを処理する必要があります。
-Web Audio API はシンプルな API であり、入力ソースを取得すると、それを音声データを処理（ゲインの調整など）できるノードに接続し、最終的にはユーザーが音声を聞くことができるようにスピーカーに接続します。
-
-
-
-
-`ScriptProcessorNode` は接続できるノードの 1 つです。このノードは、オーディオ バッファがいっぱいになるたびに `onaudioprocess` イベントを発行するため、それを処理する必要があります。この時点でデータを独自のバッファに保存しておき、あとで使用することができます。
-
-
-<pre class="prettyprint">
-&lt;script>  
+<pre class="prettyprint">&lt;script>
   var handleSuccess = function(stream) {
     <strong>var context = new AudioContext();
-    var input = context.createMediaStreamSource(stream)
-    var processor = context.createScriptProcessor(1024,1,1);
+    var source = context.createMediaStreamSource(stream);
+    var processor = context.createScriptProcessor(1024, 1, 1);
 
     source.connect(processor);
     processor.connect(context.destination);
 
-    processor.onaudioprocess = function(e){
+    processor.onaudioprocess = function(e) {
       // Do something with the data, i.e Convert this to WAV
       console.log(e.inputBuffer);
     };</strong>
   };
 
   navigator.mediaDevices.getUserMedia({ audio: true, video: false })
-      .then(handleSuccess)
+      .then(handleSuccess);
 &lt;/script>
 </pre>
 
-バッファに保持されたデータはマイクの未加工データであり、そのデータに対して多くの操作を行うことができます。次に例を示します。
+The data that is held in the buffers is the raw data from the microphone and you have a number of options with what you can do with the data:
 
+* Upload it straight to the server
+* Store it locally
+* Convert to a dedicated file format, such as WAV, and then save it to your servers or locally
 
-* データをサーバーに直接アップロードする
-* データをローカルで保存する
-* WAV などの専用のファイル形式に変換してから、サーバーまたはローカルで保存する
+### Save the data from the microphone
 
+The easiest way to save the data from the microphone is to use the `MediaRecorder` API.
 
-###  マイクのデータを保存する
+The `MediaRecorder` API will take the stream created by `getUserMedia` and then progressively save the data that is on the stream in to you preferred destination.
 
-マイクのデータを保存する最も簡単な方法は、`MediaRecorder` API を使用することです。
-
-
-`MediaRecorder` API は `getUserMedia` で作成されたストリームを取得してから、ストリーム上のデータを任意の保存先に段階的に保存します。
-
-
-
-<pre class="prettyprint">
-&lt;a id="download">Download</a>
-&lt;button id="stop">Stop</button>
-&lt;script> 
+<pre class="prettyprint">&lt;a id="download">Download&lt;/a>
+&lt;button id="stop">Stop&lt;/button>
+<script>
   let shouldStop = false;
   let stopped = false;
   const downloadLink = document.getElementById('download');
@@ -159,12 +137,12 @@ Web Audio API はシンプルな API であり、入力ソースを取得する�
 
   stopButton.addEventListener('click', function() {
     shouldStop = true;
-  })
+  });
 
-  var handleSuccess = function(stream) {  
-    const options = {mimeType: 'video/webm;codecs=vp9'};
+  var handleSuccess = function(stream) {
+    const options = {mimeType: 'audio/webm'};
     const recordedChunks = [];
-    <strong>const mediaRecorder = new MediaRecorder(stream, options);  
+    <strong>const mediaRecorder = new MediaRecorder(stream, options);
 
     mediaRecorder.addEventListener('dataavailable', function(e) {
       if (e.data.size > 0) {
@@ -191,56 +169,128 @@ Web Audio API はシンプルな API であり、入力ソースを取得する�
 &lt;/script>
 </pre>
 
-ここでは、あとで `Blob` に変換できる配列にデータを直接保存しています。その後、これを使用して、ウェブサーバーまたは直接ユーザーの端末のストレージにデータを保存します。
 
- 
 
-##  マイクを適切に使用するためにパーミッションを要求する
-
-ユーザーが、サイトによるマイクへのアクセスを許可したことがない場合は、`getUserMedia` を呼び出すと、マイクにアクセスするためのパーミッションを付与するよう求める画面が表示されます。
-
- 
-
-ユーザーは、マシン上の高機能なデバイスへのアクセス権を要求されることを好まず、リクエストを拒否する傾向があります。また、プロンプトが表示された理由がわからない場合は、リクエストを無視することもあります。よって、初めてマイクが必要になったときに、一度だけアクセス権を要求することを推奨します。アクセス権が付与されると、ユーザーに再度プロンプトが表示されることはありません。ただし、ユーザーがアクセスを拒否した場合は、再度アクセスしてユーザーにパーミッションを要求できなくなります。
+<p>
+  In our case we are saving the data directly into an array that we can later turn
+  in to a <code>Blob</code> which can be then used to save to our Web Server or directly in
+  storage on the user's device.
+</p>
 
 
 
-警告:ページの読み込み時にマイクへのアクセス権を求めると、ユーザーが拒否する確率が非常に高くなります。
-
-###  Permission API を使用してアクセス権の有無を確認する
-
-`getUserMedia` API からの情報では、既にマイクへのアクセス権があるかどうかを確認できません。
-これは問題になります。適切な UI を表示してマイクへのアクセスをユーザーに許可してもらうには、マイクへのアクセス権を求める必要があります。
+<h2>
+  Ask permission to use microphone responsibly
+</h2>
 
 
 
-この問題は、一部のブラウザでは Permission API を使用すると解決できます。`navigator.permission` API を使用すると、プロンプトを再度表示する必要なく、特定の API にアクセスできるかどうかを照会できます。
+<p>
+  If the user has not previously granted your site access to the microphone then
+  the instant that you call <code>getUserMedia</code> the browser will prompt the user to
+  grant your site permission to the microphone.
+</p>
 
 
 
-ユーザーのマイクへのアクセス権があるかどうかを照会する場合は、`{name: 'microphone'}` をクエリメソッドに渡すと、以下のいずれかが返されます。
+<p>
+  Users hate getting prompted for access to powerful devices on their machine and
+  they will frequently block the request, or they will ignore it if they don't
+  understand the context of which the prompt has been created. It is best practice
+  to only ask to access the microphone when first needed. Once the user has
+  granted access they won't be asked again, however, if they reject access,
+  you can't get access again to ask the user for permission.
+</p>
 
 
-*  `granted` &mdash; ユーザーは以前にマイクへのアクセス権を付与しています。 
-*  `prompt` &mdash; ユーザーはアクセス権を付与したことがなく、`getUserMedia` を呼び出すと、ユーザーにプロンプトが表示されます。 
-*  `denied` &mdash; システムまたはユーザーはマイクへのアクセスを明示的にブロックしているため、マイクにアクセスすることはできません。
+
+<p>
+  Warning: Asking for access to the microphone on page load will result in most of your users
+  rejecting access to the mic.
+</p>
 
 
-これで、ユーザーが必要な操作を実行できるようにするためにユーザー インターフェースを変更する必要があるかどうかをすばやく確認できます。
+
+<h3>
+  Use the permissions API to check if you already have access
+</h3>
 
 
-    navigator.permissions.query({name:'microphone'}).then(function(result) {
-      if (result.state == 'granted') {
 
-      } else if (result.state == 'prompt') {
-
-      } else if (result.state == 'denied') {
-
-      }
-      result.onchange = function() {
-
-      };
-    });
+<p>
+  The <code>getUserMedia</code> API provides you with no knowledge of if you already have
+  access to the microphone. This presents you with a problem, to provide a nice UI
+  to get the user to grant you access to the microphone, you have to ask for
+  access to microphone.
+</p>
 
 
-{# wf_devsite_translation #}
+
+<p>
+  This can be solved in some browsers by using the Permission API. The
+  <code>navigator.permission</code> API allows you to query the state of the ability to
+  access specific API's without having to prompt again.
+</p>
+
+
+
+<p>
+  To query if you have access to the user's microphone you can pass in
+  <code>{name: 'microphone'}</code> into the query method and it will return either:
+</p>
+
+
+
+<ul>
+  <li>
+    <code>granted</code> &mdash; the user has previously given you access to the microphone;
+  </li>
+  
+  
+  <li>
+    <code>prompt</code> &mdash; the user has not given you access and will be prompted when
+    you call <code>getUserMedia</code>;
+  </li>
+  
+  
+  <li>
+    <code>denied</code> &mdash; the system or the user has explicitly blocked access to the
+    microphone and you won't be able to get access to it.
+  </li>
+  
+</ul>
+
+
+
+<p>
+  And you can now check quickly check to see if you need to alter your user
+  interface to accommodate the actions that the user needs to take.
+</p>
+
+
+
+<pre><code>navigator.permissions.query({name:'microphone'}).then(function(result) {
+  if (result.state == 'granted') {
+
+  } else if (result.state == 'prompt') {
+
+  } else if (result.state == 'denied') {
+
+  }
+  result.onchange = function() {
+
+  };
+});
+</code></pre>
+
+
+
+<h2>
+  Feedback {: #feedback }
+</h2>
+
+
+
+<p>
+  {% include "web/_shared/helpful.html" %}
+</p>
