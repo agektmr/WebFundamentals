@@ -1,221 +1,209 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Pelajari cara mengidentifikasi dan mengatasi bottleneck kinerja jalur rendering penting.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Learn to identify and resolve critical rendering path performance bottlenecks.
 
-{# wf_updated_on: 2017-07-12 #}
-{# wf_published_on: 2014-03-31 #}
+{# wf_updated_on: 2018-08-17 #} {# wf_published_on: 2014-03-31 #} {# wf_blink_components: N/A #}
 
-# Menganalisis Kinerja Jalur Rendering Penting {: .page-title }
+# Analyzing Critical Rendering Path Performance {: .page-title }
 
 {% include "web/_shared/contributors/ilyagrigorik.html" %}
 
-Untuk mengidentifikasi dan mengatasi bottleneck kinerja jalur rendering penting diperlukan pengetahuan yang baik mengenai kesalahan umum. Mari kita ikuti tur praktik langsung dan memahami pola kinerja umum yang akan membantu mengoptimalkan laman Anda.
+Identifying and resolving critical rendering path performance bottlenecks requires good knowledge of the common pitfalls. Let's take a hands-on tour and extract common performance patterns that will help you optimize your pages.
 
+Optimizing the critical rendering path allows the browser to paint the page as quickly as possible: faster pages translate into higher engagement, more pages viewed, and [improved conversion](https://www.google.com/think/multiscreen/success.html). To minimize the amount of time a visitor spends viewing a blank screen, we need to optimize which resources are loaded and in which order.
 
-Pengoptimalan jalur rendering penting memungkinkan browser menggambar laman secepat mungkin: semakin cepat mengubah laman menjadi interaksi yang lebih tinggi, semakin banyak laman yang ditampilkan, dan [semakin baik konversi](https://www.google.com/think/multiscreen/success.html). Untuk meminimalkan lama pengunjung menampilkan layar kosong, kita perlu mengoptimalkan sumber daya yang akan dimuat dan urutannya.
+To help illustrate this process, let's start with the simplest possible case and incrementally build up our page to include additional resources, styles, and application logic. In the process, we'll optimize each case; we'll also see where things can go wrong.
 
-Untuk membantu mengilutrasikan proses ini, mari kita mulai dengan kasus yang sesederhana mungkin dan secara bertahap membangun laman untuk menyertakan sumber daya tambahan, gaya, dan logika aplikasi. Dalam prosesnya, kita akan mengoptimalkan setiap kasus; kita juga akan melihat di mana saja kesalahan bisa terjadi.
+So far we've focused exclusively on what happens in the browser after the resource (CSS, JS, or HTML file) is available to process. We've ignored the time it takes to fetch the resource either from cache or from the network. We'll assume the following:
 
-Sejauh ini kita telah memfokuskan secara eksklusif pada apa yang terjadi di browser setelah sumber daya (file CSS, JS, atau HTML) tersedia untuk diproses. Kita telah mengabaikan waktu yang diperlukan untuk mengambil sumber daya, baik dari cache maupun dari jaringan. Kita akan menggunakan anggapan berikut ini:
+* A network roundtrip (propagation latency) to the server costs 100ms.
+* Server response time is 100ms for the HTML document and 10ms for all other files.
 
-* Perjalanan bolak-balik jaringan (latensi propagasi) ke server menghabiskan waktu 100 md.
-* Waktu respons server adalah 100 md bagi dokumen HTML dan 10 md bagi semua file lainnya.
-
-## Pengalaman hello world
+## The hello world experience
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/performance/critical-rendering-path/_code/basic_dom_nostyle.html" region_tag="full" adjust_indentation="auto" %}
 </pre>
 
-[Cobalah](https://googlesamples.github.io/web-fundamentals/fundamentals/performance/critical-rendering-path/basic_dom_nostyle.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/performance/critical-rendering-path/basic_dom_nostyle.html){: target="_blank" .external }
 
-Kita akan mulai dengan markup HTML dasar dan gambar tunggal; tanpa CSS atau JavaScript. Mari kita buka timeline Network di Chrome DevTools dan periksa jenjang sumber daya yang dihasilkan:
+We'll start with basic HTML markup and a single image; no CSS or JavaScript. Let's open up our Network timeline in Chrome DevTools and inspect the resulting resource waterfall:
 
-<img src="images/waterfall-dom.png" alt="CRP">
+<img src="images/waterfall-dom.png" alt="CRP" />
 
-Note: Walaupun dokumen ini menggunakan DevTools untuk mengilustrasikan konsep CRP, DevTools
-saat ini tidak cocok untuk analisis CRP. Lihat [Bagaimana dengan
-DevTools?](measure-crp#devtools) untuk informasi selengkapnya.
+Note: Although this doc uses DevTools to illustrate CRP concepts, DevTools is currently not well-suited for CRP analysis. See [What about DevTools?](measure-crp#devtools) for more information.
 
-Sebagaimana yang diharapkan, file HTML memerlukan waktu sekitar 200 md untuk diunduh. Perhatikan, bagian transparan pada garis biru menyatakan waktu tunggu browser di jaringan tanpa menerima byte respons sementara bagian yang padat menampilkan waktu untuk menyelesaikan pengunduhan setelah byte respons pertama diterima. Ukuran unduhan HTML kecil (<4 K), jadi kita hanya membutuhkan satu kali bolak-balik untuk mengambil file lengkap. Hasilnya, dokumen HTML memerlukan waktu sekitar 200 md untuk diambil, dengan setengah dari waktunya dihabiskan untuk menunggu di jaringan, dan separuh lagi untuk menunggu respons server.
+As expected, the HTML file took approximately 200ms to download. Note that the transparent portion of the blue line represents the length of time that the browser waits on the network without receiving any response bytes whereas the solid portion shows the time to finish the download after the first response bytes have been received. The HTML download is tiny (<4K), so all we need is a single roundtrip to fetch the full file. As a result, the HTML document takes approximately 200ms to fetch, with half the time spent waiting on the network and the other half waiting on the server response.
 
-Bila materi HTML tersedia, browser akan mem-parse byte, mengonversinya menjadi token, dan membangun pohon DOM. Perhatikan, DevTools dengan mudah melaporkan waktu untuk kejadian DOMContentLoaded di bawah (216 md), yang juga dinyatakan dengan garis vertikal biru. Selisih antara akhir pengunduhan HTML dan garis vertikal biru (DOMContentLoaded) adalah waktu yang dihabiskan browser untuk membangun pohon DOM&mdash;dalam hal ini, hanya beberapa milidetik.
+When the HTML content becomes available, the browser parses the bytes, converts them into tokens, and builds the DOM tree. Notice that DevTools conveniently reports the time for the DOMContentLoaded event at the bottom (216ms), which also corresponds to the blue vertical line. The gap between the end of the HTML download and the blue vertical line (DOMContentLoaded) is the time it takes the browser to build the DOM tree&mdash;in this case, just a few milliseconds.
 
-Perhatikan, "awesome photo" kita tidak memblokir kejadian `domContentLoaded`. Ternyata, kita bisa membangun pohon render dan bahkan menggambar laman tanpa menunggu setiap aset pada laman: **tidak semua sumber daya wajib menghasilkan penggambaran pertama yang cepat**. Sebenarnya, bila membicarakan tentang jalur rendering penting, biasanya kita membicarakan markup HTML, CSS, dan JavaScript. Gambar tidak memblokir render awal laman&mdash;meskipun kita juga harus mencoba menggambar gambar sesegera mungkin.
+Notice that our "awesome photo" did not block the `domContentLoaded` event. Turns out, we can construct the render tree and even paint the page without waiting for each asset on the page: **not all resources are critical to deliver the fast first paint**. In fact, when we talk about the critical rendering path we are typically talking about the HTML markup, CSS, and JavaScript. Images do not block the initial render of the page&mdash;although we should also try to get the images painted as soon as possible.
 
-Dengan demikian, kejadian `load` (disebut juga dengan `onload`), diblokir pada gambar: DevTools melaporkan kejadian `onload` pada 335 md. Ingatlah bahwa kejadian `onload` menandai titik ketika **semua sumber daya** yang diperlukan oleh laman telah diunduh dan diproses; ini adalah titik ketika spinner pemuatan bisa berhenti berputar dalam browser (garis vertikal merah dalam jenjang).
+That said, the `load` event (also known as `onload`), is blocked on the image: DevTools reports the `onload` event at 335ms. Recall that the `onload` event marks the point at which **all resources** that the page requires have been downloaded and processed; at this point, the loading spinner can stop spinning in the browser (the red vertical line in the waterfall).
 
+## Adding JavaScript and CSS into the mix
 
-## Menambahkan JavaScript dan CSS ke dalam campuran
-
-Laman "pengalaman Hello World" kita tampaknya sederhana namun banyak yang terjadi di balik itu semua. Pada praktiknya kita juga akan memerlukan lebih dari sekadar HTML: kemungkinannya adalah, kita akan memiliki stylesheet CSS dan satu atau beberapa skrip untuk menambahkan beberapa interaktivitas ke laman. Marilah kita tambahkan keduanya pada campuran dan melihat apa yang terjadi:
+Our "Hello World experience" page seems simple but a lot goes on under the hood. In practice we'll need more than just the HTML: chances are, we'll have a CSS stylesheet and one or more scripts to add some interactivity to our page. Let's add both to the mix and see what happens:
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/performance/critical-rendering-path/_code/measure_crp_timing.html" region_tag="full" adjust_indentation="auto" %}
 </pre>
 
-[Cobalah](https://googlesamples.github.io/web-fundamentals/fundamentals/performance/critical-rendering-path/measure_crp_timing.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/performance/critical-rendering-path/measure_crp_timing.html){: target="_blank" .external }
 
-_Sebelum menambahkan JavaScript dan CSS:_
+*Before adding JavaScript and CSS:*
 
-<img src="images/waterfall-dom.png" alt="DOM CRP" >
+<img src="images/waterfall-dom.png" alt="DOM CRP" />
 
-_Dengan JavaScript dan CSS:_
+*With JavaScript and CSS:*
 
-<img src="images/waterfall-dom-css-js.png" alt="DOM, CSSOM, JS" >
+<img src="images/waterfall-dom-css-js.png" alt="DOM, CSSOM, JS" />
 
-Penambahan file JavaScript dan CSS eksternal akan menambahkan dua permintaan ekstra ke jenjang kita, yang semuanya yang dikirim pada waktu yang hampir bersamaan oleh browser. Akan tetapi, **perhatikan sekarang ada banyak selisih waktu lebih kecil antara kejadian `domContentLoaded` dan `onload`.**
+Adding external CSS and JavaScript files adds two extra requests to our waterfall, all of which the browser dispatches at about the same time. However, **note that there is now a much smaller timing difference between the `domContentLoaded` and `onload` events.**
 
-Apa yang terjadi?
+What happened?
 
-* Tidak seperti contoh HTML biasa, kita juga perlu mengambil dan mem-parse file CSS untuk membangun CSSOM, dan kita membutuhkan DOM maupun CSSOM untuk membangun pohon render.
-* Karena laman juga berisi file JavaScript pemblokir parser di laman, kejadian `domContentLoaded` akan diblokir hingga file CSS diunduh dan di-parse: karena JavaScript mungkin akan membuat kueri CSSOM, maka kita harus memblokir file CSS hingga selesai diunduh agar kita bisa mengeksekusi JavaScript.
+* Unlike our plain HTML example, we also need to fetch and parse the CSS file to construct the CSSOM, and we need both the DOM and CSSOM to build the render tree.
+* Because the page also contains a parser blocking JavaScript file, the `domContentLoaded` event is blocked until the CSS file is downloaded and parsed: because the JavaScript might query the CSSOM, we must block the CSS file until it downloads before we can execute JavaScript.
 
-**Bagaimana jika kita menggantikan skrip eksternal dengan skrip inline?** Meskipun skrip dibuat inline secara langsung ke dalam laman, browser tidak bisa mengeksekusinya sebelum CSSOM dibangun. Singkatnya, JavaScript yang disisipkan juga merupakan pemblokir parser.
+**What if we replace our external script with an inline script?** Even if the script is inlined directly into the page, the browser can't execute it until the CSSOM is constructed. In short, inlined JavaScript is also parser blocking.
 
-Dengan demikian, meski memblokir CSS, apakah penyisipan skrip secara inline akan membuat render laman menjadi lebih cepat? Mari kita coba dan lihat apa yang terjadi.
+That said, despite blocking on CSS, does inlining the script make the page render faster? Let's try it and see what happens.
 
-_JavaScript Eksternal:_
+*External JavaScript:*
 
-<img src="images/waterfall-dom-css-js.png" alt="DOM, CSSOM, JS" >
+<img src="images/waterfall-dom-css-js.png" alt="DOM, CSSOM, JS" />
 
-_JavaScript Disisipkan:_
+*Inlined JavaScript:*
 
-<img src="images/waterfall-dom-css-js-inline.png" alt="DOM, CSSOM, dan JS yang disisipkan inline" >
+<img src="images/waterfall-dom-css-js-inline.png" alt="DOM, CSSOM, and inlined JS" />
 
-Kita menghilangkan satu permintaan, namun waktu `onload` dan `domContentLoaded` secara efektif sama. Mengapa? Seperti yang kita ketahui, tidak masalah apakah JavaScript inline atau eksternal, karena begitu browser mencapai tag skrip, browser akan memblokir dan menunggu CSSOM dibangun. Lebih jauh, dalam contoh pertama, browser mengunduh CSS maupun JavaScript secara bersamaan dan selesai mengunduhnya pada waktu yang hampir bersamaan. Dalam hal ini, menyisipkan kode JavaScript secara inline tidak terlalu membantu. Namun ada sejumlah strategi yang bisa membuat laman kita dirender lebih cepat.
+We are making one less request, but both our `onload` and `domContentLoaded` times are effectively the same. Why? Well, we know that it doesn't matter if the JavaScript is inlined or external, because as soon as the browser hits the script tag it blocks and waits until the CSSOM is constructed. Further, in our first example, the browser downloads both CSS and JavaScript in parallel and they finish downloading at about the same time. In this instance, inlining the JavaScript code doesn't help us much. But there are several strategies that can make our page render faster.
 
-Pertama-tama, ingatlah bahwa semua skrip inline adalah pemblokir parser, namun untuk skrip eksternal kita dapat menambahkan kata kunci "async" untuk membuka kunci parser. Mari kita urungkan penyisipan dan mencoba yang itu:
+First, recall that all inline scripts are parser blocking, but for external scripts we can add the "async" keyword to unblock the parser. Let's undo our inlining and give that a try:
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/performance/critical-rendering-path/_code/measure_crp_async.html" region_tag="full" adjust_indentation="auto" %}
 </pre>
 
-[Cobalah](https://googlesamples.github.io/web-fundamentals/fundamentals/performance/critical-rendering-path/measure_crp_async.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/performance/critical-rendering-path/measure_crp_async.html){: target="_blank" .external }
 
-_Pemblokiran parser JavaScript (eksternal):_
+*Parser-blocking (external) JavaScript:*
 
-<img src="images/waterfall-dom-css-js.png" alt="DOM, CSSOM, JS" >
+<img src="images/waterfall-dom-css-js.png" alt="DOM, CSSOM, JS" />
 
-_Async JavaScript (eksternal):_
+*Async (external) JavaScript:*
 
-<img src="images/waterfall-dom-css-js-async.png" alt="DOM, CSSOM, JS asinkron" >
+<img src="images/waterfall-dom-css-js-async.png" alt="DOM, CSSOM, async JS" />
 
-Jauh lebih baik! Kejadian `domContentLoaded` dipicu tidak lama setelah HTML di-parse; browser tahu tidak boleh memblokir JavaScript dan karena tidak ada skrip pemblokiran parser lainnya, konstruksi CSSOM juga bisa berlangsung secara bersamaan.
+Much better! The `domContentLoaded` event fires shortly after the HTML is parsed; the browser knows not to block on JavaScript and since there are no other parser blocking scripts the CSSOM construction can also proceed in parallel.
 
-Alternatifnya, kita bisa membuat CSS dan JavaScript secara inline:
+Alternatively, we could have inlined both the CSS and JavaScript:
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/performance/critical-rendering-path/_code/measure_crp_inlined.html" region_tag="full" adjust_indentation="auto" %}
 </pre>
 
-[Cobalah](https://googlesamples.github.io/web-fundamentals/fundamentals/performance/critical-rendering-path/measure_crp_inlined.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/performance/critical-rendering-path/measure_crp_inlined.html){: target="_blank" .external }
 
-<img src="images/waterfall-dom-css-inline-js-inline.png" alt="DOM, CSS inline, JS inline" >
+<img src="images/waterfall-dom-css-inline-js-inline.png" alt="DOM, inline CSS, inline JS" />
 
-Perhatikan, waktu `domContentLoaded` secara efektif sama seperti dalam contoh sebelumnya; sebagai ganti menandai JavaScript kita sebagai asinkron, kita telah menyisipkan baik CSS dan JS ke dalam laman itu sendiri secara inline. Ini membuat laman HTML kita menjadi jauh lebih besar, namun keuntungannya adalah browser tidak harus menunggu mengambil sumber daya eksternal; semuanya sudah ada di laman itu.
+Notice that the `domContentLoaded` time is effectively the same as in the previous example; instead of marking our JavaScript as async, we've inlined both the CSS and JS into the page itself. This makes our HTML page much larger, but the upside is that the browser doesn't have to wait to fetch any external resources; everything is right there in the page.
 
-Seperti yang Anda dapat lihat, meski dengan satu laman sederhana, mengoptimalkan jalur rendering penting merupakan latihan yang tidak remeh: kita harus memahami ketergantungan grafik antar berbagai sumber daya berbeda, kita perlu mengidentifikasikan sumber daya mana yang "penting", dan kita harus memilih di antara berbagai strategi berbeda mengenai cara menyertakan sumber daya tersebut pada laman. Tidak ada satu solusi untuk masalah ini; setiap laman berbeda. Anda perlu mengikuti proses serupa untuk mencari tahu sendiri strategi yang optimal.
+As you can see, even with a very simple page, optimizing the critical rendering path is a non-trivial exercise: we need to understand the dependency graph between different resources, we need to identify which resources are "critical," and we must choose among different strategies for how to include those resources on the page. There is no one solution to this problem; each page is different. You need to follow a similar process on your own to figure out the optimal strategy.
 
-Dengan demikian, mari kita lihat apakah kita bisa mundur selangkah dan mengidentifikasi beberapa pola kinerja umum.
+That said, let's see if we can step back and identify some general performance patterns.
 
-## Pola kinerja
+## Performance patterns
 
-Laman paling sederhana mungkin hanya terdiri dari markup HTML: tanpa CSS, tanpa JavaScript, atau tipe sumber daya lainnya. Untuk merender laman ini, browser harus memulai permintaan, tunggu dokumen HTML tiba, lakukan parse, bangun DOM dan terakhir render pada layar.
+The simplest possible page consists of just the HTML markup; no CSS, no JavaScript, or other types of resources. To render this page the browser has to initiate the request, wait for the HTML document to arrive, parse it, build the DOM, and then finally render it on the screen:
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/performance/critical-rendering-path/_code/basic_dom_nostyle.html" region_tag="full" adjust_indentation="auto" %}
 </pre>
 
-[Cobalah](https://googlesamples.github.io/web-fundamentals/fundamentals/performance/critical-rendering-path/basic_dom_nostyle.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/performance/critical-rendering-path/basic_dom_nostyle.html){: target="_blank" .external }
 
-<img src="images/analysis-dom.png" alt="Hello world CRP" >
+<img src="images/analysis-dom.png" alt="Hello world CRP" />
 
-**Waktu antara T<sub>0</sub> dan T<sub>1</sub> merekam waktu pemrosesan jaringan dan server.** Dalam kasus terbaik (jika file HTML-nya kecil), hanya perlu satu kali bolak-balik di jaringan untuk mengambil dokumen lengkap. Mengingat cara kerja protokol transpor TCP, file yang lebih besar mungkin perlu bolak-balik lebih banyak. **Akibatnya, dalam kasus terbaik, laman di atas memiliki satu (minimum) jalur rendering penting bolak-balik.**
+**The time between T<sub>0</sub> and T<sub>1</sub> captures the network and server processing times.** In the best case (if the HTML file is small), just one network roundtrip fetches the entire document. Due to how the TCP transports protocols work, larger files may require more roundtrips. **As a result, in the best case the above page has a one roundtrip (minimum) critical rendering path.**
 
-Sekarang, marilah kita pertimbangkan laman yang sama namun dengan file CSS eksternal:
+Now, let's consider the same page but with an external CSS file:
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/performance/critical-rendering-path/_code/analysis_with_css.html" region_tag="full" adjust_indentation="auto" %}
 </pre>
 
-[Cobalah](https://googlesamples.github.io/web-fundamentals/fundamentals/performance/critical-rendering-path/analysis_with_css.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/performance/critical-rendering-path/analysis_with_css.html){: target="_blank" .external }
 
-<img src="images/analysis-dom-css.png" alt="DOM + CSSOM CRP" >
+<img src="images/analysis-dom-css.png" alt="DOM + CSSOM CRP" />
 
-Sekali lagi, kita menghabiskan satu kali bolak-balik jaringan untuk mengambil dokumen HTML, kemudian markup yang diambil akan memberi tahu bahwa kita juga memerlukan file CSS; ini berarti browser harus kembali ke server dan mengambil CSS agar bisa merender laman pada layar. **Akibatnya, laman ini perlu minimum dua kali bolak-balik agar bisa menampilkannya.** Sekali lagi, file CSS mungkin perlu beberapa kali bolak-balik, sehingga penekanannya adalah "minimum".
+Once again, we incur a network roundtrip to fetch the HTML document, and then the retrieved markup tells us that we also need the CSS file; this means that the browser has to go back to the server and get the CSS before it can render the page on the screen. **As a result, this page incurs a minimum of two roundtrips before it can be displayed.** Once again, the CSS file may take multiple roundtrips, hence the emphasis on "minimum".
 
-Mari kita definisikan kosa kata yang akan digunakan untuk menjelaskan jalur rendering penting:
+Let's define the vocabulary we use to describe the critical rendering path:
 
-* **Sumber Daya Penting:** Sumber daya yang bisa memblokir rendering awal laman.
-* **Panjang Jalur Penting:** Jumlah bolak-balik, atau total waktu yang diperlukan untuk mengambil semua sumber daya penting.
-* **Byte Penting:** Total jumlah byte yang diperlukan untuk mendapatkan render pertama laman, yaitu jumlah ukuran file yang ditransfer dari semua sumber daya penting.
-Contoh pertama kita dengan satu laman HTML yang berisi satu sumber daya penting (dokumen HTML); panjang jalur pentingnya juga sama dengan satu kali bolak-balik jaringan (dengan anggapan ukuran file kecil), dan total byte penting hanya seukuran transfer dokumen HTML itu sendiri.
+* **Critical Resource:** Resource that could block initial rendering of the page.
+* **Critical Path Length:** Number of roundtrips, or the total time required to fetch all of the critical resources.
+* **Critical Bytes:** Total number of bytes required to get to first render of the page, which is the sum of the transfer filesizes of all critical resources. Our first example, with a single HTML page, contained a single critical resource (the HTML document); the critical path length was also equal to one network roundtrip (assuming file was small), and the total critical bytes was just the transfer size of the HTML document itself.
 
-Sekarang marilah kita bandingkan dengan karakteristik jalur penting dari contoh HTML + CSS di atas:
+Now let's compare that to the critical path characteristics of the HTML + CSS example above:
 
-<img src="images/analysis-dom-css.png" alt="DOM + CSSOM CRP" >
+<img src="images/analysis-dom-css.png" alt="DOM + CSSOM CRP" />
 
-* **2** sumber daya penting
-* **2** atau lebih perjalanan bolak balik untuk panjang jalur penting minimum.
-* **9** KB byte penting
+* **2** critical resources
+* **2** or more roundtrips for the minimum critical path length
+* **9** KB of critical bytes
 
-Kita memerlukan HTML maupun CSS untuk membangun pohon render. Akibatnya, HTML dan CSS sama-sama menjadi sumber daya penting: CSS hanya diambil setelah browser mendapatkan dokumen HTML, sehingga panjang jalur pentingnya adalah minimum dua kali bolak-balik. Total jumlah kedua sumber daya menjadi 9 KB byte penting.
+We need both the HTML and CSS to construct the render tree. As a result, both HTML and CSS are critical resources: the CSS is fetched only after the browser gets the HTML document, hence the critical path length is at minimum two roundtrips. Both resources add up to a total of 9KB of critical bytes.
 
-Sekarang mari kita tambahkan file JavaScript ekstra ke dalam campuran.
+Now let's add an extra JavaScript file into the mix.
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/performance/critical-rendering-path/_code/analysis_with_css_js.html" region_tag="full" adjust_indentation="auto" %}
 </pre>
 
-[Cobalah](https://googlesamples.github.io/web-fundamentals/fundamentals/performance/critical-rendering-path/analysis_with_css_js.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/performance/critical-rendering-path/analysis_with_css_js.html){: target="_blank" .external }
 
-Kita telah menambahkan `app.js`, yang keduanya merupakan aset JavaScript eksternal pada laman dan sumber daya pemblokiran parser (yang penting). Yang lebih buruk, untuk mengeksekusi file JavaScript kita harus memblokir dan menunggu CSSOM - ingatlah bahwa JavaScript bisa membuat kueri CSSOM dan karena itu browser akan dihentikan sementara hingga `style.css` diunduh dan CSSOM dibangun.
+We added `app.js`, which is both an external JavaScript asset on the page and a parser blocking (that is, critical) resource. Worse, in order to execute the JavaScript file we have to block and wait for CSSOM; recall that JavaScript can query the CSSOM and hence the browser pauses until `style.css` is downloaded and CSSOM is constructed.
 
-<img src="images/analysis-dom-css-js.png" alt="DOM, CSSOM, JavaScript CRP" >
+<img src="images/analysis-dom-css-js.png" alt="DOM, CSSOM, JavaScript CRP" />
 
-Dengan demikian, pada praktiknya jika melihat "jenjang jaringan" laman ini, Anda akan melihat bahwa baik permintaan CSS maupun JavaScript akan dimulai pada waktu yang hampir bersamaan; browser mendapatkan HTML, menemukan kedua sumber daya, dan memulai kedua permintaan. Hasilnya, laman di atas memiliki karakteristik jalur penting berikut:
+That said, in practice if we look at this page's "network waterfall," you'll see that both the CSS and JavaScript requests are initiated at about the same time; the browser gets the HTML, discovers both resources, and initiates both requests. As a result, the above page has the following critical path characteristics:
 
-* **3** sumber daya penting
-* **2** atau lebih perjalanan bolak balik untuk panjang jalur penting minimum.
-* **11** KB byte penting
+* **3** critical resources
+* **2** or more roundtrips for the minimum critical path length
+* **11** KB of critical bytes
 
-Sekarang kita memiliki tiga sumber daya penting yang jumlahnya hingga 11 KB byte penting, namun panjang jalur penting kita masih dua kali bolak-balik karena kita bisa mentransfer CSS dan JavaScript secara bersamaan. **Dengan mengetahui karakteristik jalur rendering penting berarti kita bisa mengidentifikasi sumber daya penting, dan memahami cara browser menjadwalkan pengambilannya.** Mari kita lanjutkan dengan contoh.
+We now have three critical resources that add up to 11KB of critical bytes, but our critical path length is still two roundtrips because we can transfer the CSS and JavaScript in parallel. **Figuring out the characteristics of your critical rendering path means being able to identify the critical resources and also understanding how the browser will schedule their fetches.** Let's continue with our example.
 
-Setelah chatting dengan para developer situs, kita menyadari bahwa JavaScript yang disertakan pada laman tidak perlu diblokir; kita memiliki beberapa analitik dan kode lain di dalamnya yang tidak perlu memblokir rendering laman kita. Dengan mengetahui hal itu, kita bisa menambahkan atribut "async" ke tag skrip untuk membuka blokir parser:
+After chatting with our site developers, we realize that the JavaScript we included on our page doesn't need to be blocking; we have some analytics and other code in there that doesn't need to block the rendering of our page. With that knowledge, we can add the "async" attribute to the script tag to unblock the parser:
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/performance/critical-rendering-path/_code/analysis_with_css_js_async.html" region_tag="full" adjust_indentation="auto" %}
 </pre>
 
-[Cobalah](https://googlesamples.github.io/web-fundamentals/fundamentals/performance/critical-rendering-path/analysis_with_css_js_async.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/performance/critical-rendering-path/analysis_with_css_js_async.html){: target="_blank" .external }
 
-<img src="images/analysis-dom-css-js-async.png" alt="DOM, CSSOM, JavaScript CRP asinkron" >
+<img src="images/analysis-dom-css-js-async.png" alt="DOM, CSSOM, async JavaScript CRP" />
 
-Skrip asinkron memiliki sejumlah kelebihan:
+An asynchronous script has several advantages:
 
-* Skrip tidak lagi merupakan pemblokiran parser dan bukan bagian dari jalur rendering penting.
-* Karena tidak ada skrip penting lainnya, CSS juga tidak perlu memblokir kejadian `domContentLoaded`.
-* Semakin cepat kejadian `domContentLoaded` dipicu, semakin cepat pula logika aplikasi bisa mulai dieksekusi.
+* The script is no longer parser blocking and is not part of the critical rendering path.
+* Because there are no other critical scripts, the CSS doesn't need to block the `domContentLoaded` event.
+* The sooner the `domContentLoaded` event fires, the sooner other application logic can begin executing.
 
-Hasilnya, laman kita yang telah dioptimalkan kini kembali dengan dua sumber daya penting (HTML dan CSS), dengan panjang jalur penting minimum dua perjalanan bolak balik, dan total 9 KB byte penting.
+As a result, our optimized page is now back to two critical resources (HTML and CSS), with a minimum critical path length of two roundtrips, and a total of 9KB of critical bytes.
 
-Terakhir, jika stylesheet CSS hanya perlu dicetak, seperti apa penampilannya?
+Finally, if the CSS stylesheet were only needed for print, how would that look?
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/performance/critical-rendering-path/_code/analysis_with_css_nb_js_async.html" region_tag="full" adjust_indentation="auto" %}
 </pre>
 
-[Cobalah](https://googlesamples.github.io/web-fundamentals/fundamentals/performance/critical-rendering-path/analysis_with_css_nb_js_async.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/performance/critical-rendering-path/analysis_with_css_nb_js_async.html){: target="_blank" .external }
 
-<img src="images/analysis-dom-css-nb-js-async.png" alt="DOM, CSS yang tidak memblokir, dan JavaScript CRP asinkron" >
+<img src="images/analysis-dom-css-nb-js-async.png" alt="DOM, non-blocking CSS, and async JavaScript CRP" />
 
-Karena sumber daya style.css hanya digunakan untuk pencetakan, browser tidak perlu diblokir di situ untuk merender laman. Oleh karena itu, begitu konstruksi DOM selesai, browser memiliki cukup informasi untuk merender laman. Hasilnya, laman ini hanya merupakan sumber daya penting tunggal (dokumen HTML), dan panjang jalur rendering penting minimum adalah satu perjalanan bolak balik.
+Because the style.css resource is only used for print, the browser doesn't need to block on it to render the page. Hence, as soon as DOM construction is complete, the browser has enough information to render the page. As a result, this page has only a single critical resource (the HTML document), and the minimum critical rendering path length is one roundtrip.
 
-<a href="optimizing-critical-rendering-path" class="gc-analytics-event"
-    data-category="CRP" data-label="Next / Optimizing CRP">
-  <button>Berikutnya: Mengoptimalkan Jalur Rendering Penting</button>
-</a>
+## Feedback {: #feedback }
 
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
