@@ -1,113 +1,70 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Pelajari cara menggunakan Chrome dan DevTools untuk menemukan masalah memori yang memengaruhi kinerja laman, termasuk kebocoran memori, penggelembungan memori, dan pengumpulan sampah yang terlalu sering.
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Learn how to use Chrome and DevTools to find memory issues that affect page performance, including memory leaks, memory bloat, and frequent garbage collections.
 
-{# wf_updated_on: 2015-08-03 #}
-{# wf_published_on: 2015-04-13 #}
+{# wf_updated_on: 2018-07-27 #} {# wf_published_on: 2015-04-13 #} {# wf_blink_components: Blink>MemoryAllocator,Platform>DevTools #}
 
-# Memperbaiki Masalah Memori {: .page-title }
+# Fix Memory Problems {: .page-title }
 
 {% include "web/_shared/contributors/kaycebasques.html" %}
 
-Pelajari cara menggunakan Chrome dan DevTools untuk menemukan masalah memori
-yang memengaruhi kinerja laman, termasuk kebocoran memori, penggelembungan memori, dan
-pengumpulan sampah yang terlalu sering.
-
+Learn how to use Chrome and DevTools to find memory issues that affect page performance, including memory leaks, memory bloat, and frequent garbage collections.
 
 ### TL;DR {: .hide-from-toc }
-- Mengetahui berapa banyak memori yang sedang digunakan oleh laman dengan Task Manager pada Chrome.
-- Visualkan penggunaan memori seiring waktu dengan perekaman Timeline.
-- Mengidentifikasi pohon DOM yang terlepas (penyebab umum kebocoran memori) dengan Cuplikan Heap.
-- Mengetahui cara memori baru dialokasikan di heap JS Anda dengan perekaman Allocation Timeline.
 
+* Find out how much memory your page is currently using with the Chrome Task Manager.
+* Visualize memory usage over time with Timeline recordings.
+* Identify detached DOM trees (a common cause of memory leaks) with Heap Snapshots.
+* Find out when new memory is being allocated in your JS heap with Allocation Timeline recordings.
 
-## Ringkasan
+## Overview
 
-Dengan prinsip model kinerja [RAIL][RAIL], upaya peningkatan kinerja
-sebaiknya difokuskan pada pengguna.
+In the spirit of the [RAIL](/web/tools/chrome-devtools/profile/evaluate-performance/rail) performance model, the focus of your performance efforts should be your users.
 
-Masalah memori penting karena
-dapat dilihat oleh pengguna. Pengguna dapat melihat masalah memori dengan cara
-berikut:
+Memory issues are important because they are often perceivable by users. Users can perceive memory issues in the following ways:
 
-* **Kinerja laman secara progresif menjadi buruk seiring waktu.** Ini mungkin
-  tanda-tanda kebocoran memori. Kebocoran memori terjadi saat terdapat bug di laman 
-  yang menyebabkan laman secara progresif menggunakan lebih banyak memori seiring waktu. 
-* **Kinerja laman terus-menerus buruk.** Ini mungkin tanda-tanda
-  penggelembungan memori. Penggelembungan memori terjadi saat laman menggunakan lebih banyak memori dari
-  yang diperlukan untuk mencapai kecepatan optimal laman.
-* **Kinerja laman lambat atau tampak sering dijeda.** Ini mungkin
-  tanda-tanda pengumpulan sampah yang sering. Pengumpulan sampah
-  terjadi saat browser mengklaim kembali memori. Browser memutuskan kapan tindakan ini terjadi.
-  Selama proses pengumpulan, semua eksekusi skrip akan dijeda. Jadi, jika browser
-  sering mengumpulkan sampah, eksekusi skrip akan sering dijeda.
+* **A page's performance gets progressively worse over time.** This is possibly a symptom of a memory leak. A memory leak is when a bug in the page causes the page to progressively use more and more memory over time. 
+* **A page's performance is consistently bad.** This is possibly a symptom of memory bloat. Memory bloat is when a page uses more memory than is necessary for optimal page speed.
+* **A page's performance is delayed or appears to pause frequently.** This is possibly a symptom of frequent garbage collections. Garbage collection is when the browser reclaims memory. The browser decides when this happens. During collections, all script execution is paused. So if the browser is garbage collecting a lot, script execution is going to get paused a lot.
 
-### Penggelembungan memori: di mana batasnya?
+### Memory bloat: how much is "too much"?
 
-Kebocoran memori mudah didefinisikan. Jika sebuah situs secara progresif menggunakan semakin banyak
-memori, artinya terjadi kebocoran. Akan tetapi, penggelembungan memori
-lebih sulit ditemukan penyebabnya. Penggunaan memori sebesar apa yang dianggap "terlalu banyak"?
+A memory leak is easy to define. If a site is progressively using more and more memory, then you've got a leak. But memory bloat is a bit harder to pin down. What qualifies as "using too much memory"?
 
-Tidak ada angka yang pasti, karena perangkat dan browser
-memiliki kemampuan yang berbeda-beda. Laman yang
-berjalan mulus di ponsel cerdas kelas atas bisa saja mogok di ponsel cerdas
-kelas bawah.
+There are no hard numbers here, because different devices and browsers have different capabilities. The same page that runs smoothly on a high-end smartphone might crash on a low-end smartphone.
 
-Kuncinya adalah menggunakan model RAIL dan berfokus pada pengguna. 
-Cari tahu perangkat apa yang paling banyak digunakan oleh pengguna, lalu uji laman Anda
-pada perangkat tersebut. Jika hasil ujinya buruk di banyak perangkat, laman itu
-mungkin melampaui kemampuan memori perangkat tersebut.
+The key here is to use the RAIL model and focus on your users. Find out what devices are popular with your users, and then test out your page on those devices. If the experience is consistently bad, the page may be exceeding the memory capabilities of those devices.
 
-[RAIL]: /web/tools/chrome-devtools/profile/evaluate-performance/rail
+## Monitor memory use in realtime with the Chrome Task Manager
 
-## Memantau penggunaan memori secara realtime dengan Task Manager pada Chrome
+Use the Chrome Task Manager as a starting point to your memory issue investigation. The Task Manager is a realtime monitor that tells you how much memory a page is currently using.
 
-Gunakan Task Manager pada Chrome sebagai titik awal penyelidikan
-masalah memori. Task Manager adalah monitor realtime yang memberitahukan
-berapa memori yang sedang digunakan sebuah laman.
+1. Press <kbd>Shift</kbd>+<kbd>Esc</kbd> or go to the Chrome main menu and select **More tools** > **Task manager** to open the Task Manager.
+    
+    ![opening the task
+manager](imgs/task-manager.png)
 
-1. Tekan <kbd>Shift</kbd>+<kbd>Esc</kbd> atau masuk ke
-   menu utama Chrome dan pilih **More tools** > **Task manager** untuk membuka
-   Task Manager.
+2. Right-click on the table header of the Task Manager and enable **JavaScript memory**.
+    
+    ![enable javascript
+memory](imgs/js-memory.png)
 
-   ![membuka task
-   manager](imgs/task-manager.png)
+These two columns tell you different things about how your page is using memory:
 
-1. Klik kanan header tabel Task Manager dan aktifkan **JavaScript
-   memory**.
-
-   ![mengaktifkan memori
-   javascript](imgs/js-memory.png)
-
-Dua kolom ini menyampaikan berbagai informasi tentang cara laman menggunakan memori:
-
-* Kolom **Memory** menggambarkan memori bawaan. Simpul DOM disimpan di
-  memori bawaan. Jika nilai ini meningkat, simpul DOM sedang dibuat.
-* Kolom **JavaScript Memory** menggambarkan heap JS. Kolom ini
-  berisi dua nilai. Nilai yang sebaiknya Anda perhatikan adalah nilai
-  langsung (angka dalam tanda kurung). Angka langsung menggambarkan
-  berapa banyak memori yang digunakan oleh objek yang bisa diraih di laman Anda. Jika nomor
-  ini meningkat, artinya objek baru sedang dibuat, atau objek
-  saat ini meningkat.
+* The **Memory** column represents native memory. DOM nodes are stored in native memory. If this value is increasing, DOM nodes are getting created.
+* The **JavaScript Memory** column represents the JS heap. This column contains two values. The value you're interested in is the live number (the number in parentheses). The live number represents how much memory the reachable objects on your page are using. If this number is increasing, either new objects are being created, or the existing objects are growing.
 
 <!-- live number reference: https://groups.google.com/d/msg/google-chrome-developer-tools/aTMVGoNM0VY/bLmf3l2CpJ8J -->
 
-## Memvisualkan kebocoran memori dengan perekaman Timeline
+## Visualize memory leaks with Timeline recordings
 
-Anda juga bisa menggunakan panel Timeline sebagai titik mulai lainnya pada investigasi
-Anda. Panel Timeline membantu Anda memvisualkan penggunaan memori laman
-seiring waktu.
+You can also use the Timeline panel as another starting point in your investigation. The Timeline panel helps you visualize a page's memory use over time.
 
-1. Buka panel **Timeline** di DevTools.
-1. Aktifkan kotak centang **Memory**.
-1. [Rekam][recording].
+1. Open the **Timeline** panel on DevTools.
+2. Enable the **Memory** checkbox.
+3. [Make a recording](/web/tools/chrome-devtools/profile/evaluate-performance/timeline-tool#make-a-recording).
 
-Tip: Memulai dan mengakhiri perekaman Anda dengan pengumpulan sampah
-paksa adalah praktik yang baik. Klik tombol **collect garbage**
-(![tombol force garbage collection][cg]{:.inline})
-saat merekam untuk memaksa pengumpulan sampah.
+Tip: It's a good practice to start and end your recording with a forced garbage collection. Click the **collect garbage** button (![force garbage collection button](imgs/collect-garbage.png){:.inline}) while recording to force garbage collection.
 
-Untuk mendemonstrasikan perekaman memori Timeline, perhatikan kode berikut:
+To demonstrate Timeline memory recordings, consider the code below:
 
     var x = [];
     
@@ -119,55 +76,21 @@ Untuk mendemonstrasikan perekaman memori Timeline, perhatikan kode berikut:
     }
     
     document.getElementById('grow').addEventListener('click', grow);
+    
 
-Setiap kali tombol yang direferensikan di kode ditekan, sepuluh 
-ribu simpul `div` akan ditambahkan ke
-tubuh dokumen, dan string satu juta karakter `x` akan dimasukkan ke dalam
-larik `x`. Menjalankan kode ini menghasilkan rekaman Timeline seperti 
-tangkapan layar berikut:
+Every time that the button referenced in the code is pressed, ten thousand `div` nodes are appended to the document body, and a string of one million `x` characters is pushed onto the `x` array. Running this code produces a Timeline recording like the following screenshot:
 
-![contoh pertumbuhan sederhana][sg]
+![simple growth example](imgs/simple-growth.png)
 
-Pertama, penjelasan tentang antarmuka pengguna.
-Grafik **HEAP** di panel **Overview** (di bawah **NET**) mewakili heap
-JS. Di bawah panel **Overview** adalah panel **Counter**. Di sini, Anda bisa melihat
-penggunaan memori yang dikelompokkan menurut heap JS (sama seperti grafik **HEAP** di panel
-**Overview**), dokumen, simpul DOM, listener, dan memori GPU.
-Mengosongkan kotak centang akan menyembunyikannya dari grafik.
+First, an explanation of the user interface. The **HEAP** graph in the **Overview** pane (below **NET**) represents the JS heap. Below the **Overview** pane is the **Counter** pane. Here you can see memory usage broken down by JS heap (same as **HEAP** graph in the **Overview** pane), documents, DOM nodes, listeners, and GPU memory. Disabling a checkbox hides it from the graph.
 
-Sekarang, analisis kode dibandingkan dengan tangkapan layar.
-Jika Anda memperhatikan penghitung simpul (grafik hijau). Anda bisa melihat jumlahnya cocok dengan
-kode. Jumlah simpul meningkat
-dalam langkah yang berlainan. Anda bisa menyimpulkan bahwa setiap peningkatan pada hitungan simpul adalah sebuah
-panggilan ke `grow()`. Grafik heap JS (grafik biru) tidak sama jelasnya.
-Agar sesuai dengan praktik terbaik, percobaan pertama adalah sebenarnya pengumpulan sampah
-paksa (yang dilakukan dengan menekan tombol **collect garbage**).
-Seiring dengan berjalannya perekaman, Anda bisa melihat ukuran heap JS meningkat drastis. Ini adalah
-alami dan bisa diduga: kode JavaScript membuat simpul DOM setiap kali tombol
-diklik dan melakukan banyak sekali pekerjaan saat membuat string yang berjumlah satu juta
-karakter. Intinya, fakta bahwa heap JS berakhir lebih tinggi
-dari saat dimulai ("dimulai" disini adalah titik setelah pengumpulan sampah
-secara paksa). Dalam kondisi nyata, jika Anda melihat pola meningkatnya
-ukuran heap JS atau ukuran simpul, ini berarti ada kemungkinan kebocoran memori.
+Now, an analysis of the code compared with the screenshot. If you look at the node counter (the green graph) you can see that it matches up cleanly with the code. The node count increases in discrete steps. You can presume that each increase in the node count is a call to `grow()`. The JS heap graph (the blue graph) is not as straightforward. In keeping with best practices, the first dip is actually a forced garbage collection (achieved by pressing the **collect garbage** button). As the recording progresses you can see that the JS heap size spikes. This is natural and expected: the JavaScript code is creating the DOM nodes on every button click and doing a lot of work when it creates the string of one million characters. The key thing here is the fact that the JS heap ends higher than it began (the "beginning" here being the point after the forced garbage collection). In the real world, if you saw this pattern of increasing JS heap size or node size, it would potentially mean a memory leak.
 
-[recording]: /web/tools/chrome-devtools/profile/evaluate-performance/timeline-tool#make-a-recording
+## Discover detached DOM tree memory leaks with Heap Snapshots
 
-[cg]: imgs/collect-garbage.png
+A DOM node can only be garbage collected when there are no references to it from either the page's DOM tree or JavaScript code. A node is said to be "detached" when it's removed from the DOM tree but some JavaScript still references it. Detached DOM nodes are a common cause of memory leaks. This section teaches you how to use DevTools' heap profilers to identify detached nodes.
 
-[sg]: imgs/simple-growth.png
-
-[hngd]: https://jsfiddle.net/kaycebasques/tmtbw8ef/
-
-## Mengungkap kebocoran memori pohon DOM yang terlepas dengan Cuplikan Heap
-
-Simpul DOM hanya bisa dikumpulkan sampahnya bila tidak ada referensi kepadanya
-baik dari pohon DOM atau kode JavaScript laman. Simpul bisa dikatakan sebagai 
-"terlepas" bila dibuang dari pohon DOM tetapi masih ada JavaScript yang
-mereferensi padanya. Simpul DOM yang terlepas adalah sebab umum kebanyakan memori. Bagian
-ini mengajarkan cara menggunakan profiler heap DevTools untuk mengidentifikasi
-simpul yang terlepas.
-
-Berikut ini contoh sederhana simpul DOM yang terlepas. 
+Here's a simple example of detached DOM nodes.
 
     var detachedNodes;
     
@@ -177,147 +100,90 @@ Berikut ini contoh sederhana simpul DOM yang terlepas.
         var li = document.createElement('li');
         ul.appendChild(li);
       }
-      detachedTree = ul;
+      detachedNodes = ul;
     }
     
     document.getElementById('create').addEventListener('click', create);
+    
 
-Mengeklik tombol yang direferensikan di kode akan membuat simpul `ul` dengan
-sepuluh anak `li`. Simpul ini direferensikan oleh kode, tetapi tidak ada di pohon
-DOM, jadi statusnya terlepas.
+Clicking the button referenced in the code creates a `ul` node with ten `li` children. These nodes are referenced by the code but do not exist in the DOM tree, so they're detached.
 
-Cuplikan heap adalah salah satu cara untuk mengidentifikasi simpul yang terlepas. Seperti namanya,
-cuplikan heap menunjukkan distribusi memori antar objek JS
-dan simpul DOM laman pada waktu cuplikan dibuat.
+Heap snapshots are one way to identify detached nodes. As the name implies, heap snapshots show you how memory is distributed among your page's JS objects and DOM nodes at the point of time of the snapshot.
 
-Untuk membuat cuplikan, buka DevTools dan masuk ke panel **Profiles**, pilih
-tombol radio **Take Heap Snapshot**, lalu tekan tombol **Take
-Snapshot**. 
+To create a snapshot, open DevTools and go to the **Profiles** panel, select the **Take Heap Snapshot** radio button, and then press the **Take Snapshot** button.
 
-![mengambil cuplikan heap][ths]
+![take heap snapshot](imgs/take-heap-snapshot.png)
 
-Cuplikan mungkin membutuhkan beberapa saat untuk diproses dan dimuat. Setelah selesai, pilih cuplikan
-dari panel sebelah kiri (bernama **HEAP SNAPSHOTS**). 
+The snapshot may take some time to process and load. Once it's finished, select it from the lefthand panel (named **HEAP SNAPSHOTS**).
 
-Ketikkan `Detached` di kotak teks **Class filter** untuk mencari pohon DOM yang
-terlepas.
+Type `Detached` in the **Class filter** textbox to search for detached DOM trees.
 
-![memfilter simpul yang terlepas][df]
+![filtering for detached nodes](imgs/detached-filter.png)
 
-Luaskan karat untuk menginvestigasi pohon yang terlepas.
+Expand the carats to investigate a detached tree.
 
-![menginvestigasi pohon yang terlepas][ed]
+![investigating detached tree](imgs/expanded-detached.png)
 
-Simpul yang disorot warna kuning memiliki referensi langsung dari kode 
-JavaScript. Simpul yang disorot warna merah tidak memiliki referensi langsung. Simpul ini
-hidup hanya karena merupakan pohon simpul yang disorot warna kuning. Secara umum, Anda ingin
-berfokus pada simpul kuning. Jika Anda memperbaiki kode supaya simpul kuning tidak hidup
-lebih lama dari yang diperlukan, simpul merah yang
-berada di pohon simpul kuning itu juga akan terhapus.
+Nodes highlighted yellow have direct references to them from the JavaScript code. Nodes highlighted red do not have direct references. They are only alive because they are part of the yellow node's tree. In general, you want to focus on the yellow nodes. Fix your code so that the yellow node isn't alive for longer than it needs to be, and you also get rid of the red nodes that are part of the yellow node's tree.
 
-Klik simpul kuning untuk menginvestigasi lebih lanjut. Di panel **Objects** 
-Anda bisa melihat informasi selengkapnya tentang kode yang merujuknya. Misalnya,
-di tangkapan layar berikut Anda bisa melihat bahwa variabel `detachedTree` merujuk
-simpul. Untuk memperbaiki kebocoran memori yang ini, Anda harus mempelajari 
-kode yang menggunakan `detachedTree` dan memastikan bahwa kode ini membuang referensinya
-ke simpul itu jika sudah tidak lagi diperlukan.
+Click on a yellow node to investigate it further. In the **Objects** pane you can see more information about the code that's referencing it. For example, in the screenshot below you can see that the `detachedTree` variable is referencing the node. To fix this particular memory leak, you would study the code that uses `detachedTree` and ensure that it removes its reference to the node when it's no longer needed.
 
-![menginvestigasi simpul kuning][yn]
+![investigating a yellow node](imgs/yellow-node.png)
 
-[ths]: imgs/take-heap-snapshot.png
+## Identify JS heap memory leaks with Allocation Timelines
 
-[df]: imgs/detached-filter.png
+The Allocation Timeline is another tool that can help you track down memory leaks in your JS heap.
 
-[ed]: imgs/expanded-detached.png
-
-[yn]: imgs/yellow-node.png
-
-## Mengidentifikasi kebocoran memori heap JS dengan Allocation Timeline
-
-Allocation Timeline adalah satu alat (bantu) lain yang bisa membantu Anda melacak 
-kebocoran memori di heap JS. 
-
-Untuk mendemonstrasikan Allocation Timeline, perhatikan kode berikut:
+To demonstrate the Allocation Timeline consider the following code:
 
     var x = [];
-
+    
     function grow() {
       x.push(new Array(1000000).join('x'));
     }
-
+    
     document.getElementById('grow').addEventListener('click', grow);
+    
 
-Setiap kali tombol yang direferensikan di kode ini ditekan, string
-satu juta karakter ditambahkan ke larik `x`.
+Every time that the button referenced in the code is pushed, a string of one million characters is added to the `x` array.
 
-Untuk merekam Allocation Timeline, buka DevTools, masuk ke panel **Profiles**,
-pilih tombol radio **Record Allocation Timeline**, tekan tombol **Start**
-, lakukan tindakan yang Anda duga menyebabkan kebocoran memori, lalu
-tekan tombol **stop recording** 
-(![tombol stop recording][sr]{:.inline})
-setelah selesai. 
+To record an Allocation Timeline, open DevTools, go to the **Profiles** panel, select the **Record Allocation Timeline** radio button, press the **Start** button, perform the action that you suspect is causing the memory leak, and then press the **stop recording** button (![stop recording button](imgs/stop-recording.png){:.inline}) when you're done.
 
-Selama merekam, perhatikan apakah ada bilah biru yang muncul di Allocation
-Timeline, seperti di tangkapan layar di bawah. 
+As you're recording, notice if any blue bars show up on the Allocation Timeline, like in the screenshot below.
 
-![alokasi baru][na]
+![new allocations](imgs/new-allocations.png)
 
-Bilah biru tersebut menggambarkan alokasi memori baru. Memori alokasi yang baru tersebut
-dicurigai sebagai kebocoran memori. Anda bisa memperbesar suatu bilah untuk memfilter panel
-**Constructor** agar hanya menampilkan objek yang dialokasikan selama jangka waktu
-yang ditentukan. 
+Those blue bars represent new memory allocations. Those new memory allocations are your candidates for memory leaks. You can zoom on a bar to filter the **Constructor** pane to only show objects that were allocated during the specified timeframe.
 
-![allocation timeline yang diperbesar][zat]
+![zoomed allocation timeline](imgs/zoomed-allocation-timeline.png)
 
-Luaskan objek dan klik nilainya untuk melihat detail selengkapnya tentangnya di panel
-**Object**. Misalnya, di tangkapan layar berikut, dengan menampilkan detail
-objek yang baru dialokasikan, Anda bisa melihat bahwa objek itu
-dialokasikan ke variabel `x` di cakupan `Window`.
+Expand the object and click on its value to view more details about it in the **Object** pane. For example, in the screenshot below, by viewing the details of the object that was newly allocated, you'd be able to see that it was allocated to the `x` variable in the `Window` scope.
 
-![detail objek][od]
+![object details](imgs/object-details.png)
 
-[sr]: imgs/stop-recording.png
+## Investigate memory allocation by function {: #allocation-profile }
 
-[na]: imgs/new-allocations.png
-
-[zat]: imgs/zoomed-allocation-timeline.png
-
-[od]: imgs/object-details.png
-
-## Menginvestigasi alokasi memori berdasarkan fungsi {: #allocation-profile }
-
-Gunakan tipe **Record Allocation Profiler** untuk menampilkan alokasi memori berdasarkan
-fungsi JavaScript.
+Use the **Record Allocation Profiler** type to view memory allocation by JavaScript function.
 
 ![Record Allocation Profiler](imgs/record-allocation-profile.png)
 
-1. Pilih tombol radio **Record Allocation Profiler**. Jika ada
-   worker di laman, Anda dapat memilih itu sebagai target pembuatan profil menggunakan
-   menu tarik-turun di sebelah tombol **Start**.
-1. Tekan tombol **Start**.
-1. Lakukan tindakan di laman yang hendak diinvestigasi.
-1. Tekan tombol **Stop** setelah menyelesaikan semua tindakan.
+1. Select the **Record Allocation Profiler** radio button. If there is a worker on the page, you can select that as the profiling target using the dropdown menu next to the **Start** button.
+2. Press the **Start** button.
+3. Perform the actions on the page which you want to investigate.
+4. Press the **Stop** button when you have finished all of your actions.
 
-DevTools menampilkan perincian alokasi memori menurut fungsi. Tampilan
-default adalah **Heavy (Bottom Up)**, yang menampilkan fungsi-fungsi yang dialokasikan memori
-terbanyak di atas.
+DevTools shows you a breakdown of memory allocation by function. The default view is **Heavy (Bottom Up)**, which displays the functions that allocated the most memory at the top.
 
-![Profil alokasi](imgs/allocation-profile.png)
+![Allocation profile](imgs/allocation-profile.png)
 
-## Mencari pengumpulan sampah yang sering
+## Spot frequent garbage collections
 
-Jika laman Anda tampak sering dijeda, mungkin ada masalah
-pengumpulan sampah. 
+If your page appears to pause frequently, then you may have garbage collection issues.
 
-Anda bisa menggunakan Task Manager pada Chrome atau perekaman memori Timeline untuk
-mencari pengumpulan sampah yang sering. Di Task Manager,
-nilai **Memory** atau **JavaScript Memory** yang naik dan turun menggambarkan pengumpulan sampah
-yang sering. Di rekaman Timeline, grafik heap JS
-atau jumlah simpul yang sering naik-turun menunjukkan pengumpulan sampah yang sering.
+You can use either the Chrome Task Manager or Timeline memory recordings to spot frequent garbage collections. In the Task Manager, frequently rising and falling **Memory** or **JavaScript Memory** values represent frequent garbage collections. In Timeline recordings, frequently rising and falling JS heap or node count graphs indicate frequent garbage collections.
 
-Setelah mengidentifikasi masalahnya, Anda bisa menggunakan perekaman
-Allocation Timeline untuk menemukan di mana memori sedang dialokasikan dan fungsi apa yang
-menyebabkan alokasi itu. 
+Once you've identified the problem, you can use an Allocation Timeline recording to find out where memory is being allocated and which functions are causing the allocations.
 
+## Feedback {: #feedback }
 
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
