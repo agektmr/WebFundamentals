@@ -1,45 +1,27 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: すべてのデスクトップ ブラウザには、すぐに使える開発ツールが用意されています。ブラウザの拡張機能やプラグインを使って、開発ツールの拡張や追加を行います。
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Out of the box, every desktop browser comes with a set of developer tools, you can extend and add to these with extensions or plugins for your browser.
 
-{# wf_updated_on:2015-04-13 #}
-{# wf_published_on:2015-04-13 #}
+{# wf_updated_on: 2015-04-13 #} {# wf_published_on: 2015-04-13 #}
 
-# ブラウザ拡張機能の設定 {: .page-title }
+# Set Up Browser Extensions {: .page-title }
 
-{% include "web/_shared/contributors/megginkearney.html" %}
-{% include "web/_shared/contributors/mattgaunt.html" %}
+{% include "web/_shared/contributors/megginkearney.html" %} {% include "web/_shared/contributors/mattgaunt.html" %}
 
-すべてのデスクトップ ブラウザには、すぐに使える開発ツールが用意されています。ブラウザの拡張機能やプラグインを使って、開発ツールの拡張や追加を行います。
+Out of the box, every desktop browser comes with a set of developer tools, you can extend and add to these with extensions or plugins for your browser.
 
-ここでは、デザインのデバッグに役立つ便利な機能を備えた Chrome 拡張機能を 2 つ紹介します。
-
-
+Here are two Chrome Extensions that have some useful functionality to help with debugging your designs.
 
 ## Emmet Re:View
 
-Emmet Re:View は、各メディアクエリにおけるサイトの外観の確認や、すべてのページのスクロールの同期を簡単に行えるツールです。
-[こちらのサイト](http://re-view.emmet.io/)でデモをご覧ください。
+Emmet Re:View is a tool which makes it easy to see what your site looks like at each of your media queries and syncs the scrolling of all the pages. You can see a demo of it [on their site](http://re-view.emmet.io/).
 
+[Download on the Chrome Web Store](https://chrome.google.com/webstore/detail/emmet-review/epejoicbhllgiimigokgjdoijnpaphdp)
 
+![Screenshot of Emmet Review Extension](imgs/emmet-review-extension.png)
 
-[Chrome ウェブストアのダウンロード](https://chrome.google.com/webstore/detail/emmet-review/epejoicbhllgiimigokgjdoijnpaphdp)
+## What Font?
 
+The last extension we use on a regular basis is *What Font?*. This Chrome Extension will tell you the name of the font currently being used on the page. This is really handy for debugging any web font issues.
 
-<img src="imgs/emmet-review-extension.png" alt="Emmet Re:View 拡張機能のスクリーンショット" />
+[Download on the Chrome Web Store](https://chrome.google.com/webstore/detail/whatfont/jabopobgcpjmedljpbcaablpmlmfcogm)
 
-## WhatFont
-
-よく利用される 2 つ目の拡張機能は WhatFont です。この Chrome 拡張機能では、ページで現在使用されているフォントの名前が表示されます。
-ウェブフォントの問題をデバッグする場合に非常に便利です。
-
-
-[Chrome ウェブストアのダウンロード](https://chrome.google.com/webstore/detail/whatfont/jabopobgcpjmedljpbcaablpmlmfcogm)
-
-
-<img src="imgs/what-font-extension.png" alt="WhatFont Chrome 拡張機能のスクリーンショット" />
-
-
-
-
-{# wf_devsite_translation #}
+![Screenshot of the What Font Chrome Extension](imgs/what-font-extension.png)
