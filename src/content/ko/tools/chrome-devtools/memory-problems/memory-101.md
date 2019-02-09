@@ -1,150 +1,139 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: 이 섹션에서는 메모리 분석에 흔히 사용되는 일반적인 용어를 설명합니다. 이러한 용어는 여러 언어의 다양한 메모리 프로파일링 도구에 적용할 수 있습니다.
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: This section describes common terms used in memory analysis, and is applicable to a variety of memory profiling tools for different languages.
 
-{# wf_updated_on: 2015-05-18 #}
-{# wf_published_on: 2015-05-18 #}
+{# wf_updated_on: 2018-07-27 #} {# wf_published_on: 2015-05-18 #} {# wf_blink_components: Platform>DevTools #}
 
-# 메모리 용어 {: .page-title }
+# Memory Terminology {: .page-title }
 
 {% include "web/_shared/contributors/megginkearney.html" %}
 
-이 섹션에서는 메모리 분석에 흔히 사용되는 일반적인 용어를 설명합니다. 이러한 용어는 여러 언어의 다양한 메모리 프로파일링 도구에 적용할 수 있습니다.
+This section describes common terms used in memory analysis, and is applicable to a variety of memory profiling tools for different languages.
 
-여기에 설명된 여러 가지 용어와 개념은
-[Chrome DevTools 힙 프로파일러](/web/tools/chrome-devtools/profile/memory-problems/heap-snapshots)에 대한 내용입니다.
-자바, .NET 또는 기타 메모리 프로파일러를 다뤄본 경험이 있다면 다시 돌아보는 기회로 삼을 수 있습니다.
+The terms and notions described here refer to the [Chrome DevTools Heap Profiler](/web/tools/chrome-devtools/profile/memory-problems/heap-snapshots). If you have ever worked with either the Java, .NET, or some other memory profiler, then this may be a refresher.
 
+## Object sizes
 
-## 객체 크기
+Think of memory as a graph with primitive types (like numbers and strings) and objects (associative arrays). It might visually be represented as a graph with a number of interconnected points as follows:
 
-메모리를 일종의 기본 유형(예: 숫자와 문자열)과 객체(연관 배열)로 이루어진 그래프라고 생각하세요. 이것을 시각적으로 표현하면 아래와 같이 여러 개의 상호 연결된 점으로 이루어진 그래프 형태로 나타날 수 있습니다.
+![Visual representation of memory](imgs/thinkgraph.png)
 
-![메모리의 시각적 표현](imgs/thinkgraph.png)
+An object can hold memory in two ways:
 
-객체는 다음 두 가지 방식으로 메모리를 보유할 수 있습니다.
+* Directly by the object itself.
 
-* 객체 자체가 직접 보유합니다.
+* Implicitly by holding references to other objects, and therefore preventing those objects from being automatically disposed by a garbage collector (**GC** for short).
 
-* 암시적으로 다른 객체에 대한 참조를 보유함으로써 해당 객체가 가비지 수집기(줄여서 **GC**)에 의해 자동으로 폐기되지 않도록 합니다.
+When working with the Heap Profiler in DevTools (a tool for investigating memory issues found under "Profiles"), you will likely find yourself looking at a few different columns of information. Two that stand out are **Shallow Size** and **Retained Size**, but what do these represent?
 
-DevTools에서 힙 프로파일러를 다룰 때에는('Profiles' 아래에 있는 메모리 문제 조사용 도구) 몇 가지 정보가 담긴 열로 이루어진 형태를 접할 가능성이 높습니다. 그중 가장 눈에 띄는 두 가지는 <strong>Shallow Size</strong>와 <strong>Retained Size</strong>이지만, 이들이 의미하는 바는 무엇일까요?
-
-![Shallow 및 Retained Size](imgs/shallow-retained.png)
+![Shallow and Retained Size](imgs/shallow-retained.png)
 
 ### Shallow size
 
-객체 자체가 보유한 메모리 크기입니다.
+This is the size of memory that is held by the object itself.
 
-일반적인 자바스크립트 객체에는 설명 내용을 담고 즉시 값을 저장하기 위한 약간의 메모리가 있습니다. 대개 배열과 문자열만 상당히 큰 Shallow Size를 가질 수 있습니다. 다만 문자열과 외부 배열의 경우 렌더러 메모리에 자체 기본 저장소가 있으며 자바스크립트 힙에는 작은 래퍼 객체만 노출됩니다.
+Typical JavaScript objects have some memory reserved for their description and for storing immediate values. Usually, only arrays and strings can have a significant shallow size. However, strings and external arrays often have their main storage in renderer memory, exposing only a small wrapper object on the JavaScript heap.
 
-렌더러 메모리는 검사한 페이지가 렌더링되는 프로세스의 모든 메모리이며, 기본 메모리 + 페이지의 JS 힙 메모리 + 페이지가 시작한 전담 작업자 모두의 JS 힙 메모리가 이에 해당됩니다. 그럼에도 불구하고 작은 객체도 간접적으로, 즉  다른 객체가 자동 가비지 수집 프로세스에 의해 폐기되지 않도록 차단하는 방식으로 대량의 메모리를 보유할 수 있습니다.
+Renderer memory is all memory of the process where an inspected page is rendered: native memory + JS heap memory of the page + JS heap memory of all dedicated workers started by the page. Nevertheless, even a small object can hold a large amount of memory indirectly, by preventing other objects from being disposed of by the automatic garbage collection process.
 
 ### Retained size
 
-객체 자체가 삭제되고, 그와 함께 **GC roots**에서 연결할 수 없게 된 종속 객체도 모두 삭제되면 확보되는 메모리 크기입니다.
+This is the size of memory that is freed once the object itself is deleted along with its dependent objects that were made unreachable from **GC roots**.
 
-**GC roots**는 네이티브 코드로부터 V8 외부의 자바스크립트 객체로 참조를 만들 때 생성되는 (지역 또는 전역) *핸들*로 구성됩니다. 이러한 핸들은 모두 **GC roots** > **Handle scope** 및 **GC roots** > **Global handles** 아래의 힙 스냅샷 내에서 찾을 수 있습니다. 이 문서에서 브라우저 구현에 대해 자세하게 다루지 않으면서 핸들에 대해 설명하면 조금 혼란스러울 수 있습니다. GC 루트와 핸들은 둘 다 개발자가 별로 신경을 쓰지 않아도 되는 부분입니다.
+**GC roots** are made up of *handles* that are created (either local or global) when making a reference from native code to a JavaScript object outside of V8. All such handles can be found within a heap snapshot under **GC roots** > **Handle scope** and **GC roots** > **Global handles**. Describing the handles in this documentation without diving into details of the browser implementation may be confusing. Both GC roots and the handles are not something you need to worry about.
 
-많은 내부 GC가 있고 대부분은 사용자가 별 관심을 기울이지 않습니다. 애플리케이션 관점에서 보면 크게 다음과 같은 종류의 루트가 있습니다.
+There are lots of internal GC roots most of which are not interesting for the users. From the applications standpoint there are following kinds of roots:
 
-* Windows 전역 객체(각 iframe에서). 힙 스냅샷에는 거리 필드가 있는데, 이는 창에서 최단 거리의 보존 경로에 있는 속성 참조의 수를 의미합니다.
+* Window global object (in each iframe). There is a distance field in the heap snapshots which is the number of property references on the shortest retaining path from the window.
 
-* 문서를 탐색하여 도달할 수 있는 모든 네이티브 DOM 노드로 구성된 문서 DOM 트리. 일부는 JS 래퍼가 없을 수도 있지만 래퍼가 있으면 문서가 활성화된 동안 래퍼가 활성화됩니다.
+* Document DOM tree consisting of all native DOM nodes reachable by traversing the document. Not all of them may have JS wrappers but if they have the wrappers will be alive while the document is alive.
 
-* 경우에 따라 디버거 컨텍스트 및 DevTools 콘솔이 객체를 보존할 수도 있습니다(예: 콘솔 평가 후). 콘솔을 비우고 디버거 내 활성 중단점이 없는 상태로 힙 스냅샷을 생성합니다.
+* Sometimes objects may be retained by debugger context and DevTools console (e.g. after console evaluation). Create heap snapshots with clear console and no active breakpoints in the debugger.
 
-메모리 그래프는 루트로 시작하며, 브라우저의 `window` 객체일 수도 있고 Node.js 모듈의 `Global` 객체일 수도 있습니다. 이 루트 객체의 가비지 수집(GC) 방법은 개발자가 통제할 수 없습니다.
+The memory graph starts with a root, which may be the `window` object of the browser or the `Global` object of a Node.js module. You don't control how this root object is GC'd.
 
-![루트 객체는 통제할 수 없음](imgs/dontcontrol.png)
+![Root object can't be controlled](imgs/dontcontrol.png)
 
-루트에서 연결할 수 없는 것은 무엇이든 가비지 수집(GC)됩니다.
+Whatever is not reachable from the root gets GC.
 
-참고: Shallow Size 및 Retained Size 열은 모두 데이터를 바이트 단위로 나타냅니다.
+Note: Both the Shallow and Retained size columns represent data in bytes.
 
-## 객체 보존 트리
+## Objects retaining tree
 
-힙은 상호 연결된 객체의 네트워크입니다. 수학에서는 이 구조를 *그래프* 또는 메모리 그래프라고 부릅니다. 그래프는 *에지*로 연결된 *노드*로 구성되며, 모두 레이블이 지정됩니다.
+The heap is a network of interconnected objects. In the mathematical world, this structure is called a *graph* or memory graph. A graph is constructed from *nodes* connected by means of *edges*, both of which are given labels.
 
-* **노드**(*또는 객체*)에는 이를 빌드하는 데 사용된 *생성자* 함수의 이름을 사용하여 레이블이 지정됩니다.
-* **에지**는 *속성*의 이름을 사용하여 레이블이 지정됩니다.
+* **Nodes** (*or objects*) are labelled using the name of the *constructor* function that was used to build them.
+* **Edges** are labelled using the names of *properties*.
 
-[힙 프로파일러를 사용하여 프로필을 기록하는 방법](/web/tools/chrome-devtools/profile/memory-problems/heap-snapshots)을 알아보세요.
-아래의 힙 프로파일러 기록에서 특히 눈에 띄는 몇 가지 중에서
-거리가 포함됩니다.
-이 거리는 GC 루트로부터의 거리입니다.
-동일한 유형의 객체 중 거의 모두가 동일한 거리에 있고
-몇 개만 좀 더 먼 거리에 있다면 조사할 가치가 있는 문제입니다.
+Learn [how to record a profile using the Heap Profiler](/web/tools/chrome-devtools/profile/memory-problems/heap-snapshots). Some of the eye-catching things we can see in the Heap Profiler recording below include distance: the distance from the GC root. If almost all the objects of the same type are at the same distance, and a few are at a bigger distance, that's something worth investigating.
 
-![루트로부터의 거리](imgs/root.png)
+![Distance from root](imgs/root.png)
 
-## 도미네이터
+## Dominators
 
-도미네이터 객체는 각 객체가 정확히 한 개의 도미네이터를 갖기 때문에 트리 구조로 구성됩니다. 객체의 도미네이터에는 자신이 지배하는 객체에 대한 참조가 없을 수도 있습니다. 즉, 도미네이터의 트리는 그래프의 스패닝 트리가 아닙니다.
+Dominator objects are comprised of a tree structure because each object has exactly one dominator. A dominator of an object may lack direct references to an object it dominates; that is, the dominator's tree is not a spanning tree of the graph.
 
-아래 다이어그램에서:
+In the diagram below:
 
-* 노드 1은 노드 2를 지배합니다.
-* 노드 2는 노드 3, 4 및 6을 지배합니다.
-* 노드 3은 노드 5를 지배합니다.
-* 노드 5는 노드 8을 지배합니다.
-* 노드 6은 노드 7을 지배합니다.
+* Node 1 dominates node 2
+* Node 2 dominates nodes 3, 4 and 6
+* Node 3 dominates node 5
+* Node 5 dominates node 8
+* Node 6 dominates node 7
 
-![도미네이터 트리 구조](imgs/dominatorsspanning.png)
+![Dominator tree structure](imgs/dominatorsspanning.png)
 
-아래 예시에서 노드 `#3`은 `#10`을 지배하지만, `#7`도 GC에서 `#10`로의 모든 단순 경로에 존재합니다. 따라서 루트로부터 객체 A로 이어지는 모든 단순 경로에 객체 B가 존재하면 객체 B는 객체 A의 도미네이터입니다.
+In the example below, node `#3` is the dominator of `#10`, but `#7` also exists in every simple path from GC to `#10`. Therefore, an object B is a dominator of an object A if B exists in every simple path from the root to the object A.
 
-![애니메이션 방식의 도미네이터 설명](imgs/dominators.gif)
+![Animated dominator illustration](imgs/dominators.gif)
 
-## V8 사양
+## V8 specifics
 
-메모리를 프로파일링할 때 힙 스냅샷의 형태가 왜 그런 모양을 띠는지 이유를 파악하면 요긴합니다. 이 섹션에서는 특히 **V8 자바스크립트 가상 머신**(V8 VM 또는 VM)에 해당하는 일부 메모리 관련 주제를 설명합니다.
+When profiling memory, it is helpful to understand why heap snapshots look a certain way. This section describes some memory-related topics specifically corresponding to the **V8 JavaScript virtual machine** (V8 VM or VM).
 
-### 자바스크립트 객체 표현
+### JavaScript object representation
 
-세 가지의 기본 유형이 있습니다.
+There are three primitive types:
 
-* 숫자(예: 3.14159..)
-* 부울(true 또는 false)
-* 문자열(예: 'Werner Heisenberg')
+* Numbers (e.g., 3.14159..)
+* Booleans (true or false)
+* Strings (e.g., 'Werner Heisenberg')
 
-이들은 다른 값을 참조할 수 없으며 항상 리프 또는 말단 노드입니다.
+They cannot reference other values and are always leafs or terminating nodes.
 
-**숫자**는 다음 중 하나로 저장할 수 있습니다.
+**Numbers** can be stored as either:
 
-* **정수(Small)**(*SMI*)라고 하는 즉치 31비트 정수값, 또는
-* **힙 숫자**라고 불리는 힙 객체. 힙 숫자는 *double* 등과 같은 SMI 형식에 맞지 않는 값을 저장하거나 속성 설정 등 값을 *박싱*해야 하는 경우에 사용합니다.
+* an immediate 31-bit integer values called **small integers** (*SMIs*), or
+* heap objects, referred to as **heap numbers**. Heap numbers are used for storing values that do not fit into the SMI form, such as *doubles*, or when a value needs to be *boxed*, such as setting properties on it.
 
-**문자열**은 다음 중 하나에 저장할 수 있습니다.
+**Strings** can be stored in either:
 
-* **VM 힙**, 또는
-* 외부 **렌더러의 메모리**. *래퍼 객체*가 생성되고 외부 저장소에 액세스하는 데 사용됩니다. 예를 들어 웹에서 수신된 스크립트 소스와 기타 콘텐츠는 VM 힙으로 복사되지 않고 여기에 저장됩니다.
+* the **VM heap**, or
+* externally in the **renderer’s memory**. A *wrapper object* is created and used for accessing external storage where, for example, script sources and other content that is received from the Web is stored, rather than copied onto the VM heap.
 
-새 자바스크립트 객체의 메모리는 전용 자바스크립트 힙(또는 **VM 힙**)에서 할당됩니다. 이러한 객체는 V8의 가비지 수집기가 관리하며, 따라서 이에 대한 강력한 참조가 최소 하나만 있어도 계속 살아있게 됩니다.
+Memory for new JavaScript objects is allocated from a dedicated JavaScript heap (or **VM heap**). These objects are managed by V8's garbage collector and therefore, will stay alive as long as there is at least one strong reference to them.
 
-**네이티브 객체**는 자바스크립트 힙에 없는 다른 모든 것을 의미합니다. 네이티브 객체는 힙 객체와는 달리 수명이 다할 때까지 계속 V8 가비지 수집기가 관리하며 자바스크립트에서 자체 자바스크립트 래퍼 객체를 사용해서만 액세스할 수 있습니다.
+**Native objects** are everything else which is not in the JavaScript heap. Native object, in contrast to heap object, is not managed by the V8 garbage collector throughout its lifetime, and can only be accessed from JavaScript using its JavaScript wrapper object.
 
-**Cons 문자열**은 저장된 다음 조인되는 문자열 쌍으로 구성된 객체로, 연결(concatenation)의 결과입니다. *cons 문자열* 콘텐츠의 조인은 필요한 경우에만 발생합니다. 한 예로, 조인된 문자열의 하위 문자열을 생성해야 하는 경우가 있습니다.
+**Cons string** is an object that consists of pairs of strings stored then joined, and is a result of concatenation. The joining of the *cons string* contents occurs only as needed. An example would be when a substring of a joined string needs to be constructed.
 
-예를 들어 **a**와 **b**를 연결하면 그 연결의 결과를 나타내는 문자열 (a, b)를 얻게 됩니다. 나중에 이 결과를 **d**와 연결하면 또 다른 cons 문자열((a, b), d)을 얻게 됩니다.
+For example, if you concatenate **a** and **b**, you get a string (a, b) which represents the result of concatenation. If you later concatenated **d** with that result, you get another cons string ((a, b), d).
 
-**배열** - 배열은 숫자 키가 포함된 객체입니다. 배열은 주로 V8 VM에서 대량의 데이터를 저장하는 용도로 사용됩니다. 키-값 쌍 집합을 사용하는 사전과 같은 경우에 배열을 사용합니다.
+**Arrays** - An Array is an Object with numeric keys. They are used extensively in the V8 VM for storing large amounts of data. Sets of key-value pairs used like dictionaries are backed up by arrays.
 
-일반적인 자바스크립트 객체는 저장용으로 사용되는 다음의 두 가지 배열 유형 중 하나일 수 있습니다.
+A typical JavaScript object can be one of two array types used for storing:
 
-* 이름이 지정된 속성 및
-* 숫자 요소
+* named properties, and
+* numeric elements
 
-속성의 수가 극히 적은 경우에는 자바스크립트 객체 자체 내부에 저장할 수 있습니다.
+In cases where there is a very small number of properties, they can be stored internally in the JavaScript object itself.
 
-**맵** - 객체의 종류와 그 레이아웃을 설명하는 객체입니다. 예를 들어, [빠른 속성 액세스](/v8/design.html#prop_access)를 위한 암시적 객체 계층 구조를 설명하는 데 맵이 사용됩니다.
+**Map** - an object that describes the kind of object and its layout. For example, maps are used to describe implicit object hierarchies for [fast property access](/v8/design.html#prop_access).
 
-### 객체 그룹
+### Object groups
 
-각 네이티브 객체 그룹은 서로에 대한 상호 참조를 보유한 객체들로 구성됩니다. 예를 들어, 모든 노드에 자신의 부모 노드에 대한 링크와 다음 자식 노드 및 다음 형제 노드에 대한 링크가 있어서 연결된 그래프를 형성하는 DOM 하위 트리를 가정해 봅시다. 네이티브 객체는 자바스크립트 힙에 나타나지 않는다는 점에 유의하세요. 따라서 크기가 0입니다. 그 대신에 래퍼 객체가 생성됩니다.
+Each native objects group is made up of objects that hold mutual references to each other. Consider, for example, a DOM subtree where every node has a link to its parent and links to the next child and next sibling, thus forming a connected graph. Note that native objects are not represented in the JavaScript heap — that's why they have zero size. Instead, wrapper objects are created.
 
-각 래퍼 객체는 명령을 리디렉션하기 위해 해당 네이티브 객체에 대한 참조를 보유합니다. 또한 객체 그룹은 래퍼 객체를 보유합니다. 하지만 그렇다고 해서 수집할 수 없는 사이클이 생성되는 것은 아닙니다. GC는 래퍼가 더 이상 참조되지 않는 객체 그룹을 해제할 만큼 충분히 스마트하기 때문입니다. 하지만 단일 래퍼를 해제하는 것을 잊으면 전체 그룹 및 연관된 래퍼를 모두 보유하게 됩니다.
+Each wrapper object holds a reference to the corresponding native object, for redirecting commands to it. In its own turn, an object group holds wrapper objects. However, this doesn't create an uncollectable cycle, as GC is smart enough to release object groups whose wrappers are no longer referenced. But forgetting to release a single wrapper will hold the whole group and associated wrappers.
 
+## Feedback {: #feedback }
 
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
