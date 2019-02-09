@@ -1,226 +1,196 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: サイトの各ページにコードを数行追加すると、ソーシャル メディアでサイトを共有する際の表示内容を変更できます。この処理を行うことで、リッチな情報が追加でプレビュー表示され、より多くの人にサイトを閲覧してもらうことができます。
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: You can influence the way your site appears when shared via social media by adding a few lines of code to each page. This can help bring more people to your site by providing previews with richer information than would otherwise be available.
 
-{# wf_updated_on:2014-11-08 #}
-{# wf_published_on:2014-10-07 #}
+{# wf_blink_components: N/A #} {# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2014-10-07 #}
 
-# ソーシャル ディスカバリー {: .page-title }
+# Social Discovery {: .page-title }
 
 {% include "web/_shared/contributors/agektmr.html" %}
 
-サイトの各ページにコードを数行追加すると、ソーシャル メディアでサイトを共有する際の表示内容を変更できます。
-この処理を行うことで、リッチな情報が追加でプレビュー表示され、より多くの人にサイトを閲覧してもらうことができます。
-
-
-
+You can influence the way your site appears when shared via social media by adding a few lines of code to each page. This can help bring more people to your site by providing previews with richer information than would otherwise be available.
 
 ### TL;DR {: .hide-from-toc }
-- schema.org microdata を使用して、ページのタイトル、説明、Google+ 用の画像を提供します。
-- Open Graph Protocol（OGP）を使用して、ページのタイトル、説明、Facebook 用の画像を提供します。
-- Twitter カードを使用して、ページのタイトル、説明、画像、Twitter の Twitter ID を提供します。
 
-サイトの各ページにコードを数行追加すると、ソーシャル メディアでサイトを共有する際の表示内容を変更できます。
-リッチな情報を追加でプレビュー表示すると、エンゲージメントを高めることができます。この対応を行わないと、ソーシャル サイトの基本情報しか表示されず、画像やその他の有用な情報が提供されません。
+* Use schema.org microdata to provide page title, description, and an image for Google+.
+* Use Open Graph Protocol (OGP) to provide page title, description, and an image for Facebook.
+* Use Twitter Cards to provide page title, description, an image, and a Twitter id for Twitter.
 
+You can influence the way your site appears when shared via social media by adding a few lines of code to each page. This can help increase engagement by providing previews with richer information than would otherwise be available. Without it, social sites will provide only basic information, without images or other helpful information.
 
- 
-
-ユーザーは以下のどちらのページをクリックする可能性が高いと思いますか。ユーザーは画像に引かれるため、先にプレビューが目に入ると、そのサイトにさらに興味を持つようになります。
-
-
+Which one do you think is more likely to be clicked? People are drawn to images and feel more confident they'll like what they find when they have an early preview.
 
 <div class="attempt-left">
   <figure>
     <img src="imgs/gplus-snippet-2.png" srcset="imgs/gplus-snippet-2.png 1x,
       imgs/gplus-snippet-2-2x.png 2x" />
     <figcaption class="success">
-      適切なマークアップが設定されている場合: 正しいタイトル、短い説明、画像が含まれています。
-これらのアイテムを追加すると、エンゲージメントを高めることができます。</figcaption>
-
-
+      With the appropriate markup: the correct title, a short
+      description, and an image are included. Adding these items can help
+      increase engagement.
+     </figcaption>
   </figure>
 </div>
+
 <div class="attempt-right">
   <figure>
     <img src="imgs/gplus-snippet-1.png" srcset="imgs/gplus-snippet-1.png 1x,
       imgs/gplus-snippet-1-2x.png 2x" />
     <figcaption class="warning">
-      適切なマークアップが設定されていない場合: ページ タイトルのみが表示されています。</figcaption>
-
-
+      Without the proper mark up, only the page title is
+      included.
+     </figcaption>
   </figure>
 </div>
 
 <div style="clear:both;"></div>
 
-ユーザーがソーシャル ネットワークで任意のウェブサイトを友人と共有する場合、そのユーザーはウェブサイトの魅力を伝えるコメントを追加したうえで、友人に紹介するでしょう。しかし、一般的にウェブサイトの説明は面倒であり、説明の内容が本来のページの趣旨からずれてしまうこともあります。また、サービスによっては、コメントとして入力できる文字数に制限があります。
+When someone on a social network wants to share your website with their friends, they would probably add some notes explaining how awesome it is, and share it. But describing a website tends be cumbersome and can miss the point from the page owner's point of view. Some services restrict the number of characters users can put in the note.
 
+By adding the appropriate metadata to your pages, you can simplify the sharing process for users by providing the title, a description, and an attractive image. This means they don't have to spend valuable time (or characters) describing the link.
 
-適切なメタデータをページに追加すると、タイトルや説明、魅力的な画像が表示されるため、ユーザーの共有プロセスを簡素化することができます。つまり、ユーザーは貴重な時間（または文字）を使って、リンク先のサイトの説明をせずに済みます。
+## Use schema.org + microdata to provide rich snippets on Google+
 
+Crawlers use many methods to parse a page and understand its content. By using [microdata](http://www.w3.org/TR/microdata/){: .external }, and [schema.org](https://schema.org/){: .external } vocabulary, you help social sites and search engines better understand the contents of the page.
 
-##  schema.org と microdata を使用して Google+ にリッチ スニペットを表示する
-
-クローラはさまざまな方法でページを解析し、そのコンテンツを把握しています。[microdata](http://www.w3.org/TR/microdata/){: .external } と [schema.org](https://schema.org/){: .external } のボキャブラリを使用すると、ソーシャル サイトと検索エンジンによってページのコンテンツがより適切に把握されるようになります。
-
-
-
-
-次に例を示します。
+Here's an example:
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/discovery/social-discovery/_code/social-sites.html" region_tag="microdata" adjust_indentation="auto" %}
 </pre>
 
-ほとんどのメタデータはウェブページのヘッダー部分に埋め込みますが、microdata はコンテキストがある場所に挿入します。
+While most metadata are embedded in the head section of a web page, microdata lives where the context exists.
 
+### Add `itemscope` to define microdata scope
 
-###  `itemscope` を追加して microdata のスコープを定義する
-`itemscope` を追加すると、タグを特定のアイテムに関するコンテンツのブロックとして指定できます。
+By adding `itemscope`, you can specify the tag as a block of contents about a particular item.
 
+### Add `itemtype` to define type of your website
 
-###  `itemtype` を追加してウェブサイトのタイプを定義する
-`itemscope` と一緒に `itemtype` 属性を使用すると、アイテムのタイプを指定できます。
-`itemtype` の値は、ウェブページのコンテンツ タイプに応じて決まります。
-[このページ](https://schema.org/docs/full.html)で関連する値を見つけることができます。
+You can specify the type of item by using the `itemtype` attribute along with the `itemscope`. The value of an `itemtype` can be determined according to the type of content on your web page. You should be able to find one that is relevant in [this page](https://schema.org/docs/full.html).
 
+### Add `itemprop` to describe each item using schema.org vocabulary
 
-###  `itemprop` を追加して schema.org ボキャブラリで各アイテムを記述する
-`itemprop` は、スコープ内の `itemtype` のプロパティを定義します。メタデータをソーシャル サイトに提供する場合、一般的に使用する `itemprop` の値は `name`、`description`、および `image` です。
+`itemprop` defines properties for `itemtype` in the scope. For providing metadata to social sites, typical `itemprop` values are `name`, `description`, and `image`.
 
+### Learn more
 
-
-###  詳細
-このような microdata によって、主に [Google+](https://plus.google.com/){: .external } や Google 検索用の意味情報がクローラに提供されます。
-Google+ のスニペットやレンダリングの詳細については、次のドキュメントをご覧ください。
-
+These microdata provide semantic information to crawlers, typically for [Google+](https://plus.google.com/){: .external } and Google Search. To learn more about snippets and rendering on Google+, read the following documents:
 
 * [Article Rendering - Google+ Platform](/+/web/snippet/article-rendering)
 * [Snippet - Google+ Platform](/+/web/snippet/)
 
-###  リッチ スニペットを検証する
-Google+ のリッチ スニペットを検証する場合、次のようなツールを使用できます。
+### Validate rich snippets
 
-* [構造化データ テストツール](https://www.google.com/webmasters/tools/richsnippets) - ウェブマスター ツール  
+In order to validate rich snippets on Google+, you can use tools such as:
+
+* [Structured Data Testing Tool](https://www.google.com/webmasters/tools/richsnippets) - Webmaster Tools
 
 <img src="imgs/webmaster-tools.png" srcset="imgs/webmaster-tools.png 1x, imgs/webmaster-tools-2x.png 2x" />
 
-##  Open Graph Protocol（OGP）を使用して Facebook でリッチ スニペットを表示する
+## Use Open Graph Protocol (OGP) to provide rich snippets on Facebook
 
-[Open Graph Protocol（OGP）](http://ogp.me/){: .external }は、Facebook にメタデータを提供します。このメタデータは、ウェブページに他の Facebook オブジェクトと同じ機能を提供するために必要です。
-
-
+The [Open Graph Protocol (OGP)](http://ogp.me/){: .external } provides Facebook with the metadata necessary to allow web pages to have the same functionality as other Facebook objects.
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/discovery/social-discovery/_code/social-sites.html" region_tag="ogp" adjust_indentation="auto" %}
 </pre>
 
-このメタデータをページのヘッダー部分に含めると、ページが共有されたときに、リッチ スニペットの情報が表示されます。
+When included in the head section of your page, this metadata provides rich snippet information when the page is shared.
 
+### Use `og:` namespaced `meta` tags to describe metadata
 
-### `og:` 名前空間付きの `meta` タグを使用してメタデータを記述する
-`meta` タグは、`property` 属性と `content` 属性で構成されます。使用できるプロパティの値と内容は以下のとおりです。
-
+A `meta` tag consists of a `property` attribute and a `content` attribute. Properties and contents may take the following values:
 
 <table>
   <thead>
     <tr>
-      <th data-th="Property">プロパティ</th>
-      <th data-th="Content">内容</th>
+      <th data-th="Property">Property</th>
+      <th data-th="Content">Content</th>
     </tr>
   </thead>
   <tbody>
     <tr>
       <td data-th="Property"><code>og:title</code></td>
-      <td data-th="Content">ウェブページのタイトル。</td>
+      <td data-th="Content">The title of the web page.</td>
     </tr>
     <tr>
       <td data-th="Property"><code>og:description</code></td>
-      <td data-th="Content">ウェブページの説明。</td>
+      <td data-th="Content">The description of the web page.</td>
     </tr>
     <tr>
       <td data-th="Property"><code>og:url</code></td>
-      <td data-th="Content">ウェブページの正規 URL。</td>
+      <td data-th="Content">The canonical url of the web page.</td>
     </tr>
     <tr>
       <td data-th="Property"><code>og:image</code></td>
-      <td data-th="Content">共有する投稿に添付する画像の URL。</td>
+      <td data-th="Content">URL to an image attached to the shared post.</td>
     </tr>
     <tr>
       <td data-th="Property"><code>og:type</code></td>
-      <td data-th="Content">ウェブページのタイプを示す文字列。<a href="https://developers.facebook.com/docs/reference/opengraph/">ここで</a>ウェブページに適した文字列を見つけることができます。</td>
+      <td data-th="Content">A string that indicates the type of the web page. You can find one that is suitable for your web page <a href="https://developers.facebook.com/docs/reference/opengraph/">here</a>.</td>
     </tr>
   </tbody>
 </table>
 
-これらのメタタグによって、主に [Google+](https://plus.google.com/){: .external } や [Facebook](https://www.facebook.com/){: .external } などのソーシャル サイトのクローラに意味情報が提供されます。
+These meta tags provide semantic information to crawlers from social sites, typically from [Google+](https://plus.google.com/){: .external } and [Facebook](https://www.facebook.com/){: .external }.
 
+### Learn more
 
-
-###  詳細
-Facebook の投稿に表示できる画像やデータの詳細については、Open Graph Protocol の公式サイトをご覧ください。
-
+To learn more about things you can attach to the post on Facebook, visit the official Open Graph Protocol site.
 
 * [ogp.me](http://ogp.me/){: .external }
 
-###  リッチ スニペットを検証する
-Facebook のマークアップを検証する場合、次のようなツールを使用できます。
+### Validate rich snippets
+
+In order to validate your markup on Facebook, you can use tools such as:
 
 * [Debugger](https://developers.facebook.com/tools/debug/){: .external }
 
-##  Twitter カードを使用して Twitter にリッチ スニペットを表示する
-[Twitter カード](https://dev.twitter.com/docs/cards)は、[Twitter に適用できる Open Graph Protocol](https://twitter.com/){: .external } の拡張機能です。
-Twitter カードを使用すると、ウェブページへのリンクを含むツイートに、画像や動画などのメディアを添付できます。適切なメタデータを追加することで、ウェブページへのリンクが記載されたツイートに、詳細なリッチメディアを追加したカードが表示されるようになります。
+## Use Twitter Cards to provide rich snippets on Twitter
 
+[Twitter Cards](https://dev.twitter.com/cards/overview) are an extension to the Open [Graph Protocol applicable for Twitter](https://twitter.com/){: .external }. They allow you to add media attachments like images and video to Tweets with a link to your web page. By adding the appropriate metadata, Tweets with links to your page will have a card added that includes the rich detail you've added.
 
-###  `twitter:` 名前空間付きメタタグを使用してメタデータを記述する
-Twitter カードを適切に表示するには、[ドメインが承認されている](https://cards-dev.twitter.com/validator)ことに加えて、`property` 属性ではなく、`name` 属性を使用して `twitter:card` を含むメタタグを指定する必要があります。簡単な例を次に示します
+### Use `twitter:` namespaced meta tags to describe metadata
 
+In order to get a Twitter Card working, [your domain must be approved](https://cards-dev.twitter.com/validator) and must contain a meta tag that has `twitter:card` as the `name` attribute instead of `property` attribute.
 
-
-  
-
+Here's a quick example:
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/discovery/social-discovery/_code/social-sites.html" region_tag="twitter" adjust_indentation="auto" %}
 </pre>
 
-Twitter ID の値を twitter:site に指定すると、この情報が共有される投稿に埋め込まれます。これにより、閲覧者がページの所有者と簡単に交流できるようになります。
-
-
+By assigning the Twitter id to the value of twitter:site, Twitter embeds this information in the shared post so that people can easily engage with the page owner.
 
 <img src="imgs/twitter-card.png" srcset="imgs/twitter-card.png 1x, imgs/twitter-card-2x.png 2x" />
 
-###  詳細
-Twitter カードの詳細については、次のサイトをご覧ください。
+### Learn more
 
-* [Twitter のデベロッパー サイト](https://dev.twitter.com/docs/cards)
+To learn more about Twitter Cards, visit:
 
-###  リッチ スニペットを検証する
-マークアップの検証のために、Twitter では次のツールが用意されています。
+* [Twitter's developer site](https://dev.twitter.com/cards)
+
+### Validate rich snippets
+
+In order to validate your markup, Twitter provides:
 
 * [Card Validator](https://cards-dev.twitter.com/validator)
 
-##  ベスト プラクティス
-ベスト プラクティスは、ウェブページに対して上記の 3 つの対策をすべて実施することです。
-次に例を示します。
+## The Best Practice
+
+Given all three options, the best thing you can do is to include them all in your web page. Here's an example:
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/discovery/social-discovery/_code/social-sites2.html" region_tag="best_practice" adjust_indentation="auto" %}
 </pre>
 
-microdata と OGP が同じマークアップを共有していることに注目してください。
+Notice that microdata and OGP share some markup:
 
-* `itemscope` は、`head` タグにあります。
-* `title` と `description` は、microdata と OGP で共有されています。
-* `itemprop="image"` は、`property="og:image"` を指定した `meta` タグを再利用する代わりに、`href` 属性を指定した `link` タグを使用しています。
+* `itemscope` is located at `head` tag
+* `title` and `description` are shared between microdata and OGP
+* `itemprop="image"` is using `link` tag with `href` attribute instead of reusing `meta` tag with `property="og:image"`
 
-最後に、ウェブページを公開する前に、各ソーシャル サイトにウェブページが想定どおりに表示されることを確認してください。
-  
+Lastly, make sure to validate that your web page appears as expected on each social site before publishing.
 
+## Feedback {: #feedback }
 
-
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
