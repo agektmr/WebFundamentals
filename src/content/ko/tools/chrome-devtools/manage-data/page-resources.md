@@ -1,74 +1,57 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: 리소스를 프레임, 도메인, 유형 또는 기타 기준에 따라 구성합니다.
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Organize resources by frame, domain, type, or other criteria.
 
-{# wf_updated_on: 2016-07-28 #}
-{# wf_published_on: 2015-04-13 #}
+{# wf_updated_on: 2018-07-27 #} {# wf_published_on: 2015-04-13 #} {# wf_blink_components: Platform>DevTools #}
 
-# 리소스 검사 {: .page-title }
+# Inspect Resources {: .page-title }
 
 {% include "web/_shared/contributors/kaycebasques.html" %}
 
-리소스를 프레임, 도메인, 유형 또는 기타
-기준에 따라 구성합니다.
-
+Organize resources by frame, domain, type, or other criteria.
 
 ### TL;DR {: .hide-from-toc }
-- <strong>Application</strong> 패널의 <strong>Frames</strong> 창을 사용하면 리소스를 프레임별로 구성할 수 있습니다.
-- 또한 <strong>group by folder</strong> 선택 항목을 비활성화하여 <strong>Sources</strong> 패널에서 리소스를 프레임별로 볼 수도 있습니다.
-- 리소스를 도메인 및 폴더별로 보려면 <strong>Sources</strong> 패널을 사용합니다.
-- <strong>Network</strong> 패널에서 리소스를 이름 및 기타 기준으로 필터링합니다.
 
+* Use the **Frames** pane of the **Application** panel to organize resources by frame.
+* You can also view resources by frame from the **Sources** panel by disabling the **group by folder** option.
+* To view resources by domain and folder, use the **Sources** panel.
+* Filter resources by name or other criteria in the **Network** panel.
 
-## 리소스를 프레임별로 구성 {:#frames}
+## Organize resources by frame {:#frames}
 
-**Application** 패널의 **Frames** 창을 사용하면 페이지 리소스를 프레임별로
-구성하여 표시할 수 있습니다.
+Use the **Frames** pane on the **Application** panel for a frame-organized representation of your page's resources.
 
-![프레임 세부정보][frames]
+![frames detail](/web/tools/chrome-devtools/manage-data/imgs/frames.png)
 
-* 최상위 단계(위의 스크린샷에서 `top`)는 기본 문서입니다.
-* 그 아래는(예: 위의 스크린샷에서 `widget2`) 기본 문서의 
-하위 프레임입니다. 이러한 하위 프레임 중 하나를 확장하면 해당 프레임의 출처인 
-리소스를 볼 수 있습니다.
-* 하위 프레임 아래는 이미지, 스크립트 및 기본 문서의 
-기타 리소스입니다.
-* 마지막은 기본 문서 자체입니다.
+* The top-level (`top` in the screenshot above) is the main document.
+* Below that (e.g. `widget2` in the screenshot above) are subframes of the main document. Expand one of these subframes to view the resources originating from that frame.
+* Below the subframes are the images, scripts, and other resources of the main document.
+* Last is the main document itself.
 
-리소스를 클릭하면 해당 리소스의 미리보기를 볼 수 있습니다.
+Click on a resource to view a preview of it.
 
-리소스를 마우스 오른쪽 버튼으로 클릭하면 **Network** 패널에서 보거나 새 탭에서 열거나,
-URL을 복사하거나 저장할 수 있습니다.
+Right-click on a resource to view it in the **Network** panel, open it in a new tab, copy its URL, or save it.
 
-![리소스 보기][resource]
+![view resource](/web/tools/chrome-devtools/manage-data/imgs/resource.png)
 
-리소스를 프레임별로 볼 수도 있습니다.
-**Sources** 패널에서, 탐색기의 오버플로 메뉴를 클릭한 다음 **Group by folder**
-옵션을 비활성화하여 폴더별로 리소스 그룹 지정을 중지하면 됩니다.
+You can also view resources by frame in the **Sources** panel, by clicking on the overflow menu in the navigator and disabling the **Group by folder** option to stop grouping resources by folder.
 
-![폴더별로 그룹 지정 옵션](imgs/group-by-folder.png)
+![group by folder option](imgs/group-by-folder.png)
 
-그러면 리소스가 프레임 기준으로만 나열됩니다.
+The resources will be listed by frame only.
 
-![폴더 없음](imgs/no-folders.png)
+![no folders](imgs/no-folders.png)
 
-[frames-pane]: /web/tools/chrome-devtools/manage-data/imgs/frames-pane.png
-[frames]: /web/tools/chrome-devtools/manage-data/imgs/frames.png
-[resource]: /web/tools/chrome-devtools/manage-data/imgs/resource.png
+## Organize resources by domain and folder {:#sources}
 
-## 도메인 및 폴더별로 리소스 구성 {:#sources}
+To view resources organized by domain and directory, use the **Sources** panel.
 
-리소스를 도메인 및 디렉토리별로 구성하여 보려면, **Sources**
-패널을 사용합니다.
+![sources panel](imgs/sources.png)
 
-![sources 패널](imgs/sources.png)
+## Filter resources by name, type, or other criteria {:#filter}
 
-## 리소스를 이름, 유형 또는 기타 기준으로 필터링 {:#filter}
-
-리소스를 이름, 유형 및 이외에도 광범위한 기타 기준으로
-필터링하려면 **Network** 패널을 사용합니다. 자세한 내용은 아래의 가이드를 참조하세요.
+Use the **Network** panel to filter resources by name, type, and a whole range of other criteria. Check out the guide below to learn more.
 
 {# include shared/related_guides.liquid inline=true list=page.related-guides.filter #}
 
+## Feedback {: #feedback }
 
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
