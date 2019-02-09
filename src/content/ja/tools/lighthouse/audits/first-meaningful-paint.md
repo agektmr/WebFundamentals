@@ -1,34 +1,31 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Lighthouse の監査項目「First Meaningful Paint」のリファレンス ドキュメント。
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Reference documentation for the "First Meaningful Paint" Lighthouse audit.
 
-{# wf_updated_on: 2018-08-05 #}
-{# wf_published_on: 2016-10-05 #}
+{# wf_updated_on: 2018-11-30 #} {# wf_published_on: 2016-10-05 #} {# wf_blink_components: N/A #}
 
-#  First Meaningful Paint {: .page-title }
+# First Meaningful Paint {: .page-title }
 
-##  監査が重要である理由 {: #why }
+## Overview {: #overview }
 
-ユーザーが体感するアプリのパフォーマンスは、ページの読み込み速度に大きく左右されます。
-詳細については、[Measure Performance with the RAIL Method](/web/fundamentals/performance/rail) をご覧ください。
+Page load is a key aspect of how a user perceives the performance of your page. See [Measure Performance with the RAIL Method](/web/fundamentals/performance/rail) for more information.
 
-この監査では、ユーザーがページの主要コンテンツが表示されたと認識するタイミングを特定します。
+This audit identifies the time at which the user feels that the primary content of the page is visible.
 
+## Recommendations {: #recommendations }
 
-##  監査に合格する方法 {: #how }
+The lower your First Meaningful Paint score, the faster that the page appears to display its primary content.
 
-First Meaningful Paint のスコアが低いほど、主要コンテンツがページ上に高速で表示されます。
+[Optimizing the Critical Rendering Path](/web/fundamentals/performance/critical-rendering-path/) is particularly helpful towards achieving a faster First Meaningful Paint.
 
+### Tracking FMP in the real world {: #RUM }
 
-First Meaningful Paint の高速化を実現するには、[クリティカル レンダリング パスの最適化](/web/fundamentals/performance/critical-rendering-path/)を参考にしてください。
+To measure when FMP actually occurs on your users' devices, see [Tracking FMP using hero elements](/web/fundamentals/performance/user-centric-performance-metrics#tracking_fmp_using_hero_elements).
 
+See [Assessing Loading Performance in Real Life with Navigation and Resource Timing](/web/fundamentals/performance/navigation-and-resource-timing/) for more on collecting real-user metrics with the User Timing API. The [User Timing Marks and Measures](/web/tools/lighthouse/audits/user-timing) Lighthouse audit enables you to see User Timing data in your report.
 
-{% include "web/tools/lighthouse/audits/implementation-heading.html" %}
+## More information {: #more-info }
 
-基本的に First Meaningful Paint とは、アバブ・ザ・フォールドのレイアウトが大きく変化してウェブフォントが読み込まれる前のペイントを指します。
-詳細な仕様については
-[First Meaningful Paint: A Layout-Based Approach](https://docs.google.com/document/d/1BR94tJdZLsin5poeet0XoTW60M0SjvOJQttKT-JK8HI/view) をご覧ください。
+First Meaningful Paint is essentially the paint after which the biggest above-the-fold layout change has happened, and web fonts have loaded. See the documentation to learn more: [First Meaningful Paint: A Layout-Based Approach](https://docs.google.com/document/d/1BR94tJdZLsin5poeet0XoTW60M0SjvOJQttKT-JK8HI/view).
 
+## Feedback {: #feedback }
 
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
