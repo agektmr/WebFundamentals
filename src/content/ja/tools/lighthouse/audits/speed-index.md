@@ -1,38 +1,28 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Lighthouse の監査項目「Speed Index」のリファレンス ドキュメント。
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Reference documentation for the "Speed Index" Lighthouse audit.
 
-{# wf_updated_on:2018-11-10 #}
-{# wf_published_on:2016-10-04 #}
+{# wf_updated_on: 2018-11-10 #} {# wf_published_on: 2016-10-04 #} {# wf_blink_components: N/A #}
 
-#  Speed Index {: .page-title }
+# Speed Index {: .page-title }
 
-##  監査が重要である理由 {: #why }
+## Overview {: #overview }
 
-Speed Index はページの読み込みパフォーマンスにおける指標であり、ページのコンテンツが目に見える状態になるまでの時間を表します。
-このスコアが低いほど、パフォーマンスが高くなります。
+Speed Index is a page load performance metric that shows you how quickly the contents of a page are visibly populated. The lower the score, the better.
 
-##  監査に合格する方法 {: #how }
+## Recommendations {: #recommendations }
 
-Speed Index のスコアを低くするには、ページを最適化して、視覚的な観点で読み速度を上げる必要があります。
-まずは以下の 2 点から検討することをお勧めします。
+To lower your Speed Index score, you need to optimize your page to visually load faster. Two good starting places are:
 
-* [コンテンツの効率の最適化](/web/fundamentals/performance/optimizing-content-efficiency/)
-* [クリティカル レンダリング パスの最適化](/web/fundamentals/performance/critical-rendering-path/)
+* [Optimizing Content Efficiency](/web/fundamentals/performance/optimizing-content-efficiency/).
+* [Optimizing the Critical Rendering Path](/web/fundamentals/performance/critical-rendering-path/).
 
-{% include "web/tools/lighthouse/audits/implementation-heading.html" %}
+## More information {: #more-info }
 
-Lighthouse では
-[Speedline](https://github.com/pmdartus/speedline)
-と呼ばれるノード モジュールを使用して、Speed Index のスコアを算出します。
+Lighthouse uses a node module called [Speedline](https://github.com/pmdartus/speedline) to generate the Speed Index score.
 
-Speed Index のベースとなるアルゴリズムと手法の詳細については、[Speed Index](https://sites.google.com/a/webpagetest.org/docs/using-webpagetest/metrics/speed-index)
-をご覧ください。
+For more information on the algorithms and methodologies behind Speed Index, see [Speed Index](https://sites.google.com/a/webpagetest.org/docs/using-webpagetest/metrics/speed-index).
 
-目標スコアは、対数正規分布の累積分布関数によって計算されます。
-さらに詳しい内容については、監査の[ソース](https://github.com/GoogleChrome/lighthouse/blob/master/lighthouse-core/audits/metrics/speed-index.js)のコメントをご覧ください。
+The target score is computed by a cumulative distribution function of a log-normal distribution. Check out the comments in the [source](https://github.com/GoogleChrome/lighthouse/blob/master/lighthouse-core/audits/metrics/speed-index.js) of the audit if you need to know more.
 
+## Feedback {: #feedback }
 
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
