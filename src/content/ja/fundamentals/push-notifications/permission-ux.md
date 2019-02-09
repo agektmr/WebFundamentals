@@ -1,122 +1,121 @@
-project_path: /web/fundamentals/_project.yaml
-book_path: /web/fundamentals/_book.yaml
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml
 
-{# wf_updated_on: 2017-03-03 #}
-{# wf_published_on: 2016-06-30 #}
+{# wf_blink_components: Blink>PushAPI #} {# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2016-06-30 #}
 
-# パーミッションの UX {: .page-title }
+# Permission UX {: .page-title }
 
 {% include "web/_shared/contributors/mattgaunt.html" %}
 
-`PushSubscription`を取得してサーバーに保存した後の自然なステップはプッシュメッセージをトリガーすることですが、ひとつだけ私があえてごまかした部分があります。ユーザーにプッシュメッセージを送信するパーミッションを求めるときのユーザーエクスペリエンスです。
+The natural step after getting a `PushSubscription` and saving it our server is to trigger a push message, but there is one thing I flagrantly glossed over. The user experience when asking for permission from the user to send them push messages.
 
-残念ながら、ほとんどのサイトは、ユーザーにパーミッションを求める方法を十分に考慮していません。ここではちょっと寄り道して、良い UX と悪い UX の両方を見てみましょう。
+Sadly, very few sites give much consideration to how they ask their user for permission, so let's take a brief aside to look at both good and bad UX.
 
-## 共通のパターン
+## Common Patterns
 
-ユーザーとユースケースに最適なものを決定する際に参考になる共通のパターンがいくつか出てきました。
+There have been a few common patterns emerging that should guide and help you when deciding what is best for your users and use case.
 
-### 価値をどこに置くか
+### Value Proposition
 
-メリットが明白なときは、ユーザーにプッシュを購読するよう一度に依頼してください。
+Ask users to subscribe to push at a time when the benefit is obvious.
 
-たとえば、ユーザーがオンラインストアでアイテムを購入しチェックアウトフローを完了したばかりの場合です。このサイトは、最新の配送状況を提供することができます。
+For example, a user has just bought an item on an online store and finished the checkout flow. The site can then offer updates on the delivery status.
 
-このアプローチが有効な状況はいくつかあります：
+There are a range of situations where this approach works:
 
-- 特定の商品が在庫切れの場合、入荷されたら通知を受け取りたいですか？
-- このニュース速報は定期的に更新されます。何か変化があった時に通知を受け取りたいですか？
-- あなたは最高入札者です。他の人がより高値を付けた時に通知を受け取りたいですか？
+- A particular item is out of stock, would you like to be notified when it's next available?
+- This breaking news story will be regularly updated, would you like to be notified as the story develops?
+- You're the highest bidder, would you like to be notified if you are outbid?
 
-これらは、ユーザーがあなたのサービスに期待しているポイントすべてであり、プッシュ通知を有効にする明確な価値があります。
+These are all points where the user has invested in your service and there is a clear value proposition for them to enable push notifications.
 
-[Owen Campbell-Moore](https://twitter.com/owencm) は、このアプローチを実証するために、架空の航空会社のウェブサイトのモックを作成しました。
+[Owen Campbell-Moore](https://twitter.com/owencm) created a mock of a hypothetical airline website to demonstrate this approach.
 
-ユーザーがフライトを予約した後、フライトの遅延通知を希望するかどうかを尋ねます。
+After the user has booked a flight it asks if the user would like notifications of flight delays.
 
 ![Owen Campbell-Moore's example of good UX for push.](./images/ux-examples/owen/owen-good-example.png){: .device-image .center-image }
 
-これはウェブサイトのカスタム UI であることに注意して下さい。
+Note that this is a custom UI from the website.
 
-Owen のデモのもう一つの良い点は、ユーザーが通知を有効にするためにクリックした際、パーミッションのプロンプトが表示されると同時に、ページ全体に半透明のオーバーレイが追加されることです。これにより、ユーザーの注意がパーミッションのプロンプトに向けられます。
+Another nice touch to Owen's demo is that if the user clicks to enable notifications, the site adds a semi-transparent overlay on the entire page when it shows the permission prompt. This draws the users attention to the permission prompt.
 
 ![Owen Campbell-Moore's example of good UX for the permission prompt.](./images/ux-examples/owen/owen-permission-prompt.png){: .device-image .center-image }
 
-逆にパーミッションを求める**悪い UX** の例は、ユーザーが航空会社のサイトに辿り着いてすぐにそれを求めるものです。
+The alternative to this example, the **bad UX** for asking permission, is to request permission as soon as a user lands on the airline's site.
 
 ![Owen Campbell-Moore's example of bad UX for push.](./images/ux-examples/owen/owen-bad-ux.png){: .device-image .center-image }
 
-このアプローチは、なぜ通知がユーザにとって必要で、有用であるかについて何の説明も提供しません。また、それが原因で元々達成しようとしていた目的（例えばフライトの予約）を邪魔してしまいます。
+This approach provides no context as to why notifications are needed or useful to the user. The user is also blocked from achieving their original task (i.e. book a flight) by this permission prompt.
 
-### 二重のパーミッション
+### Double Permission
 
-あなたのサイトはプッシュ通知の明確なユースケースを持っているため、できるだけ早くユーザーのパーミッションを得たいと思うかもしれません。
+You may feel that your site has a clear use case for push messaging and as a result want to ask the user for permission as soon as possible.
 
-例えばインスタントメッセージサービスや電子メールクライアントなどです。新しいメッセージや電子メールのメッセージを表示することは、さまざまなプラットフォームにおいて確立された共通のユーザーエクスペリエンスです。
+For example instant messaging and email clients. Showing a message for a new message or email is an established user experience across a range of platforms.
 
-これらのカテゴリのアプリでは、二重パーミッションパターンを検討する価値があるかもしれません。
+For these category of apps, it's worth considering the double permission pattern.
 
-最初に、あなたのウェブサイトが制御する偽のパーミッションプロンプトを表示します。これはパーミッションの要求を許可または無視するボタンで構成します。ユーザーが許可をクリックしてはじめて、実際のブラウザーネイティブのパーミッションプロンプトを表示します。
+First show a fake permission prompt that your website controls, consisting of buttons to allow or ignore the permission request. If the user clicks allow, request permission, triggering the real browser permission prompt.
 
-この方法ではまず、Web アプリケーション上でカスタムのパーミッションプロンプトを表示し、通知を有効にするよう求めます。こうすることで、Web サイトは永久にパーミッションをブロックされるリスクなしに、ユーザーに有効または無効を選択してもらうことができます。ユーザーがカスタム UI で有効を選択した場合のみ、実際のパーミッションプロンプトを表示し、そうでなければカスタムポップアップを非表示にして、別の機会に尋ねることができます。
+With this approach you display a custom permission prompt in your web app which asks the user to enable notifications. By doing this the user can chose enable or disable without your website running the risk of being permanently blocked. If the user selects enable on the custom UI, display the actual permission prompt, otherwise hide your custom pop-up and ask some other time.
 
-これの良い例は [Slack](https://slack.com/) です。Slack ではユーザーがログインした後、通知を有効にするかどうかのプロンプ​​トをページの上部に表示します。
+A good example of this is [Slack](https://slack.com/). They show a prompt at the top of their page once you've signed in asking if you'd like to enable notifications.
 
-### 設定画面
+### Settings Panel
 
-設定画面に通知の項目を用意することで、Web アプリケーションの UI を煩雑にすることなく、ユーザーにプッシュ通知の有効または無効を変更する方法を提供することができます。
+You can move notifications into a settings panel, giving users an easy way to enable and disable push messaging, without the need of cluttering your web app's UI.
 
-[Google I / O の 2016 サイト](https://events.google.com/io2016/)が良い例です。最初に Google I / O
- サイトを読み込んだ時点では、特に何も求められません。ユーザーは自由にサイトを閲覧することができます。
+A good example of this is [Google I/O's 2016 site](https://events.google.com/io2016/). When you first load up the Google I/O site, you aren't asked to do anything, the user is left to explore the site.
 
 ![When you first load the page, no prompt, just calm on Google IO.](./images/ux-examples/google-io/google-io-first-load.png){: .device-image .center-image }
 
-右側のメニュー項目をクリックすると、ユーザーが通知を設定および管理できる設定パネルが表示されます。
+After a few visits, clicking the menu item on the right reveals a settings panel allowing the user to set up and manage notifications.
 
 ![Settings panel on Google IO's web app for push messaging.](./images/ux-examples/google-io/google-io-settings-panel.png){: .device-image .center-image }
 
-チェックボックスをクリックすると、パーミッションプロンプトが表示されます。特に驚きはありませんね。
+Clicking on the checkbox displays the permission prompt. No hidden surprises.
 
 ![Google IO's web app displaying the permission prompt.](./images/ux-examples/google-io/google-io-permission-prompt.png){: .device-image .center-image }
 
-パーミッションが与えられれば、チェックボックスがチェックされ、プッシュ通知の利用が可能になります。この UI の素晴らしいところは、ユーザーがウェブサイト上の特定の場所で、通知を有効または無効にできることです。
+After the permission has been granted the checkbox is checked and the user is good to go. The great thing about this UI is that users can enable and disable notifications from one location on the website.
 
-### 受動的アプローチ
+### Passive Approach
 
-ユーザーにプッシュ機能を提供する最も簡単な方法の 1 つは、サイト全体で一貫した場所に、プッシュ通知を有効または無効にするボタンやトグルスイッチを設置することです。
+One of the easiest ways to offer push to a user is to have a button or toggle switch that enables / disables push messages in a location on the page that is consistent throughout a site.
 
-これでユーザーがプッシュ通知を有効にするために押し寄せてくるようなことはありませんが、信頼性も高く手軽にウェブサイトとのエンゲージメントを制御する方法を提供することができます。日常的に訪問者があり、直帰率の高いブログなどのサイトでは、通りすがりのユーザーに嫌われることなく常連のみをターゲットにすることができるため、これは堅実な選択肢と言えます。
+This doesn't drive users to enable push notifications, but offers a reliable and easy way for users to opt in and out of engaging with your website. For sites like blogs that might have some regular viewers as well as high bounce rates, this is a solid option as it targets regular viewers without annoying drive-by visitors.
 
-私の個人サイトでは、フッターにプッシュ通知のトグルがあります。
+On my personal site I have a toggle switch for push messaging in the footer.
 
 ![Example of Gauntface.com push notification toggle in
 footer.](./images/ux-examples/gauntface/gauntface-intro.png)
 
-視界には入りづらいため、隅々まで見る常連には効果がある一方、たまたま訪れたユーザーには、悪影響を与えません。
+It's fairly out of the way, but for regular visitors it should get enough attention from readers wanting to get updates. One-time visitors are completely unaffected.
 
-ユーザーがプッシュ通知を購読すると、トグルスイッチの状態が変化し、サイト全体で状態が維持されます。
+If the user subscribes to push messaging, the state of the toggle switch changes and maintains state throughout the site.
 
 ![Example of Gauntface.com with notifications
 enabled.](./images/ux-examples/gauntface/gauntface-enabled.png)
 
-### 悪い UX
+### The Bad UX
 
-以上が、私がウェブ上で気付いたベストプラクティスです。残念ながらひとつだけ、よくあるバッドプラクティスも存在します。
+Those are some of the common practices I've noticed on the web. Sadly, there is one very common bad practice.
 
-最悪なのは、サイトに到着してすぐにユーザーにパーミッションダイアログを表示することです。
+The worst thing you can do is instantly show the permission dialog to users as soon as they land on your site.
 
-訪れた人は、なぜ許可を求められているか、あなたのウェブサイトの目的が何か、それが何をするのか、何を提供してくれるのかさえ知りません。そこに不満を感じたユーザーが、ここでパーミッションをブロックしてしまうことは決して珍しいことではありません。このポップアップは、ユーザーがやろうとしていることを邪魔しているのです。
+They have zero context on why they are being asked for a permission, they may not even know what your website is for, what it does or what it offers. Blocking permissions at this point out of frustration is not uncommon, this pop-up is getting in the way of what they are trying to do.
 
-ユーザーがパーミッションのリクエストを*ブロック*してしまうと、あなたのウェブサイトは二度とパーミッションを求めることができません。ブロックされた後にパーミッションを取得するには、ユーザーがブラウザの UI でパーミッションを変更する必要があります。そうすることは、ユーザーにとって簡単ではありませんし、楽しいことでもありません。
+Remember, if the user *blocks* the permission request, your web app can't ask for permission again. To get permission after being blocked the user has to change the permission in the browsers UI and doing so is not easy, obvious or fun for the user.
 
-何があっても、ユーザーがサイトを開いてすぐにパーミッションを求めるのはやめてください。そしてできれば、ユーザーがパーミッションを与える理由を見つけられる、他の UI やアプローチを検討してください。
+No matter what, don't ask for permission as soon as the user opens your site, consider some other UI or approach that has an incentive for the user to grant permission.
 
-### 逃げ道を作る
+### Offer a Way Out
 
-ユーザーにプッシュ通知を購読してもらう UX を検討することに加えて、購読を解除する方法や、オプトアウトする方法を**ぜひ**検討してください 。
+In addition to considering the UX to subscribe a user to push, **please** consider how a user should unsubscribe or opt out of push messaging.
 
-ページが読み込まれた後すぐにパーミッションを求め、プッシュ通知を無効にする UI を提供しないサイトの数は驚異的です。
+The number of sites that ask for permission as soon as the page load and then offers no UI for disabling push notifications is astounding.
 
-サイトは、プッシュを無効にする方法をユーザーに説明する必要があります。さもなければ、あなたのサイトは永久にパーミッションをブロックされてしまうでしょう。
+Your site should explain to your users how they can disable push. If you don't, users are likely to take the nuclear option and block permission permanently.
 
-Translated by {% include "web/_shared/contributors/agektmr.html" %}
+## Feedback {: #feedback }
+
+{% include "web/_shared/helpful.html" %}
