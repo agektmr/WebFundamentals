@@ -1,86 +1,85 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Temukan cara menggunakan pustaka Ray Input untuk menambahkan masukan ke adegan WebVR.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Discover how to use the Ray Input library to add input to your WebVR scene.
 
-{# wf_updated_on: 2017-07-12 #}
-{# wf_published_on: 2016-12-12 #}
+{# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2016-12-12 #} {# wf_blink_components: Blink>WebVR #}
 
-# Menambahkan Masukan ke Adegan WebVR {: .page-title }
+# Adding Input to a WebVR Scene {: .page-title }
 
-{% include "web/_shared/contributors/paullewis.html" %}
+{% include "web/_shared/webxr-status.html" %}
 
-Caution: WebVR masih eksperimental dan dapat berubah.
+In the [Getting Started with WebVR section](../getting-started-with-webvr/) we looked at how to take a WebGL scene and add WebVR functionality to it. While that works, and you can look around the scene in VR, there’s so much more fun to be had when you can interact with entities in the scene.
 
-Di [bagian Memulai WebVR](../getting-started-with-webvr/) kita mengamati cara mengambil adegan WebGL dan menambahkan fungsionalitas WebVR padanya. Walaupun hal itu berhasil, dan Anda bisa melihat-lihat adegan VR, ada banyak hal yang lebih menyenangkan bila Anda bisa berinteraksi dengan entitas dalam adegan tersebut.
+![A ray beam showing input in a WebVR Scene](./img/ray-input.jpg)
 
-![Berkas sinar yang menampilkan masukan dalam Adegan WebVR](./img/ray-input.jpg)
+With WebVR (and 3D in general) there can be a variety of inputs, and ideally speaking we want to not only account for all of them, but switch between them as the user’s context changes.
 
-Dengan WebVR (dan 3D pada umumnya) boleh jadi ada beragam masukan, dan idealnya kita ingin agar tidak hanya mempertimbangkan semua itu, melainkan beralih di antara masukan tersebut saat konteks pengguna berubah.
+A quick survey of input types available today includes:
 
-Survei cepat mengenai tipe masukan yang tersedia saat ini antara lain:
-
-<img class="attempt-right" src="../img/touch-input.png" alt="Ikon masukan sentuh">
+<img class="attempt-right" src="../img/touch-input.png" alt="Touch input icon" />
 
 * **Mouse.**
-* **Sentuh.**
-* **Akselerometer & Giroskop.**
-* **Pengontrol tanpa tingkat kebebasan** (seperti Cardboard). Inilah pengontrol yang sepenuhnya terikat pada tampilan yang terlihat, dan umumnya interaksi dianggap berasal dari pusat tampilan yang terlihat.
-* **Pengontrol dengan 3 tingkat kebebasan** (seperti pengontrol Daydream). Pengontrol dengan 3 tingkatan menyediakan informasi orientasi, namun bukan informasi lokasi. Umumnya pengontrol tersebut dianggap dipegang di tangan kiri atau kanan seseorang, dan posisinya di ruang 3D telah diperkirakan.
-* **Pengontrol dengan 6 tingkat kebebasan** (seperti Oculus Rift atau Vive). Pengontrol dengan 6 tingkat kebebasan akan menyediakan informasi orientasi dan lokasi. Ini umumnya di ujung atas jangkauan kemampuan, dan memiliki akurasi terbaik.
+* **Touch.**
+* **Accelerometer & Gyroscope.**
+* **Controllers with no degrees of freedom** (like Cardboard). These are controllers that are tied entirely to the viewport, and typically the interaction is assumed to originate in the center of the viewport.
+* **Controllers with 3 degrees of freedom** (like the Daydream Controller). A controller with 3 degrees provides orientation information, but not location information. Typically such controllers are assumed to be held in the person’s left or right hand, and their position in 3D space is estimated.
+* **Controllers with 6 degrees of freedom** (like the Oculus Rift or Vive). Any controller with 6 degrees of freedom will provide both orientation and location information. These are typically at the upper end of capabilities range, and have the best accuracy.
 
-Nantinya, bila WebVR semakin matang, kita bahkan dapat melihat tipe masukan baru, ini berarti kode kita sebisa mungkin tidak boleh menjadi usang. Akan tetapi, menulis kode untuk menangani semua permutasi masukan bisa menjadi rumit dan sulit dilakukan. Pustaka [Ray Input](https://github.com/borismus/ray-input) oleh Boris Smus sudah menyediakan awal yang baik, yang mendukung sebagian besar tipe masukan yang tersedia saat ini, jadi kita akan mulai dari sana.
+In the future, as WebVR matures, we may even see new input types, which means our code needs to be as future-proof as possible. Writing code to handle all input permutations, however, can get complicated and unwieldy. The [Ray Input](https://github.com/borismus/ray-input) library by Boris Smus already provides a flying start, supporting the majority of input types available today, so we will start there.
 
-Mulai dari adegan sebelumnya, mari kita [tambahkan penangan masukan dengan Ray Input](https://googlechrome.github.io/samples/web-vr/basic-input/). Jika ingin melihat kode akhir, Anda harus memeriksa [repo contoh Google Chrome](https://github.com/GoogleChrome/samples/tree/gh-pages/web-vr/basic-input/).
+Starting from our previous scene, let’s [add input handlers with Ray Input](https://googlechrome.github.io/samples/web-vr/basic-input/). If you want to look at the final code you should check out the [Google Chrome samples repo](https://github.com/GoogleChrome/samples/tree/gh-pages/web-vr/basic-input/).
 
-## Tambahkan pustaka Ray Input ke laman
+## Add the Ray Input library to the page
 
-Untuk mudahnya, kita bisa menambahkan Ray Input secara langsung dengan tag skrip:
+For simplicity’s sake, we can add Ray Input directly with a script tag:
 
     <!-- Must go after Three.js as it relies on its primitives -->
     <script src="third_party/ray.min.js"></script>
+    
 
-Jika menggunakan Ray Input sebagai bagian dari sistem pembangunan yang lebih besar, maka Anda juga bisa mengimpornya dengan cara itu. [Ray Input README memiliki informasi selengkapnya](https://github.com/borismus/ray-input/blob/master/README.md), jadi Anda harus memeriksanya.
+If you’re using Ray Input as part of a bigger build system, you can import it that way, too. The [Ray Input README has more info](https://github.com/borismus/ray-input/blob/master/README.md), so you should check that out.
 
-## Dapatkan akses ke masukan
+## Get access to inputs
 
-Setelah mendapatkan akses ke Tampilan VR, kita bisa meminta akses ke masukan yang tersedia. Dari sana kita bisa menambahkan event listener, dan memperbarui adegan ke keadaan default kotak kita sebagai "deselected".
+After getting access to any VR Displays we can request access to any inputs that are available. From there we can add event listeners, and we’ll update the scene to default our box’s state as "deselected".
 
     this._getDisplays().then(_ => {
       // Get any available inputs.
       this._getInput();
       this._addInputEventListeners();
-
+    
       // Default the box to 'deselected'.
       this._onDeselected(this._box);
     });
+    
 
 Let’s take a look inside both the `_getInput` and `_addInputEventListeners` functions.
 
     _getInput () {
       this._rayInput = new RayInput.default(
           this._camera, this._renderer.domElement);
-
+    
       this._rayInput.setSize(this._renderer.getSize());
     }
+    
 
-Pembuatan Ray Input melibatkan penerusannya ke kamera Three.js dari adegan, dan elemen yang akan digunakannya untuk mengikat mouse, sentuhan, dan event listener lainnya yang dibutuhkan. Jika Anda tidak meneruskan elemen sebagai parameter kedua, maka default-nya adalah mengikat ke `window`, yang mungkin mencegah sebagian Antarmuka Pengguna (‘UI’) menerima kejadian masukan!
+Creating a Ray Input involves passing it the Three.js camera from the scene, and an element onto which it can bind mouse, touch and any other event listeners it needs. If you don’t pass through an element as the second parameter it will default to binding to `window`, which may be prevent parts of your User Interface (‘UI’) from receiving input events!
 
-Hal lain yang perlu Anda lakukan adalah memberitahukannya seberapa besar area yang dibutuhkan untuk bekerja, yang pada kebanyakan kasus merupakan area elemen kanvas WebGL.
+The other thing you need to do is tell it how big an area it needs to work with, which in most cases is the area of the WebGL canvas element.
 
-## Aktifkan interaktivitas untuk entitas adegan
+## Enable interactivity for scene entities
 
-Berikutnya, kita perlu memberi tahu Ray Input apa yang harus dilacak, dan kejadian apa yang ingin kita terima.
+Next we need to tell Ray Input what to track, and what events we’re interested in receiving.
 
     _addInputEventListeners () {
       // Track the box for ray inputs.
       this._rayInput.add(this._box);
-
+    
       // Set up a bunch of event listeners.
       this._rayInput.on('rayover', this._onSelected);
       this._rayInput.on('rayout', this._onDeselected);
       this._rayInput.on('raydown', this._onSelected);
       this._rayInput.on('rayup', this._onDeselected);
     }
+    
 
 As you interact with the scene, whether by mouse, touch, or other controllers, these events will fire. In the scene we can make our box’s opacity change based on whether the user is pointing at it.
 
@@ -88,33 +87,35 @@ As you interact with the scene, whether by mouse, touch, or other controllers, t
       if (!optMesh) {
         return;
       }
-
+    
       optMesh.material.opacity = 1;
     }
-
+    
     _onDeselected (optMesh) {
       if (!optMesh) {
         return;
       }
-
+    
       optMesh.material.opacity = 0.5;
     }
+    
 
-Agar berhasil, perlu dipastikan kita memberi tahu Three.js bahwa materi kotak harus mendukung transparansi.
+For this to work we’ll need to make sure that we tell Three.js that the box’s material should support transparency.
 
     this._box.material.transparent = true;
+    
 
-Kini hal itu harus mencakup interaksi mouse dan sentuh. Mari kita lihat apa yang dilibatkan dalam penambahan pengontrol dengan 3 tingkat kebebasan, seperti pengontrol Daydream.
+That should now cover mouse and touch interactions. Let’s see what’s involved with adding in a controller with 3 degrees of freedom, like the Daydream controller.
 
-## Aktifkan ekstensi Gamepad API
+## Enable the Gamepad API extensions
 
-Ada dua catatan penting untuk dipahami tentang penggunaan Gamepad API di WebVR sekarang ini:
+There are two important notes to understand about using the Gamepad API in WebVR today:
 
-* Di Chrome 56, Anda perlu mengaktifkan flag Gamepad Extensions di `chrome://flags`. Jika Anda memiliki [Origin Trial](https://github.com/jpchase/OriginTrials/blob/gh-pages/developer-guide.md) Gamepad Extensions sudah diaktifkan bersama WebVR API. **Untuk development lokal, Anda perlu mengaktifkan flag**.
+* In Chrome 56 you will need to enable the Gamepad Extensions flag in `chrome://flags`. If you have an [Origin Trial](https://github.com/GoogleChrome/OriginTrials/blob/gh-pages/developer-guide.md) the Gamepad Extensions will already be enabled along with the WebVR APIs. **For local development you’ll need the flag enabled**.
 
-* Informasi pose untuk gamepad (yaitu cara Anda mengakses 3 tingkat kebebasan itu) **hanya diaktifkan setelah pengguna menekan tombol di pengontrol VR**.
+* Pose information for the gamepad (which is how you get access to those 3 degrees of freedom) are **only enabled once a user has pressed a button on their VR controller**.
 
-Karena pengguna perlu berinteraksi sebelum kita bisa menampilkan kepada mereka pointer dalam adegan, kita perlu meminta mereka untuk menekan tombol pada pengontrol. Waktu terbaik untuk melakukannya adalah setelah kita mulai menyajikan ke Head Mounted Display (‘HMD’).
+Because the user needs to interact before we can show them a pointer in the scene, we’ll need to ask them to press a button on their controller. The best time to do that is after we begin to present to the Head Mounted Display (‘HMD’).
 
     this._vr.display.requestPresent([{
       source: this._renderer.domElement
@@ -125,12 +126,13 @@ Karena pengguna perlu berinteraksi sebelum kita bisa menampilkan kepada mereka p
     .catch(e => {
       console.error(`Unable to init VR: ${e}`);
     });
+    
 
-Biasanya Anda mungkin berharap menggunakan Elemen HTML untuk menampilkan informasi demikian kepada pengguna, namun HMD menampilkan konteks WebGL (dan bukan yang lain), sehingga kita harus menggambar pesan di sana. Three.js memiliki [primitif Sprite](https://threejs.org/docs/#Reference/Objects/Sprite) yang akan selalu menghadap ke depan kamera (biasanya disebut "Billboarding"), dan ke situlah kita bisa menggambar.
+Typically you might expect to use HTML Elements to show such information to users, but the HMD is displaying a WebGL context (and nothing else), so we must draw the message there. Three.js has a [Sprite primitive](https://threejs.org/docs/#Reference/Objects/Sprite) which will always face towards the camera (typically called “Billboarding”), and into which we can draw an image.
 
-![Menampilkan pesan "Press Button" kepada pengguna](./img/press-a-button.jpg)
+![Showing a "Press Button" message to users](./img/press-a-button.jpg)
 
-Kode yang harus dibuat mirip dengan ini.
+The code to do that looks something like this.
 
     _showPressButtonModal () {
       // Get the message texture, but disable mipmapping so it doesn't look blurry.
@@ -138,23 +140,24 @@ Kode yang harus dibuat mirip dengan ini.
       map.generateMipmaps = false;
       map.minFilter = THREE.LinearFilter;
       map.magFilter = THREE.LinearFilter;
-
+    
       // Create the sprite and place it into the scene.
       const material = new THREE.SpriteMaterial({
         map, color: 0xFFFFFF
       });
-
+    
       this._modal = new THREE.Sprite(material);
       this._modal.position.z = -4;
       this._modal.scale.x = 2;
       this._modal.scale.y = 2;
       this._scene.add(this._modal);
-
+    
       // Finally set a flag so we can pick this up in the _render function.
       this._isShowingPressButtonModal = true;
     }
+    
 
-Terakhir, di fungsi `_render` kita bisa mengamati interaksi, dan menggunakannya untuk menyembunyikan modal. Kita juga perlu memberi tahu Ray Input kapan harus memperbarui, seperti cara kita memanggil `submitFrame()` terhadap HMD untuk mengalirkan kanvas ke sana.
+Finally in the `_render` function we can watch for interactions, and use that to hide the modal. We also need to tell Ray Input when to update, similarly to the way we call `submitFrame()` against the HMD to flush the canvas to it.
 
     _render () {
       if (this._rayInput) {
@@ -162,35 +165,37 @@ Terakhir, di fungsi `_render` kita bisa mengamati interaksi, dan menggunakannya 
             this._rayInput.controller.wasGamepadPressed) {
           this._hidePressButtonModal();
         }
-
+    
         this._rayInput.update();
-
+    
       }
       …
     }
+    
 
-## Tambahkan mesh pointer ke adegan
+## Add the pointer mesh to the scene
 
-Selain memungkinkan interaksi, besar kemungkinan kita perlu menampilkan sesuatu kepada pengguna dengan menampilkan tempat yang mereka tunjuk. Ray Input menyediakan mesh yang bisa Anda tambahkan ke adegan untuk melakukannya.
+As well as allowing interactions it’s highly likely that we will want to display something to the user that shows where they’re pointing. Ray Input provides a mesh that you can add to your scene to do just that.
 
     this._scene.add(this._rayInput.getMesh());
+    
 
-Dengan ini, kita mendapatkan retikel untuk HMD tanpa kebebasan bergerak di pengontrolnya (seperti Cardboard), dan sinar seperti berkas untuk HMD yang memiliki kebebasan bergerak. Untuk mouse dan sentuh, tidak ada retikel yang ditampilkan.
+With this we get a reticle for HMDs with no freedom of movement in their controller (like Cardboard), and a beam-like ray for those with freedom of movement. For mouse and touch there are no reticles shown.
 
-![Berkas sinar yang menampilkan masukan dalam Adegan WebVR](./img/ray-input.jpg)
+![A ray beam showing input in a WebVR Scene](./img/ray-input.jpg)
 
-## Pendapat penutup
+## Closing thoughts
 
-Ada beberapa hal yang perlu diingat saat Anda menambahkan masukan ke pengalaman.
+There are some things to keep in mind as you add input to your experiences.
 
-* **Anda harus menerapkan Penyempurnaan Progresif.** Karena seseorang bisa saja mendapati apa yang telah Anda bangun dengan permutasi masukan tertentu dari daftar, Anda harus berusaha merencanakan UI sedemikian rupa agar bisa beradaptasi dengan benar di antara berbagai tipe. Bila memungkinkan, ujilah beragam perangkat dan masukan untuk memaksimalkan jangkauan.
+* **You should embrace Progressive Enhancement.** Since a person may come to what you’ve built with any particular permutation of inputs from the list you should endeavor to plan your UI such that it can adapt properly between types. Where you can, test a range of devices and inputs to maximize reach.
 
-* **Masukan tersebut mungkin tidak sepenuhnya akurat.** Khususnya, pengontrol Daydream memiliki 3 tingkat kebebasan, namun beroperasi dalam ruang yang mendukung 6 tingkat kebebasan. Ini berarti walaupun orientasinya sudah benar, posisinya di ruang 3D harus ditentukan. Untuk mempertimbangkannya, Anda mungkin perlu membuat target masukan yang lebih besar dan memastikan ruang yang baik agar tidak membingungkan.
+* **Inputs may not be perfectly accurate.** In particular a Daydream controller has 3 degrees of freedom, but it’s operating in a space which supports 6. That means that while its orientation is correct its position in 3D space has to be assumed. To account for this you may wish to make your input targets larger and ensure proper spacing to avoid confusion.
 
-Menambahkan masukan ke adegan amatlah penting untuk menjadikan pengalaman yang mendalam, dan dengan [Ray Input](https://github.com/borismus/ray-input), jadi lebih mudah melakukannya.
+Adding input to your scene is vital to making an immersive experience, and with [Ray Input](https://github.com/borismus/ray-input) it’s much easier to get going.
 
-Mari kita lihat cara Anda melakukannya!
+Let us know how you get on!
 
+## Feedback {: #feedback }
 
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
