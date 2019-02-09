@@ -1,47 +1,34 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: '홈 화면에 표시되었을 때 매니페스트의 short_name이 잘리지 않음' Lighthouse 감사의 참조 문서입니다.
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Reference documentation for the "Manifest's short_name won't be truncated when displayed on homescreen" Lighthouse audit.
 
-{# wf_updated_on: 2016-09-21 #}
-{# wf_published_on: 2016-09-21 #}
+{# wf_updated_on: 2018-07-23 #} {# wf_published_on: 2016-09-21 #} {# wf_blink_components: N/A #}
 
-# 홈 화면에 표시되었을 때 매니페스트의 짧은 이름이 잘리지 않음 {: .page-title }
+# Manifest's short_name Won't Be Truncated When Displayed on Homescreen {: .page-title }
 
-## 감사가 중요한 이유 {: #why }
+## Overview {: #overview }
 
-사용자가 홈 화면에 웹 앱을 추가하면 `short_name` 속성은
-앱 아이콘 옆에 레이블로 표시됩니다. `short_name`이
-12자보다 길면 홈 화면에 잘려서 표시됩니다.
+When a user adds your web app to the homescreen, the `short_name` property is displayed as the label next to your app's icon. If the `short_name` is longer than 12 characters, it'll be truncated on the homescreen.
 
-`short_name`이 없으면 Chrome은
-`name` 속성으로 돌아갑니다(길이가 짧을 경우).
+Note that, if the `short_name` is not present, Chrome can fall back to the `name` property if it's short enough.
 
-## 감사를 통과하는 방법 {: #how }
+## Recommendations {: #recommendations }
 
-웹 앱 매니페스트의 `short_name` 속성을 12자 미만으로 설정합니다.
+Make the `short_name` property in your Web App Manifest less than 12 characters.
 
     {
       ...
       "short_name": "Air Horner",
       ...
     }
+    
 
-또는 매니페스트에서 `short_name` 속성을 지정하지 않은 경우
-`name` 속성을 12자 미만으로 설정합니다.
+Or, if you don't specify a `short_name` property in your manifest, make the `name` property less than 12 characters.
 
-앱에서 'Add to Homescreen'을 적절히 구현하고 테스트하는 방법을 안내하는 가이드 목록은 [매니페스트의 존재](manifest-exists#how)를
-참조하세요.
+Check out [Manifest Exists](manifest-exists#recommendations) for a list of guides that teach you how to properly implement and test "Add to Homescreen" support in your app.
 
+## More information {: #more-info }
 
-{% include "web/tools/lighthouse/audits/implementation-heading.html" %}
+Lighthouse fetches the manifest and verifies that the `short_name` property is less than 12 characters. Note that since the `name` property can be used as a fallback for `short_name`, Lighthouse also tests this property as a fallback. So, if you don't include a `short_name` in your manifest, but your `name` is less than 12 characters, then the audit passes. The manifest that Lighthouse fetches is separate from the one that Chrome is using on the page, which can possibly cause inaccurate results.
 
-Lighthouse가 매니페스트를 가져와서 `short_name` 속성이
-12자 미만인지 확인합니다. `name` 속성은
-`short_name` 대신 사용할 수 있기 때문에 Lighthouse는 이 속성도 대체용으로 검사합니다.
-매니페스트에 `short_name`을 포함하지 않았지만 `name`이
-12자 미만이라면 감사가 통과됩니다. Lighthouse가 가져오는 매니페스트는
-Chrome이 페이지에서 사용하는 것과 별개로, 부정확한 결과가 나올 수 있습니다.
+## Feedback {: #feedback }
 
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
