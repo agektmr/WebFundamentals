@@ -1,129 +1,75 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Host situs di server web mesin development, kemudian akseslah materinya dari perangkat Android.
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Host a site on a development machine web server, and then access the content from an Android device.
 
-{# wf_updated_on: 2016-04-07 #}
-{# wf_published_on: 2015-04-13 #}
+{# wf_updated_on: 2018-07-27 #} {# wf_published_on: 2015-04-13 #} {# wf_blink_components: Platform>DevTools #}
 
-# Akses Server Lokal {: .page-title }
+# Access Local Servers {: .page-title }
 
-{% include "web/_shared/contributors/kaycebasques.html" %}
-{% include "web/_shared/contributors/megginkearney.html" %}
+{% include "web/_shared/contributors/kaycebasques.html" %} {% include "web/_shared/contributors/megginkearney.html" %}
 
-Host situs di server web mesin development, kemudian 
-akseslah materinya dari perangkat Android.
+Host a site on a development machine web server, then access the content from an Android device.
 
-Dengan kabel USB dan Chrome DevTools, Anda bisa menjalankan situs dari
-mesin development kemudian menampilkan situs tersebut di perangkat Android. 
-
+With a USB cable and Chrome DevTools, you can run a site from a development machine and then view the site on an Android device.
 
 ### TL;DR {: .hide-from-toc }
-- Penerusan port memungkinkan Anda menampilkan materi server web mesin development di perangkat Android.
-- Jika server web menggunakan domain khusus, Anda bisa menyiapkan perangkat Android untuk mengakses materi di domain itu dengan pemetaan domain khusus.
 
+- Port forwarding enables you to view content from your development machine's web server on your Android device.
+- If your web server is using a custom domain, you can set up your Android device to access the content at that domain with custom domain mapping.
 
-## Siapkan penerusan port {:#port-forwarding}
+## Set up port forwarding {:#port-forwarding}
 
-Penerusan port memungkinkan perangkat Android mengakses materi yang sedang
-di-host di server web mesin development Anda. Penerusan port bekerja dengan cara
-membuat port TCP pendengar di perangkat Android Anda yang memetakan ke port TCP
-di mesin development Anda. Lalu lintas antar port berjalan melalui koneksi USB
-antara perangkat Android Anda dan mesin development, sehingga
-koneksi tidak bergantung pada konfigurasi jaringan.
+Port forwarding enables your Android device to access content that's being hosted on your development machine's web server. Port forwarding works by creating a listening TCP port on your Android device that maps to a TCP port on your development machine. Traffic between the ports travel through the USB connection between your Android device and development machine, so the connection doesn't depend on your network configuration.
 
-Untuk mengaktifkan penerusan port:
+To enable port forwarding:
 
-1. Siapkan [debug dari jauh](.) antara mesin development dan
-   perangkat Android Anda. Bila selesai, Anda akan melihat perangkat Android
-   di menu sebelah kiri dialog **Inspect Devices** dan indikator status 
-   **Connected**.
-1. Dalam dialog **Inspect Devices** di DevTools, aktifkan **Port forwarding**.
-1. Klik **Add rule**.
+1. Set up [remote debugging](.) between your development machine and your Android device. When you're finished, you should see your Android device in the left-hand menu of the **Inspect Devices** dialog and a **Connected** status indicator. 
+2. In the **Inspect Devices** dialog in DevTools, enable **Port forwarding**.
+3. Click **Add rule**. ![adding a port forwarding rule](imgs/add-rule.png)
+4. In the **Device port** textfield on the left, enter the `localhost` port number from which you want to be able to access the site on your Android device. For example, if you wanted to access the site from `localhost:5000` you would enter `5000`.
+5. In the **Local address** textfield on the right, enter the IP address or hostname on which your site is running on your development machine's web server, followed by the port number. For example, if your site is running on `localhost:7331` you would enter `localhost:7331`. 
+6. Click **Add**.
 
-   ![menambahkan aturan penerusan port](imgs/add-rule.png)
-1. Dalam bidang teks **Device port** di kiri, masukkan nomor port `localhost` yang 
-   nanti Anda gunakan untuk mengakses situs di 
-   perangkat Android. Misalnya, jika Anda ingin mengakses situs dari `localhost:5000` 
-   Anda perlu memasukkan `5000`.
-1. Dalam bidang teks **Local address** di kanan, masukkan alamat IP atau 
-   hostname di mana situs Anda dijalankan pada server web
-   mesin development, diikuti dengan nomor port. Misalnya, jika situs Anda dijalankan 
-   di `localhost:7331` Anda perlu memasukkan `localhost:7331`.
-1. Klik **Add**.
+Port forwarding is now set up. You can see a status indicator of the port forward on the device's tab within the **Inspect Devices** dialog.
 
-Penerusan port sekarang sudah siap. Anda bisa melihat indikator status penerusan
-port di tab perangkat dalam dialog **Inspect Devices**.
+![port forwarding status](imgs/port-forwarding-status.png)
 
-![status penerusan port](imgs/port-forwarding-status.png)
+To view the content, open up Chrome on your Android device and go to the `localhost` port that you specified in the **Device port** field. For example, if you entered `5000` in the field, then you would go to `localhost:5000`.
 
-Untuk menampilkan materinya, buka Chrome di perangkat Android dan masuk ke 
-port `localhost` yang Anda tetapkan dalam bidang **Device port**. Misalnya, 
-jika Anda memasukkan `5000` dalam bidang tersebut, maka Anda akan masuk ke 
-`localhost:5000`. 
+## Map to custom local domains {:#custom-domains}
 
-## Petakan ke domain lokal khusus {:#custom-domains}
+Custom domain mapping enables you to view content on an Android device from a web server on your development machine that is using a custom domain.
 
-Pemetaan domain khusus memungkinkan Anda menampilkan materi di perangkat Android
-dari server web di mesin development yang menggunakan domain khusus.
+For example, suppose that your site uses a third-party JavaScript library that only works on the whitelisted domain `chrome.devtools`. So, you create an entry in your `hosts` file on your development machine to map this domain to `localhost` (i.e. `127.0.0.1 chrome.devtools`). After setting up custom domain mapping and port forwarding, you'll be able to view the site on your Android device at the URL `chrome.devtools`.
 
-Misalnya, anggaplah situs Anda menggunakan pustaka JavaScript pihak ketiga
-yang hanya bekerja di domain daftar putih `chrome.devtools`. Jadi, Anda membuat
-sebuah entri di file `hosts` pada mesin development untuk memetakan domain ini 
-ke `localhost` (yakni `127.0.0.1 chrome.devtools`). Setelah menyiapkan 
-pemetaan domain khusus dan penerusan port, Anda akan dapat menampilkan
-situs di perangkat Android di URL `chrome.devtools`. 
+### Set up port forwarding to proxy server
 
-### Siapkan penerusan port ke server proxy
+To map a custom domain you must run a proxy server on your development machine. Examples of proxy servers are [Charles](http://www.charlesproxy.com/), [Squid](http://www.squid-cache.org/), and [Fiddler](http://www.telerik.com/fiddler).
 
-Untuk memetakan domain khusus, Anda harus menjalankan server proxy di 
-mesin development. Contoh server proxy adalah [Charles][charles], [Squid][squid], 
-dan [Fiddler][fiddler].
+To set up port forwarding to a proxy:
 
-Untuk menyiapkan penerusan port ke proxy:
+1. Run the proxy server and note the port that it's using. **Note**: The proxy server and your web server must run on different ports. 
+2. Set up [port forwarding](#port-forwarding) to your Android device. For the **local address** field, enter `localhost:` followed by the port that your proxy server is running on. For example, if it's running on port `8000`, then you would enter `localhost:8000`. In the **device port** field enter the number that you want your Android device to listen on, such as `3333`.
 
-1. Jalankan server proxy dan catat port yang digunakannya. **Catatan**: Server 
-   proxy dan server web Anda harus dijalankan pada port yang berbeda.
-1. Siapkan [penerusan port](#port-forwarding) ke perangkat Android Anda. Untuk bidang
-   **local address**, masukkan `localhost:` diikuti dengan port tempat Anda
-   menjalankan server proxy. Misalnya, jika dijalankan di port `8000`,
-   maka Anda perlu memasukkan `localhost:8000`. Dalam bidang **device port** masukkan 
-   nomor yang Anda inginkan untuk didengar oleh perangkat Android, misalnya `3333`.
+### Configure proxy settings on your device
 
-[charles]: http://www.charlesproxy.com/
-[squid]: http://www.squid-cache.org/
-[fiddler]: http://www.telerik.com/fiddler
+Next, you need to configure your Android device to communicate with the proxy server.
 
-### Konfigurasi setelan proxy di perangkat Anda
+1. On your Android device go to **Settings** > **Wi-Fi**.
+2. Long-press the name of the network that you are currently connected to. **Note**: Proxy settings apply per network.
+3. Tap **Modify network**.
+4. Tap **Advanced options**. The proxy settings display. 
+5. Tap the **Proxy** menu and select **Manual**.
+6. For the **Proxy hostname** field, enter `localhost`.
+7. For the **Proxy port** field, enter the port number that you entered for **device port** in the previous section. 
+8. Tap **Save**.
 
-Berikutnya, Anda perlu mengonfigurasi perangkat Android untuk berkomunikasi dengan 
-server proxy. 
+With these settings, your device forwards all of its requests to the proxy on your development machine. The proxy makes requests on behalf of your device, so requests to your customized local domain are properly resolved.
 
-1. Di perangkat Android Anda, masuklah ke **Settings** > **Wi-Fi**.
-2. Tekan lama pada nama jaringan yang terhubung dengan Anda saat ini.
-   **Catatan**: Setelan proxy berlaku per jaringan.
-3. Ketuk **Modify network**.
-4. Ketuk **Advanced options**. Tampilan setelan proxy.
-5. Ketuk menu **Proxy** dan pilih **Manual**.
-6. Untuk bidang **Proxy hostname**, masukkan `localhost`.
-7. untuk bidang **Proxy port**, masukkan nomor port yang tadi Anda masukkan untuk
-   **device port** di bagian sebelumnya.
-8. Ketuk **Simpan**.
+Now you can access custom domains on your Android device Android just as you would on the development machine.
 
-Dengan setelan ini, perangkat Anda akan meneruskan semua permintaannya ke proxy di 
-mesin development Anda. Proxy akan membuat permintaan atas nama perangkat Anda, 
-jadi permintaan ke domain lokal yang disesuaikan akan dipenuhi dengan benar.
+If your web server is running off of a non-standard port, remember to specify the port when requesting the content from your Android device. For example, if your web server is using the custom domain `chrome.devtools` on port `7331`, when you view the site from your Android device you should be using the URL `chrome.devtools:7331`.
 
-Sekarang Anda bisa mengakses domain khusus di perangkat Android seperti yang 
-dilakukan di mesin development. 
+**Tip**: To resume normal browsing, remember to revert the proxy settings on your Android device after you disconnect from the development machine.
 
-Jika server web Anda dijalankan pada port non-standar,
-jangan lupa untuk menetapkan port saat meminta materi dari perangkat Android
-Anda. Misalnya, jika server web Anda menggunakan domain khusus 
-`chrome.devtools` di port `7331`, bila menampilkan situs dari perangkat Android
-Anda harus menggunakan URL `chrome.devtools:7331`. 
+## Feedback {: #feedback }
 
-**Tip**: Untuk melanjutkan penjelajahan normal, ingatlah untuk membalik setelan proxy di 
-perangkat Android Anda setelah memutus koneksi dari mesin development.
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
