@@ -1,129 +1,123 @@
-project_path: /web/fundamentals/_project.yaml
-book_path: /web/fundamentals/_book.yaml
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml
 
+{# wf_updated_on: 2018-08-30 #} {# wf_published_on: 2014-05-06 #} {# wf_blink_components: Blink>Image #}
 
-{# wf_updated_on: 2019-02-06 #}
-{# wf_published_on: 2014-05-06 #}
-{# wf_blink_components: Blink>Image #}
-
-# 이미지 최적화 {: .page-title }
+# Image Optimization {: .page-title }
 
 {% include "web/_shared/contributors/ilyagrigorik.html" %}
 
-대개 이미지는 웹페이지에서 다운로드되는 바이트의 대부분을 차지하며, 또한 시각적 공간의 상당 부분을 차지합니다. 결과적으로, 이미지를 최적화하면 바이트를 최대한 절약할 수 있고 웹사이트에 맞게 성능을 개선할 수 있습니다. 또한 브라우저가 다운로드해야 하는 바이트가 줄어들고, 클라이언트의 대역폭에 여유가 생기고, 브라우저가 유용한 콘텐츠를 더 빨리 다운로드하고 화면에 렌더링할 수 있습니다.
+Images often account for most of the downloaded bytes on a web page and also often occupy a significant amount of visual space. As a result, optimizing images can often yield some of the largest byte savings and performance improvements for your website: the fewer bytes the browser has to download, the less competition there is for the client's bandwidth and the faster the browser can download and render useful content on the screen.
 
-이미지 최적화는 예술이자 과학입니다. 개별 이미지를 압축하는 최상의 방법에 대해 하나로 정해진 답변이 없으므로 예술이고, 이미지 크기를 상당히 줄일 수 있는 잘 발달된 기술 및 알고리즘이 많이 있기 때문에 과학입니다. 이미지에 맞는 최적의 설정을 찾으려면 형식 기능, 인코딩된 데이터 콘텐츠, 품질, 픽셀 크기 등의 많은 차원을 기준으로 세심하게 분석해야 합니다.
+Image optimization is both an art and science: an art because there is no one definitive answer for how best to compress an individual image, and a science because there are many well developed techniques and algorithms that can significantly reduce the size of an image. Finding the optimal settings for your image requires careful analysis along many dimensions: format capabilities, content of encoded data, quality, pixel dimensions, and more.
 
-## 이미지 제거 및 바꾸기
+## Eliminating and replacing images
 
-### 짧은 요약 {: .hide-from-toc }
-- 불필요한 이미지 리소스 제거
-- 가능한 경우 CSS3 효과 활용
-- 이미지에서 인코딩 텍스트 대신 웹 글꼴 사용
+### TL;DR {: .hide-from-toc }
 
+* Eliminate unnecessary image resources
+* Leverage CSS3 effects where possible
+* Use web fonts instead of encoding text in images
 
-자기 자신에게 가장 첫 번째로 물어야 할 질문은 이미지가 실제로 추구하는 효과를 실현하는 데 필요한지 여부에 대한 것입니다. 좋은 디자인은 단순하면서도 항상 최상의 성능을 제공합니다. 페이지에서 HTML, CSS, 자바스크립트 및 기타 자산과 관련하여 대량의 바이트를 필요로 하는 경우가 많은 이미지 리소스를 제거할 수 있다면 이렇게 하는 것이 항상 최고의 최적화 전략입니다. 그렇다 하더라도, 적절한 곳에 사용된 이미지는 천마디 말보다도 많은 정보를 전달할 수 있으며, 따라서 균형을 적절히 유지하는 것은 여러분의 몫입니다.
+The very first question you should ask yourself is whether an image is, in fact, required to achieve the effect you are after. Good design is simple and will also always yield the best performance. If you can eliminate an image resource, which often requires a large number of bytes relative to HTML, CSS, JavaScript and other assets on the page, then that is always the best optimization strategy. That said, a well-placed image can also communicate more information than a thousand words, so it is up to you to find that balance.
 
-다음으로 원하는 결과를 더욱 효율적인 방법으로 제공할 수 있는 대체 기술이 있는지 살펴봐야 합니다.
+Next, you should consider if there is an alternative technology that could deliver the desired results, but in a more efficient manner:
 
-* **CSS 효과**(그라데이션, 그림자 등) 및 CSS 애니메이션은 모든 해상도 및 확대/축소 배율에서 항상 선명하게 표시되는 해상도에 독립적인 자산을 생성하는 데 사용될 수 있습니다. 이러한 리소스는 이미지 파일에 필요한 바이트의 극히 일부만 사용합니다.
-* **웹 글꼴**을 사용하면 아름다운 서체를 사용할 수 있으며, 종전과 같이 텍스트를 선택, 검색 및 크기 조정할 수도 있습니다. 따라서 사용성이 상당히 향상됩니다.
+* **CSS effects** (gradients, shadows, etc.) and CSS animations can be used to produce resolution-independent assets that always look sharp at every resolution and zoom level, often at a fraction of the bytes required by an image file.
+* **Web fonts** enable use of beautiful typefaces while preserving the ability to select, search, and resize text - a significant improvement in usability.
 
-이미지 자산에서 인코딩 텍스트를 찾는다면 잠시 멈추고 다시 검토해 보세요. 보기 좋은 서체는 좋은 디자인, 브랜딩 및 가독성을 구현하는 데 중요하지만, 이미지 내 텍스트는 형편 없는 사용자 환경을 제공합니다. 즉, 텍스트를 선택, 검색 또는 확대/축소할 수 없으며 액세스할 수도 없고 DPI가 높은 기기에는 익숙하지도 않습니다. 웹 글꼴을 사용하려면 [자체적인 최적화 세트](https://www.igvita.com/2014/01/31/optimizing-web-font-rendering-performance/)가 필요하지만, 웹 글꼴을 사용하는 것은 이러한 모든 문제들을 해결해주므로 텍스트 표시와 관련하여 항상 더 나은 선택이 될 것입니다.
+If you ever find yourself encoding text in an image asset, stop and reconsider. Great typography is critical to good design, branding, and readability, but text-in-images delivers a poor user experience: the text is not selectable, not searchable, not zoomable, not accessible, and not friendly for high-DPI devices. The use of web fonts requires its [own set of optimizations](https://www.igvita.com/2014/01/31/optimizing-web-font-rendering-performance/), but it addresses all of these concerns and is always a better choice for displaying text.
 
+## Vector vs. Raster images
 
-## 벡터와 래스터 이미지 비교
+### TL;DR {: .hide-from-toc }
 
-### 짧은 요약 {: .hide-from-toc }
-- 벡터 이미지는 기하학적 모양으로 구성된 이미지에 적합합니다.
-- 벡터 이미지는 확대/축소되고 해상도에 독립적입니다.
-- 래스터 이미지는 불규칙적인 모양과 세부 사항이 많은 복잡한 장면에 사용해야 합니다.
+* Vector images are ideal for images that consist of geometric shapes
+* Vector images are zoom and resolution-independent
+* Raster images should be used for complex scenes with lots of irregular shapes and details
 
-
-이미지가 실제로 원하는 효과를 실현하는 데 최적의 형식임을 확인했으면 다음으로 적절한 형식을 선택하는 것이 중요합니다.
+Once you've determined that an image is, in fact, the optimal format to achieve the desired effect, the next critical choice is to select the appropriate format:
 
 <div class="attempt-left">
   <figure>
-    <img src="images/vector-zoom.png" alt="확대된 벡터 이미지">
-    <figcaption>확대된 벡터 이미지</figcaption>
+    <img src="images/vector-zoom.png" alt="Zoomed-in vector image">
+    <figcaption>Zoomed-in vector image</figcaption>
   </figure>
 </div>
+
 <div class="attempt-right">
   <figure>
-    <img src="images/raster-zoom.png" alt="확대된 래스터 이미지">
-    <figcaption>확대된 래스터 이미지</figcaption>
+    <img src="images/raster-zoom.png" alt="Zoomed-in raster image">
+    <figcaption>Zoomed-in raster image</figcaption>
   </figure>
 </div>
 
 <div style="clear:both;"></div>
 
-* [벡터 그래픽](https://en.wikipedia.org/wiki/Vector_graphics)은 선, 점 및 폴리곤을 사용하여 이미지를 나타냅니다.
-* [래스터 그래픽](https://en.wikipedia.org/wiki/Raster_graphics)은 사각형 그리드 내에서 각 픽셀의 개별 값을 인코딩함으로써 이미지를 나타냅니다.
+* [Vector graphics](https://en.wikipedia.org/wiki/Vector_graphics) use lines, points, and polygons to represent an image.
+* [Raster graphics](https://en.wikipedia.org/wiki/Raster_graphics) represent an image by encoding the individual values of each pixel within a rectangular grid.
 
-각 형식마다 저마다의 장단점이 있습니다. 벡터 형식은 단순한 기하학적 모양으로 구성된 이미지(예: 로고, 텍스트, 아이콘 등)에 적합하고 모든 해상도 및 확대/축소 설정에서 선명한 결과를 제공하므로, 다양한 크기로 표시되어야 하는 자산 및 고해상도 화면에 이상적인 형식입니다.
+Each format has its own set of pros and cons. Vector formats are ideally suited for images that consist of simple geometric shapes (for example, logos, text, icons, and so on), and deliver sharp results at every resolution and zoom setting, which makes them an ideal format for high-resolution screens and assets that need to be displayed at varying sizes.
 
-하지만 장면이 복잡한 경우(예: 사진)에는 벡터 형식이 그다지 적합하지 않습니다. 모든 모양을 설명하기 위한 SVG 마크업의 양이 엄청나게 많아질 수 있으며, 그럼에도 불구하고 출력은 '실제와 거의 같게' 보이지 않을 수 있습니다. 이런 경우, GIF, PNG, JPEG 등의 래스터 이미지 형식을 사용하거나 JPEG-XR 및 WebP와 같은 최신 형식 중 하나를 사용해야 합니다.
+However, vector formats fall short when the scene is complicated (for example, a photo): the amount of SVG markup to describe all the shapes can be prohibitively high and the output may still not look "photorealistic". When that's the case, that's when you should be using a raster image format such as GIF, PNG, JPEG, or one of the newer formats such as JPEG-XR and WebP.
 
-래스터 이미지에는 이같은 해상도 또는 확대/축소 배율에 독립적인 멋진 속성이 없습니다. 래스터 이미지를 확대하면 들쑥날쑥하고 흐릿한 그래픽이 표시됩니다. 따라서 사용자에게 최적의 환경을 제공하기 위해 다양한 해상도에서 여러 버전의 래스터 이미지를 저장해야 합니다.
+Raster images do not have the same nice properties of being resolution or zoom independent - when you scale up a raster image you'll see jagged and blurry graphics. As a result, you may need to save multiple versions of a raster image at various resolutions to deliver the optimal experience to your users.
 
+## Implications of high-resolution screens
 
-## 고해상도 화면의 영향
+### TL;DR {: .hide-from-toc }
 
-### 짧은 요약 {: .hide-from-toc }
-- 고해상도 장면은 CSS 픽셀당 여러 기기 픽셀로 구성되어 있습니다.
-- 고해상도 이미지에는 상당히 더 많은 수의 픽셀과 바이트가 필요합니다.
-- 이미지 최적화 기술은 해상도에 상관없이 동일합니다.
+* High resolution screens have multiple device pixels per CSS pixel
+* High resolution images require significantly higher number of pixels and bytes
+* Image optimization techniques are the same regardless of resolution
 
+When we talk about image pixels, we need to distinguish between different kinds of pixels: CSS pixels and device pixels. A single CSS pixel may contain multiple device pixels - for example, a single CSS pixel may correspond directly to a single device pixel, or may be backed by multiple device pixels. What's the point? Well, the more device pixels there are, the finer the detail of the displayed content on the screen.
 
-이미지 픽셀에 대해 얘기할 때에는 서로 다른 종류의 픽셀인 CSS 픽셀과 기기 픽셀을 구분해야 합니다. 단일 CSS 픽셀에는 여러 기기 픽셀이 포함될 수 있습니다. 예를 들어, 단일 CSS 픽셀은 단일 기기 픽셀에 직접 대응되거나 여러 기기 픽셀이 뒤에 있을 수 있습니다. 요점은 무엇일까요? 기기 픽셀이 많을수록 화면에 표시되는 콘텐츠의 세부 사항이 더 세밀해집니다.
+<img src="images/css-vs-device-pixels.png"  alt="CSS vs device pixels" />
 
-<img src="images/css-vs-device-pixels.png"  alt="CSS 픽셀과 기기 픽셀 비교">
+High DPI (HiDPI) screens produce beautiful results, but there is one obvious tradeoff: our image assets require more detail in order to take advantage of the higher device pixel counts. The good news is, vector images are ideally suited for this task, as they can be rendered at any resolution with sharp results - we might incur a higher processing cost to render the finer detail, but the underlying asset is the same and is resolution independent.
 
-DPI가 높은(HiDPI) 화면은 아름다운 결과를 생성하지만, 여기에는 분명한 단점이 하나 있습니다. 더 많은 기기 픽셀 수를 활용하기 위해서는 이미지 자산에 더 많은 세부 사항이 필요합니다. 좋은 소식은 벡터 이미지는 이러한 작업에 적합하다는 것입니다. 벡터 이미지는 어떠한 해상도에서든 렌더링되어 선명한 결과를 보여주기 때문입니다. 더 세밀한 세부 사항을 렌더링하려면 더 높은 처리 비용이 들 수도 있겠지만, 기본 자산은 동일하고 해상도에 독립적입니다.
-
-반면에 래스터 이미지는 픽셀 단위로 이미지 데이터를 인코딩하므로 문제가 훨씬 더 큽니다. 따라서 픽셀 수가 클수록 래스터 이미지의 파일 크기도 커집니다. 이에 대한 예로, 100x100(CSS) 픽셀에 표시되는 사진 자산의 차이점을 살펴보도록 하겠습니다.
+On the other hand, raster images pose a much larger challenge because they encode image data on a per-pixel basis. Hence, the larger the number of pixels, the larger the filesize of a raster image. As an example, let's consider the difference between a photo asset displayed at 100x100 (CSS) pixels:
 
 <table>
+  
 <thead>
   <tr>
-    <th>화면 해상도</th>
-    <th>총 픽셀 수</th>
-    <th>압축되지 않은 파일 크기(픽셀당 4바이트)</th>
+    <th>Screen resolution</th>
+    <th>Total pixels</th>
+    <th>Uncompressed filesize (4 bytes per pixel)</th>
   </tr>
 </thead>
-<tbody>
+
 <tr>
   <td data-th="resolution">1x</td>
   <td data-th="total pixels">100 x 100 = 10,000</td>
-  <td data-th="filesize">40,000바이트</td>
+  <td data-th="filesize">40,000 bytes</td>
 </tr>
 <tr>
   <td data-th="resolution">2x</td>
   <td data-th="total pixels">100 x 100 x 4 = 40,000</td>
-  <td data-th="filesize">160,000바이트</td>
+  <td data-th="filesize">160,000 bytes</td>
 </tr>
 <tr>
   <td data-th="resolution">3x</td>
   <td data-th="total pixels">100 x 100 x 9 = 90,000</td>
-  <td data-th="filesize">360,000바이트</td>
+  <td data-th="filesize">360,000 bytes</td>
 </tr>
-</tbody>
 </table>
 
-해상도를 두 배로 높이면 실제 화면에서 총 픽셀 수는 4배로 늘어납니다. 가로 픽셀의 수가 2배로 늘어나고 여기에 세로 픽셀의 수가 2배로 늘어나므로 2 * 2=4가 됩니다. 따라서 '2x' 화면은 필요한 픽셀의 수를 단순하게 2배로 늘리는 것이 아니라 4배로 늘립니다.
+When we double the resolution of the physical screen, the total number of pixels increases by a factor of four: double the number of horizontal pixels, times double the number of vertical pixels. Hence, a "2x" screen not just doubles, but quadruples the number of required pixels!
 
-그렇다면, 이것이 실제 환경에서 의미하는 바는 무엇일까요? 고해상도 화면을 사용하면 아름다운 이미지를 제공할 수 있으며, 이는 훌륭한 제품 기능일 수 있습니다. 하지만 고해상도 화면에는 고해상도 이미지도 필요합니다. 벡터 이미지가 해상도에 독립적이고 항상 선명한 결과를 제공하므로 가급적이면 벡터 이미지를 사용하세요. 그리고 래스터 이미지가 필요한 경우에는 [`srcset` 및 `picture`](/web/fundamentals/design-and-ux/responsive/images#images-in-markup)를 사용하여 각 이미지에 대한 여러 버전을 제공하고 최적화하세요.
+So, what does this mean in practice? High resolution screens enable us to deliver beautiful images, which can be a great product feature. However, high resolution screens also require high-resolution images: prefer vector images whenever possible as they are resolution independent and always deliver sharp results, and if a raster image is required, deliver and optimize multiple variants of each image with the help of [`srcset` and `picture`](/web/fundamentals/design-and-ux/responsive/images#images-in-markup).
 
-## 벡터 이미지 최적화
+## Optimizing vector images
 
-### 짧은 요약 {: .hide-from-toc }
-- SVG는 XML 기반 이미지 형식입니다.
-- SVG 파일은 축소하여 크기를 줄여야 합니다.
-- SVG 파일은 GZIP으로 압축해야 합니다.
+### TL;DR {: .hide-from-toc }
 
+* SVG is an XML-based image format
+* SVG files should be minified to reduce their size
+* SVG files should be compressed with GZIP
 
-모든 최신 브라우저는 SVG(Scalable Vector Graphics)를 지원합니다. 이는 2차원 그래픽을 위한 XML 기반 이미지 형식입니다. SVG 마크업은 페이지에 직접 포함하거나 외부 리소스로 포함할 수 있습니다. SVG 파일은 대부분의 벡터 기반 그리기 소프트웨어에서 생성하거나 좋아하는 텍스트 편집기에서 손으로 직접 생성할 수 있습니다.
-
+All modern browsers support Scalable Vector Graphics (SVG), which is an XML-based image format for two-dimensional graphics: we can embed the SVG markup directly on the page, or as an external resource. In turn, an SVG file can be created by most vector-based drawing software, or by hand and directly in your favorite text editor.
 
     <?xml version="1.0" encoding="utf-8"?>
     <!-- Generator: Adobe Illustrator 17.1.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
@@ -135,255 +129,247 @@ DPI가 높은(HiDPI) 화면은 아름다운 결과를 생성하지만, 여기에
       </g>
     </g>
     </svg>
+    
 
+The above example renders a simple circle shape with a black outline and red background and was exported from Adobe Illustrator. As you can tell, it contains a lot of metadata, such as layer information, comments, and XML namespaces that are often unnecessary to render the asset in the browser. As a result, it is always a good idea to minify your SVG files by running through a tool like [svgo](https://github.com/svg/svgo).
 
-위의 예시는 검정색 윤곽선과 빨간색 배경을 가진 단순한 원형을 렌더링하고 Adobe Illustrator에서 내보내졌습니다. 보시다시피, 여기에는 브라우저에 자산을 렌더링하는 데 흔히 불필요한 레이어 정보, 주석 및 XML 네임스페이스 같은 많은 양의 메타데이터가 들어 있습니다. 따라서 항상 [svgo](https://github.com/svg/svgo)와 같은 도구를 실행하여 SVG 파일을 최소화하는 것이 좋습니다.
+Case in point, svgo reduces the size of the above SVG file generated by Illustrator by 58%, taking it from 470 to 199 bytes. Further, because SVG is an XML-based format, we can also apply GZIP compression to reduce its transfer size - make sure your server is configured to compress SVG assets!
 
-일례로 svgo는 Illustrator에서 생성된 위의 SVG 파일 크기를 58% 줄입니다. 즉, 470바이트에서 199바이트로 줄입니다. 또한 SVG가 XML 기반 형식이므로 GZIP 압축을 적용하여 해당 전송 크기를 줄일 수도 있습니다. 이 경우, 서버가 SVG 자산을 압축하도록 구성되었는지 확인해야 합니다.
+## Optimizing raster images
 
+### TL;DR {: .hide-from-toc }
 
-## 래스터 이미지 최적화
+* A raster image is a grid of pixels
+* Each pixel encodes color and transparency information
+* Image compressors use a variety of techniques to reduce the number of required bits per pixel to reduce file size of the image
 
-### 짧은 요약 {: .hide-from-toc }
-- 래스터 이미지는 픽셀들이 모인 그리드입니다.
--각 픽셀은 색 및 투명도 정보를 인코딩합니다.
-- 이미지 압축 프로그램은 다양한 기술을 활용하여 픽셀당 필요한 비트 수를 줄여 이미지 파일의 크기를 축소합니다.
+A raster image is simply a 2-dimensional grid of individual "pixels" - for example, a 100x100 pixel image is a sequence of 10,000 pixels. In turn, each pixel stores the "[RGBA](https://en.wikipedia.org/wiki/RGBA_color_space)" values: (R) red channel, (G) green channel, (B) blue channel, and (A) alpha (transparency) channel.
 
+Internally, the browser allocates 256 values (shades) for each channel, which translates to 8 bits per channel (2 ^ 8 = 256), and 4 bytes per pixel (4 channels x 8 bits = 32 bits = 4 bytes). As a result, if we know the dimensions of the grid we can easily calculate the filesize:
 
-래스터 이미지는 단순하게 개별 '픽셀'로 구성된 2차원 그리드입니다. 예를 들어, 100x100픽셀 이미지는 10,000픽셀로 구성된 시퀀스입니다. 각 픽셀은 '[RGBA](https://en.wikipedia.org/wiki/RGBA_color_space)' 값을 저장합니다. 즉, (R)은 빨간색 채널이고, (G)는 녹색 채널이고, (B)는 파란색 채널이며 (A)는 알파(투명도) 채널입니다.
+* 100 x 100px image is composed of 10,000 pixels
+* 10,000 pixels x 4 bytes = 40,000 bytes
+* 40,000 bytes / 1024 = 39 KB
 
-내부적으로 브라우저는 각 채널에 대해 256개 값(음영)을 할당하며, 이러한 값은 채널당 8비트(2 ^ 8 = 256), 픽셀당 4바이트(4개 채널 x 8비트 = 32비트 = 4바이트)로 변환됩니다. 따라서 그리드의 크기를 알면 파일 크기를 쉽게 계산할 수 있습니다.
-
-* 100 x 100px 이미지는 10,000픽셀로 구성되어 있습니다.
-* 10,000픽셀 x 4바이트 = 40,000바이트
-* 40,000바이트 / 1024 = 39KB
-
-참고: 여담으로 서버에서 클라이언트로 데이터를 전송하는 데 사용되는 이미지 형식에 관계없이 브라우저에서 이미지를 디코딩할 때 각 픽셀은 항상 메모리에서 4바이트를 차지합니다. 이는 대규모 이미지와 사용 가능한 메모리가 많지 않은 기기(예: 저사양 휴대기기)에 중요한 제약이 될 수 있습니다.
+Note: As an aside, regardless of the image format used to transfer the data from the server to the client, when the image is decoded by the browser, each pixel always occupies 4 bytes of memory. This can be an important constraint for large images and devices which do not have a lot of available memory - for example, low-end mobile devices.
 
 <table>
+  
 <thead>
   <tr>
-    <th>측정기준</th>
-    <th>픽셀</th>
-    <th>파일 크기</th>
+    <th>Dimensions</th>
+    <th>Pixels</th>
+    <th>File size</th>
   </tr>
 </thead>
-<tbody>
+
 <tr>
   <td data-th="dimensions">100 x 100</td>
   <td data-th="pixels">10,000</td>
-  <td data-th="file size">39KB</td>
+  <td data-th="file size">39 KB</td>
 </tr>
 <tr>
   <td data-th="dimensions">200 x 200</td>
   <td data-th="pixels">40,000</td>
-  <td data-th="file size">156KB</td>
+  <td data-th="file size">156 KB</td>
 </tr>
 <tr>
   <td data-th="dimensions">300 x 300</td>
   <td data-th="pixels">90,000</td>
-  <td data-th="file size">351KB</td>
+  <td data-th="file size">351 KB</td>
 </tr>
 <tr>
   <td data-th="dimensions">500 x 500</td>
   <td data-th="pixels">250,000</td>
-  <td data-th="file size">977KB</td>
+  <td data-th="file size">977 KB</td>
 </tr>
 <tr>
   <td data-th="dimensions">800 x 800</td>
   <td data-th="pixels">640,000</td>
-  <td data-th="file size">2500KB</td>
+  <td data-th="file size">2500 KB</td>
 </tr>
-</tbody>
 </table>
 
-100x100픽셀 이미지에 39KB는 큰 문제가 되지는 않아 보일 수 있지만, 파일 크기는 이미지의 크기가 클수록 빠르게 폭발적으로 증가하고 이는 이미지 자산을 다운로드하기에 느리고 비용이 많이 들게 만듭니다. 고맙게도 지금까지 우리가 설명한 것은 '압축되지 않은' 이미지 형식입니다. 이미지 파일 크기를 줄이려면 어떻게 해야 할까요?
+39KB for a 100x100 pixel image may not seem like a big deal, but the filesize quickly explodes for larger images and makes image assets both slow and expensive to download. Thankfully, what we've described so far is the "uncompressed" image format. What could we do to reduce the image file size?
 
-간단한 전략 하나는 이미지의 '비트 깊이'를 채널당 8비트에서 더 작은 색상 팔레트로 줄이는 것입니다. 채널당 8비트는 채널당 256개 값을 제공하여 총 16,777,216(256^3) 색을 제공합니다. 팔레트를 256색으로 줄이면 어떻게 될까요? 그러면 RGB 채널에 총 8비트만 필요하게 되므로 픽셀당 2바이트를 즉각적으로 절감할 수 있습니다. 원래 픽셀당 4바이트 형식에 비해 압축을 통해 50%의 절감 효과를 얻는 셈입니다.
+One simple strategy is to reduce the "bit-depth" of the image from 8 bits per channel to a smaller color palette: 8 bits per channel gives us 256 values per channel and 16,777,216 (256 ^ 3) colors in total. What if we reduced the palette to 256 colors? Then we would only need 8 bits in total for the RGB channels and immediately save two bytes per pixel -- that's 50% compression savings over our original 4 bytes per pixel format!
 
-<img src="images/artifacts.png"  alt="압축 아티팩트">
+<img src="images/artifacts.png"  alt="Compression artifacts" />
 
-참고: 왼쪽에서 오른쪽(PNG): 32비트(16M 색), 7비트(128색), 5비트(32색). 점진적인 색 전환이 있는 복잡한 장면(그라데이션, 하늘 등)에는 5비트 자산 단위로 모자이크 처리된 하늘과 같은 시각적 아티팩트를 피하기 위해 더 큰 색상 팔레트가 필요합니다. 반면, 이미지에서 몇 가지 색상만 사용하는 경우에는 큰 팔레트가 그저 귀중한 비트를 낭비하는 꼴만 됩니다.
+Note: Left to right (PNG): 32-bit (16M colors), 7-bit (128 colors), 5-bit (32 colors). Complex scenes with gradual color transitions (gradients, sky, etc.) require larger color palettes to avoid visual artifacts such as the pixelated sky in the 5-bit asset. On the other hand, if the image only uses a few colors, then a large palette is simply wasting precious bits!
 
-다음으로, 개별 픽셀에 저장된 데이터를 최적화하고 나면 더욱 똑똑해지고 인근 픽셀을 살펴보게 될 수 있습니다. 많은 이미지, 특히 사진은 색이 유사한 많은 인근 픽셀을 가집니다. 예를 들어, 하늘, 반복되는 텍스처 등이 그렇습니다. 압축 프로그램이 각 픽셀에 대한 개별 값을 저장하는 대신 '[델타 인코딩](https://en.wikipedia.org/wiki/Delta_encoding)'을 적용할 수 있는 이점에 이러한 정보를 활용하면 인근 픽셀 간의 차이를 저장할 수 있습니다. 인접 픽셀이 동일하면 델타가 '0'이고 이에 따라 단일 비트만 저장하면 됩니다. 그뿐만이 아닙니다.
+Next, once we've optimized the data stored in individual pixels we could get more clever and look at nearby pixels as well: turns out, many images, and especially photos, have many nearby pixels with similar colors - for example, the sky, repeating textures, and so on. Using this information to our advantage the compressor can apply "[delta encoding](https://en.wikipedia.org/wiki/Delta_encoding)" where instead of storing the individual values for each pixel, we can store the difference between nearby pixels: if the adjacent pixels are the same, then the delta is "zero" and we only need to store a single bit! But why stop there...
 
-인간의 눈은 색에 따라 민감도가 다릅니다. 따라서 이러한 색에 대한 팔레트를 줄이거나 늘려 이를 처리할 색 인코딩을 최적화할 수 있습니다.
-'인근' 픽셀은 2차원 그리드를 형성합니다. 이는 각 픽셀이 여러 이웃을 가진다는 것을 의미합니다. 이러한 사실을 활용하여 델타 인코딩을 더 향상시킬 수 있습니다.
-각 픽셀에 대한 바로 인접한 이웃만 살펴보는 대신 더 큰 인근 픽셀 블록과 설정이 각각 다르며 인코딩이 다른 블록을 검토할 수 있습니다. 이외에 더 많은 이점이 있습니다.
+The human eye has different level of sensitivity to different colors: we can optimize our color encoding to account for this by reducing or increasing the palette for those colors. "Nearby" pixels form a two dimensional grid, which means that each pixel has multiple neighbors: we can use this fact to further improve delta encoding. Instead of looking at just the immediate neighbors for each pixel, we can look at larger blocks of nearby pixels and encode different blocks with different settings. And so on...
 
-아시다시피 이미지 최적화는 빠르게 복잡해지며(또는, 개발자 관점에 따라 재밌어질 수도 있음) 학술적으로는 물론 상업적으로도 활발한 연구가 이루어지고 있는 영역입니다. 이미지는 많은 바이트를 차지하므로, 더 나은 이미지 압축 기술을 개발하는 것이 많은 가치가 있습니다. 자세한 사항이 궁금하면 [Wikipedia 페이지](https://en.wikipedia.org/wiki/Image_compression)를 참조하거나 [WebP 압축 기술 백서](/speed/webp/docs/compression)에서 실습 예시를 확인해 보시기 바랍니다.
+As you can tell, image optimization gets complicated quickly (or fun, depending on your perspective), and is an active area of academic and commercial research. Images occupy a lot of bytes and there is a lot of value in developing better image compression techniques! If you're curious to learn more, head to the [Wikipedia page](https://en.wikipedia.org/wiki/Image_compression), or check out the [WebP compression techniques whitepaper](/speed/webp/docs/compression) for a hands-on example.
 
-그렇다면 이러한 압축 기술이 훌륭하며 굉장히 학술적이기는 한데 페이지에 표시되는 이미지를 최적화하는 데는 어떤 식으로 도움이 될까요? 우리는 새로운 압축 기술을 발명할 위치에 있지 않지만, 이러한 문제의 형태, 즉, RGBA 픽셀, 비트 깊이 및 다양한 최적화 기술을 이해하는 것이 중요합니다. 다양한 래스터 이미지 형식에 대한 논의를 진행하기에 앞서 이러한 개념을 모두 이해하고 유념해야 합니다.
+So, once again, this is all great, but also very academic: how does it help us optimize images on our pages? Well, we are definitely not in a position to invent new compression techniques, but it's important to understand the shape of the problem: RGBA pixels, bit-depth, and various optimization techniques. All of these concepts are critical to understand and keep in mind before we dive into the discussions of various raster image formats.
 
+## Lossless vs lossy image compression
 
-## 무손실 이미지 압축과 손실이 있는 이미지 압축 비교
+### TL;DR {: .hide-from-toc }
 
-### 짧은 요약 {: .hide-from-toc }
-- 우리의 눈이 기능하는 방식 덕분에 이미지는 손실이 있는 압축을 수행하기에 좋은 후보입니다.
-- 이미지 최적화는 손실이 있는 압축 및 무손실 압축으로 구성된 기능입니다.
-- 이미지 형식의 차이점은 이미지를 최적화하기 위해 손실이 있는 알고리즘과 무손실 알고리즘 중 무엇을 어떻게 사용하는지에 대한 차이로 인해 발생합니다.
-- 모든 이미지에 동일하게 최고인 형식이나 '품질 설정'은 없습니다. 특정 압축 프로그램 및 이미지 콘텐츠에 따라 각각 고유한 출력이 생성됩니다.
+* Due to how our eyes work, images are great candidates for lossy compression
+* Image optimization is a function of lossy and lossless compression
+* Differences in image formats are due to the difference in how and which lossy and lossless algorithms are used to optimize the image
+* There is no single best format or "quality setting" for all images: each combination of particular compressor and image contents produce a unique output
 
+For certain types of data, such as source code for a page, or an executable file, it is critical that a compressor does not alter or lose any of the original information: a single missing or wrong bit of data could completely change the meaning of the contents of the file, or worse, break it entirely. For some other types of data, such as images, audio, and video, it may be perfectly acceptable to deliver an "approximate" representation of the original data.
 
-페이지의 소스 코드나 실행 파일과 같은 특정 데이터 유형에서는 압축 프로그램이 원래 정보를 변경하거나 손실하지 않아야 합니다. 데이터에서 1비트라도 누락되거나 잘못되면 파일 콘텐츠의 의미가 완전히 달라질 수 있으며, 더 안 좋게는 파일이 완전히 깨질 수 있습니다. 이미지, 오디오 및 동영상과 같은 일부 다른 데이터 유형의 경우 원래 데이터에 대한 '대략적인' 표현을 제공하는 것이 충분히 받아들여질 수 있습니다.
+In fact, due to how the eye works, we can often get away with discarding some information about each pixel in order to reduce the filesize of an image - for example, our eyes have different sensitivity to different colors, which means that we can use fewer bits to encode some colors. As a result, a typical image optimization pipeline consists of two high level steps:
 
-실제로 눈이 기능하는 방식 덕분에 우리는 종종 이미지의 파일 크기를 줄이기 위해 각 픽셀에 대한 일부 정보를 삭제할 수 있습니다. 예를 들어, 우리의 눈은 색에 따라 민감도가 다릅니다. 따라서 일부 색의 경우 인코딩하는 데 비트를 덜 사용할 수도 있습니다. 따라서 일반적인 이미지 최적화 파이프라인은 다음과 같은 두 가지 대략적인 단계로 구성됩니다.
+1. Image is processed with a "[lossy](https://en.wikipedia.org/wiki/Lossy_compression)" filter that eliminates some pixel data
+2. Image is processed with a "[lossless](https://en.wikipedia.org/wiki/Lossless_compression)" filter that compresses the pixel data
 
-1. 이미지가 일부 픽셀 데이터를 제거하는 '[손실이 있는](https://en.wikipedia.org/wiki/Lossy_compression)' 필터로 처리됩니다.
-1. 이미지가 픽셀 데이터를 압축하는 '[무손실](https://en.wikipedia.org/wiki/Lossless_compression)' 필터로 처리됩니다.
+**The first step is optional, and the exact algorithm will depend on the particular image format, but it is important to understand that any image can undergo a lossy compression step to reduce its size.** In fact, the difference between various image formats, such as GIF, PNG, JPEG, and others, is in the combination of the specific algorithms they use (or omit) when applying the lossy and lossless steps.
 
-**첫 번째 단계는 선택 항목이며, 정확한 알고리즘은 특정 이미지 형식에 따라 결정되지만, 모든 이미지가 크기를 줄이기 위해 손실이 있는 압축 단계를 거칠 수 있음을 이해하는 것이 중요합니다.** 실제로 다양한 이미지 형식(예: GIF, PNG, JPEG 등) 간의 차이점은 손실이 있는 단계와 무손실 단계를 적용할 때 이러한 이미지 형식이 사용하는(또는 생략하는) 특정 알고리즘의 조합에 있습니다.
+So, what is the "optimal" configuration of lossy and lossless optimization? The answer depends on the image contents and your own criteria such as the tradeoff between filesize and artifacts introduced by lossy compression: in some cases you may want to skip lossy optimization to communicate intricate detail in its full fidelity, and in others you may be able to apply aggressive lossy optimization to reduce the filesize of the image asset. This is where your own judgment and context need to come into play - there is no one universal setting.
 
-그렇다면 손실이 있는 최적화와 무손실 최적화에 대한 '최적'의 구성은 무엇일까요? 이에 대한 답은 이미지 콘텐츠와 손실이 있는 압축으로 인해 발생하는 아티팩트 및 파일 크기 사이의 균형점과 같은 개발자만의 기준에 따라 달라집니다. 특정 경우, 복잡한 세부 사항을 완벽하게 전달하기 위해 손실이 있는 최적화를 건너뛸 수 있으며, 다른 경우 이미지 자산의 파일 크기를 줄이기 위해 공격적인 손실이 있는 최적화를 적용할 수도 있습니다.  이는 여러분이 스스로 판단하고 상황을 고려해야 합니다. 모든 경우에 보편적으로 적용되는 특정한 한 가지 설정은 없습니다.
+<img src="images/save-for-web.png" class="attempt-right" alt="Save for web" />
 
-<img src="images/save-for-web.png" class="attempt-right" alt="Save for Web">
+As a hands-on example, when using a lossy format such as JPEG, the compressor will typically expose a customizable "quality" setting (for example, the quality slider provided by the "Save for Web" functionality in Adobe Photoshop), which is typically a number between 1 and 100 that controls the inner workings of the specific collection of lossy and lossless algorithms. For best results, experiment with various quality settings for your images, and don't be afraid to dial down the quality - the visual results are often very good and the filesize savings can be quite large.
 
-실습 예시로, JPEG와 같은 손실이 있는 형식을 사용할 경우 압축 프로그램은 일반적으로 사용자설정 가능한 '품질' 설정(예: Adobe Photoshop의 'Save for Web' 기능에서 제공되는 품질 슬라이더)을 제공합니다. 이 설정은 대개 1에서 100 사이의 숫자로, 손실이 있는 알고리즘과 무손실 알고리즘으로 구성된 특정 모음의 내부 작동 방식을 제어합니다. 최상의 결과를 얻기 위해, 다양한 품질 설정을 사용하여 이미지를 실험해 보고 품질을 낮추는 것을 두려워하지 마세요. 시각적인 결과는 대개 매우 좋으며 파일 크기도 꽤 크게 절감할 수 있습니다.
+Note: Note that quality levels for different image formats are not directly comparable due to differences in algorithms used to encode the image: quality 90 JPEG will produce a very different result than a quality 90 WebP. In fact, even quality levels for the same image format may produce visibly different output based on implementation of the compressor!
 
-참고: 참고로 여러 이미지 형식에 대한 품질 수준은 이미지를 인코딩하는 데 사용되는 알고리즘의 차이점으로 인해 직접적으로 비교할 수 없습니다. 품질 90인 JPEG는 품질 90인 WebP와는 매우 다른 결과를 생성합니다. 사실상 동일한 이미지 형식의 품질 수준도 압축 프로그램 구현에 따라 눈에 띄게 다른 출력을 생성할 수 있습니다.
+## Selecting the right image format
 
+### TL;DR {: .hide-from-toc }
 
-## 올바른 이미지 형식 선택
+* Start by selecting the right universal format: GIF, PNG, JPEG
+* Experiment and select the best settings for each format: quality, palette size, etc.
+* Consider adding WebP and JPEG XR assets for modern clients
 
-### 짧은 요약 {: .hide-from-toc }
-- 보편적인 형식인 GIF, PNG, JPEG 중에서 적합한 형식을 선택하는 것으로 시작합니다.
-- 각 형식에 최상의 설정(품질, 팔레트 크기 등)을 시험해보고 선택합니다.
-- 최신 클라이언트에 WebP 및 JPEG XR 자산을 추가할 것을 고려합니다.
-
-
-이미지 형식은 손실이 있는 압축 알고리즘과 무손실 압축 알고리즘 중 어느 것을 지원하는지도 각각 다르지만 애니메이션 및 투명도(알파) 채널과 같은 기능도 각각 다르게 지원합니다. 따라서 특정 이미지에 '올바른 형식'을 선택할 때에는 원하는 시각적 결과와 기능적인 요구사항을 함께 고려해야 합니다.
-
+In addition to different lossy and lossless compression algorithms, different image formats support different features such as animation and transparency (alpha) channels. As a result, the choice of the "right format" for a particular image is a combination of desired visual results and functional requirements.
 
 <table>
+  
 <thead>
   <tr>
-    <th>형식</th>
-    <th>투명도</th>
-    <th>애니메이션</th>
-    <th>브라우저</th>
+    <th>Format</th>
+    <th>Transparency</th>
+    <th>Animation</th>
+    <th>Browser</th>
   </tr>
 </thead>
-<tbody>
+
 <tr>
   <td data-th="format"><a href="http://en.wikipedia.org/wiki/Graphics_Interchange_Format">GIF</a></td>
-  <td data-th="transparency">지원</td>
-  <td data-th="animation">지원</td>
-  <td data-th="browser">전체</td>
+  <td data-th="transparency">Yes</td>
+  <td data-th="animation">Yes</td>
+  <td data-th="browser">All</td>
 </tr>
 <tr>
   <td data-th="format"><a href="http://en.wikipedia.org/wiki/Portable_Network_Graphics">PNG</a></td>
-  <td data-th="transparency">지원</td>
-  <td data-th="animation">지원 안 함</td>
-  <td data-th="browser">전체</td>
+  <td data-th="transparency">Yes</td>
+  <td data-th="animation">No</td>
+  <td data-th="browser">All</td>
 </tr>
 <tr>
   <td data-th="format"><a href="http://en.wikipedia.org/wiki/JPEG">JPEG</a></td>
-  <td data-th="transparency">지원 안 함</td>
-  <td data-th="animation">지원 안 함</td>
-  <td data-th="browser">전체</td>
+  <td data-th="transparency">No</td>
+  <td data-th="animation">No</td>
+  <td data-th="browser">All</td>
 </tr>
 <tr>
   <td data-th="format"><a href="http://en.wikipedia.org/wiki/JPEG_XR">JPEG XR</a></td>
-  <td data-th="transparency">지원</td>
-  <td data-th="animation">지원</td>
+  <td data-th="transparency">Yes</td>
+  <td data-th="animation">Yes</td>
   <td data-th="browser">IE</td>
 </tr>
 <tr>
   <td data-th="format"><a href="http://en.wikipedia.org/wiki/WebP">WebP</a></td>
-  <td data-th="transparency">지원</td>
-  <td data-th="animation">지원</td>
+  <td data-th="transparency">Yes</td>
+  <td data-th="animation">Yes</td>
   <td data-th="browser">Chrome, Opera, Android</td>
 </tr>
-</tbody>
 </table>
 
-보편적으로 지원되는 이미지 형식으로는 GIF, PNG 및 JPEG, 세 가지가 있습니다. 몇몇 브라우저는 이러한 형식 외에도, 더 향상된 전체 압축 및 더 많은 기능을 제공하는 WebP 및 JPEG XR과 같은 최신 형식도 지원합니다. 그러면 어떠한 형식을 사용해야 할까요?
+There are three universally supported image formats: GIF, PNG, and JPEG. In addition to these formats, some browsers also support newer formats such as WebP and JPEG XR, which offer better overall compression and more features. So, which format should you use?
 
-<img src="images/format-tree.png"  alt="Save for Web">
+<img src="images/format-tree.png"  alt="Save for web" />
 
-1. **애니메이션이 필요한가요? 그렇다면 GIF가 유일하게 보편적으로 사용할 수 있는 형식입니다.**
-   * GIF는 색상 팔레트를 최대 256색으로 제한하므로 대부분의 이미지에 좋은 형식이 아닙니다. 또한, PNG-8은 작은 팔레트로 이미지에 더 나은 압축 기능을 제공합니다. 따라서 애니메이션이 필요한 경우에만 GIF가 올바른 답이 됩니다.
-1. **가장 높은 해상도로 세부 사항을 세밀하게 유지해야 합니까? PNG를 사용하세요.**
-   * PNG는 선택한 색상 팔레트 크기를 넘어서는 손실이 있는 압축 알고리즘을 적용하지 않습니다. 그 결과 품질이 가장 좋은 이미지를 생성하지만, 비용 면에서는 다른 형식에 비해 파일 크기가 상당히 커집니다. 현명하게 사용하세요.
-    * 이미지 자산에 기하학적 모양으로 구성된 이미지가 들어 있으면 이를 벡터(SVG) 형식으로 변환하는 것이 좋습니다.
-    * 이미지 자산에 텍스트가 들어 있으면 잠시 멈추고 다시 생각해 보세요. 이미지에 포함된 텍스트는 선택하고 검색할 수 없으며 '확대/축소'할 수도 없습니다. (브랜딩이나 기타 이유로 인해) 맞춤형 표시를 제공해야 할 경우 웹 글꼴을 대신 사용하세요.
-1. **사진, 스크린샷 또는 유사한 이미지 자산을 최적화하려 하나요? JPEG를 사용하세요.**
-    * JPEG는 이미지 자산의 파일 크기를 줄이기 위해 손실이 있는 최적화와 무손실 최적화를 함께 사용합니다. 여러 JPEG 품질 수준을 시험해보고 자산에 대해 최상의 품질과 파일 크기 사이의 균형점을 찾으세요.
+1. **Do you need animation? If so, GIF is the only universal choice.** 
+    * GIF limits the color palette to at most 256 colors, which makes it a poor choice for most images. Further, PNG-8 delivers better compression for images with a small palette. As a result, GIF is the right answer only when animation is required.
+2. **Do you need to preserve fine detail with highest resolution? Use PNG.** 
+    * PNG does not apply any lossy compression algorithms beyond the choice of the size of the color palette. As a result, it will produce the highest quality image, but at a cost of significantly higher filesize than other formats. Use judiciously.
+    * If the image asset contains imagery composed of geometric shapes, consider converting it to a vector (SVG) format!
+    * If the image asset contains text, stop and reconsider. Text in images is not selectable, searchable, or "zoomable". If you need to convey a custom look (for branding or other reasons), use a web font instead.
+3. **Are you optimizing a photo, screenshot, or a similar image asset? Use JPEG.** 
+    * JPEG uses a combination of lossy and lossless optimization to reduce filesize of the image asset. Try several JPEG quality levels to find the best quality vs. filesize tradeoff for your asset.
 
-마지막으로, 각 자산에 대해 최적의 이미지 형식과 해당 설정을 결정하고 나면 WebP 및 JPEG XR에서 인코딩된 버전을 추가하는 것이 좋습니다. 이러한 형식은 모두 최신 형식이며, 안타깝지만 아직까지는 모든 브라우저에서 보편적으로 지원되지는 않습니다. 하지만 그럼에도 불구하고 최신 클라이언트에 대한 상당한 절감 효과를 제공할 수 있습니다. 예를 들어, 평균적으로 WebP는 이와 비슷한 JPEG 이미지에 비해 [30%의 파일 크기 축소](/speed/webp/docs/webp_study) 이점을 제공합니다.
+Finally, once you've determined the optimal image format and its settings for each of your assets, consider adding an additional variant encoded in WebP and JPEG XR. Both of these formats are new, and unfortunately are not (yet) universally supported by all browsers, but they can nonetheless provide significant savings for newer clients - for example, on average, WebP delivers a [30% filesize decrease](/speed/webp/docs/webp_study) over a comparable JPEG image.
 
-WebP 및 JPEG XR은 모두 보편적으로 지원되지 않으므로 적절한 리소스를 제공하도록 애플리케이션 또는 서버에 로직을 추가해야 합니다.
+Since neither WebP and JPEG XR are universally supported, you will need to add additional logic to your application or servers to serve the appropriate resource:
 
-* 일부 CDN은 JPEG XR 및 WebP 제공을 포함하여 이미지 최적화를 서비스로 제공합니다.
-* 일부 오픈소스 도구(예: PageSpeed for Apache 또는 Nginx)는 최적화, 변환 및 적합한 자산 제공을 자동화합니다.
-* 클라이언트를 감지하기 위한 애플리케이션 로직을 추가하고, 지원되는 형식을 확인하고, 사용 가능한 최상의 이미지 형식을 제공할 수 있습니다.
+* Some CDNs provide image optimization as a service, including JPEG XR and WebP delivery.
+* Some open-source tools (for example, PageSpeed for Apache or Nginx) automate the optimization, conversion, and serving of appropriate assets.
+* You can add additional application logic to detect the client, check which formats they support, and serve the best available image format.
 
-끝으로 Webview를 사용하여 네이티브 애플리케이션에서 콘텐츠를 렌더링하는 경우 클라이언트에 대한 모든 권한을 가지고 WebP를 배타적으로 사용할 수 있다는 사실을 유의하세요. Facebook, Google+ 및 기타 많은 사이트에서 WebP를 사용하여 해당 애플리케이션 내에서 모든 이미지를 제공합니다. 이로 인한 절감 효과는 확실히 그만한 가치가 있습니다. WebP에 대한 자세한 내용은 Google I/O 2013의 [WebP: Deploying Faster, Smaller, and More Beautiful Images](https://www.youtube.com/watch?v=pS8udLMOOaE) 프레젠테이션을 확인하세요.
+Finally, note that if you are using a Webview to render content in your native application, then you have full control of the client and can use WebP exclusively! Facebook, Google+ and many others use WebP to deliver all of their images within their applications - the savings are definitely worth it. To learn more about WebP, checkout the [WebP: Deploying Faster, Smaller, and More Beautiful Images](https://www.youtube.com/watch?v=pS8udLMOOaE) presentation from Google I/O 2013.
 
+## Tools and parameter tuning
 
-## 도구 및 매개변수 조정
-
-모든 이미지에 적용되는 하나의 완벽한 이미지 형식, 도구 또는 최적화 매개변수 집합은 없습니다. 최상의 결과를 얻기 위해 이미지 콘텐츠와 이에 대한 시각적 요구사항 및 기타 기술적인 요구사항에 따라 형식과 해당 설정을 선택해야 합니다.
+There is no one perfect image format, tool, or a set of optimization parameters that apply to all images. For best results you will have to pick the format and its settings depending on the contents of the image, and its visual and other technical requirements.
 
 <table>
+  
 <thead>
   <tr>
-    <th>도구</th>
-    <th>설명</th>
+    <th>Tool</th>
+    <th>Description</th>
   </tr>
 </thead>
-<tbody>
+
 <tr>
   <td data-th="tool"><a href="http://www.lcdf.org/gifsicle/">gifsicle</a></td>
-  <td data-th="description">GIF 이미지 생성 및 최적화</td>
+  <td data-th="description">create and optimize GIF images</td>
 </tr>
 <tr>
   <td data-th="tool"><a href="http://jpegclub.org/jpegtran/">jpegtran</a></td>
-  <td data-th="description">JPEG 이미지 최적화</td>
+  <td data-th="description">optimize JPEG images</td>
 </tr>
 <tr>
   <td data-th="tool"><a href="http://optipng.sourceforge.net/">optipng</a></td>
-  <td data-th="description">무손실 PNG 최적화</td>
+  <td data-th="description">lossless PNG optimization</td>
 </tr>
 <tr>
   <td data-th="tool"><a href="http://pngquant.org/">pngquant</a></td>
-  <td data-th="description">손실이 있는 PNG 최적화</td>
+  <td data-th="description">lossy PNG optimization</td>
 </tr>
-</tbody>
 </table>
 
+Don't be afraid to experiment with parameters of each compressor. Dial down the quality, see how it looks, then rinse, lather and repeat. Once you've found a good set of settings, you can apply them to other similar images on your site, but don't assume that all images must be compressed with the same settings.
 
-각 압축 프로그램의 매개변수로 실험해 보는 것을 두려워하지 마세요. 품질을 낮추고, 어떻게 보이는지 확인한 후 원래대로 돌리고 이러한 작업을 다시 반복해보세요. 적절한 설정 집합을 발견하고 나면 사이트에 있는 다른 유사한 이미지에 이 설정을 적용할 수 있습니다. 단, 모든 이미지가 동일한 설정으로 압축되어야 한다고 가정하지는 마세요.
+## Delivering scaled image assets
 
+### TL;DR {: .hide-from-toc }
 
-## 배율이 조정된 이미지 자산 제공
+* Delivering scaled assets is one of the simplest and most effective optimizations
+* Pay close attention to large assets as they result in high overhead
+* Reduce the number of unnecessary pixels by scaling your images to their display size
 
-### 짧은 요약 {: .hide-from-toc }
-- 배율이 조정된 자산을 제공하는 것은 가장 간단하면서도 가장 효과적인 최적화 작업 중 하나입니다.
-- 대규모 자산의 경우 높은 오버헤드를 초래하므로 주의해야 합니다.
-- 이미지의 배율을 표시 크기에 맞게 조정함으로써 불필요한 픽셀 수를 줄입니다.
+Image optimization boils down to two criteria: optimizing the number of bytes used to encode each image pixel, and optimizing the total number of pixels: the filesize of the image is simply the total number of pixels times the number of bytes used to encode each pixel. Nothing more, nothing less.
 
+<img src="images/resized-image.png" class="attempt-right" alt="Resized image" />
 
-이미지 최적화는 두 가지 기준으로 압축됩니다. 각 이미지 픽셀을 인코딩하는 데 사용되는 바이트의 수를 최적화하는 것과 총 픽셀 수를 최적화하는 것이 그것입니다. 이미지의 파일 크기는 단순하게 총 픽셀 수에 각 픽셀을 인코딩하는 데 사용되는 바이트 수를 곱한 수치입니다. 그 이상도 그 이하도 아닙니다.
+As a result, one of the simplest and most effective image optimization techniques is to ensure that we are not shipping any more pixels than needed to display the asset at its intended size in the browser. Sounds simple, right? Unfortunately, most pages fail this test for many of their image assets: typically, they ship larger assets and rely on the browser to rescale them - which also consumes extra CPU resources - and display them at a lower resolution.
 
-<img src="images/resized-image.png" class="attempt-right" alt="크기가 조정된 이미지">
+Note: Hovering over the image element in Chrome DevTools reveals both the "natural" and "display" sizes of the image asset. In above example the 300x260 pixel image is downloaded but is then downscaled (245x212) on the client when it is displayed.
 
-따라서 가장 간단하면서도 가장 효과적인 이미지 최적화 기술 중 하나는 브라우저에 의도한 크기로 자산을 표시하는 데 필요한 것보다 더 많은 픽셀을 제공하지 않도록 하는 것입니다. 간단한 얘기처럼 들리죠? 안타깝게도 대부분의 페이지가 해당 이미지 자산 대부분에 대해 이 테스트를 통과하지는 못합니다. 일반적으로 이러한 페이지는 더 큰 자산을 제공하고 자산의 배율을 조정하기 위해 브라우저에 의존하여 추가적인 CPU 리소스를 사용하며 더 낮은 해상도에서 자산을 표시합니다.
-
-참고: Chrome DevTools에서 이미지 요소 위로 마우스를 가져가면 이미지 자산의 '실물' 크기와 '표시' 크기가 모두 표시됩니다. 위의 예에서는 300x260픽셀 이미지가 다운로드되었지만 클라이언트에 표시될 때 축소(245x212)되었습니다.
-
-단지 브라우저가 대신하여 이미지의 배율을 조정하도록 하기 위해 불필요한 픽셀을 제공함으로 인해 발생하는 오버헤드는 페이지를 렌더링하는 데 필요한 총 바이트 수를 줄이고 최적화할 수 있는 큰 기회를 놓치는 것입니다. 또한, 크기를 조정한다고 해서 단순히 이미지가 실제 크기에 비해 줄어든 만큼 픽셀 수가 줄어들게 되지는 않습니다.
+The overhead of shipping unnecessary pixels, only to have the browser rescale the image on our behalf, is a big missed opportunity to reduce and optimize the total number of bytes required to render the page. Further, note that resizing is not simply a function of the number of pixels by which the image is reduced by, but also of its natural size.
 
 <table>
+  
 <thead>
   <tr>
-    <th>화면 해상도</th>
-    <th>실제 크기</th>
-    <th>표시 크기(CSS px)</th>
-    <th>불필요한 픽셀</th>
+    <th>Screen resolution</th>
+    <th>Natural size</th>
+    <th>Display size (CSS px)</th>
+    <th>Unnecessary pixels</th>
   </tr>
 </thead>
-<tbody>
+
 <tr>
   <td data-th="resolution">1x</td>
   <td data-th="natural">110 x 110</td>
@@ -420,25 +406,24 @@ WebP 및 JPEG XR은 모두 보편적으로 지원되지 않으므로 적절한 �
   <td data-th="display">800 x 800</td>
   <td data-th="overhead">1620 x 1620 - (2 x 800) x (2 x 800) = 64400</td>
 </tr>
-</tbody>
 </table>
 
-참고로 위의 모든 경우에서 표시 크기는 각 화면 해상도에 필요한 자산보다 '10 CSS 픽셀만 더 작습니다'. 하지만 여분의 픽셀 수 및 관련 오버헤드는 이미지의 표시 크기가 증가함에 따라 급격하게 늘어납니다. 따라서 각각의 모든 자산이 정확한 표시 크기로 제공된다고 보장할 수는 없지만, **불필요한 픽셀의 수를 최소화하고, 특히 대규모 자산의 경우 표시 크기에 최대한 가깝게 제공해야 합니다.**
+Note that in all of the cases above the display size is "only 10 CSS pixels smaller" than the required asset for each screen resolution. However, the number of extra pixels, and their associated overhead, rises rapidly as the display dimensions of the image increase! As a result, while you may not be able to guarantee that every single asset is delivered at the exact display size, **you should ensure that the number of unnecessary pixels is minimal, and that your large assets in particular are delivered as close as possible to their display size.**
 
-## 이미지 최적화 체크리스트
+## Image optimization checklist
 
-이미지 최적화는 예술이자 과학입니다. 개별 이미지를 압축하는 최상의 방법에 대해 하나로 정해진 답변이 없으므로 예술이고, 이미지 크기를 상당히 줄이는 데 도움이 될 수 있는 잘 발달된 기술 및 알고리즘이 많이 있기 때문에 과학입니다.
+Image optimization is both an art and a science: an art because there is no one definitive answer for how to best compress an individual image, and a science because there are well-developed techniques and algorithms that can help significantly reduce the size of an image.
 
-이미지 최적화와 관련하여 작업할 때 유의해야 할 몇 가지 팁과 기술은 다음과 같습니다.
+Some tips and techniques to keep in mind as you work on optimizing your images:
 
-* **벡터 형식 선호:** 벡터 이미지는 해상도 및 배율에 독립적이므로, 여러 기기 및 고해상도 환경에 가장 적합합니다.
-* **SVG 자산 최소화 및 압축:** 대부분의 그리기 애플리케이션에서 생성하는 XML 마크업에는 불필요한 메타데이터가 들어 있는 경우가 많습니다. 이러한 메타데이터는 삭제할 수 있습니다. 서버가 SVG 자산에 대해 GZIP 압축을 적용하도록 구성되었는지 확인하세요.
-* **최적의 래스터 이미지 형식 선택:** 기능적인 요구사항을 확인하고 각각의 특정 자산에 맞는 형식을 선택합니다.
-* **래스터 형식에 최적화된 품질 설정 실험:** '품질' 설정을 낮추는 것을 두려워하지 마세요. 결과가 매우 좋은 경우가 많으며 바이트 절감 효과는 상당합니다.
-* **불필요한 이미지 메타데이터 삭제:** 많은 래스터 이미지에는 위치정보, 카메라 정보 등 자산과 관련하여 불필요한 메타데이터가 들어 있습니다. 적합한 도구를 사용하여 이러한 데이터를 삭제하세요.
-* **배율이 조정된 이미지 제공:** 서버의 이미지 크기를 조정하고 '표시' 크기를 이미지의 '실제' 크기와 최대한 가깝게 하세요. 특히 대규모 자산의 경우 크기 조절을 하면 높은 오버헤드를 초래하므로 주의해야 합니다.
-* **자동화, 자동화, 자동화:** 자동화된 도구 및 인프라에 투자하여 모든 이미지 자산이 항상 최적화되도록 하세요.
+* **Prefer vector formats:** vector images are resolution and scale independent, which makes them a perfect fit for the multi-device and high-resolution world.
+* **Minify and compress SVG assets:** XML markup produced by most drawing applications often contains unnecessary metadata which can be removed; ensure that your servers are configured to apply GZIP compression for SVG assets.
+* **Pick best raster image format:** determine your functional requirements and select the one that suits each particular asset.
+* **Experiment with optimal quality settings for raster formats:** don't be afraid to dial down the "quality" settings, the results are often very good and byte savings are significant.
+* **Remove unnecessary image metadata:** many raster images contain unnecessary metadata about the asset: geo information, camera information, and so on. Use appropriate tools to strip this data.
+* **Serve scaled images:** resize images on the server and ensure that the "display" size is as close as possible to the "natural" size of the image. Pay close attention to large images in particular, as they account for largest overhead when resized!
+* **Automate, automate, automate:** invest into automated tools and infrastructure that will ensure that all of your image assets are always optimized.
 
-## 의견 {: #feedback }
+## Feedback {: #feedback }
 
 {% include "web/_shared/helpful.html" %}
