@@ -1,38 +1,25 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Dokumentasi referensi untuk audit Lighthouse "Situs Tidak Menggunakan Cache Aplikasi".
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Reference documentation for the "Avoids Application Cache" Lighthouse audit.
 
-{# wf_updated_on: 2017-01-04 #}
-{# wf_published_on: 2017-01-04 #}
+{# wf_updated_on: 2018-07-23 #} {# wf_published_on: 2017-01-04 #} {# wf_blink_components: N/A #}
 
-# Situs Tidak Menggunakan Cache Aplikasi  {: .page-title }
+# Avoids Application Cache {: .page-title }
 
-## Mengapa audit itu penting {: #why }
+## Overview {: #overview }
 
-Cache Aplikasi, yang juga dikenal dengan AppCache, sudah [tidak digunakan lagi][deprecated].
+Application Cache, also known as AppCache, is [deprecated](https://html.spec.whatwg.org/multipage/browsers.html#offline).
 
-[deprecated]: https://html.spec.whatwg.org/multipage/browsers.html#offline
+## Recommendations {: #recommendations }
 
-## Cara untuk lulus audit {: #how }
+Consider using the service worker [Cache API](https://developer.mozilla.org/en-US/docs/Web/API/Cache) instead.
 
-Pertimbangkan menggunakan service worker [Cache API][API] sebagai gantinya.
+To help migrate from AppCache to service workers, consider the [sw-appcache-behavior](https://github.com/GoogleChrome/sw-appcache-behavior) library. This library generates a service-worker-based implementation of the behavior defined in an AppCache manifest.
 
-Untuk membantu migrasi dari AppCache ke service worker, pertimbangkan pustaka
-[sw-appcache-behavior][sw-appcache-behavior]. Pustaka ini menghasilkan
-implementasi berbasis service worker untuk perilaku yang didefinisikan dalam manifes
-AppCache.
+See the [URL Responds With a 200 When Offline](http-200-when-offline) audit reference for more resources on using service workers to make your site work offline.
 
-Lihat referensi audit [URL Merespons dengan 200 Bila Offline](http-200-when-offline) untuk
-sumber daya selengkapnya mengenai penggunaan service worker untuk membuat situs Anda bekerja
-secara offline.
+## More information {: #more-info }
 
-[API]: https://developer.mozilla.org/en-US/docs/Web/API/Cache
+The audit passes if no AppCache manifest is detected.
 
-[sw-appcache-behavior]: https://github.com/GoogleChrome/sw-appcache-behavior
+## Feedback {: #feedback }
 
-{% include "web/tools/lighthouse/audits/implementation-heading.html" %}
-
-Audit dianggap lulus jika tidak ada manifes AppCache yang terdeteksi.
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
