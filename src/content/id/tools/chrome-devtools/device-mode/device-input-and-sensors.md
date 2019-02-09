@@ -1,82 +1,90 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Layar sentuh, chip GPS, dan akselerometer bisa sulit diuji karena sebagian desktop tidak memilikinya. Emulator sensor Chrome DevTools mengurangi biaya pengujian dengan mengemulasi sensor perangkat seluler yang umum.
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Touch screens, GPS chips, and accelerometers can be difficult to test since most desktops don't have them. The Chrome DevTools sensor emulators reduce the overhead of testing by emulating common mobile device sensors. robots: noindex
 
-{# wf_updated_on: 2017-07-12 #}
-{# wf_published_on: 2015-04-13 #}
+{# wf_updated_on: 2018-12-18 #} {# wf_published_on: 2015-04-13 #} {# wf_blink_components: Platform>DevTools #}
 
-# Mengemulasikan Sensor: Geolokasi dan Akselerometer {: .page-title }
+# Emulate Sensors: Geolocation and Accelerometer {: .page-title }
 
-{% include "web/_shared/contributors/megginkearney.html" %}
-{% include "web/_shared/contributors/pbakaus.html" %}
+{% include "web/_shared/contributors/megginkearney.html" %} {% include "web/_shared/contributors/pbakaus.html" %}
 
-Chip GPS dan akselerometer bisa sulit diuji karena sebagian desktop tidak memilikinya. Panel emulasi Chrome DevTools Sensors mengurangi overhead dengan mengemulasi sensor perangkat seluler yang umum.
+<aside class="warning">
+  <b>This page is deprecated</b>. There are links to up-to-date documentation
+  throughout the page.
+</aside>
 
+GPS chips and accelerometers can be difficult to test since most desktops don't have them. The Chrome DevTools Sensors emulation pane reduces the overhead of testing by emulating common mobile device sensors.
 
 ### TL;DR {: .hide-from-toc }
-- Mengemulasikan koordinat geolokasi untuk menguji penggantian geolokasi.
-- Menyimulasikan orientasi perangkat untuk menguji data akselerometer.
 
+- Emulate geolocation coordinates to test geolocation overrides.
+- Simulate device orientation to test accelerometer data.
 
-## Mengakses kontrol sensor
+## Access sensor controls
 
 <div class="wf-devtools-flex">
   <div>
-    <p>Untuk mengakses kontrol sensor Chrome DevTools:</p>
+    <p>To access the Chrome DevTools sensor controls:</p>
     <ol>
-      <li>Buka menu utama DevTools, lalu</li>
-      <li>Di bawah <strong>More Tools</strong>, klik <strong>Sensors</strong></li>
+      <li>Open the DevTools main menu, then</li>
+      <li>Under <strong>More Tools</strong>, click on <strong>Sensors</strong></li>
     </ol>
   </div>
   <div class="wf-devtools-flex-half">
-    <img src="imgs/navigate-to-sensors.png" alt="Navigasi ke panel Sensors">
+    <img src="imgs/navigate-to-sensors.png" alt="Navigate to Sensors panel">
   </div>
 </div>
 
-Note: Jika aplikasi Anda mendeteksi pemuatan sensor menggunakan JavaScript (misalnya Modernizr), pastikan Anda memuat ulang laman setelah mengaktifkan emulator sensor.
+Note: If your app detects sensors onload using JavaScript (such as Modernizr), make sure that you reload the page after enabling sensor emulators.
 
-## Mengganti data geolokasi
+## Override geolocation data
 
-Tidak seperti desktop, perangkat seluler biasanya menggunakan perangkat keras GPS untuk mendeteksi lokasi. Di panel Sensors, Anda bisa menyimulasikan koordinat geolokasi untuk digunakan dengan <a href='http://www.w3.org/TR/geolocation-API/'>Geolocation API</a>.
+<aside class="warning">
+  <b>This page is deprecated</b>. See <a href="/web/tools/chrome-devtools/device-mode/geolocation">Override Geolocation</a>.
+</aside>
+
+Unlike desktops, mobile devices commonly use GPS hardware to detect location. In the Sensors pane, you can simulate geolocation coordinates to use with the [Geolocation API](http://www.w3.org/TR/geolocation-API/).
 
 <div class="wf-devtools-flex">
   <div>
-    <p>Aktifkan emulasi geolokasi dengan mencentang kotak <strong>Emulate geolocation coordinates</strong> pada panel sensor di panel samping emulasi.</p>
+    <p>Enable the geolocation emulation by selecting the <strong>Emulate geolocation coordinates</strong> checkbox in the sensors pane of the emulation drawer.</p>
   </div>
   <div class="wf-devtools-flex-half">
-    <img src="imgs/emulation-drawer-geolocation.png" alt="geolokasi emulator diaktifkan">
+    <img src="imgs/emulation-drawer-geolocation.png" alt="geolocation emulator enabled">
   </div>
 </div>
 
-Anda bisa menggunakan emulator ini untuk mengganti nilai posisi untuk `navigator.geolocation`, serta untuk menyimulasikan kasus ketika data geolokasi tidak tersedia.
+You can use this emulator to override position values for `navigator.geolocation`, as well as to simulate cases when geolocation data is unavailable.
 
-## Mengemulasikan Akselerometer (Orientasi Perangkat)
+## Emulate Accelerometer (Device Orientation)
+
+<aside class="warning">
+  <b>This page is deprecated</b>. See <a href="/web/tools/chrome-devtools/device-mode/orientation">Simulate Device Orientation</a>.
+</aside>
 
 <div class="wf-devtools-flex">
   <div>
-    <p>Untuk menguji data akselerometer yang berasal dari <a href='http://www.w3.org/TR/screen-orientation/'>Orientation API</a>, aktifkan emulator akselerometer dengan mencentang kotak <strong>Accelerometer</strong> di panel Sensors.</p>
+    <p>To test accelerometer data coming from the <a href='http://www.w3.org/TR/screen-orientation/'>Orientation API</a>, enable the accelerometer emulator by selecting the <strong>Accelerometer</strong> checkbox in the Sensors pane.</p>
   </div>
   <div class="wf-devtools-flex-half">
-    <img src="imgs/emulation-drawer-accelerometer.png" alt="Kontrol akselerometer">
+    <img src="imgs/emulation-drawer-accelerometer.png" alt="Accelerometer control">
   </div>
 </div>
 
-Anda bisa mengubah parameter orientasi berikut:
+You can manipulate the following orientation parameters:
 
 <dl>
+  
 <dt><abbr title="alpha">α</abbr></dt>
-<dd>Rotasi di sekeliling sumbu z.</dd>
+<dd>Rotation around the z-axis.</dd>
 <dt><abbr title="beta">β</abbr></dt>
-<dd>Miring kiri-ke-kanan.</dd>
+<dd>Left-to-right tilt.</dd>
 <dt><abbr title="gamma">γ</abbr></dt>
-<dd>Miring depan-ke-belakang.</dd>
+<dd>Front-to-back tilt.</dd>
 </dl>
 
-Anda juga bisa mengeklik dan menyeret akselerometer model ke orientasi yang diinginkan.
+You can also click and drag the model accelerometer to the desired orientation.
 
-Coba emulator akselerometer dengan menggunakan [demo orientasi perangkat](http://googlesamples.github.io/web-fundamentals/fundamentals/native-hardware/device-orientation/dev-orientation.html) ini.
+Try out the accelerometer emulator using this [device orientation demo](http://googlesamples.github.io/web-fundamentals/fundamentals/native-hardware/device-orientation/dev-orientation.html).
 
+## Feedback {: #feedback }
 
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
