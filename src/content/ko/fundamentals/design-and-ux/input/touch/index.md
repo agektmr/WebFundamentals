@@ -1,11 +1,8 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: 전화기에서 데스크톱 화면에 이르기까지 점점 더 많은 기기에서 터치스크린을 사용할 수 있습니다. 앱은 직관적이고 멋진 방식으로 터치스크린의 터치에 반응해야 합니다.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Touchscreens are available on more and more devices, from phones up to desktop screens. Your app should respond to their touch in intuitive and beautiful ways.
 
-{# wf_updated_on: 2017-07-12 #}
-{# wf_published_on: 2014-01-01 #}
+{# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2014-01-01 #} {# wf_blink_components: Blink>Input #}
 
-# 사이트에 터치 추가 {: .page-title }
+# Add Touch to Your Site {: .page-title }
 
 {% include "web/_shared/contributors/mattgaunt.html" %}
 
@@ -15,469 +12,357 @@ description: 전화기에서 데스크톱 화면에 이르기까지 점점 더 �
   </iframe>
 </div>
 
-전화기에서 데스크톱 화면에 이르기까지 점점 더 많은 기기에서
- 터치스크린을 사용할 수 있습니다. 사용자가 UI와의 상호작용을 선택하면 앱이
-직관적인 방식으로 터치스크린의 터치에 반응해야 합니다.
+Touchscreens are available on more and more devices, ranging from phones to desktop screens. When your users choose to interact with your UI, your app should respond to their touch in intuitive ways.
 
 <div class="clearfix"></div>
 
-## 요소 상태에 반응
+## Respond to element states
 
-웹페이지에서 어떤 요소를 터치하거나 클릭했는데
- 사이트가 이 터치나 클릭을 실제로 감지했는지 궁금했던 적이 있으세요?
+Have you ever touched or clicked an element on a web page and questioned whether the site actually detected it?
 
-사용자가 UI 부분을 터치하거나 상호작용할 때
- 해당 요소의 색상이 바뀐다면, 이 사이트가 작동 중인지를 쉽게 확인할 수 있을 것입니다. 그러면 좌절감이 줄어들 뿐만 아니라
- 사이트가 빠르고 반응성이 뛰어나다는 느낌을 줍니다.
+Simply altering the color of an element as users touch or interact with parts of your UI gives a basic reassurance that your site is working. Not only does this alleviate frustration, it can also give a snappy and responsive feel.
 
-DOM 요소는 default, focus, hover, active의 네 가지 상태를
- 임의로 상속할 수 있습니다. 이들 각 상태에 대해 UI를 변경하기 위해 우리는 아래 나타난 것처럼
- 의사 클래스 `:hover`, `:focus` 및 `:active`에 스타일을 적용해야 합니다.
+DOM elements can inherit any of the following states: default, focus, hover and active. To change our UI for each of these states, we need to apply styles to the following pseudo classes `:hover`, `:focus` and `:active` as shown below:
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/design-and-ux/input/touch/_code/states-example.html" region_tag="btnstates" adjust_indentation="auto" %}
 </pre>
 
-[체험해 보기](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/input/touch/states-example.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/input/touch/states-example.html){: target="_blank" .external }
 
-![버튼 상태에 따라 다른 색상을 보여주는
-이미지](images/button-states.png)
+![Image illustrating different colors for button
+states](images/button-states.png)
 
-대부분의 모바일 브라우저에서는 어떤 요소를 누른 후
- 이 요소에 *hover* 및/또는 *focus* 상태가 적용됩니다.
+On most mobile browsers *hover* and/or *focus* states will apply to an element after it's been tapped.
 
-어떤 스타일을 설정할지 그리고 사용자가 이 스타일을 터치했을 때
- 어떻게 보일지를 신중하게 고려하세요.
+Consider carefully what styles you set and how they will look to the user after they finish their touch.
 
-참고: 앵커 태그 및 버튼은 다른 브라우저에서
- 다르게 동작할 수도 있으므로, 어떤 경우에는 **hover**가
-유지되고 다른 경우에는 **focus**가 유지된다고 가정하세요.
+Note: Anchor tags and buttons may have different behavior in different browsers, so assume in some cases **hover** will remain and in others **focus** will remain.
 
-### 기본 브라우저 스타일 억제
+### Suppressing default browser styles
 
-다른 상태에 대한 스타일을 추가한 경우,
- 대부분의 브라우저는 사용자 터치에 반응하여 자체 스타일을 구현하게 됩니다. 그 주된 이유는,
- 휴대기기가 처음 시작될 때 다수의 사이트는 `:active` 상태에 대한
- 스타일이 없기 때문입니다. 따라서 사용자 피드백을 제공하기 위해
- 많은 브라우저들이 추가적인 하이라이트 색상이나 스타일을 추가했습니다.
+Once you add styles for the different states, you'll notice that most browsers implement their own styles in response to a user’s touch. This is largely because when mobile devices first launched, a number of sites didn’t have styling for the `:active` state. As a result, many browsers added additional highlight color or style to give the user feedback.
 
-대부분의 브라우저는 어떤 요소가 포커스를 받을 때
- 요소 주변에 포커스 링을 표시하기 위해 `outline` CSS 속성을 사용합니다. 이 속성을 억제하기 위해 다음을 사용합니다.
+Most browsers use the `outline` CSS property to display a ring around an element when an element is focused. You can suppress it with:
 
     .btn:focus {
       outline: 0;
-
+    
       // Add replacement focus styling here (i.e. border)
     }
+    
 
-Safari 및 Chrome에서는
-`-webkit-tap-highlight-color` CSS 속성으로 방지가 가능한 탭 하이라이트 색상을 추가합니다.
+Safari and Chrome add a tap highlight color which can be prevented with the `-webkit-tap-highlight-color` CSS property:
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/design-and-ux/input/touch/_code/states-example.html" region_tag="webkit-specific" adjust_indentation="auto" %}
 </pre>
 
-[체험해 보기](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/input/touch/states-example.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/input/touch/states-example.html){: target="_blank" .external }
 
-Windows Phone에 설치된 Internet Explorer도 동작은 유사하지만
-다음 메타 태그를 통해 억제됩니다.
+Internet Explorer on Windows Phone has a similar behavior, but is suppressed via a meta tag:
 
     <meta name="msapplication-tap-highlight" content="no">
+    
 
-Firefox에는 처리할 두 가지 부작용이 있습니다.
+Firefox has two side effects to handle.
 
-`-moz-focus-inner` 의사 클래스는
-터치 가능 요소에 윤곽선을 추가하는데, `border: 0`을 설정하여 이 의사 클래스를 제거할 수 있습니다.
+The `-moz-focus-inner` pseudo class, which adds an outline on touchable elements, you can remove by setting `border: 0`.
 
-Firefox에서 `<button>` 요소를 사용 중인 경우 그라데이션을 적용하게 되는데
-, `background-image: none`을 설정하여 이 그라데이션을 제거할 수 있습니다.
+If you are using a `<button>` element on Firefox, you get a gradient applied, which you can remove by setting `background-image: none`.
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/design-and-ux/input/touch/_code/states-example.html" region_tag="ff-specific" adjust_indentation="auto" %}
 </pre>
 
-[체험해 보기](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/input/touch/states-example.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/input/touch/states-example.html){: target="_blank" .external }
 
-Caution: `:hover`, `:active` 및 `:focus`에 대한 의사 클래스가 있는 경우에는
- 위에 언급된 기본 스타일만을 억제할 수 있습니다!
+Caution: Only suppress the default styles mentioned above if you have pseudo classes for `:hover`, `:active` and `:focus`!
 
-### user-select 비활성화
+### Disabling user-select
 
-UI를 만들 때 사용자가 요소와 상호작용하기를
-원하거나, 텍스트를 길게 눌러 선택하거나 마우스를 UI 위로 드래그하는 기본 동작을
-억제해야 하는 경우가 있습니다.
+When you're creating your UI there may be scenarios where you want users to interact with your elements but you want to suppress the default behavior of selecting text on long press or dragging a mouse over your UI.
 
-이를 위해 `user-select` CSS 속성을 사용할 수 있지만 주의할 점은,
-사용자가 요소의 텍스트를 선택하기를 *원하는데*
-콘텐츠에서 이 작업을 수행할 경우 사용자의 **엄청난** 분노를 유발할 수 있습니다.
-따라서 주의해서 사용하고 가급적 사용하지 마세요.
+You can do this with the `user-select` CSS property, but beware that doing this on content can be **extremely** infuriating for users if they *want* to select the text in the element. So make sure you use it with caution and sparingly.
 
     user-select: none;
+    
 
-## 사용자설정 동작 구현
+## Implement custom gestures
 
-사용자설정 상호작용과 동작을 사이트에 구현할 경우
- 다음의 두 가지 사항을 명심해야 합니다.
+If you have an idea for custom interactions and gestures for your site, there are two topics to keep in mind:
 
-1. 모든 브라우저를 지원하는 방법.
-1. 프레임 속도를 높게 유지하는 방법.
+1. How to support all browsers.
+2. How to keep your frame rate high.
 
-이 문서에서는 모든 브라우저를 지원하는 데 필요한
-API에 대해 살펴보고 또한 이들 이벤트를 효율적으로 사용하는
-방법에 대해 살펴보겠습니다.
+In this article, we'll look at exactly these topics covering the API's we need to support to hit all browsers and then cover how we use these events efficiently.
 
-여러분의 제스처가 어떤 동작을 수행하는지에 따라,
- 사용자가 한번에 하나의 요소와 상호작용을 수행하거나 아니면 동시에
- 여러 요소와 상호작용을 수행할 수 있습니다.
+Depending on what you would like your gesture to do, you likely want the user to interact with one element at a time *or* you'll want them to be able to interact with multiple elements at the same time.
 
-Caution: 일부 사용자는 키보드 입력을 원하는데, 터치스크린 기기에서
- 보조 기술을 실행 중인 사용자가 동작을 수행하지 못할 수도 있습니다.
- 왜냐하면 이 보조 기술이 동작을 가로채거나 사용하기
- 때문입니다.
+Caution: Don't forget that some users will want keyboard input and users running assistive technology on a touchscreen device may not be able to perform gestures because they're intercepted / consumed by the assistive technology.
 
-이 문서의 두 가지 예시인 모든 브라우저를 지원하는 방법과
- 프레임 속도를 높게 유지하는 방법에 대해 살펴보겠습니다.
+We are going to look at two examples in this article, both demonstrating support for all browsers and how to keep the frame rate high.
 
-![문서 터치에 대한 예시 GIF](images/touch-document-level.gif){: .attempt-right }
+![Example GIF of touch on document](images/touch-document-level.gif){: .attempt-right }
 
-첫 번째 예시는 사용자가 하나의 요소와 상호작용하도록 허용합니다. 이 경우
-동작이 요소에서 처음 시작되었다면, 모든 터치 이벤트를 이 요소에
-지정할 수 있습니다. 예를 들어, 스와이프 가능 요소에서
- 손가락을 떼더라도 여전히 이 요소를 제어할 수 있습니다.
+The first example will allow the user to interact with one element. In this case you might want all touch events to be given to that one element, as long as the gesture initially started on the element itself. For example, moving a finger off the swipe-able element can still control the element.
 
-이 기능은 뛰어난 유연성을 사용자에게 제공하지만
- 사용자가 UI와 상호작용할 수 있는 방식이 제한됩니다.
+This is useful as it provides a great deal of flexibility for the user, but enforces a restriction on how the user can interact with your UI.
 
 <div class="clearfix"></div>
 
-![요소 터치에 대한 예시 GIF](images/touch-element-level.gif){: .attempt-right }
+![Example GIF of touch on element](images/touch-element-level.gif){: .attempt-right }
 
-그러나 사용자가 멀티터치를 사용하여 동시에
-여러 요소와 상호작용할 것으로 예상된다면, 터치 동작을 특정 요소로
-제한해야 합니다.
+If, however, you expect users to interact with multiple elements at the same time (using multi-touch), you should restrict the touch to the specific element.
 
-이 기능은 사용자에게 더 많은 유연성을 제공하지만,
- UI 조작을 위한 로직이 복잡하며 사용자 오류에 대한 복원성이 떨어집니다.
+This is more flexible for users, but complicates the logic for manipulating the UI and is less resilient to user error.
 
 <div class="clearfix"></div>
 
-### 이벤트 리스너 추가
+### Add event listeners
 
-`PointerEvents`는 Chrome(버전 55 이상), Internet Explorer 및 Edge에서
-사용자설정 동작을 구현하기 위해 권장되는 방법입니다.
+In Chrome (version 55 and later), Internet Explorer & Edge, `PointerEvents` are the recommended approach for implementing custom gestures.
 
-다른 브라우저에서는 `TouchEvents` 및 `MouseEvents`가 올바른 방법입니다.
+In other browsers `TouchEvents` and `MouseEvents` are the correct approach.
 
-`PointerEvents`는 여러 유형의 입력(예: 마우스, 터치, 펜 이벤트)을
-하나의 콜백 세트에 병합해주는
-멋진 기능입니다. 수신할 이벤트는 `pointerdown`, `pointermove`,
-`pointerup` 및 `pointercancel`입니다.
+The great feature of `PointerEvents` is that it merges multiple types of input, including mouse, touch and pen events, into one set of callbacks. The events to listen for are `pointerdown`, `pointermove`, `pointerup` and `pointercancel`.
 
-다른 브라우저에서 이에 상응하는 이벤트는`touchstart`, `touchmove`,
-`touchend` 및 `touchcancel`이며(터치 이벤트의 경우),
- 마우스 입력 시에 동일한 동작을 구현하려면 `mousedown`,
-`mousemove` 및 `mouseup`을 구현해야 합니다.
+The equivalents in other browsers are `touchstart`, `touchmove`, `touchend` and `touchcancel` for touch events and if you wanted to implement the same gesture for mouse input you'd need to implement `mousedown`, `mousemove`, and `mouseup`.
 
-어떤 이벤트를 사용할지 궁금하면 
-[터치, 마우스 및 포인터 이벤트](#touch-mouse-and-pointer-events) 표를 확인하세요.
+If you have questions about which events to use, check out this table of [Touch, mouse and pointer events](#touch-mouse-and-pointer-events)).
 
-이들 이벤트를 사용하려면 DOM
-요소에서 `addEventListener()` 메서드를 호출해야 하며 이벤트 이름, 콜백 함수 및 부울 값이 필요합니다.
-부울 값은 다른 요소들이 이벤트를 포착하고 해석하기 전에
-이벤트를 포착할지 아니면 후에 포착할지를 결정합니다.
-(`true`는 다른 요소들 전에 이벤트를 원한다는 의미입니다.)
+Using these events requires calling the `addEventListener()` method on a DOM element, along with the name of an event, a callback function and a boolean. The boolean determines whether you should catch the event before or after other elements have had the opportunity to catch and interpret the events. (`true` means you want the event before other elements.)
 
-다음은 상호작용의 시작을 수신 대기하는 예시입니다.
+Here's an example of listening for the start of an interaction.
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/design-and-ux/input/touch/_code/touch-demo-1.html" region_tag="addlisteners" adjust_indentation="auto" %}
 </pre>
 
-[체험해 보기](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/input/touch/touch-demo-1.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/input/touch/touch-demo-1.html){: target="_blank" .external }
 
-참고: API 디자인 덕분에 PointerEvents는 마우스 및 터치 이벤트를 처리하기 위해 단일
-`pointerdown` 이벤트만 필요합니다.
+Note: Because of the design of the API, PointerEvents only need a single `pointerdown` event to handle both mouse and touch events.
 
-#### 단일 요소 상호작용 처리
+#### Handle single-element interaction
 
-위의 간단한 코드 스니펫에는 마우스 이벤트의 시작 이벤트 리스너만
- 추가되었습니다. 그 이유는, 이벤트 리스너가 추가된 요소 *위를* 커서로 가리킬 때만
- 마우스 이벤트가 트리거되기 때문입니다.
+In the short snippet of code above we only added the starting event listener for mouse events. The reason for this is that mouse events will only trigger when the cursor is hovering *over* the element the event listener is added to.
 
-TouchEvents는 터치가 발생한 위치에 상관없이 동작이 시작된 후
-동작을 추적하며, PointerEvents는 터치가 발생한 위치에 상관없이
-이벤트를 추적합니다. 우리는 DOM 요소에서 `setPointerCapture`를 호출합니다.
+`TouchEvents` will track a gesture after it's started regardless of where the touch occurs and `PointerEvents` will track events regardless of where the touch occurs after we call `setPointerCapture` on a DOM element.
 
-마우스 이동 및 종료 이벤트의 경우, 동작 시작 메서드 *안에* 
-이벤트 리스너를 추가하고 이 리스너를 문서에 추가합니다.
-즉, 동작이 완료될 때까지 커서를 추적할 수 있습니다.
+For mouse move and end events we add the event listeners *in* the gesture start method and add the listeners to the document, meaning it can track the cursor until the gesture is complete.
 
-구현 단계는 다음과 같습니다.
+The steps taken to implement this are:
 
-1. 모든 TouchEvent 및 PointerEvent 리스너를 추가합니다. MouseEvents의 경우
- 시작 이벤트**만** 추가합니다.
-1. 시작 동작 콜백 내에서, 마우스 이동 및 종료 이벤트를
-문서에 바인딩합니다. 이런 방식으로, 원래 요소에서 이벤트 발생 여부에 상관없이
- 모든 마우스 이벤트가 수신됩니다. PointerEvents의 경우
- 추가적인 모든 이벤트를 수신하려면 원래 요소에서 `setPointerCapture()`를
- 호출해야 합니다. 그런 다음, 동작 시작을 처리합니다.
-1. 이동 이벤트를 처리합니다.
-1. 종료 이벤트에서 마우스 이동 및 종료 리스너를 문서로부터 제거하고
-동작을 종료합니다.
+1. Add all TouchEvent and PointerEvent listeners. For MouseEvents add **only** the start event.
+2. Inside the start gesture callback, bind the mouse move and end events to the document. This way all mouse events are received regardless of whether the event occurs on the original element or not. For PointerEvents we need to call `setPointerCapture()` on our original element to receive all further events. Then handle the start of the gesture.
+3. Handle the move events.
+4. On the end event, remove the mouse move and end listeners from the document and end the gesture.
 
-다음은 이동 및 종료 이벤트를 문서에 추가하는
- `handleGestureStart()` 메서드의 스니펫입니다.
+Below is a snippet of our `handleGestureStart()` method which adds the move and end events to the document:
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/design-and-ux/input/touch/_code/touch-demo-1.html" region_tag="handle-start-gesture" adjust_indentation="auto" %}
 </pre>
 
-[체험해 보기](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/input/touch/touch-demo-1.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/input/touch/touch-demo-1.html){: target="_blank" .external }
 
-우리가 추가하는 종료 콜백은 `handleGestureEnd()`이며,
-이 콜백은 이동 및 종료 이벤트 리스너를 문서로부터 제거하고,
-동작이 완료되면 포인터 캡처를 해제합니다.
+The end callback we add is `handleGestureEnd()`, which removes the move and end event listeners from the document and releases the pointer capture when the gesture has finished like so:
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/design-and-ux/input/touch/_code/touch-demo-1.html" region_tag="handle-end-gesture" adjust_indentation="auto" %}
 </pre>
 
-[체험해 보기](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/input/touch/touch-demo-1.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/input/touch/touch-demo-1.html){: target="_blank" .external }
 
 <div class="attempt-left">
-  <p>이 패턴에 따라 이동 이벤트를 문서에 추가하게 되면
- 사용자가 요소와의 상호작용을 시작하고 동작을 요소 밖으로 이동할 때,
- 페이지 위치에 상관없이 계속해서 마우스 이동을 포착할 수 있습니다.
- 그 이유는 이벤트가 문서로부터 수신 중이기 때문입니다.</p>
+  <p>By following this pattern of adding the move event to the document, if the
+  user starts interacting with an element and moves their gesture outside of
+  the element, we'll continue to get mouse movements regardless of where they
+  are on the page, because the events are being received from the document.</p>
 
-  <p>이 다이어그램은 동작이 시작된 후에
- 이동 및 종료 이벤트를 문서에 추가할 때 터치 이벤트가 무엇을 수행 중인지 보여줍니다.</p>
+  <p>This diagram shows what the touch events are doing as we add the
+  move and end events to the document once a gesture begins.</p>
 </div>
 
-![`touchstart`로 터치 이벤트를 문서에 바인딩하는
- 그림](images/scroll-bottleneck.gif)
+![Illustrating binding touch events to document in
+<code>touchstart</code>](images/scroll-bottleneck.gif)
 
 <div class="clearfix"></div>
 
-### 효율적으로 터치에 반응
+### Responding to touch efficiently
 
-이제 우리는 시작 및 종료 이벤트를 처리했으므로
- 실제로 터치 이벤트에 반응할 수 있습니다.
+Now that we have the start and end events taken care of we can actually respond to the touch events.
 
-모든 시작 및 이동 이벤트에 대해 여러분은 `x` 및 `y`를
-이벤트로부터 쉽게 추출할 수 있습니다.
+For any of the start and move events, you can easily extract `x` and `y` from an event.
 
-다음 예시에서는 이벤트가 `TouchEvent`로부터 오는지 여부를
- 확인하기 위해 `targetTouches`의 존재 여부를 확인합니다. 존재하는 경우에는 최초 터치로부터
-`clientX` 및 `clientY`를 추출합니다.
-이벤트가 `PointerEvent` 또는 `MouseEvent`인 경우에는 `clientX` 및
-`clientY`를 이벤트 자체로부터 직접 추출합니다.
+The following example checks whether the event is from a `TouchEvent` by checking if `targetTouches` exists. If it does, then it extracts the `clientX` and `clientY` from the first touch. If the event is a `PointerEvent` or `MouseEvent` it extracts `clientX` and `clientY` directly from the event itself.
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/design-and-ux/input/touch/_code/touch-demo-2.html" region_tag="extract-xy" adjust_indentation="auto" %}
 </pre>
 
-[체험해 보기](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/input/touch/touch-demo-2.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/input/touch/touch-demo-2.html){: target="_blank" .external }
 
-`TouchEvent`에는 터치 데이터가 포함된 세 개의 목록이 있습니다.
+A `TouchEvent` has three lists containing touch data:
 
-* `touches`: 화면의 모든 현재 터치 목록(터치가 어떤
-DOM 요소에 있는지는 상관없음).
-* `targetTouches`: 이벤트가 바인딩된 DOM 요소에
-있는 현재 터치 목록.
-* `changedTouches`: 변경될 경우 이벤트를 발생시키는
- 터치 목록.
+* `touches`: list of all current touches on the screen, regardless of DOM element they are on.
+* `targetTouches`: list of touches currently on the DOM element the event is bound to.
+* `changedTouches`: list of touches which changed resulting in the event being fired.
 
-대부분의 경우 `targetTouches`만 필요합니다. (이들 목록에
- 대한 자세한 내용은 [터치 목록](#touch-lists)을 참조하세요).
+In most cases, `targetTouches` gives you everything you need and want. (For more info on these lists see [Touch lists](#touch-lists)).
 
-#### requestAnimationFrame 사용
+#### Use requestAnimationFrame
 
-이벤트 콜백은 메인 스레드에서 발생하므로
-우리는 이벤트 콜백에서 코드를 최대한 적게 사용하려고 합니다.
-그래야만 프레임 속도를 높게 유지하고 버벅거림 현상을 없앨 수 있습니다.
+Since the event callbacks are fired on the main thread, we want to run as little code as possible in the callbacks for our events, keeping our frame rate high and preventing jank.
 
-`requestAnimationFrame()`을 사용하면 브라우저가 프레임을
- 그리기 직전에 UI를 업데이트할 수 있는 기회가 있으며,
- 수행할 이벤트 콜백의 작업을 줄일 수 있습니다.
+Using `requestAnimationFrame()` we have an opportunity to update the UI just before the browser is intending to draw a frame and will help us move some work out of our event callbacks.
 
-`requestAnimationFrame()`에 친숙하지 않은 분은
- [여기에서 자세한 내용을 알아보세요](/web/fundamentals/performance/rendering/optimize-javascript-execution#use-requestanimationframe-for-visual-changes).
+If you are unfamiliar with `requestAnimationFrame()`, you can [learn more here](/web/fundamentals/performance/rendering/optimize-javascript-execution#use-requestanimationframe-for-visual-changes).
 
-일반적인 구현에서는
-시작 및 이동 이벤트로부터 `x` 및 `y` 좌표를 저장하고
- 이동 이벤트 콜백 내에서 애니메이션 프레임을 요청합니다.
+A typical implementation is to save the `x` and `y` coordinates from the start and move events and request an animation frame inside the move event callback.
 
-우리의 데모에서는 초기 터치 위치를 `handleGestureStart()`에 저장합니다(`initialTouchPos` 검색).
+In our demo, we store the initial touch position in `handleGestureStart()` (look for `initialTouchPos`):
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/design-and-ux/input/touch/_code/touch-demo-1.html" region_tag="handle-start-gesture" adjust_indentation="auto" %}
 </pre>
 
-`handleGestureMove()` 메서드는
-애니메이션 프레임을 요청하기 전에 이벤트의 위치를 저장하고,
-`onAnimFrame()` 함수를 콜백으로 전달합니다.
+The `handleGestureMove()` method stores the position of it's event before requesting an animation frame if we need to, passing in our `onAnimFrame()` function as the callback:
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/design-and-ux/input/touch/_code/touch-demo-1.html" region_tag="handle-move" adjust_indentation="auto" %}
 </pre>
 
-`onAnimFrame` 값은 호출 시 UI를 이동하도록 변경하는
- 함수입니다. 이 함수를 `requestAnimationFrame()`에 전달하면,
-페이지를 업데이트하기 직전에(즉, 페이지의 변경사항을 그리기 직전에)
-이 함수를 호출하도록 브라우저에 알립니다.
+The `onAnimFrame` value is a function that when called, changes our UI to move it around. By passing this function into `requestAnimationFrame()`, we tell the browser to call it just before it's about to update the page (i.e. paint any changes to the page).
 
-`handleGestureMove()` 콜백에서 먼저 `rafPending`이 false인지
-확인합니다. 이는 마지막 이동 이벤트 이후에 `onAnimFrame()`이 `requestAnimationFrame()`에 의해
-호출되었음을 나타냅니다. 즉, 실행을 기다리는 `requestAnimationFrame()`은
-어느 시점에서든 하나밖에 없습니다.
+In the `handleGestureMove()` callback we initially check if `rafPending` is false, which indicates if `onAnimFrame()` has been called by `requestAnimationFrame()` since the last move event. This means we only have one `requestAnimationFrame()` waiting to run at any one time.
 
-`onAnimFrame()` 콜백이 실행될 때, `rafPending`을 `false`로 업데이트하기에 앞서
-이동하려는 모든 요소에 대해 변환을 설정합니다. 이렇게 하면 그 다음 터치 이벤트가
-새 애니메이션 프레임을 요청할 수 있습니다.
+When our `onAnimFrame()` callback is executed, we set the transform on any elements we want to move before updating `rafPending` to `false`, allowing the the next touch event to request a new animation frame.
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/design-and-ux/input/touch/_code/touch-demo-1.html" region_tag="on-anim-frame" adjust_indentation="auto" %}
 </pre>
 
-### 터치 액션을 사용하여 동작 제어
+### Control gestures using touch actions
 
-CSS 속성 `touch-action`을 사용하여 요소의 기본 터치 동작을
- 제어할 수 있습니다. 이 예시에서는 사용자 터치 시에
-브라우저가 아무것도 수행하지 못하도록 `touch-action: none`을 사용합니다.
-이렇게 하면 모든 터치 이벤트를 가로챌 수 있습니다.
+The CSS property `touch-action` allows you to control the default touch behavior of an element. In our examples, we use `touch-action: none` to prevent the browser from doing anything with a users' touch, allowing us to intercept all of the touch events.
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/design-and-ux/input/touch/_code/touch-demo-1.html" region_tag="touch-action-example" adjust_indentation="auto" %}
 </pre>
 
-`touch-action: none`은 모든 기본 브라우저 동작을 차단하므로
-다소 위험한 옵션입니다. 상당수 경우 아래 옵션 중 하나가
- 더 나은 해결책입니다.
+Using `touch-action: none` is somewhat a nuclear option as it prevents all the default browser behaviors. In many cases one of the options below is a better solution.
 
-`touch-action`을 사용하면 브라우저에 의해 구현된 동작을 비활성화할 수 있습니다.
-예를 들어, IE10 이상에서는 동작 확대/축소를 위해 두 번 탭을 지원합니다. `manipulation`의 touch-action을
- 설정하여 기본 두 번 탭
-동작을 차단할 수 있으며,
+`touch-action` allows you to disable gestures implemented by a browser. For example, IE10+ supports a double-tap to zoom gesture. By setting a touch-action of `manipulation` you prevent the default double-tap behavior.
 
-여러분이 두 번 탭 동작을 직접 구현할 수 있습니다.
+This allows you to implement a double-tap gesture yourself.
 
-다음은 흔히 사용되는 touch-action 값의 목록입니다.
+Below is a list of commonly used touch-action values:
 
 <table class="responsive">
   <thead>
     <tr>
-      <th colspan="2">터치 동작 매개변수</th>
+      <th colspan="2">Touch Action Parameters</th>
     </tr>
   </thead>
   <tbody>
     <tr>
       <td data-th="Property"><code>touch-action: none</code></td>
-      <td data-th="Description">터치 상호작용이 브라우저에 의해
-  처리되지 않습니다.</td>
+      <td data-th="Description">No touch interactions will be handled by
+      the browser.</td>
     </tr>
     <tr>
       <td data-th="Property"><code>touch-action: pinch-zoom</code></td>
-      <td data-th="Description">`touch-action: none`과 같은
-  모든 브라우저 상호작용을 비활성화합니다. `pinch-zoom`은 여전히
-  브라우저에 의해 처리됩니다.</td>
+      <td data-th="Description">Disables all browser interactions like
+      `touch-action: none` apart from `pinch-zoom`, which is still handled by
+      the browser.</td>
     </tr>
     <tr>
       <td data-th="Property"><code>touch-action: pan-y pinch-zoom</code></td>
-      <td data-th="Description">세로 스크롤이나 핀치 줌을 비활성화하지 않고도
-  가로 스크롤을 자바스크립트에서 처리합니다(예: 이미지 캐러셀).</td>
+      <td data-th="Description">Handle horizontal scrolls in JavaScript without
+      disabling vertical scrolling or pinch-zooming (eg. image carousels).</td>
     </tr>
     <tr>
       <td data-th="Property"><code>touch-action: manipulation</code></td>
-      <td data-th="Description">두 번 탭 동작을 비활성화합니다.
-  이 경우 브라우저에 의한 클릭 지연이 방지됩니다. 스크롤과 핀치 줌을
-  브라우저에게 맡깁니다.</td>
+      <td data-th="Description">Disables double-tap gesture which avoids any
+      click delay by the browser. Leaves scrolling and pinch-zoom up to the
+      browser.</td>
     </tr>
   </tbody>
 </table>
 
-## 이전 버전의 IE 지원
+## Supporting older versions of IE
 
-IE10을 지원하려면 공급업체 접두사가 붙은 `PointerEvents` 버전을
- 처리해야 합니다.
+If you want to support IE10, you'll need to handle vendor prefixed versions of `PointerEvents`.
 
+To check for support of `PointerEvents` you'd typically look for `window.PointerEvent`, but in IE10, you'd look for `window.navigator.msPointerEnabled`.
 
-`PointerEvents` 지원 여부를 확인하려면 일반적으로
-`window.PointerEvent`를 찾지만 IE10에서는
-`window.navigator.msPointerEnabled`를 찾아야 합니다.
+The event names with vendor prefixes are: 'MSPointerDown', 'MSPointerUp' and 'MSPointerMove'.
 
-공급업체 접두사가 붙은 이벤트 이름은 'MSPointerDown', 'MSPointerUp' 및
-'MSPointerMove'입니다.
-
-아래 예시에서는 지원 여부를 확인하고 이벤트 이름을
- 전환하는 방법을 보여줍니다.
+The example below shows you how to check for support and switch the event names.
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/design-and-ux/input/touch/_code/touch-demo-1.html" region_tag="pointereventsupport" adjust_indentation="auto" %}
 </pre>
 
-자세한 내용은 [Microsoft의
- 업데이트 문서](https://msdn.microsoft.com/en-us/library/dn304886(v=vs.85).aspx)를 확인하세요.
+For more information, checkout this [updates article from Microsoft](https://msdn.microsoft.com/en-us/library/dn304886(v=vs.85).aspx).
 
-## 참조
+## Reference
 
-### 터치 상태를 나타내는 의사 클래스
+### Pseudo classes for touch states
 
 <table>
   <thead>
     <tr>
-      <th>클래스</th>
-      <th>예시</th>
-      <th>설명</th>
+      <th>Class</th>
+      <th>Example</th>
+      <th>Description</th>
     </tr>
   </thead>
   <tbody>
     <tr>
       <td data-th="Class">:hover</td>
-      <td data-th="Example"><img alt="누른 상태의 버튼" src="images/btn-hover-state.png"></td>
+      <td data-th="Example"><img alt="Button in Pressed State" src="images/btn-hover-state.png"></td>
       <td data-th="Description">
-        커서로 요소를 가리킬 때 이 상태로 진입합니다.
-        마우스로 가리킬 때 UI가 변경된다면
-      사용자가 요소와 상호작용하는 데 도움이 됩니다.
+        Entered when a cursor is placed over an element.
+        Changes in the UI on hover are helpful to encourage users to interact
+        with elements.
       </td>
     </tr>
     <tr>
       <td data-th="Class">:focus</td>
       <td data-th="Example">
-        <img alt="포커스 상태의 버튼" src="images/btn-focus-state.png">
+        <img alt="Button with Focus State" src="images/btn-focus-state.png">
       </td>
       <td data-th="Description">
-        사용자가 페이지의 요소를 탭할 때 이 상태로 진입합니다. 포커스 상태에서는
-      사용자가 현재 상호작용 중인 요소를 알 수 있으며,
-      또한 사용자가 키보드를 사용하여 쉽게 UI를 탐색할 수 있습니다.
+        Entered when the user tabs through elements on a page. The focus state
+        allows the user to know what element they are currently interacting
+        with; also allows users to navigate your UI easily using a keyboard.
       </td>
     </tr>
     <tr>
       <td data-th="Class">:active</td>
       <td data-th="Example">
-        <img alt="누른 상태의 버튼" src="images/btn-pressed-state.png">
+        <img alt="Button in Pressed State" src="images/btn-pressed-state.png">
       </td>
       <td data-th="Description">
-        요소가 선택 중일 때 이 상태로 진입합니다(예:
-         사용자가 요소를 클릭하거나 터치하는 경우).
+        Entered when an element is being selected, for
+        example, when a user is clicking or touching an element.
       </td>
     </tr>
   </tbody>
 </table>
 
+The definitive touch events reference can be found here: [w3 Touch Events](http://www.w3.org/TR/touch-events/).
 
-터치 이벤트에 대한 자세한 내용은
-[w3 터치 이벤트](http://www.w3.org/TR/touch-events/)를 참조하세요.
+### Touch, mouse, and pointer events
 
-### 터치, 마우스 및 포인터 이벤트
-
-이들 이벤트는 새 동작을 애플리케이션에 추가하기 위한
- 기본 요소입니다.
+These events are the building blocks for adding new gestures into your application:
 
 <table class="responsive">
   <thead>
     <tr>
-      <th colspan="2">터치, 마우스, 포인터 이벤트</th>
+      <th colspan="2">Touch, Mouse, Pointer Events</th>
     </tr>
   </thead>
   <tbody>
@@ -488,8 +373,8 @@ IE10을 지원하려면 공급업체 접두사가 붙은 `PointerEvents` 버전�
         <code>pointerdown</code>
       </td>
       <td data-th="Description">
-        이 이벤트는 손가락으로 요소를 처음 터치하거나 사용자가 마우스를
-        클릭했을 때 호출됩니다.
+        This is called when a finger first touches an element or when the
+        user clicks down on the mouse.
       </td>
     </tr>
     <tr>
@@ -499,8 +384,8 @@ IE10을 지원하려면 공급업체 접두사가 붙은 `PointerEvents` 버전�
         <code>pointermove</code>
       </td>
       <td data-th="Description">
-        이 이벤트는 사용자가 화면에서 손가락을 움직이거나
-        마우스로 드래그할 때 호출됩니다.
+        This is called when the user moves their finger across the screen or
+        drags with the mouse.
       </td>
     </tr>
     <tr>
@@ -510,8 +395,8 @@ IE10을 지원하려면 공급업체 접두사가 붙은 `PointerEvents` 버전�
         <code>pointerup</code>
       </td>
       <td data-th="Description">
-       이 이벤트는 사용자가 화면에서 손가락을 떼거나
-        마우스를 놓을 때 호출됩니다.
+        This is called when the user lifts their finger off of the screen
+        or releases the mouse.
       </td>
     </tr>
     <tr>
@@ -520,68 +405,68 @@ IE10을 지원하려면 공급업체 접두사가 붙은 `PointerEvents` 버전�
         <code>pointercancel</code>
       </td>
       <td data-th="Description">
-         이 이벤트는 브라우저가 터치 동작을 취소할 때 호출됩니다. 예를 들어,
-        사용자가 웹 앱을 터치하고 탭을 변경합니다.
+        This is called when the browser cancels the touch gestures. For example,
+        a user touch a web app and then change tabs.
       </td>
     </tr>
   </tbody>
 </table>
 
-### 터치 목록
+### Touch lists
 
-각 터치 이벤트에는 세 개의 목록 속성이 포함됩니다.
+Each touch event includes three list attributes:
 
 <table class="responsive">
   <thead>
     <tr>
-      <th colspan="2">터치 이벤트 속성</th>
+      <th colspan="2">Touch Event Attributes</th>
     </tr>
   </thead>
   <tbody>
     <tr>
       <td data-th="Attribute"><code>touches</code></td>
       <td data-th="Description">
-        화면의 모든 현재 터치 목록(어떤 요소가 터치 중인지는
-        상관없음).
+        List of all current touches on the screen, regardless of elements
+        being touched.
       </td>
     </tr>
     <tr>
       <td data-th="Attribute"><code>targetTouches</code></td>
       <td data-th="Description">
-        현재 이벤트의 대상인 요소에서
-        시작된 터치 목록. 예를 들어,  <code>&lt;button&gt;</code>에 바인딩한 경우에는
-        버튼에 있는 현재 터치만 나타납니다. 문서에 바인딩한 경우에는
-        문서의 모든 현재 터치가 나타납니다.
+        List of touches that started on the element that is the target of
+        the current event. For example, if you bind to a <code>&lt;button&gt;</code>,
+        you'll only get touches currently on that button. If you bind to the
+        document, you'll get all touches currently on the document.
       </td>
     </tr>
     <tr>
       <td data-th="Attribute"><code>changedTouches</code></td>
       <td data-th="Description">
-        변경될 경우 이벤트를 발생시키는 터치 목록:
+        List of touches which changed resulting in the event being fired:
         <ul>
           <li>
-            <code>
+            For the <code>
             <a href="http://www.w3.org/TR/touch-events/#dfn-touchstart">
             touchstart</a></code>
-            이벤트의 경우 -- 현재 이벤트에서 활성화된 터치 지점의
-            목록.
+            event-- list of the touch points that just became active with the
+            current event.
           </li>
           <li>
-            <code>
+            For the <code>
             <a href="http://www.w3.org/TR/touch-events/#dfn-touchmove">
             touchmove</a></code>
-            이벤트의 경우 -- 마지막 이벤트 이후로 이동된 터치 지점의
-            목록.
+            event-- list of the touch points that have moved since the last
+            event.
           </li>
           <li>
-            <code>
+            For the <code>
             <a href="http://www.w3.org/TR/touch-events/#dfn-touchend">
             touchend</a></code>
-            및 <code>
+            and <code>
             <a href="http://www.w3.org/TR/touch-events/#dfn-touchcancel">
             touchcancel</a></code>
-            이벤트의 경우 -- 표면에서 제거된 터치 지점의
-            목록.
+            events-- list of the touch points that have just been removed
+            from the surface.
           </li>
         </ul>
       </td>
@@ -589,28 +474,22 @@ IE10을 지원하려면 공급업체 접두사가 붙은 `PointerEvents` 버전�
   </tbody>
 </table>
 
-### iOS에서 활성 상태 지원 활성화
+### Enabling active state support on iOS
 
-불행히도, iOS의 Safari에서는 `touchstart` 이벤트 리스너를
-*문서 본문*이나 각 요소에 추가하는 데 필요한 *활성* 상태를
-기본적으로 적용하지 않습니다.
+Unfortunately, Safari on iOS does not apply the *active* state by default, to get it working you need to add a `touchstart` event listener to the *document body* or to each element.
 
-iOS 기기에서만 실행되도록 하기 위해서는 이 작업을 사용자 에이전트 테스트 후에 수행해야 합니다.
+You should do this behind a user agent test so it's only run on iOS devices.
 
-touchstart를 본문에 추가하면 DOM의 모든 요소에 적용되는 이점이
- 있습니다. 그러나 이 경우 페이지를 스크롤할 때 성능 문제가 발생할 수도 있습니다.
-
+Adding a touch start to the body has the advantage of applying to all elements in the DOM, however this may have performance issues when scrolling the page.
 
     window.onload = function() {
       if(/iP(hone|ad)/.test(window.navigator.userAgent)) {
         document.body.addEventListener('touchstart', function() {}, false);
       }
     };
+    
 
-
-그 대안은, 페이지에서 상호작용이 가능한 모든 요소에
- touchstart 리스너를 추가하는 것입니다. 그러면 성능 문제가 다소 완화됩니다.
-
+The alternative is to add the touch start listeners to all the interactable elements in the page, alleviating some of the performance concerns.
 
     window.onload = function() {
       if(/iP(hone|ad)/.test(window.navigator.userAgent)) {
@@ -621,6 +500,8 @@ touchstart를 본문에 추가하면 DOM의 모든 요소에 적용되는 이점
         }
       }
     };
+    
 
+## Feedback {: #feedback }
 
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
