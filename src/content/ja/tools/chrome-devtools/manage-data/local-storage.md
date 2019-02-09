@@ -1,169 +1,115 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: ストレージ、データベース、およびキャッシュを [Application] パネルから調査および管理します。
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Inspect and manage storage, databases, and caches from the Application panel.
 
-{# wf_updated_on:2016-07-28 #}
-{# wf_published_on:2015-04-13 #}
+{# wf_updated_on: 2018-07-27 #} {# wf_published_on: 2015-04-13 #} {# wf_blink_components: Platform>DevTools #}
 
-# ストレージ、データベース、およびキャッシュの調査と管理 {: .page-title }
+# Inspect and Manage Storage, Databases, and Caches {: .page-title }
 
-{% include "web/_shared/contributors/kaycebasques.html" %}
-ストレージ、データベース、およびキャッシュを [<strong>Application</strong>] パネルから調査および管理します。
-
-
+{% include "web/_shared/contributors/kaycebasques.html" %} Inspect and manage storage, databases, and caches from the
+<strong>Application</strong> panel.
 
 ### TL;DR {: .hide-from-toc }
-- ローカル ストレージとセッション ストレージを表示および編集します。
-- IndexedDB データベースを調査および変更します。
-- ウェブ SQL データベースに対して文を実行します。
-- アプリケーションと Service Worker のキャッシュを表示します。
-- すべてのストレージ、データベース、キャッシュ、および Service Worker を、1 回のボタンクリックで消去します。
 
+* View and edit local and session storage.
+* Inspect and modify IndexedDB databases.
+* Execute statements on a Web SQL database.
+* View Application and Service Worker Caches.
+* Clear all storage, databases, caches, and service workers with a single button click.
 
-##  ローカル ストレージ{:#local-storage}
+## Local storage {:#local-storage}
 
-キー値ペア（KVP）の格納に[ローカル ストレージ][ls]を使用している場合は、これらの KVP を [**Local Storage**] ペインから調査、変更、および削除できます。
+If you're using [local storage](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage) to store key-value pairs (KVPs), you can inspect, modify, and delete these KVPs from the **Local Storage** pane.
 
+![local storage pane](/web/tools/chrome-devtools/manage-data/imgs/local-storage.png)
 
-![[Local Storage] ペイン][ls-pane]
+* Double-click on a key or value to edit that value.
+* Double-click on an empty cell to add a new KVP.
+* Click on a KVP and then press the **delete** button (![delete button](/web/tools/chrome-devtools/manage-data/imgs/delete.png){:.inline}) to delete that KVP. You can wipe all of your local storage data with a single button click from the [**Clear storage** pane](#clear-storage).
+* If you're interacting with a page in a way that creates, deletes, or modifies KVPs, you won't see those changes get updated in realtime. Click the **refresh** button (![refresh button](/web/tools/chrome-devtools/manage-data/imgs/refresh.png){:.inline}) to see your changes.
 
-* 値を編集するには、キーまたは値をダブルクリックします。
-* 新しい KVP を追加するには、空のセルをダブルクリックします。
-* KVP を削除するには、その KVP をクリックしてから**削除**ボタン（![削除ボタン][delete]{:.inline}）をクリックします。
-1 回のボタンクリックで、[[**Clear storage**] ペイン](#clear-storage)からすべてのローカル ストレージ データを消去できます。
-* ページで KVP の作成、削除、または変更操作をしている場合、それらの変更がリアルタイムでアップデートされることはありません。
-変更を表示するには、**更新**ボタン（![更新ボタン][refresh]{:.inline}）をクリックします。
+## Session storage {:#session-storage}
 
+The **Session Storage** pane works the same as the **Local Storage** pane. Check out the [Local storage](#local-storage) section above to learn how to view and edit [session storage](https://developer.mozilla.org/en-US/docs/Web/API/Window/sessionStorage).
 
-[ls]: https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage
-[ls-pane]: /web/tools/chrome-devtools/manage-data/imgs/local-storage.png
-[refresh]: /web/tools/chrome-devtools/manage-data/imgs/refresh.png
-[delete]: /web/tools/chrome-devtools/manage-data/imgs/delete.png
+## IndexedDB {:#indexeddb}
 
-##  セッション ストレージ{:#session-storage}
+Use the **IndexedDB** pane to inspect, modify, and delete IndexedDB data.
 
-[**Session Storage**] ペインの機能は [**Local Storage**] ペインと同じです。
-[セッション ストレージ][ss]を表示および編集する方法については、前述の[ローカル ストレージ](#local-storage)セクションを参照してください。
+When you expand the **IndexedDB** pane, the first level below that are databases. If there are multiple databases active, then you'll see multiple entries. In the screenshot below there's only one database active for the page.
 
+![indexeddb tab](/web/tools/chrome-devtools/manage-data/imgs/idb-tab.png)
 
-[ss]: https://developer.mozilla.org/en-US/docs/Web/API/Window/sessionStorage
+Click on the name of a database to view the security origin, name, and version of that database.
 
-##  IndexedDB{:#indexeddb}
+![indexeddb database](/web/tools/chrome-devtools/manage-data/imgs/idb-db.png)
 
-[**IndexedDB**] ペインは、IndexedDB データを調査、変更、および削除するために使用します。
+Expand a database to view its key-value pairs (KVPs).
 
-[**IndexedDB**] ペインを展開してその下に表示される最初のレベルはデータベースです。
-複数のデータベースがアクティブの場合は、複数のエントリが表示されます。
-次のスクリーンショットでは、ページに対してアクティブになっているのは 1 つのデータベースのみです。
+![indexeddb key-value pairs](/web/tools/chrome-devtools/manage-data/imgs/idb-kvps.png)
 
-![[IndexedDB] タブ][idb-tab]
+Use the arrow buttons next to the **Start from key** textfield to move between pages of KVPs.
 
-データベースの名前をクリックすると、そのデータベースのセキュリティ オリジン、名前、およびバージョンが表示されます。
+Expand a value and double-click to edit that value. When you add, modify, or delete values, those changes won't get updated in realtime. Click the **refresh** button to update a database. ![editing an indexeddb kvp](/web/tools/chrome-devtools/manage-data/imgs/idb-edit.png)
 
+Enter a key in the **Start from key** textfield to filter out all keys with a value smaller than that one.
 
-![IndexedDB データベース][idb-db]
+![filtered kvps](/web/tools/chrome-devtools/manage-data/imgs/idb-filter.png)
 
-データベースを展開すると、そのキー値ペア（KVP）が表示されます。
+When you add, modify, or delete values, those changes won't get updated in realtime. Click the **refresh** button (![refresh button](/web/tools/chrome-devtools/manage-data/imgs/refresh.png){:.inline}) to update a database.
 
-![IndexedDB のキー値ペア][idb-kvps]
+Click the **clear object store** button (![clear object store](/web/tools/chrome-devtools/manage-data/imgs/clear-object-store.png){:.inline}) to delete all data from your database. You can also accomplish this as well as unregistering service workers and removing other storage and caches with a single click from the [**Clear storage** pane](#clear-storage).
 
-KVP のページ間を移動するには、[**Start from key**] テキスト項目の横にある矢印ボタンを使用します。
+## Web SQL {:#web-sql}
 
+Use the **Web SQL** pane to query and modify Web SQL databases.
 
-値を編集するには、その値を展開してダブルクリックします。値を追加、変更、または削除する場合、それらの変更がリアルタイムでアップデートされるわけではありません。**更新**ボタンをクリックしてデータベースをアップデートします。
-![IndexedDB の KVP の編集][idb-edit]
+Click on a database name to open a console for that database. From here you can execute statements on the database.
 
-[**Start from key**] テキスト項目にキーを入力し、そのキーよりも小さい値を持つすべてのキーを除外します。
+![web sql console](/web/tools/chrome-devtools/manage-data/imgs/web-sql-console.png)
 
+Click on a database table to view that table's data.
 
-![除外された KVP][idb-filter]
+![web sql table](/web/tools/chrome-devtools/manage-data/imgs/web-sql-table.png)
 
-値を追加、変更、または削除しても、これらの変更がリアルタイムでアップデートされるわけではありません。
-**更新**ボタン（![更新ボタン][refresh]{:.inline}）をクリックしてデータベースをアップデートします。
+* You can't update values from here, but you can do so via the database console (see above).
+* Click on a column's header to sort the table by that column.
+* Changes that you make to a table won't update in realtime. Click the **refresh** button (![refresh button](/web/tools/chrome-devtools/manage-data/imgs/refresh.png){:.inline}) to view your updates.
+* Enter a space-separated or comma-separated list of column names in the **Visible columns** textfield to only display those columns.
 
+## Application Cache {:#application-cache}
 
-データベースからすべてのデータを削除するには、**オブジェクト ストアの消去**ボタン（![オブジェクト ストアの消去][cos]{:.inline}）をクリックします。
-これは、Service Worker の登録を解除して [[**Clear storage**] ペイン](#clear-storage)から 1 回のクリックで他のストレージとキャッシュを削除しても実現できます。
+Use the **Application Cache** pane to inspect resources and rules that have been created via the [Application Cache API](https://developer.mozilla.org/en-US/docs/Web/HTML/Using_the_application_cache).
 
+![application cache pane](/web/tools/chrome-devtools/manage-data/imgs/appcache.png)
 
+Each row represents a resource.
 
-[idb-tab]: /web/tools/chrome-devtools/manage-data/imgs/idb-tab.png
-[idb-db]: /web/tools/chrome-devtools/manage-data/imgs/idb-db.png
-[idb-kvps]: /web/tools/chrome-devtools/manage-data/imgs/idb-kvps.png
-[idb-edit]: /web/tools/chrome-devtools/manage-data/imgs/idb-edit.png
-[idb-filter]: /web/tools/chrome-devtools/manage-data/imgs/idb-filter.png
-[cos]: /web/tools/chrome-devtools/manage-data/imgs/clear-object-store.png
+The **Type** column will have one of the following values:
 
-##  ウェブ SQL{:#web-sql}
+* **Master**. The `manifest` attribute on the resource indicated that this cache is its master.
+* **Explicit**. This resource was explicitly listed in the manifest.
+* **Network**. The manifest specified that this resource must come from the network.
+* **Fallback**. The URL in the **Resource** column was listed as a fallback for another URL (not shown in DevTools).
 
-[**Web SQL**] ペインは、ウェブ SQL データベースをクエリおよび変更するために使用します。
+At the bottom of the table there are status icons indicating your network connection and the status of the application cache. The application cache can have the following statuses:
 
-データベース名をクリックすると、そのデータベースのコンソールが開きます。ここでデータベースに対して文を実行できます。
+* **IDLE**. The cache has no new changes.
+* **CHECKING**. The manifest is being fetched and checked for updates.
+* **DOWNLOADING**. Resources are being added to the cache.
+* **UPDATEREADY**. A new version of the cache is available.
+* **OBSOLETE**. The cache is being deleted.
 
+## Service Worker Caches {:#service-worker-caches}
 
-![ウェブ SQL コンソール][wsc]
-
-データベース テーブルをクリックすると、そのテーブルのデータが表示されます。
-
-![ウェブ SQL テーブル][wst]
-
-* ここでは値を更新できませんが、データベース コンソールからアップデートできます（上記を参照）。
-* 列の見出しをクリックすると、テーブルがその列で並べ替えられます。
-* テーブルに加えた変更がリアルタイムでアップデートされるわけではありません。**更新**ボタン（![更新ボタン][refresh]{:.inline}）をクリックするとアップデートが表示されます。
-* [**Visibile columns**] テキスト項目にスペースまたはコンマ区切りの列名のリストを入力すると、その列のみが表示されます。
-
-
-[wsc]: /web/tools/chrome-devtools/manage-data/imgs/web-sql-console.png
-[wst]: /web/tools/chrome-devtools/manage-data/imgs/web-sql-table.png
-
-##  アプリケーション キャッシュ{:#application-cache}
-
-[**Application Cache**] ペインは、[Application Cache API][appcache-api] を使用して作成されたリソースやルールを調査するために使用します。
-
-
-![[Application Cache] ペイン][appcache]
-
-各行はリソースを表しています。
-
-[**Type**] 列の値は次のいずれかになります。
-
-* **Master**。リソースの `manifest` 属性で、このキャッシュがそのリソースのマスターであることが示されています。
-* **Explicit**。このリソースはマニフェストに明示的にリストされています。
-* **Network**。マニフェストで、このリソースをネットワークから取得する必要があることが示されています。
-* **Fallback**。[**Resource**] 列の URL が（DevTools では表示されない）別の URL の代わりとしてリストされています。
-
-
-テーブルの一番下に、ネットワーク接続とアプリケーション キャッシュのステータスを示すステータス アイコンがあります。
-アプリケーション キャッシュのステータスは次のいずれかです。
-
-
-* **IDLE**。キャッシュに新しい変更はありません。
-* **CHECKING**。マニフェストが取得され、アップデートがないか確認中です。
-* **DOWNLOADING**。リソースがキャッシュに追加されています。
-* **UPDATEREADY**。新しいバージョンのキャッシュが利用可能です。
-* **OBSOLETE**。キャッシュが削除されています。
-
-[appcache-api]: https://developer.mozilla.org/en-US/docs/Web/HTML/Using_the_application_cache
-[appcache]: /web/tools/chrome-devtools/manage-data/imgs/appcache.png
-
-##  Service Worker のキャッシュ{:#service-worker-caches}
-
-[**Application**] パネルの [**Cache Storage**] ペインでは、（Service Worker）Cache API を使用して作成されたキャッシュを調査、変更、およびデバッグできます。
-詳しくは、次のガイドをご覧ください。
-
+The **Cache Storage** pane on the **Application** panel lets you inspect, modify, and debug caches created with the (service worker) Cache API. Check out the guide below for more help.
 
 {# include shared/related_guides.liquid inline=true list=page.related-guides.pwa #}
 
-##  Service Worker、ストレージ、データベース、およびキャッシュの消去{:#clear-storage}
+## Clear service workers, storage, databases, and caches {:#clear-storage}
 
-特定のオリジンのデータをすべて消去することが必要になる場合があります。[**Application**] パネルの [**Clear Storage**] ペインでは、Service Worker、ストレージ、およびキャッシュを選択的に登録解除できます。
-データを消去するには、消去するコンポーネントの横にあるチェックボックスをオンにし、[**Clear site data**] をクリックします。
-[**Clear storage**] ラベルの下に表示されているオリジンのデータがすべて消去されます。
+Sometimes you just need to wipe all of the data for a given origin. The **Clear Storage** pane on the **Application** panel lets you selectively unregister service workers, storage, and caches. To clear data, just enable the checkboxes next to the components that you want to wipe, and then click **Clear site data**. The action wipes all of the data for the origin listed under the **Clear storage** label.
 
+![clear storage](/web/tools/chrome-devtools/manage-data/imgs/clear-storage.png)
 
-![Clear storage][clear]
+## Feedback {: #feedback }
 
-[clear]: /web/tools/chrome-devtools/manage-data/imgs/clear-storage.png
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
