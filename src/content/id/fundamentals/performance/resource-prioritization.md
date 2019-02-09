@@ -1,9 +1,6 @@
-project_path: /web/fundamentals/_project.yaml
-book_path: /web/fundamentals/_book.yaml
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml
 
-{# wf_updated_on: 2019-02-06 #}
-{# wf_published_on: 2017-11-01 #}
-{# wf_blink_components: Blink>Network,Blink>Loader #}
+{# wf_updated_on: 2018-08-17 #} {# wf_published_on: 2017-11-01 #} {# wf_blink_components: Blink>Network,Blink>Loader #}
 
 <!--
   Aspect ratio CSS, Copyright 2017 Google Inc
@@ -11,7 +8,8 @@ book_path: /web/fundamentals/_book.yaml
   move around as media loads.
 
   Adapted from https://github.com/sgomes/css-aspect-ratio
--->
+--> 
+
 <style>
 .aspect-ratio {
   /* aspect-ratio custom properties */
@@ -49,256 +47,139 @@ book_path: /web/fundamentals/_book.yaml
 }
 </style>
 
-# Penentuan Prioritas Resource – Mengambil Browser untuk Membantu Anda {: .page-title }
+ 
+
+# Resource Prioritization – Getting the Browser to Help You {: .page-title }
 
 {% include "web/_shared/contributors/sgomes.html" %}
 
-Tidak setiap byte yang dikirim melalui jaringan ke browser memiliki tingkat substansi
-yang sama, dan browser mengetahui hal ini. Browser memiliki sifat heuristik yang berupaya semaksimal mungkin
-menerka resource paling penting agar dimuat terlebih dahulu — seperti
-CSS sebelum skrip dan gambar.
+Not every byte that is sent down the wire to the browser has the same degree of importance, and the browser knows this. Browsers have heuristics that attempt to make a best-guess at the most important resources to load first — such as CSS before scripts and images.
 
-Seperti halnya sifat heuristik lainnya, tindakan ini tidak selalu berhasil; kemungkinan browser
-mengambil keputusan yang salah, biasanya karena browser tidak memiliki informasi yang memadai pada
-saat itu. Artikel ini menjelaskan cara memengaruhi prioritas konten
-secara memadai dalam browser modern dengan memberi tahu apa yang akan Anda perlukan selanjutnya.
+That said, as with any heuristic, it doesn’t always work out; the browser might make the wrong decision, usually because it doesn’t have enough information at that time. This article explains how to influence the priority of content adequately in modern browsers by letting them know what you’ll be needing later.
 
-## Prioritas Default di Browser
+## Default Priorities in the Browser
 
-Seperti disebutkan sebelumnya, browser menentukan prioritas yang relatif berbeda untuk
-jenis resource yang berbeda berdasarkan seberapa penting prioritasnya. Dengan demikian, sebagai
-contoh, sebuah tag `<script>` di `<head>` halaman Anda akan dimuat di Chrome pada prioritas
-**High** (di bawah CSS, pada prioritas **Highest**), namun prioritas tersebut akan berubah menjadi
-**Low** jika memiliki atribut asinkron (yang berarti dapat dimuat dan dijalankan
-secara asinkron).
+As mentioned before, the browser assigns different relative priorities to different types of resources based on how critical they might be. So, for example, a `<script>` tag in your page’s `<head>` would be loaded in Chrome at a **High** priority (below CSS, at **Highest**), but that priority would change to **Low** if it has the async attribute (meaning it can be loaded and run asynchronously).
 
-Prioritas menjadi hal penting saat menyelidiki kinerja pemuatan di situs Anda.
-Di samping teknik
-[pengukuran](/web/fundamentals/performance/critical-rendering-path/measure-crp)
-dan
-[menganalisis jalur render penting](/web/fundamentals/performance/critical-rendering-path/analyzing-crp) yang biasa,
-sangat penting untuk mengetahui prioritas Chrome bagi setiap resource. Anda dapat menemukannya di
-panel Network pada Chrome Developer Tools. Berikut tampilannya:
-
+Priorities become important when investigating loading performance in your site. Beyond the usual techniques of [measuring](/web/fundamentals/performance/critical-rendering-path/measure-crp) and [analyzing the critical rendering path](/web/fundamentals/performance/critical-rendering-path/analyzing-crp), it’s useful to know Chrome’s priority for each resource. You can find that in the Network panel in Chrome Developer Tools. Here’s what it looks like:
 
 <figure>
   <div class="aspect-ratio"
        style="width: 1810px; --aspect-ratio-w: 1810; --aspect-ratio-h: 564">
     <img src="images/res-prio-priorities.png"
-    alt="Contoh bagaimana prioritas ditampilkan pada Chrome Developer Tools">
+    alt="An example of how priorities are displayed in Chrome Developer Tools">
   </div>
-  <figcaption><b>Gambar 1</b>: Prioritas di Chrome Developer Tools. Anda mungkin
-  perlu mengaktifkan kolom Prioritas dengan mengklik kanan header kolom.
+  <figcaption><b>Figure 1</b>: Priorities in Chrome Developer Tools. You may
+  need to enable the Priority column by right-clicking on the column headers.
   </figcaption>
 </figure>
 
+These priorities give you an idea of how much relative importance the browser attributes to each resource. And remember that subtle differences are enough for the browser to assign a different priority; for example, an image that is part of the initial render is prioritized higher than an image that starts offscreen. If you’re curious about priorities, [this article by Addy Osmani](https://medium.com/reloading/preload-prefetch-and-priorities-in-chrome-776165961bbf){: .external} digs a lot deeper into the current state of priorities in Chrome.
 
-Prioritas ini memberikan ide tentang seberapa pentingnya
-atribut browser tersebut untuk setiap resource. Dan ingat bahwa perbedaan kecil
-cukup bagi browser untuk menetapkan prioritas yang berbeda; misalnya, sebuah gambar
-yang merupakan bagian dari render awal diprioritaskan lebih tinggi daripada gambar yang
-dimulai di luar layar. Jika penasaran tentang prioritas, baca
-[artikel dari Addy Osmani](https://medium.com/reloading/preload-prefetch-and-priorities-in-chrome-776165961bbf){: .external}
-menggali lebih dalam mengenai status prioritas saat ini di Chrome.
+So what can you do if you find any resources that are marked with a different priority than the one you’d want?
 
-Jadi, apa yang dapat Anda lakukan jika menemukan resource yang ditandai dengan prioritas
-yang berbeda dari yang Anda inginkan?
+This article dives into three different declarative solutions, which are all relatively new `<link>` types. If your resources are crucial to the user experience but are being loaded at too low a priority, you can try fixing that in one of two ways: preload or preconnect. On the other hand, if you’d like the browser to fetch some resources only when it’s done dealing with everything else, try prefetch.
 
-Artikel ini menguraikan tiga solusi deklaratif, yang semuanya
-merupakan jenis `<link>` yang relatif baru. Jika resource Anda sangat penting bagi pengalaman
-pengguna namun dimuat dengan prioritas relatif rendah, Anda dapat mencoba memperbaikinya dengan
-salah satu dari dua cara berikut: preload atau preconnect. Di samping itu, jika Anda menginginkan
-browser tersebut mengambil beberapa resource hanya ketika selesai menangani resource
-yang lain, coba lakukan prefetch.
-
-Mari kita lihat ketiganya!
+Let’s look at all three!
 
 ## Preload
 
-`<link rel="preload">` memberi tahu browser bahwa resource diperlukan sebagai
-bagian dari navigasi saat ini, dan harus mulai diambil sesegera
-mungkin. Berikut ini cara Anda menggunakannya:
+`<link rel="preload">` informs the browser that a resource is needed as part of the current navigation, and that it should start getting fetched as soon as possible. Here’s how you use it:
 
     <link rel="preload" as="script" href="super-important.js">
     <link rel="preload" as="style" href="critical.css">
+    
 
-Sebagian besar mungkin yang sudah Anda harapkan, kecuali mungkin untuk atribut
-“sebagai”. Hal ini memungkinkan Anda memberi tahu browser tentang jenis resource yang sedang Anda
-muat, sehingga dapat ditangani dengan tepat. Browser tersebut tidak menggunakan
-resource yang dimuat sebelumnya kecuali jika jenis yang tepat sudah ditetapkan. Resource
-dimuat dengan prioritas yang sama seperti sebelumnya, namun sekarang browser mengetahui
-tentang hal ini lebih awal, yang memungkinkan proses download dimulai lebih cepat.
+Most of this is probably what you’d expect, except perhaps for the “as” attribute. This allows you to tell the browser the type of the resource you’re loading, so that it can be handled correctly. The browser doesn't use the preloaded resource unless the correct type is set. The resource is loaded with the same priority as it would otherwise, but now the browser knows about it ahead of time, allowing for the download to start earlier.
 
-Perhatikan bahwa `<link rel="preload">` adalah instruksi wajib untuk browser;
-tidak seperti petunjuk resource lain yang akan kita bahas, ini adalah sesuatu
-yang harus dilakukan browser, bukan semata-mata petunjuk opsional. Hal ini membuatnya
-sangat penting untuk mengujinya dengan saksama, guna memastikan Anda secara tidak sengaja menyebabkan
-sesuatu diambil dua kali dengan menggunakannya, atau mengambil sesuatu yang tidak diperlukan.
+Note that `<link rel="preload">` is a compulsory instruction to the browser; unlike the other resource hints we’ll be talking about, it’s something the browser must do, rather than merely an optional hint. This makes it particularly important to test carefully, to insure that you’re not accidentally causing anything to fetch twice by using it, or fetching something that’s not needed.
 
-Resource yang diambil menggunakan `<link rel="preload">`, namun tidak digunakan oleh
-halaman saat ini dalam 3 detik akan memicu peringatan pada Konsol di Chrome
-Developer Tools, jadi pastikan agar tetap memperhatikan hal ini!
+Resources that are fetched using `<link rel="preload">`, but not used by the current page within 3 seconds will trigger a warning in the Console in Chrome Developer Tools, so be sure to keep an eye out for these!
 
 <figure>
   <div class="aspect-ratio"
        style="width: 1050px; --aspect-ratio-w: 1050; --aspect-ratio-h: 244">
     <img src="images/res-prio-timeout.png"
-    alt="Contoh error waktu tunggu preload di Chrome Developer Tools">
+    alt="An example of a preload timeout error in Chrome Developer Tools">
   </div>
 </figure>
 
-### Kasus penggunaan: Font
+### Use-case: Fonts
 
-Font adalah contoh yang tepat dari resource yang harus diambil, yang terakhir ditemukan,
-seringkali berada di bagian bawah salah satu dari beberapa file CSS yang dimuat oleh suatu halaman.
+Fonts are a great example of late-discovered resources that must be fetched, often sitting at the bottom of one of several CSS files loaded by a page.
 
-Dalam rangka mengurangi jumlah waktu tunggu pengguna untuk konten teks
-situs Anda, serta menghindari konflik antara font sistem dan
-font yang dipilih, Anda dapat menggunakan `<link rel="preload">` di HTML agar
-browser segera mengetahui bahwa font diperlukan.
+In order to reduce the amount of time the user has to wait for the text content of your site, as well as avoid jarring flashes between system fonts and your preferred ones, you can use `<link rel="preload">` in your HTML to let the browser know immediately that a font is needed.
 
     <link rel="preload" as="font" crossorigin="crossorigin" type="font/woff2" href="myfont.woff2">
+    
 
-Perhatikan bahwa penggunaan `crossorigin` di sini sangat penting; tanpa atribut ini,
-font yang dimuat sebelumnya akan diabaikan oleh browser, dan dilakukan pengambilan
-yang baru. Hal ini karena font diharapkan agar diambil secara anonim oleh
-browser, serta permintaan preload hanya dibuat secara anonim dengan menggunakan
-atribut `crossorigin`.
+Note that the use of `crossorigin` here is important; without this attribute, the preloaded font is ignored by the browser, and a new fetch takes place. This is because fonts are expected to be fetched anonymously by the browser, and the preload request is only made anonymous by using the `crossorigin` attribute.
 
-Perhatian: Jika Anda menggunakan CDN, seperti Google Fonts, pastikan bahwa file font
-yang Anda muat sebelumnya cocok dengan font di CSS, yang hal ini akan menjadi rumit dikarenakan rentang unicode
-, bobot, dan variasi font. Font juga dapat diperbarui secara berkala, jika
-Anda terlebih dahulu memuat versi lama selagi menggunakan CSS dengan versi yang lebih baru, pada akhirnya kemungkinan
-Anda mendownload dua versi font yang sama dan menyia-nyiakan
-bandwidth pengguna. Pertimbangkan menggunakan `<link rel="preconnect">` agar pemeliharaannya
-lebih mudah.
+Caution: If you’re using a CDN, such as Google Fonts, be sure that the font files you’re preloading match the ones in the CSS, which can be tricky due to unicode ranges, weights, and font variants. Fonts can also be regularly updated, and if you’re preloading an old version while using the CSS for a newer one, you may end up downloading two versions of the same font and wasting your users’ bandwidth. Consider using `<link rel="preconnect">` instead for easier maintenance.
 
-### Kasus penggunaan: Critical Path CSS dan JavaScript
+### Use-case: Critical Path CSS and JavaScript
 
-Jika membahas tentang kinerja halaman, salah satu konsep yang berguna adalah “critical path”.
-Critical path merujuk pada resource yang harus dimuat sebelum render awal
-Anda. Resource ini, seperti halnya CSS, adalah sangat penting guna mendapatkan piksel
-pertama di layar pengguna.
+When talking about page performance, one useful concept is the “critical path”. The critical path refers to the resources that must be loaded before your initial render. These resources, like CSS, are critical to getting the first pixels on the user’s screen.
 
-Sebelumnya, yang disarankan adalah menggabungkan konten ini ke dalam HTML.
-Namun, dalam keadaan saat beberapa halaman yang dirender di server, hal ini cepat berkembang menjadi
-banyak byte yang disia-siakan. Hal ini juga mempersulit penentuan versi, karena perubahan apa pun dalam
-kode penting akan membatalkan halaman yang sudah digabungkan.
+Previously, the recommendation was to inline this content into your HTML. However, in a multi-page, server-side rendered scenario, this quickly grows into a lot of wasted bytes. It also makes versioning harder, as any change in the critical code invalidates any page that has it inlined.
 
-Dengan `<link rel="preload">`, Anda dapat mempertahankan manfaat
-penentuan versi dan cache masing-masing file, sambil memberikan mekanisme ke permintaan
-sesegera mungkin.
+`<link rel="preload">` allows you to keep the benefits of individual file versioning and caching, while giving you mechanism to request the resource as soon as possible.
 
     <link rel="preload" as="script" href="super-important.js">
     <link rel="preload" as="style" href="critical.css">
+    
 
-Ada satu kekurangan preload: Anda masih harus tunduk pada roundtrip ekstra.
-Roundtrip ekstra ini berasal dari fakta bahwa browser terlebih dahulu harus mengambil
-HTML, dan hanya setelah langkah tersebut dilakukan, browser mengetahui tentang resource berikutnya.
+With preload, there is one downside: you’re still subject to an extra roundtrip. This extra roundtrip comes from the fact that the browser first has to fetch the HTML, and only then does it find out about the next resources.
 
-Salah satu menangani masalah cara seputar roundtrip ekstra ini adalah menggunakan
-[HTTP/2](/web/fundamentals/performance/http2/#server_push)
-push, di mana Anda terlebih dahulu melampirkan aset penting ke koneksi
-yang sama tempat Anda mengirim HTML. Tindakan ini menjamin bahwa
-tidak ada downtime antara saat browser pengguna mengambil HTML dan memulai
-proses download aset penting. Meskipun begitu, berhati-hatilah saat menggunakan push HTTP/2,
-karena terlalu mengontrol penggunaan bandwidth pengguna (“server
-tahu yang terbaik”), dan menyisakan ruang yang sangat sempit bagi browser untuk memutuskan
-sendiri, seperti tidak mengambil file yang sudah berada di cache!
+One way around the extra roundtrip is to use [HTTP/2](/web/fundamentals/performance/http2/#server_push) push instead, where you preemptively attach the critical assets to the same connection through which you’re sending the HTML. This guarantees that there’s no downtime between the user’s browser retrieving the HTML and starting the download of the critical assets. Be mindful when using HTTP/2 push, though, as it’s a very forceful way of controlling the user’s bandwidth usage (“server knows best”), and leaves the browser very little room for making its own decisions, such as not retrieving a file that is already in its cache!
 
 ## Preconnect
 
-`<link rel="preconnect">` memberi tahu browser bahwa halaman Anda bermaksud
-membangun koneksi ke asal yang lain, serta Anda ingin proses tersebut
-dimulai secepat mungkin.
+`<link rel="preconnect">` informs the browser that your page intends to establish a connection to another origin, and that you’d like the process to start as soon as possible.
 
-Membangun koneksi seringkali membutuhkan banyak waktu dalam jaringan yang lambat,
-khususnya saat berhubungan dengan koneksi yang aman, karena hal ini mungkin melibatkan DNS
-pencarian, pengalihan, serta beberapa round trip ke server akhir yang menangani
-permintaan pengguna. Memperhatikan semua hal ini sebelumnya dapat menjadikan
-aplikasi Anda terasa jauh lebih cepat bagi pengguna tanpa berdampak negatif terhadap penggunaan
-bandwidth. Sebagian besar waktu dalam membangun koneksi dihabiskan untuk menunggu,
-dan bukan melakukan pertukaran data.
+Establishing connections often involves significant time in slow networks, particularly when it comes to secure connections, as it may involve DNS lookups, redirects, and several round trips to the final server that handles the user’s request. Taking care of all this ahead of time can make your application feel much snappier to the user without negatively affecting the use of bandwidth. Most of the time in establishing a connection is spent waiting, rather than exchanging data.
 
-Memberi tahu maksud Anda ke browser itu semudah menambahkan tag link ke
-halaman:
+Informing the browser of your intention is as simple as adding a link tag to your page:
 
     <link rel="preconnect" href="https://example.com">
+    
 
-Dalam kasus ini, kita memberi tahu browser bahwa kita bermaksud menghubungkan ke
-`example.com` dan mengambil konten dari sana.
+In this case, we’re letting the browser know that we intend to connect to `example.com` and retrieve content from there.
 
-Harap diingat bahwa meskipun `<link rel="preconnect">` cukup murah, tindakan ini masih
-membutuhkan waktu CPU yang berharga, khususnya pada koneksi yang aman. Hal ini
-sangat buruk jika koneksi tidak digunakan dalam 10 detik, karena browser
-menutupnya, ini menyia-nyiakan semua hasil kerja koneksi pada awal waktu tersebut.
+Bear in mind that while `<link rel="preconnect">` is pretty cheap, it can still take up valuable CPU time, particularly on secure connections. This is especially bad if the connection isn’t used within 10 seconds, as the browser closes it, wasting all of that early connection work.
 
-Secara umum, cobalah menggunakan `<link rel="preload">` di mana pun Anda bisa, karena hal ini lebih
-meningkatkan kinerja secara komprehensif, namun tetap ingat `<link rel="preconnect">` di dalam
-memori Anda untuk menghadapi kasus yang bersifat darurat. Mari kita lihat beberapa dari kasus tersebut.
+In general, try to use `<link rel="preload">` wherever you can, as it’s a more comprehensive performance tweak, but do keep `<link rel="preconnect">` in your toolbelt for the edge cases. Let’s look at a couple of them.
 
-Note: Sebenarnya terdapat jenis `<link>` lain yang terkait dengan koneksi:
-`<link rel="dns-prefetch">`. Koneksi ini hanya menangani pencarian DNS, jadi ini adalah subset
-kecil dari `<link rel="preconnect">`, namun mendapatkan dukungan browser yang lebih luas, sehingga
-dapat berfungsi sebagai fallback yang bagus.
-Anda menggunakannya dengan cara yang sama persis:
-`<link rel="dns-prefetch" href="https://example.com">`
+Note: There’s actually another `<link>` type related to connections: `<link rel="dns-prefetch">`. This handles the DNS lookup only, so it’s a small subset of `<link rel="preconnect">`, but it’s got wider browser support, so it may serve as a nice fallback. You use it the exact same way: `<link rel="dns-prefetch" href="https://example.com">`
 
-### Kasus penggunaan: Mengetahui *Dari Mana*, namun bukan *Apa* yang Anda Ambil
+### Use-case: Knowing *Where From*, but not *What* You're Fetching
 
-Karena adanya dependensi berversi, terkadang Anda berakhir dalam situasi ketika Anda
-mengetahui akan mengambil resource dari CDN tertentu, namun bukan jalur yang tepat
-untuk hal ini. Dalam kasus yang lain, salah satu dari beberapa resource mungkin dapat diambil, yang bergantung
-pada kueri media atau pemeriksaan fitur runtime pada browser pengguna.
+Due to versioned dependencies, you sometimes end up in a situation where you know you’ll be retrieving a resource from a given CDN, but not the exact path for it. In other cases, one of several resources may be retrieved, depending on media queries or runtime feature checks on the user’s browser.
 
-Dalam situasi ini, dan jika resource yang akan Anda ambil bersifat penting, Anda
-dapat menghemat sebanyak mungkin waktu dengan melakukan pre-connecting ke server. Browser
-tidak akan memulai mengambil file tersebut sebelum diperlukan (jadi, setelah
-permintaan dibuat dari halaman Anda), namun setidaknya browser ini dapat menangani
-aspek koneksi lebih awal, menjadikan pengguna dapat menghemat waktu dari menunggu beberapa
-roundtrip.
+In these situations, and if the resource you’ll be fetching is important, you may want to save as much time as possible by pre-connecting to the server. The browser won’t begin fetching the file before it needs it (that is, once the request is made from your page somehow), but at least it can handle the connection aspects ahead of time, saving the user from waiting for several roundtrips.
 
-### Kasus penggunaan: Media Streaming
+### Use-case: Streaming Media
 
-Contoh yang lain di mana Anda mungkin ingin menghemat waktu dalam tahap koneksi,
-namun tidak harus segera mengambil konten, adalah saat melakukan media streaming
-dari asal yang berbeda.
+Another example where you may want to save some time in the connection phase, but not necessarily start retrieving content right away, is when streaming media from a different origin.
 
-Sesuai dengan cara halaman Anda menangani streaming konten, Anda mungkin ingin menunggu
-hingga skrip dimuat dan siap untuk memproses streaming. Dengan preconnect
-, Anda dapat memangkas waktu tunggu menjadi satu roundtrip setelah Anda siap
-memulai pengambilan.
+Depending on how your page handles the streamed content, you may want to wait until your scripts have loaded and are ready to process the stream. Preconnect helps you cut the waiting time to a single roundtrip once you’re ready to start fetching.
 
 ## Prefetch
 
-`<link rel="prefetch">` berbeda dibandingkan `<link rel="preload">` dan
-`<link rel="preconnect">`, dalam cara tersebut tidak mencoba membuat sesuatu yang penting
-terjadi lebih cepat; sebaliknya, cara tersebut mencoba membuat sesuatu yang tidak penting terjadi lebih awal,
-jika ada kesempatan.
+`<link rel="prefetch">` is somewhat different from `<link rel="preload">` and `<link rel="preconnect">`, in that it doesn’t try to make something critical happen faster; instead, it tries to make something non-critical happen earlier, if there’s a chance.
 
-Langkah ini bisa dilakukan dengan memberi tahu browser tentang resource yang diharapkan agar
-diperlukan sebagai bagian dari navigasi atau interaksi pengguna di masa mendatang, misalnya,
-sesuatu yang *kemungkinan* akan diperlukan nanti, jika pengguna mengambil tindakan yang kita
-harapkan. Resource ini diambil dengan prioritas **Lowest** di Chrome,
-ketika halaman saat ini selesai dimuat dan ada bandwith yang tersedia.
+It does this by informing the browser of a resource that is expected to be needed as part of a future navigation or user interaction, for example, something that *might* be needed later, if the user takes the action we’re expecting. These resources are fetched at the **Lowest** priority in Chrome, when the current page is done loading and there’s bandwidth available.
 
-Ini berarti `prefetch` paling cocok untuk mendahului yang mungkin
-dilakukan pengguna berikutnya, serta menyiapkan untuk hal itu, seperti mengambil halaman detail produk yang pertama
-di daftar hasil, atau mengambil halaman berikutnya di konten yang memiliki nomor halaman.
+This means that `prefetch` is most suitable to preempt what the user might be doing next, and prepare for it, such as retrieving the first product details page in a list of results, or retrieving the next page in paginated content.
 
     <link rel="prefetch" href="page-2.html">
+    
 
-Harap diingat bahwa pengambilan sebelumnya tersebut tidak berfungsi secara rekursif. Pada contoh
-di atas, Anda hanya mengambil HTML; setiap resource yang diperlukan `page-2.html`
-tidak akan didownload sebelumnya kecuali Anda secara eksplisit mengambilnya terlebih dahulu
-.
+Bear in mind that prefetch doesn’t work recursively, though. In the example above you’d only be retrieving the HTML; any resources that `page-2.html` needs would not be downloaded ahead of time unless you explicitly prefetch them as well.
 
-### Prefetch Tidak Akan Berfungsi sebagai Override
+### Prefetch Doesn't Work as an Override
 
-Penting untuk dicatat bahwa Anda tidak dapat menggunakan `<link rel="prefetch">` sebagai cara
-menurunkan prioritas resource yang sudah ada. Di HTML berikut, Anda mungkin
-berpikir bahwa menyatakan `optional.css` dalam suatu prefetch akan menurunkan prioritasnya
-untuk `<link rel="stylesheet">` selanjutnya:
+It’s important to note that you can’t use `<link rel="prefetch">` as a way of lowering the priority of an existing resource. In the following HTML, you might think that declaring `optional.css` in a prefetch would lower its priority for the subsequent `<link rel="stylesheet">`:
 
     <html>
       <head>
@@ -306,50 +187,30 @@ untuk `<link rel="stylesheet">` selanjutnya:
         <link rel="stylesheet" href="optional.css">
       </head>
       <body>
-        Halo!
+        Hello!
       </body>
     </html>
+    
 
-Namun, sebenarnya ini akan menyebabkan stylesheet Anda akan diambil dua kali (walaupun
-dengan potensi mengenai cache pada pengambilan kedua), sekali pada prioritas **Highest**
-default, dan sekali pada prioritas **Lowest**, karena prefetch memulai
-pengambilan yang terpisah:
+However, this will actually cause your stylesheet to be fetched twice (albeit with a potential cache hit on the second one), once at the default **Highest** priority, and once at the **Lowest** priority, as prefetch kicks off a separate fetch:
 
 <figure>
   <div class="aspect-ratio"
        style="width: 1374px; --aspect-ratio-w: 1374; --aspect-ratio-h: 190">
     <img src="images/res-prio-prefetch.png"
-         alt="Screenshot Chrome Developer Tools menunjukkan optional.css sedang
-              diambil dua kali">
+         alt="A screenshot of Chrome Developer Tools showing optional.css being
+              fetched twice">
   </div>
 </figure>
 
-Pengambilan ganda akan berdampak buruk bagi pengguna. Dalam kasus ini, tidak hanya akan menyebabkan pengguna harus
-menunggu CSS pemblokiran-render, namun juga berpotensi
-memboroskan bandwith karena mendownload file dua kali. Harap diingat
-bandwidth mereka mungkin diukur. Pastikan untuk menganalisis permintaan jaringan
-Anda secara keseluruhan, dan hati-hati terhadap pengambilan ganda!
+Double-fetching can be bad for users. In this case, not only would they have to wait for the render-blocking CSS, but they would also potentially have their bandwidth wasted by downloading the file twice. Remember their bandwidth may be metered. Be sure to analyze your network requests thoroughly, and watch out for any double-fetching!
 
-## Teknik dan Fitur Lain
+## Other Techniques and Tools
 
-`<link rel="preload">`, `<link rel="preconnect">`, dan `<link rel="prefetch">`
-(serta bonusnya `<link rel="dns-prefetch">`) menawarkan
-cara yang bagus untuk memberi tahu browser secara deklaratif tentang resource dan
-koneksi di waktu berikutnya, serta melakukan penyesuaian saat terjadi, menurut kapan
-hal tersebut dibutuhkan.
+`<link rel="preload">`, `<link rel="preconnect">`, and `<link rel="prefetch">` (as well as the bonus `<link rel="dns-prefetch">`) offer a great way of declaratively letting the browser know about resources and connections ahead of time, and tweaking when things happen, according to when they’re needed.
 
-Terdapat sejumlah alat dan teknik yang dapat Anda gunakan untuk melakukan penyesuaian prioritas
-dan waktu resource Anda dimuat. Pastikan Anda membaca tentang
-[HTTP/2 push server](/web/fundamentals/performance/http2/#server_push);
-[menggunakan `IntersectionObserver` untuk memuat gambar dan media lain](/web/updates/2016/04/intersectionobserver);
-[menghindari CSS render-pemblokiran](/web/fundamentals/performance/critical-rendering-path/render-blocking-css)
-dengan kueri dan library seperti
-[loadCSS](https://github.com/filamentgroup/loadCSS){: .external};
-serta menunda mengambil, mengkompilasi, dan mengeksekusi JavaScript dengan
-[async](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/script#attr-async){: .external}
-dan
-[defer](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/script#attr-defer){: .external}.
+There’s a number of other tools and techniques you can use to tweak the priority and timing at which your resources get loaded. Be sure to read up on [HTTP/2 server push](/web/fundamentals/performance/http2/#server_push); [using `IntersectionObserver` to lazily load images and other media](/web/updates/2016/04/intersectionobserver); [avoiding render-blocking CSS](/web/fundamentals/performance/critical-rendering-path/render-blocking-css) with media queries and libraries like [loadCSS](https://github.com/filamentgroup/loadCSS){: .external}; and delaying JavaScript fetch, compile and execute with [async](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/script#attr-async){: .external} and [defer](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/script#attr-defer){: .external}.
 
-## Masukan {: #feedback }
+## Feedback {: #feedback }
 
 {% include "web/_shared/helpful.html" %}
