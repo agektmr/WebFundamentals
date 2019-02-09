@@ -1,164 +1,166 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Three.js の WebGL シーンを使用して WebVR 機能を追加する方法を学びます。
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Learn how to take a WebGL scene in Three.js and add WebVR capabilities.
 
-{# wf_updated_on: 2016-12-12 #}
-{# wf_published_on: 2016-12-12 #}
+{# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2016-12-12 #} {# wf_blink_components: Blink>WebVR #}
 
-# WebVR のスタートガイド {: .page-title }
+# Getting Started with WebVR {: .page-title }
 
-{% include "web/_shared/contributors/paullewis.html" %}
-{% include "web/_shared/contributors/mscales.html" %}
+{% include "web/_shared/webxr-status.html" %}
 
-警告:WebVR はまだ試験運用版であり、仕様変更の可能性があります。
+In this guide we will be exploring the WebVR APIs, and using them to enhance a simple WebGL scene built with [Three.js](https://threejs.org/). For production work, however, you may want to starting with existing solutions, like [WebVR Boilerplate](https://github.com/borismus/webvr-boilerplate). If you’re totally new to Three.js, you can use this [handy starting guide](https://aerotwist.com/tutorials/getting-started-with-three-js/). The community is also extremely supportive, so if you get stuck, definitely give them a shout.
 
-このガイドでは WebVR API について詳しく説明するとともに、このAPI を使用して、[Three.js](https://threejs.org/) で作成されたシンプルな WebGL シーンを改良します。制作作業においては、[WebVR ボイラプレート](https://github.com/borismus/webvr-boilerplate)のような既存のソリューションをベースにしてもよいでしょう。Three.js を初めて使用する方は、こちらの[便利なスタートガイド](https://aerotwist.com/tutorials/getting-started-with-three-js/)をご覧ください。このコミュニティではサポート体制が整っているため、お困りのことがありましたら、ぜひご相談ください。
+Let’s start with [a scene that puts a box inside a wireframe room](https://googlechrome.github.io/samples/web-vr/hello-world/), the code for which is on the [Google Chrome samples repo](https://github.com/GoogleChrome/samples/tree/gh-pages/web-vr/hello-world).
 
-では、最初に[ワイヤーフレーム空間にボックスがあるシーン](https://googlechrome.github.io/samples/web-vr/hello-world/) から見ていきましょう。このコードは [Google Chrome のサンプル リポジトリ](https://github.com/GoogleChrome/samples/tree/gh-pages/web-vr/hello-world) で入手できます。
+![WebGL Scene running on Chrome desktop](./img/desktop.jpg)
 
-![Chrome Desktop で実行される WebGL シーン](./img/desktop.jpg)
+### A small note on support
 
-###  サポートに関する注記
+WebVR is available in Chrome 56+ behind a runtime flag. Enabling the flag (head to `chrome://flags` and search for "WebVR") will allow you to build and test your VR work locally. If you want to support WebVR for your visitors, you can opt into an [Origin Trial](https://github.com/GoogleChrome/OriginTrials/blob/gh-pages/developer-guide.md), which will allow you to have WebVR enabled for your origin.
 
-WebVR はランタイムフラグ制の Chrome 56 以降で利用できます。フラグを有効にする（`chrome://flags` で「WebVR」を検索）ことによって、作成した VR をローカルでビルドしてテストできます。訪問者が WebVR を利用できるようにするには、[Origin Trial](https://github.com/jpchase/OriginTrials/blob/gh-pages/developer-guide.md) にオプトインして、オリジンに対して WebVR を有効にします。
+You can also use the [Web VR polyfill](https://github.com/googlevr/webvr-polyfill), but bear in mind that there are significant performance penalties when using polyfills. You should definitely test on your target devices, and avoid shipping anything that does not keep up with the device’s refresh rate. A poor or variable frame rate can result in significant discomfort for the people using your experience!
 
-[Web VR polyfill](https://github.com/googlevr/webvr-polyfill) を使用することも可能ですが、使用した場合はパフォーマンスが著しく低下することに注意してください。対象デバイスでのテストを必ず実施して、端末のリフレッシュ レートに追いつかないものをリリースしないようにしてください。フレームレートが低い、または不安定であると、ユーザー エクスペリエンスが大きく損なわれる可能性があります。
+For more information, take a look at [the WebVR Status](../status/) page.
 
-詳細については、[WebVR のステータス](../status/)のページをご覧ください。
+## Get access to VR Displays
 
-##  VR ディスプレイにアクセスする
-
-WebVR を使用して WebGL シーンを機能させるためには、どのような作業が必要でしょうか。まずは、navigator.getVRDisplays() を使用して、利用可能な VR ディスプレイがあるか確認するようブラウザに問い合わせる必要があります。
+So with a WebGL scene, what do we need to do get it working with WebVR? Well, firstly we need to query the browser to discover if there are any VR displays available, which we can do with `navigator.getVRDisplays()`.
 
     navigator.getVRDisplays().then(displays => {
       // Filter down to devices that can present.
       displays = displays.filter(display => display.capabilities.canPresent);
-
+    
       // If there are no devices available, quit out.
       if (displays.length === 0) {
         console.warn('No devices available able to present.');
         return;
       }
-
+    
       // Store the first display we find. A more production-ready version should
       // allow the user to choose from their available displays.
       this._vr.display = displays[0];
       this._vr.display.depthNear = DemoVR.CAMERA_SETTINGS.near;
       this._vr.display.depthFar = DemoVR.CAMERA_SETTINGS.far;
     });
+    
 
-このコードには注目すべきポイントがいくつかあります。
+There are a few things to notice in this code.
 
-1. **すべてのデバイスがヘッドマウント ディスプレイに使用できるわけではありません。** たとえば加速度計の用途や疑似 VR 体験に対応していても、HMD は使用しないデバイスがあります。そのような端末の canPresent ブール値は false になる点に注意してください。
+1. **Not every device can "present" to a Head Mounted Display.** There are devices which allow for — say — accelerometer usage, or a pseudo-VR experience, but do not make use of an HMD. For those devices the canPresent boolean will be false, and it’s something to be checked.
 
-2. **利用可能な VR デバイスがない可能性もあります。** 非 VR 設定で適切に動作するエクスペリエンスの構築を目標にした上で、VR についてはプログレッシブ エンハンスメントとして取り扱う必要があります。
+2. **There may be no VR devices available.** We should aim to create experiences that work just fine for non-VR settings, and treat the availability of VR as Progressive Enhancement.
 
-3. **利用可能な VR デバイスが複数存在する可能性があります。**複数の VR デバイスが利用できる可能性も十分あるため、できるだけそれらの中から最適なデバイスを選択できるようにする必要があります。
+3. **There may be several VR devices available. **Equally it’s perfectly possible that someone will have multiple VR devices available, and we should allow for that if at all possible, letting them choose the most appropriate.
 
-##  WebVR をエミュレーションする Chrome DevTools 拡張機能をインストールする
+## Install a WebVR Emulation Chrome DevTools Extension
 
-テストを実行したくても、VR に対応したデバイスを持っていないこともあるかもしれません。そのような場合は、Jaume Elias が開発した [VR デバイスをエミュレーションする Chrome DevTools 拡張機能](https://chrome.google.com/webstore/detail/webvr-api-emulation/gbdnpaebafagioggnhkacnaaahpiefil)をご利用ください。
+Perhaps you find yourself not having a VR-capable device to test against. If that’s the case, help is at hand! Jaume Elias has created a [Chrome DevTools Extension which emulates a VR device](https://chrome.google.com/webstore/detail/webvr-api-emulation/gbdnpaebafagioggnhkacnaaahpiefil).
 
-![Jaume Elias の Chrome 拡張機能で WebVR をエミュレーションする](./img/webvr-emulation.jpg)
+![Emulating WebVR with Jaume Elias's Chrome Extension](./img/webvr-emulation.jpg)
 
-常に実機でテストできるに越したことはありませんが（特にパフォーマンスのテストに関しては）、開発中に素早くデバッグをするにはこの拡張機能が役立ちます。
+While it’s always preferable to test on real devices (especially for performance testing!) having this extension to hand can help you quickly debug during your builds.
 
-##  デバイスから表示をリクエストする
+## Request presentation from the device
 
-「VR モード」での表示を開始するには、デバイスからリクエストをする必要があります。
+To begin presenting in "VR mode", we have to request it from the device:
 
     this._vr.display.requestPresent([{
       source: this._renderer.domElement
     }]);
+    
 
-`requestPresent` には、[Web VR 仕様](https://w3c.github.io/webvr/#vrlayer) で 「VRLayers」と呼ばれる配列を指定します。この配列は、実質的には VR デバイスに渡す Canvas 要素のラッパーです。上記のコードスニペットでは、Three.jp から提供された Canvas 要素（`WebGLRenderer.domElement`）を取得して、単一の VRLayer のソースプロパティとして渡しています。戻り値として `requestPresent` から [Promise](/web/fundamentals/getting-started/primers/promises) が返され、リクエストに成功すれば解決し、そうでなければ拒否されます。
+`requestPresent` takes an array of what the [Web VR spec](https://w3c.github.io/webvr/#vrlayer) calls "VRLayers", which is essentially a wrapper around a Canvas element given to the VR device. In the code snippet above we’re taking the Canvas element — `WebGLRenderer.domElement` — provided by Three.js, and passing it in as the source property of a single VRLayer. In return, `requestPresent` will give you a [Promise](/web/fundamentals/getting-started/primers/promises), which will resolve if the request is successful, and will reject if not.
 
-##  VR シーンを描く
+## Draw your VR scene
 
-ついに、ユーザーに VR シーンを表示します。ワクワクしますね。
+Finally, we’re ready to present the user with a VR scene, which is really exciting!
 
-![Pixel で実行中の WebVR シーン](../img/getting-started-with-webvr.jpg)
+![The WebVR scene running on a Pixel](../img/getting-started-with-webvr.jpg)
 
-まず、必要な処理を確認しましょう。
+Firstly let’s talk about what we need to do.
 
-* デバイスの `requestAnimationFrame` コールバックを確実に使用します。
-* VR デバイスに、現在のポーズ、方向、目の情報をリクエストします。
-* WebGL コンテキストを右目用と左目用に二分割して、それぞれを描画します。
+* Ensure we use the device’s `requestAnimationFrame()` callback.
+* Request the current pose, orientation, and eye information from the VR device.
+* Split our WebGL context into two halves, one for each eye, and draw each.
 
-ウィンドウ オブジェクトと一緒に提供されたものとは別の `requestAnimationFrame` を使用する必要があるのはなぜでしょうか？理由は、使用するディスプレイのリフレッシュ レートが、ホストマシーンのレートとは異なる可能性があるためです。ホストマシーンで 60 Hz で画面を更新していても、ヘッドセットのリフレッシュ レートが 120 Hz の場合は、それに合わせて 120 Hz でフレームを生成する必要があります。これに対応するため、WebVR API では別の `requestAnimationFrame` API を呼び出せるようにしています。モバイル端末の場合、一般的にはディスプレイが 1 つしかありませんが（さらに現在の Android のリフレッシュ レートは 60Hz）、それでも適切な API を使用して、できるだけ将来的にも有効で広い互換性のあるコードを作成する必要があります。
+Why do we need to use a different `requestAnimationFrame()` to the one provided with the window object? Because we’re working with a display whose refresh rate may differ from the host machine! If the headset has a refresh rate of 120Hz, we need to generate frames according to that rate, even if the host machine refreshes its screen at 60Hz. The WebVR API accounts for that by giving us a different `requestAnimationFrame()` API to call. In the case of a mobile device, there is typically only one display (and on Android today the refresh rate is 60Hz). Even so we should use the correct API to make our code future-proof and as broadly compatible as possible.
 
     _render () {
       // Use the VR display's in-built rAF (which can be a diff refresh rate to
       // the default browser one).  _update will call _render at the end.
-
+    
       this._vr.display.requestAnimationFrame(this._update);
       …
     }
+    
 
-続いて `getFrameData()` を使用して、ユーザーの頭の位置、回転状況、さらに正確に描画するために必要なその他の情報すべてをリクエストする必要があります。
+Next, we need to request the information about where the person’s head is, its rotation, and any other information we need to be able to do the drawing correctly, which we do with `getFrameData()`.
 
     // Get all the latest data from the VR headset and dump it into frameData.
     this._vr.display.getFrameData(this._vr.frameData);
+    
 
-`getFrameData()` には、必要な情報を格納するためのオブジェクトを指定します。このオブジェクトは、`new VRFrameData()` で作成した `VRFrameData` オブジェクトである必要があります。
+`getFrameData()` takes an object on which it can place the information we need. It needs to be a `VRFrameData` object, which we can create with `new VRFrameData()`.
 
     this._vr.frameData = new VRFrameData();
+    
 
-このフレームデータには興味深い情報がたくさんあるので、少し見てみましょう。
+There’s lots of interesting information in the frame data, so let’s take a quick look over that.
 
-* **timestamp**。デバイスの更新のタイムスタンプ。これは、VR ディスプレイで getFrameData が初めて呼び出されたときを 0 としてカウントされた値です。
+* **timestamp**. The timestamp of the update from the device. This value starts at 0 the first time getFrameData() is invoked on the VR display.
 
-* **leftProjectionMatrix** と **rightProjectionMatrix**。シーンにおけるカメラの視野を表すマトリックスです。これについては、少し後で詳しく説明します。
+* **leftProjectionMatrix** and **rightProjectionMatrix**. These are the matrices for the camera that account for the perspective of the eyes in the scene. We’ll talk more about these in a moment.
 
-* **leftViewMatrix** と **rightViewMatrix**これらは、シーンにおけるそれぞれの目の位置を示す行列です。
+* **leftViewMatrix** and **rightViewMatrix**. These are two more matrices that provide about the location of each eye in the scene.
 
-3D に馴染みのない方にとって、射影行列やモデルビュー行列はとっつきにくいかもしれません。これらの処理には多少数学的な要素が含まれていますが、その技術的な仕組みや処理内容を正確に知る必要はありません。
+If you’re new to 3D work Projection matrices and Model-View matrices can appear daunting. While there is some math behind what these do, we don’t technically need to know exactly how they work, more what they do.
 
-* **射影行列。** シーン内で、遠近法のような効果を生み出すために使用されます。一般的には、目からの距離が遠くなるにつれて、シーン内のオブジェクトのスケールをゆがめることによって、この効果を実現します。
+* **Projection Matrices.** These are used to create an impression of perspective within a scene. They typically do this by distorting the scale of objects in the scene as they move further away from the eye.
 
-* **モデルビュー行列。** 3D 空間にオブジェクトを配置するために使用されます。行列の仕組み上、対象となるオブジェクトの最終的なモデルビュー行列を取得するには、シーングラフを作成して、そのグラフを上から走査し、各ノード行列を乗算します。
+* **Model-View Matrices.** These are used to position an object in 3D space. Because of the way matrices work you can create scene graphs and work your way down the graph, multiplying each node’s matrix, arriving at the final model-view matrix for the object in question.
 
-ウェブ上には、射影行列やモデルビュー行列ついて詳しく学べる優れたガイドがたくさんあります。背景情報を詳しく知りたい方は、インターネットで検索してください。
+There are many good guides around the web that explain Projection and Model-View matrices in much more depth, so have a google around if you want to get more background information.
 
-##  シーンのレンダリングを制御する
+## Take control of the scene rendering
 
-必要な行列がそろったので、左目用のビューを描画しましょう。まず、レンダラを呼び出すたびに WebGL コンテキストをクリアしないよう Three.js に伝える必要があります。これは、左右で 2 回描写する必要がありますが、右目用に描画しているときに左目用のイメージが消えないようにするためです。
+Since we have the matrices we need, let’s draw the view for the left eye. To begin with we will need to tell Three.js not to clear out the WebGL context every time we call render, since we need to draw twice and we don’t want to lose the image for the left eye when we draw it for the right.
 
     // Make sure not to clear the renderer automatically, because we will need
     // to render it ourselves twice, once for each eye.
     this._renderer.autoClear = false;
-
+    
     // Clear the canvas manually.
     this._renderer.clear();
+    
 
-続いて、左半分のみを描画するようにレンダラを設定します。
+Next let’s set the renderer to only draw the left half:
 
     this._renderer.setViewport(
         0, // x
         0, // y
         window.innerWidth * 0.5,
         window.innerHeight);
+    
 
-このコードは GL コンテキストがフルスクリーンであることを想定しています（`window.inner*`）。VR では、ほとんどの場合がフルスクリーンです。これで、左目用の 2 つの行列を取り込むことができます。
+This code assumes that the GL context is full screen (`window.inner*`), which is a pretty good bet for VR. We can now plug in the two matrices for the left eye.
 
     const lViewMatrix = this._vr.frameData.leftViewMatrix;
     const lProjectionMatrix = this._vr.frameData.leftProjectionMatrix;
-
+    
     // Update the scene and camera matrices.
     this._camera.projectionMatrix.fromArray(lProjectionMatrix);
     this._scene.matrix.fromArray(lViewMatrix);
-
+    
     // Tell the scene to update (otherwise it will ignore the change of matrix).
     this._scene.updateMatrixWorld(true);
     this._renderer.render(this._scene, this._camera);
+    
 
-実装の詳細について、大事なことが 2 点あります。
+There are a couple of implementation details that are important.
 
-* **動かすのは世界であって、カメラではありません。**初めての方には奇妙に聞こえるかもしれませんが、カメラは原点（0, 0, 0）に固定して世界を動かすというのは、グラフィック作業においてはよくあることです。哲学的に考える必要はありませんが、10 m 前に進むというのは、私が 10 m 前方へ進んだのか、それとも世界が 10 m 後方へ移動したのでしょうか？これは視点の問題であり、数学的な観点ではどちらを行っても変わりはありません。WebVR API では「目のモデル行列の*逆行列*」が返されるため、これをカメラ自体ではなく、世界（コード上では `this._scene`）に対して適用する必要があります。
+* **We move the world, not the camera.** It may seem a little odd if you’ve not encountered it before, but it’s common in graphics work to leave the camera at the origin (0, 0, 0) and move the world. Without getting too philosophical, if I move 10 metres forward did I move 10 metres forward or did the world move 10 metres backward? It’s relative to your point-of-view, and it doesn’t matter from a mathematical perspective which one we do. Since the WebVR API returns the "*inverse* of the model matrix of the eye" we’re expected to apply it to the world (`this._scene` in our code) not the camera itself.
 
-* **行列の値を変更した後は、手動で更新する必要があります。**Three.js では値を頻繁にキャッシュします（パフォーマンスにおいては素晴らしいことです）。そのため、変更された内容を表示するには、変更があったことを伝える*必要があります*。そのためには `updateMatrixWorld()` メソッドを使用し、引数にブール値を指定して、計算内容がシーングラフまで確実に反映されるようにします。
+* **We must manually update the matrix after we change its values.** Three.js caches values very heavily (which is great for performance!), but that means that you *must* tell it that something has changed in order to see changes. This is done with the `updateMatrixWorld()` method, which takes a boolean for ensuring the calculations propagate down the scene graph.
 
-あともう少しです。最終ステップでは、右目用に同じプロセスを繰り返します。ここでは、左目用のビューを描画したあとにレンダラの深度の計算をクリアして、右目のビューのレンダリングに影響を及ぼさないようにします。その後、右側に合わせてビューポートを更新して、シーンを再描画します。
+We’re nearly there! The final step is repeat the process for the right eye. Here we’ll clear the renderer’s depth calculations after drawing the view for the left eye, since we don’t want it to affect the rendering of the right eye’s view. Then we update the viewport to be the right hand side, and draw the scene again.
 
     // Ensure that left eye calcs aren't going to interfere with right eye ones.
     this._renderer.clearDepth();
@@ -167,53 +169,57 @@ WebVR を使用して WebGL シーンを機能させるためには、どのよ�
         0, // y
         window.innerWidth * 0.5,
         window.innerHeight);
+    
 
-これで、右目用の 2 つの行列を取り込むことができます。
+We can now plug in the two matrices for the right eye.
 
     const rViewMatrix = this._vr.frameData.rightViewMatrix;
     const rProjectionMatrix = this._vr.frameData.rightProjectionMatrix;
-
+    
     // Update the scene and camera matrices.
     this._camera.projectionMatrix.fromArray(rProjectionMatrix);
     this._scene.matrix.fromArray(rViewMatrix);
-
+    
     // Tell the scene to update (otherwise it will ignore the change of matrix).
     this._scene.updateMatrixWorld(true);
     this._renderer.render(this._scene, this._camera);
+    
 
-これで完成かと思いきや、実はまだでした。
+And we’re done! Actually, not quite...
 
-##  デバイスに更新するよう伝える
+## Tell the device to update
 
-この状態で実行しても、ディスプレイは更新されないはずです。これは、WebGL コンテキストに対して多くのレンダリングを実施できるものの、HMD 側では実際にディスプレイを更新するタイミングがわからないためです。たとえば、片目のイメージがそれぞれレンダリングされた後で更新しても、効果的とはいえません。そこで、submitFrame を呼び出して描画処理をコントロールします。
+If you run things as they stand you’ll notice that the display never updates. This is because we can do a bunch of rendering to the WebGL context, and the HMD doesn’t know when to actually update its own display. It’s inefficient to update after — say — each individual eye’s image is rendered. So we take control of that ourselves by calling submitFrame.
 
     // Call submitFrame to ensure that the device renders the latest image from
     // the WebGL context.
     this._vr.display.submitFrame();
+    
 
-このコードをもって、今度こそ*本当に*完成です。最終版が必要な場合は、[Google Chrome のサンプル リポジトリ](https://github.com/GoogleChrome/samples/tree/gh-pages/web-vr/hello-world)からチェックアウトできます。
+With that code we really *are* done this time. If you want the final version, don’t forget you can check out the [Google Chrome Samples repo](https://github.com/GoogleChrome/samples/tree/gh-pages/web-vr/hello-world).
 
-##  まとめと参考資料
+## Closing thoughts and resources
 
-WebVR は、臨場感あふれるコンテンツを作成するための優れた方法です。Three.js などのライブラリを使用すれば、WebGL での作業もずっと簡単になります。ただし、以下の重要な点に留意してください。
+WebVR is a really awesome way to add immersion to your content, and using libraries like Three.js makes it much easier to get going with WebGL. There are some important things to remember, though.
 
-* **初期段階から、プログレッシブ エンハンスメントの概念に基づいて開発します。**このガイドでも何度か言及しましたが、基盤となるエクスペリエンスを構築した上で、WebVR を追加でサポートすることが重要です。多くのエクスペリエンスはマウスやタップの制御で実装可能です。それをベースに、加速度計の制御、さらには本格的な VR エクスペリエンスへとアップグレードしていきます。より多くのユーザーを対象にすることは、いかなる場合でもメリットがあります。
+* **Build in Progressive Enhancement from the start.** As we’ve mentioned several times, it’s important to build a good base level experience onto which you can layer WebVR. While billions of people can reach your page only a few million can see your VR content. Many experiences can be implemented with mouse / touch control, and can upgrade through accelerometer controls, to fully-fledged VR experiences. Maximizing your audience is always worthwhile.
 
-* **シーンを 2 回レンダリングすることを忘れないでください。**シーンを 2 回レンダリングする際に、CPU や GPU の演算処理の負荷を確実に下げるために、詳細レベル（LOD）やその他テクニックについて検討する必要があります。そして、なによりも安定したフレームレートを維持する必要があります。乗り物酔いのような極度の不快感を与えてしまっては、どんなに魅力的な VR 体験も台無しです。
+* **Remember you’re going to render your scene twice.** You may need to think about Level of Detail (LOD) and other techniques to ensure that when you render the scene twice it scales down the computation workload for the CPU and GPU. Above all else you must maintain a solid frame rate! No amount of showbiz is worth someone feeling extreme discomfort from motion sickness!
 
-* **実機でテストを実施します。**これは前述のポイントに関連します。特にモバイル端末を対象にしている場合は、実機を用意して、実際の環境で開発段階のアプリを動かしてみる必要があります。[「ノートパソコンで確認したときと全然違う」](https://youtu.be/4bZvq3nodf4?list=PLNYkxOF6rcIBTs2KPy1E6tIYaWoFcG3uj&t=405)という声はよく聞かれます。
+* **Test on a real device.** This is related to the previous point. You should try and get a hold of real devices on which you can test what you’re building, especially if you’re targeting mobile devices. As the saying goes, ["your laptop is a filthy liar"](https://youtu.be/4bZvq3nodf4?list=PLNYkxOF6rcIBTs2KPy1E6tIYaWoFcG3uj&t=405).
 
-WebVR コンテンツの作成に関しては、開発を始める際に役立つリソースがたくさんあります。
+While we’re here, there are plenty of resources out there to give you a flying start when it comes to making WebVR content:
 
-* **[VRView](https://github.com/googlevr/vrview)**: このライブラリは、360 度パノラマの写真や動画を埋め込むのに役立ちます。
+* **[VRView](https://github.com/googlevr/vrview)**. This library helps you embed 360-degree panoramic photos and videos.
 
-* **[WebVR ボイラープレート](https://github.com/borismus/webvr-boilerplate)**: WebVR と Three.js を簡単に使い始めることができます。
+* **[WebVR Boilerplate](https://github.com/borismus/webvr-boilerplate)**. For getting started with WebVR and Three.js
 
-* **[WebVR Polyfill](https://github.com/googlevr/webvr-polyfill)**: WebVR API の代用として必要です。[Web VR polyfill] を使用するとパフォーマンスが低下することに注意してください。これにより機能性は提供されますが、ユーザーにとっては非 VR エクスペリエンスの方が好ましい可能性もあります。
+* **[WebVR Polyfill](https://github.com/googlevr/webvr-polyfill)**. To back-fill required APIs for WebVR. Please remember that there are performance penalties for using polyfills, so while this does provide functionality your users may be better off with your non-VR experience.
 
-* **[Ray-Input](https://github.com/borismus/ray-input)**: マウス、タップ、VR ゲームパッド コントローラーなど、VR および 非 VR デバイスの様々な入力タイプに対応するためのライブラリです。
+* **[Ray-Input](https://github.com/borismus/ray-input)**. A library to help you handle the various types of input for VR- and non-VR-devices, such as mouse, touch, and VR Gamepad controllers.
 
-さあ、魅力的な VR を開発しましょう。
+Now go and make some awesome VR!
 
+## Feedback {: #feedback }
 
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
