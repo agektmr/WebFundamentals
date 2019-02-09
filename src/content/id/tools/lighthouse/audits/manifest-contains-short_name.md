@@ -1,41 +1,32 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Dokumentasi referensi untuk "Manifes Berisi short_name" audit Lighthouse.
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Reference documentation for the "Manifest Contains short_name" Lighthouse audit.
 
-{# wf_updated_on: 2016-09-21 #}
-{# wf_published_on: 2016-09-21 #}
+{# wf_updated_on: 2018-07-23 #} {# wf_published_on: 2016-09-21 #} {# wf_blink_components: N/A #}
 
-# Manifes Berisi Nama Singkat  {: .page-title }
+# Manifest Contains short_name {: .page-title }
 
-## Mengapa audit itu penting {: #why }
+## Overview {: #overview }
 
-Setelah pengguna menambahkan aplikasi ke layar beranda, `short_name` adalah teks yang
-ditampilkan pada layar beranda di sebelah ikon aplikasi Anda. Biasanya, itu digunakan bila
-tidak ada cukup ruang untuk menampilkan nama lengkap aplikasi Anda.
+After a user adds your app to the homescreen, the `short_name` is the text that is displayed on the homescreen next to your app icon. In general, it is used wherever there is insufficient space to display the full name of your app.
 
-## Cara untuk lulus audit {: #how }
+## Recommendations {: #recommendations }
 
-Tambahkan properti `short_name` di Manifes Aplikasi Web Anda.
+Add a `short_name` property in your Web App Manifest.
 
     {
       ...
       "short_name": "Air Horner",
       ...
     }
+    
 
-[Rekomendasi panjang
-maksimum](https://developer.chrome.com/apps/manifest/name#short_name) Chrome adalah 12
-karakter.
+Chrome's [maximum recommended length](https://developer.chrome.com/apps/manifest/name#short_name) is 12 characters.
 
-Lihat [Manifest Exists](manifest-exists#how)
-untuk daftar panduan yang mengajarkan Anda cara
-mengimplementasikan dan menguji dukungan "Add to Homescreen" dalam aplikasi Anda dengan benar.
+Check out [Manifest Exists](manifest-exists#recommendations) for a list of guides that teach you how to properly implement and test "Add to Homescreen" support in your app.
 
-{% include "web/tools/lighthouse/audits/implementation-heading.html" %}
+## More information {: #more-info }
 
-Audit diteruskan jika manifes berisi properti `short_name` atau `name`.
-Manifes yang diambil Lighthouse berbeda dari yang digunakan Chrome
-pada laman, yang mungkin bisa menyebabkan hasil yang tidak akurat.
+Audit passes if the manifest contains either `short_name` or `name` property. The manifest that Lighthouse fetches is separate from the one that Chrome is using on the page, which can possibly cause inaccurate results.
 
+## Feedback {: #feedback }
 
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
