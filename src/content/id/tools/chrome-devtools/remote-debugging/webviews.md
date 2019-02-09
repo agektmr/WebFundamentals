@@ -1,40 +1,33 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Debug WebViews di aplikasi asli Android Anda dengan Chrome Developer Tools.
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Debug WebViews in your native Android apps using Chrome Developer Tools.
 
-{# wf_updated_on: 2015-07-29 #}
-{# wf_published_on: 2015-04-13 #}
+{# wf_updated_on: 2018-07-27 #} {# wf_published_on: 2015-04-13 #} {# wf_blink_components: Platform>DevTools #}
 
-# Men-debug WebViews dari Jauh {: .page-title }
+# Remote Debugging WebViews {: .page-title }
 
 {% include "web/_shared/contributors/megginkearney.html" %}
 
-Debug WebViews di aplikasi asli Android Anda dengan Chrome Developer Tools.
+Debug WebViews in your native Android apps using Chrome Developer Tools.
 
-Pada Android 4.4 (KitKat) atau yang lebih baru,
-gunakan DevTools untuk men-debug materi WebView dalam aplikasi asli Android.
-
+On Android 4.4 (KitKat) or later, use DevTools to debug WebView content in native Android applications.
 
 ### TL;DR {: .hide-from-toc }
-- Aktifkan debugging WebView di aplikasi asli Android Anda; debug WebViews di Chrome DevTools.
-- Akses daftar WebViews yang bisa di-debug melalui <strong>chrome://inspect</strong>.
-- Men-debug WebViews sama dengan men-debug laman web melalui <a href='/web/tools/chrome-devtools/debug/remote-debugging'>debug dari jauh</a>.
 
+* Enable WebView debugging in your native Android app; debug WebViews in Chrome DevTools.
+* Access list of debug-enabled WebViews via **chrome://inspect**.
+* Debugging WebViews is the same as debugging a web page through [remote debugging](/web/tools/chrome-devtools/debug/remote-debugging).
 
-## Mengonfigurasi WebViews untuk debugging
+## Configure WebViews for debugging
 
-Debugging WebView harus diaktifkan dari dalam aplikasi Anda. Untuk mengaktifkan debug WebView, panggil metode statis [setWebContentsDebuggingEnabled](https://developer.android.com/reference/android/webkit/WebView.html#setWebContentsDebuggingEnabled(boolean)) pada kelas WebView.
-
+WebView debugging must be enabled from within your application. To enable WebView debugging, call the static method [setWebContentsDebuggingEnabled](https://developer.android.com/reference/android/webkit/WebView.html#setWebContentsDebuggingEnabled(boolean)) on the WebView class.
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
         WebView.setWebContentsDebuggingEnabled(true);
     }
     
 
-Setelan ini diterapkan ke semua WebViews aplikasi.
+This setting applies to all of the application's WebViews.
 
-**Tip**: Debug WebView **tidak** dipengaruhi oleh status flag `debuggable` di manifes aplikasi. Jika Anda ingin mengaktifkan debug WebView hanya bila `debuggable` adalah `true`, uji flag di waktu proses.
-
+**Tip**: WebView debugging is **not** affected by the state of the `debuggable` flag in the application's manifest. If you want to enable WebView debugging only when `debuggable` is `true`, test the flag at runtime.
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
         if (0 != (getApplicationInfo().flags & ApplicationInfo.FLAG_DEBUGGABLE))
@@ -42,22 +35,23 @@ Setelan ini diterapkan ke semua WebViews aplikasi.
     }
     
 
-## Membuka WebView di DevTools
+## Open a WebView in DevTools
 
-Laman **chrome://inspect** menampilkan daftar WebViews yang bisa di-debug pada perangkat Anda.
+The **chrome://inspect** page displays a list of debug-enabled WebViews on your device.
 
-Untuk memulai debugging, klik **inspect** di bawah WebView yang ingin Anda debug. Gunakan DevTools seperti yang Anda lakukan untuk tab browser remote.
+To start debugging, click **inspect** below the WebView you want to debug. Use DevTools as you would for a remote browser tab.
 
-![Memeriksa elemen di WebView](imgs/webview-debugging.png)
+![Inspecting elements in a WebView](imgs/webview-debugging.png)
 
-Grafik berwarna abu-abu yang tercantum dengan WebView merepresentasikan ukuran dan posisi relatifnya terhadap layar perangkat. Jika WebViews Anda telah disetel dengan judul, judulnya juga akan dicantumkan.
+The gray graphics listed with the WebView represent its size and position relative to the device's screen. If your WebViews have titles set, the titles are listed as well.
 
-## Pemecahan Masalah
+## Troubleshooting
 
-Tidak bisa melihat WebViews Anda di **laman chrome://inspect**?
+Can't see your WebViews on the **chrome://inspect page**?
 
-* Verifikasi debug WebView telah diaktifkan untuk aplikasi Anda.
-* Di perangkat Anda, buka aplikasi dengan WebView yang ingin Anda debug. Kemudian, segarkan laman **chrome://inspect**.
+* Verify that WebView debugging is enabled for your app.
+* On your device, open the app with the WebView you want to debug. Then, refresh the **chrome://inspect** page.
 
+## Feedback {: #feedback }
 
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
