@@ -1,213 +1,177 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Pelajari cara menavigasi Konsol JavaScript di Chrome DevTools.
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Learn how to navigate the Chrome DevTools JavaScript Console.
 
-{# wf_updated_on: 2019-02-06 #}
-{# wf_published_on: 2015-05-10 #}
-{# wf_blink_components: Platform>DevTools #}
+{# wf_updated_on: 2018-07-27 #} {# wf_published_on: 2015-05-10 #} {# wf_blink_components: Platform>DevTools #}
 
-# Menggunakan Console {: .page-title }
+# Using the Console {: .page-title }
 
-{% include "web/_shared/contributors/kaycebasques.html" %}
-{% include "web/_shared/contributors/andismith.html" %}
-{% include "web/_shared/contributors/megginkearney.html" %}
-{% include "web/_shared/contributors/pbakaus.html" %}
+{% include "web/_shared/contributors/kaycebasques.html" %} {% include "web/_shared/contributors/andismith.html" %} {% include "web/_shared/contributors/megginkearney.html" %} {% include "web/_shared/contributors/pbakaus.html" %}
 
-Pelajari cara: membuka DevTools Console, menumpuk pesan 
-berlebihan atau menampilkannya di baris masing-masing, menghapus atau mempertahankan 
-keluaran atau menyimpannya ke file, memfilter keluaran, dan mengakses setelan
-Console tambahan.
+Learn how to: open the DevTools Console, stack redundant messages or display them on their own lines, clear or persist output or save it to a file, filter output, and access additional Console settings.
 
 ### TL;DR {: .hide-from-toc }
-- Buka Console sebagai panel tersendiri atau sebagai panel samping di sebelah panel lain.
-- Tumpuk pesan yang berlebihan, atau tampilkan di barisnya masing-masing.
-- Hapus atau pertahankan output antarhalaman, atau simpan ke file.
-- Filter output menurut tingkat keseriusannya, dengan menyembunyikan pesan jaringan, atau dengan pola ekspresi reguler.
 
-## Membuka Console
+* Open the Console as a dedicated panel or as a drawer next to any other panel.
+* Stack redundant messages, or display them on their own lines.
+* Clear or persist output between pages, or save it to a file.
+* Filter output by severity level, by hiding network messages, or by regular expression patterns.
 
-Akses Console sebagai panel layar-penuh tersendiri:
+## Opening the Console
 
-![Panel Console](images/console-panel.png)
+Access the Console as a full-screen, dedicated panel:
 
-Atau berupa panel samping yang dibuka di sebelah panel lain:
+![The Console panel](images/console-panel.png)
 
-![Panel samping Console](images/console-drawer.png)
+Or as a drawer that opens next to any other panel:
 
-### Buka sebagai panel
+![The Console drawer](images/console-drawer.png)
 
-Untuk membuka panel **Console**:
+### Open as panel
 
-* Tekan <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>J</kbd> (Windows / Linux) atau
-  <kbd>Cmd</kbd>+<kbd>Opt</kbd>+<kbd class="kbd">J</kbd> (Mac).
-* Jika DevTools terbuka, tekan tombol **Console**.
+To open the dedicated **Console** panel, either:
 
-Bila Anda membuka panel Console, panel samping Console akan diciutkan secara otomatis.
+* Press <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>J</kbd> (Windows / Linux) or <kbd>Cmd</kbd>+<kbd>Opt</kbd>+<kbd class="kbd">J</kbd> (Mac).
+* If DevTools is already open, press the **Console** button.
 
-### Buka sebagai panel samping
+When you open the Console panel, the Console drawer collapses automatically.
 
-Untuk membuka Console sebagai panel samping di sebelah panel lain, lakukan salah satu hal berikut:
+### Open as drawer
 
-* Tekan <kbd>Esc</kbd> saat DevTools terfokus.
-* Tekan tombol **Customize and control DevTools** dan tekan tombol 
-  **Show console**.
+To open the Console as a drawer next to any other panel, either:
+
+* Press <kbd>Esc</kbd> while DevTools is in focus.
+* Press the **Customize and control DevTools** button and then press **Show console**.
 
 ![Show console](images/show-console.png)
 
-## Penumpukan pesan
+## Message stacking
 
-Jika pesan diulang secara berturutan, Console tidak akan mencetak setiap
-contoh pesan pada baris baru, tetapi "menumpuk" pesan tersebut
-dan menampilkan angka di margin kiri. Angka itu menunjukkan berapa kali
-pesan diulangi.
+If a message is consecutively repeated, rather than printing out each instance of the message on a new line, the Console "stacks" the messages and shows a number in the left margin instead. The number indicates how many times the message has repeated.
 
-![Penumpukan pesan](images/message-stacking.png)
+![Message stacking](images/message-stacking.png)
 
-Jika Anda lebih menyukai entri baris sendiri-sendiri untuk setiap log, aktifkan **Show timestamps**
-dari pengaturan DevTools.
+If you prefer a unique line entry for every log, enable **Show timestamps** from the DevTools settings.
 
 ![Show timestamps](images/show-timestamps.png)
 
-Karena stempel waktu setiap pesan berbeda, setiap pesan akan ditampilkan
-pada barisnya sendiri.
+Since the timestamp of each message is different, each message is displayed on its own line.
 
-![Konsol stempel waktu](images/timestamped-console.png)
+![Timestamped console](images/timestamped-console.png)
 
-## Menggunakan histori Console
+## Working with the Console history
 
-### Mengosongkan histori {: #clearing}
+### Clearing the history {: #clearing}
 
-Anda bisa mengosongkan histori konsol dengan melakukan salah satu hal berikut:
+You can clear the console history by doing any of the following:
 
-* Klik kanan Console dan tekan **Clear console**.
-* Ketikkan `clear()` di Console.
-* Panggil `console.clear()` dari dalam kode JavaScript.
-* Tekan <kbd class="kbd">Ctrl</kbd>+<kbd class="kbd">L</kbd> 
-  (Mac, Windows, Linux).
+* Right-click in the Console and press **Clear console**.
+* Type `clear()` in the Console.
+* Call `console.clear()` from within your JavaScript code.
+* Type <kbd class="kbd">Ctrl</kbd>+<kbd class="kbd">L</kbd> (Mac, Windows, Linux).
 
-### Mempertahankan histori {: #preserve-log}
+### Persisting the history {: #preserve-log}
 
-Aktifkan kotak centang **Preserve log** di bagian atas konsol untuk mempertahankan
-histori konsol di sela penyegaran atau perubahan laman. Pesan akan disimpan
-hingga Anda mengosongkan Console atau menutup tab.
+Enable the **Preserve log** checkbox at the top of the console to persist the console history between page refreshes or changes. Messages will be stored until you clear the Console or close the tab.
 
-### Menyimpan histori
+### Saving the history
 
-Klik kanan di Console dan pilih **Save as** untuk menyimpan keluaran
-konsol ke file log.
+Right-click in the Console and select **Save as** to save the output of the console to a log file.
 
-![Simpan Console ke file log](images/console-save-as.png)
+![Save Console to log file](images/console-save-as.png)
 
-## Memilih konteks eksekusi {: #execution-context }
+## Selecting execution context {: #execution-context }
 
-Menu tarik-turun yang disorot biru di tangkapan layar berikut disebut
-**Pemilih Konteks Eksekusi**.
+The dropdown menu highlighted in blue in the screenshot below is called the **Execution Context Selector**.
 
-![Pemilih Konteks Eksekusi](images/execution-context-selector.png)
+![Execution Context Selector](images/execution-context-selector.png)
 
-Biasanya konteks disetel ke `top` (bingkai atas laman).
+You'll usually see the context set to `top` (the top frame of the page).
 
-Bingkai dan ekstensi lain beroperasi di konteksnya masing-masing. Untuk menggarap konteks
-lain ini, Anda perlu memilihnya dari menu tarik-turun. Misalnya,
-jika ingin melihat keluaran log elemen `<iframe>` dan mengubah
-variabel yang berada di konteks itu, Anda perlu memilihnya dari
-menu tarik-turun Pemilih Konteks Eksekusi.
+Other frames and extensions operate in their own context. To work with these other contexts you need to select them from the dropdown menu. For example, if you wanted to see the logging output of an `<iframe>` element and modify a variable that exists within that context, you'd need to select it from the Execution Context Selector dropdown menu.
 
-Secara default Console berada dalam konteks `top`, kecuali jika Anda mengakses DevTools dengan
-memeriksa elemen di dalam konteks lain. Misalnya, jika Anda memeriksa
-elemen `<p>` di dalam konteks `<iframe>`, DevTools menyetel Pemilih
-Konteks Eksekusi ke konteks `<iframe>` tersebut.
+The Console defaults to the `top` context, unless you access DevTools by inspecting an element within another context. For example, if you inspect a `<p>` element within an `<iframe>`, then DevTools sets the Execution Context Selector to the context of that `<iframe>`.
 
-Saat Anda sedang menggarap konteks selain `top`, DevTools menyoroti
-Pemilih Konteks Eksekusi dengan warna merah, seperti dalam screenshot berikut. Ini karena
-developer jarang perlu menggarap konteks selain `top`. Tentu
-membingungkan kalau kita mengetikkan suatu variabel, mengharapkan suatu nilai, tetapi malah melihat bahwa
-variabel itu `undefined` (karena definisinya berada di konteks lain).
+When you're working in a context other than `top`, DevTools highlights the Execution Context Selector red, as in the screenshot below. This is because developers rarely need to work in any context other than `top`. It can be pretty confusing to type in a variable, expecting a value, only to see that it's `undefined` (because it's defined in a different context).
 
-![Pemilih Konteks Eksekusi disorot merah](images/non-top-context.png)
+![Execution Context Selector highlighted red](images/non-top-context.png)
 
-## Memfilter keluaran Console
+## Filtering the Console output
 
-Klik tombol **Filter** 
-(![tombol filter](images/filter-button.png){:.inline})
-untuk memfilter keluaran console. Anda bisa memfilter menurut tingkat keseriusan, menurut ekspresi 
-reguler, atau dengan menyembunyikan pesan jaringan.
+Click the **Filter** button (![filter button](images/filter-button.png){:.inline}) to filter console output. You can filter by severity level, by a regular expression, or by hiding network messages.
 
-![Keluaran Konsol Difilter](images/filtered-console.png)
+![Filtered Console output](images/filtered-console.png)
 
-Memfilter menurut tingkat keparahan setara dengan yang berikut ini:
+Filtering by severity level is equivalent to the following:
 
 <table class="responsive">
   <thead>
      <tr>
-      <th colspan="2">Opsi &amp; Tampilan</th>
+      <th colspan="2">Option &amp; Shows</th>
     </tr>   
   </thead>
   <tbody>
   <tr>
-    <td>Semua</td>
-    <td>Menampilkan semua keluaran konsol</td>
+    <td>All</td>
+    <td>Shows all console output</td>
   </tr>
   <tr>
     <td>Errors</td>
-    <td>Hanya menampilkan keluaran dari <a href="/web/tools/chrome-devtools/debug/console/console-reference#consoleerrorobject--object-">console.error()</a>.</td>
+    <td>Only show output from <a href="/web/tools/chrome-devtools/debug/console/console-reference#consoleerrorobject--object-">console.error()</a>.</td>
   </tr>
   <tr>
     <td>Warnings</td>
-    <td>Hanya menampilkan keluaran dari <a href="/web/tools/chrome-devtools/debug/console/console-reference#consolewarnobject--object-">console.warn()</a>.</td>
+    <td>Only show output from <a href="/web/tools/chrome-devtools/debug/console/console-reference#consolewarnobject--object-">console.warn()</a>.</td>
   </tr>
   <tr>
     <td>Info</td>
-    <td>Hanya menampilkan keluaran dari <a href="/web/tools/chrome-devtools/debug/console/console-reference#consoleinfoobject--object-">console.info()</a>.</td>
+    <td>Only show output from <a href="/web/tools/chrome-devtools/debug/console/console-reference#consoleinfoobject--object-">console.info()</a>.</td>
   </tr>
   <tr>
     <td>Logs</td>
-    <td>Hanya menampilkan keluaran dari <a href="/web/tools/chrome-devtools/debug/console/console-reference#consolelogobject--object-">console.log()</a>.</td>
+    <td>Only show output from <a href="/web/tools/chrome-devtools/debug/console/console-reference#consolelogobject--object-">console.log()</a>.</td>
   </tr>
   <tr>
     <td>Debug</td>
-    <td>Hanya menampilkan keluaran dari <a href="/web/tools/chrome-devtools/debug/console/console-reference#consoletimeendlabel">console.timeEnd()</a> dan <a href="/web/tools/chrome-devtools/debug/console/console-reference#consoledebugobject--object-">console.debug()</a>.</td>
+    <td>Only show output from <a href="/web/tools/chrome-devtools/debug/console/console-reference#consoletimeendlabel">console.timeEnd()</a> and <a href="/web/tools/chrome-devtools/debug/console/console-reference#consoledebugobject--object-">console.debug()</a>.</td>
   </tr>
   </tbody>
 </table>
 
-## Setelan tambahan
+## Additional settings
 
-Buka setelan DevTools, masuk ke tab **General**, dan scroll ke bawah hingga
-bagian **Console** untuk melihat setelan Console lebih lanjut.
+Open the DevTools settings, go to the **General** tab, and scroll down to the **Console** section for further Console settings.
 
-![Setelan konsol](images/console-settings.png)
+![Console settings](images/console-settings.png)
 
 <table class="responsive">
   <thead>
      <tr>
-      <th colspan="2">Setelan &amp; Keterangan</th>
+      <th colspan="2">Setting &amp; Description</th>
     </tr>   
   </thead>
   <tbody>
   <tr>
     <td>Hide network messages</td>
-    <td>Secara default, konsol melaporkan masalah jaringan. Mengaktifkannya akan menginstruksikan konsol agar tidak menampilkan log error ini. Misalnya, error seri 404 dan 500 tidak akan dimasukkan ke log.</td>
+    <td>By default, the console reports network issues. Turning this on instructs the console to not show logs for these errors. For example, 404 and 500 series errors will not be logged.</td>
   </tr>
   <tr>
     <td>Log XMLHttpRequests</td>
-    <td>Menentukan apakah konsol merekam log setiap XMLHttpRequest.</td>
+    <td>Determines if the console logs each XMLHttpRequest.</td>
   </tr>
   <tr>
     <td>Preserve log upon navigation</td>
-    <td>Mempertahankan histori konsol selama penyegaran laman atau navigasi.</td>
+    <td>Persists the console history during page refreshes or navigation.</td>
   </tr>
   <tr>
     <td>Show timestamps</td>
-    <td>Menyertakan stempel waktu ke setiap pesan konsol, menunjukkan kapan panggilan itu dibuat. Berguna untuk men-debug saat terjadi kejadian tertentu. Ini akan menonaktifkan penumpukan pesan.</td>
+    <td>Prepends a timestamp to each console message showing when the call was made. Useful for debugging when a certain event occurred. This will disable message stacking.</td>
   </tr>
   <tr>
     <td>Enable custom formatters</td>
-    <td>Mengontrol <a href="https://docs.google.com/document/d/1FTascZXT9cxfetuPRT2eXPQKXui4nWFivUnS_335T3U/preview">format</a> objek JavaScript.</td>
+    <td>Control the <a href="https://docs.google.com/document/d/1FTascZXT9cxfetuPRT2eXPQKXui4nWFivUnS_335T3U/preview">formatting</a> of JavaScript objects.</td>
   </tr>
   </tbody>
 </table>
 
-## Masukan {: #feedback }
+## Feedback {: #feedback }
 
 {% include "web/_shared/helpful.html" %}
