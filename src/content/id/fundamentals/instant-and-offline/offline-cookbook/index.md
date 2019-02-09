@@ -1,55 +1,32 @@
-project_path: /web/fundamentals/_project.yaml
-book_path: /web/fundamentals/_book.yaml
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml
 
-{# wf_updated_on: 2019-02-06 #}
-{# wf_published_on: 2014-12-09 #}
-{# wf_blink_components: N/A #}
+{# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2014-12-09 #} {# wf_blink_components: N/A #}
 
-# Cookbook Offline {: .page-title }
+# The Offline Cookbook {: .page-title }
 
 {% include "web/_shared/contributors/jakearchibald.html" %}
 
-Jika AppCache tiba di lokasi, ini akan memberi kita beberapa pola untuk membuat
-konten berfungsi offline. Jika pola tersebut memang yang Anda butuhkan, selamat,
-Anda memenangi undian AppCache (jackpot tidak diklaim), namun sebagian dari kita
-tetap berjubel di pojok
-[bergoyang maju-mundur](http://alistapart.com/article/application-cache-is-a-douchebag).
+When AppCache arrived on the scene it gave us a couple of patterns to make content work offline. If those were the patterns you needed, congratulations, you won the AppCache lottery (the jackpot remains unclaimed), but the rest of us were left huddled in a corner [rocking back & forth](http://alistapart.com/article/application-cache-is-a-douchebag).
 
-Dengan [ServiceWorker][sw_primer] kami menyerah mencoba mengatasi offline, dan
-memberi developer suku cadang untuk mengatasinya sendiri. Ini memberi Anda
-kontrol atas proses cache dan cara menangani permintaan. Ini artinya Anda harus
-membuat pola sendiri. Mari kita lihat beberapa kemungkinan pola secara
-terpisah, namun pada praktiknya Anda kemungkinan akan menggunakan banyak pola tersebut sekaligus
-bergantung pada URL & konteks.
+With [ServiceWorker](/web/fundamentals/getting-started/primers/service-workers) we gave up trying to solve offline, and gave developers the moving parts to go solve it themselves. It gives you control over caching and how requests are handled. That means you get to create your own patterns. Let's take a look at a few possible patterns in isolation, but in practice you'll likely use many of them in tandem depending on URL & context.
 
-Semua contoh kode saat ini berfungsi di Chrome & Firefox, kecuali disebutkan lain.
-Untuk detail selengkapnya tentang dukungan service worker, lihat ["Apakah Service Worker Siap?"][is_sw_ready].
+All code examples work today in Chrome & Firefox, unless otherwise noted. For full details on service worker support, see ["Is Service Worker Ready?"](https://jakearchibald.github.io/isserviceworkerready/).
 
-Untuk demo beberapa pola ini yang dapat digunakan, lihat [Trained-to-thrill][ttt],
-dan [video ini](https://www.youtube.com/watch?v=px-J9Ghvcx4)
-yang menampilkan dampak performa.
+For a working demo of some of these patterns, see [Trained-to-thrill](https://jakearchibald.github.io/trained-to-thrill/), and [this video](https://www.youtube.com/watch?v=px-J9Ghvcx4) showing the performance impact.
 
-## Mesin cache - kapan menyimpan resource
+## The cache machine - when to store resources
 
-[ServiceWorker][sw_primer] memungkinkan Anda menangani permintaan secara independen dari
-caching, jadi kami akan melihatnya secara terpisah. Yang pertama, caching, kapan harus
-melakukannya?
+[ServiceWorker](/web/fundamentals/getting-started/primers/service-workers) lets you handle requests independently from caching, so we'll look at them separately. First up, caching, when should it be done?
 
-### Saat menginstal - sebagai dependensi {: #on-install-as-dependency }
+### On install - as a dependency {: #on-install-as-dependency }
 
-<img src="images/cm-on-install-dep.png">
+<img src="images/cm-on-install-dep.png" />
 
-ServiceWorker memberi Anda peristiwa `install`. Anda dapat menggunakannya untuk menyiapkan
-berbagai item yang harus sudah siap sebelum Anda menangani peristiwa lainnya. Saat ini
-terjadi, ServiceWorker versi sebelumnya tetap berjalan &
-menayangkan halaman, jadi tindakan yang Anda lakukan di sini tidak boleh mengganggunya.
+ServiceWorker gives you an `install` event. You can use this to get stuff ready, stuff that must be ready before you handle other events. While this happens any previous version of your ServiceWorker is still running & serving pages, so the things you do here mustn't disrupt that.
 
-**Ideal untuk:** CSS, gambar, font, JS, template… apa pun yang Anda
-anggap statis untuk "versi" situs Anda tersebut.
+**Ideal for:** CSS, images, fonts, JS, templates… basically anything you'd consider static to that "version" of your site.
 
-Inilah item yang akan membuat situs Anda sama sekali tidak berfungsi jika sampai
-gagal diambil, item yang dijadikan oleh aplikasi native yang setara sebagai bagian dari
-download awal.
+These are things that would make your site entirely non-functional if they failed to fetch, things an equivalent native-app would make part of the initial download.
 
     self.addEventListener('install', function(event) {
       event.waitUntil(
@@ -64,27 +41,19 @@ download awal.
         })
       );
     });
+    
 
-`event.waitUntil` menggunakan promise untuk menentukan durasi & keberhasilan
-penginstalan. Jika promise ditolak, penginstalan dianggap gagal
-dan ServiceWorker ini akan ditinggalkan (jika versi lama
-berjalan, maka akan dibiarkan). `caches.open` dan `cache.addAll` menampilkan
-promise. Jika ada resource tersebut yang gagal diambil, pemanggilan `cache.addAll` akan
-ditolak.
+`event.waitUntil` takes a promise to define the length & success of the install. If the promise rejects, the installation is considered a failure and this ServiceWorker will be abandoned (if an older version is running, it'll be left intact). `caches.open` and `cache.addAll` return promises. If any of the resources fail to fetch, the `cache.addAll` call rejects.
 
-Saat [trained-to-thrill][ttt] saya menggunakan ini untuk
-[menyimpan cache aset statis](https://github.com/jakearchibald/trained-to-thrill/blob/3291dd40923346e3cc9c83ae527004d502e0464f/www/static/js-unmin/sw/index.js#L3).
+On [trained-to-thrill](https://jakearchibald.github.io/trained-to-thrill/) I use this to [cache static assets](https://github.com/jakearchibald/trained-to-thrill/blob/3291dd40923346e3cc9c83ae527004d502e0464f/www/static/js-unmin/sw/index.js#L3).
 
+### On install - not as a dependency {: #on-install-not }
 
-### Saat menginstal - bukan sebagai dependensi {: #on-install-not }
+<img src="images/cm-on-install-not.png" />
 
-<img src="images/cm-on-install-not.png">
+Similar to above, but won't delay install completing and won't cause installation to fail if caching fails.
 
-Serupa dengan di atas, namun tidak akan menunda diselesaikannya penginstalan dan tidak akan menyebabkan
-penginstalan gagal jika caching gagal.
-
-**Ideal untuk:** Resource lebih besar yang tidak langsung diperlukan, seperti
-aset untuk level game selanjutnya.
+**Ideal for:** Bigger resources that aren't needed straight away, such as assets for later levels of a game.
 
     self.addEventListener('install', function(event) {
       event.waitUntil(
@@ -98,27 +67,19 @@ aset untuk level game selanjutnya.
         })
       );
     });
+    
 
-Kami tidak meneruskan promise `cache.addAll` untuk level 11-20 kembali ke
-`event.waitUntil`, jadi meski ini gagal, game akan tetap tersedia
-offline. Tentu saja, Anda harus mengantisipasi kemungkinan tidak adanya
-level tersebut & mencoba lagi caching jika tidak ada.
+We're not passing the `cache.addAll` promise for levels 11-20 back to `event.waitUntil`, so even if it fails, the game will still be available offline. Of course, you'll have to cater for the possible absence of those levels & reattempt caching them if they're missing.
 
-ServiceWorker dapat dimatikan saat level 11-20 didownload karena
-peristiwa penanganannya telah selesai, yang berarti ini tidak akan disimpan sebagai cache. Di masa mendatang, kami berencana
-menambahkan API download latar belakang untuk menangani kasus seperti ini, dan
-download yang lebih besar seperti film.
+The ServiceWorker may be killed while levels 11-20 download since it's finished handling events, meaning they won't be cached. In future we plan to add a background downloading API to handle cases like this, and larger downloads such as movies.
 
-### Saat mengaktifkan {: #on-activate }
+### On activate {: #on-activate }
 
-<img src="images/cm-on-activate.png">
+<img src="images/cm-on-activate.png" />
 
-**Ideal untuk:** Pembersihan & migrasi.
+**Ideal for:** Clean-up & migration.
 
-Setelah ServiceWorker baru diinstal & versi sebelumnya tidak sedang digunakan,
-ServiceWorker baru tersebut diaktifkan, dan Anda mendapatkan peristiwa `activate`. Karena
-versi lama sudah tidak sesuai, inilah saat yang tepat untuk menangani migrasi skema di
-IndexedDB serta menghapus cache yang tidak digunakan.
+Once a new ServiceWorker has installed & a previous version isn't being used, the new one activates, and you get an `activate` event. Because the old version is out of the way, it's a good time to handle schema migrations in IndexedDB and also delete unused caches.
 
     self.addEventListener('activate', function(event) {
       event.waitUntil(
@@ -135,29 +96,23 @@ IndexedDB serta menghapus cache yang tidak digunakan.
         })
       );
     });
+    
 
-Selama proses aktivasi, peristiwa lain seperti `fetch` dimasukkan ke antrean, sehingga
-aktivasi yang lama dapat berpotensi memblokir pemuatan halaman. Pertahankan proses aktivasi
-sesingkat mungkin, gunakan hanya untuk you _couldn't_ do saat
-versi lama aktif.
+During activation, other events such as `fetch` are put into a queue, so a long activation could potentially block page loads. Keep your activation as lean as possible, only use it for things you *couldn't* do while the old version was active.
 
-Saat [trained-to-thrill][ttt] saya menggunakan ini untuk
-[menghapus cache lama](https://github.com/jakearchibald/trained-to-thrill/blob/3291dd40923346e3cc9c83ae527004d502e0464f/www/static/js-unmin/sw/index.js#L17).
+On [trained-to-thrill](https://jakearchibald.github.io/trained-to-thrill/) I use this to [remove old caches](https://github.com/jakearchibald/trained-to-thrill/blob/3291dd40923346e3cc9c83ae527004d502e0464f/www/static/js-unmin/sw/index.js#L17).
 
-### Saat interaksi pengguna {: #on-user-interaction }
+### On user interaction {: #on-user-interaction }
 
-<img src="images/cm-on-user-interaction.png">
+<img src="images/cm-on-user-interaction.png" />
 
-**Ideal untuk:** Jika seluruh situs tidak dapat diambil secara offline, Anda dapat mengizinkan
-pengguna memilih konten yang diinginkan pengguna tersedia secara offline. Mis. video mengenai
-sesuatu seperti YouTube, artikel di Wikipedia, atau galeri khusus di Flickr.
+**Ideal for:** If the whole site can't be taken offline, you may allow the user to select the content they want available offline. E.g. a video on something like YouTube, an article on Wikipedia, a particular gallery on Flickr.
 
-Berikan tombol "Baca nanti" atau "Simpan untuk offline". Jika tombol ini
-diklik, mengambil yang Anda butuhkan dari jaringan & memunculkannya di cache.
+Give the user a "Read later" or "Save for offline" button. When it's clicked, fetch what you need from the network & pop it in the cache.
 
     document.querySelector('.cache-article').addEventListener('click', function(event) {
       event.preventDefault();
-
+    
       var id = this.dataset.articleId;
       caches.open('mysite-article-' + id).then(function(cache) {
         fetch('/get-article-urls?id=' + id).then(function(response) {
@@ -169,27 +124,19 @@ diklik, mengambil yang Anda butuhkan dari jaringan & memunculkannya di cache.
         });
       });
     });
+    
 
-[Caches API][caches_api] tersedia dari halaman begitu pula service
-worker, ini berarti Anda tidak perlu melibatkan service worker untuk menambahkan item
-ke cache.
+The [caches API](https://developer.mozilla.org/en-US/docs/Web/API/Cache) is available from pages as well as service workers, meaning you don't need to involve the service worker to add things to the cache.
 
+### On network response {: #on-network-response }
 
-### Saat respons jaringan {: #on-network-response }
+<img src="images/cm-on-network-response.png" />
 
-<img src="images/cm-on-network-response.png">
+**Ideal for:** Frequently updating resources such as a user's inbox, or article contents. Also useful for non-essential content such as avatars, but care is needed.
 
-**Ideal untuk:** Memperbarui resource secara berkala, seperti kotak masuk pengguna atau
-konten artikel. Juga berguna untuk konten non-esensial seperti avatar,
-namun perlu hati-hati.
+If a request doesn't match anything in the cache, get it from the network, send it to the page & add it to the cache at the same time.
 
-Jika permintaan tidak cocok dengan item di cache, ambil dari jaringan,
-kirimkan ke halaman & tambahkan ke cache pada waktu yang sama.
-
-Jika Anda melakukannya untuk beragam URL, seperti avatar, Anda perlu
-berhati-hati agar tidak membuat penyimpanan asal Anda menjadi terlalu besar — jika pengguna perlu
-menggunakan kembali ruang disk, Anda tentu tidak ingin menjadi kandidat utama. Pastikan Anda
-menghapus item di cache yang tidak diperlukan lagi.
+If you do this for a range of URLs, such as avatars, you'll need to be careful you don't bloat the storage of your origin — if the user needs to reclaim disk space you don't want to be the prime candidate. Make sure you get rid of items in the cache you don't need any more.
 
     self.addEventListener('fetch', function(event) {
       event.respondWith(
@@ -203,24 +150,19 @@ menghapus item di cache yang tidak diperlukan lagi.
         })
       );
     });
+    
 
-Agar penggunaan memori efisien, Anda hanya dapat membaca isi respons/permintaan
-satu kali. Dalam kode di atas,
-[`.clone()`](https://fetch.spec.whatwg.org/#dom-request-clone) digunakan untuk 
-membuat salinan tambahan yang bisa dibaca secara terpisah.
+To allow for efficient memory usage, you can only read a response/request's body once. In the code above, [`.clone()`](https://fetch.spec.whatwg.org/#dom-request-clone) is used to create additional copies that can be read separately.
 
-Saat [trained-to-thrill][ttt] saya menggunakan ini untuk menyimpan
-[cache gambar Flickr](https://github.com/jakearchibald/trained-to-thrill/blob/3291dd40923346e3cc9c83ae527004d502e0464f/www/static/js-unmin/sw/index.js#L109).
+On [trained-to-thrill](https://jakearchibald.github.io/trained-to-thrill/) I use this to [cache Flickr images](https://github.com/jakearchibald/trained-to-thrill/blob/3291dd40923346e3cc9c83ae527004d502e0464f/www/static/js-unmin/sw/index.js#L109).
 
 ### Stale-while-revalidate {: #stale-while-revalidate }
 
-<img src="images/cm-stale-while-revalidate.png">
+<img src="images/cm-stale-while-revalidate.png" />
 
-**Ideal untuk:** Memperbarui resource secara berkala jika
-versi terbaru tidak esensial untuk didapatkan. Avatar dapat dimasukkan dalam kategori ini.
+**Ideal for:** Frequently updating resources where having the very latest version is non-essential. Avatars can fall into this category.
 
-Gunakan ini jika tersedia versi yang di-cache, namun untuk yang berikutnya
-ambil pembaruan.
+If there's a cached version available, use it, but fetch an update for next time.
 
     self.addEventListener('fetch', function(event) {
       event.respondWith(
@@ -235,25 +177,17 @@ ambil pembaruan.
         })
       );
     });
+    
 
-Ini sangat mirip dengan HTTP's
-[stale-while-revalidate](https://www.mnot.net/blog/2007/12/12/stale).
+This is very similar to HTTP's [stale-while-revalidate](https://www.mnot.net/blog/2007/12/12/stale).
 
-### Di pesan push {: #on-push-message }
+### On push message {: #on-push-message }
 
-<img src="images/cm-on-push.png">
+<img src="images/cm-on-push.png" />
 
-[Push API](/web/fundamentals/push-notifications)
-adalah fitur lain yang dibuat selain ServiceWorker. Ini memungkinkan
-ServiceWorker diaktifkan untuk merespons pesan dari
-layanan messaging OS. Ini terjadi bahkan jika pengguna tidak memiliki tab yang dibuka untuk
-situs Anda, hanya ServiceWorker yang diaktifkan. Anda meminta izin melakukannya
-dari halaman & pengguna akan ditanyai.
+The [Push API](/web/fundamentals/push-notifications) is another feature built on top of ServiceWorker. This allows the ServiceWorker to be awoken in response to a message from the OS's messaging service. This happens even when the user doesn't have a tab open to your site, only the ServiceWorker is woken up. You request permission to do this from a page & the user will be prompted.
 
-**Ideal untuk:** Konten yang berkaitan dengan notifikasi, seperti pesan
-chat, artikel berita terbaru, atau email. Selain itu perubahan konten
-yang tidak sering yang memanfaatkan sinkronisasi langsung, seperti pembaruan agenda kerja
-atau pengubahan kalender.
+**Ideal for:** Content relating to a notification, such as a chat message, a breaking news story, or an email. Also infrequently changing content that benefits from immediate sync, such as a todo list update or a calendar alteration.
 
 <div class="video-wrapper">
   <iframe class="devsite-embedded-youtube-video" data-video-id="0i7YdSEQI1w"
@@ -261,21 +195,13 @@ atau pengubahan kalender.
   </iframe>
 </div>
 
-Hasil akhir umum adalah notifikasi yang, jika di-tap,
-akan membuka/memfokuskan halaman yang relevan, namun memperbarui cache sebelum ini terjadi adalah
-_extremely_ important. Pengguna jelas online pada saat menerima
-pesan push, namun mungkin tidak demikian jika pengguna pada akhirnya berinteraksi dengan
-notifikasi tersebut, jadi membuat konten ini tersedia secara offline adalah penting. Aplikasi
-native Twitter, yang untuk sebagian besarnya adalah contoh bagus bagi
-offline-first, sedikit salah memahaminya.
+The common final outcome is a notification which, when tapped, opens/focuses a relevant page, but updating caches before this happens is *extremely* important. The user is obviously online at the time of receiving the push message, but they may not be when they finally interact with the notification, so making this content available offline is important. The Twitter native app, which is for the most part an excellent example of offline-first, gets this a bit wrong.
 
-Tanpa koneksi, Twitter gagal menyediakan konten yang berkaitan dengan
-pesan push. Menge-tapnya tidak akan menghapus notifikasi, sehingga membuat
-pengguna kekurangan informasi dibandingkan sebelum menge-tap. Jangan lakukan ini!
+Without a connection, Twitter fails to provide the content relating to the push message. Tapping it does remove the notification however, leaving the user with less information than before they tapped. Don't do this!
 
 <div style="clear:both;"></div>
 
-Kode ini akan memperbarui cache sebelum menampilkan notifikasi:
+This code updates caches before showing a notification:
 
     self.addEventListener('push', function(event) {
       if (event.data.text() == 'new-email') {
@@ -294,7 +220,7 @@ Kode ini akan memperbarui cache sebelum menampilkan notifikasi:
         );
       }
     });
-
+    
     self.addEventListener('notificationclick', function(event) {
       if (event.notification.tag == 'new-email') {
         // Assume that all of the resources needed to render
@@ -303,23 +229,15 @@ Kode ini akan memperbarui cache sebelum menampilkan notifikasi:
         new WindowClient('/inbox/');
       }
     });
+    
 
+### On background-sync {: #on-background-sync }
 
-### Saat sinkronisasi latar belakang {: #on-background-sync }
+<img src="images/cm-on-bg-sync.png" />
 
-<img src="images/cm-on-bg-sync.png">
+[Background sync](/web/updates/2015/12/background-sync) is another feature built on top of ServiceWorker. It allows you to request background data synchronization as a one-off, or on an (extremely heuristic) interval. This happens even when the user doesn't have a tab open to your site, only the ServiceWorker is woken up. You request permission to do this from a page & the user will be prompted.
 
-[Sinkronisasi latar belakang](/web/updates/2015/12/background-sync)
-adalah fitur lain yang dibuat selain
-ServiceWorker. Ini memungkinkan Anda meminta sinkronisasi data latar belakang
-yang hanya terjadi sekali, atau dengan interval (yang sangat heuristik). Ini terjadi bahkan
-jika pengguna tidak memiliki tab yang dibuka untuk situs Anda, hanya ServiceWorker
-yang diaktifkan. Anda meminta izin melakukannya dari halaman & pengguna
-akan ditanyai.
-
-**Ideal for:** Pembaruan yang tidak mendesak, khususnya yang terjadi secara rutin
-yang membuat pesan push per pembaruan akan menjadi terlalu sering, seperti kronologi
-sosial atau artikel berita.
+**Ideal for:** Non-urgent updates, especially those that happen so regularly that a push message per update would be too frequent, such as social timelines or news articles.
 
     self.addEventListener('sync', function(event) {
       if (event.id == 'update-leaderboard') {
@@ -330,16 +248,13 @@ sosial atau artikel berita.
         );
       }
     });
+    
 
+## Cache persistence {: #cache-persistence }
 
-## Persistensi cache {: #cache-persistence }
+Your origin is given a certain amount of free space to do what it wants with. That free space is shared between all origin storage: LocalStorage, IndexedDB, Filesystem, and of course Caches.
 
-Asal Anda akan diberi ruang bebas dalam jumlah tertentu untuk melakukan apa yang diinginkannya.
-Ruang bebas itu digunakan bersama dengan semua penyimpanan asal: LocalStorage,
-IndexedDB, Filesystem, dan tentunya Caches.
-
-Jumlah yang Anda dapatkan tidak ditetapkan, jumlahnya berbeda-beda menurut
-kondisi perangkat dan penyimpanan. Anda dapat mengetahui banyaknya melalui:
+The amount you get isn't spec'd, it will differ depending on device and storage conditions. You can find out how much you've got via:
 
     navigator.storageQuota.queryInfo("temporary").then(function(info) {
       console.log(info.quota);
@@ -347,14 +262,11 @@ kondisi perangkat dan penyimpanan. Anda dapat mengetahui banyaknya melalui:
       console.log(info.usage);
       // Result: <used data in bytes>
     });
+    
 
-Akan tetapi, seperti halnya semua penyimpanan browser, browser bebas menghapusnya
-jika perangkat mengalami tekanan penyimpanan. Sayangnya, browser
-tidak dapat membedakan antara film yang Anda prioritaskan untuk disimpan,
-dan game yang tidak penting bagi Anda.
+However, like all browser storage, the browser is free to throw it away if the device becomes under storage pressure. Unfortunately the browser can't tell the different between those movies you want to keep at all costs, and the game you don't really care about.
 
-Untuk solusinya, ada API yang diusulkan,
-[`requestPersistent`](https://storage.spec.whatwg.org/){: .external }:
+To work around this, there's a proposed API, [`requestPersistent`](https://storage.spec.whatwg.org/){: .external }:
 
     // From a page:
     navigator.storage.requestPersistent().then(function(granted) {
@@ -362,64 +274,51 @@ Untuk solusinya, ada API yang diusulkan,
         // Hurrah, your data is here to stay!
       }
     });
+    
 
-Tentu saja, pengguna harus memberikan izin. Sangat penting untuk menjadikan pengguna sebagai bagian dari
-alur ini, karena kami sekarang dapat meminta pengguna mengontrol penghapusan.
-Jika perangkat mengalami tekanan penyimpanan, dan menghapus
-data non-esensial tidak dapat mengatasinya, pengguna harus memutuskan item mana yang akan
-disimpan dan dihapus.
+Of course, the user has to grant permission. Making the user part of this flow is important, as we can now expect them to be in control of deletion. If their device comes under storage pressure, and clearing non-essential data doesn't solve it, the user gets to make a judgment call on which items to keep and remove.
 
-Agar berfungsi, sistem operasi harus memperlakukan asal yang "tahan lama" sebagai
-setara dengan aplikasi native dalam uraian penggunaan penyimpanan, bukan
-melaporkan browser sebagai satu item.
+For this to work, it requires operating systems to treat "durable" origins as equivalent to native apps in their breakdowns of storage usage, rather than reporting the browser as a single item.
 
+## Serving Suggestions - responding to requests {: #serving-suggestions }
 
-## Saran Penyajian - merespons permintaan {: #serving-suggestions }
+It doesn't matter how much caching you do, the ServiceWorker won't use the cache unless you tell it when & how. Here are a few patterns for handling requests:
 
-Tidak penting berapa banyak cache Anda, ServiceWorker tidak akan menggunakan
-cache kecuali jika Anda memberitahukan waktu & caranya. Berikut ini beberapa pola untuk
-menangani permintaan:
+### Cache only {: #cache-only }
 
-### Hanya cache {: #cache-only }
+<img src="images/ss-cache-only.png" />
 
-<img src="images/ss-cache-only.png">
-
-**Ideal untuk:** Apa pun yang Anda anggap statis untuk "versi" situs Anda tersebut.
-Anda harus menyimpan cache item tersebut di peristiwa penginstalan, jadi Anda dapat mengandalkannya
-di sana.
+**Ideal for:** Anything you'd consider static to that "version" of your site. You should have cached these in the install event, so you can depend on them being there.
 
     self.addEventListener('fetch', function(event) {
       // If a match isn't found in the cache, the response
       // will look like a connection error
       event.respondWith(caches.match(event.request));
     });
+    
 
-…Anda tidak perlu sering menangani kasus ini secara spesifik, namun
-[Cache, fallback ke jaringan](#cache-falling-back-to-network) akan mencakupnya.
+…although you don't often need to handle this case specifically, [Cache, falling back to network](#cache-falling-back-to-network) covers it.
 
-### Hanya jaringan {: #network-only }
+### Network only {: #network-only }
 
-<img src="images/ss-network-only.png">
+<img src="images/ss-network-only.png" />
 
-**Ideal untuk:** Item yang tidak memiliki padanan offline, seperti
-ping analitik, dan permintaan non-GET.
+**Ideal for:** Things that have no offline equivalent, such as analytics pings, non-GET requests.
 
     self.addEventListener('fetch', function(event) {
       event.respondWith(fetch(event.request));
       // or simply don't call event.respondWith, which
       // will result in default browser behaviour
     });
+    
 
-…Anda tidak perlu sering menangani kasus ini secara spesifik, namun
-[Cache, fallback ke jaringan](#cache-falling-back-to-network) akan mencakupnya.
+…although you don't often need to handle this case specifically, [Cache, falling back to network](#cache-falling-back-to-network) covers it.
 
-### Cache, fallback ke jaringan {: #cache-falling-back-to-network }
+### Cache, falling back to network {: #cache-falling-back-to-network }
 
-<img src="images/ss-falling-back-to-network.png">
+<img src="images/ss-falling-back-to-network.png" />
 
-**Ideal untuk:** Jika Anda sedang membuat offline-first, begini cara menangani
-mayoritas permintaan. Pola lainnya akan menjadi pengecualian berdasarkan
-permintaan yang masuk.
+**Ideal for:** If you're building offline-first, this is how you'll handle the majority of requests. Other patterns will be exceptions based on the incoming request.
 
     self.addEventListener('fetch', function(event) {
       event.respondWith(
@@ -428,22 +327,17 @@ permintaan yang masuk.
         })
       );
     });
+    
 
-Ini memberi Anda perilaku "Hanya cache" untuk item yang ada di cache dan perilaku
-"Hanya jaringan" untuk semua item yang tidak di-cache (termasuk semua permintaan non-GET,
-karena semua itu tidak dapat di-cache).
+This gives you the "Cache only" behaviour for things in the cache and the "Network only" behaviour for anything not-cached (which includes all non-GET requests, as they cannot be cached).
 
-### Persaingan cache & jaringan {: #cache-and-network-race }
+### Cache & network race {: #cache-and-network-race }
 
-<img src="images/ss-cache-and-network-race.png">
+<img src="images/ss-cache-and-network-race.png" />
 
-**Ideal for:** Aset kecil jika Anda mengejar performa pada perangkat
-yang memiliki akses disk lambat.
+**Ideal for:** Small assets where you're chasing performance on devices with slow disk access.
 
-Dengan beberapa kombinasi hard drive lama, pemindai virus, dan koneksi
-internet yang lebih cepat, mendapatkan resource dari jaringan bisa lebih cepat daripada
-masuk ke disk. Akan tetapi, masuk ke jaringan jika pengguna memiliki konten di
-perangkatnya dapat menjadi pemborosan data, jadi ini perlu diingat baik-baik.
+With some combinations of older hard drives, virus scanners, and faster internet connections, getting resources from the network can be quicker than going to disk. However, going to the network when the user has the content on their device can be a waste of data, so bear that in mind.
 
     // Promise.race is no good to us because it rejects if
     // a promise rejects before fulfilling. Let's make a proper
@@ -459,7 +353,7 @@ perangkatnya dapat menjadi pemborosan data, jadi ini perlu diingat baik-baik.
           .catch(() => reject(Error("All failed")));
       });
     };
-
+    
     self.addEventListener('fetch', function(event) {
       event.respondWith(
         promiseAny([
@@ -468,25 +362,17 @@ perangkatnya dapat menjadi pemborosan data, jadi ini perlu diingat baik-baik.
         ])
       );
     });
+    
 
+### Network falling back to cache {: #network-falling-back-to-cache }
 
-### Fallback jaringan ke cache {: #network-falling-back-to-cache }
+<img src="images/ss-network-falling-back-to-cache.png" />
 
-<img src="images/ss-network-falling-back-to-cache.png">
+**Ideal for:** A quick-fix for resources that update frequently, outside of the "version" of the site. E.g. articles, avatars, social media timelines, game leader boards.
 
-**Ideal untuk:** Perbaikan cepat untuk sumber daya yang sering diperbarui, di luar
-"versi" situs. Mis. artikel, avatar, kronologi media sosial,
-papan skor game.
+This means you give online users the most up-to-date content, but offline users get an older cached version. If the network request succeeds you'll most-likely want to [update the cache entry](#on-network-response).
 
-Ini artinya Anda memberikan konten terbaru kepada pengguna, namun pengguna
-offline mendapatkan versi lama dari cache. Jika permintaan jaringan berhasil, Anda
-kemungkinan besar ingin [memperbarui entri cache](#on-network-response).
-
-Akan tetapi, metode ini memiliki kelemahan. Jika memiliki koneksi yang terputus-putus atau lambat,
-pengguna harus menunggu jaringan untuk gagal sebelum mendapatkan
-konten yang dapat diterima dengan sempurna di perangkatnya. Ini butuh waktu sangat
-lama dan membuat pengalaman pengguna yang merepotkan. Lihat pola
-berikutnya, [Cache kemudian jaringan](#cache-then-network), untuk solusi yang lebih baik.
+However, this method has flaws. If the user has an intermittent or slow connection they'll have to wait for the network to fail before they get the perfectly acceptable content already on their device. This can take an extremely long time and is a frustrating user experience. See the next pattern, [Cache then network](#cache-then-network), for a better solution.
 
     self.addEventListener('fetch', function(event) {
       event.respondWith(
@@ -495,35 +381,26 @@ berikutnya, [Cache kemudian jaringan](#cache-then-network), untuk solusi yang le
         })
       );
     });
+    
 
-### Cache kemudian jaringan {: #cache-then-network }
+### Cache then network {: #cache-then-network }
 
-<img src="images/ss-cache-then-network.png">
+<img src="images/ss-cache-then-network.png" />
 
-**Ideal untuk:** Konten yang sering diperbarui. Mis. artikel, kronologi media
-sosial, papan peringkat game.
+**Ideal for:** Content that updates frequently. E.g. articles, social media timelines, game leaderboards.
 
-Ini mengharuskan halaman membuat dua permintaan, satu ke cache, satu ke
-jaringan. Dasar pemikirannya adalah menampilkan data yang di-cache terlebih dahulu, lalu memperbarui halaman
-saat/jika data jaringan telah tiba.
+This requires the page to make two requests, one to the cache, one to the network. The idea is to show the cached data first, then update the page when/if the network data arrives.
 
-Kadang Anda dapat hanya menggantikan data saat ini jika data baru telah tiba
-(mis., papan peringkat game), namun ini dapat mengganggu dengan konten
-lebih besar. Pada dasarnya, jangan "hilangkan" sesuatu yang mungkin sedang dibaca atau
-berinteraksi dengan pengguna.
+Sometimes you can just replace the current data when new data arrives (e.g. game leaderboard), but that can be disruptive with larger pieces of content. Basically, don't "disappear" something the user may be reading or interacting with.
 
-Twitter menambahkan konten baru di atas konten lama & menyesuaikan posisi
-scroll sehingga pengguna tidak terganggu. Hal ini mungkin karena Twitter
-umumnya menyimpan urutan yang kebanyakan bersifat linier ke konten. Saya menyalin pola ini untuk
-[trained-to-thrill][ttt] guna menampilkan konten ke layar secepat
-mungkin, namun tetap menampilkan konten terbaru setelah datanya tiba.
+Twitter adds the new content above the old content & adjusts the scroll position so the user is uninterrupted. This is possible because Twitter mostly retains a mostly-linear order to content. I copied this pattern for [trained-to-thrill](https://jakearchibald.github.io/trained-to-thrill/) to get content on screen as fast as possible, but still display up-to-date content once it arrives.
 
-**Kode di halaman:**
+**Code in the page:**
 
     var networkDataReceived = false;
-
+    
     startSpinner();
-
+    
     // fetch fresh data
     var networkUpdate = fetch('/data.json').then(function(response) {
       return response.json();
@@ -531,7 +408,7 @@ mungkin, namun tetap menampilkan konten terbaru setelah datanya tiba.
       networkDataReceived = true;
       updatePage(data);
     });
-
+    
     // fetch cached data
     caches.match('/data.json').then(function(response) {
       if (!response) throw Error("No data");
@@ -545,11 +422,11 @@ mungkin, namun tetap menampilkan konten terbaru setelah datanya tiba.
       // we didn't get cached data, the network is our last hope:
       return networkUpdate;
     }).catch(showErrorMessage).then(stopSpinner);
+    
 
+**Code in the ServiceWorker:**
 
-**Kode di ServiceWorker:**
-
-Kami selalu masuk ke jaringan & memperbarui cache sambil jalan.
+We always go to the network & update a cache as we go.
 
     self.addEventListener('fetch', function(event) {
       event.respondWith(
@@ -561,23 +438,17 @@ Kami selalu masuk ke jaringan & memperbarui cache sambil jalan.
         })
       );
     });
+    
 
+In [trained-to-thrill](https://jakearchibald.github.io/trained-to-thrill/) I worked around this by using [XHR instead of fetch](https://github.com/jakearchibald/trained-to-thrill/blob/3291dd40923346e3cc9c83ae527004d502e0464f/www/static/js-unmin/utils.js#L3), and abusing the Accept header to tell the ServiceWorker where to get the result from ([page code](https://github.com/jakearchibald/trained-to-thrill/blob/3291dd40923346e3cc9c83ae527004d502e0464f/www/static/js-unmin/index.js#L70), [ServiceWorker code](https://github.com/jakearchibald/trained-to-thrill/blob/3291dd40923346e3cc9c83ae527004d502e0464f/www/static/js-unmin/sw/index.js#L61)).
 
-Di [trained-to-thrill][ttt] saya mengatasinya dengan menggunakan
-[XHR sebagai ganti pengambilan](https://github.com/jakearchibald/trained-to-thrill/blob/3291dd40923346e3cc9c83ae527004d502e0464f/www/static/js-unmin/utils.js#L3),
-dan menyalahgunakan header Accept untuk memberi tahu ServiceWorker tempat untuk mengambil
-hasilnya dari ([kode halaman](https://github.com/jakearchibald/trained-to-thrill/blob/3291dd40923346e3cc9c83ae527004d502e0464f/www/static/js-unmin/index.js#L70),
-[kode ServiceWorker](https://github.com/jakearchibald/trained-to-thrill/blob/3291dd40923346e3cc9c83ae527004d502e0464f/www/static/js-unmin/sw/index.js#L61)).
+### Generic fallback {: #generic-fallback }
 
-### Fallback generik {: #generic-fallback }
+<img src="images/ss-generic-fallback.png" />
 
-<img src="images/ss-generic-fallback.png">
+If you fail to serve something from the cache and/or network you may want to provide a generic fallback.
 
-Jika gagal menayangkan item dari cache dan/atau jaringan, Anda mungkin
-perlu menyediakan fallback generik.
-
-**Ideal untuk:** Gambar sekunder seperti avatar, permintaan POST yang gagal,
-halaman "Tidak tersedia saat offline".
+**Ideal for:** Secondary imagery such as avatars, failed POST requests, "Unavailable while offline" page.
 
     self.addEventListener('fetch', function(event) {
       event.respondWith(
@@ -594,30 +465,25 @@ halaman "Tidak tersedia saat offline".
         })
       );
     });
+    
 
-Item tujuan fallback Anda mungkin berupa [dependensi penginstalan](#on-install-as-dependency).
+The item you fallback to is likely to be an [install dependency](#on-install-as-dependency).
 
-Jika halaman memposting email, ServiceWorker mungkin melakukan fallback ke
-penyimpanan email di 'outbox' IDB dan merespons dengan memberi tahu halaman bahwa
-pengiriman gagal namun data berhasil disimpan.
+If your page is posting an email, your ServiceWorker may fall back to storing the email in an IDB 'outbox' & respond letting the page know that the send failed but the data was successfully retained.
 
-### Pembuatan template sisi-ServiceWorker {: #serviceworker-side-templating }
+### ServiceWorker-side templating {: #serviceworker-side-templating }
 
-<img src="images/ss-sw-side-templating.png">
+<img src="images/ss-sw-side-templating.png" />
 
-**Ideal untuk:** Halaman yang respons servernya tidak dapat di-cache.
+**Ideal for:** Pages that cannot have their server response cached.
 
-[Merender halaman di server akan membuat semuanya menjadi cepat](https://jakearchibald.com/2013/progressive-enhancement-is-faster/),
-namun itu berarti menyertakan data keadaan yang mungkin tidak logis dalam cache,
-mis. "Login sebagai…". Jika halaman dikontrol oleh ServiceWorker,
-Anda mungkin malah memilih meminta data JSON beserta template,
-dan merendernya.
+[Rendering pages on the server makes things fast](https://jakearchibald.com/2013/progressive-enhancement-is-faster/), but that can mean including state data that may not make sense in a cache, e.g. "Logged in as…". If your page is controlled by a ServiceWorker, you may instead choose to request JSON data along with a template, and render that instead.
 
     importScripts('templating-engine.js');
-
+    
     self.addEventListener('fetch', function(event) {
       var requestURL = new URL(event.request.url);
-
+    
       event.respondWith(
         Promise.all([
           caches.match('/article-template.html').then(function(response) {
@@ -629,7 +495,7 @@ dan merendernya.
         ]).then(function(responses) {
           var template = responses[0];
           var data = responses[1];
-
+    
           return new Response(renderTemplate(template, data), {
             headers: {
               'Content-Type': 'text/html'
@@ -638,25 +504,23 @@ dan merendernya.
         })
       );
     });
+    
 
+## Putting it together
 
-## Menggabungkan semuanya
+You don't have to pick one of these methods, you'll likely use many of them depending on request URL. For example, [trained-to-thrill](https://jakearchibald.github.io/trained-to-thrill/) uses:
 
-Anda tidak harus memilih salah satu metode ini, Anda mungkin akan menggunakan beberapa
-di antaranya, bergantung pada URL permintaan. Misalnya,
-[trained-to-thrill][ttt] menggunakan:
+* [Cache on install](#on-install-as-dependency), for the static UI and behaviour
+* [Cache on network response](#on-network-response), for the Flickr images and data
+* [Fetch from cache, falling back to network](#cache-falling-back-to-network), for most requests
+* [Fetch from cache, then network](#cache-then-network), for the Flickr search results
 
-* [Cache di install](#on-install-as-dependency), untuk UI statis dan perilaku
-* [Cache di respons jaringan](#on-network-response), untuk gambar dan data Flickr
-* [Ambil dari cache, fallback ke jaringan](#cache-falling-back-to-network), untuk sebagian besar permintaan
-* [Ambil dari cache, kemudian jaringan](#cache-then-network), untuk hasil penelusuran Flickr
-
-Amati saja permintaan tersebut dan putuskan tindakan yang harus dilakukan:
+Just look at the request and decide what to do:
 
     self.addEventListener('fetch', function(event) {
       // Parse the URL:
       var requestURL = new URL(event.request.url);
-
+    
       // Handle requests to a particular host specifically
       if (requestURL.hostname == 'api.example.com') {
         event.respondWith(/* some combination of patterns */);
@@ -686,7 +550,7 @@ Amati saja permintaan tersebut dan putuskan tindakan yang harus dilakukan:
           return;
         }
       }
-
+    
       // A sensible default pattern
       event.respondWith(
         caches.match(event.request).then(function(response) {
@@ -694,42 +558,38 @@ Amati saja permintaan tersebut dan putuskan tindakan yang harus dilakukan:
         })
       );
     });
+    
 
-…begitulah gambarannya.
+…you get the picture.
 
-## Masukan {: .hide-from-toc }
+## Feedback {: .hide-from-toc }
 
 {% include "web/_shared/helpful.html" %}
 
 <div class="clearfix"></div>
 
-### Ucapan terima kasih {: hide-from-toc }
-…untuk semua ikon yang menarik:
+### Credits {: hide-from-toc }
 
-* [Kode](http://thenounproject.com/term/code/17547/){: .external } oleh buzzyrobot
-* [Kalender](http://thenounproject.com/term/calendar/4672/){: .external } oleh Scott Lewis
-* [Jaringan oleh](http://thenounproject.com/term/network/12676/){: .external } Ben Rizzo
-* [SD](http://thenounproject.com/term/sd-card/6185/) oleh Thomas Le Bas
-* [CPU](http://thenounproject.com/term/cpu/72043/){: .external } oleh iconsmind.com
-* [Sampah](http://thenounproject.com/term/trash/20538/){: .external } oleh trasnik
-* [Notifikasi](http://thenounproject.com/term/notification/32514/){: .external } oleh @daosme
-* [Tata letak](http://thenounproject.com/term/layout/36872/){: .external } oleh Mister Pixel
-* [Cloud](http://thenounproject.com/term/cloud/2788/){: .external } oleh P.J. Onori
+…for the lovely icons:
 
-Dan terima kasih kepada [Jeff Posnick](https://twitter.com/jeffposnick) karena memerhatikan banyak error besar
-sebelum saya mengklik "publish".
+* [Code](http://thenounproject.com/term/code/17547/){: .external } by buzzyrobot
+* [Calendar](http://thenounproject.com/term/calendar/4672/){: .external } by Scott Lewis
+* [Network by](http://thenounproject.com/term/network/12676/){: .external } Ben Rizzo
+* [SD](http://thenounproject.com/term/sd-card/6185/) by Thomas Le Bas
+* [CPU](http://thenounproject.com/term/cpu/72043/){: .external } by iconsmind.com
+* [Trash](http://thenounproject.com/term/trash/20538/){: .external } by trasnik
+* [Notification](http://thenounproject.com/term/notification/32514/){: .external } by @daosme
+* [Layout](http://thenounproject.com/term/layout/36872/){: .external } by Mister Pixel
+* [Cloud](http://thenounproject.com/term/cloud/2788/){: .external } by P.J. Onori
 
-### Bacaan lebih lanjut
-* [ServiceWorkers - an Introduction][sw_primer]
-* [Is ServiceWorker ready?][is_sw_ready] - track the implementation status across the main browsers
+And thanks to [Jeff Posnick](https://twitter.com/jeffposnick) for catching many howling errors before I hit "publish".
+
+### Further reading
+
+* [ServiceWorkers - an Introduction](/web/fundamentals/getting-started/primers/service-workers)
+* [Is ServiceWorker ready?](https://jakearchibald.github.io/isserviceworkerready/) - track the implementation status across the main browsers
 * [JavaScript Promises - an Introduction](/web/fundamentals/getting-started/primers/promises) - guide to promises
 
-
-[ttt]: https://jakearchibald.github.io/trained-to-thrill/
-[is_sw_ready]: https://jakearchibald.github.io/isserviceworkerready/
-[sw_primer]: /web/fundamentals/getting-started/primers/service-workers
-[caches_api]: https://developer.mozilla.org/en-US/docs/Web/API/Cache
-
-## Masukan {: #feedback }
+## Feedback {: #feedback }
 
 {% include "web/_shared/helpful.html" %}
