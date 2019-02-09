@@ -1,45 +1,27 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Dalam komponen internalnya, setiap browser desktop sudah dilengkapi dengan serangkaian alat developer yang dapat Anda kembangkan dan tambahi dengan ekstensi atau plugin untuk browser Anda.
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Out of the box, every desktop browser comes with a set of developer tools, you can extend and add to these with extensions or plugins for your browser.
 
-{# wf_updated_on: 2015-04-13 #}
-{# wf_published_on: 2015-04-13 #}
+{# wf_updated_on: 2015-04-13 #} {# wf_published_on: 2015-04-13 #}
 
-# Menyiapkan Ekstensi Browser {: .page-title }
+# Set Up Browser Extensions {: .page-title }
 
-{% include "web/_shared/contributors/megginkearney.html" %}
-{% include "web/_shared/contributors/mattgaunt.html" %}
+{% include "web/_shared/contributors/megginkearney.html" %} {% include "web/_shared/contributors/mattgaunt.html" %}
 
-Dalam komponen internalnya, setiap browser desktop sudah dilengkapi dengan serangkaian alat developer yang dapat Anda kembangkan dan tambahi dengan ekstensi atau plugin untuk browser Anda.
+Out of the box, every desktop browser comes with a set of developer tools, you can extend and add to these with extensions or plugins for your browser.
 
-Berikut ini dua Ekstensi Chrome yang memiliki fungsionalitas bermanfaat untuk membantu melakukan debug
-pada desain Anda.
-
+Here are two Chrome Extensions that have some useful functionality to help with debugging your designs.
 
 ## Emmet Re:View
 
-Emmet Re:View adalah alat yang memudahkan Anda melihat seperti apa penampilan situs Anda di
-setiap kueri media dan menyinkronkan pengguliran semua laman. Anda bisa
-melihat demo [di
-situsnya](http://re-view.emmet.io/).
+Emmet Re:View is a tool which makes it easy to see what your site looks like at each of your media queries and syncs the scrolling of all the pages. You can see a demo of it [on their site](http://re-view.emmet.io/).
 
-[Unduh di Toko Web
-Chrome](https://chrome.google.com/webstore/detail/emmet-review/epejoicbhllgiimigokgjdoijnpaphdp)
+[Download on the Chrome Web Store](https://chrome.google.com/webstore/detail/emmet-review/epejoicbhllgiimigokgjdoijnpaphdp)
 
-<img src="imgs/emmet-review-extension.png" alt="Tangkapan layar Ekstensi Emmet Review" />
+![Screenshot of Emmet Review Extension](imgs/emmet-review-extension.png)
 
 ## What Font?
 
-Ekstensi terakhir yang rutin kami pakai adalah *What Font?*. Ekstensi Chrome
-ini akan memberi tahu nama font yang sedang dipakai di laman. Alat
-ini sangat bermanfaat untuk melakukan debug pada masalah font web apa pun.
+The last extension we use on a regular basis is *What Font?*. This Chrome Extension will tell you the name of the font currently being used on the page. This is really handy for debugging any web font issues.
 
-[Unduh di Toko Web
-Chrome](https://chrome.google.com/webstore/detail/whatfont/jabopobgcpjmedljpbcaablpmlmfcogm)
+[Download on the Chrome Web Store](https://chrome.google.com/webstore/detail/whatfont/jabopobgcpjmedljpbcaablpmlmfcogm)
 
-<img src="imgs/what-font-extension.png" alt="Tangkapan layar Ekstensi Chrome What Font" />
-
-
-
-
-{# wf_devsite_translation #}
+![Screenshot of the What Font Chrome Extension](imgs/what-font-extension.png)
