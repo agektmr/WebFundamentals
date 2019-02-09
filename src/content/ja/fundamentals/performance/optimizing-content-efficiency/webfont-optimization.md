@@ -1,301 +1,255 @@
-project_path: /web/fundamentals/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description:タイポグラフィは、優れたデザイン、ブランディング、読みやすさ、ユーザー補助機能において非常に重要です。 ウェブフォントを使うと、これらのすべてに加えて、テキストの選択、検索、ズームが可能で、高 DPI に対応します。その結果、画面のサイズや解像度にかかわらず一貫性のある鮮明な良いテキスト レンダリングが実現されます。
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Typography is fundamental to good design, branding, readability, and accessibility. Webfonts enable all of the above and more: the text is selectable, searchable, zoomable, and high-DPI friendly, providing consistent and sharp text rendering regardless of the screen size and resolution.
 
-{# wf_updated_on: 2019-02-06 #}
-{# wf_published_on: 2014-09-19 #}
-{# wf_blink_components: Blink>CSS #}
+{# wf_updated_on: 2018-12-17 #} {# wf_published_on: 2014-09-19 #} {# wf_blink_components: Blink>CSS #}
 
-# ウェブフォントの最適化 {: .page-title }
+# Web Font Optimization {: .page-title }
 
 {% include "web/_shared/contributors/ilyagrigorik.html" %}
 
-タイポグラフィは、優れたデザイン、ブランディング、読みやすさ、ユーザー補助機能において非常に重要です。 ウェブフォントを使うと、これらのすべてに加えて、テキストの選択、検索、ズームが可能で、高 DPI に対応します。その結果、画面のサイズや解像度にかかわらず一貫性のある鮮明な良いテキスト レンダリングが実現されます。
- 優れたデザイン、ユーザー エクスペリエンス、パフォーマンスを実現するにはウェブフォントが重要です。
+*This article contains contributions from [Monica Dinculescu](https://meowni.ca/posts/web-fonts/), [Rob Dodson](/web/updates/2016/02/font-display), and Jeff Posnick.*
 
-ウェブフォントの最適化は全体的なパフォーマンス戦略における重要な要素です。 フォントはそれぞれ追加のリソースです。フォントによってはテキストのレンダリングがブロックされることがありますが、ページでウェブフォントを使用しているからといってレンダリングが遅くなっていいわけではありません。
- 逆に、最適化されたフォントを使い、それらをページ上でどのように読み込んで適用するのかを十分に検討することで、全体のページ サイズを削減してページのレンダリング時間を短縮することができます。
+Typography is fundamental to good design, branding, readability, and accessibility. Webfonts enable all of the above and more: the text is selectable, searchable, zoomable, and high-DPI friendly, providing consistent and sharp text rendering regardless of the screen size and resolution. Webfonts are critical to good design, UX, and performance.
 
-## ウェブフォントの仕組み
+Webfont optimization is a critical piece of the overall performance strategy. Each font is an additional resource, and some fonts may block rendering of the text, but just because the page is using webfonts doesn't mean that it has to render slower. On the contrary, optimized fonts, combined with a judicious strategy for how they are loaded and applied on the page, can help reduce the total page size and improve page rendering times.
 
-### TL;DR {: .hide-from-toc }
-* Unicode フォントには数千のグリフが含まれることがあります。
-* フォントには WOFF2、WOFF、EOT、TTF の 4 つの形式があります。
-* 一部のフォント形式では圧縮を使う必要があります。
-
-*ウェブフォント*はグリフの集合であり、それぞれのグリフは文字または記号を表現するベクター図形です。
- そのため、特定のフォント ファイルのサイズは 2 つの単純な変数によって決まります。各グリフのベクターパスの複雑さと、特定のフォントのグリフの数です。
- たとえば、ごく一般的なウェブフォントの 1 つである Open Sans には、ラテン文字、ギリシャ文字、キリル文字などの 897 個のグリフが含まれています。
-
-<img src="images/glyphs.png"  alt="フォントのグリフ テーブル">
-
-フォントを選択する際は、どの文字セットがサポートされているのかを考慮することが重要です。 ページ コンテンツを複数の言語にローカライズする必要がある場合は、一貫性のある外観やエクスペリエンスをユーザーに提供できるフォントを使用してください。
- たとえば、[Google の Noto フォント ファミリー](https://www.google.com/get/noto/){: .external } は世界中のすべての言語をサポートすることを目的としています。
-ただし、すべての言語を含む Noto の合計サイズは、ダウンロード用の ZIP ファイルでも 1.1GB を超えます。
-
-ウェブでフォントを使用する際は、タイポグラフィによってパフォーマンスが低下しないように十分注意する必要があります。
- 幸い、ウェブ プラットフォームには必要な基本要素がすべて用意されています。以降、このガイドでは、パフォーマンスを損なわずにウェブフォントを活用するための実践的な方法について説明します。
-
-### ウェブフォントの形式
-
-現在ウェブでは、
-[EOT](https://en.wikipedia.org/wiki/Embedded_OpenType)、
-[TTF](https://en.wikipedia.org/wiki/TrueType)、
-[WOFF](https://en.wikipedia.org/wiki/Web_Open_Font_Format)、
-[WOFF2](https://www.w3.org/TR/WOFF2/){: .external } の 4 種類のフォント コンテナ形式が利用されています。 幅広い選択肢があるにもかかわらず、残念ながら、新旧のすべてのブラウザで動作する単一の普遍的な形式はありません。
-EOT は [IE のみ](http://caniuse.com/#feat=eot)です。TTF は [IE では一部しかサポートされていません](http://caniuse.com/#search=ttf)。WOFF は最も幅広くサポートされていますが、[一部の旧式のブラウザでは利用できません](http://caniuse.com/#feat=woff)。WOFF 2.0 のサポートについては、[多数のブラウザで現在対応中です](http://caniuse.com/#feat=woff2)。
-
-ではどのように対処すればよいでしょうか。すべてのブラウザで動作する単一の形式はありません。これは、一貫性のあるエクスペリエンスを提供するためには、複数の形式を提供する必要があることを意味します。
-
-* WOFF 2.0 派生フォントをサポートしているブラウザには WOFF 2.0 を提供します。
-* 大部分のブラウザには WOFF 派生フォントを提供します。
-* 旧式の Android ブラウザ（4.4 より前）には TTF 派生フォントを提供します。
-* 旧式の IE ブラウザ（IE9 より前）には EOT 派生フォントを提供します。
-
-注: 正確には、<a href='http://caniuse.com/svg-fonts'>SVG フォント コンテナ</a>もありますが、IE や Firefox では一切サポートされておらず、Chrome では現在はサポートを終了しています。
- 使用範囲が限られるため、このガイドでは説明しません。
-
-### 圧縮を利用したフォントサイズの削減
-
-フォントはグリフのコレクションであり、それぞれのグリフは文字の形状を表すパスのセットです。 それぞれのグリフは異なりますが、GZIP や互換性のある圧縮ツールによって圧縮可能な類似情報が多数含まれています。
-
-* EOT 形式と TTF 形式はデフォルトで圧縮されません。 これらの形式を提供する場合は [GZIP 圧縮](/web/fundamentals/performance/optimizing-content-efficiency/optimize-encoding-and-transfer#text-compression-with-gzip)を適用するようにサーバーを設定します。
-* WOFF にはビルトインの圧縮付きです。 WOFF 圧縮ツールで最適な圧縮設定を使用していることを確認してください。
-* WOFF2 では独自の前処理アルゴリズムと圧縮アルゴリズムが使用されており、他の形式よりも約 30% ファイルサイズが縮小します。
- 詳細については、[WOFF 2.0 評価レポート](http://www.w3.org/TR/WOFF20ER/){: .external }をご覧ください。
-
-なお、一部のフォント形式には[フォント ヒンティング情報](https://en.wikipedia.org/wiki/Font_hinting)や[カーニング情報](https://en.wikipedia.org/wiki/Kerning)など、プラットフォームによっては不要な追加のメタデータが含まれています。このため、ファイルサイズをさらに最適化可能です。
- 使用可能な最適化オプションについては各フォント圧縮ツールのマニュアルをご覧ください。最適化を行う場合は、必ず適切なインフラストラクチャを配備して、最適化後のフォントをテストしたうえで、それらを各ブラウザに提供するようにしてください。
- たとえば、[Google Fonts](https://fonts.google.com/) の場合、フォントごとに 30 を超える最適化された派生フォントが含まれており、それぞれのプラットフォームやブラウザに最適な派生フォントを自動的に検出して提供します。
-
-注: EOT、TTF、WOFF 形式には <a href='http://en.wikipedia.org/wiki/Zopfli'>Zopfli 圧縮</a>の使用を検討してください。
- Zopfli は zlib と互換性のある圧縮ツールで、gzip と比べてファイルサイズが最大で 5% 削減されます。
-
-## @font-face を使用したフォント ファミリーの定義
+## Anatomy of a webfont
 
 ### TL;DR {: .hide-from-toc }
-* 複数のフォント形式を指定するには、`format()` ヒントを使用します。
-* 大きな Unicode フォントをサブセットにまとめることでパフォーマンスが向上します。 unicode-range でサブセット化して、旧式のブラウザの場合は代わりに手動でサブセット化します。
-* スタイル別の派生フォントの数が減り、ページやテキスト表示のパフォーマンスが向上します。
 
-`@font-face` CSS @ ルールを使うと、特定のフォント リソースの場所、スタイル特性、および使用すべき Unicode コードポイントを定義できます。
- こうした `@font-face 宣言を組み合わせて使うことで「フォント ファミリー」を構築できます。ブラウザはこの「フォント ファミリー」を使用して、どのフォント リソースをダウンロードして現在のページに適用する必要があるのかを判断します。
+* Unicode fonts can contain thousands of glyphs.
+* There are four font formats: WOFF2, WOFF, EOT, and TTF.
+* Some font formats require the use of compression.
 
-### 形式の選択
+A *webfont* is a collection of glyphs, and each glyph is a vector shape that describes a letter or symbol. As a result, two simple variables determine the size of a particular font file: the complexity of the vector paths of each glyph and the number of glyphs in a particular font. For example, Open Sans, which is one of the most popular webfonts, contains 897 glyphs, which include Latin, Greek, and Cyrillic characters.
 
-それぞれの `@font-face` 宣言ではフォント ファミリーの名前（複数の宣言の論理的なグループとして機能）、[フォント プロパティ](http://www.w3.org/TR/css3-fonts/#font-prop-desc)（スタイル、ウェイト、ストレッチ）、および [src ディスクリプタ](http://www.w3.org/TR/css3-fonts/#src-desc)（フォント リソースの場所の優先順位付きリストを指定）を指定します。
+<img src="images/glyphs.png"  alt="Font glyph table" />
+
+When picking a font, it's important to consider which character sets are supported. If you need to localize your page content to multiple languages, you should use a font that can deliver a consistent look and experience to your users. For example, [Google's Noto font family](https://www.google.com/get/noto/){: .external } aims to support all the world's languages. Note, however, that the total size of Noto, with all languages included, results in a 1.1GB+ ZIP download.
+
+Clearly, using fonts on the web requires careful engineering to ensure that the typography doesn't impede performance. Thankfully, the web platform provides all the necessary primitives, and the rest of this guide provides a hands-on look at how to get the best of both worlds.
+
+### Webfont formats
+
+Today there are four font container formats in use on the web: [EOT](https://en.wikipedia.org/wiki/Embedded_OpenType), [TTF](https://en.wikipedia.org/wiki/TrueType), [WOFF](https://en.wikipedia.org/wiki/Web_Open_Font_Format), and [WOFF2](https://www.w3.org/TR/WOFF2/){: .external }. Unfortunately, despite the wide range of choices, there isn't a single universal format that works across all old and new browsers: EOT is [IE only](http://caniuse.com/#feat=eot), TTF has [partial IE support](http://caniuse.com/#search=ttf), WOFF enjoys the widest support but is [not available in some older browsers](http://caniuse.com/#feat=woff), and WOFF 2.0 support is a [work in progress for many browsers](http://caniuse.com/#feat=woff2).
+
+So, where does that leave us? There isn't a single format that works in all browsers, which means that we need to deliver multiple formats to provide a consistent experience:
+
+* Serve WOFF 2.0 variant to browsers that support it.
+* Serve WOFF variant to the majority of browsers.
+* Serve TTF variant to old Android (below 4.4) browsers.
+* Serve EOT variant to old IE (below IE9) browsers.
+
+Note: There's technically another container format, the [SVG font container](http://caniuse.com/svg-fonts), but IE and Firefox never supported it, and it is now deprecated in Chrome. As such, it's of limited use and it's intentionally omitted it in this guide.
+
+### Reducing font size with compression
+
+A font is a collection of glyphs, each of which is a set of paths describing the letter form. The individual glyphs are different, but they contain a lot of similar information that can be compressed with GZIP or a compatible compressor:
+
+* EOT and TTF formats are not compressed by default. Ensure that your servers are configured to apply [GZIP compression](/web/fundamentals/performance/optimizing-content-efficiency/optimize-encoding-and-transfer#text-compression-with-gzip) when delivering these formats.
+* WOFF has built-in compression. Ensure that your WOFF compressor is using optimal compression settings.
+* WOFF2 uses custom preprocessing and compression algorithms to deliver ~30% file-size reduction over other formats. For more information, see [the WOFF 2.0 evaluation report](http://www.w3.org/TR/WOFF20ER/){: .external }.
+
+Finally, it's worth noting that some font formats contain additional metadata, such as [font hinting](https://en.wikipedia.org/wiki/Font_hinting) and [kerning](https://en.wikipedia.org/wiki/Kerning) information that may not be necessary on some platforms, which allows for further file-size optimization. Consult your font compressor for available optimization options, and if you take this route, ensure that you have the appropriate infrastructure to test and deliver these optimized fonts to each browser. For example, [Google Fonts](https://fonts.google.com/) maintains 30+ optimized variants for each font and automatically detects and delivers the optimal variant for each platform and browser.
+
+Note: Consider using [Zopfli compression](http://en.wikipedia.org/wiki/Zopfli) for the EOT, TTF, and WOFF formats. Zopfli is a zlib compatible compressor that delivers ~5% file-size reduction over gzip.
+
+## Defining a font family with @font-face
+
+### TL;DR {: .hide-from-toc }
+
+* Use the `format()` hint to specify multiple font formats.
+* Subset large Unicode fonts to improve performance. Use Unicode-range subsetting and provide a manual subsetting fallback for older browsers.
+* Reduce the number of stylistic font variants to improve the page- and text-rendering performance.
+
+The `@font-face` CSS at-rule allows you to define the location of a particular font resource, its style characteristics, and the Unicode codepoints for which it should be used. A combination of such `@font-face declarations can be used to construct a "font family," which the browser will use to evaluate which font resources need to be downloaded and applied to the current page.
+
+### Format selection
+
+Each `@font-face` declaration provides the name of the font family, which acts as a logical group of multiple declarations, [font properties](http://www.w3.org/TR/css3-fonts/#font-prop-desc) such as style, weight, and stretch, and the [src descriptor](http://www.w3.org/TR/css3-fonts/#src-desc), which specifies a prioritized list of locations for the font resource.
 
     @font-face {
-      font-family:'Awesome Font';
+      font-family: 'Awesome Font';
       font-style: normal;
       font-weight: 400;
       src: local('Awesome Font'),
-           url('/fonts/awesome.woff2') format('woff2'),
+           url('/fonts/awesome.woff2') format('woff2'), 
            url('/fonts/awesome.woff') format('woff'),
            url('/fonts/awesome.ttf') format('truetype'),
            url('/fonts/awesome.eot') format('embedded-opentype');
     }
-
+    
     @font-face {
-      font-family:'Awesome Font';
+      font-family: 'Awesome Font';
       font-style: italic;
       font-weight: 400;
       src: local('Awesome Font Italic'),
-           url('/fonts/awesome-i.woff2') format('woff2'),
+           url('/fonts/awesome-i.woff2') format('woff2'), 
            url('/fonts/awesome-i.woff') format('woff'),
            url('/fonts/awesome-i.ttf') format('truetype'),
            url('/fonts/awesome-i.eot') format('embedded-opentype');
     }
+    
 
-まず、上記の例では _Awesome Font_ という単一のファミリーを定義しています。このファミリーには 2 つのスタイル（normal と _italic_）があり、それぞれ異なるフォント リソース セットを指しています。
- さらに、それぞれの `src` ディスクリプタには、カンマで区切られた派生リソースの優先順位付きリストが含まれています。
+First, note that the above examples define a single *Awesome Font* family with two styles (normal and *italic*), each of which points to a different set of font resources. In turn, each `src` descriptor contains a prioritized, comma-separated list of resource variants:
 
+* The `local()` directive allows you to reference, load, and use locally installed fonts.
+* The `url()` directive allows you to load external fonts, and are allowed to contain an optional `format()` hint indicating the format of the font referenced by the provided URL.
 
-* `local()` ディレクティブを使うと、ローカルにインストールされているフォントを参照、読み込み、使用できます。
-* `url()` ディレクティブを使うと、外部フォントの読み込みができます。また、オプションの `format()` ヒントを含めて、指定した URL によって参照されるフォントの形式を指定できます。
+Note: Unless you're referencing one of the default system fonts, it is rare for the user to have it locally installed, especially on mobile devices, where it is effectively impossible to "install" additional fonts. You should always start with a `local()` entry "just in case," and then provide a list of `url()` entries.
 
-注: いずれかのデフォルト システム フォントを参照している場合を除き、ユーザーがシステム フォントをローカルにインストールしていることはほとんどありません。特にモバイル端末では、追加のフォントを「インストール」することは実質的に不可能です。 いつもまず「念のために」 `local()` エントリから始めて、それから `url()` エントリのリストを指定する必要があります。
+When the browser determines that the font is needed, it iterates through the provided resource list in the specified order and tries to load the appropriate resource. For example, following the example above:
 
-ブラウザは、フォントが必要であると判断すると、指定されたリソースリストを指定された順序で調べ、該当するリソースの読み込みを試みます。
- たとえば前の例では次のようになります。
+1. The browser performs page layout and determines which font variants are required to render the specified text on the page.
+2. For each required font, the browser checks if the font is available locally.
+3. If the font is not available locally, the browser iterates over external definitions: 
+    * If a format hint is present, the browser checks if it supports the hint before initiating the download. If the browser doesn't support the hint, the browser advances to the next one.
+    * If no format hint is present, the browser downloads the resource.
 
-1. ブラウザは、ページのレイアウトを行い、指定されたテキストをページに表示するためにどの派生フォントが必要なのかを判断します。
-1. それぞれの必要なフォントについて、ブラウザは、ローカルのフォントが使用できるかどうかを調べます。
-1. ローカルのフォントが使用できない場合は、ブラウザは外部定義を順番に調べます。
-    * 形式ヒントが存在する場合、ブラウザは自身がサポートしているかどうかを調べ、サポートしている場合はダウンロードを開始します。
- そのヒントをサポートしていない場合は、次の形式ヒントを調べます。
-    * 形式ヒントが存在しない場合、ブラウザはリソースをダウンロードします。
+The combination of local and external directives with appropriate format hints allows you to specify all of the available font formats and let the browser handle the rest. The browser determines which resources are required and selects the optimal format.
 
-ローカル / 外部ディレクティブと適切な形式ヒントを組み合わせて使うことで、使用可能なすべてのフォント形式を指定して、残りの処理をブラウザに任せることができます。
- ブラウザは、どのリソースが必要なのかを判断して、最適な形式を自動的に選択します。
+Note: The order in which the font variants are specified matters. The browser picks the first format it supports. Therefore, if you want the newer browsers to use WOFF2, then you should place the WOFF2 declaration above WOFF, and so on.
 
-注: 派生フォントの指定順序は重要です。 ブラウザは、サポートする最初の形式を選択します。
- したがって、たとえば新しいブラウザで WOFF2 を使いたい場合は、WOFF の前に WOFF2 宣言を記述します。
+### Unicode-range subsetting
 
-### uniode-range サブセット化
+In addition to font properties such as style, weight, and stretch, the `@font-face` rule allows us to define a set of Unicode codepoints supported by each resource. This enables us to split a large Unicode font into smaller subsets (for example, Latin, Cyrillic, and Greek subsets) and only download the glyphs required to render the text on a particular page.
 
-スタイル、ウェイト、ストレッチなどのフォント プロパティに加えて、`@font-face` ルールではそれぞれのリソースでサポートされる Unicode コードポイントのセットを定義することもできます。
- これを使って、大きい Unicode フォントをより小さいサブセット（ラテン、キリル、ギリシャの各文字のサブセットなど）に分割し、特定のページでテキストをレンダリングするために必要なグリフだけをダウンロードできます。
+The [unicode-range descriptor](http://www.w3.org/TR/css3-fonts/#descdef-unicode-range) allows you to specify a comma-delimited list of range values, each of which can be in one of three different forms:
 
-[unicode-range ディスクリプタ](http://www.w3.org/TR/css3-fonts/#descdef-unicode-range)を使うと、カンマで区切られた範囲値のリストを指定できます。範囲値はそれぞれ次の 3 つのうちいずれかの形式で指定できます。
+* Single codepoint (for example, `U+416`)
+* Interval range (for example, `U+400-4ff`): indicates the start and end codepoints of a range
+* Wildcard range (for example, `U+4??`): `?` characters indicate any hexadecimal digit
 
-* 1 つのコードポイント（例: `U+416`）
-* 範囲（例: `U+400-4ff`）: 範囲のコードポイントの始めと終わりを指定
-* ワイルドカード範囲（例: `U+4??`）: `?` 文字は任意の 16 進数を表す
-
-たとえば、前述の _Awesome Font_ ファミリーをラテン語と日本語のサブセットに分割し、ブラウザがそれぞれのサブセットを必要に応じてダウンロードするようにできます。
-
+For example, you can split your *Awesome Font* family into Latin and Japanese subsets, each of which the browser downloads on an as-needed basis:
 
     @font-face {
-      font-family:'Awesome Font';
+      font-family: 'Awesome Font';
       font-style: normal;
       font-weight: 400;
       src: local('Awesome Font'),
-           url('/fonts/awesome-l.woff2') format('woff2'),
+           url('/fonts/awesome-l.woff2') format('woff2'), 
            url('/fonts/awesome-l.woff') format('woff'),
            url('/fonts/awesome-l.ttf') format('truetype'),
            url('/fonts/awesome-l.eot') format('embedded-opentype');
-      unicode-range:U+000-5FF; /* Latin glyphs */
+      unicode-range: U+000-5FF; /* Latin glyphs */
     }
-
+    
     @font-face {
-      font-family:'Awesome Font';
+      font-family: 'Awesome Font';
       font-style: normal;
       font-weight: 400;
       src: local('Awesome Font'),
-           url('/fonts/awesome-jp.woff2') format('woff2'),
+           url('/fonts/awesome-jp.woff2') format('woff2'), 
            url('/fonts/awesome-jp.woff') format('woff'),
            url('/fonts/awesome-jp.ttf') format('truetype'),
            url('/fonts/awesome-jp.eot') format('embedded-opentype');
-      unicode-range:U+3000-9FFF, U+ff??; /* Japanese glyphs */
+      unicode-range: U+3000-9FFF, U+ff??; /* Japanese glyphs */
     }
+    
 
+Note: Unicode-range subsetting is particularly important for Asian languages, where the number of glyphs is much larger than in Western languages and a typical "full" font is often measured in megabytes instead of tens of kilobytes.
 
-注: unicode-range によるサブセット化は特にアジア系の言語で重要です。これらの言語では、グリフの数が西洋言語よりもずっと多く、通常の「フル装備の」フォントではそのサイズが数十キロバイト単位ではなく数メガバイト単位に及ぶことが多くあります。
+The use of Unicode range subsets and separate files for each stylistic variant of the font allows you to define a composite font family that is both faster and more efficient to download. Visitors only download the variants and subsets they need, and they aren't forced to download subsets that they may never see or use on the page.
 
-unicode-range によるサブセットを使い、スタイル別の派生フォントにそれぞれ別々のファイルを使うことで、より高速かつ効率よくダウンロードされる複合フォント ファミリーを定義できます。
- 必要な派生フォントやサブセットをダウンロードするだけで済み、ページ上で表示されたり使用されたりすることが決してないサブセットをダウンロードする必要がなくなります。
+That said, there's one small issue with unicode-range: [not all browser support it](http://caniuse.com/#feat=font-unicode-range) yet. Some browsers simply ignore the unicode-range hint and download all variants, while others may not process the `@font-face` declaration at all. To address this, you need to fall back to "manual subsetting" for older browsers.
 
-ただし、unicode-range には 1 つだけ、[すべてのブラウザがサポートしているわけではない](http://caniuse.com/#feat=font-unicode-range)という小さな欠点があります。
- unicode-range ヒントを無視してすべての派生フォントをダウンロードするブラウザもあれば、`@font-face` 宣言をまったく処理しないブラウザもあります。
- こうした問題に対処するには、旧式のブラウザで代わりに「手動サブセット化」を行う必要があります。
+Because old browsers are not smart enough to select only the necessary subsets and cannot construct a composite font, you have to fall back to providing a single font resource that contains all the necessary subsets and hide the rest from the browser. For example, if the page is only using Latin characters, then you can strip other glyphs and serve that particular subset as a standalone resource.
 
-旧式のブラウザは必要なサブセットだけを選択できる機能を備えておらず、複合フォントを構築できないため、代わりに、必要なサブセットをすべて含んだ単一のフォント リソースを提供して、残りをブラウザから隠す必要があります。
- たとえば、ページでラテン文字しか使われていない場合は、それ以外のグリフを取り除いて、特定のサブセットを単独のリソースとして利用することができます。
+1. **How do you determine which subsets are needed?** 
+    * If the browser supports unicode-range subsetting, then it will automatically select the right subset. The page just needs to provide the subset files and specify appropriate unicode-ranges in the `@font-face` rules.
+    * If the browser doesn't support unicode-range subsetting, then the page needs to hide all unnecessary subsets; that is, the developer must specify the required subsets.
+2. **How do you generate font subsets?** 
+    * Use the open-source [pyftsubset tool](https://github.com/behdad/fonttools/){: .external } to subset and optimize your fonts.
+    * Some font services allow manual subsetting via custom query parameters, which you can use to manually specify the required subset for your page. Consult the documentation from your font provider.
 
-1. **必要なサブセットを判断する方法**
-    * unicode-range によるサブセット化がブラウザでサポートされている場合は、自動的に適切なサブセットが選択されます。
- ページでは、サブセット ファイルを提供し、該当する unicode-range を `@font-face` ルールで指定するだけで済みます。
-    * ブラウザで unicode-range によるサブセット化がサポートされない場合は、ページで不要なサブセットをすべて隠す必要があります。つまり、デベロッパーが必要なサブセットを指定する必要があります。
-1. **フォント サブセットを生成する方法**
-    - オープンソースの [pyftsubset ツール](https://github.com/behdad/fonttools/){: .external }を使用して、 フォントのサブセット化と最適化を行います。
-    - フォント サービスによってはカスタム クエリ パラメータによる手動サブセット化が可能です。この方法を使ってページで必要なサブセットを手動で指定できます。
- 詳しくはフォント提供者のマニュアルをご覧ください。
+### Font selection and synthesis
 
-### フォントの選択と合成
+Each font family is composed of multiple stylistic variants (regular, bold, italic) and multiple weights for each style, each of which, in turn, may contain very different glyph shapes&mdash;for example, different spacing, sizing, or a different shape altogether.
 
-フォント ファミリーはそれぞれ、複数のスタイル別の派生フォント（標準、太字、斜体）と、スタイルごとの複数のウェイトで構成されますが、さらにスタイルに含まれるグリフ形状がスタイルごとに大きく異なる場合があります。たとえば、スペーシングやサイジングが異なる場合や、形状が完全に異なる場合があります。
+<img src="images/font-weights.png"  alt="Font weights" />
 
-<img src="images/font-weights.png"  alt="フォント ウェイト">
+For example, the above diagram illustrates a font family that offers three different bold weights: 400 (regular), 700 (bold), and 900 (extra bold). All other in-between variants (indicated in gray) are automatically mapped to the closest variant by the browser.
 
-たとえば上の図は、
-400（標準）、700（太字）、900（極太）の 3 つの異なる太字ウェイトを提供するフォント ファミリーです。 それ以外のウェイトの派生フォント（グレーで表示）はすべて、ブラウザによって最も近い派生フォントに自動的にマッピングされます。
+> When a weight is specified for which no face exists, a face with a nearby weight is used. In general, bold weights map to faces with heavier weights and light weights map to faces with lighter weights.
+> 
+> > [CSS3 font matching algorithm](http://www.w3.org/TR/css3-fonts/#font-matching-algorithm)
 
-
-
-> 指定されたウェイトに対応するフェースが存在しない場合は、それに近いウェイトのフェースが使用されます。 一般に、太字のウェイトは、より重いウェイトのフェースにマッピングされ、細字のウェイトは、より軽いウェイトのフェースにマッピングされます。
-
-> > <a href="http://www.w3.org/TR/css3-fonts/#font-matching-algorithm">CSS3 のフォント マッチング アルゴリズム</a>
-
-_italic_ の派生フォントにも同様のロジックが適用されます。 フォント デザイナーはどの派生フォントを生成するのかをコントロールし、ユーザーはどの派生フォントをページ上で使用するのかをコントロールします。
- 派生フォントはそれぞれ別々のダウンロードになるため、派生フォントの数は少なく保つことをおすすめします。
- たとえば、次のように _Awesome Font_ ファミリー用に 2 つの太字の派生フォントを定義できます。
-
+Similar logic applies to *italic* variants. The font designer controls which variants they will produce, and you control which variants you'll use on the page. Because each variant is a separate download, it's a good idea to keep the number of variants small. For example, you can define two bold variants for the *Awesome Font* family:
 
     @font-face {
-      font-family:'Awesome Font';
+      font-family: 'Awesome Font';
       font-style: normal;
       font-weight: 400;
       src: local('Awesome Font'),
-           url('/fonts/awesome-l.woff2') format('woff2'),
+           url('/fonts/awesome-l.woff2') format('woff2'), 
            url('/fonts/awesome-l.woff') format('woff'),
            url('/fonts/awesome-l.ttf') format('truetype'),
            url('/fonts/awesome-l.eot') format('embedded-opentype');
-      unicode-range:U+000-5FF; /* Latin glyphs */
+      unicode-range: U+000-5FF; /* Latin glyphs */
     }
-
+    
     @font-face {
-      font-family:'Awesome Font';
+      font-family: 'Awesome Font';
       font-style: normal;
       font-weight: 700;
       src: local('Awesome Font'),
-           url('/fonts/awesome-l-700.woff2') format('woff2'),
+           url('/fonts/awesome-l-700.woff2') format('woff2'), 
            url('/fonts/awesome-l-700.woff') format('woff'),
            url('/fonts/awesome-l-700.ttf') format('truetype'),
            url('/fonts/awesome-l-700.eot') format('embedded-opentype');
-      unicode-range:U+000-5FF; /* Latin glyphs */
+      unicode-range: U+000-5FF; /* Latin glyphs */
     }
+    
 
+The above example declares the *Awesome Font* family that is composed of two resources that cover the same set of Latin glyphs (`U+000-5FF`) but offer two different "weights": normal (400) and bold (700). However, what happens if one of your CSS rules specifies a different font weight, or sets the font-style property to italic?
 
-この例で宣言した _Awesome Font_ ファミリーは 2 つのリソースで構成されています。これらは同じラテン グリフ セット（`U+000-5FF`）を対象としていますが、標準（400）と太字（700）の 2 つの異なる「ウェイト」を提供します。
- しかし、いずれかの CSS ルールで、異なるフォント ウェイトを指定したり、font-style プロパティを斜体に設定したりした場合はどうなるでしょうか。
+* If an exact font match isn't available, the browser substitutes the closest match.
+* If no stylistic match is found (for example, no italic variants were declared in the example above), then the browser synthesizes its own font variant.
 
-- 正確に一致するフォントが見つからない場合、ブラウザは最も近いものを代用します。
-- スタイルが一致するフォントが見つからない場合（上の例で斜体の派生フォントを宣言しなかった場合など）、ブラウザは独自の派生フォントを合成します。
+<img src="images/font-synthesis.png"  alt="Font synthesis" />
 
-<img src="images/font-synthesis.png"  alt="フォントの合成">
+Warning: Authors should also be aware that synthesized approaches may not be suitable for scripts like Cyrillic, where italic forms are very different in shape. For proper fidelity in those scripts, use an actual italic font.
 
-Warning: 作成者は、斜体にすると形状が大きく変わるキリル文字など、合成による方法が適さない場合があることにも注意する必要があります。
- これらのスクリプトを正しく再現するためには、実際の斜体フォントを使用してください。
+The example above illustrates the difference between the actual vs. synthesized font results for Open Sans. All synthesized variants are generated from a single 400-weight font. As you can see, there's a noticeable difference in the results. The details of how to generate the bold and oblique variants are not specified. Therefore, the results vary from browser to browser, and are highly dependent on the font.
 
-上の例では、 Open-Sans における実際のフォントと合成フォントの違いを示しています。
- 合成の派生フォントはすべて、1 つの 400 ウェイトのフォントから生成されます。 ご覧のように、著しい違いが見られます。
- 太字と斜体の派生フォントを生成する方法の詳細は指定されていません。
- したがって、その結果はブラウザごとに異なり、またフォントに大きく依存します。
+Note: For best consistency and visual results, don't rely on font synthesis. Instead, minimize the number of used font variants and specify their locations, such that the browser can download them when they are used on the page. That said, in some cases a synthesized variant [may be a viable option](https://www.igvita.com/2014/09/16/optimizing-webfont-selection-and-synthesis/), but be cautious in using synthesized variants.
 
-注: 最適な一貫性と見栄えを保つには、合成フォントを使用しないようにします。 代わりに、使用する派生フォントの数を最小限に抑えて、それらの場所を指定してください。そうすることで、ページ上で使用されているときにブラウザがフォントをダウンロードできます。
- ただし、場合によっては[合成の派生フォント]<ahref='https://www.igvita.com/2014/09/16/optimizing-webfont-selection-and-synthesis/'が使用可能な選択肢となることがあります</a>。使用の際は注意してください。
-
-## 読み込みと表示の最適化
+## Optimizing loading and rendering
 
 ### TL;DR {: .hide-from-toc }
-* デフォルトでは、フォント リクエストはレンダリング ツリーが構築されるまで遅延されるため、テキストのレンダリングが遅れることがあります。
-* `<link rel="preload">`、CSS `font-display` プロパティ、および Font Loading API は、デフォルトの動作をオーバーライドして、カスタム フォントの読み込みとレンダリング処理を実装するために必要なフックを提供します。
 
-「フル装備の」ウェブフォントには、場合によっては必要ないスタイル別派生フォントや、使用されないグリフもすべて含まれているため、ダウンロードのサイズがあっという間に数メガバイトに及んでしまいます。
- この問題に対処するため、`@font-face` CSS ルールではフォント ファミリーをリソースのコレクション（Unicode サブセット、個別のスタイル別派生フォントなど）に分割できるようになっています。
+* By default, font requests are delayed until the render tree is constructed, which can result in delayed text rendering.
+* `<link rel="preload">`, the CSS `font-display` property, and the Font Loading API provide the hooks needed to implementing custom font loading and rendering strategies, overriding the default behavior.
 
-これらが宣言されている場合、ブラウザは必要なサブセットや派生フォントを判断して、テキストのレンダリングに最小限必要なセットをダウンロードします。この動作は非常に便利ですが、
- クリティカル レンダリング パスの中でパフォーマンスのボトルネックが生じたり、テキストのレンダリングが遅れたりするなど、回避すべき副作用が生じる可能性もあるので注意が必要です。
+A "full" webfont that includes all stylistic variants, which you may not need, plus all the glyphs, which may go unused, can easily result in a multi-megabyte download. To address this, the `@font-face` CSS rule is specifically designed to allow you to split the font family into a collection of resources: unicode subsets, distinct style variants, and so on.
 
-### デフォルトの動作
+Given these declarations, the browser figures out the required subsets and variants and downloads the minimal set required to render the text, which is very convenient. However, if you're not careful, it can also create a performance bottleneck in the critical rendering path and delay text rendering.
 
-フォントの遅延読み込みは、実はテキストのレンダリングが遅れるという重要な問題を引き起こす場合があります。ブラウザ側でテキストのレンダリングに必要なフォント リソースを判別するには、まず、DOM ツリーと CSSOM ツリーから[レンダリング ツリーを構築](/web/fundamentals/performance/critical-rendering-path/render-tree-construction)する必要があります。
- その結果、フォントのリクエストが他の重要なリソースよりもずっと後になるため、リソースを取得するまでブラウザでのテキストのレンダリングがブロックされることがあります。
+### The default behavior
 
-<img src="images/font-crp.png"  alt="フォントのクリティカル レンダリング パス">
+Lazy loading of fonts carries an important hidden implication that may delay text rendering: the browser must [construct the render tree](/web/fundamentals/performance/critical-rendering-path/render-tree-construction), which is dependent on the DOM and CSSOM trees, before it knows which font resources it needs in order to render the text. As a result, font requests are delayed well after other critical resources, and the browser may be blocked from rendering text until the resource is fetched.
 
-1. ブラウザが HTML ドキュメントをリクエストします。
-1. ブラウザが HTML レスポンスの解析と DOM の構築を始めます。
-1. ブラウザが CSS、JS、その他のリソースを検出し、リクエストを送信します。
-1. すべての CSS コンテンツを受信した時点で、ブラウザが CSSOM を構築し、DOM ツリーと結合してレンダリング ツリーを構築します。
-    - ページ上の指定されたテキストのレンダリングにどのフォント バリアントが必要なのかがレンダリング ツリーによって示されると、フォント リクエストが送信されます。
-1. ブラウザがレイアウトを実行し、コンテンツを画面にペイントします。
-    - フォントがまだ使用できない場合、ブラウザはいずれのテキスト ピクセルもレンダリングできません。
-    - フォントが使用できるようになるとブラウザがテキスト ピクセルをペイントします。
+<img src="images/font-crp.png"  alt="Font critical rendering path" />
 
-ページ コンテンツの初回ペイント（レンダリング ツリー構築のすぐ後に実行可能）と、フォント リソースのリクエストとの間に起こる「競合」によって、ブラウザがページ レイアウトをレンダリングする一方で、すべてのテキストは省略する「空テキスト問題」が発生します。
+1. The browser requests the HTML document.
+2. The browser begins parsing the HTML response and constructing the DOM.
+3. The browser discovers CSS, JS, and other resources and dispatches requests.
+4. The browser constructs the CSSOM after all of the CSS content is received and combines it with the DOM tree to construct the render tree. 
+    * Font requests are dispatched after the render tree indicates which font variants are needed to render the specified text on the page.
+5. The browser performs layout and paints content to the screen. 
+    * If the font is not yet available, the browser may not render any text pixels.
+    * After the font is available, the browser paints the text pixels.
 
-次のセクションでは、このデフォルトの動作をカスタマイズするためのいくつかのオプションについて説明します。
+The "race" between the first paint of page content, which can be done shortly after the render tree is built, and the request for the font resource is what creates the "blank text problem" where the browser might render page layout but omits any text.
 
-### Web フォントのリソースをプリロードする
+The next section describes a number of options for customizing this default behavior.
 
-既知の URL でホストされている特定の Web フォントをページで必要とする可能性が高い場合、新しいウェブ プラットフォーム機能の [`<link rel="preload">`](/web/fundamentals/performance/resource-prioritization) を利用することができます。
+### Preload your Webfont resources
 
-この機能により、CSSOM が作成されるのを待たずに、クリティカル レンダリング パスの早い段階で Web フォントへのリクエストをトリガーする要素を、通常は `<head>` の一部として HTML に含めることができます。
+If there's a high probability that your page will need a specific Webfont hosted at a URL you know in advance, you can take advantage of a new web platform feature: [`<link rel="preload">`](/web/fundamentals/performance/resource-prioritization).
 
-`<link rel="preload">` は、特定のリソースがすぐに必要になるというブラウザへの「ヒント」として役立ちますが、ブラウザにその*使い方*を教えることはしません。
-その Web フォント URL で何をするのかブラウザに指示するために、適切な CSS `@font-face`定義と一緒にプリロードを使用する必要があります。
+It allows you to include an element in your HTML, usually as part of the `<head>`, that will trigger a request for the Webfont early in the critical rendering path, without having to wait for the CSSOM to be created.
+
+`<link rel="preload">` serves as a "hint" to the browser that a given resource is going to be needed soon, but it doesn't tell the browser *how* to use it. You need to use preload in conjunction with an appropriate CSS `@font-face` definition in order to instruct the browser what do to with a given Webfont URL.
 
 ```html
 <head>
@@ -306,43 +260,37 @@ Warning: 作成者は、斜体にすると形状が大きく変わるキリル�
 
 ```css
 @font-face {
-  font-family:'Awesome Font';
+  font-family: 'Awesome Font';
   font-style: normal;
   font-weight: 400;
   src: local('Awesome Font'),
-       url('/fonts/awesome-l.woff2') format('woff2'), /* will be preloaded */
+       url('/fonts/awesome-l.woff2') format('woff2'), /* will be preloaded */ 
        url('/fonts/awesome-l.woff') format('woff'),
        url('/fonts/awesome-l.ttf') format('truetype'),
        url('/fonts/awesome-l.eot') format('embedded-opentype');
-  unicode-range:U+000-5FF; /* Latin glyphs */
+  unicode-range: U+000-5FF; /* Latin glyphs */
 }
 ```
 
-すべてのブラウザが [`<link rel="preload">` をサポート](https://caniuse.com/#feat=link-rel-preload)しているわけではなく、それらのブラウザでは `<link rel="preload">` は無視されます。
- しかし、プリロードをサポートするすべてのブラウザは WOFF2 もサポートしているので、WOFF2 は常にプリロードする必要があるフォーマットです。
+Not all browsers [support `<link rel="preload">`](https://caniuse.com/#feat=link-rel-preload), and in those browsers, `<link rel="preload">` will just be ignored. But every browser that supports preloading also supports WOFF2, so that's always the format that you should preload.
 
-Note: `<link rel="preload">` を使用すると、実際にページに必要かどうかにかかわらず、Web フォントの URL に対して無条件で優先度の高いリクエストが送られます。
- Web フォントのリモート コピーは不要であるという合理的な可能性がある場合（たとえば、`@font-face` 定義に Roboto のような一般的なフォントのための `local()` エントリが含まれている、など）、`<link rel="preload">` の使用は無駄なリクエストになります。
- 一部のブラウザでは、リソースがプリロードされていても実際には使用されない場合、デベロッパー ツール コンソールに警告が表示されます。
+Caution: Using `<link rel="preload">` will make an unconditional, high-priority request for the Webfont's URL, regardless of whether it actually ends up being needed on the page. If there's a reasonable chance that the remote copy of the Webfont won't be needed—for instance, because the `@font-face` definition includes a `local()` entry for a common font like Roboto—then using `<link rel="preload">` will result in a wasted request. Some browsers will display a warning in their Developer Tools Console when a resource is preloaded but not actually used.
 
-### テキスト レンダリングの遅延をカスタマイズする
+### Customize the text rendering delay
 
-プリロードを行うと、ページのコンテンツがレンダリングされるときに Web フォントが使用可能である可能性が高くなりますが、その保証はありません。
- まだ利用できない `font-family` を使用するテキストをレンダリングする場合に、ブラウザがどのように動作するかを考慮する必要があります。
+While preloading makes it more likely that a Webfont will be available when a page's content is rendered, it offers no guarantees. You still need to consider how browsers behave when rendering text that uses a `font-family` which is not yet available.
 
-#### ブラウザの動作
+#### Browser behaviors
 
-ページ コンテンツの初回ペイント（レンダリング ツリー構築のすぐ後に実行可能）と、フォント リソースのリクエストとの間に起こる「競合」によって、ブラウザがページ レイアウトをレンダリングする一方で、すべてのテキストは省略する「空テキスト問題」が発生します。
- ほとんどのブラウザは、Web フォントがダウンロードされるのを待つ最大タイムアウトを実装しています。その後、代替フォントが使用されます。
- 残念ながら、その実装方法はブラウザによって異なります。
+The "race" between the first paint of page content, which can be done shortly after the render tree is built, and the request for the font resource is what creates the "blank text problem" where the browser might render page layout but omits any text. Most browsers implement a maximum timeout that they'll wait for a Webfont to download, after which a fallback font will be used. Unfortunately, browsers differ on implementation:
 
 <table>
   <thead>
     <tr>
-      <th data-th="Browser">ブラウザ</th>
-      <th data-th="Timeout">タイムアウト</th>
-      <th data-th="Fallback">代替</th>
-      <th data-th="Swap">スワップ</th>
+      <th data-th="Browser">Browser</th>
+      <th data-th="Timeout">Timeout</th>
+      <th data-th="Fallback">Fallback</th>
+      <th data-th="Swap">Swap</th>
     </tr>
   </thead>
   <tbody>
@@ -351,13 +299,13 @@ Note: `<link rel="preload">` を使用すると、実際にページに必要か
         <strong>Chrome 35+</strong>
       </td>
       <td data-th="Timeout">
-        3 秒
+        3 seconds
       </td>
       <td data-th="Fallback">
-        対応
+        Yes
       </td>
       <td data-th="Swap">
-        対応
+        Yes
       </td>
     </tr>
     <tr>
@@ -365,13 +313,13 @@ Note: `<link rel="preload">` を使用すると、実際にページに必要か
         <strong>Opera</strong>
       </td>
       <td data-th="Timeout">
-        3 秒
+        3 seconds
       </td>
       <td data-th="Fallback">
-        対応
+        Yes
       </td>
       <td data-th="Swap">
-        対応
+        Yes
       </td>
     </tr>
     <tr>
@@ -379,13 +327,13 @@ Note: `<link rel="preload">` を使用すると、実際にページに必要か
         <strong>Firefox</strong>
       </td>
       <td data-th="Timeout">
-        3 秒
+        3 seconds
       </td>
       <td data-th="Fallback">
-        対応
+        Yes
       </td>
       <td data-th="Swap">
-        対応
+        Yes
       </td>
     </tr>
     <tr>
@@ -393,13 +341,13 @@ Note: `<link rel="preload">` を使用すると、実際にページに必要か
         <strong>Internet Explorer</strong>
       </td>
       <td data-th="Timeout">
-        0 秒
+        0 seconds
       </td>
       <td data-th="Fallback">
-        対応
+        Yes
       </td>
       <td data-th="Swap">
-        対応
+        Yes
       </td>
     </tr>
     <tr>
@@ -407,161 +355,135 @@ Note: `<link rel="preload">` を使用すると、実際にページに必要か
         <strong>Safari</strong>
       </td>
       <td data-th="Timeout">
-        タイムアウトなし
+        No timeout
       </td>
       <td data-th="Fallback">
-        該当せず
+        N/A
       </td>
       <td data-th="Swap">
-        該当せず
+        N/A
       </td>
     </tr>
   </tbody>
 </table>
 
-- Chrome と Firefox には 3 秒のタイムアウトがあり、その後テキストは代替フォントで表示されます。
- フォントがダウンロードに成功した場合、最終的にスワップが発生し、テキストは意図したフォントで再レンダリングされます。
-- Internet Explorer のタイムアウトは 0 秒で、即時にテキストのレンダリングが行われます。
- リクエストされたフォントがまだ使用できない場合は代替フォントが使用され、リクエストされたフォントが利用可能になるとテキストの再レンダリングを行います。
-- Safari にはタイムアウトの振る舞いはありません（ベースラインのネットワークタイムアウト以外のものはありません）。
+* Chrome and Firefox have a three second timeout after which the text is shown with the fallback font. If the font manages to download, then eventually a swap occurs and the text is re-rendered with the intended font.
+* Internet Explorer has a zero second timeout which results in immediate text rendering. If the requested font is not yet available, a fallback is used, and text is re-rendered later once the requested font becomes available.
+* Safari has no timeout behavior (or at least nothing beyond a baseline network timeout).
 
+To ensure consistency moving forward, the CSS Working Group has proposed a new `@font-face` descriptor, [`font-display`](https://drafts.csswg.org/css-fonts-4/#font-display-desc), and a corresponding property for controlling how a downloadable font renders before it is loaded.
 
-一貫性を確実に前進させるために、CSS ワーキング グループは、新しい `@font-face` 記述子、[`font-display`](https://drafts.csswg.org/css-fonts-4/#font-display-desc)、および対応するプロパティを提案しました。これは、CSS ダウンロード可能フォントが読み込まれる前にレンダリングする方法を制御するためのものです。
+#### The font display timeline
 
-#### フォント表示タイムライン
+Similar to the existing font timeout behaviors that some browsers implement today, `font-display` segments the lifetime of a font download into three major periods:
 
-一部のブラウザが現在実装している既存のフォント タイムアウト動作と同様に、`font-display` はフォントのダウンロードの有効期間を 3 つの主要な期間に分割します。
+1. The first period is the **font block period**. During this period, if the font face is not loaded, any element attempting to use it must instead render with an invisible fallback font face. If the font face successfully loads during the block period, the font face is then used normally.
+2. The **font swap period** occurs immediately after the font block period. During this period, if the font face is not loaded, any element attempting to use it must instead render with a fallback font face. If the font face successfully loads during the swap period, the font face is then used normally.
+3. The **font failure period** occurs immediately after the font swap period. If the font face is not yet loaded when this period starts, it’s marked as a failed load, causing normal font fallback. Otherwise, the font face is used normally.
 
-1. 最初の期間は**フォント ブロック期**です。 この期間中にフォント フェースがロードされていない場合、それを使おうとする要素は、代わりに不可視代替フォント フェースでレンダリングされる必要があります。
- このブロック期にフォント フェースが正常にロードされた場合、そのフォント フェースは通常どおりに使用されます。
-2. **フォント スワップ期**はフォント ブロック期の直後に発生します。 この期間中にフォント フェースがロードされていない場合、それを使おうとする要素は、代わりに代替フォント フェースでレンダリングされる必要があります。
- このスワップ期にフォント フェースが正常にロードされた場合、そのフォント フェースは通常どおりに使用されます。
-3. **フォント失敗期**はフォント スワップ期の直後に発生します。
- この期間の開始時にフォント フェースがまだロードされていない場合、読み込み失敗としてマークされ、通常の代替フォントが使用されます。
- それ以外の場合は、フォント フェースが通常どおりに使用されます。
+Understanding these periods means you can use `font-display` to decide how your font should render depending on whether or when it was downloaded.
 
-これらの期間を理解すると、`font-display` を使用して、フォントがダウンロードされたかどうか、またはいつダウンロードされるかによってフォントのレンダリング方法を決定できます。
+#### Using font-display
 
-#### font-display を使用する
-
-`font-display` プロパティを使用するには、`@font-face` ルールにそれを追加します。
+To work with the `font-display` property, add it your `@font-face` rules:
 
 ```css
 @font-face {
-  font-family:'Awesome Font';
+  font-family: 'Awesome Font';
   font-style: normal;
   font-weight: 400;
   font-display: auto; /* or block, swap, fallback, optional */
   src: local('Awesome Font'),
-       url('/fonts/awesome-l.woff2') format('woff2'), /* will be preloaded */
+       url('/fonts/awesome-l.woff2') format('woff2'), /* will be preloaded */ 
        url('/fonts/awesome-l.woff') format('woff'),
        url('/fonts/awesome-l.ttf') format('truetype'),
        url('/fonts/awesome-l.eot') format('embedded-opentype');
-  unicode-range:U+000-5FF; /* Latin glyphs */
+  unicode-range: U+000-5FF; /* Latin glyphs */
 }
 ```
 
-`font-display` が現在サポートする値の範囲は
-`auto | block | swap | fallback | optional` です。
+`font-display` currently supports the following range of values: `auto | block | swap | fallback | optional`.
 
-- **`auto`** は、user-agent が使用するフォント表示戦略を必ず使用します。 ほとんどのブラウザは、現在 `block` に似たデフォルト戦略を持っています。
+* **`auto`** uses whatever font display strategy the user-agent uses. Most browsers currently have a default strategy similar to `block`.
 
-- **`block`** を使用すると、フォント フェースのブロック期は短く（ほとんどの場合 3 秒が推奨されます）、スワップ期は無限になります。
- つまり、フォントが読み込まれていない場合、ブラウザは最初は「不可視」テキストを描画しますが、読み込まれるとすぐにフォント フェースを入れ替えます。
- これを行うために、ブラウザは、選択されたフォントに似たメトリックで、すべてのグリフに「インク」を含まない匿名のフォント フェースを作成します。
-この値は、ページを使用可能にするために特定の書体でテキストをレンダリングすることが必要な場合にのみ使用する必要があります。
+* **`block`** gives the font face a short block period (3s is recommended in most cases) and an infinite swap period. In other words, the browser draws "invisible" text at first if the font is not loaded, but swaps the font face in as soon as it loads. To do this the browser creates an anonymous font face with metrics similar to the selected font but with all glyphs containing no "ink." This value should only be used if rendering text in a particular typeface is required for the page to be usable.
 
-- **`swap`** を使用すると、フォント フェースのブロック期は 0 秒でスワップ期は無限になります。
-つまり、フォント フェースがロードされていない場合、ブラウザは代替フォントですぐにテキストを描画しますが、ロードされるとすぐにフォントフェースを入れ替えます。
- `block` と同様に、この値は、特定のフォントでテキストをレンダリングすることがページにとって重要ではあるが、どのフォントでレンダリングしてもメッセージは正しく表示される場合にのみ使用する必要があります。
- ロゴ テキストは **swap** の候補として適しています。合理的な代替フォントを使用して会社の名前を表示すればメッセージは伝わりますが、最終的には正式な書体を使用することになるためです。
+* **`swap`** gives the font face a zero second block period and an infinite swap period. This means the browser draws text immediately with a fallback if the font face isn’t loaded, but swaps the font face in as soon as it loads. Similar to `block`, this value should only be used when rendering text in a particular font is important for the page, but rendering in any font will still get a correct message across. Logo text is a good candidate for **swap** since displaying a company’s name using a reasonable fallback will get the message across but you’d eventually use the official typeface.
 
-- **`fallback`** を使用すると、フォント フェースのブロック期は非常に短く（ほとんどの場合 100ms 以下が推奨されます）、スワップ期は短く（ほとんどの場合 3 秒が推奨されます）なります。
- つまり、フォント フェースが読み込まれていない場合、最初は代替フォントでレンダリングされますが、読み込まれるとすぐにフォントが入れ替わります。
- ただし、時間がかかりすぎると、残りのページの有効期間は代替フォントが使用されます。
- `fallback` は本文のようなものに適しています。ユーザーにできるだけ早く読み始めてもらうと同時に、新しいフォントの読み込み時にテキストを移動させてユーザーの邪魔をしたくないからです。
+* **`fallback`** gives the font face an extremely small block period (100ms or less is recommended in most cases) and a short swap period (three seconds is recommended in most cases). In other words, the font face is rendered with a fallback at first if it’s not loaded, but the font is swapped as soon as it loads. However, if too much time passes, the fallback will be used for the rest of the page’s lifetime. `fallback` is a good candidate for things like body text where you’d like the user to start reading as soon as possible and don’t want to disturb their experience by shifting text around as a new font loads in.
 
-- **`optional`** を使用すると、フォント フェースのブロック期は非常に短く（ほとんどの場合 100ms 以下が推奨されます）、スワップ期は 0 秒になります。
- `fallback` と同様に、これはダウンロードするフォントが「あれば良い」ものの、
-使用感にとって重要ではない場合に適しています。 `optional` 値は、フォントのダウンロードを開始するかどうかをブラウザに任せます。ユーザーにとって最適と思われることに応じて、フォントのダウンロードをしない場合も、ダウンロードの優先順位を低くする場合もあります。
- これは、ユーザーの接続が遅いため、フォントの取り込みがリソースの最善の使い方ではないような状況では有益です。
+* **`optional`** gives the font face an extremely small block period (100ms or less is recommended in most cases) and a zero second swap period. Similar to `fallback`, this is a good choice for when the downloading font is more of a "nice to have" but not critical to the experience. The `optional` value leaves it up to the browser to decide whether to initiate the font download, which it may choose not to do or it may do it as a low priority depending on what it thinks would be best for the user. This can be beneficial in situations where the user is on a weak connection and pulling down a font may not be the best use of resources.
 
-`font-display` は、新しいブラウザの多くで[採用されています](https://caniuse.com/#feat=css-font-rendering-controls)。
- これがより広く採用されるにつれて、ブラウザの一貫した振る舞いを期待することができます。
+`font-display` is [gaining adoption](https://caniuse.com/#feat=css-font-rendering-controls) in many modern browsers. You can look forward to consistency in browser behavior as it becomes widely implemented.
 
-### Font Loading API
+### The Font Loading API
 
-`<link rel="preload">` および CSS `font-display` を一緒に使用すると、開発者はオーバーヘッドを増やすことなく、フォントの読み込みとレンダリングを大幅に制御できます。
- しかし、追加のカスタマイズが必要で、JavaScript の実行によるオーバーヘッドが問題ない場合は、別の選択肢があります。
+Used together, `<link rel="preload">` and the CSS `font-display` give developers a great deal of control over font loading and rendering, without adding in much overhead. But if you need additional customizations, and are willing to incur with the overhead introduced by running JavaScript, there is another option.
 
-[Font Loading API](https://www.w3.org/TR/css-font-loading/) はスクリプティング インターフェースを提供するもので、CSS フォント フェースを定義および操作すること、それらのダウンロードの進行状況を追跡すること、デフォルトの遅延読み込み動作をオーバーライドすることが可能です。
- たとえば、特定の派生フォントが必要になることがわかっている場合に、その派生フォントを定義し、フォント リソースの取得を直ちに開始するようブラウザに指示することができます。
+The [Font Loading API](https://www.w3.org/TR/css-font-loading/) provides a scripting interface to define and manipulate CSS font faces, track their download progress, and override their default lazyload behavior. For example, if you're sure that a particular font variant is required, you can define it and tell the browser to initiate an immediate fetch of the font resource:
 
     var font = new FontFace("Awesome Font", "url(/fonts/awesome.woff2)", {
-      style: 'normal', unicodeRange:'U+000-5FF', weight:'400'
+      style: 'normal', unicodeRange: 'U+000-5FF', weight: '400'
     });
-
+    
     // don't wait for the render tree, initiate an immediate fetch!
     font.load().then(function() {
       // apply the font (which may re-render text and cause a page reflow)
       // after the font has finished downloading
       document.fonts.add(font);
       document.body.style.fontFamily = "Awesome Font, serif";
-
-      // OR... by default the content is hidden,
+    
+      // OR... by default the content is hidden, 
       // and it's rendered after the font is available
       var content = document.getElementById("content");
       content.style.visibility = "visible";
-
-      // OR... apply your own render strategy here...
+    
+      // OR... apply your own render strategy here... 
     });
+    
 
+Further, because you can check the font status (via the [check()](https://www.w3.org/TR/css-font-loading/#font-face-set-check)) method and track its download progress, you can also define a custom strategy for rendering text on your pages:
 
-また、フォントの状態を（[check()](https://www.w3.org/TR/css-font-loading/#font-face-set-check) メソッドを通じて）確認し、ダウンロードの進行状況を追跡できるので、ページにテキストを表示するための独自の方法を定義することもできます。
+* You can hold all text rendering until the font is available.
+* You can implement a custom timeout for each font.
+* You can use the fallback font to unblock rendering and inject a new style that uses the desired font after the font is available.
 
-- フォントが使用可能になるまですべてのテキストの表示を保留できます。
-- フォントごとに独自のタイムアウトを実装できます。
-- 代替フォントを使用して表示の保留を解除し、フォントが使用可能になった時点で、目的のフォントを使用した新しいスタイルを表示できます。
+Best of all, you can also mix and match the above strategies for different content on the page. For example, you can delay text rendering on some sections until the font is available, use a fallback font, and then re-render after the font download has finished, specify different timeouts, and so on.
 
-特に、ページ上のさまざまなコンテンツに対して上記の方法を組み合わせることもできます。 たとえば、「フォントが使用可能になるまで一部のセクションでテキストの表示を保留する」、「代替フォントを使用し、フォントのダウンロードが完了したら再表示する」、「さまざまなタイムアウトを指定する」などの方法を利用できます。
+Note: The Font Loading API is still [under development in some browsers](http://caniuse.com/#feat=font-loading). Consider using the [FontLoader polyfill](https://github.com/bramstein/fontloader) or the [webfontloader library](https://github.com/typekit/webfontloader) to deliver similar functionality, albeit with even more overhead from an additional JavaScript dependency.
 
-注: Font Loading API は、<a href='http://caniuse.com/#feat=font-loading'>一部のブラウザではまだ開発段階です</a>。
- <ahref='https://github.com/bramstein/fontloader'>FontLoader polyfill</a> または <ahref='https://github.com/typekit/webfontloader'>webfontloader ライブラリ</a>を使用して同様の機能を提供することを検討してください。ただし、JavaScript への依存性が高まることによるオーバーヘッドがあります。
+### Proper caching is a must
 
-### 適切なキャッシングは必須
+Font resources are, typically, static resources that don't see frequent updates. As a result, they are ideally suited for a long max-age expiry - ensure that you specify both a [conditional ETag header](/web/fundamentals/performance/optimizing-content-efficiency/http-caching#validating-cached-responses-with-etags), and an [optimal Cache-Control policy](/web/fundamentals/performance/optimizing-content-efficiency/http-caching#cache-control) for all font resources.
 
-フォント リソースは通常は静的なリソースであり、頻繁に更新されることはありません。 そのため、max-age の有効期限を長く指定する対象として適しています。すべてのフォント リソースに対して[条件付き ETag ヘッダー](/web/fundamentals/performance/optimizing-content-efficiency/http-caching#validating-cached-responses-with-etags)と[最適な Cache-Control ポリシー](/web/fundamentals/performance/optimizing-content-efficiency/http-caching#cache-control)の両方を必ず指定してください。
+If your web application uses a [service worker](/web/fundamentals/primers/service-workers/), serving font resources with a [cache-first strategy](/web/fundamentals/instant-and-offline/offline-cookbook/#cache-then-network) is appropriate for most use cases.
 
-ウェブ アプリケーションが [Service Worker](/web/fundamentals/primers/service-workers/) を使用している場合は、[キャッシュ優先戦略](/web/fundamentals/instant-and-offline/offline-cookbook/#cache-then-network)でフォント リソースを提供することがほとんどのユース ケースに適しています。
+You should not store fonts using [`localStorage`](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage) or [IndexedDB](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API); each of those has its own set of performance issues. The browser's HTTP cache provides the best and most robust mechanism to deliver font resources to the browser.
 
-フォントを [`localStorage`](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage) または [IndexedDB](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API) を使って保存するべきではありません。これらには、独自のパフォーマンス問題があります。
- ブラウザの HTTP キャッシュが、ブラウザにフォント リソースを提供するための最も確実で最適なメカニズムです。
+## Optimization checklist
 
-## 最適化チェックリスト
+Contrary to popular belief, the use of webfonts doesn't need to delay page rendering or have a negative impact on other performance metrics. The well-optimized use of fonts can deliver a much better overall user experience: great branding, improved readability, usability, and searchability, all while delivering a scalable multi-resolution solution that adapts well to all screen formats and resolutions. Don't be afraid to use webfonts.
 
-一般的な理解に反して、ウェブフォントを利用することで必ずページのレンダリングが遅れたり、その他のパフォーマンス指標に悪影響が生じたりするわけではありません。
- フォントを適切に最適化された方法で利用すれば、全体的なユーザー エクスペリエンスを大幅に向上できます。優れたブランディング、読みやすさの向上、ユーザビリティ、検索機能を備えながら、あらゆる画面形式と解像度にうまく対応する、複数の解像度に対応した拡張可能なソリューションを提供できます。
- ウェブフォントを積極的に活用しましょう。
+That said, a naive implementation may incur large downloads and unnecessary delays. You need to help the browser by optimizing the font assets themselves and how they are fetched and used on your pages.
 
-ただし、安易に実装すると、大量のダウンロードや不要な遅延を招くおそれがあります。 そこで、フォント アセット自体を最適化し、それらを取得してページ上で利用する方法を最適化できるようにすることにより、ブラウザに負荷がかからないようにする必要があります。
+* **Audit and monitor your font use:** don't use too many fonts on your pages, and, for each font, minimize the number of used variants. This helps produce a more consistent and a faster experience for your users.
+* **Subset your font resources:** many fonts can be subset, or split into multiple unicode-ranges to deliver just the glyphs that a particular page requires. This reduces the file size and improves the download speed of the resource. However, when defining the subsets, be careful to optimize for font re-use. For example, don't download a different but overlapping set of characters on each page. A good practice is to subset based on script: for example, Latin, Cyrillic, and so on.
+* **Deliver optimized font formats to each browser:** provide each font in WOFF2, WOFF, EOT, and TTF formats. Make sure to apply GZIP compression to the EOT and TTF formats, because they are not compressed by default.
+* **Give precedence to `local()` in your `src` list:** listing `local('Font Name')` first in your `src` list ensures that HTTP requests aren't made for fonts that are already installed.
+* **Customize font loading and rendering using `<link rel="preload">`, `font-display`, or the Font Loading API:** default lazyloading behavior may result in delayed text rendering. These web platform features allow you to override this behavior for particular fonts, and to specify custom rendering and timeout strategies for different content on the page.
+* **Specify revalidation and optimal caching policies:** fonts are static resources that are infrequently updated. Make sure that your servers provide a long-lived max-age timestamp and a revalidation token to allow for efficient font reuse between different pages. If using a service worker, a cache-first strategy is appropriate.
 
-- **フォントの利用を調査して監視する:** ページ上で使用するフォントの数を多すぎないようにし、フォントごとに使用する派生フォントの数を最小限に抑えます。
- こうすることで、ユーザー エクスペリエンスの一貫性が高まり、動作が高速になります。
-- **フォント リソースをサブセット化する:** 多数のフォントが、サブセット化や複数の unicode-range への分割が可能で、特定のページで必要なグリフだけを提供できます。
- その結果、ファイルサイズが小さくなり、リソースのダウンロード速度が改善されます。
- ただし、サブセットを定義する際はフォントの再利用を考慮して注意深く最適化してください。
- たとえば、ページごとに異なる文字セットをダウンロードする際、文字セットに重複が生じないようにします。 スクリプト（ラテン文字やキリル文字など）に基づいてサブセット化することをおすすめします。
-- **ブラウザごとに最適化されたフォント形式を提供する:** それぞれのフォントを WOFF2、WOFF、EOT、TTF の各形式で提供します。
- EOT 形式と TTF 形式はデフォルトで圧縮されないため、必ず GZIP 圧縮を適用します。
-- **`src` リストで `local()` に優先順位を与える:** `src` リストの最初に `local('Font Name')` をリストすることで、すでにインストールされているフォントに対して HTTP リクエストが行われないようにすることができます。
-- **`<link rel="preload">`、`font-display`、または Font Loading API を使用してフォントの読み込みとレンダリングをカスタマイズする:** デフォルトの遅延読み込み動作により、テキストのレンダリングが遅れることがあります。
- これらのウェブ プラットフォームに機能を使用すると、特定のフォントに対してこの動作をオーバーライドでき、ページ上のさまざまなコンテンツに対してカスタムのレンダリング方法やタイムアウトを指定できます。
-- **再検証と最適なキャッシュ ポリシーを指定する:** フォントは静的なリソースであり、頻繁に更新されることはありません。
- サーバーで長期間にわたって最大限存続させるようにします。また、再検証トークンを用意して、異なるページ間でフォントが効率よく再利用されるようにします。
- Service Worker を使用している場合は、キャッシュ優先戦略が適しています。
+## Automated testing for web font optimization with Lighthouse {: #lighthouse }
 
-*この記事には、[Monica Dinculescu](https://meowni.ca/posts/web-fonts/)、[Rob Dodson](/web/updates/2016/02/font-display)、Jeff Posnick の寄稿が含まれます。*
+[Lighthouse](/web/tools/lighthouse) can help automate the process of making sure that you're following web font optimization best practices. Lighthouse is an auditing tool built by the Chrome DevTools team. You can run it as a Node module, from the command line, or from the Audits panel of Chrome DevTools. You tell Lighthouse what URL to audit, and then it runs a bunch of tests on the page, and gives you a report of what the page is doing well, and how it can improve.
 
-## フィードバック {: #feedback }
+The following audits can help you make sure that your pages are continuing to follow web font optimization best practices over time:
+
+* [Enable text compression](/web/tools/lighthouse/audits/text-compression)
+* [Preload key requests](/web/tools/lighthouse/audits/preload)
+* [Uses inefficient cache policy on static assets](/web/tools/lighthouse/audits/cache-policy)
+* [All text remains visible during webfont loads](/web/updates/2016/02/font-display)
+
+## Feedback {: #feedback }
 
 {% include "web/_shared/helpful.html" %}
