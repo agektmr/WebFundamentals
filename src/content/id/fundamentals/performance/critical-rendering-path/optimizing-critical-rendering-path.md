@@ -1,41 +1,30 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Pelajari faktor kunci dalam mengoptimalkan jalur rendering penting.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Learn the key factors in optimizing the critical rendering path.
 
-{# wf_updated_on: 2015-10-05 #}
-{# wf_published_on: 2014-03-31 #}
+{# wf_updated_on: 2018-08-17 #} {# wf_published_on: 2014-03-31 #} {# wf_blink_components: N/A #}
 
-# Mengoptimalkan Jalur Rendering Penting {: .page-title }
+# Optimizing the Critical Rendering Path {: .page-title }
 
 {% include "web/_shared/contributors/ilyagrigorik.html" %}
 
+To deliver the fastest possible time to first render, we need to minimize three variables:
 
-  Untuk menghasilkan waktu tercepat untuk render pertama, kita perlu 
-  meminimalkan tiga variabel:
+- The number of critical resources.
+- The critical path length.
+- The number of critical bytes.
 
-  <ul>
-    <li>Jumlah sumber daya penting.</li>
-    <li>Panjang jalur penting.</li>
-    <li>Jumlah byte penting.</li>
-  </ul>
+A critical resource is a resource that could block initial rendering of the page. The fewer of these resources, the less work for the browser, the CPU, and other resources.
 
-Sumber daya penting adalah sumber daya yang bisa memblokir rendering awal laman. Semakin sedikit sumber daya ini, semakin sedikit kerja browser, CPU, dan sumber daya lainnya.
+Similarly, the critical path length is a function of the dependency graph between the critical resources and their bytesize: some resource downloads can only be initiated after a previous resource has been processed, and the larger the resource the more roundtrips it takes to download.
 
-Demikian pula, panjang jalur penting merupakan fungsi grafik dependensi antara sumber daya penting dan ukuran byte-nya: sebagian pengunduhan sumber daya hanya bisa dimulai setelah sumber daya sebelumnya diproses, dan semakin besar sumber daya, semakin sering harus bolak-balik mengunduhnya.
+Finally, the fewer critical bytes the browser has to download, the faster it can process content and render it visible on the screen. To reduce the number of bytes, we can reduce the number of resources (eliminate them or make them non-critical) and ensure that we minimize the transfer size by compressing and optimizing each resource.
 
-Terakhir, semakin sedikit byte penting yang harus diunduh browser, semakin cepat pemrosesan materi dan merendernya pada layar. Untuk mengurangi jumlah byte, kita bisa mengurangi jumlah sumber daya (meniadakannya atau membuatnya menjadi tidak penting), dan memastikan kita meminimalkan ukuran transfer dengan memampatkan dan mengoptimalkan setiap sumber daya.
+**The general sequence of steps to optimize the critical rendering path is:**
 
-**Urutan langkah-langkah umum untuk mengoptimalkan jalur rendering penting adalah:**
+1. Analyze and characterize your critical path: number of resources, bytes, length.
+2. Minimize number of critical resources: eliminate them, defer their download, mark them as async, and so on.
+3. Optimize the number of critical bytes to reduce the download time (number of roundtrips).
+4. Optimize the order in which the remaining critical resources are loaded: download all critical assets as early as possible to shorten the critical path length.
 
-1. Analisis dan karakterisasikan jalur penting Anda: jumlah sumber daya, byte, dan panjangnya.
-1. Minimalkan jumlah sumber daya penting: meniadakannya, menangguhkan pengunduhannya, menandainya sebagai asinkron, dan seterusnya.
-1. Optimalkan jumlah byte penting untuk mengurangi waktu pengunduhan (jumlah bolak-balik).
-1. Optimalkan urutan pemuatan sumber daya penting selebihnya: unduh semua aset penting seawal mungkin untuk memperpendek panjang jalur penting.
+## Feedback {: #feedback }
 
-<a href="page-speed-rules-and-recommendations" class="gc-analytics-event"
-    data-category="CRP" data-label="Next / PageSpeed">
-  <button>Berikutnya: Aturan dan Saran PageSpeed</button>
-</a>
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
