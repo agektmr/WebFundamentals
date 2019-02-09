@@ -1,470 +1,395 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Google dan AnswerLab melakukan penelitian mengenai cara pengguna berinteraksi dengan berbagai situs seluler. Tujuannya adalah untuk menjawab pertanyaan, 'Apa yang membuat sebuah situs seluler bagus?'
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Google and AnswerLab undertook a study examining how users interact with a diverse set of mobile sites. The goal was to answer the question, 'What makes a good mobile site?'
 
-{# wf_published_on: 2014-08-08 #}
-{# wf_updated_on: 2018-02-05 #}
+{# wf_published_on: 2014-08-08 #} {# wf_updated_on: 2018-09-20 #} {# wf_blink_components: N/A #}
 
-# Apa yang Membuat Sebuah Situs Seluler Bagus? {: .page-title }
+# What Makes a Good Mobile Site? {: .page-title }
 
 {% include "web/_shared/contributors/jennygove.html" %}
 
-Google dan AnswerLab melakukan [studi penelitian](https://www.google.com/think/multiscreen/whitepaper-sitedesign.html?utm_source=web-fundamentals&utm_term=chrome&utm_content=ux-landing&utm_campaign=web-fundamentals) untuk menjawab pertanyaan ini.
+Google and AnswerLab conducted a [research study](https://www.google.com/think/multiscreen/whitepaper-sitedesign.html?utm_source=web-fundamentals&utm_term=chrome&utm_content=ux-landing&utm_campaign=web-fundamentals) to answer this question.
 
-> Pengguna seluler sangat berorientasi pada tujuan. Mereka berharap bisa mendapatkan apa yang mereka
-> butuhkan, dengan segera, dan dengan cara mereka sendiri.
+> Mobile users are very goal-oriented. They expect to be able to get what they need, immediately, and on their own terms.
 
-Penelitian ini dilakukan dengan sesi kegunaan per-orang selama 119 jam dengan
-partisipan dari AS. Para partisipan diminta untuk melakukan tugas-tugas kunci di
-berbagai situs seluler. Termasuk pengguna iOS dan Android, dan pengguna
-menguji situs tersebut di ponsel mereka sendiri. Untuk setiap situs, para partisipan diminta
-untuk menyuarakan pemikiran mereka dengan keras karena mereka menyelesaikan tugas-tugas yang berfokus pada konversi seperti
-melakukan pembelian atau pemesanan reservasi.
+The study was held through 119 hour-long, in-person usability sessions with participants in the US. Participants were asked to perform key tasks across a diverse set of mobile sites. iOS and Android users were included, and users tested the sites on their own phones. For each site, participants were asked to voice their thoughts aloud as they completed conversion-focused tasks like making a purchase or booking a reservation.
 
-Penelitian ini menemukan 25 prinsip desain situs seluler, dikelompokkan ke dalam lima
-kategori.
+The study uncovered 25 mobile site design principles, grouped into five categories.
 
-## Navigasi situs dan laman Beranda
+## Home page and site navigation
 
-Berhasil: Fokuskan beranda seluler Anda pada cara menghubungkan pengguna ke materi yang mereka cari.
+Success: Focus your mobile homepage on connecting users to the content they’re looking for.
 
-### Pertahankan panggilan untuk aksi di depan dan tengah
+### Keep calls to action front and center
 
-Menyediakan tugas sekunder melalui [menu](/web/fundamentals/design-and-ux/responsive/)
-atau "paro bawah" (bagian dari laman web yang tidak bisa dilihat tanpa gulir ke bawah).
+Make secondary tasks available through [menus](/web/fundamentals/design-and-ux/responsive/) or “below the fold” (the part of the webpage that can’t be seen without scrolling down).
 
 <div class="attempt-left">
   <figure id="fig1">
     <img src="images/hpnav-cta-good.png">
     <figcaption class="success">
-      <b>LAKUKAN</b>: Memudahkan ketersediaan semua tugas yang paling sering dipakai pengguna.
+      <b>DO</b>: Make all of your users’ most common tasks easily available.
      </figcaption>
   </figure>
 </div>
+
 <div class="attempt-right">
   <figure id="fig1">
     <img src="images/hpnav-cta-bad.png">
     <figcaption class="warning">
-      <b>JANGAN</b>: Membuang ruang berharga paro-atas dengan panggil-untuk-aksi tidak jelas seperti "ketahui selengkapnya".
+      <b>DON'T</b>: Waste precious above-the-fold space with vague
+      calls-to-action like “learn more”.
      </figcaption>
   </figure>
 </div>
 
 <div style="clear:both;"></div>
 
-### Pertahankan menu yang singkat dan manis
+### Keep menus short and sweet
 
 <div class="attempt-right">
   <figure id="fig1">
     <img src="images/hpnav-menus-good.png">
     <figcaption class="success">
-      <b>LAKUKAN</b>: Pertahankan menu yang singkat dan manis.
+      <b>DO</b>: Keep menus short and sweet.
      </figcaption>
   </figure>
 </div>
 
-Pengguna seluler tidak memiliki kesabaran untuk menggulir melalui daftar panjang opsi
-untuk menemukan apa yang mereka inginkan. Tata ulang menu Anda agar menggunakan item sesedikit mungkin,
-tanpa harus mengorbankan kegunaan.
+Mobile users don’t have the patience to scroll through a long list of options to find what they want. Reorganize your menu to use as few items as possible, without sacrificing usability.
 
 <div style="clear:both;"></div>
 
-### Mempermudah cara kembali ke laman beranda
+### Make it easy to get back to the home page
 
 <div class="attempt-right">
   <figure id="fig1">
     <img src="images/hpnav-hp-good.png">
     <figcaption class="success">
-      <b>LAKUKAN</b>: Mempermudah cara kembali ke laman beranda.
+      <b>DO</b>: Make it easy to get back to the home page.
      </figcaption>
   </figure>
 </div>
 
-Pengguna ingin kembali ke beranda ketika mereka mengetuk logo di sudut kiri atas
-laman seluler, dan mereka bisa frustrasi bila tidak tersedia atau tidak bekerja.
+Users expect to go back to the homepage when they tap the logo in the top-left of a mobile page, and they become frustrated when it isn’t available or doesn’t work.
 
 <div style="clear:both;"></div>
 
-### Jangan biarkan promosi mencuri perhatian
+### Don't let promotions steal the show
 
-Pengantara pemasangan aplikasi besar (mis. promosi selayar-penuh yang menyembunyikan materi
-dan meminta pengguna untuk memasang aplikasi) menjengkelkan pengguna dan mempersulit saat
-melakukan tugas. Selain menjengkelkan pengguna, situs yang menggunakan pengantara pemasangan aplikasi
-tidak akan lolos
-[Uji Ramah Google Seluler](https://search.google.com/test/mobile-friendly),
-yang bisa berdampak negatif terhadap peringkat penelusuran mereka.
+Large app install interstitials (e.g., full-page promotions that hide content and prompt users to install an app) annoy users and make it difficult to perform tasks. In addition to annoying users, [sites that use interstitials may see a negative impact to their search rankings](https://webmasters.googleblog.com/2016/08/helping-users-easily-access-content-on.html).
 
 <div class="attempt-left">
   <figure id="fig1">
     <img src="images/hpnav-promo-good.png">
     <figcaption class="success">
-      <b>LAKUKAN</b>: Promosi harus mudah ditutup dan tidak mengganggu pengalaman pengguna.
+      <b>DO</b>: Promotions should be easily dismissable and not distract from
+      the experience.
      </figcaption>
   </figure>
 </div>
+
 <div class="attempt-right">
   <figure id="fig1">
     <img src="images/hpnav-promo-bad.png">
     <figcaption class="warning">
-      <b>JANGAN</b>: Pengantara (kadang-kadang disebut membanting pintu) sering menjengkelkan pengguna dan membuat menggunakan situs adalah sebuah penderitaan.
+      <b>DON'T</b>: Interstitials (sometimes called door slams) often annoy
+      users and make using the site a pain.
      </figcaption>
   </figure>
 </div>
 
 <div style="clear:both;"></div>
 
-## Penelusuran situs
+## Site search
 
-Berhasil: Membantu pengguna seluler menemukan apa yang mereka cari dengan sangat cepat.
+Success: Help mobile users find what they’re looking for in a hurry.
 
-### Membuat penelusuran situs terlihat
+### Make site search visible
 
-Pengguna yang mencari informasi biasanya membuka penelusuran, sehingga bidang penelusuran
-harus menjadi salah satu item utama yang mereka lihat di laman Anda. Jangan menyembunyikan kotak
-telusur di menu.
+Users looking for information usually turn to search, so the search field should be one of the first things they see on your pages. Don’t hide the search box in a menu.
 
 <div class="attempt-left">
   <figure id="fig1">
     <img src="images/ss-search-good.jpg">
     <figcaption class="success">
-      <b>LAKUKAN</b>: Membuat penelusuran terlihat
+      <b>DO</b>: Make search visible
      </figcaption>
   </figure>
 </div>
+
 <div class="attempt-right">
   <figure id="fig1">
     <img src="images/ss-search-bad.jpg">
     <figcaption class="warning">
-      <b>JANGAN</b>: Menyembunyikan penelusuran di menu luapan
+      <b>DON'T</b>: Hide search in overflow menus
      </figcaption>
   </figure>
 </div>
 
 <div style="clear:both;"></div>
 
-### Pastikan hasil penelusuran situs relevan
+### Ensure site search results are relevant
 
-Pengguna tidak memindai beberapa laman dari hasil penelusuran untuk menemukan apa yang mereka
-cari. Permudah pengguna dengan menyelesaikan-otomatis kueri, mengoreksi
-kesalahan eja, dan menyarankan kueri terkait. Daripada menciptakan kembali
-sesuatu yang sudah ada, pertimbangkan produk yang kuat seperti [Google Penelusuran Khusus](https://cse.google.com/cse/){: .external }.
+Users don’t scan through multiple pages of results to find what they’re looking for. Make life easier on users by auto-completing queries, correcting misspellings, and suggesting related queries. Rather than reinventing the wheel, consider robust products like [Google Custom Search](https://cse.google.com/cse/){: .external }.
 
 <div class="attempt-left">
   <figure id="fig1">
     <img src="images/ss-relevant-good.png">
     <figcaption class="success">
-      <b>LAKUKAN</b>: Macy hanya mengembalikan barang anak-anak (kids).
+      <b>DO</b>: Macy's only returns kids items.
      </figcaption>
   </figure>
 </div>
+
 <div class="attempt-right">
   <figure id="fig1">
     <img src="images/ss-relevant-bad.png">
     <figcaption class="warning">
-      <b>JANGAN</b>: Mengembalikan hasil dengan kata anak (kid) di dalamnya.
+      <b>DON'T</b>: Return results for anything with the word kid in it.
      </figcaption>
   </figure>
 </div>
 
 <div style="clear:both;"></div>
 
+### Implement filters to narrow results
 
-### Mengimplementasikan filter untuk mempersempit hasil
-
-Partisipan penelitian mengandalkan [filter](/custom-search/docs/structured_search)
-untuk menemukan apa yang mereka cari, dan meninggalkan situs yang tidak memiliki filter
-yang efektif. Menempatkan filter di atas hasil penelusuran, dan membantu pengguna dengan menampilkan berapa
-banyak hasil yang dikembalikan ketika filter tertentu diterapkan.
+Study participants rely on [filters](/custom-search/docs/structured_search) to find what they’re looking for, and abandon sites that do not have effective filters. Place filters above search results, and help users by displaying how many results will be returned when a specific filter is applied.
 
 <div class="attempt-left">
   <figure id="fig1">
     <img src="images/ss-filters-good.jpg">
     <figcaption class="success">
-      <b>LAKUKAN</b>: Permudah untuk memberi filter.
+      <b>DO</b>: Make it easy to filter.
      </figcaption>
   </figure>
 </div>
+
 <div class="attempt-right">
   <figure id="fig1">
     <img src="images/ss-filters-bad.jpg">
     <figcaption class="warning">
-      <b>JANGAN</b>: Menyembunyikan fungsionalitas filter.
+      <b>DON'T</b>: Hide filter functionality.
      </figcaption>
   </figure>
 </div>
 
 <div style="clear:both;"></div>
 
-### Memandu pengguna agar hasil penelusuran situs lebih baik
+### Guide users to better site search results
 
 <div class="attempt-right">
   <figure id="fig1">
-    <img src="images/ss-guide-good.png" alt="Zappos memandu pengguna dengan bertanya apa yang mereka cari.">
+    <img src="images/ss-guide-good.png"
+         alt="Zappos guides users by asking them what they're looking for.">
     <figcaption class="success">
-      <b>LAKUKAN</b>: Membantu pengguna untuk menemukan apa yang mereka cari dengan memandu mereka ke arah yang tepat.
+      <b>DO</b>: Help users to find what they're looking for by guiding them
+      in the right direction.
      </figcaption>
   </figure>
 </div>
 
-Untuk situs dengan segmen pengguna yang beragam, ajukan beberapa pertanyaan sebelum menyajikan
-kotak telusur, dan menggunakan respons pengguna sebagai filter kueri penelusuran untuk
-memastikan bahwa pengguna mendapatkan hasil dari segmen yang paling relevan.
+For sites with diverse customer segments, ask a few questions before presenting the search box, and use the customer’s responses as search query filters to ensure that users get results from the most relevant segment.
 
 <div style="clear:both;"></div>
 
-## Niaga dan konversi
+## Commerce and conversion
 
-Berhasil: Memahami perjalanan pelanggan Anda dan membiarkan pengguna melakukan konversi dengan cara mereka sendiri.
+Success: Understand your customer journeys and let users convert on their own terms.
 
-### Biarkan pengguna menjelajahi sebelum mereka berkomitmen
+### Let users explore before they commit
 
-Partisipan penelitian frustrasi oleh situs yang mengharuskan pendaftaran di awal
-untuk melihat situs, terutama ketika merek tersebut masih terdengar asing. Meskipun informasi
-pelanggan mungkin integral untuk bisnis Anda, memintanya terlalu dini bisa
-menyebabkan pendaftaran yang lebih sedikit.
+Study participants were frustrated by sites that require upfront registrations to view the site, especially when the brand was unfamiliar. Although customer information may be integral to your business, asking for it too early may result in fewer registrations.
 
 <div class="attempt-left">
   <figure id="fig1">
     <img src="images/cc-gates-good.png">
     <figcaption class="success">
-      <b>LAKUKAN</b>: Izinkan pengguna menjelajahi situs tanpa harus mendaftar masuk.
+      <b>DO</b>: Allow users to browse the site without requiring sign in.
      </figcaption>
   </figure>
 </div>
+
 <div class="attempt-right">
   <figure id="fig1">
     <img src="images/cc-gates-bad.png">
     <figcaption class="warning">
-      <b>JANGAN</b>: Menempatkan login atau registrasi terlalu awal dalam sebuah situs.
+      <b>DON'T</b>: Place login or registration too early in a site.
      </figcaption>
   </figure>
 </div>
 
 <div style="clear:both;"></div>
 
-
-### Izinkan pengguna membeli sebagai tamu
+### Let users purchase as guests
 
 <div class="attempt-right">
   <figure id="fig1">
     <img src="images/cc-purchase-guest-good.png">
     <figcaption class="success">
-      <b>LAKUKAN</b>: Izinkan pengguna membeli dengan akun tamu.
+      <b>DO</b>: Allow users to purchase with a guest account.
      </figcaption>
   </figure>
 </div>
 
-Partisipan penelitian menganggap checkout tamu "nyaman", "sederhana", "mudah",
-dan "cepat". Pengguna kesal oleh situs yang memaksa mereka mendaftarkan sebuah
-akun saat melakukan pembelian, terutama ketika manfaat dari akun
-tidak jelas.
+Study participants viewed guest checkouts as “convenient”, “simple”, “easy”, and “quick”. Users are annoyed by sites that force them to register for an account when making a purchase, especially when the benefit of an account is unclear.
 
 <div style="clear:both;"></div>
 
-### Menggunakan informasi yang ada untuk memaksimalkan kemudahan
+### Use existing information to maximize convenience
 
-Ingat dan
-[pra-isi preferensi](/web/fundamentals/design-and-ux/input/forms/#label-and-name-inputs-properly)
-untuk pengguna terdaftar. Tawarkan layanan checkout pihak ketiga yang familier untuk pengguna baru.
+Remember and [pre-fill preferences](/web/fundamentals/design-and-ux/input/forms/#label-and-name-inputs-properly) for registered users. Offer familiar, third-party checkout services for new users.
 
-### Menggunakan tombol click-to-call untuk tugas yang kompleks
+### Use click-to-call buttons for complex tasks
 
-Pada perangkat dengan kemampuan menelepon,
-[tautan click-to-call](/web/fundamentals/native-hardware/click-to-call/) memungkinkan
-pengguna untuk melakukan panggilan telepon hanya dengan mengetuk tautan. Pada kebanyakan perangkat seluler, pengguna
-menerima konfirmasi sebelum nomor dihubungi, atau tampil menu yang akan
-menanyakan pengguna bagaimana sebaiknya nomor ditangani.
+On devices with calling capabilities, [click-to-call links](/web/fundamentals/native-hardware/click-to-call/) enable users to make a phone call by simply tapping a link. On most mobile devices the user receives a confirmation before the number is dialed, or a menu is presented asking the user how the number should be handled.
 
-### Buatlah mudah untuk diselesaikan pada perangkat lain
+### Make it easy to finish on another device
 
 <div class="attempt-right">
   <figure id="fig1">
     <img src="images/cc-other-device-good.png">
     <figcaption class="success">
-      <b>LAKUKAN</b>: Berikan cara mudah bagi pengguna untuk melanjutkan browsing atau berbelanja di perangkat lain.
+      <b>DO</b>: Provide easy ways for users to continue browsing or shopping on another device.
      </figcaption>
   </figure>
 </div>
 
-Pengguna sering kali ingin menyelesaikan tugas pada perangkat lain. Misalnya, mereka
-mungkin ingin menampilkan item pada layar yang lebih besar. Atau mereka mungkin sedang sibuk dan harus
-menyelesaikannya nanti. Dukung perjalanan pelanggan ini dengan memungkinkan pengguna untuk
-[berbagi item di jaringan sosial](/web/fundamentals/discovery-and-monetization/social-discovery/),
-atau dengan memperbolehkan pengguna meng-email sendiri tautan secara langsung dari dalam situs.
+Users frequently want to finish tasks on other devices. For instance, they might wish to view an item on a larger screen. Or they might get busy and need to finish later. Support these customer journeys by enabling users to [share items on social networks](/web/fundamentals/discovery-and-monetization/social-discovery/), or by letting users email themselves links from directly within the site.
 
 <div style="clear:both;"></div>
 
-## Entri formulir
+## Form entry
 
-Berhasil: Sediakan pengalaman konversi yang mulus dan tanpa friksi dengan formulir yang bisa dipakai.
+Success: Provide a seamless, frictionless conversion experience with usable forms.
 
+### Streamline information entry
 
-### Merampingkan entri informasi
+Automatically advance to the next field when a user presses Return. In general, the fewer taps the user must perform, the better.
 
-Secara otomatis maju ke bidang berikutnya ketika pengguna menekan Return. Secara umum,
-semakin sedikit pengguna melakukan ketukan, semakin baik.
+### Choose the simplest input
 
-### Memilih masukan yang paling sederhana
+Use the most [appropriate input type](/web/fundamentals/design-and-ux/input/forms/choose-the-best-input-type) for each scenario. Use elements like [`datalist`](/web/fundamentals/design-and-ux/input/forms/choose-the-best-input-type#offer-suggestions-during-input-with-datalist) to provide suggested values for a field.
 
-Gunakan [tipe masukan yang paling tepat](/web/fundamentals/design-and-ux/input/forms/choose-the-best-input-type)
-untuk setiap skenario. Gunakan elemen seperti
-[`datalist`](/web/fundamentals/design-and-ux/input/forms/choose-the-best-input-type#offer-suggestions-during-input-with-datalist)
-untuk menyediakan nilai yang disarankan untuk bidang.
-
-### Menyediakan kalender visual untuk pemilihan tanggal
+### Provide visual calendar for date selection
 
 <div class="attempt-right">
   <figure id="fig1">
     <img src="images/forms-calendar-good.png">
     <figcaption class="success">
-      <b>LAKUKAN</b>: gunakan widget kalender jika memungkinkan.
+      <b>DO</b>: Use calendar widgets when possible.
      </figcaption>
   </figure>
 </div>
 
-Beri label tanggal awal dan akhir dengan jelas. Pengguna sebaiknya tidak perlu meninggalkan situs dan
-memeriksa aplikasi kalender hanya untuk menjadwalkan suatu tanggal.
+Clearly label start and end dates. Users should not need to leave a site and check a calendar app just to schedule a date.
 
 <div style="clear:both;"></div>
 
-### Meminimalkan kesalahan formulir dengan label dan validasi real-time
+### Minimize form errors with labeling and real-time validation
 
 <div class="attempt-right">
   <figure id="fig1">
     <img src="images/forms-multipart-good.png">
     <figcaption class="success">
-      <b>LAKUKAN</b>: Pra-isi materi apabila memungkinkan.
+      <b>DO</b>: Label inputs clearly.
      </figcaption>
   </figure>
 </div>
 
-Labeli input dengan benar dan validasi input secara real-time.
+Label inputs properly and validate input in real-time.
 
 <div style="clear:both;"></div>
 
-### Mendesain formulir efisien
+### Design efficient forms
 
-Manfaatkan [isiotomatis](/web/fundamentals/design-and-ux/input/forms/#label-and-name-inputs-properly#use-metadata-to-enable-auto-complete)
-sehingga pengguna bisa dengan mudah melengkapi formulir dengan data pra-isi. Pra-isi
-bidang dengan informasi yang sudah Anda tahu. Misalnya, ketika mengambil alamat pengiriman
-dan penagihan, cobalah untuk menggunakan
-[`requestAutocomplete`](/web/fundamentals/design-and-ux/input/forms/use-request-auto-complete)
-atau memperbolehkan pengguna menyalin alamat pengiriman ke alamat penagihan mereka (atau sebaliknya).
+Take advantage of [autofill](/web/fundamentals/design-and-ux/input/forms/#label-and-name-inputs-properly#use-metadata-to-enable-auto-complete) so that users can easily complete forms with pre-populated data. Pre-fill fields with information you already know. For example, when retrieving shipping and billing addresses, try to use [`requestAutocomplete`](/web/fundamentals/design-and-ux/input/forms/use-request-auto-complete) or enable users to copy their shipping address to their billing address (or vice versa).
 
-## Kegunaan dan faktor bentuk
+## Usability and form factor
 
-Berhasil: Menyenangkan pengguna seluler dengan hal-hal kecil yang meningkatkan pengalaman mereka.
+Success: Delight your mobile users with small things that enhance their experiences.
 
-### Mengoptimalkan seluruh situs Anda untuk perangkat seluler
+### Optimize your entire site for mobile
 
-Menggunakan [layout responsif](/web/fundamentals/design-and-ux/responsive/) yang
-bisa berubah berdasarkan ukuran dan kemampuan perangkat pengguna. Partisipan
-penelitian menemukan bahwa situs dengan campuran laman yang dioptimalkan untuk seluler dan desktop, lebih
-sulit digunakan dibandingkan situs khusus untuk desktop.
+Use a [responsive layout](/web/fundamentals/design-and-ux/responsive/) that changes based on the size and capabilities of the user’s device. Study participants found sites with a mix of desktop and mobile-optimized pages even harder to use than desktop-only sites.
 
-### Jangan buat pengguna melakukan cubit-untuk-zoom
+### Don't make users pinch-to-zoom
 
-Pengguna merasa nyaman dengan pengguliran situs secara vertikal, namun tidak secara horizontal.
-Hindari elemen dengan lebar tetap dan besar. Gunakan
-[kueri media CSS](/web/fundamentals/design-and-ux/responsive/#use-css-media-queries-for-responsiveness)
-untuk menerapkan penataan gaya yang berbeda untuk layar berbeda. Jangan membuat materi yang
-hanya terlihat baik pada
-[lebar tampilan yang terlihat](/web/fundamentals/design-and-ux/responsive/#set-the-viewport) tertentu.
-Situs yang memaksa pengguna untuk gulir secara horizontal tidak akan lolos
-[Uji Ramah-Google Seluler](https://search.google.com/test/mobile-friendly),
-yang bisa berdampak negatif terhadap peringkat penelusuran.
+Users are comfortable with scrolling sites vertically, but not horizontally. Avoid large, fixed-width elements. Use [CSS media queries](/web/fundamentals/design-and-ux/responsive/#use-css-media-queries-for-responsiveness) to apply different stylings for different screens. Don’t create content that only displays well at a particular [viewport width](/web/fundamentals/design-and-ux/responsive/#set-the-viewport). Sites that force users to horizontally scroll fail the [Google Mobile-Friendly Test](https://search.google.com/test/mobile-friendly), which may negatively impact their search rankings.
 
-### Membuat gambar produk yang bisa diperbesar
+### Make product images expandable
 
 <div class="attempt-right">
   <figure id="fig1">
     <img src="images/sw-make-images-expandable-good.png">
     <figcaption class="success">
-      <b>LAKUKAN</b>: Membuat gambar produk yang bisa diperbesar sehingga mudah untuk melihat detailnya.
+      <b>DO</b>: Make product images expandable and easy to see in detail.
      </figcaption>
   </figure>
 </div>
 
-Pelanggan retail berharap situs mengizinkan mereka
-[melihat tampilan dekat resolusi tinggi](/web/fundamentals/design-and-ux/media/images#make-product-images-expandable)
-dari produk. Partisipan penelitian merasa kecewa ketika mereka tidak bisa melihat
-apa yang mereka beli.
+Retail customers expect sites to let them [view high resolution closeups](/web/fundamentals/design-and-ux/responsive/images#make-product-images-expandable) of products. Study participants got frustrated when they weren’t able to see what they were buying.
 
 <div style="clear:both;"></div>
 
-### Memberi tahu pengguna orientasi yang terbaik
+### Tell users which orientation works best
 
 <div class="attempt-right">
   <figure id="fig1">
     <img src="images/us-orientation.jpg">
     <figcaption class="success">
-      <b>LAKUKAN</b>: Memberi tahu pengguna orientasi yang terbaik.
+      <b>DO</b>: Tell the user which orientation works best.
      </figcaption>
   </figure>
 </div>
 
-Partisipan penelitian biasanya tetap menggunakan orientasi layar yang sama sampai
-sesuatu mendorong mereka untuk beralih. Desain untuk mode lanskap dan potret,
-atau dorong pengguna agar beralih ke orientasi optimal. Pastikan bahwa
-panggil-untuk-aksi yang penting bisa diselesaikan bahkan jika pengguna mengabaikan
-saran untuk beralih orientasi.
+Study participants tended to stay in the same screen orientation until something prompted them to switch. Design for both landscape and portrait, or encourage users to switch to the optimal orientation. Make sure that your important calls-to-action can be completed even if the users ignore the suggestion to switch orientations.
 
 <div style="clear:both;"></div>
 
-### Menjaga pengguna tetap di satu jendela browser
+### Keep your user in a single browser window
 
 <div class="attempt-right">
   <figure id="fig1">
     <img src="images/sw-single-browser-good.png">
     <figcaption class="success">
-      <b>LAKUKAN</b>: Macy mempertahankan pengguna di situs mereka dengan memberikan kupon di situs.
+      <b>DO</b>: Macy's keeps their users on their site by providing coupons on site.
      </figcaption>
   </figure>
 </div>
 
-Pengguna mungkin mengalami kesulitan saat beralih antar jendela dan mungkin tidak dapat menemukan
-jalan kembali ke situs. Hindari panggil-untuk-aksi yang membuka jendela baru.
-Identifikasi setiap proses yang mungkin menyebabkan pengguna mencari di luar situs dan
-menyediakan fitur agar mereka tetap berada di situs Anda. Misalnya, jika Anda menerima kupon,
-langsung tawarkan kepada mereka di situs, bukannya memaksa pengguna mencari penawaran di situs
-lainnya.
+Users may have trouble switching between windows and might not be able to find their way back to the site. Avoid calls-to-action that launch new windows. Identify any journeys that might cause a user to look outside your site and provide features to keep them on your site. For example, if you accept coupons, offer them directly on the site, rather than forcing users to search other sites for deals.
 
 <div style="clear:both;"></div>
 
-### Hindari pelabelan "situs lengkap"
+### Avoid "full site" labeling
 
-Ketika partisipan penelitian melihat opsi untuk "situs lengkap" (situs desktop)
-versus "situs seluler", mereka berpikir bahwa situs seluler kekurangan materi dan memilih
-"lengkap", yang mengarahkan mereka ke situs desktop.
+When study participants saw an option for a "full site" (i.e., desktop site) versus a "mobile site", they thought the mobile site lacked content and chose the "full" one instead, directing them to the desktop site.
 
+### Be clear why you need a user's location
 
-### Jelaskan mengapa Anda memerlukan lokasi pengguna
-
-Pengguna harus selalu mengerti alasan Anda meminta
-[lokasi](/web/fundamentals/native-hardware/user-location/) mereka. Partisipan
-penelitian yang mencoba untuk memesan hotel di kota lain menjadi bingung ketika sebuah
-situs perjalanan mendeteksi lokasi mereka dan menawarkan hotel di kota mereka yang
-sekarang ini. Biarkan bidang lokasi kosong secara default, dan izinkan pengguna untuk
-mengisinya melalui panggil-untuk-aksi yang jelas seperti "Find Near Me".
+Users should always understand why you’re asking for their [location](/web/fundamentals/native-hardware/user-location/). Study participants trying to book a hotel in another city became confused when a travel site detected their location and offered hotels in their current city instead. Leave location fields blank by default, and let users choose to populate them through a clear call-to-action like “Find Near Me”.
 
 <div class="attempt-left">
   <figure id="fig1">
     <img src="images/sw-navigation-good.png">
     <figcaption class="success">
-      <b>LAKUKAN</b>: Selalu minta akses ke lokasi berdasarkan isyarat pengguna.
+      <b>DO</b>: Always request access to location on a user gesture.
      </figcaption>
   </figure>
 </div>
+
 <div class="attempt-right">
   <figure id="fig1">
     <img src="images/sw-navigation-bad.png">
     <figcaption class="warning">
-      <b>JANGAN</b>: Memintanya secara langsung di beranda saat situs sedang memuat akan menjadikan pengalaman pengguna yang buruk.
+      <b>DON'T</b>: Request immediately access to location on the
+      homepage, as this results in a poor user experience.
      </figcaption>
   </figure>
 </div>
 
 <div style="clear:both;"></div>
 
+## Feedback {: #feedback }
 
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
