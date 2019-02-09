@@ -1,74 +1,57 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Mengatur sumber daya menurut bingkai, domain, jenis, atau kriteria lainnya.
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Organize resources by frame, domain, type, or other criteria.
 
-{# wf_updated_on: 2016-07-28 #}
-{# wf_published_on: 2015-04-13 #}
+{# wf_updated_on: 2018-07-27 #} {# wf_published_on: 2015-04-13 #} {# wf_blink_components: Platform>DevTools #}
 
-# Memeriksa Sumber Daya {: .page-title }
+# Inspect Resources {: .page-title }
 
 {% include "web/_shared/contributors/kaycebasques.html" %}
 
-Mengatur sumber daya menurut bingkai, domain, jenis, atau kriteria
-lainnya.
-
+Organize resources by frame, domain, type, or other criteria.
 
 ### TL;DR {: .hide-from-toc }
-- Gunakan panel <strong>Frame</strong> pada panel <strong>Application</strong> untuk mengatur sumber daya menurut bingkai.
-- Anda juga bisa menampilkan sumber daya menurut bingkai dari panel <strong>Sources</strong> dengan menonaktifkan opsi <strong>group by folder</strong>.
-- Untuk menampilkan sumber daya menurut domain dan folder, gunakan panel <strong>Sources</strong>.
-- Filter sumber daya menurut nama atau kriteria lainnya di panel <strong>Network</strong>.
 
+* Use the **Frames** pane of the **Application** panel to organize resources by frame.
+* You can also view resources by frame from the **Sources** panel by disabling the **group by folder** option.
+* To view resources by domain and folder, use the **Sources** panel.
+* Filter resources by name or other criteria in the **Network** panel.
 
-## Mengatur sumber daya menurut bingkai {:#frames}
+## Organize resources by frame {:#frames}
 
-Gunakan panel **Frames** pada panel **Application** untuk representasi
-terorganisasi-bingkai dari sumber daya laman Anda.
+Use the **Frames** pane on the **Application** panel for a frame-organized representation of your page's resources.
 
-![detail frame][frames]
+![frames detail](/web/tools/chrome-devtools/manage-data/imgs/frames.png)
 
-* Tingkat atas (`top` di tangkapan layar di atas) adalah dokumen utama.
-* Di bawahnya (mis. `widget2` di tangkapan layar di atas) adalah sub-bingkai
-  dokumen utama. Luaskan salah satu sub-bingkai ini untuk melihat sumber daya
-  yang berasal dari bingkai tersebut.
-* Di bawah sub-bingkai adalah gambar, skrip, dan sumber daya lain
-  dari dokumen utama.
-* Terakhir adalah dokumen utama itu sendiri.
+* The top-level (`top` in the screenshot above) is the main document.
+* Below that (e.g. `widget2` in the screenshot above) are subframes of the main document. Expand one of these subframes to view the resources originating from that frame.
+* Below the subframes are the images, scripts, and other resources of the main document.
+* Last is the main document itself.
 
-Klik pada sumber daya untuk menampilkan pratinjau-nya.
+Click on a resource to view a preview of it.
 
-Klik-kanan pada sumber daya untuk menampilkannya pada panel **Network**, bukalah di
-tab yang baru, salin URL-nya, atau menyimpannya.
+Right-click on a resource to view it in the **Network** panel, open it in a new tab, copy its URL, or save it.
 
-![menampilkan sumber daya][resource]
+![view resource](/web/tools/chrome-devtools/manage-data/imgs/resource.png)
 
-Anda juga bisa menampilkan sumber daya menurut bingkai di panel **Sources**, dengan mengeklik
-menu luapan dalam navigator dan menonaktifkan opsi **Group by folder**
-untuk menghentikan pengelompokan sumber daya menurut folder.
+You can also view resources by frame in the **Sources** panel, by clicking on the overflow menu in the navigator and disabling the **Group by folder** option to stop grouping resources by folder.
 
-![opsi group by folder](imgs/group-by-folder.png)
+![group by folder option](imgs/group-by-folder.png)
 
-Sumber daya akan didaftarkan hanya menurut bingkai.
+The resources will be listed by frame only.
 
-![tidak ada folder](imgs/no-folders.png)
+![no folders](imgs/no-folders.png)
 
-[frames-pane]: /web/tools/chrome-devtools/manage-data/imgs/frames-pane.png
-[frames]: /web/tools/chrome-devtools/manage-data/imgs/frames.png
-[resource]: /web/tools/chrome-devtools/manage-data/imgs/resource.png
+## Organize resources by domain and folder {:#sources}
 
-## Mengatur sumber daya menurut domain dan folder {:#sources}
+To view resources organized by domain and directory, use the **Sources** panel.
 
-Untuk menampilkan sumber daya yang diatur menurut domain dan direktori, gunakan panel **Sources**.
+![sources panel](imgs/sources.png)
 
+## Filter resources by name, type, or other criteria {:#filter}
 
-![panel sources](imgs/sources.png)
-
-## Memfilter sumber daya menurut nama, tipe, atau kriteria lainnya {:#filter}
-
-Gunakan panel **Network** untuk memfilter sumber daya menurut nama, tipe, dan berbagai macam
-kriteria lainnya. Baca panduan berikut untuk mengetahui selengkapnya.
+Use the **Network** panel to filter resources by name, type, and a whole range of other criteria. Check out the guide below to learn more.
 
 {# include shared/related_guides.liquid inline=true list=page.related-guides.filter #}
 
+## Feedback {: #feedback }
 
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
