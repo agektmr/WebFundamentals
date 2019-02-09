@@ -1,40 +1,32 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: 'start_url을 포함한 매니페스트' Lighthouse 감사의 참조 문서입니다.
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Reference documentation for the "Manifest Contains start_url" Lighthouse audit.
 
-{# wf_updated_on: 2016-09-21 #}
-{# wf_published_on: 2016-09-21 #}
+{# wf_updated_on: 2018-07-23 #} {# wf_published_on: 2016-09-21 #} {# wf_blink_components: N/A #}
 
-# 시작 URL을 포함한 매니페스트  {: .page-title }
+# Manifest Contains Start URL {: .page-title }
 
-## 감사가 중요한 이유 {: #why }
+## Overview {: #overview }
 
-웹 앱을 사용자 홈 화면에 추가한 후 웹 앱 매니페스트의 `start_url`
-속성은 사용자가 앱을 홈 화면에서 실행했을 때 처음으로 로드할 앱 페이지를 결정합니다.
+After your web app has been added to a user's homescreen, the `start_url` property in the Web App Manifest determines what page of your app loads first when the user launches your app from the homescreen.
 
+If the `start_url` property is absent, then the browser defaults to whatever page was active when the user decided to add the app to the homescreen.
 
-`start_url` 속성이 없으면 브라우저는 사용자가 앱을 홈 화면에 추가했을 때
-활성화되어 있던 페이지를 기본값으로 지정합니다.
+## Recommendations {: #recommendations }
 
-## 감사를 통과하는 방법 {: #how }
-
-웹 앱 매니페스트에 `start_url` 속성을 추가합니다.
+Add a `start_url` property in your Web App Manifest.
 
     {
       ...
       "start_url": ".",
       ...
     }
+    
 
-앱에서 'Add to Homescreen'을 적절히 구현하고 테스트하는 방법을 안내하는 가이드 목록은 [매니페스트의 존재](manifest-exists#how)를
-참조하세요.
+Check out [Manifest Exists](manifest-exists#recommendations) for a list of guides that teach you how to properly implement and test "Add to Homescreen" support in your app.
 
+## More information {: #more-info }
 
-{% include "web/tools/lighthouse/audits/implementation-heading.html" %}
+Lighthouse fetches the manifest and verifies that it has a `start_url` property. The manifest that Lighthouse fetches is separate from the one that Chrome is using on the page, which can possibly cause inaccurate results.
 
-Lighthouse는 매니페스트를 가져와서 `start_url` 속성이 있는지 확인합니다.
-Lighthouse가 가져오는 매니페스트는 Chrome이 페이지에서 사용하는 것과 별개로, 부정확한 결과가 나올 수 있습니다.
+## Feedback {: #feedback }
 
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
