@@ -1,286 +1,240 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Pelajari seluruh cara menghentikan kode di Chrome DevTools.
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Learn about all the ways you can pause your code in Chrome DevTools.
 
-{# wf_updated_on: 2019-02-06 #}
-{# wf_published_on: 2017-02-03 #}
-{# wf_blink_components: Platform>DevTools #}
+{# wf_updated_on: 2018-12-19 #} {# wf_published_on: 2017-02-03 #} {# wf_blink_components: Platform>DevTools #}
 
 {% include "web/tools/chrome-devtools/_shared/styles.html" %}
 
-# Hentikan Kode dengan Titik Putus {: .page-title }
+# How To Pause Your Code With Breakpoints In Chrome DevTools {: .page-title }
 
 {% include "web/_shared/contributors/kaycebasques.html" %}
 
-Gunakan titik putus untuk menghentikan kode JavaScript. Panduan ini menjelaskan setiap jenis
-titik putus yang tersedia di DevTools, juga kapan menggunakan dan cara
-mengatur setiap jenis. Untuk tutorial praktik langsung tentang proses debug, baca [Memulai
-dengan Proses Debug JavaScript di Chrome
-DevTools](/web/tools/chrome-devtools/javascript/).
+Use breakpoints to pause your JavaScript code. This guide explains each type of breakpoint that's available in DevTools, as well as when to use and how to set each type. For a hands-on tutorial of the debugging process, see [Get Started with Debugging JavaScript in Chrome DevTools](/web/tools/chrome-devtools/javascript/).
 
-## Ringkasan tentang kapan menggunakan setiap tipe titik putus {: #overview }
+## Overview of when to use each breakpoint type {: #overview }
 
-Tipe titik putus paling terkenal adalah baris kode. Tetapi titik putus
-baris kode tidak efisien diatur, terutama jika Anda tidak tahu persis
-di mana mencari, atau jika Anda mengerjakan codebase besar. Anda bisa
-menghemat waktu saat proses debug dengan mengetahui cara dan kapan menggunakan tipe lain
-titik putus.
+The most well-known type of breakpoint is line-of-code. But line-of-code breakpoints can be inefficient to set, especially if you don't know exactly where to look, or if you are working with a large codebase. You can save yourself time when debugging by knowing how and when to use the other types of breakpoints.
 
 <table>
-  <tr><th>Tipe Titik Putus</th><th>Gunakan Tipe Ini Saat Anda Ingin Berhenti...</th></tr>
+  <tr><th>Breakpoint Type</th><th>Use This When You Want To Pause...</th></tr>
   <tr>
-    <td><a href="#loc">Baris kode</a></td>
+    <td><a href="#loc">Line-of-code</a></td>
     <td>
-      Di region kode yang tepat.
+      On an exact region of code.
     </td>
   </tr>
   <tr>
-    <td><a href="#conditional-loc">Baris kode bersyarat</a></td>
+    <td><a href="#conditional-loc">Conditional line-of-code</a></td>
     <td>
-      Di region kode yang tepat, tetapi hanya beberapa kondisi lain yang benar.
+      On an exact region of code, but only when some other condition is true.
     </td>
   </tr>
   <tr>
     <td><a href="#dom">DOM</a></td>
     <td>
-      Pada kode yang mengubah atau menghapus node DOM
-      tertentu, atau turunannya.
+      On the code that changes or removes a specific DOM
+      node, or its children.
     </td>
   </tr>
   <tr>
     <td><a href="#xhr">XHR</a></td>
     <td>
-      Bila URL XHR berisi pola string.
+      When an XHR URL contains a string pattern.
     </td>
   </tr>
   <tr>
-    <td><a href="#event-listeners">Pemerhati kejadian</a></td>
+    <td><a href="#event-listeners">Event listener</a></td>
     <td>
-      Di kode yang berjalan setelah kejadian, seperti
-      <code>click</code>, diinisiasi.
+      On the code that runs after an event, such as
+      <code>click</code>, is fired.
     </td>
   </tr>
   <tr>
-    <td><a href="#exceptions">Pengecualian</a></td>
+    <td><a href="#exceptions">Exception</a></td>
     <td>
-      Di kode baris yang mengembalikan pengecualian
-      yang tertangkap atau tidak tertangkap.
+      On the line of code that is throwing a caught or
+      uncaught exception.
     </td>
   </tr>
   <tr>
-    <td><a href="#function">Fungsi</a></td>
+    <td><a href="#function">Function</a></td>
     <td>
-      Kapan pun fungsi tertentu dipanggil.
+      Whenever a specific function is called.
     </td>
   </tr>
 </table>
 
-## Titik putus baris kode {: #loc }
+## Line-of-code breakpoints {: #loc }
 
-Gunakan titik putus baris kode bila Anda tahu wilayah region tepat yang
-perlu Anda selidiki. DevTools *selalu* berhenti sebelum baris kode ini
-dijalankan.
+Use a line-of-code breakpoint when you know the exact region of code that you need to investigate. DevTools *always* pauses before this line of code is executed.
 
-Untuk mengatur titik putus baris kode di DevTools:
+To set a line-of-code breakpoint in DevTools:
 
-1. Klik tab **Sources**.
-1. Buka file yang berisi baris kode yang ingin Anda pecahkan.
-1. Ke baris kode.
-1. Di sebelah kiri baris kode adalah kolom nomor baris. Klik kolom itu. Ikon
-   biru muncul di bagian atas kolom nomor baris.
+1. Click the **Sources** tab.
+2. Open the file containing the line of code you want to break on.
+3. Go the line of code.
+4. To the left of the line of code is the line number column. Click on it. A blue icon appears on top of the line number column.
 
 <figure>
   <img src="imgs/loc-breakpoint.png"
-       alt="Titik putus baris kode."
+       alt="A line-of-code breakpoint."
   <figcaption>
-    <b>Gambar 1</b>: Titik putus baris kode diatur di baris <b>29</b>
+    <b>Figure 1</b>: A line-of-code breakpoint set on line <b>29</b>
   </figcaption>
 </figure>
 
-### Titik putus baris kode dalam kode Anda {: #debugger }
+### Line-of-code breakpoints in your code {: #debugger }
 
-Panggil `debugger` dari kode Anda untuk berhenti di baris itu. Ini setara dengan
-a [titik putus baris kode](#loc), kecuali titik putus itu diatur dalam kode
-Anda, bukan di UI DevTools.
+Call `debugger` from your code to pause on that line. This is equivalent to a [line-of-code breakpoint](#loc), except that the breakpoint is set in your code, not in the DevTools UI.
 
     console.log('a');
     console.log('b');
     debugger;
     console.log('c');
+    
 
-### Titik putus baris kode bersyarat {: #conditional-loc }
+### Conditional line-of-code breakpoints {: #conditional-loc }
 
-Gunakan titik putus baris kode bersyarat bila Anda tahu region
-kode yang tepat yang perlu Anda selidiki, tetapi Anda ingin berhenti hanya bila beberapa
-kondisi lain benar.
+Use a conditional line-of-code breakpoint when you know the exact region of code that you need to investigate, but you want to pause only when some other condition is true.
 
-Untuk mengatur titik putus baris kode bersyarat:
+To set a conditional line-of-code breakpoint:
 
-1. Klik tab **Sources**.
-1. Buka file yang berisi baris kode yang ingin Anda pecahkan.
-1. Ke baris kode.
-1. Di sebelah kiri baris kode adalah kolom nomor baris. Klik kanan kolom itu.
-1. Pilih **Add conditional breakpoint**. Dialog muncul di bawah
-   baris kode.
-1. Masukkan kondisi dalam dialog.
-1. Tekan <kbd>Enter</kbd> untuk mengaktifkan titik putus. Ikon oranye muncul
-   di bagian atas kolom nomor baris.
+1. Click the **Sources** tab.
+2. Open the file containing the line of code you want to break on.
+3. Go the line of code.
+4. To the left of the line of code is the line number column. Right-click it.
+5. Select **Add conditional breakpoint**. A dialog displays underneath the line of code.
+6. Enter your condition in the dialog.
+7. Press <kbd>Enter</kbd> to activate the breakpoint. An orange icon appears on top of the line number column.
 
 <figure>
   <img src="imgs/conditional-loc-breakpoint.png"
-       alt="Titik putus baris kode bersyarat."
+       alt="A conditional line-of-code breakpoint."
   <figcaption>
-    <b>Gambar 2</b>: Titik putus baris kode bersyarat diatur di baris
+    <b>Figure 2</b>: A conditional line-of-code breakpoint set on line
     <b>32</b>
   </figcaption>
 </figure>
 
-### Kelola titik putus baris kode {: #manage-loc }
+### Manage line-of-code breakpoints {: #manage-loc }
 
-Gunakan panel **Breakpoints** untuk menonaktifkan atau menghapus titik putus baris kode dari
-satu lokasi.
+Use the **Breakpoints** pane to disable or remove line-of-code breakpoints from a single location.
 
 <figure>
   <img src="imgs/breakpoints-pane.png"
-       alt="Panel Breakpoints."
+       alt="The Breakpoints pane."
   <figcaption>
-    <b>Gambar 3</b>: Panel <b>Breakpoints</b> menampilkan dua titik putus
-    baris kode: satu di baris 15 dari <code>get-started.js</code>, yang lain di
-    baris 32
+    <b>Figure 3</b>: The <b>Breakpoints</b> pane showing two line-of-code
+    breakpoints: one on line 15 of <code>get-started.js</code>, another on
+    line 32
   </figcaption>
 </figure>
 
-* Centang kotak centang di samping entri untuk menonaktifkan titik putus itu.
-* Klik kanan untuk menghapus titik putus itu.
-* Klik kanan di mana pun di panel **Breakpoints** untuk menonaktifkan semua
-  titik putus, menonaktifkan semua titik henti, atau menghapus semua titik putus. Dengan menonaktifkan
-  semua titik putus setara dengan menghapus centang kotak masing-masing. Dengan menonaktifkan semua
-  titik henti memerintahkan DevTools untuk mengabaikan semua titik putus baris kode, tetapi
-  juga mempertahankan kondisi aktif semua titik ini, sehingga ada dalam kondisi
-  sama seperti sebelum Anda mengaktifkan ulang titik ini.
+* Check the checkbox next to an entry to disable that breakpoint.
+* Right-click an entry to remove that breakpoint.
+* Right-click anywhere in the **Breakpoints** pane to deactivate all breakpoints, disable all breakpoints, or remove all breakpoints. Disabling all breakpoints is equivalent to unchecking each one. Deactivating all breakpoints instructs DevTools to ignore all line-of-code breakpoints, but to also maintain preserve their enabled state so that they are in the same state as before when you reactivate them.
 
 <figure>
   <img src="imgs/deactivated-breakpoints.png"
-       alt="Titik putus nonaktif di panel Breakpoints."
+       alt="Deactivated breakpoints in the Breakpoints pane."
   <figcaption>
-    <b>Gambar 4</b>: Titik putus nonaktif di panel <b>Breakpoints</b>
-    tidak aktif dan transparan
+    <b>Figure 4</b>: Deactivated breakpoints in the <b>Breakpoints</b> pane
+    are disabled and transparent
   </figcaption>
 </figure>
 
-## Titik putus perubahan DOM {: #dom }
+## DOM change breakpoints {: #dom }
 
-Gunakan titik putus perubahan DOM bila Anda ingin berhenti di kode yang mengubah
-node DOM atau turunannya.
+Use a DOM change breakpoint when you want to pause on the code that changes a DOM node or its children.
 
-Untuk mengatur titik putus perubahan DOM:
+To set a DOM change breakpoint:
 
-1. Klik tab **Elements**.
-1. Ke elemen tempat Anda ingin mengatur titik putus.
-1. Klik kanan elemen.
-1. Arahkan kursor ke atas **Break on** lalu pilih **Subtree modifications**, **Attribute
-  modifications**, atau **Node removal**.
+1. Click the **Elements** tab.
+2. Go the element that you want to set the breakpoint on.
+3. Right-click the element.
+4. Hover over **Break on** then select **Subtree modifications**, **Attribute modifications**, or **Node removal**.
 
 <figure>
   <img src="imgs/dom-change-breakpoint.png"
-       alt="Menu konteks untuk membuat titik putus perubahan DOM."
+       alt="The context menu for creating a DOM change breakpoint."
   <figcaption>
-    <b>Gambar 5</b>: Menu konteks untuk membuat titik putus perubahan DOM.
+    <b>Figure 5</b>: The context menu for creating a DOM change breakpoint
   </figcaption>
 </figure>
 
-### Titik putus perubahan DOM {: #dom-types }
+### Types of DOM change breakpoints {: #dom-types }
 
-* **Subtree modifications**. Dipicu bila turunan dari node yang saat ini dipilih
-  telah dihapus, ditambah, atau konten turunan telah berubah. Tidak dipicu
-  bila ada perubahan atribut node turunan, atau ada perubahan pada
-  node yang saat ini dipilih.
+* **Subtree modifications**. Triggered when a child of the currently-selected node is removed or added, or the contents of a child are changed. Not triggered on child node attribute changes, or on any changes to the currently-selected node.
 
-* **Attributes modifications**: Dipicu bila ada atribut yang ditambah atau dihapus
-  pada node yang saat ini dipilih, atau bila ada nilai atribut yang berubah.
+* **Attributes modifications**: Triggered when an attribute is added or removed on the currently-selected node, or when an attribute value changes.
 
-* **Node Removal**: Dipicu bila node yang saat ini dipilih dihapus.
+* **Node Removal**: Triggered when the currently-selected node is removed.
 
-## Titik putus XHR/Fetch {: #xhr }
+## XHR/Fetch breakpoints {: #xhr }
 
-Gunakan titik putus XHR bila Anda ingin memutus URL permintaan dari XHR
-berisi string tertentu. DevTools berhenti di baris kode tempat
-XHR memanggil `send()`.
+Use an XHR breakpoint when you want to break when the request URL of an XHR contains a specified string. DevTools pauses on the line of code where the XHR calls `send()`.
 
-Note: Fitur ini juga berfungsi dengan permintaan [Fetch][Fetch].
+Note: This feature also works with [Fetch](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API) requests.
 
-Salah satu contoh kapan fungsi ini bermanfaat bila Anda melihat halaman
-meminta URL salah, dan Anda ingin cepat menemukan kode sumber AJAX atau
-Fetch yang menyebabkan permintaan salah.
+One example of when this is helpful is when you see that your page is requesting an incorrect URL, and you want to quickly find the AJAX or Fetch source code that is causing the incorrect request.
 
-Untuk mengatur titik putus XHR:
+To set an XHR breakpoint:
 
-1. Klik tab **Sources**.
-1. Luaskan panel **XHR Breakpoints**.
-1. Klik **Add breakpoint**.
-1. Masukkan string tempat Anda ingin memutus. DevTools berhenti saat string
-   ini ada di mana pun di URL permintaan XHR.
-1. Tekan <kbd>Enter</kbd> untuk mengonfirmasi.
+1. Click the **Sources** tab.
+2. Expand the **XHR Breakpoints** pane.
+3. Click **Add breakpoint**.
+4. Enter the string which you want to break on. DevTools pauses when this string is present anywhere in an XHR's request URL.
+5. Press <kbd>Enter</kbd> to confirm.
 
 <figure>
   <img src="imgs/xhr-breakpoint.png"
-       alt="Membuat titik putus XHR."
+       alt="Creating an XHR breakpoint."
   <figcaption>
-    <b>Gambar 6</b>: Membuat titik putus XHR di <b>XHR Breakpoints</b>
-    untuk permintaan apa pun yang berisi <code>org</code> di URL
+    <b>Figure 6</b>: Creating an XHR breakpoint in the <b>XHR Breakpoints</b>
+    for any request that contains <code>org</code> in the URL
   </figcaption>
 </figure>
 
-[Fetch]: https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API
+## Event listener breakpoints {: #event-listeners }
 
-## Titik putus pemerhati kejadian {: #event-listeners }
+Use event listener breakpoints when you want to pause on the event listener code that runs after an event is fired. You can select specific events, such as `click`, or categories of events, such as all mouse events.
 
-Gunakan titik putus pemerhati kejadian saat Anda berhenti di kode pemerhati
-kejadian yang berjalan setelah kejadian diinisiasi. Anda bisa memilih kejadian tertentu, seperti
- `click`, atau kategori acara, seperti semua kejadian mouse.
-
-1. Klik tab **Sources**.
-1. Luaskan panel **Event Listener Breakpoints**. DevTools menampilkan daftar
-   kategori acara, seperti **Animation**.
-1. Centang salah satu kategori untuk berhenti setiap kali kejadian apa pun dari kategori itu
-   diinisiasi, atau luaskan kategori dan centang kejadian tertentu.
+1. Click the **Sources** tab.
+2. Expand the **Event Listener Breakpoints** pane. DevTools shows a list of event categories, such as **Animation**.
+3. Check one of these categories to pause whenever any event from that category is fired, or expand the category and check a specific event.
 
 <figure>
   <img src="imgs/event-listener-breakpoint.png"
-       alt="Membuat titik putus pemerhati kejadian."
+       alt="Creating an event listener breakpoint."
   <figcaption>
-    <b>Gambar 7</b>: Membuat titik putus pemerhati kejadian untuk
+    <b>Figure 7</b>: Creating an event listener breakpoint for
     <code>deviceorientation</code>
   </figcaption>
 </figure>
 
-## Titik putus pengecualian {: #exceptions }
+## Exception breakpoints {: #exceptions }
 
-Gunakan titik putus pengecualian bila kamu ingin berhenti di baris kode yang
-mengembalikan pengecualian yang tertangkap atau tidak tertangkap.
+Use exception breakpoints when you want to pause on the line of code that's throwing a caught or uncaught exception.
 
-1. Klik tab **Sources**.
-1. Klik **Pause on exceptions** ![Berhenti di
-   pengecualian](imgs/pause-on-exceptions.png){:.devtools-inline}. Panel jaringan berubah menjadi biru
-   ketika diaktifkan.
-1. (Opsional) Centang kotak **Pause On Caught Exceptions** jika Anda juga
-   ingin berhenti di pengecualian tertangkap, selain yang tidak tertangkap.
+1. Click the **Sources** tab.
+2. Click **Pause on exceptions** ![Pause on
+exceptions](imgs/pause-on-exceptions.png){:.devtools-inline}. It turns blue when enabled.
+    
+    <figure> <img src="imgs/pause-on-exceptions-highlight.png" alt="The 'Pause on exceptions' button." <figcaption> 
+    
+    **Figure 8**: The **Pause on exceptions** button </figcaption> </figure>
+3. (Optional) Check the **Pause On Caught Exceptions** checkbox if you also want to pause on caught exceptions, in addition to uncaught ones.
 
 <figure>
   <img src="imgs/uncaught-exception.png"
-       alt="Berhenti di pengecualian tidak tertangkap."
+       alt="Paused on an uncaught exception."
   <figcaption>
-    <b>Gambar 7</b>: Berhenti di pengecualian tidak tertangkap
+    <b>Figure 9</b>: Paused on an uncaught exception
   </figcaption>
 </figure>
 
-## Fungsi titik putus {: #function }
+## Function breakpoints {: #function }
 
-Panggil `debug(functionName)`, tempat `functionName` adalah fungsi Anda ingin
-men-debug, saat Anda ingin menjeda setiap kali fungsi tertentu dipanggil. Anda bisa
-memasukkan `debug()` ke kode (seperti `console.log()` pernyataan) atau panggil
-dari DevTools Console. `debug()` setara dengan mengatur
-[titik putus baris kode](#loc) di baris pertama fungsi.
+Call `debug(functionName)`, where `functionName` is the function you want to debug, when you want to pause whenever a specific function is called. You can insert `debug()` into your code (like a `console.log()` statement) or call it from the DevTools Console. `debug()` is equivalent to setting a [line-of-code breakpoint](#loc) on the first line of the function.
 
     function sum(a, b) {
       let result = a + b; // DevTools pauses on this line.
@@ -288,12 +242,11 @@ dari DevTools Console. `debug()` setara dengan mengatur
     }
     debug(sum); // Pass the function object, not a string.
     sum();
+    
 
+### Make sure the target function is in scope {: #scope }
 
-### Pastikan fungsi target dalam cakupan {: #scope }
-
-DevTools mengembalikan `ReferenceError` jika fungsi yang ingin Anda debug
-dalam cakupan.
+DevTools throws a `ReferenceError` if the function you want to debug is not in scope.
 
     (function () {
       function hey() {
@@ -306,16 +259,14 @@ dalam cakupan.
       yo();
     })();
     debug(hey); // This doesn't work. hey() is out of scope.
+    
 
-Dengan nemastikan fungsi target dalam cakupan bisa sulit jika Anda
-memanggil `debug()` dari DevTools Console. Inilah salah satu strategi:
+Ensuring the target function is in scope can be tricky if you're calling `debug()` from the DevTools Console. Here's one strategy:
 
-1. Atur [titik putus baris kode](#loc) suatu tempat di mana fungsi
-   dalam cakupan.
-1. Picu titik putus.
-1. Panggil `debug()` di DevTools Console saat kode masih dijeda
-   di titik putus baris kode.
+1. Set a [line-of-code breakpoint](#loc) somewhere where the function is scope.
+2. Trigger the breakpoint.
+3. Call `debug()` in the DevTools Console while the code is still paused on your line-of-code breakpoint.
 
-## Masukan {: #feedback }
+## Feedback {: #feedback }
 
 {% include "web/_shared/helpful.html" %}
