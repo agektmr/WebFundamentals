@@ -1,38 +1,35 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Memahami animasi dan penggunaannya dengan lebih baik dalam aplikasi dan situs modern.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Get a better understanding of animations and their use in modern apps and sites.
 
-{# wf_updated_on: 2016-08-23 #}
-{# wf_published_on: 2014-08-08 #}
+{# wf_blink_components: Blink>Animation #} {# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2014-08-08 #}
 
-# Animasi {: .page-title }
+# Animations {: .page-title }
 
 {% include "web/_shared/contributors/paullewis.html" %}
 
-Animasi adalah bagian penting saat membuat aplikasi web dan situs yang menarik. Pengguna mengharapkan antarmuka pengguna yang sangat responsif dan interaktif. Namun, menganimasikan antarmuka Anda bukanlah hal yang mudah. Apa yang harus dianimasikan, kapan, dan apa jenis nuansa yang dimiliki animasi tersebut?
-
+Animations are a huge part of making compelling web applications and sites. Users have come to expect highly responsive and interactive user interfaces. Animating your interface, however, is not necessarily straightforward. What should be animated, when, and what kind of feel should the animation have?
 
 ### TL;DR {: .hide-from-toc }
-* Gunakan animasi sebagai cara untuk menambahkan jiwa ke proyek Anda.
-* Animasi harus mendukung interaksi pengguna.
-* Hati-hati dengan properti yang Anda animasikan; beberapa lebih berat dibanding yang lain.
 
+* Use animations as a way to add life to your projects.
+* Animations should be in support of user interaction.
+* Be careful which properties you animate; some are more expensive than others.
 
-## Memilih hal yang tepat untuk dianimasikan
+## Choose the right things to animate
 
-Animasi yang bagus menambahkan selapis kegembiraan dan rasa keterlibatan pengguna untuk proyek Anda. Anda bisa menganimasikan hampir semuanya, apakah itu lebar, ketinggian, posisi, warna, atau latar belakang, namun Anda harus menyadari potensi bottleneck kinerja dan bagaimana animasi memengaruhi personalitas aplikasi Anda. Animasi yang tersendat atau salah pilih bisa berdampak negatif terhadap pengalaman pengguna, sehingga animasi harus berkinerja baik dan tepat.
+Great animations add a layer of enjoyment and engagement to your projects for your users. You can animate pretty much anything you like, whether that’s widths, heights, positions, colors, or backgrounds, but you need to be aware of potential performance bottlenecks and how animations affect the personality of your application. Stuttering or poorly chosen animations can negatively affect user experience, so animations need to be both performant and appropriate.
 
-## Gunakan animasi untuk mendukung interaksi
+## Use animations to support interactions
 
-Jangan menganimasikan sesuatu hanya karena Anda bisa; itu hanya akan membuat pengguna jengkel dan mengganggunya. Namun, gunakan animasi yang ditempatkan secara tepat untuk memperkuat interaksi pengguna. Jika mereka mengetuk ikon menu, menggesek untuk menampilkan panel samping navigasi, atau mengetuk tombol, gunakan cahaya lembut atau efek memantul untuk menerima interaksi. Hindari animasi yang mengganggu atau menghalangi aktivitas pengguna secara tidak perlu.
+Don’t just animate something because you can; it just annoys users and feels obstructive. Instead, use strategically placed animations to *reinforce* the user interactions. If they tap the menu icon, swipe to reveal a navigation drawer, or tap a button, use perhaps a subtle glow or bounce to acknowledge the interaction. Avoid animations that interrupt or obstruct the user's activity unnecessarily.
 
-## Hindari menganimasikan properti yang berat
+## Avoid animating expensive properties
 
-Satu-satunya hal yang lebih buruk daripada animasi yang salah tempat adalah yang menyebabkan laman menjadi tersendat. Tipe animasi ini membuat pengguna merasa frustrasi dan tak senang, dan berharap Anda tidak menganimasikannya sama sekali.
+The only thing worse than animations that are poorly placed are those that cause the page to stutter. This type of animation leaves users feeling frustrated and unhappy, and likely wishing you didn't animate things at all.
 
-Beberapa properti lebih sulit untuk diubah dibanding yang lain, dan hal inilah yang lebih mungkin membuat animasi tersendat. Jadi, misalnya, mengubah `box-shadow` sebuah elemen memerlukan operasi pewarnaan yang jauh lebih sulit dibandingkan mengubah, katakan, warna teksnya. Demikian pula, mengubah `width` sebuah elemen cenderung lebih sulit dibandingkan mengubah `transform`.
+Some properties are more expensive to change than others, and are therefore more likely to make things stutter. So, for example, changing the `box-shadow` of an element requires a much more expensive paint operation than changing, say, its text color. Similarly, changing the `width` of an element is likely to be more expensive than changing its `transform`.
 
-Anda bisa membaca selengkapnya mengenai perhitungan kinerja animasi dalam panduan [Animasi dan Kinerja](animations-and-performance), namun jika Anda menginginkan TL;DR, tetaplah konsisten pada ubahan transform dan opacity, serta menggunakan `will-change`. Jika Anda ingin mengetahui secara pasti pekerjaan mana yang dipicu karena menganimasikan properti yang diberikan, lihat [Pemicu CSS](http://csstriggers.com).
+You can read more about the performance considerations of animations in the [Animations and Performance](animations-and-performance) guide, but if you want the TL;DR, stick to transforms and opacity changes, and use `will-change`. If you want to know exactly which work is triggered by animating a given property, see [CSS Triggers](http://csstriggers.com).
 
+## Feedback {: #feedback }
 
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
