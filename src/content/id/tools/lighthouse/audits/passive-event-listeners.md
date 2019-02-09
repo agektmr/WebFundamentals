@@ -1,63 +1,41 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Dokumentasi referensi untuk audit Lighthouse "Situs Menggunakan Event Listener Pasif untuk Meningkatkan Kinerja Pengguliran".
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Reference documentation for the "Uses Passive Event Listeners to Improve Scrolling Performance" Lighthouse audit.
 
-{# wf_updated_on: 2016-11-30 #}
-{# wf_published_on: 2016-11-30 #}
+{# wf_updated_on: 2018-07-23 #} {# wf_published_on: 2016-11-30 #} {# wf_blink_components: N/A #}
 
-# Situs Menggunakan Event Listener Pasif untuk Meningkatkan Kinerja Pengguliran  {: .page-title }
+# Uses Passive Event Listeners to Improve Scrolling Performance {: .page-title }
 
-## Mengapa audit itu penting {: #why }
+## Overview {: #overview }
 
-Menyetel opsi `passive` pada event listener wheel dan sentuh bisa
-meningkatkan kinerja pengguliran.
+Setting the `passive` option on your touch and wheel event listeners can improve scrolling performance.
 
-Lihat [Meningkatkan Kinerja Pengguliran dengan Event Listener Pasif][blog] untuk
-ringkasannya.
+See [Improving Scrolling Performance with Passive Event Listeners](/web/updates/2016/06/passive-event-listeners) for an overview.
 
-Lihat [Explainer][explainer] dalam spesifikasi event listener pasif untuk
-penyelaman teknis yang lebih mendalam.
+See the [Explainer](https://github.com/WICG/EventListenerOptions/blob/gh-pages/explainer.md) in the passive event listener specification for a technical deep-dive.
 
-[blog]: /web/updates/2016/06/passive-event-listeners
-[explainer]: https://github.com/WICG/EventListenerOptions/blob/gh-pages/explainer.md
+## Recommendations {: #recommendations }
 
-## Cara untuk lulus audit {: #how }
+Add the `passive` flag to all of the event listeners that Lighthouse has identified. In general, add the `passive` flag to every `wheel`, `mousewheel`, `touchstart`, and `touchmove` event listener that does not call `preventDefault()`.
 
-Tambahkan flag `passive` untuk semua event listener yang telah diidentifikasi
-Lighthouse. Secara umum, tambahkan flag `passive` untuk semua event listener `wheel`,
-`mousewheel`, `touchstart`, dan `touchmove` yang tidak
-memanggil `preventDefault()`.
-
-Dalam browser yang mendukung event listener pasif, menandai listener sebagai
-`passive` semudah menyetel flag:
+In browsers that support passive event listeners, marking a listener as `passive` is as easy as setting a flag:
 
     document.addEventListener('touchstart', onTouchStart, {passive: true});
+    
 
-Namun, dalam browser yang tidak mendukung event listener pasif, parameter
-ketiga adalah boolean untuk menunjukkan apakah kejadian harus digelembungkan atau ditangkap.
-Jadi, menggunakan sintaks di atas bisa menyebabkan konsekuensi yang tidak diinginkan.
+However, in browsers that do not support passive event listeners, the third parameter is a boolean to indicate whether the event should bubble or capture. So, using the syntax above may cause unintended consequences.
 
-Lihat polyfill di [Deteksi Fitur][polyfill] untuk mempelajari cara
-mengimplementasikan event listener pasif dengan aman.
+See the polyfill in [Feature Detection](https://github.com/WICG/EventListenerOptions/blob/gh-pages/explainer.md#feature-detection) to learn how to safely implement passive event listeners.
 
-[polyfill]: https://github.com/WICG/EventListenerOptions/blob/gh-pages/explainer.md#feature-detection
+## More information {: #more-info }
 
-{% include "web/tools/lighthouse/audits/implementation-heading.html" %}
+Lighthouse uses the following algorithm to flag potential passive event listener candidates:
 
-Lighthouse menggunakan algoritme berikut untuk menandai kandidat event
-listener pasif yang potensial:
+1. Collect all event listeners on the page.
+2. Filter out non-touch and non-wheel listeners.
+3. Filter out listeners that call `preventDefault()`.
+4. Filter out listeners that are from a different host than the page.
 
-1. Mengumpulkan semua event listener pada laman.
-1. Memfilter listener non-sentuh dan non-wheel.
-1. Memfilter listener yang memanggil `preventDefault()`.
-1. Memfilter listener yang berasal dari host yang berbeda
-   dari laman.
+Lighthouse filters out listeners from different hosts because you probably don't have control over these scripts. Because of this, note that Lighthouse's audit does not represent the full scroll performance of your page. There may be third-party scripts that are harming your page's scroll performance, but these aren't listed in your Lighthouse report.
 
-Lighthouse memfilter listener dari host yang berbeda karena Anda mungkin
-tidak memiliki kontrol atas skrip ini. Karena itu, perhatikan bahwa audit
-Lighthouse tidak mewakili kinerja gulir penuh dari laman Anda. Mungkin
-ada skrip pihak ketiga yang membahayakan kinerja gulir laman,
-namun ini tidak tercantum dalam laporan Lighthouse Anda.
+## Feedback {: #feedback }
 
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
