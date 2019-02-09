@@ -1,289 +1,230 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: ウェブアプリ マニフェストは、ユーザーが想定するネイティブ アプリの場所（端末のホーム画面など）にウェブアプリやサイトを表示する方法を制御したり、ユーザーが起動できる対象や起動時の外観を指定したりするための JSON ファイルです。
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: The web app manifest is a JSON file that gives you the ability to control how your web app or site appears to the user in areas where they would expect to see native apps (for example, a device's home screen), direct what the user can launch, and define its appearance at launch.
 
-{# wf_updated_on: 2017-10-06 #}
-{# wf_published_on:2016-02-11 #}
+{# wf_updated_on: 2019-01-31 #} {# wf_published_on: 2016-02-11 #} {# wf_blink_components: Manifest #}
 
-#  ウェブアプリ マニフェスト {: .page-title }
+# The Web App Manifest {: .page-title }
 
-{% include "web/_shared/contributors/mattgaunt.html" %}
-{% include "web/_shared/contributors/paulkinlan.html" %}
+{% include "web/_shared/contributors/mattgaunt.html" %} {% include "web/_shared/contributors/paulkinlan.html" %}
 
-[ウェブアプリ マニフェスト](https://developer.mozilla.org/en-US/docs/Web/Manifest)はシンプルな JSON 形式のファイルです。デベロッパーはこのファイルを使用することで、ユーザーが想定するネイティブ アプリの場所（モバイル端末のホーム画面など）にウェブアプリやサイトを表示する方法を制御し、ユーザーが起動できる対象や起動時の外観を指定することができます。
+The [web app manifest](https://developer.mozilla.org/en-US/docs/Web/Manifest) is a simple JSON file that tells the browser about your web application and how it should behave when 'installed' on the user's mobile device or desktop. Having a manifest is required by Chrome to show the [Add to Home Screen prompt](/web/fundamentals/app-install-banners/).
 
-ウェブアプリ マニフェストによって、サイトのブックマークを端末のホーム画面に保存することができます。この操作は、サイトが次のように起動された場合に可能です。 
+A typical manifest file includes information about the app `name`, `icons` it should use, the `start_url` it should start at when launched, and more.
 
-* 固有のアイコンと名前があり、その他のサイトと区別できる。
-* リソースのダウンロード中、またはキャッシュからの復元中に、ユーザーに表示するコンテンツがある。
-* サイトのリソースが利用可能になったときに唐突に画面遷移することのないように、ブラウザに既定の表示特性を指定している。 
+## Create the manifest
 
-このすべてを、テキスト ファイルのメタデータによるシンプルな仕組みによって実現するのが、ウェブアプリ マニフェストです。
-
-注: どのサイトでもウェブアプリ マニフェストを使用できますが、[Progressive Web App](/web/progressive-web-apps/) には必須です。
-
-### TL;DR {: .hide-from-toc }
-- マニフェストを作成し、ページをマニフェストにリンクさせるのは簡単なプロセスです。
-- ホーム画面から起動したとき、ユーザーに表示する内容を制御します。
-- これには、スプラッシュ画面、テーマ色、開くURL などが含まれます。 
-
-##  マニフェストを作成する
-
-ウェブアプリ マニフェストについて詳しく説明する前に、基本的なマニフェストを作成し、ウェブページをそのマニフェストにリンクしてみましょう。
-
-
-マニフェストには任意の名前を付けることができます。一般には `manifest.json` という名前が使用されます。次に例を示します。
-
+A complete `manifest.json` file for a progressive web app.
 
     {
-      "short_name": "AirHorner",
-      "name": "Kinlan's AirHorner of Infamy",
+      "short_name": "Maps",
+      "name": "Google Maps",
       "icons": [
         {
-          "src": "launcher-icon-1x.png",
-          "type": "image/png",
-          "sizes": "48x48"
-        },
-        {
-          "src": "launcher-icon-2x.png",
-          "type": "image/png",
-          "sizes": "96x96"
-        },
-        {
-          "src": "launcher-icon-4x.png",
+          "src": "/images/icons-192.png",
           "type": "image/png",
           "sizes": "192x192"
+        },
+        {
+          "src": "/images/icons-512.png",
+          "type": "image/png",
+          "sizes": "512x512"
         }
       ],
-      "start_url": "index.html?launcher=true"
+      "start_url": "/maps/?source=pwa",
+      "background_color": "#3367D6",
+      "display": "standalone",
+      "scope": "/maps/",
+      "theme_color": "#3367D6"
     }
     
 
-必ず次の要素を含める必要があります。 
+Note: See the [add to home screen criteria](/web/fundamentals/app-install-banners/#criteria) for the specific properties that are required to show the add to home screen prompt.
 
-* `short_name`: ユーザーのホーム画面でテキストとして使用します。  
-* `name`: ウェブアプリのインストール バナーに使用します。  
-  
+## Tell the browser about your manifest
 
-##  マニフェストについてブラウザに伝える
-
-マニフェストを作成してサイトに配置したら、ウェブアプリを含むすべてのページに、次のような `link` タグを追加します。
-
-
+When you have created the manifest, add a `link` tag to all the pages that encompass your web app:
 
     <link rel="manifest" href="/manifest.json">
-  
-##  起動時の URL を設定する
+    
 
-`start_url` を指定しないと現在のページが使用されますが、これはおそらくユーザーが望んでいることではありません。
-また、URL を設定する理由は他にもあります。
-現在は、アプリの起動方法を定義して、起動方法を示すクエリ文字列パラメータを `start_url` に追加できるようになっています。
- 
+## Key manifest properties
 
-    "start_url": "/?utm_source=homescreen"
+### `short_name` and/or `name` {: #name }
 
-この機能が必要になることもあるでしょう。ここで使用している値は、Google Analytics において意味があるというメリットがあります。
- 
+You must provide at least the `short_name` or `name` property. If both are provided, `short_name` is used on the user's home screen, launcher, or other places where space may be limited. `name` is used in the [app install prompt](/web/fundamentals/app-install-banners/).
 
-##  アイコンをカスタマイズする
+    "short_name": "Maps",
+    "name": "Google Maps"
+    
 
-<figure class="attempt-right">
-  <img src="images/homescreen-icon.png" alt="ホーム画面のアイコンに追加する">
-  <figcaption>ホーム画面のアイコンに追加する</figcaption>
-</figure>
+### `icons` {: #icons }
 
- ホーム画面にサイトを追加する際にブラウザが使用するアイコンのセットを定義することができます。次のように、タイプとサイズを定義できます。
+When a user adds your site to their home screen, you can define a set of icons for the browser to use. These icons are used in places like the home screen, app launcher, task switcher, splash screen, etc.
 
-<div style="clear:both;"></div>
+`icons` is an array of image objects. Each object should include the `src`, a `sizes` property, and the `type` of image.
 
-    "icons": [{
-        "src": "images/touch/icon-128x128.png",
-        "type": "image/png",
-        "sizes": "128x128"
-      }, {
-        "src": "images/touch/apple-touch-icon.png",
-        "type": "image/png",
-        "sizes": "152x152"
-      }, {
-        "src": "images/touch/ms-touch-icon-144x144-precomposed.png",
-        "type": "image/png",
-        "sizes": "144x144"
-      }, {
-        "src": "images/touch/chrome-touch-icon-192x192.png",
+    "icons": [
+      {
+        "src": "/images/icons-192.png",
         "type": "image/png",
         "sizes": "192x192"
-      }],
+      },
+      {
+        "src": "/images/icons-512.png",
+        "type": "image/png",
+        "sizes": "512x512"
+      }
+    ]
     
 
-注: アイコンをホーム画面に保存するとき、Chrome は最初にディスプレイの密度と一致するアイコンを探し、48dp 画面密度にサイズを変更します。目的のアイコンが見つからなかった場合は、端末特性に最も近いアイコンを探します。理由によらず、特定のピクセル密度のアイコンを対象とするように具体的に指定したい場合は、引数として数値を取るオプションの  <code>density</code> メンバーを使用できます。密度を宣言しない場合は、既定値の 1.0 が使用されます。この場合、「このアイコンは画面密度 1.0 以上で使用する」という意味になり、一般的に期待動作になります。
+Success: include a 192x192 pixel icon and a 512x512 pixel icon. Chrome will automatically scale the icon for the device. If you'd prefer to scale your own icons and adjust them for pixel-perfection, provide icons in increments of 48dp.
 
-##  スプラッシュ画面を追加する
+### `start_url` {: #start-url }
 
-<figure class="attempt-right">
-  <img src="images/background-color.gif" alt="背景の色">
-  <figcaption>起動画面の背景の色</figcaption>
-</figure>
+The `start_url` tells the browser where your application should start when it is launched, and prevents the app from starting on whatever page the user was on when they added your app to their home screen.
 
-ホーム画面からウェブアプリを起動すると、その裏側で多数の処理が実行されます。
+Your `start_url` should direct the user straight into your app, rather than a product landing page. Think about what the user will want to do once they open your app, and place them there.
 
-
-1. Chrome が起動します。
-2. ページを表示するレンダラが起動されます。
-3. サイトがネットワークから（Service Worker がある場合はキャッシュから）読み込まれます。
-
-この間、画面が白く表示されて処理が滞っているように見えます。この現象は、ホームページのコンテンツをページ上に表示するまでに 1～2 秒かかる状況で、ネットワークからウェブページを読み込んでいる場合に特に目立ちます。
-
-
-
-ユーザー エクスペリエンスを向上するために、白い画面の代わりに、タイトルや色、画像のある画面を使用することができます。 
-
-###  画像とタイトルを設定する
-
-最初のセクションから順に学習している場合は、すでに画像とタイトルを設定しているはずです。Chrome は、マニフェストの特定のメンバーから画像とタイトルを推測します。ここで重要なことは、詳細を把握しておくことです。 
-
-スプラッシュ画面の画像は、`icons` 配列から描画されます。Chrome は、端末の 128dp に最も近い画像を選択します。タイトルは単に `name` メンバーから取得されます。
-
-###  背景の色を設定する 
-
-わかりやすい名前の `background_color` プロパティを使用して、背景の色を指定します。
-Chrome では、ウェブアプリを起動した瞬間にこの色が使用され、ウェブアプリの初回レンダリングまで画面上に表示されたままになります。
-
-
-背景色を設定するには、マニフェストで次のように設定します。
-
-
-    "background_color": "#2196F3",
+    "start_url": "/?utm_source=a2hs"
     
 
-これで、ホーム画面からサイトを開いたときに白い画面は表示されなくなります。
+Success: add a query string to the end of the `start_url` to track how often your installed app is launched.
 
-このプロパティの推奨値は、読み込むページの背景色です。読み込むページと同じ色を使用することで、スプラッシュ画面からホームページにスムーズに遷移しているように見えます。
+### `background_color` {: #background-color }
 
+The `background_color` property is used on the [splash screen](#splash-screen) when the application is first launched.
 
-###  テーマカラーを設定する
+### `display` {: #display }
 
-`theme_color` プロパティを使用して、テーマカラーを指定します。このプロパティは、ツールバーの色を設定します。
-ここでも既存の色を複製することをおすすめします。厳密には `theme-color` `<meta>` を設定します。
-
-
-
-##  起動時のスタイルを設定する
-
-<figure class="attempt-right">
-  <img src="images/manifest-display-options.png" alt="ウェブアプリ対応">
-  <figcaption>マニフェストの表示オプション</figcaption>
-</figure>
-
-ウェブアプリ マニフェストを使用して、表示タイプとページの向きを制御します。
-
-###  表示タイプをカスタマイズする
-
-`display` タイプを `standalone` に設定すると、ウェブアプリでブラウザの UI を非表示にすることができます。
-
+You can customize what browser UI is shown when your app is launched. For example, you can hide the address bar and browser chrome. Or games may want to go completely full screen.
 
     "display": "standalone"
     
 
-ブラウザで通常のサイトのようにページを表示したい場合も、問題ありません。`display` タイプを `browser` に設定できます。
+<table id="display-params" class="responsive">
+  <tbody>
+    <tr>
+      <th colspan=2>Parameters</th>
+    </tr>
+    <tr>
+      <td><code>value</code></td><td><code>Description</code></td>
+    </tr>
+    <tr id="display-fullscreen">
+      <td><code>fullscreen</code></td>
+      <td>
+        Opens the web application without any browser UI and takes
+        up the entirety of the available display area.
+      </td>
+    </tr>
+    <tr>
+      <td><code>standalone</code></td>
+      <td>
+        Opens the web app to look and feel like a standalone native
+        app. The app runs in its own window, separate from the browser, and
+        hides standard browser UI elements like the URL bar, etc.</td>
+    </tr>
+    <tr>
+      <td><code>minimal-ui</code></td>
+      <td>
+        <b>Not supported by Chrome</b><br>
+        This mode is similar to <code>fullscreen</code>, but provides the
+        user with some means to access a minimal set of UI elements for
+        controlling navigation (i.e., back, forward, reload, etc).
+      </td>
+    </tr>
+    <tr>
+      <td><code>browser</code></td>
+      <td>A standard browser experience.</td>
+    </tr>
+  </tbody>
+</table>
 
+Success: In order to show the [Add to Home Screen Prompt](/web/fundamentals/app-install-banners/), `display` must be set to `standalone`.
 
-    "display": "browser"
-    
-<div style="clear:both;"></div>
+### `orientation` {: #orientation }
 
-###  ページの最初の向きを指定する
-
-<figure class="attempt-right">
-  <img src="images/manifest-orientation-options.png" alt="ウェブアプリ マニフェストの画面の向きのオプション">
-  <figcaption>ウェブアプリ マニフェストの画面の向きのオプション</figcaption>
-</figure>
-
-画面の向きを特定の方向に強制することができます。これは横表示のみで使用するゲームのようなアプリでは非常に便利です。
-必要に応じて使用してください。
-向きを選択できるほうがユーザーには好まれます。
-
+You can enforce a specific orientation, which is advantageous for apps that work in only one orientation, such as games. Use this selectively. Users prefer selecting the orientation.
 
     "orientation": "landscape"
-
-<div style="clear:both;"></div>
     
 
-##  サイト全体のテーマカラーを指定する
+### `scope` {: #scope }
+
+The `scope` defines the set of URLs that the browser considers to be within your app, and is used to decide when the user has left the app. The `scope` controls the URL structure that encompasses all the entry and exit points in your web app. Your `start_url` must reside within the `scope`.
+
+    "scope": "/maps/"
+    
+
+Caution: If the user clicks a link in your app that navigates outside of the `scope`, the link will open and render within the existing the PWA window. If you want the link to open in a browser tab, you must add `target="_blank"` to the `<a>` tag. On Android, links with `target="_blank"` will open in a Chrome Custom Tab.
+
+A few other tips:
+
+* If you don't include a `scope` in your manifest, then the default implied `scope` is the directory that your web app manifest is served from.
+* The `scope` attribute can be a relative path (`../`), or any higher level path (`/`) which would allow for an increase in coverage of navigations in your web app.
+* The `start_url` must be in the scope.
+* The `start_url` is relative to the path defined in the `scope` attribute.
+* A `start_url` starting with `/` will always be the root of the origin.
+
+### `theme_color` {: #theme-color }
+
+The `theme_color` sets the color of the tool bar, and may be reflected in the app's preview in task switchers.
+
+    "theme_color": "#3367D6"
+    
+
+Success: the `theme_color` should match the [`meta` theme color](/web/fundamentals/design-and-ux/browser-customization/) specified in your document head.
+
+Learn more about theming in [this video](https://www.youtube.com/watch?v=5fEMTxpA6BA&t=0s&index=7&list=PLNYkxOF6rcIB1V2i_qfRtDMcY6YZK1lkt).
+
+## Splash screens {: #splash-screen }
 
 <figure class="attempt-right">
-  <img src="images/theme-color.png" alt="背景の色">
-  <figcaption>テーマカラー</figcaption>
+  <img src="images/background-color.gif" alt="background color">
+  <figcaption>Background color for launch screen</figcaption>
 </figure>
 
-Chrome は、サイトのテーマカラーのコンセプトを 2014 年に導入しました。"テーマカラーは、ウェブページがブラウザに、[アドレスバーなどの UI 要素](/web/fundamentals/design-and-ux/browser-customization/)をどの色にするかを指定するためのヒントになります。"
+When your app first launches, it can take a moment for the browser to spin up, and the initial content to begin rendering. Instead of showing a white screen that may look to the user like the app is stall, Chrome will show a splash screen, until the first paint.
 
-  
+Chrome will automatically create the splash screen from the manifest properties, including:
 
-マニフェストがないと、各ページのテーマカラーを指定しなければなりません。大規模なサイトや旧式のサイトでは、サイト全体にわたって多くの変更を加えるのは不可能です。
+* `name`
+* `background_color`
+* `icons`
 
+The `background_color` should be the same color as the load page, to provide a smooth transition from the splash screen to your app.
 
-<div style="clear:both;"></div>
+### Icons used for the splash screen {: #splash-screen-icons }
 
-マニフェストに `theme_color` 属性を追加すれば、サイトがホーム画面から起動されたときに、ドメイン内のすべてのページに自動的にテーマカラーが設定されます。
+Chrome will choose the icon that closely matches the 128dp icon for that device. 128dp is the ideal size for the image on the splash screen, and means no scaling will be applied to the image.
 
+Again, providing a 192px and a 512px icon will be sufficient for most cases, but you can provide additional icons as necessary.
 
+<div class="clearfix"></div>
 
+## Feedback {: .hide-from-toc }
 
-    "theme_color": "#2196F3"
-    
+{% include "web/_shared/helpful.html" %}
 
-<figure>
-  <img src="images/manifest-display-options.png" alt="背景の色">
-  <figcaption>サイト全体のテーマカラー</figcaption>
+<div class="clearfix"></div>
+
+## Test your manifest {: #test }
+
+<figure class="attempt-right">
+  <img src="images/devtools-manifest.png" alt="DevTools">
+  <figcaption>Manifest tab of Chrome DevTools</figcaption>
 </figure>
 
-##  マニフェストをテストする {: #test }
+To manually verify your manifest is setup correctly, you can use the [**Manifest**](/web/tools/chrome-devtools/progressive-web-apps) tab on the **Application** panel of Chrome DevTools.
 
-ウェブアプリ マニフェストが正しく設定されていることを手動で確認する場合は、Chrome DevTools の [**Application**] パネルにある [**Manifest**] タブを使用します。
+This tab provides a human-readable version of many of your manifest's properties. You can also simulate Add to Home Screen events from here. See [Testing the app install banner](/web/fundamentals/app-install-banners#test) for more on this topic.
 
+If you want an automated approach towards validating your web app manifest, check out [Lighthouse](/web/tools/lighthouse/). Lighthouse is a web app auditing tool. It's built into the Audits tab of Chrome DevTools, or can be run as an NPM module. You provide Lighthouse with a URL, it runs a suite of audits against that page, and then displays the results in a report.
 
-![Chrome DevTools の [Manifest] タブ](images/devtools-manifest.png)
+## What's next?
 
-このタブには、人が読み取れるバージョンのマニフェストのプロパティが数多く表示されます。
-このタブの詳細については、Chrome DevTools ドキュメントの[ウェブアプリ マニフェスト](/web/tools/chrome-devtools/progressive-web-apps#manifest)をご覧ください。
+* If you're using a web app manifest, you'll probably want to set up an [app install banner](/web/fundamentals/app-install-banners) as well.
+* [A complete reference](https://developer.mozilla.org/en-US/docs/Web/Manifest) to the web app manifest is available on the Mozilla Developer Network.
+* If you want feature descriptions from the engineers who created web app manifests, you can read the [W3C Web App Manifest Spec](http://www.w3.org/TR/appmanifest/).
 
-このタブでは、[Add to Homescreen] イベントのシミュレーションも可能です。
-このトピックの詳細については、[アプリのインストール バナーのテスト](/web/fundamentals/app-install-banners#test)をご覧ください。
+## Feedback {: #feedback }
 
-
-
-ウェブアプリ マニフェストの検証を自動化したい場合は、[Lighthouse](/web/tools/lighthouse/) のページをご覧ください。
-Lighthouse はウェブアプリの監査ツールで、Chrome 拡張機能または NPM モジュールとして動作します。
-Lighthouse に URL を指定すると、そのページに対する一連の監査が実行され、レポートに結果が表示されます。
-
-Lighthouse では関連するウェブアプリ マニフェストを監査します。チェック内容は次のとおりです。
-
-
-* アプリをホーム画面に追加できる。
-* 追加すると、アプリはカスタムのスプラッシュ画面を使用して起動する。
-* ブラウザのアドレスバーの色が、カスタマイズされている。
-* アプリは HTTPS で実行される（ホーム画面への追加の前提条件）。
-
-##  詳細
-
-ここまで、ウェブアプリ マニフェストについて簡単に説明してきましたが、理解すべきことはまだたくさんあります。
-
-
-* ウェブアプリ マニフェストを使用する場合は、たいてい[アプリのインストール バナー](/web/fundamentals/app-install-banners)のセットアップも必要になります。
- 
-
-* ウェブアプリ マニフェストについての[包括的なリファレンス](https://developer.mozilla.org/en-US/docs/Web/Manifest)は、Mozilla Developer Network で利用できます。
-
-
-* ウェブアプリ マニフェストを作成したエンジニアによる機能説明については、[実際の W3C の仕様](http://www.w3.org/TR/appmanifest/){: .external }をご覧ください。
-
-
-注: 今後 `manifest.json` ファイルを更新した場合、変更は自動的には反映されません。反映するには、ユーザーがアプリをホーム画面に再度追加する必要があります。
-
-
-
-
-
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
