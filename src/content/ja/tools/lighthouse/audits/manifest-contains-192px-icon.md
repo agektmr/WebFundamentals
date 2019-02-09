@@ -1,26 +1,18 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Lighthouse の監査項目「マニフェストで少なくとも 192px のアイコンを定義する」のリファレンス ドキュメント。
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Reference documentation for the "Manifest Contains Icons at Least 192px" Lighthouse audit.
 
-{# wf_updated_on:2016-09-21 #}
-{# wf_published_on:2016-09-21 #}
+{# wf_updated_on: 2018-07-23 #} {# wf_published_on: 2016-09-21 #} {# wf_blink_components: N/A #}
 
-#  マニフェストで少なくとも 192px のアイコンを定義する {: .page-title }
+# Manifest Contains Icons at Least 192px {: .page-title }
 
-##  監査が重要である理由 {: #why }
+## Overview {: #overview }
 
-モバイル端末では、ユーザーがホーム画面にアプリを追加した際に表示するアイコンが必要です。
-アイコンは、ウェブアプリ マニフェストの `icons` 配列に指定します。
+When a user adds your app to the homescreen, the mobile device needs an icon to display. That icon is specified in the `icons` array of the Web App Manifest.
 
-192 ピクセルのアイコンがあると、最も大きな Android 端末でもアイコンが適切に表示されます。
-サイズの小さい端末には小さいアイコンが必要になるため、Android では 192 ピクセルのアイコンを妥当なサイズに縮小します。
-つまり、ウェブアプリ マニフェストで小さいサイズのアイコンを指定することは可能ですが、そうする必要性はありません。
+The presence of a 192-pixel icon ensures that your icon displays well on the largest Android devices. For smaller devices that need a smaller icon, Android can scale down the 192-pixel icon with reasonable accuracy. In other words, although you can provide smaller-sized icons in your Web App Manifest, it's unnecessary.
 
+## Recommendations {: #recommendations }
 
-
-##  監査に合格する方法 {: #how }
-
-ウェブアプリ マニフェストに 192 ピクセルのアイコンを追加します。
+Add a 192-pixel icon to your Web App Manifest.
 
     {
       ...
@@ -31,23 +23,16 @@ description: Lighthouse の監査項目「マニフェストで少なくとも 1
       }],
       ...
     }
+    
 
-アプリに "Add to Homescreen"
-機能を適切に実装して、テストを実施する方法については、[マニフェストを使用する](manifest-exists#how)で紹介しているガイドをご覧ください。
+Check out [Manifest Exists](manifest-exists#recommendations) for a list of guides that teach you how to properly implement and test "Add to Homescreen" support in your app.
 
+## More information {: #more-info }
 
-{% include "web/tools/lighthouse/audits/implementation-heading.html" %}
+This audit can only guarantee that your icon displays well on Android devices. Other operating systems may require a different icon size for optimal presentation.
 
-この監査で保証するのは、Android 端末でアイコンが適切に表示されることのみです。
-他のオペレーティング システムでは、最適な表示のために異なるサイズのアイコンが必要になる場合があります。
+Lighthouse fetches the manifest and verifies that the `icons` property references a 192-pixel icon. The manifest that Lighthouse fetches is separate from the one that Chrome is using on the page, which can possibly cause inaccurate results. Note also that Lighthouse does not check whether the icon actually exists in the cache. It just makes sure that the Web App Manifest defines a 192-pixel icon.
 
+## Feedback {: #feedback }
 
-Lighthouse ではマニフェストを取得して、`icons` プロパティが 192 ピクセルのアイコンを参照しているか検証します。
-なお、Lighthouse
-で取得するマニフェストは、Chrome がページで使用するマニフェストとは別のファイルであるため、正確な結果が出ない場合があります。
-また、アイコンがキャッシュに実在することはチェックしない点にも注意してください。
-Lighthouse で確認するのは、ウェブアプリ マニフェストで 192 ピクセルのアイコンが定義されていることのみです。
-
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
