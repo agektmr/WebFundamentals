@@ -1,254 +1,150 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml
 
-{# wf_updated_on: 2016-09-28 #}
-{# wf_published_on: 2016-09-28 #}
+{# wf_updated_on: 2018-08-17 #} {# wf_published_on: 2016-09-28 #} {# wf_blink_components: Blink>Network,Blink>Loader #}
 
-# PRPL 패턴 {: .page-title }
+# The PRPL Pattern {: .page-title }
 
 {% include "web/_shared/contributors/addyosmani.html" %}
 
-Dogfood: PRPL은 엄청난 잠재력을 지닌 새로운 패턴입니다. 이 실험 단계에서는
- 이 패턴이 제공하는 뛰어난 이점들에 대한 데이터를
- 수집합니다.
-
-모바일 웹은 너무 느립니다. 지난 몇 년 동안 웹은 문서 중심 플랫폼에서
- 최고급 애플리케이션 플랫폼으로 진화해 왔습니다. 플랫폼 자체의 발전(예:
-[서비스 워커](/web/fundamentals/getting-started/primers/service-workers))과
- 앱 빌드에 사용되는 도구와 기술의 발전 덕분에,
- 사용자는 네이티브 앱에서 수행할 수 있는 거의 모든 작업을 앱에서도
- 수행할 수 있습니다.
-
-이와 동시에, 상당수의 컴퓨터 시스템은 성능이 강력하고
- 네트워크 연결이 빠르고 안정적인 데스크톱 시스템으로부터
- 비교적 성능이 떨어지고 연결이 느리고 불안정한 휴대기기로 바뀌었습니다. 이러한 현상은
- 수많은 사용자들이 온라인으로 이동하고 있는 세상에서 특히
- 그러합니다.
-
-불행히도, 우리가 데스크톱 시절에 다양한 기능의 강력한 웹 앱을
- 빌드하고 배포하기 위해 만들었던 패턴은 일반적으로 휴대기기에서는
- 로드 시간이 너무 오래 걸립니다. 너무 길어서 사용자들이 쉽게 포기해 버립니다.
+Dogfood: PRPL is a new pattern we feel has great potential. At this stage, we welcome experimentation with it while we iterate on the ideas in the pattern and collect more data on where it offers the greatest benefits.
 
-이 때문에, 최신 웹 플랫폼 기능들을 활용하여 모바일 웹 환경을
- 보다 신속하게 제공할 수 있는 새로운 패턴을 만들 필요성이
- 부각되었습니다.
+The mobile web is too slow. Over the years the web has evolved from a document-centric platform to a first-class application platform. Thanks to advancements in the platform itself (such as [Service Workers](/web/fundamentals/getting-started/primers/service-workers)) and in the tools and techniques we use to build apps, users can do virtually anything on the web they can do in a native app.
 
-## PRPL 패턴
+At the same time, the bulk of our computing has moved from powerful desktop machines with fast, reliable network connections to relatively underpowered mobile devices with connections that are often slow, flaky or both. This is especially true in parts of the world where the next billion users are coming online.
 
-PRPL은 PWA(Progressive Web App)를 구성하고 제공하기 위한 패턴이며
- 앱 전달 및 출시의 성능에 중점을 둡니다. PRPL은 다음의 약자입니다.
+Unfortunately, the patterns we devised for building and deploying powerful, feature-rich web apps in the desktop era generally yield apps that take far too long to load on mobile devices – so long that many users simply give up.
 
-*  **Push**: 초기 URL 경로에서 중요한 리소스를 푸시합니다.
-*  **Render**: 초기 경로를 렌더링합니다.
-*  **Pre-cache**: 남은 경로를 사전 캐시합니다.
-*  **Lazy-load**: 필요 시 남은 경로를 지연 로드하고 생성합니다.
+This presents an opportunity to craft new patterns that take advantage of modern web platform features to granularly deliver mobile web experiences more quickly. PRPL is one such pattern.
 
-PRPL은 PWA의 기본 목표와 표준을 추구할 뿐만 아니라
- 다음과 같은 경우에 맞게 최적화를 수행합니다.
+## The PRPL pattern
 
-* 최소 상호작용 시간(Time-to-Interactive)
-    * 특히 최초 사용 시(진입점과 무관)
-    * 특히 실제 휴대기기에서
-* 최대한의 캐싱 효율성(특히 업데이트가 릴리스되는 동안)
-* 개발 및 배포의 단순성
+PRPL is a pattern for structuring and serving Progressive Web Apps (PWAs), with an emphasis on the performance of app delivery and launch. It stands for:
 
-PRPL 패턴은 최신 웹 플랫폼 기능들을 모아 놓은 것이지만,
- 모든 기능을 사용하지 않고도 이 패턴을 적용할 수
- 있습니다.
+* **Push** critical resources for the initial URL route.
+* **Render** initial route.
+* **Pre-cache** remaining routes.
+* **Lazy-load** and create remaining routes on demand.
 
-실제로, PRPL은 구체적인 기술이나 기법이 아니라
- 모바일 웹의 성능을 개선하려는 마음가짐이나 장기적 비전에
- 가깝습니다. PRPL 이면의 아이디어는 새로운 것이 아니며,
- Polymer 팀이 그 틀을 짜고 명명한 후 [Google I/O
-2016](https://www.youtube.com/watch?v=J4i0xJnQUzU)에 공개했습니다.
+Beyond targeting the fundamental goals and standards of PWAs, PRPL strives to optimize for:
 
-Polymer [Shop](https://shop.polymer-project.org) 전자상거래 데모는
- PRPL을 사용하여 리소스를 정밀하게 제공하는 애플리케이션의
- 가장 좋은 예시입니다. 이 데모는 실제 휴대기기에서
- 각 경로의 상호작용을 놀라운 속도로 실현합니다.
+* Minimum time-to-interactive 
+    * Especially on first use (regardless of entry point)
+    * Especially on real-world mobile devices
+* Maximum caching efficiency, especially over time as updates are released
+* Simplicity of development and deployment
 
-![1.75초만에 상호작용이 되는 Polymer Shop 데모](images/app-build-prpl-shop.png)
+PRPL is inspired by a suite of modern web platform features, but it’s possible to apply the pattern without hitting every letter in the acronym or using every feature.
 
-대부분의 실제 프로젝트에서 PRPL 비전을 완전한 형태로 실현하기는
- 솔직히 말해 너무 이릅니다. 그러나 그러한 마음가짐을 갖거나
- 다양한 관점에서 비전을 추구하는 것은 절대로 너무 이른 것이 아닙니다. 오늘날 PRPL를 추구하기 위해
- 앱 개발자, 도구 개발자 및 브라우저 공급업체가 따를 수 있는 유용한 단계들이
- 많이 있습니다.
+In fact, PRPL is more about a mindset and a long-term vision for improving the performance of the mobile web than it is about specific technologies or techniques. The ideas behind PRPL are not new, but the approach was framed and named by the Polymer team and unveiled at [Google I/O 2016](https://www.youtube.com/watch?v=J4i0xJnQUzU).
 
-## 앱 구조
+Polymer's [Shop](https://shop.polymer-project.org) e-commerce demo is a first-class example of an application using PRPL to granularly serve resources. It achieves interactivity for each route incredibly quickly on real-world mobile devices:
 
-다음과 같은 구조의 단일 페이지 앱(SPA)이 있는 경우
- PRPL이 효과가 있을 것입니다.
+![The Polymer Shop demo is interactive in 1.75s](images/app-build-prpl-shop.jpg)
 
--   모든 유효 경로로부터 애플리케이션의 주요 _진입점_ 이 제공되는
- 경우. 이 파일은 다른 URL로부터 제공되며 여러 번 캐시되므로
- 매우 작아야 합니다. 최상위가 아닌 URL로부터
- 제공될 수도 있으므로, 진입점의 모든 리소스 URL은 절대 URL이
- 되어야 합니다.
+For most real-world projects, it’s frankly too early to realize the PRPL vision in its purest, most complete form – but it’s definitely not too early to adopt the mindset, or to start chasing the vision from various angles. There are many practical steps that app developers, tool developers and browser vendors can take in pursuit of PRPL today.
 
--   최상위 앱 로직, 라우터 등이
- 포함된 _셸_ 또는 앱 셸.
+## App structure
 
--   지연 로딩되는 앱 _프래그먼트_. 프래그먼트는 지연 로드되는
- 특정 뷰의 코드나 기타 코드를 나타낼 수 있습니다. 예를 들어,
- 기본 앱 중에서 첫 페인트에 필요없는 부분(예: 메뉴)은
- 사용자가 앱과 상호작용할 때까지 표시되지 않습니다. 셸은 필요할 때
- 프래그먼트를 동적으로 가져오는 역할을 합니다.
+PRPL can work well if you have a single-page app (SPA) with the following structure:
 
-서버와 서비스 워커가 함께 작동하여
- 비활성 경로의 리소스를 사전 캐시합니다.
+* The main *entrypoint* of the application which is served from every valid route. This file should be very small, since it will be served from different URLs and therefore be cached multiple times. All resource URLs in the entrypoint need to be absolute, since it may be served from non-top-level URLs.
 
-사용자가 경로를 전환하면 앱은 아직 캐시되지 않은
- 모든 필수 리소스를 지연 로드하고, 필요한 뷰를 생성합니다. 반복적인 경로 방문은 즉시
-상호작용이 되어야 합니다. 여기서는 서비스 워커가 많은 도움이 됩니다.
+* The *shell* or app-shell, which includes the top-level app logic, router, and so on.
 
-아래 다이어그램은 [웹 구성 요소](http://webcomponents.org/)를 사용하여 구성 가능한
- 간단한 앱의 구성 요소를 보여줍니다.
+* Lazily loaded *fragments* of the app. A fragment can represent the code for a particular view, or other code that can be loaded lazily (for example, parts of the main app not required for first paint, like menus that aren't displayed until a user interacts with the app). The shell is responsible for dynamically importing the fragments as needed.
 
-![뷰가 두 개 있는 앱의 다이어그램, 두 개의 뷰는 개별 및 공유
-종속성이 있음](images/app-build-components.png)
+The server and service worker together work to precache the resources for the inactive routes.
 
-참고: HTML 가져오기는 Polymer가 선호하는 번들링 전략이지만,
- 여러분은 코드 분할 및 경로 기반 청크를 사용하여
- 최신 자바스크립트 모듈 번들러에서 유사한 설정을 실현할 수 있습니다.
+When the user switches routes, the app lazy-loads any required resources that haven't been cached yet, and creates the required views. Repeat visits to routes should be immediately interactive. Service Worker helps a lot here.
 
-이 다이어그램에서 실선은 _정적 종속성_을 나타내며 외부 리소스는
- 파일에서 `<link>` 및 `<script>` 태그를 사용하여 식별됩니다. 점선은
- _동적_ 또는 _필요 시 로드되는 종속성_ 을 나타내며 셸에 필요할 때마다
- 파일이 로드됩니다.
+The diagram below shows the components of a simple app that might be structured using [Web Components](http://webcomponents.org/):
 
-빌드 프로세스는 이 모든 종속성의 그래프를 빌드하며
- 서버는 이 정보를 사용하여 파일을 효율적으로 제공합니다. HTTP/2를 지원하지 않는
- 브라우저의 경우 이 프로세스는 가공된 번들 세트도 빌드합니다.
+![diagram of an app that has two views, which have both individual and shared
+dependencies](images/app-build-components.png)
 
-### 앱 진입점
+Note: although HTML Imports are Polymer's preferred bundling strategy, you can use code-splitting and route-based chunking to achieve a similar setup with modern JavaScript module bundlers.
 
-이 진입점은 셸을 가져와서 인스턴스화할 뿐만 아니라
- 필요한 폴리필을 조건부로 로드해야 합니다.
+In this diagram, the solid lines represent *static dependencies*: external resources identified in the files using `<link>` and `<script>` tags. Dotted lines represent *dynamic* or *demand-loaded dependencies*: files loaded as needed by the shell.
 
-진입점의 주요 고려사항은 다음과 같습니다.
+The build process builds a graph of all of these dependencies, and the server uses this information to serve the files efficiently. It also builds a set of vulcanized bundles, for browsers that don't support HTTP/2.
 
--   최소한의 정적 종속성(즉 앱 셸 자체를 넘어서지 않음)
--   필요한 폴리필을 조건부로 로드
--   모든 종속성에 절대 경로를 사용
+### App entrypoint
 
-### 앱 셸
+The entrypoint must import and instantiate the shell, as well as conditionally load any required polyfills.
 
-이 셸은 라우팅을 담당하며 일반적으로
- 앱의 주요 탐색 UI를 포함합니다.
+The main considerations for the entrypoint are:
 
-앱은 필요할 때 프래그먼트를 지연 로드해야 합니다. 예를 들어,
- 사용자가 새 경로로 변경하면 앱은 이 경로에 관련된 프래그먼트를
- 가져옵니다. 이 때 새 요청을 서버에 시작할 수도 있고
- 그냥 캐시에서 리소스를 로드할 수도 있습니다.
+* Has minimal static dependencies, in other words, not much beyond the app-shell itself.
+* Conditionally loads required polyfills.
+* Uses absolute paths for all dependencies.
 
-셸(정적 종속성 포함)에는 첫 페인트에 필요한 모든 것이
- 포함되어야 합니다.
+### App shell
 
-## 빌드 출력
+The shell is responsible for routing and usually includes the main navigation UI for the app.
 
-빌드 프로세스는 아래와 같은 두 가지 빌드를 생성할 수 있으며,
- 이것은 PRPL 사용 시에 그다지 어려운 요구사항은 아닙니다.
+The app should lazy-load fragments as they're required. For example, when the user changes to a new route, it imports the fragment(s) associated with that route. This may initiate a new request to the server, or simply load the resource from the cache.
 
--   번들되지 않은 빌드는 서버/브라우저 조합을 위해 고안되었으며,
- 캐싱을 최적화하면서도 신속한 첫 페인트를 위해
- 브라우저에 필요한 리소스를 전달하도록 HTTP/2를 지원합니다. [`<link rel="preload">`][Resource hints] 또는 [HTTP/2 Push]를 사용하여
- 이러한 리소스 전달을 효율적으로 트리거할 수 있습니다.
+The shell (including its static dependencies) should contain everything needed for first paint.
 
--   번들된 빌드는 서버 푸시를 지원하지 않는 서버/브라우저 조합에서
- 애플리케이션을 실행하는 데 필요한 왕복 횟수를 최소화하도록
- 고안되었습니다.
+## Build output
 
-여러분의 서버 로직은 각 브라우저에 적합한 빌드를 전달해야 합니다.
+Although it isn't a hard requirement for using PRPL, your build process could produce two builds:
 
-### 번들된 빌드
+* An unbundled build designed for server/browser combinations that support HTTP/2 to deliver the resources the browser needs for a fast first paint while optimizing caching. The delivery of these resources can be triggered efficiently using [`<link rel="preload">`](/web/updates/2016/03/link-rel-preload) or [HTTP/2 Push](/web/fundamentals/performance/http2/#server-push).
 
-HTTP/2를 처리하지 않는 브라우저의 경우 빌드 프로세스는
- 다른 번들 세트를 생성할 수 있습니다. 하나는 셸용 번들이고
- 다른 하나는 각 프래그먼트용 번들입니다. 아래 다이어그램은 웹 구성 요소를 다시 사용하여 간단한 앱을
- 번들하는 방법을 보여줍니다.
+* A bundled build designed to minimize the number of round-trips required to get the application running on server/browser combinations that don't support server push.
 
-![이전과 동일한 앱의 다이어그램, 이 경우 번들된 종속성이
- 세 개 있음](images/app-build-bundles.png)
+Your server logic should deliver the appropriate build for each browser.
 
-둘 이상의 프래그먼트에 의해 공유되는 모든 종속성은
- 셸과 그 정적 종속성이 번들됩니다.
+### Bundled build
 
-각 프래그먼트와 해당 _미공유_ 정적 종속성은 단일 번들로
-구성됩니다. 서버는 브라우저에 따라 적절한 버전(번들되거나 번들되지 않은 버전)의 프래그먼트를
- 반환해야 합니다. 즉, _번들 여부를 몰라도_
- 셸 코드가 `detail-view.html`을 지연 로드할 수
- 있습니다. 셸 코드는 서버와 브라우저에 의존하여
- 가장 효율적인 방식으로 종속성을 로드합니다.
+For browsers that don't handle HTTP/2, the build process could produce a set of different bundles: one bundle for the shell, and one bundle for each fragment. The diagram below shows how a simple app would be bundled, again using Web Components:
 
+![diagram of the same app as before, where there are three bundled
+dependencies](images/app-build-bundles.png)
 
-## 배경: HTTP/2 및 HTTP/2 서버 푸시
+Any dependency shared by two or more fragments is bundled with the shell and its static dependencies.
 
-[HTTP/2]에서는 단일 연결을 통해 _다중화된_ 다운로드를
- 허용하므로, 여러 개의 작은 파일을 보다 효율적으로 다운로드할 수 있습니다.
+Each fragment and its *unshared* static dependencies are bundled into a single bundle. The server should return the appropriate version of the fragment (bundled or unbundled), depending on the browser. This means that the shell code can lazy-load `detail-view.html` *without having to know whether it is bundled or unbundled*. It relies on the server and browser to load the dependencies in the most efficient way.
 
-[HTTP/2 서버 푸시][HTTP/2 Push]에서는 서버가
- 리소스를 브라우저에 우선적으로 전송하도록 허용합니다.
+## Background: HTTP/2 and HTTP/2 server push
 
-HTTP/2 서버 푸시가 다운로드 속도를 어떻게 높이는지 설명하기 위해,
- 링크된 스타일시트가 있는 HTML 파일을 브라우저가 검색하는 방법을 예로 들어 보겠습니다.
+[HTTP/2](/web/fundamentals/performance/http2/) allows *multiplexed* downloads over a single connection, so that multiple small files can be downloaded more efficiently.
 
-HTTP/1에서:
+[HTTP/2 server push](/web/fundamentals/performance/http2/#server-push) allows the server to preemptively send resources to the browser.
 
-*   브라우저가 HTML 파일을 요청합니다.
-*   서버가 HTML 파일을 반환하고 브라우저가 파일 분석을 시작합니다.
-*   브라우저가 `<link rel="stylesheet">` 태그를 만나고
- 새로운 스타일시트 요청을 시작합니다.
-*   브라우저가 스타일시트를 수신합니다.
+For an example of how HTTP/2 server push speeds up downloads, consider how the browser retrieves an HTML file with a linked stylesheet.
 
-HTTP/2 푸시에서:
+In HTTP/1:
 
-*   브라우저가 HTML 파일을 요청합니다.
-*   서버가 HTML 파일을 반환하고 이와 동시에 스타일시트를
- 푸시합니다.
-*   브라우저가 HTML 분석을 시작합니다. 브라우저가 `<link
-rel="stylesheet">을 만날 때쯤이면 이미﻿ 스타일시트가 캐시에 있습니다.
+* The browser requests the HTML file.
+* The server returns the HTML file and the browser starts parsing it.
+* The browser encounters the `<link rel="stylesheet">` tag, and starts a new request for the stylesheet.
+* The browser receives the stylesheet.
 
-가장 단순한 경우에 HTTP/2 서버 푸시는 단일 HTTP
-요청-응답을 제거합니다.
+With HTTP/2 push:
 
-HTTP/1에서 개발자는 페이지 렌더링에 필요한 HTTP
-요청 수를 줄이기 위해 리소스를 번들합니다. 그러나 번들링은 브라우저 캐시의 효율성을
- 떨어뜨릴 수 있습니다. 각 페이지의 리소스가 단일 번들로 결합된 경우
- 각 페이지는 자체 번들을 가지며 브라우저는 공유 리소스를 식별할 수
- 없습니다.
+* The browser requests the HTML file.
+* The server returns the HTML file, and pushes the stylesheet at the same time.
+* The browser starts parsing the HTML. By the time it encounters the `<link
+rel="stylesheet">`, the stylesheet is already in the cache.
 
-HTTP/2와 HTTP/2 서버 푸시의 조합은 실제 번들링이 없이도
- 번들링의 _이점_을 제공합니다(짧은 지연 시간). 리소스를 별도로 유지한다는 것은
- 효율적인 캐싱이 가능하고 페이지 간에 공유가 가능하다는 의미입니다.
+In the simplest case, HTTP/2 server push eliminates a single HTTP request-response.
 
-HTTP/2 푸시는 브라우저의 로컬 캐시에 파일이 이미 있거나
- 대역폭이 이미 포화 상태이더라도 강제로 데이터를 브라우저에 보내므로,
- 사용 시 주의가 필요합니다. 잘못 수행할 경우 성능이 저하될 수 있습니다. 
-[`<link rel="preload">`][Resource hints]는 요청의 우선순위를
- 브라우저가 정확하게 결정하도록 도와줄 수 있습니다.  
+With HTTP/1, developers bundle resources to reduce the number of HTTP requests required to render a page. However, bundling can reduce the efficiency of the browser's cache. if resources for each page are combined into a single bundle, each page gets its own bundle, and the browser can't identify shared resources.
 
-## 결론
+The combination of HTTP/2 and HTTP/2 server push provides the *benefits* of bundling (reduced latency) without actual bundling. Keeping resources separate means they can be cached efficiently and be shared between pages.
 
-경로 코드를 보다 정밀하게 로드하고 브라우저가 작업을 더 효과적으로 예약할 수 있게 되면
-애플리케이션에서
- 더욱 신속한 상호작용이 가능할 것입니다. 우리는 **신속한 상호작용이 가능한
- 더 나은 아키텍처**가 필요합니다. 이러한 목표를
- 실제 휴대기기에서 실현하기 위한 방법을 보여주는 예가 바로 PRPL 패턴입니다.
+HTTP/2 Push needs to be utilized with care, as it forces data to the browser, even if the file is already in the browser’s local cache or bandwidth is already saturated. If done wrong, performance can suffer. [`<link rel="preload">`](/web/updates/2016/03/link-rel-preload) might be a good alternative to allow the browser to make smart decisions about the prioritization of these requests.
 
-입력 이벤트가 발송되는 것을 막는 스크립트로 인해
- 링크 누르기가 수초간 지연되는 경우, 이는 성능 향상을 위한 조치가
- 필요함을 나타냅니다.
- 이러한 문제는 갈수록 커지는 자바스크립트 라이브러리를 사용하여 빌드된
- 애플리케이션에서 공통적으로 나타나며,
- 이 경우 렌더링된 UI가 제대로 작동하지 않습니다.
+## Conclusion
 
-PRPL은 사용자가 상호작용할 수 있는 경로를 만드는 데 필요한 최소한의 기능
-코드를 제공하여 이러한 문제를 해결할 수 있도록 지원합니다.
+Loading the code for routes more granularly and allowing browsers to schedule work better has the potential to greatly aid reaching interactivity in our applications sooner. We need **better architectures that enable interactivity quickly** and the PRPL pattern is an interesting example of how to accomplish this goal on real mobile devices.
 
-[HTTP/2]: /web/fundamentals/performance/http2/
-[Resource hints]: /web/updates/2016/03/link-rel-preload
-[HTTP/2 Push]: /web/fundamentals/performance/http2/#server-push
+It’s all about headroom and giving yourself enough once you’re done loading your abstractions. If tapping on a link is delayed by seconds of script that prevents input events from dispatching, that’s a strong indication there is work to be done on performance. This is a common problem with applications built using larger JavaScript libraries today, where UI is rendered that looks like it should work but does not.
 
+PRPL can help deliver the minimal functional code needed to make the route your users land on interactive, addressing this challenge.
 
-{# wf_devsite_translation #}
+## Feedback {: #feedback }
+
+{% include "web/_shared/helpful.html" %}
