@@ -1,62 +1,33 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: ページ ナビゲーションにおけるセマンティクスの役割
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: The role of semantics in page navigation
 
+{# wf_blink_components: Blink>Accessibility #} {# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2016-10-04 #}
 
-{# wf_updated_on: 2017-07-12 #}
-{# wf_published_on: 2016-10-04 #}
+# Semantics and Navigating Content {: .page-title }
 
-# セマンティクスとコンテンツのナビゲーション {: .page-title }
+{% include "web/_shared/contributors/megginkearney.html" %} {% include "web/_shared/contributors/dgash.html" %} {% include "web/_shared/contributors/aliceboxhall.html" %}
 
-{% include "web/_shared/contributors/megginkearney.html" %}
-{% include "web/_shared/contributors/dgash.html" %}
-{% include "web/_shared/contributors/aliceboxhall.html" %}
+You've learned about affordances, semantics, and how assistive technologies use the accessibility tree to create an alternative user experience for their users. You can see that writing expressive, semantic HTML gives you a lot of accessibility with very little effort, as many standard elements have both the semantics and supporting behavior built in.
 
+In this lesson we'll cover some less obvious semantics that are very important to screen reader users, especially as regards navigation. In a simple page with lots of controls but not much content, it's easy to scan the page to find what you need. But on a content-heavy page, such as a Wikipedia entry or a news aggregator, it's not practical to read through everything from the top down; you need a way to efficiently navigate through the content.
 
+Developers often have the misconception that screen readers are tedious and slow to use, or that everything on the screen has to be focusable for the screen reader to find it. That's often not the case.
 
-ここまで、アフォーダンスとセマンティクスについて、そして支援技術がアクセシビリティ ツリーを使用してどのようにして代替となるユーザー エクスペリエンスを作成しているのかを学習しました。表現力が豊かでセマンティックな HTML を作成すると、少しの手間で多くのアクセシビリティを利用できます。これは、多くの標準要素に、セマンティクスとサポート機能が組み込まれているためです。
+Screen reader users often rely on a list of headings to locate information. Most screen readers have easy ways to isolate and scan a list of page headings, an important feature called the *rotor*. Let's see how we can use HTML headings effectively to support this feature.
 
+## Using headings effectively
 
+First, let's reiterate an earlier point: [*DOM order matters*](/web/fundamentals/accessibility/focus/dom-order-matters), not only for focus order but for screen reader order. As you experiment with screen readers like VoiceOver, NVDA, JAWS, and ChromeVox, you'll find the heading list follows the DOM order rather than the visual order.
 
+This is true for screen readers in general. Because screen readers interact with the accessibility tree, and the accessibility tree is based on the DOM tree, the order a screen reader perceives is thus directly based on the DOM order. This means that an appropriate heading structure is more important than ever.
 
+In most well-structured pages, the heading levels are nested to indicate parent-child relationships among content blocks. The [WebAIM checklist](http://webaim.org/standards/wcag/checklist) repeatedly refers to this technique.
 
-このレッスンでは、スクリーン リーダーのユーザーにとって非常に重要で、しかしわかりづらいナビゲーションに関するセマンティクスについて説明します。多くのコントロールが含まれ、コンテンツが少ない単純なページでは、ページをスキャンして必要なものを見つけるのは簡単です。しかし Wikipedia のエントリやニュース集約サイトなど、コンテンツが非常に多いページで上から順にすべての情報を読み取るのは実用的ではありません。コンテンツを効率良くナビゲーションする方法が必要です。
+- [1.3.1](http://webaim.org/standards/wcag/checklist#sc1.3.1){: .external } mentions "Semantic markup is used to designate headings"
+- [2.4.1](http://webaim.org/standards/wcag/checklist#sc2.4.1){: .external } mentions heading structure as a technique for bypassing blocks of content
+- [2.4.6](http://webaim.org/standards/wcag/checklist#sc2.4.6){: .external } discusses some details for writing useful headings
+- [2.4.10](http://webaim.org/standards/wcag/checklist#sc2.4.10){: .external } states "individual sections of content are designated using headings, where appropriate"
 
-
-
-デベロッパーがよく誤解しているのは、スクリーン リーダーはわずらわしく速度が遅すぎるとか、画面上のすべての情報をスクリーン リーダーでフォーカスおよび検索できるようにする必要がある、という点です。これは、ほぼ事実ではありません。
-
-スクリーン リーダーは多くの場合、見出しのリストを使用して情報を見つけます。ほとんどのスクリーン リーダーには、ページの見出しのリストを容易に区別してスキャンできる、*ローター*と呼ばれる重要な機能が備わっています。この機能をサポートするために、効果的に HTML の見出しを活用する方法を見ていきましょう。
-
-
-##  効果的に見出しを使用する
-
-以前にも説明しましたが、最初に、フォーカスの順序だけでなくスクリーン リーダーの順序にも [*DOM 順序が影響*](/web/fundamentals/accessibility/focus/dom-order-matters)する点についてもう一度説明します。VoiceOver、NVDA、JAWS、ChromeVox といったスクリーン リーダーで実際に試すとわかりますが、見出しのリストは視覚的順序よりも DOM 順序に従います。
-
-
-
-スクリーン リーダーは全般的にそのようになっています。スクリーン リーダーはアクセシビリティ ツリーとやり取りし、アクセシビリティ ツリーは DOM ツリーに基づいているため、スクリーン リーダーが受け取る順序は直接 DOM 順序に基づいています。つまり、適切な見出し構造がより重要になります。
-
-
-一般的に、適切な構造を持つページでは、見出しのレベルがネストされ、コンテンツ ブロック間の親子関係が示されています。[WebAIM チェックリスト](http://webaim.org/standards/wcag/checklist)でも、このテクニックについて何度も取り上げています。
-
-
-
- - [1.3.1](http://webaim.org/standards/wcag/checklist#sc1.3.1){: .external } 「セマンティックなマークアップは見出しを指定するために使用」と説明
-
- - [2.4.1](http://webaim.org/standards/wcag/checklist#sc2.4.1){: .external } コンテンツのブロックを回避するテクニックとして見出しの構造について説明
-
-
- - [2.4.6](http://webaim.org/standards/wcag/checklist#sc2.4.6){: .external } 有用な見出しの書き方について詳しく説明
-
- - [2.4.10](http://webaim.org/standards/wcag/checklist#sc2.4.10){: .external } 「適宜、見出しを使用してコンテンツの個々のセクションを指定する」と説明
-
-
-
-必ずしもすべての見出しを画面上に表示する必要はありません。たとえば [Wikipedia](https://www.wikipedia.org/) の場合、スクリーン リーダーなどの支援技術*のみ*がアクセスできるように、意図的に見出しを画面外に配置するテクニックを使用しています。
-
-
-
+Not all headings have to be visible on-screen. [Wikipedia](https://www.wikipedia.org/), for instance, uses a technique that deliberately places some headings off-screen to specifically make them accessible *only* to screen readers and other assistive technology.
 
     <style>
       .sr-only {
@@ -68,66 +39,42 @@ description: ページ ナビゲーションにおけるセマンティクスの
         overflow:hidden;
       }
     </style>
-
+    
     <h2 class="sr-only">This heading is offscreen.</h2>
+    
 
-注: WebAIM サイトでは、[画面外のコンテンツに関するこちらの記事](http://webaim.org/techniques/css/invisiblecontent/)で、このテクニックについて詳しく説明しています。
+Note: The WebAIM site discusses this technique at length in [this article on offscreen content](http://webaim.org/techniques/css/invisiblecontent/).
 
+For complex applications, this can be a good way to accommodate headings when the visual design doesn't require or have room for a visible heading.
 
-これは、複雑なアプリケーションでビジュアル デザイン上、視覚的な見出しが不要またはそのスペースがない場合でも見出しを配置できる、おすすめの方法です。
+Caution: It's important not to go overboard with this technique. Remember that assistive technology users may also be able to see the screen for themselves, so going too far down the path of creating "screen reader only" content may actually degrade the user experience for some users. It can also create a maintenance headache for you later.
 
+## Other navigation options
 
-Warning: このテクニックを多用しすぎないよう注意してください。支援技術のユーザーは自分で画面を見ることができる場合があるため、「スクリーン リーダー限定」コンテンツの作成に偏ってしまうと、実際には一部のユーザーのユーザー エクスペリエンスを損なう可能性があります。さらに、後でメンテナンスする際に悩みの種にもなります。
+Although pages with good headings help screen reader users navigate, there are other elements they can use to move around a page, including *links*, *form controls*, and *landmarks*.
 
+Readers can use the screen reader's rotor feature (an easy way to isolate and scan a list of page headings) to access a *list of links* on the page. Sometimes, as on a wiki, there are many links, so the reader might search for a term within the links. This limits the hits to links that actually contain the term, rather than every occurrence of the term on the page.
 
-##  その他のナビゲーション オプション
+This feature is useful only if the screen reader can find the links and the link text is meaningful. For example, here are some common patterns that make links hard to find.
 
-適切な見出しが付けられたページはスクリーン リーダーのユーザーがナビゲートする際に役立ちますが、*リンク*、*フォーム コントロール*、*ランドマーク*など、ページ内の移動に活用されている要素は他にもあります。
+- Anchor tags without `href` attributes. Often used in single-page applications, these link targets cause problems for screen readers. You can read more in [this article on single-page apps](http://neugierig.org/software/blog/2014/02/single-page-app-links.html).
+- Buttons that are implemented with links. These cause the screen reader to interpret the content as a link, and the button functionality is lost. For these cases, replace the anchor tag with a real button and style it appropriately.
+- Images used as link content. Sometimes necessary, linked images can be unusable to screen readers. To guarantee that the link is properly exposed to assistive technology, make sure the image has `alt` attribute text.
 
+Poor link text is another problem. Clickable text such as "learn more" or "click here" provides no semantic information about where the link goes. Instead, use descriptive text like "learn more about responsive design" or "see this canvas tutorial" to help screen readers provide meaningful context about links.
 
+The rotor can also retrieve a *form control list*. Using this list, readers can search for specific items and go directly to them.
 
-リーダーはスクリーン リーダーのローター機能（ページの見出しのリストを容易に区別およびスキャンする方法）を使用して、ページ上の*リンクのリスト*にアクセスできます。場合によっては、Wiki のように多数のリンクが存在すると、リーダーはリンク内の用語を検索できます。これにより、ページ上で繰り返し使われているすべての用語ではなく、実際にその用語を含むリンクのみを検索するように制限できます。
+A common error that screen readers make is pronunciation. For example, a screen reader might pronounce "Udacity" as "oo-dacity", or read a phone number as a large integer, or read capitalized text as though it were an acronym. Interestingly, screen reader users are quite used to this quirk and take it into consideration.
 
+Some developers try to ameliorate this situation by providing screen-reader-only text that is spelled phonetically. Here's a simple rule for phonetic spelling: **don't do it**; it only makes the problem worse! If, for example, a user is using a braille display, the word will be spelled incorrectly, leading to more confusion. Screen readers allow words to be spelled aloud, so leave it to the reader to control their experience and decide when this is necessary.
 
-この機能は、スクリーン リーダーがリンクを見つけることができて、さらにリンクのテキストが有用である場合にのみ役立ちます。リンクを見つけにくい、よくあるパターンの例を紹介します。
+Readers can use the rotor to see a *landmarks list*. This list helps readers find the main content and a set of navigational landmarks provided by HTML landmark elements.
 
+HTML5 introduced some new elements that help define the semantic structure of the page, including `header`, `footer`, `nav`, `article`, `section`, `main`, and `aside`. These elements specifically provide structural clues in the page without forcing any built-in styling (which you should do with CSS anyway).
 
- - `href` 属性のないアンカータグ。主にシングルページ アプリケーションで使用されています。このようなリンク ターゲットは、スクリーン リーダーにとって問題になります。詳細については、[シングルページ アプリケーションに関するこちらの記事](http://neugierig.org/software/blog/2014/02/single-page-app-links.html)をご覧ください。
+Semantic structural elements replace multiple, repetitive `div` blocks, and provide a clearer, more descriptive way to intuitively express page structure for both authors and readers.
 
- - リンク付きで実装されているボタン。スクリーン リーダーがコンテンツをリンクとして解釈し、ボタンの機能が失われます。このような場合、アンカータグを実際のボタンで置き換えて、適切にスタイルを設定します。
+## Feedback {: #feedback }
 
-
- - リンクのコンテンツとして使用されている画像。必要なリンク付きの画像がスクリーン リーダーで使用できない場合があります。支援技術にリンクを適切に伝えるには、画像に必ず `alt` 属性テキストを付けてください。
-
-
-情報不足のリンクテキストも問題になります。「詳細」や「こちらをクリック」といったクリック可能なテキストは、リンク先に関するセマンティックな情報がありません。代わりに、「レスポンシブ デザインに関する詳細」や「こちらの canvas チュートリアルを参照」のようなテキストを使用し、スクリーン リーダーがリンクについて意味のある情報を提供できるようにします。
-
-
-
-ローターは、*フォーム コントロール リスト*も取得できます。このリストを使用すると、リーダーは特定の項目を検索して直接アクセスできます。
-
-
-スクリーン リーダーでよく起こるエラーは、発音です。たとえば、スクリーン リーダーが「Udacity」を「オーダシティ」と発音したり、電話番号を大きな数値のように読み上げたり、大文字のテキストを略語のように読むことがあります。興味深いことに、スクリーン リーダーのユーザーはこの癖にうまく順応し、自ら考慮しています。
-
-
-
-
-
-デベロッパーによっては、音声学に従ってスペルを記述したスクリーン リーダー専用のテキストを用意して、この状況の改善に努めています。音声学的なスペルを記述するにあたって、シンプルなルールは「**やめておくこと**」ことです。問題がさらに悪化するだけだからです。たとえば、点字ディスプレイのユーザーにとって、誤ったスペルの単語は混乱の元になります。スクリーン リーダーを使用すると、単語のスペルを読み上げることができるため、 読者側で操作を制御し、必要なタイミングを判断できます。
-
-
-リーダーはローターを使用して、*ランドマーク リスト*を参照できます。このリストは、リーダーがメイン コンテンツと、HTML ランドマーク要素で指定されたナビゲーション用のランドマークを特定するために役立ちます。
-
-
-
-HTML5 では、`header`、`footer`、`nav`、`article`、`section`、`main`、`aside` など、ページのセマンティックな構造を定義するために活用できる新しい要素が導入されました。これらの要素は特に、（どうしても CSS を使用しなければならない）組み込みのスタイル設定を適用しなくても、ページの構造を把握する手がかりとなります。
-
-
-セマンティックな構造を持つ要素は、繰り返し登場する `div` ブロックに置き換わり、より明確かつ情報量の多い形で作成者と読者の両方に対してページの構造を直感的に示します。
-
-
-
-
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
