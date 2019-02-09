@@ -1,0 +1,6 @@
+---
+redirects:
+  - 
+    from: /web/fundamentals/media/mse/
+    to: /web/fundamentals/media/mse/basics
+    temporary: true
