@@ -1,272 +1,285 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Service Worker を既存のアプリに組み込み、オフラインで動作させる方法を学びます。
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Learn how to integrate a service worker into an existing application to make the application work offline.
 
-{# wf_auto_generated #}
-{# wf_updated_on: 2016-11-09 #}
-{# wf_published_on: 2016-01-01 #}
+{# wf_auto_generated #} {# wf_updated_on: 2018-07-03 #} {# wf_published_on: 2016-01-01 #}
 
-
-# ウェブアプリへの Service Worker とオフラインの追加 {: .page-title }
+# Adding a Service Worker and Offline into your Web App {: .page-title }
 
 {% include "web/_shared/contributors/paulkinlan.html" %}
 
+## Overview
 
+![3ec8737c20a475df.png](img/3ec8737c20a475df.png)
 
-##  概要
+In this codelab, you learn how to integrate a service worker into an existing application to make the application work offline. The application is called [Air Horner](https://airhorner.com). Click the horn and it makes a sound.
 
+#### What you'll learn
 
+* How to add a basic service worker to an existing project.
+* How to simulate offline mode and inspect and debug a service worker with Chrome DevTools.
+* A simple offline caching strategy.
 
-![9246b0abd8d860da.png](img/9246b0abd8d860da.png)
+#### What you'll need
 
-このコードラボでは、Service Worker を既存のアプリに組み込み、オフラインで動作させる方法を学びます。これは [Air Horner](https://airhorner.com) というアプリです。警笛をクリックして音を出します。
+* Chrome 52 or above.
+* A basic understanding of [Promises](/web/fundamentals/getting-started/primers/promises), Git, and Chrome DevTools.
+* The sample code.
+* A text editor.
+* A local web server. If you want to use the web server described in this codelab, you need Python installed on your command line.
 
-####  学習内容
+## Get the sample code
 
-* 基本的な Service Worker を既存のプロジェクトに追加する方法
-* Chrome DevTools を使用してオフライン モードをシミュレートし、Service Worker の調査やデバッグを行う方法
-* 単純なオフライン キャッシュ戦略
-
-####  必要なもの
-
-* Chrome 52 以上。
-* [Promises](/web/fundamentals/getting-started/primers/promises)、Git、Chrome DevTools に関する基本知識。
-* サンプルコード。
-* テキスト エディタ。
-* ローカル ウェブサーバー。このコードラボで説明されているウェブサーバーを使用する場合は、コマンドラインに Python がインストールされている必要があります。
-
-
-##  サンプルコードを入手する
-
-
-
-コマンドラインから GitHub レポジトリのクローンを作成します。SSH 経由:
+Clone the GitHub repository from the command line over SSH:
 
     $ git clone git@github.com:GoogleChrome/airhorn.git
+    
 
-HTTPS 経由:
+Or HTTPS:
 
     $ git clone https://github.com/GoogleChrome/airhorn.git
+    
 
+## Run the sample app
 
-##  サンプルアプリを実行する
+First, let's see what the finished sample app looks like (hint: it's amazing).
 
-
-
-まず、サンプルアプリが完成するとどのようなものになるか見てみましょう（ヒント: すばらしいですよ）。 
-
-`master` ブランチをチェックアウトして、正しい（完成版の）ブランチを使用していることを確認してください。
+Make sure you are on the correct (final) branch by checking out the `master` branch.
 
     $ git checkout master
+    
 
-ローカル ウェブサーバーからサイトを実行します。どのウェブサーバーでも使用できますが、このコードラボではこれ以降、ポート 3000 で Python の `SimpleHTTPServer` を使用していることを前提としているため、アプリは `localhost:3000` から利用可能になります。
+Run the site from a local web server. You can use any web server, but for the rest of this codelab we'll assume that you're using Python's `SimpleHTTPServer` on port 3000, so the app will be available from `localhost:3000`.
 
     $ cd app
     $ python -m SimpleHTTPServer 3000
+    <aside class="key-point">
 
-Chrome でサイトを開きます。次のように表示されます。![9246b0abd8d860da.png](img/9246b0abd8d860da.png)
+<p>This repository has one main folder <strong>"app"</strong>. This folder contains the static assets (HTML, CSS, and JavaScript) that you will use for this project.</p>
 
+</aside> 
 
-##  アプリをテストする
+Open up the site in Chrome. You should see: ![3ec8737c20a475df.png](img/3ec8737c20a475df.png)
 
+## Test the app
 
+Click the horn. It should make a sound.
 
-警笛をクリックしてください。音が鳴るはずです。
+Now, you're going to simulate going offline using Chrome DevTools.
 
-ここで、Chrome DevTools を使用してオフラインになった状況をシミュレートします。
-
-DevTools を開き、[__Application__] パネルに移動して [__Offline__] チェックボックスを有効にします。以下のスクリーンショットでは、このチェックボックスの上にカーソルが合わせられています。 
+Open DevTools, go to the **Application** panel, and enable the **Offline** checkbox. In the screenshot below the mouse is hovering over the checkbox.
 
 ![479219dc5f6ea4eb.png](img/479219dc5f6ea4eb.png)
 
-チェックボックスをクリックした後、[__Network__] パネルタブの横にある警告アイコン（感嘆符が付いた黄色の三角形）に注目してください。これは、オフラインであることを示しています。 
+After clicking the checkbox note the warning icon (yellow triangle with exclamation mark) next to the **Network** panel tab. This indicates that you're offline.
 
-オフラインであることを試すには、[https://google.com](https://google.com) にアクセスします。Chrome の「there is no Internet connection」というエラー メッセージが表示されます。 
+To prove that you're offline, go to <https://google.com>. You should see Chrome's "there is no Internet connection" error message.
 
-ここで、アプリに戻ってください。オフラインであっても、ページは完全に再読み込みされるはずです。警笛も鳴らすことができます。
+Now, go back to your app. Although you're offline, the page should still fully reload. You should be able to use the horn still.
 
-このアプリがオフラインでも動作する理由こそが、このコードラボで学習する基礎知識です。つまり、Service Worker のオフライン サポートです。
+The reason this works offline is the basis of this codelab: offline support with service worker.
 
+## Build the starter app
 
-##  基本的なアプリを作成する
+You are now going to remove all offline support from the application and you are going to learn how to use a service worker to add the offline support back into the application
 
-
-
-ここでは、アプリからすべてのオフライン サポートを削除し、Service Worker を使用してアプリにオフライン サポートを追加する方法を学びます。
-
-Service Worker が実装されていない不完全なバージョンのアプリをご覧ください。
+Check out the "broken" version of the app that does not have the service worker implemented.
 
     $ git checkout code-lab
+    
 
-DevTools の [__Application__] パネルに戻り、[__Offline__] チェックボックスを無効にしてオンライン状態にします。
+Go back to the **Application** panel of DevTools and disable the **Offline** checkbox, so that you're back online.
 
-ページを実行します。アプリは想定どおりに動作します。
+Run the page. The app should work as expected.
 
-ここで、DevTools を使用して再度オフライン モードをシミュレートします（[__Application__] パネルの [__Offline__] チェックボックスを有効にします）。__注意してください。__Service Worker についてまだよく知らない場合、動作は想定していないものになります。
+Now, use DevTools to simulate offline mode again (by enabling the **Offline** checkbox in the **Application** panel). **Heads up!** If you don't know much about service workers, you're about to see some unexpected behavior.
 
-何が起こると思いますか。現在オフラインで、このアプリのバージョンには Service Worker がないため、通常は Chrome から「there is no Internet connection」というエラー メッセージが表示されると考えるでしょう。
+What do you expect to see? Well, because you're offline and because this version of the app has no service worker, you'd expect to see the typical "there is no Internet connection" error message from Chrome.
 
-しかし、実際に表示されるのは、完全に機能的なオフライン アプリです。
+But what you actually see is... a fully-functional offline app!
 
-![9246b0abd8d860da.png](img/9246b0abd8d860da.png)
+![3ec8737c20a475df.png](img/3ec8737c20a475df.png)
 
-何が起きたのでしょう？このコードラボの初めに完成版のアプリを試したことを思い出してください。そのバージョンを実行したとき、アプリは実際には Service Worker をインストールしました。その Service Worker が、アプリを実行するたびに自動的に実行されています。Service Worker が `localhost:3000` などのスコープにインストールされると、プログラムや手動で削除されるまで、ユーザーがスコープにアクセスするたびにその Service Worker が自動的に起動されます（スコープの詳細については次のセクションをご覧ください）。 
+What happened? Well, recall that when you began this codelab, you tried out the completed version of the app. When you ran that version, the app actually installed a service worker. That service worker is now automatically running every time that you run the app. Once a service worker is installed to a scope such as `localhost:3000` (you'll learn more about scope in the next section), that service worker automatically starts up every time that you access the scope, unless you programmatically or manually delete it.
 
-これを修正するには、DevTools の [__Application__] パネルに移動し、[__Service Workers__] タブをクリックして [__Unregister__] ボタンをクリックします。以下のスクリーンショットでは、ボタンの上にカーソルが合わせられています。 
+To fix this, go to the **Application** panel of DevTools, click on the **Service Workers** tab, and then click the **Unregister** button. In the screenshot below the mouse is hovering over the button.
 
 ![837b46360756810a.png](img/837b46360756810a.png)
 
-サイトを再読み込みする前に、DevTools を使用してオフライン モードをシミュレートしていることを確認してください。ページを再読み込みすると、想定したとおり、「there is no Internet connection」というエラー メッセージが表示されます。
+Now, before you reload the site, make sure that you're still using DevTools to simulate offline mode. Reload the page, and it should show you the "there is no Internet connection" error message as expected.
 
 ![da11a350ed38ad2e.png](img/da11a350ed38ad2e.png)
 
+## Register a service worker on the site
 
-##  サイトで Service Worker を登録する
+Now it's time to add offline support back into the app. This consists of two steps:
 
+1. Create a JavaScript file that will be the service worker.
+2. Tell the browser to register the JavaScript file as the "service worker".
 
+First, create a blank file called `sw.js` and place it in the `/app` folder.<aside class="key-point">
 
-ここで、アプリにオフライン サポートを追加します。これには 2 つのステップがあります。
+<p><strong>The location of the service worker is important! </strong>For security reasons, a service worker can only control the pages that are in its same directory or its subdirectories. This means that if you place the service worker file in a scripts directory it will only be able to interact with pages in the scripts directory or below.</p>
 
-1. Service Worker のコードを提供する JavaScript ファイルを作成します。
-2. この JavaScript ファイルを Service Worker として登録するようブラウザに伝えます。
+</aside> 
 
-まず、`/app` フォルダ内に `sw.js` という空のファイルを作成します 
+Now open `index.html` and add the following code to the bottom of `<body>`.
 
-`index.html` を開いて `<body>` の下部に次のコードを追加します。
+    <script>
+    if('serviceWorker' in navigator) {
+      navigator.serviceWorker
+               .register('/sw.js')
+               .then(function() { console.log("Service Worker Registered"); });
+    }
+    </script>
+    
 
-```
-<script>
-if('serviceWorker' in navigator) {
-  navigator.serviceWorker
-           .register('/sw.js')
-           .then(function() { console.log("Service Worker Registered"); });
-}
-</script>
-```
+The script checks if the browser supports service workers. If it does, then it registers our currently blank file `sw.js` as the service worker, and then logs to the Console.
 
-このスクリプトは、ブラウザが Service Worker をサポートしているかどうかを確認します。サポートしている場合は、現在空のファイル `sw.js` を Service Worker として登録し、コンソールにログを出力します。
-
-サイトを再実行する前に DevTools に戻り、[__Application__] パネルの [__Service Workers__] タブを確認します。現在これは空になっており、サイトに Service Worker がインストールされていないことを示しています。 
+Before you run your site again, go back to DevTools and look at the **Service Workers** tab of the **Application** panel. It should currently be empty, meaning the site has no service workers installed.
 
 ![37d374c4b51d273.png](img/37d374c4b51d273.png)
 
-DevTools の [__Offline__] チェックボックスが無効になっていることを確認します。再度ページを再読み込みします。ページが読み込まれると、Service Worker が登録されていることがわかります。
+Make sure that the **Offline** checkbox in DevTools is disabled. Reload your page again. As the page loads, you can see that a service worker is registered.
 
 ![b9af9805d4535bd3.png](img/b9af9805d4535bd3.png)
 
-[__Source__] ラベルの横に、登録された Service Worker のソースコードへのリンクが表示されます。 
+Next to the **Source** label you can see a link to the source code of the registered service worker.
 
 ![3519a5068bc773ea.png](img/3519a5068bc773ea.png)
 
-あるページについて、現在インストールされている Service Worker を調べる場合は、このリンクをクリックします。これにより、DevTools の [__Sources__] パネルに Service Worker のソースコードが表示されます。たとえば、今このリンクをクリックすると、空のファイルが表示されます。 
+If you ever want to inspect the currently-installed service worker for a page, click on the link. This will show you the source code of the service worker in the **Sources** panel of DevTools. For example, click on the link now, and you should see an empty file.
 
 ![dbc14cbb8ca35312.png](img/dbc14cbb8ca35312.png)
 
+## Install the site assets
 
-##  サイトのアセットをインストールする
+With the service worker registered, the first time a user hits the page an `install` event is triggered. This event is where you want to cache your page assets.
 
+Add the following code to sw.js.
 
+    importScripts('/cache-polyfill.js');
+    
+    
+    self.addEventListener('install', function(e) {
+     e.waitUntil(
+       caches.open('airhorner').then(function(cache) {
+         return cache.addAll([
+           '/',
+           '/index.html',
+           '/index.html?homescreen=1',
+           '/?homescreen=1',
+           '/styles/main.css',
+           '/scripts/main.min.js',
+           '/sounds/airhorn.mp3'
+         ]);
+       })
+     );
+    });
+    
 
-Service Worker が登録されている場合は、ユーザーがページに初めてアクセスしたときに `install` イベントがトリガーされます。このイベントはページのアセットをキャッシュします。
+The first line adds the Cache polyfill. This polyfill is already included in the repository. We need to use the polyfill because the Cache API is not yet fully supported in all browsers. Next comes the `install` event listener. The `install` event listener opens the `caches` object and then populates it with the list of resources that we want to cache. One important thing about the `addAll` operation is that it's all or nothing. If one of the files is not present or fails to be fetched, the entire `addAll` operation fails. A good application will handle this scenario.
 
-sw.js ファイルに次のコードを追加します。
+The next step is to program our service worker to return the intercept the requests to any of these resources and use the `caches` object to return the locally stored version of each resource.
 
-```
-importScripts('/cache-polyfill.js');
+<
 
+aside markdown="1" class="key-point">
 
-self.addEventListener('install', function(e) {
- e.waitUntil(
-   caches.open('airhorner').then(function(cache) {
-     return cache.addAll([
-       '/',
-       '/index.html',
-       '/index.html?homescreen=1',
-       '/?homescreen=1',
-       '/styles/main.css',
-       '/scripts/main.min.js',
-       '/sounds/airhorn.mp3'
-     ]);
-   })
- );
-});
-```
+<h4>Frequently Asked Questions</h4>
 
-最初の行は Cache ポリフィルを追加します。このポリフィルは既にレポジトリ内に含まれています。Cache API はまだすべてのブラウザで完全にサポートされていないため、ポリフィルを使用する必要があります。次に来るのが `install` イベント リスナーです。`install` イベント リスナーは `caches` オブジェクトを開いて、キャッシュするリソースのリストを移入します。`addAll` 操作に関する重要なことの 1 つは、これはゼロかすべてかであるということです。ファイルの 1 つが存在しないか、フェッチに失敗すると、`addAll` 操作全体が失敗します。このようなシナリオにも対処するのが、優れたアプリというものです。
+<ul>
+  
+<li>Where is the polyfill?</li>
+<li><a href="https://github.com/coonsta/cache-polyfill">https://github.com/coonsta/cache-polyfill</a> </li>
+<li>Why do I need to polyfill?</li>
+<li>Currently Chrome and other browsers don't yet fully support the <code>addAll</code> method (<strong>note:</strong> Chrome 46 will be compliant).</li>
+<li>Why do you have ?homescreen=1</li>
+  
+  <li>
+    
+<p>URLs with query string parameters are treated as individual URLs and need to be cached separately.</p>
+</aside>
+  </li>
+</ul>
 
-次のステップは、これらのいずれかのリソースに対するリクエストのインターセプトを返し、`caches` オブジェクトを使用して各リソースのローカルに格納されているバージョンを返すように Service Worker をプログラムします。
+## Intercept the web page requests
 
+One powerful feature of service workers is that, once a service worker controls a page, it can intercept every request that the page makes and decide what to do with the request. In this section you are going to program your service worker to intercept requests and return the cached versions of assets, rather than going to the network to retrieve them.
 
-##  ウェブページのリクエストをインターセプトする
+The first step is to attach an event handler to the `fetch` event. This event is triggered for every request that is made.
 
+Add the following code to the bottom of your `sw.js` to log the requests made from the parent page.
 
+    self.addEventListener('fetch', function(event) {
+     console.log(event.request.url);
+    });
+    
 
-Service Worker の強力な機能の 1 つは、Service Worker がページを制御すると、ページで生成されたすべてのリクエストをインターセプトして、そのリクエストの処理方法を決定できることです。このセクションでは、アセットを取得するためにネットワークにアクセスするのではなく、Service Worker がリクエストをインターセプトして、アセットのキャッシュされたバージョンを返すようにプログラムします。
+Let's test this out. **Heads up!** You're about to see some more unexpected service worker behavior.
 
-最初のステップでは、`fetch` イベントに対してイベント ハンドラを登録します。このイベントはリクエストが生成されるたびにトリガーされます。
-
-次のコードを `sw.js` の下部に追加して、親ページから生成されたリクエストを出力します。
-
-これをテストしてみましょう。Service Worker が想定外の動作をするので__注意してください__。 
-
-DevTools を開いて [__Application__] パネルに移動します。[__Offline__] チェックボックスが無効になっているはずです。`Esc` キーを押して DevTools ウィンドウの下部にある [__Console__] ドロワーを開きます。DevTools ウィンドウは次のスクリーンショットのようになります。
+Open DevTools and go to the **Application** panel. The **Offline** checkbox should be disabled. Press the `Esc` key to open the **Console** drawer at the bottom of your DevTools window. Your DevTools window should look similar to the following screenshot:
 
 ![c96de824be6852d7.png](img/c96de824be6852d7.png)
 
-ページを再読み込みして DevTools ウィンドウを再度確認します。まず、[Console] に一連のリクエストのログが出力されることを想定していましたが、何も表示されていません。次に、[__Service Worker__] ペインの [__Status__] が変更されていることがわかります。
+Reload your page now and look at the DevTools window again. For one, we're expecting to see a bunch of requests logged to the Console, but that's not happening. For two, in the **Service Worker** pane we can see that the **Status** has changed:
 
 ![c7cfb6099e79d5aa.png](img/c7cfb6099e79d5aa.png)
 
-[__Status__] には、アクティベートを待機している新しい Service Worker が表示されています。これは、変更を行ったばかりの新しい Service Worker です。つまり、なんらかの理由で、インストールされている（空のファイルの）古い Service Worker がまだページを制御しています。[__Source__] の横の `sw.js` リンクをクリックすると、古い Service Worker がまだ実行されていることを確認できます。 
+In the **Status** there's a new service worker that's waiting to activate. That must be the new service worker that includes the changes that we just made. So, for some reason, the old service worker that we installed (which was just a blank file) is still controlling the page. If you click on the `sw.js` link next to **Source** you can verify that the old service worker is still running.<aside class="key-point">
 
-この不都合を修正するには、[__Update on reload__] チェックボックスを有効にします。
+<p>This behavior is by design. Check out  <a href="/web/fundamentals/primers/service-worker/update-a-service-worker">Update a Service Worker</a> to learn more about the service worker lifecycle.</p>
+
+</aside> 
+
+To fix this inconvenience, enable the **Update on reload** checkbox.
 
 ![26f2ae9a805bc69b.png](img/26f2ae9a805bc69b.png)
 
-このチェックボックスが有効になっている場合は、DevTools はページが再読み込みされるたびに常に Service Worker をアップデートします。これは、Service Worker をアクティブに開発する場合に非常に役に立ちます。
+When this checkbox is enabled, DevTools always updates the service worker on every page reload. This is very useful when actively developing a service worker.
 
-ここでページを再読み込みすると、想定どおりに新しい Service Worker がインストールされていることと、リクエストの URL が [Console] に出力されていることを確認できます。
+Reload the page now and you can see that a new service worker is installed and that the request URLs are being logged to the Console, as expected.
 
 ![53c23650b131143a.png](img/53c23650b131143a.png)
 
-これらすべてのリクエストの処理方法を決定する必要があります。デフォルトでは、何も実行しなければリクエストはネットワークに渡され、レスポンスがウェブページに返されます。
+Now you need to decide what to do with all of those requests. By default, if you don't do anything, the request is passed to the network and the response is returned to the web page.
 
-アプリをオフラインで動作させるには、リクエストがキャッシュに存在する場合はキャッシュから取得する必要があります。
+To make your application work offline you need to pull the request from the cache, if it is available.
 
-fetch イベント リスナーをアップデートして以下のコードに一致させます。
+Update your fetch event listener to match the code below.
 
-`event.respondWith()` メソッドは、以降に発生するイベントの結果を評価するようブラウザに指示します。`caches.match(event.request)` は、fetch イベントをトリガーした現在のウェブ リクエストを取得して、一致するリソースのキャッシュを調べます。この一致は URL 文字列を検索して実行されます。`match` メソッドは、キャッシュにファイルが見つからない場合でも解決する Promise を返します。これにより、処理を選択できます。今回の単純なケースでは、ファイルが見つからなかった場合はネットワークから単純に `fetch` して、ブラウザに返します。
+    self.addEventListener('fetch', function(event) {
+     console.log(event.request.url);
+    
+     event.respondWith(
+       caches.match(event.request).then(function(response) {
+         return response || fetch(event.request);
+       })
+     );
+    });
+    
 
-これは最も単純なケースで、他にもキャッシュのシナリオは数多く存在します。たとえば、まだキャッシュされていないリクエストに対するすべてのレスポンスを順次キャッシュに追加して、以降はすべてキャッシュから返すようにすることもできます。 
+The `event.respondWith()` method tells the browser to evaluate the result of the event in the future. `caches.match(event.request)` takes the current web request that triggered the fetch event and looks in the cache for a resource that matches. The match is performed by looking at the URL string. The `match` method returns a promise that resolves even if the file is not found in the cache. This means that you get a choice about what you do. In your simple case, when the file is not found, you simply want to `fetch` it from the network and return it to the browser.
 
+This is the simplest case; there are many other caching scenarios. For example, you could incrementally cache all responses for previously uncached requests, so in the future they are all returned from the cache.
 
-## これで完了です。
+## Congratulations!
 
+You now have offline support. Reload your page while still online to update your service worker to the latest version, and then use DevTools to go into offline mode. Reload your page again, and you should have a fully-functional offline air horn!
 
+#### What we've covered
 
-オフライン サポートを追加できました。オンライン中にページを再読み込みして Service Worker を最新バージョンにアップデートし、DevTools を使用してオフライン モードにします。再度ページを再読み込みすると、完全に機能するオフラインの警笛を使用できます。
+* How to add a basic service worker to an existing project.
+* How to use Chrome DevTools to simulate offline mode and to inspect and debug service workers.
+* A simple offline caching strategy.
 
-####  これまでの学習内容
+#### Next Steps
 
-* 基本的な Service Worker を既存のプロジェクトに追加する方法
-* Chrome DevTools を使用してオフライン モードをシミュレートし、Service Worker の調査やデバッグを行う方法
-* 単純なオフライン キャッシュ戦略
+* Learn how to easily add robust [offline support with Polymer offline elements](https://codelabs.developers.google.com/codelabs/sw-precache/index.html?index=..%2F..%2Findex#0)
+* Explore more [advanced caching techniques](https://jakearchibald.com/2014/offline-cookbook/)
 
-####  次のステップ
+#### Learn More
 
-* 堅牢な [Polymer オフライン要素を使用したオフライン サポート](https://codelabs.developers.google.com/codelabs/sw-precache/index.html?index=..%2F..%2Findex#0)を簡単に追加する方法を学びます。
-* 詳細については、[高度なキャッシュ テクニック](https://jakearchibald.com/2014/offline-cookbook/)をご覧ください。
+* [Introduction to service worker](/web/fundamentals/primers/service-worker/)
 
-####  さらに詳しく知る
+## Found an issue, or have feedback? {: .hide-from-toc }
 
-*  [Service Worker の紹介](/web/fundamentals/primers/service-worker/?hl=en)
-
-
-
-
-
-##  問題の発見やフィードバック{: .hide-from-toc }
-コードラボの向上のために[問題](https://github.com/googlesamples/io2015-codelabs/issues)がある場合はお知らせください。
-ご協力お願いします。
-
-{# wf_devsite_translation #}
+Help us make our code labs better by submitting an [issue](https://github.com/googlesamples/io2015-codelabs/issues) today. And thanks!
