@@ -1,23 +1,19 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Ketahui cara browser mengonstruksikan pohon DOM dan CSSOM.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Learn how the browser constructs the DOM and CSSOM trees.
 
-{# wf_updated_on: 2017-07-12 #}
-{# wf_published_on: 2014-03-31 #}
+{# wf_updated_on: 2018-08-17 #} {# wf_published_on: 2014-03-31 #} {# wf_blink_components: Blink>DOM #}
 
-# Mengonstruksikan Model Objek {: .page-title }
+# Constructing the Object Model {: .page-title }
 
 {% include "web/_shared/contributors/ilyagrigorik.html" %}
 
-Sebelum browser dapat merender laman, browser harus mengonstruksi pohon DOM dan CSSOM. Akibatnya, kita harus memastikan bahwa kita menyerahkan baik HTML maupun CSS ke browser sesegera mungkin.
-
+Before the browser can render the page, it needs to construct the DOM and CSSOM trees. As a result, we need to ensure that we deliver both the HTML and CSS to the browser as quickly as possible.
 
 ### TL;DR {: .hide-from-toc }
-- Byte → karakter → token → simpul → model objek.
-- Markup HTML ditransformasikan menjadi Document Object Model (DOM), markup CSS ditransformasikan menjadi CSS Object Model (CSSOM).
-- DOM dan CSSOM adalah struktur data yang independen.
-- Timeline di Chrome DevTools memungkinkan kita merekam dan memeriksa konstruksi dan biaya pemrosesan DOM dan CSSOM.
 
+- Bytes → characters → tokens → nodes → object model.
+- HTML markup is transformed into a Document Object Model (DOM); CSS markup is transformed into a CSS Object Model (CSSOM).
+- DOM and CSSOM are independent data structures.
+- Chrome DevTools Timeline allows us to capture and inspect the construction and processing costs of DOM and CSSOM.
 
 ## Document Object Model (DOM)
 
@@ -25,65 +21,61 @@ Sebelum browser dapat merender laman, browser harus mengonstruksi pohon DOM dan 
 {% includecode content_path="web/fundamentals/performance/critical-rendering-path/_code/basic_dom.html" region_tag="full" adjust_indentation="auto" %}
 </pre>
 
-[Cobalah](https://googlesamples.github.io/web-fundamentals/fundamentals/performance/critical-rendering-path/basic_dom.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/performance/critical-rendering-path/basic_dom.html){: target="_blank" .external }
 
-Mari kita mulai dengan kasus yang sesederhana mungkin: laman HTML biasa dengan beberapa teks dan satu gambar. Bagaimana browser memroses laman ini?
+Let’s start with the simplest possible case: a plain HTML page with some text and a single image. How does the browser process this page?
 
-<img src="images/full-process.png" alt="Proses konstruksi DOM">
+<img src="images/full-process.png" alt="DOM construction process" />
 
-1. **Konversi:** Browser membaca byte mentah dari HTML dari disk atau jaringan dan menerjemahkannya menjadi karakter individual berdasarkan enkode yang ditetapkan file (mis. UTF-8).
-1. **Pentokenan:** Browser mengonversi string karakter ke dalam token khas&mdash;yang ditetapkan oleh [standar W3C HTML5](http://www.w3.org/TR/html5/){: .external }; misalnya, "&lt;html&gt;", "&lt;body&gt;"&mdash;dan string lainnya di dalam kurung siku. Setiap token memiliki arti spesial dan seperangkat aturan.
-1. **Lexing:** Token yang dipancarkan dikonversikan ke dalam "objek" yang mendefinisikan properti dan aturannya.
-1. **Konstruksi DOM:** Terakhir, karena markup HTML mendefinisikan tag berbeda di antara tag (sebagian tag berada di dalam tag), objek yang dibuat ditautkan dalam struktur data pohon yang juga merekam hubungan induk-anak yang didefinisikan dalam markup asli: objek _HTML_ adalah induk dari objek _body_, _body_ adalah induk dari _paragraph_, dan seterusnya.
+1. **Conversion:** The browser reads the raw bytes of HTML off the disk or network, and translates them to individual characters based on specified encoding of the file (for example, UTF-8).
+2. **Tokenizing:** The browser converts strings of characters into distinct tokens&mdash;as specified by the [W3C HTML5 standard](http://www.w3.org/TR/html5/){: .external }; for example, "&lt;html&gt;", "&lt;body&gt;"&mdash;and other strings within angle brackets. Each token has a special meaning and its own set of rules.
+3. **Lexing:** The emitted tokens are converted into "objects," which define their properties and rules.
+4. **DOM construction:** Finally, because the HTML markup defines relationships between different tags (some tags are contained within other tags) the created objects are linked in a tree data structure that also captures the parent-child relationships defined in the original markup: the *HTML* object is a parent of the *body* object, the *body* is a parent of the *paragraph* object, and so on.
 
-<img src="images/dom-tree.png"  alt="Pohon DOM">
+<img src="images/dom-tree.png"  alt="DOM tree" />
 
-**Keluaran akhir dari keseluruhan proses ini adalah Document Object Model (DOM) dari laman sederhana kita, yang digunakan browser untuk semua pemrosesan laman lebih lanjut.**
+**The final output of this entire process is the Document Object Model (DOM) of our simple page, which the browser uses for all further processing of the page.**
 
-Setiap kali browser memroses markup HTML, browser harus melewati semua langkah di atas: mengonversikan byte menjadi karakter, mengidentifikasi token, mengonversikan token menjadi simpul, dan membangun pohon DOM. Keseluruhan proses ini bisa membutuhkan waktu, terutama jika jumlah HTML yang harus diproses sangat banyak.
+Every time the browser processes HTML markup, it goes through all of the steps above: convert bytes to characters, identify tokens, convert tokens to nodes, and build the DOM tree. This entire process can take some time, especially if we have a large amount of HTML to process.
 
-<img src="images/dom-timeline.png"  alt="Melacak konstruksi DOM dalam DevTools">
+<img src="images/dom-timeline.png"  alt="Tracing DOM construction in DevTools" />
 
-Note: Kami menganggap sudah memiliki pengetahuan dasar Chrome DevTools - artinya Anda sudah tahu cara merekam jenjang jaringan, atau merekam timeline. Jika Anda butuh penyegaran cepat, lihat <a href='/web/tools/chrome-devtools/'>dokumentasi Chrome DevTools</a>, atau jika Anda baru mengenal DevTools, sebaiknya mengambil kursus <a href='http://discover-devtools.codeschool.com/'>Discover DevTools</a> dari Codeschool.
+Note: We're assuming that you have basic familiarity with Chrome DevTools - that is, you know how to capture a network waterfall or record a timeline. If you need a quick refresher, check out the [Chrome DevTools documentation](/web/tools/chrome-devtools/); if you're new to DevTools, we recommend that you take the Codeschool [Discover DevTools](http://discover-devtools.codeschool.com/) course.
 
-Jika Anda membuka Chrome DevTools dan merekam timeline saat laman dimuat, Anda bisa melihat waktu sebenarnya yang dihabiskan untuk melakukan langkah ini&mdash;dalam contoh di atas, butuh waktu sekitar 5 md untuk mengonversikan HTML dalam jumlah besar ke dalam pohon DOM. Untuk laman yang lebih besar, proses ini mungkin menghabiskan waktu lebih lama. Saat pembuatan animasi yang lancar, hal ini bisa menjadi bottleneck apabila browser harus memroses banyak HTML.
+If you open up Chrome DevTools and record a timeline while the page is loaded, you can see the actual time taken to perform this step&mdash;in the example above, it took us ~5ms to convert a chunk of HTML into a DOM tree. For a larger page, this process could take significantly longer. When creating smooth animations, this can easily become a bottleneck if the browser has to process large amounts of HTML.
 
-Pohon DOM merekam properti dan hubungan dari markup dokumen, namun ia sama sekali tidak memberi tahu kita tentang bagaimana elemen akan terlihat saat dirender. Itu adalah tanggung jawab CSSOM.
+The DOM tree captures the properties and relationships of the document markup, but it doesn't tell us how the element will look when rendered. That’s the responsibility of the CSSOM.
 
 ## CSS Object Model (CSSOM)
 
-Sementara browser mengonstruksikan DOM dari laman sederhana kita, browser menemukan tag tautan dalam bagian kepala dokumen yang merujuk ke stylesheet CSS eksternal: style.css. Dengan mengantisipasi bahwa browser membutuhkan sumber daya ini untuk merender laman, browser segera mengeluarkan permintaan untuk sumber daya ini, yang dikembalikan dengan materi berikut:
+While the browser was constructing the DOM of our simple page, it encountered a link tag in the head section of the document referencing an external CSS stylesheet: style.css. Anticipating that it needs this resource to render the page, it immediately dispatches a request for this resource, which comes back with the following content:
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/performance/critical-rendering-path/_code/style.css" region_tag="full" adjust_indentation="auto" %}
 </pre>
 
-Kita bisa mendeklarasikan gaya kita secara langsung di dalam markup HTML (inline), namun menjaga CSS kita tetap independen dari HTML memungkinkan kita untuk memperlakukan materi dan desain sebagai dua hal berbeda: desainer bisa mengerjakan CSS, developer bisa fokus pada HTML, dan seterusnya.
+We could have declared our styles directly within the HTML markup (inline), but keeping our CSS independent of HTML allows us to treat content and design as separate concerns: designers can work on CSS, developers can focus on HTML, and so on.
 
-Seperti halnya dengan HTML, kita harus mengonversikan aturan CSS yang diterima menjadi sesuatu yang bisa dipahami dan dikerjakan oleh browser. Dengan demikian, kita mengulang kembali proses HTML, namun untuk CSS, bukan HTML:
+As with HTML, we need to convert the received CSS rules into something that the browser can understand and work with. Hence, we repeat the HTML process, but for CSS instead of HTML:
 
-<img src="images/cssom-construction.png"  alt="Langkah-langkah konstruksi CSSOM">
+<img src="images/cssom-construction.png"  alt="CSSOM construction steps" />
 
-Byte CSS dikonversikan menjadi karakter, selanjutnya menjadi token dan simpul, dan akhirnya ditautkan ke dalam struktur pohon yang dikenal sebagai "CSS Object Model" (CSSOM):
+The CSS bytes are converted into characters, then tokens, then nodes, and finally they are linked into a tree structure known as the "CSS Object Model" (CSSOM):
 
-<img src="images/cssom-tree.png"  alt="Pohon CSSOM">
+<img src="images/cssom-tree.png"  alt="CSSOM tree" />
 
-Mengapa CSSOM memiliki struktur pohon? Saat menghitung seperangkat gaya akhir untuk setiap objek pada laman, browser memulai dengan aturan paling umum yang berlaku untuk simpul itu (misalnya apakah ia anak dari elemen tubuh, kemudian semua gaya tubuh diterapkan) dan selanjutnya berulang-ulang menyaring gaya terkomputasi dengan menerapkan aturan yang lebih spesifik; misalnya, aturan "penguraian menurun".
+Why does the CSSOM have a tree structure? When computing the final set of styles for any object on the page, the browser starts with the most general rule applicable to that node (for example, if it is a child of a body element, then all body styles apply) and then recursively refines the computed styles by applying more specific rules; that is, the rules "cascade down."
 
-Agar lebih konkret, mari kita lihat pohon CSSOM di atas. Sembarang teks yang ada di dalam tag _span_ yang ditempatkan di dalam elemen body akan memiliki ukuran font 16 piksel dan berwarna merah&mdash;direktif ukuran font diuraikan ke bawah dari tubuh hingga bentangannya. Akan tetapi, apabila tag bentang merupakan anak dari sebuah tag paragraf (p), maka materinya tidak ditampilkan.
+To make it more concrete, consider the CSSOM tree above. Any text contained within the *span* tag that is placed within the body element, has a font size of 16 pixels and has red text&mdash;the font-size directive cascades down from the body to the span. However, if a span tag is child of a paragraph (p) tag, then its contents are not displayed.
 
-Selain itu, perhatikan bahwa pohon di atas bukanlah pohon CSSOM yang komplet dan hanya menampilkan gaya yang kita putuskan untuk diganti di stylesheet kita. Setiap browser menyediakan seperangkat gaya default yang juga dikenal sebagai "gaya agen pengguna"&mdash;itulah yang kita lihat ketika kita tidak menyediakan salah satu gaya kita&mdash;dan gaya kita hanya menggantikan default ini (mis. [gaya IE default](http://www.iecss.com/){: .external }).
+Also, note that the above tree is not the complete CSSOM tree and only shows the styles we decided to override in our stylesheet. Every browser provides a default set of styles also known as "user agent styles"&mdash;that’s what we see when we don’t provide any of our own&mdash;and our styles simply override these defaults (for example, [default IE styles](http://www.iecss.com/){: .external }).
 
-Untuk mencari tahu seberapa lama pemrosesan CSS, Anda bisa merekam sebuah timeline di DevTools dan cari kejadian "Recalculate Style": tidak seperti penguraian DOM, timeline tidak menampilkan entri "Parse CSS" terpisah, dan malahan merekam parsing dan konstruksi pohon CSSOM, plus perhitungan berulang-ulang gaya terkomputasi di bawah kejadian tunggal ini.
+To find out how long the CSS processing takes you can record a timeline in DevTools and look for "Recalculate Style" event: unlike DOM parsing, the timeline doesn’t show a separate "Parse CSS" entry, and instead captures parsing and CSSOM tree construction, plus the recursive calculation of computed styles under this one event.
 
-<img src="images/cssom-timeline.png"  alt="Melacak konstruksi CSSOM dalam DevTools">
+<img src="images/cssom-timeline.png"  alt="Tracing CSSOM construction in DevTools" />
 
-Stylesheet sederhana kita ini membutuhkan waktu pemrosesan ~0,6 md dan memengaruhi delapan elemen pada laman&mdash;tidak banyak, namun sekali lagi, tidak bebas. Namun demikian, dari manakah asal delapan elemen ini? CSSOM dan DOM adalah struktur data yang independen! Diketahui kemudian, browser menyembunyikan langkah penting. Berikutnya, mari kita bicarakan tentang [pohon render](/web/fundamentals/performance/critical-rendering-path/render-tree-construction) yang bersama menautkan DOM dan CSSOM semuanya.
+Our trivial stylesheet takes ~0.6ms to process and affects eight elements on the page&mdash;not much, but once again, not free. However, where did the eight elements come from? The CSSOM and DOM are independent data structures! Turns out, the browser is hiding an important step. Next, lets talk about the [render tree](/web/fundamentals/performance/critical-rendering-path/render-tree-construction) that links the DOM and CSSOM together.
 
-<a href="render-tree-construction" class="gc-analytics-event"
-    data-category="CRP" data-label="Next / Render-Tree Construction">
-  <button>Berikutnya: Konstruksi Pohon Render, Layout, dan Menggambar</button>
-</a>
+## Feedback {: #feedback }
 
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
