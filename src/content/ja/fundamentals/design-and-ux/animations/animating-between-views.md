@@ -1,49 +1,46 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: アプリ内の 2 つのビュー間にアニメーションを付ける方法を学習します。
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Learn how to animate between two views in your apps.
 
-{# wf_updated_on: 2017-07-12 #}
-{# wf_published_on: 2014-08-08 #}
+{# wf_blink_components: Blink>Animation #} {# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2014-08-08 #}
 
-# ビュー切り替えのアニメーション {: .page-title }
+# Animating Between Views {: .page-title }
 
 {% include "web/_shared/contributors/paullewis.html" %}
 
-リストから詳細ビューを開いたり、サイドバー ナビゲーションを表示したり、アプリケーション内でビューを切り替えたいケースが多くあります。このようなビュー間に切り替えアニメーションがあると、ユーザーを引きつけ、プロジェクトに躍動感を与えることができます。
+Often, you want to move users between views in your application, whether that's from a list to a details view, or show a sidebar navigation. Animations between these views keep the user engaged and add even more life to your projects.
 
 ### TL;DR {: .hide-from-toc }
-* ビューの切り替えには遷移を利用し、レイアウトをトリガーする `left` や `top` などのプロパティの使用は避けます。
-* アニメーションはすばやく動くものを使用し、継続時間を短くする必要があります。
-* 画面サイズが大きくなったときに、アニメーションとレイアウトがどのように変化するかについても考慮が必要です。小さい画面でうまく動作しても、デスクトップで使用すると適切に表示されない場合があります。
 
-これらのビュー遷移の外観と動作は、扱うビューのタイプによって異なります。たとえば、ビュー上のモーダル オーバーレイのアニメーションは、リストビューと詳細ビューを切り替える遷移とは別物です。
+* Use translations to move between views; avoid using `left`, `top`, or any other property that triggers layout.
+* Ensure that any animations you use are snappy and the durations are kept short.
+* Consider how your animations and layouts change as the screen sizes go up; what works for a smaller screen may look odd when used in a desktop context.
 
-ポイント:すべてのアニメーションにおいて、60fps を極力維持します。これにより、アニメーションがスムーズに動き、ユーザー操作に支障をきたすことがなくなります。また、アニメーションが始まる前に、各アニメーション要素で予定されている変更内容を `will-change` で指定しておきます。ビュー遷移には、`will-change: transform` を使用するのが最も一般的です。
+What these view transitions look and behave like depends on the type of views you’re dealing with. For example, animating a modal overlay on top of a view should be a different experience from transitioning between a list and details view.
 
-##  画面遷移によってビュー間を移動
+Success: Try to maintain 60fps for all of your animations. That way, your users won't see stuttering animations that interfere with their experience. Ensure that any animating element has `will-change` set for anything you plan to change well ahead of the animation starting. For view transitions, it’s highly likely you will want to use `will-change: transform`.
+
+## Use translations to move between views
 
 <div class="attempt-left">
   <figure>
-    <img src="images/view-translate.gif" alt="2 つのビュー間の遷移" />
+    <img src="images/view-translate.gif" alt="Translating between two views" />
   </figure>
 </div>
 
-わかりやすくするために、リストビューと詳細ビューの 2 つのビューがあるとしましょう。ユーザーがリストビュー内のリスト項目をタップすると、詳細ビューがスライドインして、リストビューがスライドアウトします。
+To make life easier, assume that there are two views: a list view and a details view. As the user taps a list item inside the list view, the details view slides in, and the list view slides out.
 
 <div style="clear:both;"></div>
 
 <div class="attempt-right">
   <figure>
-    <img src="images/container-two-views.svg" alt="階層を表示。" />
+    <img src="images/container-two-views.svg" alt="View hierarchy." />
   </figure>
 </div>
 
-この効果を実現するには、`overflow: hidden` が設定された、両方のビュー用のコンテナが必要です。こうすると、水平スクロールバーを表示しなくても、2 つのビューをコンテナ内に並べることができます。また、各ビューを必要に応じてコンテナ内で左右にスライドさせることができます。
+To achieve this effect, you need a container for both views that has `overflow: hidden` set on it. That way, the two views can both be inside the container side-by-side without showing any horizontal scrollbars, and each view can slide side-to-side inside the container as needed.
 
 <div style="clear:both;"></div>
 
-コンテナの CSS は次のとおりです。
-
+The CSS for the container is:
 
     .container {
       width: 100%;
@@ -53,8 +50,7 @@ description: アプリ内の 2 つのビュー間にアニメーションを付�
     }
     
 
-コンテナの位置は `relative` として設定します。これにより、コンテナ内の各ビューは必ず左上に配置されたあと、遷移に応じてさまざまな位置に移動します。このアプローチは（レイアウトと描画をトリガーする）`left` プロパティを使用するよりもパフォーマンスが高く、一般的に、より簡単に効率化することができます。
-
+The position of the container is set as `relative`. This means that each view inside it can be positioned absolutely to the top left corner and then moved around with transforms. This approach is better for performance than using the `left` property (because that triggers layout and paint), and is typically easier to rationalize.
 
     .view {
       width: 100%;
@@ -69,8 +65,7 @@ description: アプリ内の 2 つのビュー間にアニメーションを付�
     }
     
 
-`transform` プロパティに `transition` を追加すると、良好なスライド効果が得られます。また、動きを滑らかにするために、カスタム `cubic-bezier` 曲線を使用しています。詳しくは、[カスタム イージングのガイド](custom-easing)をご覧ください。
-
+Adding a `transition` on the `transform` property provides a nice slide effect. To give it a nice feel, it’s using a custom `cubic-bezier` curve, which we discussed in the [Custom Easing guide](custom-easing).
 
     .view {
       /* Prefixes are needed for Safari and other WebKit-based browsers */
@@ -79,8 +74,7 @@ description: アプリ内の 2 つのビュー間にアニメーションを付�
     }
     
 
-画面外のビューは右側に移動する必要があります。したがって、この場合は詳細ビューを移動する必要があります。
-
+The view that is offscreen should be translated to the right, so in this case the details view needs to be moved:
 
     .details-view {
       -webkit-transform: translateX(100%);
@@ -88,8 +82,7 @@ description: アプリ内の 2 つのビュー間にアニメーションを付�
     }
     
 
-ここで、クラスを処理するために JavaScript が少し必要になります。これにより、ビュー上で適切なクラスを切り替えます。
-
+Now a small amount of JavaScript is necessary to handle the classes. This toggles the appropriate classes on the views.
 
     var container = document.querySelector('.container');
     var backButton = document.querySelector('.back-button');
@@ -112,8 +105,7 @@ description: アプリ内の 2 つのビュー間にアニメーションを付�
     backButton.addEventListener('click', onViewChange);
     
 
-最後に、これらのクラスの CSS 宣言を追加します。
-
+Finally, we add the CSS declarations for those classes.
 
     .view-change .list-view {
       -webkit-transform: translateX(-100%);
@@ -125,27 +117,25 @@ description: アプリ内の 2 つのビュー間にアニメーションを付�
       transform: translateX(0);
     }
     
+
 [Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/animations/inter-view-animation.html){: target="_blank" .external }
 
-この手法を拡張して複数のビューに適用することもできます。基本的な概念は同じです。見えていない個々のビューは画面外に移動し、必要に応じて画面内に戻します。その際、現在画面に表示されているビューは画面外に移動する必要があります。
+You could expand this to cover multiple views, and the basic concept should remain the same; each non-visible view should be offscreen and brought on as needed, and the currently onscreen view should be moved off.
 
-Warning: 複数のブラウザ間でこのような階層を作成するのは困難になる場合があります。たとえば、フリング スクロールを「再有効化」するには、iOS で追加の CSS プロパティ  <code>-webkit-overflow-scrolling: touch</code> が必要です。ただし、標準の overflow プロパティの場合と違って、対象とする軸を制御できません。そのため、実装後は複数のデバイスで必ずをテストを実施してください。
+Caution: Making this kind of hierarchy in a cross-browser way can be challenging. For example, iOS requires an additional CSS property, `-webkit-overflow-scrolling: touch`, to "reenable" fling scrolling, but you don’t get to control which axis that’s for, as you can with the standard overflow property. Be sure to test your implementation across a range of devices!
 
-この手法はビューの切り替えに加え、サイドバー ナビゲーション要素のような他のスライドイン要素に適用することができます。実質的な違いは、他のビューを移動する必要がないことだけです。
+In addition to transitioning between views, this technique can also be applied to other slide-in elements, like sidebar navigation elements. The only real difference is that you shouldn’t need to move the other views.
 
-## 大画面でのアニメーション動作の確認
+## Ensure that your animation works with larger screens
 
 <div class="attempt-right">
   <figure>
-    <img src="images/container-two-views-ls.svg" alt="階層を大画面に表示。" />
+    <img src="images/container-two-views-ls.svg" alt="View hierarchy on a large screen." />
   </figure>
 </div>
 
-大きい画面の場合は、リストビューを消さずに常時表示して、詳細ビューを右側からスライドインさせます。これはナビゲーション ビューの操作とよく似ています。
+For a larger screen, you should keep the list view around all the time rather than removing it, and slide on the details view from the right-hand side. It’s pretty much the same as dealing with a navigation view.
 
+## Feedback {: #feedback }
 
-
-
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
