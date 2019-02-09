@@ -1,174 +1,244 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: RAIL은 사용자 중심 성능 모델입니다. 모든 웹 앱은 수명 주기에 뚜렷한 네 가지 측면, 즉 응답, 애니메이션, 유휴, 로드가 있으며, 여기에 성능이 각기 다른 방식으로 적용됩니다.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: RAIL is a user-centric performance model. Every web app has these four distinct aspects to its life cycle, and performance fits into them in different ways: Response, Animation, Idle, Load.
 
-{# wf_updated_on: 2015-06-07 #}
-{# wf_published_on: 2015-06-07 #}
+{# wf_updated_on: 2018-08-17 #} {# wf_published_on: 2015-06-07 #} {# wf_blink_components: Blink>PerformanceAPIs,Blink>JavaScript>Runtime,Blink>Input #}
 
-# RAIL 모델로 성능 측정 {: .page-title }
+# Measure Performance with the RAIL Model {: .page-title }
 
-{% include "web/_shared/contributors/megginkearney.html" %}
+{% include "web/_shared/contributors/megginkearney.html" %} {% include "web/_shared/contributors/addyosmani.html" %} {% include "web/_shared/contributors/kaycebasques.html" %} {% include "web/_shared/contributors/developit.html" %}
 
-RAIL은 사용자 중심 성능 모델입니다. 모든 웹 앱은 수명 주기에 다음과 같은 뚜렷한 네 가지 측면이 있으며, 여기에 성능이 각기 다른 방식으로 적용됩니다.
+**RAIL** is a **user-centric** performance model that breaks down the user's experience into key actions. RAIL's [**goals** and **guidelines**](#goals-and-guidelines) aim to help developers and designers ensure a good user experience for each of these actions. By laying out a structure for thinking about performance, RAIL enables designers and developers to reliably target the work that has the highest impact on user experience.
 
-![RAIL 성능 모델](images/rail.png)
+Every web app has four distinct aspects to its life cycle, and performance fits into them in different ways:
 
+<figure>
+  <img src="images/rail.png"
+    alt="The 4 parts of the RAIL performance model: Response, Animation, Idle, and Load."/>
+  <figcaption>
+    <b>Figure 1</b>. The 4 parts of the RAIL performance model
+  </figcaption>
+</figure>
 
-### TL;DR {: .hide-from-toc }
+## Goals and guidelines {: #goals-and-guidelines }
 
-- 사용자에게 주안점을 두세요. 최종 목표는 사이트가 기기 유형을 불문하고 어디서나 빠른 성능을 발휘하는 것이 아닙니다. 궁극적으로 사용자를 만족시키는 것이 중요합니다.
-- 사용자에게 즉각적으로 반응하세요. 사용자 입력은 100ms 내에 인지해야 합니다.
-- 애니메이션이나 스크롤 시에 10ms 이내에 프레임을 생성하세요.
-- 메인 스레드의 유휴 시간을 극대화하세요.
-- 사용자가 계속 참여하게 만드세요. 대화형 콘텐츠는 1000ms 이내에 전달하세요.
+In the context of RAIL, the terms **goals** and **guidelines** have specific meanings:
 
+* **Goals**. Key performance metrics related to user experience. Since human perception is relatively constant, these goals are unlikely to change any time soon.
+* **Guidelines**. Recommendations that help you achieve goals. These may be specific to current hardware and network connection conditions, and therefore may change over time.
 
-## 사용자에게 주안점 두기
+## Focus on the user {: #ux }
 
-성능 개선 노력의 초점은 사용자에게 맞추어야 합니다. 
-사용자가 사이트에서 보내는 시간의 대부분은 페이지가 로드되기를 기다리는 시간이 아니라 
-사용 중 응답을 대기하는 시간입니다. 
-사용자가 성능 지연을 어떻게 받아들이는지 제대로 파악해야 합니다.
+Make users the focal point of your performance effort. The table below describes key metrics of how users perceive performance delays:
 
 <table class="responsive">
   <thead>
-      <th colspan="2">지연 및 사용자 반응</th>
+      <th colspan="2">User Perception Of Performance Delays</th>
   </thead>
   <tbody>
     <tr>
-      <td data-th="Delay">0 - 16ms</td>
-      <td data-th="User Reaction">사람들은 움직임을 뒤쫓는 재주가
-특히 탁월하며, 부드럽지 못한 애니메이션을 싫어합니다. 초당 60개의
-새 프레임으로 렌더링되면 사용자는 애니메이션을
-부드럽다고 인식합니다. 이것은 프레임당 16ms에 해당하고
-여기에는 브라우저가 새 프레임을 화면에 그리는 시간이 포함되며,
-약 10ms는 앱이 프레임을 생성하는 시간으로 남겨둡니다.</td>
+      <td data-th="Delay">0 to 16ms</td>
+      <td data-th="User Reaction">Users are exceptionally good at tracking motion, and they
+      dislike it when animations aren't smooth. They perceive animations as smooth so long as
+      60 new frames are rendered every second. That's 16ms per frame, including the time it
+      takes for the browser to paint the new frame to the screen, leaving an app about 10ms to
+      produce a frame.</td>
     </tr>
     <tr>
-      <td data-th="Delay">0 - 100ms</td>
-      <td data-th="User Reaction">이 시간 범위 내에 사용자 동작에 응답하면 결과가 신속하다는 느낌을 사용자가 받게 됩니다. 이보다 더 오래 걸리면 동작과 반응 사이의 연결이 끊어집니다.</td>
+      <td data-th="Delay">0 to 100ms</td>
+      <td data-th="User Reaction">Respond to user actions within this time window and users
+      feel like the result is immediate. Any longer, and the connection between action and
+      reaction is broken.</td>
     </tr>
     <tr>
-      <td data-th="Delay">100 - 300ms</td>
-      <td data-th="User Reaction">사용자가 약간의 지연을 인지할 수 있습니다.</td>
+      <td data-th="Delay">100 to 300ms</td>
+      <td data-th="User Reaction">Users experience a slight perceptible delay.</td>
     </tr>
     <tr>
-      <td data-th="Delay">300 - 1000ms</td>
-      <td data-th="User Reaction">이 시간 범위 내의 지연은 작업이 자연스럽고 지속적으로 이어지는 과정의 일부분으로 느껴집니다. 웹 상의 대부분의 사용자에게 있어 페이지 로드와 뷰 변경이 하나의 작업으로 보입니다.</td>
+      <td data-th="Delay">300 to 1000ms</td>
+      <td data-th="User Reaction">Within this window, things feel part of a natural and
+      continuous progression of tasks. For most users on the web, loading pages or changing
+      views represents a task.</td>
     </tr>
     <tr>
-      <td data-th="Delay">1000ms 이상</td>
-      <td data-th="User Reaction">1초가 넘어가면 사용자가 자신이 수행 중인 작업에서 집중력을 잃게 됩니다.</td>
+      <td data-th="Delay">1000ms or more</td>
+      <td data-th="User Reaction">Beyond 1000 milliseconds (1 second), users lose focus on
+      the task they are performing.</td>
     </tr>
     <tr>
-      <td data-th="Delay">10,000ms 이상</td>
-      <td data-th="User Reaction">사용자가 짜증을 내고 작업을 중도 포기할 가능성이 커지며, 나중에 다시 돌아오지 않을 수도 있습니다. </td>
+      <td data-th="Delay">10000ms or more</td>
+      <td data-th="User Reaction">Beyond 10000 milliseconds (10 seconds), users are frustrated
+      and are likely to abandon tasks. They may or may not come back later.</td>
     </tr>
   </tbody>
 </table>
 
-## 응답: 100ms 이내에 응답
+Users perceive performance delays differently, depending on network conditions and hardware. For example, loading an experience in 1000ms is plausible on a powerful desktop machine over a fast Wi-Fi connection, so users have grown accustomed to a 1000ms loading experience. But for mobile devices over slow 3G connections, loading in 5000ms is a more realistic goal, so mobile users are generally more patient.
 
-사용자 입력에 100ms 이내에 응답하지 않으면 지연을 느낍니다. 
-이는 버튼 클릭, 
-양식 컨트롤 전환, 애니메이션 시작과 같은 대부분의 입력에 적용됩니다. 이것은 터치 드래그나 스크롤에는
-적용되지 않습니다.
+## Response: process events in under 50ms {: #response }
 
-여러분이 응답하지 않으면 동작과 반응 사이의 연결이 끊어집니다. 사용자는 이런 현상을 잘 알아챕니다.
+**Goal**: Complete a transition initiated by user input within 100ms. Users spend the majority of their time waiting for sites to respond to their input, not waiting for the sites to load.
 
-사용자의 작업에 즉시 응답하는 것이 명백한 정답으로 보일 수 있지만, 
-이것이 늘 옳은 방안은 아닙니다. 
-이 100ms의 시간 범위를 다른 고비용 작업에 사용해도 좋지만, 사용자를 가로막지 않도록 주의하세요. 
-가능하면 백그라운드에서 작업을 수행하세요.
+**Guidelines**:
 
-완료하는 데 500ms 이상이 걸리는 작업의 경우, 항상 피드백을 제공하세요.
+* Process user input events within 50ms to ensure a visible response within 100ms, otherwise the connection between action and reaction is broken. This applies to most inputs, such as clicking buttons, toggling form controls, or starting animations. This does not apply to touch drags or scrolls.
+* Though it may sound counterintuitive, it's not always the right call to respond to user input immediately. You can use this 100ms window to do other expensive work. But be careful not to block the user. If possible, do work in the background.
+* For actions that take longer than 50ms to complete, always provide feedback.
 
-## 애니메이션: 10ms 이내에 프레임 생성
+**50ms or 100ms?:**
 
-애니메이션은 단순히 멋진 UI 효과가 아닙니다. 예를 들어, 스크롤과 터치 드래그도
-일종의 애니메이션입니다.
+The goal is respond to input in under 100ms, so why is our budget only 50ms? This is because there is generally other work being done in addition to input handling, and that work takes up part of the time available for acceptable input response. If an application is performing work in the recommended 50ms chunks during idle time, that means input can be queued for up to 50ms if it occurs during one of those chunks of work. Accounting for this, it's safe to assume only the remaining 50ms is available for actual input handling. This effect is visualized in the diagram below which shows how input received during an idle task is queued, reducing the available processing time:
 
-애니메이션 프레임 속도가 다르면 사용자가 눈치챕니다.
-목표는 초당 60프레임을 생성하는 것이고, 모든 프레임이 다음 단계를 거쳐야 합니다.
+<figure>
+  <img src="images/rail-response-details.png"
+    alt="Diagram showing how input received during an idle task is queued,
+         reducing available input processing time to 50ms."/>
+  <figcaption>
+    <b>Figure 2</b>. How idle tasks affect input response budget.
+  </figcaption>
+</figure>
 
-![프레임 렌더링 단계](images/render-frame.png)
+## Animation: produce a frame in 10ms {: #animation }
 
-순전히 수학적인 측면에서 보자면, 모든 프레임에는
-약 16ms의 시간이 할당됩니다(1000ms / 초당 60프레임 = 프레임당 16.66ms). 그러나 
-브라우저가 새 프레임을 화면에 그리는 시간이 필요하므로 **코드는 10ms 이내에
-실행이 끝나야 합니다**. 
+**Goals**:
 
-애니메이션과 같이 압박이 심한 시점에서 핵심은
-가능하면 아무 작업도 하지 않는 것이며 아니면 최소한의 작업만 수행하는 것입니다. 가능하면 항상 100ms의 응답 시한을 활용하여
-고비용 작업을 사전에 계산하는 것이 좋습니다.
-그러면 60fps의 목표를 달성할 가능성이 극대화됩니다.
+* Produce each frame in an animation in 10ms or less. Technically, the maximum budget for each frame is 16ms (1000ms / 60 frames per second ≈ 16ms), but browsers need about 6ms to render each frame, hence the guideline of 10ms per frame.
+* Aim for visual smoothness. Users notice when frame rates vary.
 
-자세한 내용은
-[렌더링 성능](/web/fundamentals/performance/rendering/)을 참조하세요.
+**Guidelines**:
 
-##  유휴: 유휴 시간 극대화
+* In high pressure points like animations, the key is to do nothing where you can, and the absolute minimum where you can't. Whenever possible, make use of the 100ms response to pre-calculate expensive work so that you maximize your chances of hitting 60fps.
+* See [Rendering Performance](/web/fundamentals/performance/rendering/) for various animation optimization strategies.
+* Recognize all the types of animations. Animations aren't just fancy UI effects. Each of these interactions are considered animations: 
+    * Visual animations, such as entrances and exits, [tweens](https://www.webopedia.com/TERM/T/tweening.html), and loading indicators.
+    * Scrolling. This includes flinging, which is when the user starts scrolling, then lets go, and the page continues scrolling.
+    * Dragging. Animations often follow user interactions, such as panning a map or pinching to zoom.
 
-유휴 시간을 활용하여 지연된 작업을 완료합니다. 예를 들어, 미리 로드하는 데이터를 최소한으로 유지하면 앱이 빠르게 로드되며, 유휴 시간을 활용하여 남은 데이터를 로드하세요.
+## Idle: maximize idle time {: #idle }
 
-지연된 작업은 약 50ms 단위의 블록으로 그룹화해야 합니다. 사용자가 상호작용을 시작하면 우선순위가 가장 높은 것이 이에 응답합니다. 
+**Goal**: Maximize idle time to increase the odds that the page responds to user input within 50ms.
 
-100ms 미만의 응답을 허용하려면 
-앱이 50ms 미만의 간격마다 메인 스레드에게 통제권을 양보해야 합니다. 
-그래야만 픽셀 파이프라인을 실행하고 사용자 입력에 반응하는 등의 여러 작업을 수행할 수 있습니다.
+**Guidelines**:
 
-50ms 블록 단위로 나누면 작업을 완료하면서도 즉각적인 응답을 보장할 수 있습니다.
+* Use idle time to complete deferred work. For example, for the initial page load, load as little data as possible, then use idle time to load the rest.
+* Perform work during idle time in 50ms or less. Any longer, and you risk interfering with the app's ability to respond to user input within 50ms.
+* If a user interacts with a page during idle time work, the user interaction should always take the highest priority and interrupt the idle time work.
 
-## 로드: 콘텐츠를 1000ms 이내에 전달
+## Load: deliver content and become interactive in under 5 seconds {: #load }
 
-사이트를 1초 이내에 로드하세요. 그렇지 않으면 사용자의 주의가 흐트러지고 
-작업에 대한 집중도가 산만해집니다.
+When pages load slowly, user attention wanders, and users perceive the task as broken. Sites that load quickly have longer average sessions, lower bounce rates, and higher ad viewability. See [The Need For Mobile Speed: How Mobile Latency Impacts Publisher Revenue](https://www.doubleclickbygoogle.com/articles/mobile-speed-matters/).
 
-무엇보다
-[중요 렌더링 경로 최적화](/web/fundamentals/performance/critical-rendering-path/)에 집중하여
-렌더링 차단을 해제하세요.
+**Goals**:
 
-완전히 로드되었다는 인상을 주기 위해 모든 것을 1초 이내에 로드할 필요는 없습니다. 프로그레시브 렌더링을 활성화하고 백그라운드에서 다른 작업을 수행합니다. 필수가 아닌 로드는 유휴 시간으로 미룹니다(자세한 내용은 이 [웹사이트 성능 최적화 Udacity 과정](https://www.udacity.com/course/website-performance-optimization--ud884)을 참조하세요).
+* Optimize for fast loading performance relative to the device and network capabilities that your users use to access your site. Currently, a good target for first loads is to load the page and be [interactive](/web/tools/lighthouse/audits/time-to-interactive) in 5 seconds or less on mid-range mobile devices with slow 3G connections. See [Can You Afford It? Real-World Web Performance Budgets](https://infrequently.org/2017/10/can-you-afford-it-real-world-web-performance-budgets/). But be aware that these targets may change over time.
+* For subsequent loads, a good target is to load the page in under 2 seconds. But this target may also change over time.
 
-## 주요 RAIL 지표 요약
+<figure>
+  <img src="images/speed-metrics.png"
+    alt="Each loading metric (First Paint, First Contentful Paint, First Meaningful Paint, Time
+         To Interactive) represents a different phase of the user's perception of the loading
+         experience"/>
+  <figcaption>
+    <b>Figure 3</b>. Each loading metric represents a different phase of the user's perception of
+    the loading experience
+  </figcaption>
+</figure>
 
-RAIL 지표에 따라 사이트를 평가하려면 Chrome DevTools [타임라인 도구](/web/tools/chrome-devtools/profile/evaluate-performance/timeline-tool)를 사용하여 사용자 작업을 기록합니다. 그런 다음, 다음과 같은 주요 RAIL 지표에 따라 타임라인에서 기록 시간을 점검합니다.
+**Guidelines**:
 
-<table>
-  <thead>
-      <th>RAIL 단계</th>
-      <th>주요 지표</th>
-      <th>사용자 작업</th>
-  </thead>
-  <tbody>
-    <tr>
-      <td data-th="RAIL Step"><strong>응답</strong></td>
-      <td data-th="Key Metric">입력 지연 시간(탭부터 페인트까지)이 100ms 미만입니다.</td>
-      <td data-th="User Test">사용자가 버튼을 누릅니다(예: 탐색 열기).</td>
-    </tr>
-    <tr>
-      <td data-th="RAIL Step"><strong>애니메이션</strong></td>
-      <td data-th="Key Metric">각 프레임 작업(JS부터 페인트까지)의 완료 시간은 16ms 미만입니다.</td>
-      <td data-th="User Test">사용자가 페이지를 스크롤하거나,
-손가락을 드래그하거나(예: 메뉴 열기), 애니메이션을 봅니다. 손가락을 드래그할 때
-손가락 위치에 따라 앱의 응답성이 달라집니다(예:
-당겨서 새로고침, 캐러셀을 스와이프). 이 지표는 연속된 드래그 상태에만
-적용됩니다(처음 상태에 적용되는 것이 아님).
-      </td>
-    </tr>
-    <tr>
-      <td data-th="RAIL Step"><strong>유휴</strong></td>
-      <td data-th="Key Metric">메인 스레드 JS 작업이 50ms 이하의 조각으로 나뉩니다.</td>
-      <td data-th="User Test">사용자가 페이지와 상호작용하지 않지만, 다음 사용자 입력을 처리할 만큼 메인 스레드를 충분히 이용할 수 있어야 합니다.</td>
-    </tr>
-    <tr>
-      <td data-th="RAIL Step"><strong>로드</strong></td>
-      <td data-th="Key Metric">페이지가 1000ms 이내에 사용할 준비가 된 것으로 간주됩니다.</td>
-      <td data-th="User Test">사용자가 페이지를 로드하고 주요 경로 콘텐츠를 봅니다.</td>
-    </tr>
-  </tbody>
-</table> 
+* Test your load performance on the mobile devices and network connections that are common among your users. If your business has information on what devices and network connections your users are on, then you can use that combination and set your own loading performance targets. Otherwise, [The Mobile Economy 2017](https://www.gsma.com/mobileeconomy/) suggests that a good global baseline is a mid-range Android phone, such as a Moto G4, and a slow 3G network, defined as 400ms RTT and 400kbps transfer speed. This combination is available on [WebPageTest](https://www.webpagetest.org/easy).
+* Keep in mind that although your typical mobile user's device might claim that it's on a 2G, 3G, or 4G connection, in reality the *effective connection speed* is often significantly slower, due to packet loss and network variance.
+* Focus on optimizing the [Critical Rendering Path](/web/fundamentals/performance/critical-rendering-path/) to unblock rendering.
+* You don't have to load everything in under 5 seconds to produce the perception of a complete load. Enable progressive rendering and do some work in the background. Defer non-essential loads to periods of idle time. See [Website Performance Optimization](https://www.udacity.com/course/website-performance-optimization--ud884).
+* Recognize the factors that affect page load performance: 
+    * Network speed and latency
+    * Hardware (slower CPUs, for example)
+    * Cache eviction
+    * Differences in L2/L3 caching
+    * Parsing JavaScript
 
+## Tools for measuring RAIL {: #tools }
 
+There are a few tools to help you automate your RAIL measurements. Which one you use depends on what type of information you need, and what type of workflow you prefer:
 
+* [**Chrome DevTools**](#devtools). The developer tools built into Google Chrome. Provides in-depth analysis on everything that happens while your page loads or runs.
+* [**Lighthouse**](#lighthouse). Available in Chrome DevTools, as a Chrome Extension, as a Node.js module, and within WebPageTest. You give it a URL, it simulates a mid-range device with a slow 3G connection, runs a series of audits on the page, and then gives you a report on load performance, as well as suggestions on how to improve. Also provides audits to improve accessibility, make the page easier to maintain, qualify as a Progressive Web App, and more.
+* [**WebPageTest**](#webpagetest). Available at [webpagetest.org/easy](https://webpagetest.org/easy). You give it a URL, it loads the page on a real Moto G4 device with a slow 3G connection, and then gives you a detailed report on the page's load performance. You can also configure it to include a Lighthouse audit.
 
-{# wf_devsite_translation #}
+The sections below give you more information on how to use each tool to measure RAIL.
+
+### Chrome DevTools {: #devtools }
+
+The **Performance** panel is the main place to analyze your RAIL metrics. See [Get Started With Analyzing Runtime Performance](/web/tools/chrome-devtools/evaluate-performance/) to get familiar with the **Performance** panel UI. The workflow and UI for analyzing load performance is mostly the same, the only difference is how you start and stop the recording. See [Record load performance](/web/tools/chrome-devtools/evaluate-performance/reference#record-load).
+
+The following DevTools features are especially relevant:
+
+* [Throttle your CPU](/web/tools/chrome-devtools/evaluate-performance/reference#cpu-throttle) to simulate a less-powerful device.
+* [Throttle the network](/web/tools/chrome-devtools/evaluate-performance/reference#network-throttle) to simulate slower connections.
+* [View main thread activity](/web/tools/chrome-devtools/evaluate-performance/reference#main) to view every event that occurred on the main thread while you were recording.
+* [View main thread activities in a table](/web/tools/chrome-devtools/evaluate-performance/reference#activities) to sort activities based on which ones took up the most time.
+* [Analyze frames per second (FPS)](/web/tools/chrome-devtools/evaluate-performance/reference#fps) to measure whether your animations truly run smoothly.
+* [Monitor CPU usage, JS heap size, DOM nodes, layouts per second, and more](/web/updates/2017/11/devtools-release-notes#perf-monitor) in real-time with the **Performance Monitor**.
+* [Visualize network requests](/web/tools/chrome-devtools/evaluate-performance/reference#network) that occurred while you were recording with the **Network** section.
+* [Capture screenshots while recording](/web/tools/chrome-devtools/evaluate-performance/reference#screenshots) to play back exactly how the page looked while the page loaded, or an animation fired, and so on.
+* [View interactions](/web/tools/chrome-devtools/evaluate-performance/reference#interactions) to quickly identify what happened on a page after a user interacted with it.
+* [Find scroll performance issues in real-time](/web/tools/chrome-devtools/evaluate-performance/reference#scrolling-performance-issues) by highlighting the page whenever a potentially problematic listener fires.
+* [View paint events in real-time](/web/tools/chrome-devtools/evaluate-performance/reference#paint-flashing) to identify costly paint events that may be harming the performance of your animations.
+
+### Lighthouse {: #lighthouse }
+
+See [Get started](/web/tools/lighthouse/#get-started) to learn how to set up and run Lighthouse.
+
+<figure>
+  <img src="images/lighthouse-performance.jpg"
+    alt="An example Lighthouse report"/>
+  <figcaption>
+    <b>Figure 4</b>. An example Lighthouse report
+  </figcaption>
+</figure>
+
+The following audits are especially relevant:
+
+* **Response** 
+    * [Estimated Input Latency](/web/tools/lighthouse/audits/estimated-input-latency). Estimates how long your app will take to respond to user input, based on main thread idle time.
+    * [Uses Passive Event Listeners To Improve Scrolling](/web/tools/lighthouse/audits/passive-event-listeners).
+* **Load** 
+    * [Registers A Service Worker](/web/tools/lighthouse/audits/registered-service-worker). A service worker can cache common resources on a user's device, reducing time spent fetching resources over the network.
+    * [Page Load Is Fast Enough On 3G](/web/tools/lighthouse/audits/fast-3g).
+    * [First Meaningful Paint](/web/tools/lighthouse/audits/first-meaningful-paint). Measures when the page appears meaningfully complete.
+    * [First CPU Idle](/web/tools/lighthouse/audits/first-interactive). Marks the first time at which the page's main thread is quiet enough to handle input.
+    * [Time To Interactive](/web/tools/lighthouse/audits/consistently-interactive). Measures when a user can consistently interact with all page elements.
+    * [Perceptual Speed Index](/web/tools/lighthouse/audits/speed-index).
+    * [Reduce Render-Blocking Resources](/web/tools/lighthouse/audits/blocking-resources).
+    * [Offscreen Images](/web/tools/lighthouse/audits/offscreen-images). Defer the loading of offscreen images until they're needed.
+    * [Properly Size Images](/web/tools/lighthouse/audits/oversized-images). Don't serve images that are significantly larger than the size that's rendered in the mobile viewport.
+    * [Critical Request Chains](/web/tools/lighthouse/audits/critical-request-chains). Visualize your [Critical Rendering Path](/web/fundamentals/performance/critical-rendering-path/).
+    * [Uses HTTP/2](/web/tools/lighthouse/audits/http2).
+    * [Optimize Images](/web/tools/lighthouse/audits/optimize-images).
+    * [Enable Text Compression](/web/tools/lighthouse/audits/text-compression).
+    * [Avoid Enormous Network Payloads](/web/tools/lighthouse/audits/network-payloads).
+    * [Uses An Excessive DOM Size](/web/tools/lighthouse/audits/dom-size). Reduce network bytes by only shipping DOM nodes that are needed for rendering the page.
+
+### WebPageTest {: #webpagetest }
+
+Enter a URL at [webpagetest.org/easy](https://webpagetest.org/easy) to get a report on how that page loads on a real mid-range Android device with a slow 3G connection.
+
+<figure>
+  <img src="images/wpt-report.png"
+    alt="An example WebPageTest report"/>
+  <figcaption>
+    <b>Figure 5</b>. An example WebPageTest report
+  </figcaption>
+</figure>
+
+## Summary {: #summary }
+
+RAIL is a lens for looking at a website's user experience as a journey composed of distinct interactions. Understand how users perceive your site in order to set performance goals with the greatest impact on user experience.
+
+* **Focus on the user**.
+* **Respond to user input in under 100ms**.
+* **Produce a frame in under 10ms when animating or scrolling**.
+* **Maximize main thread idle time**.
+* **Load interactive content in under 5000ms**.
+
+## Feedback {: #feedback }
+
+{% include "web/_shared/helpful.html" %}
