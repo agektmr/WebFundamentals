@@ -1,121 +1,84 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Memeriksa dan mengedit HTML dan CSS laman.
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Inspect and edit the HTML and CSS of your pages.
 
-{# wf_updated_on: 2016-01-28 #}
-{# wf_published_on: 2015-04-13 #}
+{# wf_updated_on: 2018-07-27 #} {# wf_published_on: 2015-04-13 #} {# wf_blink_components: Platform>DevTools #}
 
-# Memeriksa dan Mengedit Laman dan Gaya {: .page-title }
+# Inspect and Edit Pages and Styles {: .page-title }
 
-{% include "web/_shared/contributors/megginkearney.html" %}
-{% include "web/_shared/contributors/kaycebasques.html" %}
+{% include "web/_shared/contributors/megginkearney.html" %} {% include "web/_shared/contributors/kaycebasques.html" %}
 
-Memeriksa dan mengedit langsung HTML dan CSS laman menggunakan panel Elements pada 
-Chrome DevTools.
+Inspect and live-edit the HTML and CSS of a page using the Chrome DevTools Elements panel.
 
-![Panel Chrome DevTools Elements](imgs/elements-panel.png)
-
+![Chrome DevTools Elements panel](imgs/elements-panel.png)
 
 ### TL;DR {: .hide-from-toc }
-- Memeriksa dan mengedit langsung elemen apa pun di pohon DOM di panel Elements.
-- Menampilkan dan mengubah aturan CSS yang diterapkan pada elemen yang dipilih di panel Styles.
-- Menampilkan dan mengedit model kotak elemen yang dipilih di panel Computed.
-- Menampilkan perubahan apa pun yang dibuat pada laman Anda secara lokal di panel Sources.
 
+* Inspect and edit on the fly any element in the DOM tree in the Elements panel.
+* View and change the CSS rules applied to any selected element in the Styles pane.
+* View and edit a selected element's box model in the Computed pane.
+* View any changes made to your page locally in the Sources panel.
 
-## Mengedit langsung simpul DOM
+## Live-edit a DOM node
 
-Untuk mengedit langsung simpul DOM, cukup klik dua kali 
-[elemen yang dipilih](#inspect-an-element) dan buat perubahan:
+To live-edit a DOM node, simply double-click a [selected element](#inspect-an-element) and make changes:
 
 <video src="animations/edit-element-name.mp4" style="max-width:100%;"
        loop muted autoplay controls></video>
 
-Tampilan pohon DOM menampilkan keadaan terkini pohon tersebut, yang belum tentu sesuai dengan 
-HTML yang dimuat semula karena berbagai alasan. Misalnya, 
-Anda bisa mengubah pohon DOM menggunakan JavaScript, mesin browser bisa mencoba 
-memperbaiki markup penulisan yang tidak valid dan menghasilkan DOM yang tidak diharapkan.
+The DOM tree view shows the current state of the tree; it may not match the HTML that was originally loaded for different reasons. For example, you can modify the DOM tree using JavaScript; the browser engine can try to correct invalid author markup and produce an unexpected DOM.
 
-## Mengedit langsung gaya
+## Live-edit a style
 
-Edit langsung nama dan nilai properti gaya di panel **Styles**. Semua
-gaya bisa diedit, kecuali yang diwarnai abu-abu (seperti halnya
-stylesheet agen-pengguna).
+Live-edit style property names and values in the **Styles** pane. All styles are editable, except the ones that are greyed out (as is the case with user agent stylesheets).
 
-Untuk mengedit nama atau nilai, klik nama atau nilai tersebut, lakukan perubahan, dan tekan
-<kbd class="kbd">Tab</kbd> atau <kbd class="kbd">Enter</kbd> untuk menyimpan perubahan itu.
+To edit a name or value, click on it, make your changes, and press
+<kbd class="kbd">Tab</kbd> or <kbd class="kbd">Enter</kbd> to save the change.
 
-![edit nama properti](imgs/edit-property-name.png)
+![edit property name](imgs/edit-property-name.png)
 
-Secara default, perubahan CSS Anda tidak permanen, perubahan akan hilang saat 
-Anda memuat ulang laman. Siapkan [penulisan 
-persisten](/web/tools/setup/setup-workflow) jika Anda ingin mempertahankan 
-perubahan Anda antar pemuatan laman. 
+By default, your CSS modifications are not permanent, changes are lost when you reload the page. Set up [persistent authoring](/web/tools/setup/setup-workflow) if you want to persist your changes between page loads.
 
-## Memeriksa dan mengedit parameter model kotak
+## Examine and edit box model parameters
 
-Periksa dan edit parameter model kotak untuk elemen saat ini menggunakan 
-**panel Computed**. Semua nilai di model kotak bisa diedit, cukup klik 
-nilai tersebut.
+Examine and edit the current element's box model parameters using the **Computed pane**. All values in the box model are editable, just click on them.
 
-![Panel Computed](imgs/computed-pane.png)
+![Computed pane](imgs/computed-pane.png)
 
-Kotak konsentris berisi nilai **top**, **bottom**, **left**, **right**
-untuk properti **padding**, **border**, dan **margin**
-elemen saat ini. 
+The concentric rectangles contain the **top**, **bottom**, **left**, **right** values for the current element's **padding**, **border**, and **margin** properties.
 
-Untuk elemen yang posisinya tidak statis, kotak **position** 
-juga ditampilkan, yang berisi nilai properti **top**, 
-**right**, **bottom**, dan **left**.
+For non-statically positioned elements, a **position** rectangle is also displayed, containing the values of the **top**, **right**, **bottom**, and **left** properties.
 
-![elemen computed non-statis](imgs/computed-non-static.png)
+![non-static computed element](imgs/computed-non-static.png)
 
-Untuk elemen `position: fixed` dan `position: absolute`, bidang 
-tengah berisi dimensi piksel **offsetWidth × offsetHeight** sebenarnya 
-dari elemen yang dipilih. Semua nilai bisa diubah dengan mengeklik dua kali 
-nilai tersebut, seperti nilai properti di panel Styles. Akan tetapi, perubahan tidak 
-dijamin memberi dampak, karena ini tergantung pada detail penentuan posisi 
-elemen sebenarnya.
+For `position: fixed` and `position: absolute` elements, the central field contains the actual **offsetWidth × offsetHeight** pixel dimensions of the selected element. All values can be modified by double-clicking them, like property values in the Styles pane. The changes are not, however, guaranteed to take effect, as this is subject to the concrete element positioning specifics.
 
-![memperbaiki elemen computed](imgs/computed-fixed.png)
+![fixed computed element](imgs/computed-fixed.png)
 
-## Menampilkan perubahan lokal
+## View local changes
 
 <video src="animations/revisions.mp4" style="max-width:100%;"
        autoplay loop muted controls></video>
 
-Untuk menampilkan riwayat pengeditan langsung yang dibuat pada laman Anda:
+To view a history of live-edits made to your page:
 
-1. Di panel **Styles**, klik file yang sudah Anda ubah. DevTools
-   akan membuka panel **Sources**.
-1. Klik kanan file. 
-1. Pilih **Local modifications**.
+1. In the **Styles** pane, click on the file that you modified. DevTools takes you to the **Sources** panel.
+2. Right-click on the file. 
+3. Select **Local modifications**.
 
-Untuk menjelajah perubahan yang dibuat:
+To explore the changes made:
 
-* Luaskan nama file tingkat atas untuk melihat waktu 
-  ![waktu saat perubahan terjadi](imgs/image_25.png){:.inline} 
-  saat perubahan terjadi.
-* Luaskan item tingkat kedua untuk melihat 
-  [diff](https://en.wikipedia.org/wiki/Diff) (sebelum dan sesudah) 
-  terkait dengan perubahan. Baris dengan latar belakang merah muda menandakan 
-  penghapusan, sedangkan baris dengan latar belakang hijau menandakan penambahan.
+* Expand top-level file names to view the time ![time modification occurred](imgs/image_25.png){:.inline} a modification occurred.
+* Expand second-level items to view a [diff](https://en.wikipedia.org/wiki/Diff) (before and after) corresponding to the modification. A line with a pink background signifies a removal while a line with a green background signifies an addition.
 
-## Mengurungkan perubahan
+## Undo changes
 
-Jika Anda belum [menyiapkan penulisan persisten](/web/tools/setup/setup-workflow), 
-setiap kali Anda memuat ulang laman, semua pengeditan langsung akan hilang.
+If you haven't [set up persistent authoring](/web/tools/setup/setup-workflow), any time you reload the page, all live-edits are lost.
 
-Jika Anda sudah menyiapkan penulisan persisten, untuk mengurungkan perubahan:
+Assuming you've set up persistent authoring, to undo changes:
 
-* Gunakan <kbd class="kbd">Ctrl</kbd>+<kbd class="kbd">Z</kbd> (Windows) atau 
-  <kbd class="kbd">Cmd</kbd>+<kbd class="kbd">Z</kbd> (Mac) untuk secara cepat mengurungkan 
-  perubahan minor pada DOM atau gaya melalui panel Elements.
+* Use <kbd class="kbd">Ctrl</kbd>+<kbd class="kbd">Z</kbd> (Windows) or <kbd class="kbd">Cmd</kbd>+<kbd class="kbd">Z</kbd> (Mac) to quickly undo minor changes to the DOM or styles via the Elements panel.
 
-* Untuk mengurungkan semua perubahan lokal yang dibuat pada file, buka panel **Sources** 
-  dan pilih **revert** di sebelah nama file.
+* To undo all local modifications made to a file, open the **Sources** panel and select **revert** next to the filename.
 
-[periksa]: /web/tools/chrome-devtools/debug/command-line/command-line-reference#inspect
+## Feedback {: #feedback }
 
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
