@@ -1,139 +1,73 @@
-project_path: /web/fundamentals/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Jika situs Anda memiliki banyak gambar dan video, tetapi Anda tidak ingin mengurangi salah satu dari itu, lazy loading mungkin menjadi teknik yang Anda butuhkan untuk meningkatkan waktu pemuatan halaman awal dan menurunkan payload per halaman.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: If your site has a ton of images and video, but you don't want to cut down on any of it, lazy loading might be just the technique you need to improve initial page load time and lower per-page payload.
 
-{# wf_updated_on: 2019-02-06 #}
-{# wf_published_on: 2018-04-04 #}
-{# wf_blink_components: Blink>Image,Blink>HTML,Blink>JavaScript #}
+{# wf_updated_on: 2018-06-11 #} {# wf_published_on: 2018-04-04 #} {# wf_blink_components: Blink>Image,Blink>HTML,Blink>JavaScript #}
 
-# Menjalankan Lazy Loading Gambar dan Video {: .page-title }
+# Lazy Loading Images and Video {: .page-title }
 
 {% include "web/_shared/contributors/jeremywagner.html" %}
 
-Bagian
-[gambar](http://beta.httparchive.org/reports/state-of-images?start=earliest&end=latest)
-dan [video](http://beta.httparchive.org/reports/page-weight#bytesVideo) dalam
-payload khusus situs dapat menjadi signifikan. Sayangnya, stakeholder
-project mungkin tidak mau memotong resource media apa pun dari aplikasi
-yang ada. Jalan buntu semacam ini membuat frustrasi, terutama ketika semua pihak
-yang terlibat ingin meningkatkan kinerja situs, tetapi tidak bisa menyetujui cara mencapai tujuan itu.
-Untungnya, lazy loading adalah solusi yang mempersingkat payload halaman awal_dan_
-waktu pemuatan, tetapi tidak mengecilkan konten.
+The portion of [images](http://beta.httparchive.org/reports/state-of-images?start=earliest&end=latest) and [video](http://beta.httparchive.org/reports/page-weight#bytesVideo) in the typical payload of a website can be significant. Unfortunately, project stakeholders may be unwilling to cut any media resources from their existing applications. Such impasses are frustrating, especially when all parties involved want to improve site performance, but can't agree on how to get there. Fortunately, lazy loading is a solution that lowers initial page payload *and* load time, but doesn't skimp on content.
 
-## Apa itu lazy loading?
+## What is lazy loading?
 
-Lazy loading adalah teknik yang menunda pemuatan dari resource yang tidak penting pada waktu
-pemuatan halaman. Sebagai gantinya, resource yang tidak penting dimuat pada saat yang
-dibutuhkan. Di mana gambar terkait, "tidak penting" sering diartikan sebagai
-"off-screen". Jika Anda menggunakan Lighthouse dan memeriksa peluang untuk
-peningkatan, Anda mungkin telah melihat beberapa panduan di bagian ini dalam bentuk
-[audit Gambar
-Offscreen](/web/tools/lighthouse/audits/offscreen-images):
+Lazy loading is technique that defers loading of non-critical resources at page load time. Instead, these non-critical resources are loaded at the moment of need. Where images are concerned, "non-critical" is often synonymous with "off-screen". If you've used Lighthouse and examined some opportunities for improvement, you may have seen some guidance in this realm in the form of the [Offscreen Images audit](/web/tools/lighthouse/audits/offscreen-images):<figure> 
 
-<figure>
-  <img srcset="images/offscreen-audit-2x.png 2x, images/offscreen-audit-1x.png 1x"
-src="images/offscreen-audit-1x.png" alt="Screenshot Audit
-Gambar Offscreen di Lighthouse.">
-  <figcaption><b>Gambar 1</b>. Salah satu audit kinerja Lighthouse adalah untuk
-mengidentifikasi gambar off screen, yang merupakan kandidat untuk lazy loading.</figcaption>
-</figure>
+<img srcset="images/offscreen-audit-2x.png 2x, images/offscreen-audit-1x.png 1x"
+src="images/offscreen-audit-1x.png" alt="A screenshot of the Offscreen Images
+Audit in Lighthouse." /> <figcaption>**Figure 1**. One of Lighthouse's performance audits is to identify off screen images, which are candidates for lazy loading.</figcaption> </figure> 
 
-Anda mungkin sudah melihat lazy loading saat diimplementasikan, dan akan terjadi seperti
-ini:
+You've probably already seen lazy loading in action, and it goes something like this:
 
-- Anda tiba di suatu halaman, dan mulai men-scroll saat Anda membaca konten.
-- Pada titik tertentu, Anda men-scroll gambar placeholder ke dalam viewport.
-- Gambar pengganti tiba-tiba diganti oleh gambar akhir.
+- You arrive at a page, and begin to scroll as you read content.
+- At some point, you scroll a placeholder image into the viewport.
+- The placeholder image is suddenly replaced by the final image.
 
-Contoh dari lazy loading gambar dapat ditemukan pada platform penerbitan populer
-[Medium](https://medium.com/), yang memuat gambar placeholder yang ringan ke
-pemuatan halaman, dan menggantinya dengan gambar yang telah menjalankan lazy loading saat di-scroll ke
-viewport.
+An example of image lazy loading can be found on the popular publishing platform [Medium](https://medium.com/), which loads lightweight placeholder images at page load, and replaces them with lazily-loaded images as they're scrolled into the viewport.<figure> 
 
-<figure>
-  <img srcset="images/lazy-loading-example-2x.jpg 2x,
+<img srcset="images/lazy-loading-example-2x.jpg 2x,
 images/lazy-loading-example-1x.jpg 1x"
-src="images/lazy-loading-example-1x.jpg" alt="Screenshot situs
-Medium dalam penjelajahan, menunjukkan lazy loading saat diimplementasikan. Placeholder
-blurry ada di sebelah kiri, dan resource yang dimuat ada di sebelah kanan.">
-  <figcaption><b>Gambar 2</b>. Contoh lazy loading gambar saat diimplementasikan. Gambar
-placeholder dimuat saat memuat halaman (kiri), dan ketika di-scroll ke
-viewport, gambar akhir dimuat pada saat dibutuhkan.</figcaption>
-</figure>
+src="images/lazy-loading-example-1x.jpg" alt="A screenshot of the website
+Medium in the browsing, demonstrating lazy loading in action. The blurry
+placeholder is on the left, and the loaded resource is on the right." /> <figcaption>**Figure 2**. An example of image lazy loading in action. A placeholder image is loaded at page load (left), and when scrolled into the viewport, the final image loads at the time of need.</figcaption> </figure> 
 
-Jika Anda tidak terbiasa dengan lazy loading, Anda mungkin bertanya-tanya seberapa bermanfaat
-teknik ini, dan apa manfaatnya. Baca terus untuk mengetahui!
+If you're unfamiliar with lazy loading, you might be wondering just how useful the technique is, and what its benefits are. Read on to find out!
 
-## Mengapa menjalankan lazy loading gambar atau video, bukan langsung _memuatnya_ saja?
+## Why lazy load images or video instead of just *loading* them?
 
-Karena mungkin Anda memuat sesuatu yang tidak pernah dilihat pengguna. Ini
-bermasalah karena beberapa alasan:
+Because it's possible you're loading stuff the user may never see. This is problematic for a couple reasons:
 
-- Memboroskan data. Pada koneksi yang tidak diukur, hal ini bukan hal terburuk yang bisa
-terjadi (walaupun Anda bisa menggunakan bandwidth berharga itu untuk mendownload
-resource lain yang memang akan dilihat oleh pengguna). Namun, pada paket
-data yang terbatas, memuat sesuatu yang tidak pernah dilihat pengguna bisa menjadi
-pemborosan uang mereka.
-- Memboroskan waktu pemrosesan, baterai, dan resource sistem lainnya. Setelah resource
-media didownload, browser harus mendekodekannya dan menyajikan kontennya di dalam
-viewport.
+- It wastes data. On unmetered connections, this isn't the worst thing that could happen (although you could be using that precious bandwidth for downloading other resources that are indeed going to be seen by the user). On limited data plans, however, loading stuff the user never sees could effectively be a waste of their money.
+- It wastes processing time, battery, and other system resources. After a media resource is downloaded, the browser must decode it and render its content in the viewport.
 
-Saat menjalankan lazy loading gambar dan video, kita mengurangi waktu pemuatan halaman awal, berat
-halaman awal, dan penggunaan resource sitem, yang semuanya memiliki dampak positif pada
-kinerja. Dalam panduan ini, kita akan membahas beberapa teknik dan menawarkan panduan untuk menajalankan
-lazy loading gambar dan video, serta [daftar pendek library yang umum digunakan
-](/web/fundamentals/performance/lazy-loading-guidance/images-and-video/#lazy_loading_libraries).
+When we lazy load images and video, we reduce initial page load time, initial page weight, and system resource usage, all of which have positive impacts on performance. In this guide, we'll cover some techniques and offer guidance for lazy loading images and video, as well as [a short list of some commonly used libraries](/web/fundamentals/performance/lazy-loading-guidance/images-and-video/#lazy_loading_libraries).
 
-## Menjalankan lazy loading gambar
+## Lazy loading images
 
-Mekanisme lazy loading gambar sederhana secara teori, tetapi detailnya sebenarnya
-agak rewel. Selain itu, ada dua kasus penggunaan berbeda yang keduanya dapat
-mendapat manfaat dari pemuatan malas. Pertama-tama mari kita mulai dengan menjalankan lazy loading gambar inline di
-HTML.
+Image lazy loading mechanisms are simple in theory, but the details are actually a bit finicky. Plus there are a couple of distinct use cases that can both benefit from lazy loading. Let's first start with lazy loading inline images in HTML.
 
-### Gambar inline
+### Inline images
 
-Kandidat lazy loading yang paling umum adalah gambar seperti yang digunakan dalam elemen `<img>`.
-Saat menjalankan lazy loading pada elemen `<img>`, kita menggunakan JavaScript untuk memeriksa apakah elemen tersebut ada di
-viewport. Jika iya, atribut `src` (dan terkadang `srcset`) yang diisi dengan
-URL ke konten gambar yang diinginkan.
+The most common lazy loading candidates are images as used in `<img>` elements. When we lazy load `<img>` elements, we use JavaScript to check if they're in the viewport. If they are, their `src` (and sometimes `srcset`) attributes are populated with URLs to the desired image content.
 
-#### Menggunakan intersection observer
+#### Using intersection observer
 
-Jika Anda sudah menulis kode lazy loading sebelumnya, Anda mungkin sudah menyelesaikan tugas Anda
-dengan menggunakan pengendali peristiwa seperti `scroll` atau `resize`. Meskipun pendekatan ini adalah
-yang paling kompatibel di seluruh browser, browser modern menawarkan cara yang lebih berkinerja dan
-efisien untuk mengecek visibilitas elemen melalui [
-API intersection observer](/web/updates/2016/04/intersectionobserver).
+If you've written lazy loading code before, you may have accomplished your task by using event handlers such as `scroll` or `resize`. While this approach is the most compatible across browsers, modern browsers offer a more performant and efficient way to do the work of checking element visibility via [the intersection observer API](/web/updates/2016/04/intersectionobserver).
 
-Note: Intersection observer tidak didukung di semua browser. Jika kompatibilitas
-lintas browser sangat penting, pastikan untuk membaca [bagian
-berikutnya](#using_event_handlers_the_most_compatible_way), yang menunjukkan kepada Anda cara
-menjalankan lazy loading gambar dengan menggunakan lebih sedikit performan (tetapi lebih kompatibel!) scroll dan ubah ukuran
-pengendali peristiwa.
+Note: Intersection observer is not supported in all browsers. If compatibility across browsers is crucial, be sure to read [the next section](#using_event_handlers_the_most_compatible_way), which shows you how to lazy load images using less performant (but more compatible!) scroll and resize event handlers.
 
-Intersection observer lebih mudah digunakan dan dibaca daripada kode yang mengandalkan berbagai
-pengendali peristiwa, karena developer hanya perlu mendaftarkan observer ke elemen
-pengawasan daripada menulis kode deteksi visibilitas elemen yang membosankan. Yang
-perlu dilakukan pengembang adalah memutuskan apa yang harus dilakukan ketika suatu elemen
-tidak terlihat. Mari kita asumsikan pola markup dasar ini untuk elemen `<img>`
-yang menjalankan lazy loading:
+Intersection observer is easier to use and read than code relying on various event handlers, because developers only need to register an observer to watch elements rather than writing tedious element visibility detection code. All that's left to do for the developer is to decide what to do when an element is visible. Let's assume this basic markup pattern for our lazily loaded `<img>` elements:
 
 ```html
-<img class="lazy" src="placeholder-image.jpg" data-src="image-to-lazy-load-1x.jpg" data-srcset="image-to-lazy-load-2x.jpg 2x, image-to-lazy-load-1x.jpg 1x" alt="Saya adalah sebuah gambar!">
+<img class="lazy" src="placeholder-image.jpg" data-src="image-to-lazy-load-1x.jpg" data-srcset="image-to-lazy-load-2x.jpg 2x, image-to-lazy-load-1x.jpg 1x" alt="I'm an image!">
 ```
 
-Ada tiga bagian yang relevan dari markup ini yang harus kita fokuskan:
+There are three relevant pieces of this markup we should focus on:
 
-1. Atribut `class`, yang elemennya akan kita pilih di
-JavaScript.
-2. Atribut `src`, yang mereferensikan gambar placeholder yang akan muncul saat
-halaman pertama kali dimuat.
-3. Atribut `data-src` dan `data-srcset`, yang merupakan atribut placeholder
-yang berisi URL untuk gambar yang akan dimuat setelah elemen ada di viewport.
+1. The `class` attribute, which is what we'll select the element with in JavaScript.
+2. The `src` attribute, which references a placeholder image that will appear when the page first loads.
+3. The `data-src` and `data-srcset` attributes, which are placeholder attributes containing the URL for the image we'll load once the element is in the viewport.
 
-Sekarang mari kita lihat bagaimana kita dapat menggunakan intersection observer di JavaScript untuk menjalankan lazy loading
-gambar menggunakan pola markup ini:
+Now let's see how we can use intersection observer in JavaScript to lazy load images using this markup pattern:
 
 ```javascript
 document.addEventListener("DOMContentLoaded", function() {
@@ -161,43 +95,17 @@ document.addEventListener("DOMContentLoaded", function() {
 });
 ```
 
-Pada peristiwa `DOMContentLoaded` dokumen, skrip ini menanyakan DOM untuk semua elemen
-`<img>` dengan class `lazy`. Jika intersection observer tersedia,
-kita membuat observer baru yang menjalankan callback ketika elemen `img.lazy` masuk ke
-viewport. Lihat [contoh
-CodePen ini](https://codepen.io/malchata/pen/YeMyrQ) untuk melihat kode ini diimplementasikan.
+On the document's `DOMContentLoaded` event, this script queries the DOM for all `<img>` elements with a class of `lazy`. If intersection observer is available, we create a new observer that runs a callback when `img.lazy` elements enter the viewport. Check out [this CodePen example](https://codepen.io/malchata/pen/YeMyrQ) to see this code in action.
 
-Note: Kode ini memanfaatkan metode intersection observer yang bernama
-`isIntersecting`, yang tidak tersedia pada implementasi Edge 15's intersection observer
-. Karena itulah, kode lazy loading di atas (dan snippet kode serupa lainnya
-) akan gagal. Konsultasikan [masalah GitHub
-ini](https://github.com/w3c/IntersectionObserver/issues/211) untuk panduan tentang
-kondisi deteksi fitur yang lebih lengkap.
+Note: This code makes use of an intersection observer method named `isIntersecting`, which is unavailable in Edge 15's intersection observer implementation. As such, the lazy loading code above (and other similar code snippets) will fail. Consult [this GitHub issue](https://github.com/w3c/IntersectionObserver/issues/211) for guidance on a more complete feature detection conditional.
 
-Namun, kelemahan dari intersection observer adalah bahwa [meskipun memiliki dukungan
-yang baik di antara browser](https://caniuse.com/#feat=intersectionobserver), intersection observer ini
-tidak universal. [Anda perlu melakukan
-polyfill](https://github.com/w3c/IntersectionObserver/tree/master/polyfill)
-browser yang tidak mendukungnya, atau seperti yang disarankan oleh kode di atas, mendeteksi apakah itu
-tersedia dan kemudian kembali ke metode yang lebih lama dan lebih kompatibel.
+The drawback of intersection observer, however, is that while [it has good support amongst browsers](https://caniuse.com/#feat=intersectionobserver), it's not universal. [You'll need to polyfill](https://github.com/w3c/IntersectionObserver/tree/master/polyfill) browsers that don't support it, or as the above code suggests, detect if it's available and subsequently fall back to older, more compatible methods.
 
-#### Menggunakan pengendali peristiwa (cara yang paling kompatibel)
+#### Using event handlers (the most compatible way)
 
-Saat Anda _harus_ menggunakan intersection observer untuk lazy loading, persyaratan
-aplikasi Anda mungkin sedemikian rupa sehingga kompatibilitas browser sangat penting. [Anda _dapat_
-polyfill dukungan
-intersection observer](https://github.com/w3c/IntersectionObserver/tree/master/polyfill) (dan
-ini akan lebih mudah), tetapi Anda juga dapat kembali ke kode menggunakan
-[`scroll`](https://developer.mozilla.org/en-US/docs/Web/Events/scroll),
-[`resize`](https://developer.mozilla.org/en-US/docs/Web/Events/resize), dan
-mungkin
-[`orientationchange`](https://developer.mozilla.org/en-US/docs/Web/Events/orientationchange)
-pengendali peristiwa dalam konser dengan
-[`getBoundingClientRect`](https://developer.mozilla.org/en-US/docs/Web/API/Element/getBoundingClientRect)
-untuk menentukan apakah suatu elemen ada di viewport.
+While you *should* use intersection observer for lazy loading, your application requirements may be such that browser compatibility is critical. [You *can* polyfill intersection observer support](https://github.com/w3c/IntersectionObserver/tree/master/polyfill) (and this would be easiest), but you could also fall back to code using [`scroll`](https://developer.mozilla.org/en-US/docs/Web/Events/scroll), [`resize`](https://developer.mozilla.org/en-US/docs/Web/Events/resize), and possibly [`orientationchange`](https://developer.mozilla.org/en-US/docs/Web/Events/orientationchange) event handlers in concert with [`getBoundingClientRect`](https://developer.mozilla.org/en-US/docs/Web/API/Element/getBoundingClientRect) to determine whether an element is in the viewport.
 
-Dengan asumsi pola markup yang sama dari sebelumnya, JavaScript berikut menyediakan
-fungsionalitas lazy loading:
+Assuming the same markup pattern from before, the following JavaScript provides the lazy loading functionality:
 
 ```javascript
 document.addEventListener("DOMContentLoaded", function() {
@@ -238,48 +146,17 @@ document.addEventListener("DOMContentLoaded", function() {
 });
 ```
 
-Kode ini menggunakan `getBoundingClientRect` dalam pengendali peristiwa `scroll` untuk memeriksa apakah
-ada elemen `img.lazy` di viewport. Panggilan `setTimeout` digunakan untuk
-menghapus pemrosesan, dan variabel `active` berisi status pemrosesan yang
-digunakan untuk membatasi panggilan fungsi. Karena gambar di-lazy loading, gambar
-tersebut dihapus dari array elemen. Ketika array elemen mencapai `length` dari `0`,
-kode pengendali peristiwa creoll dihapus. Lihat kode ini diimplementasikan di [contoh
-CodePen ini](https://codepen.io/malchata/pen/mXoZGx).
+This code uses `getBoundingClientRect` in a `scroll` event handler to check if any of `img.lazy` elements are in the viewport. A `setTimeout` call is used to delay processing, and an `active` variable contains the processing state which is used to throttle function calls. As images are lazy loaded, they're removed from the elements array. When the elements array reaches a `length` of `0`, the scroll event handler code is removed. See this code in action in [this CodePen example](https://codepen.io/malchata/pen/mXoZGx).
 
-Sementara kode ini diimplementasikan di hampir semua browser, code tersebut memiliki potensi masalah
-kinerja dalam panggilan `setTimeout` berulang dapat menjadi sia-sia, bahkan jika kode
-di dalamnya diperlambat. Dalam contoh ini, pemeriksaan sedang dijalankan setiap 200
-milidetik pada scroll dokumen atau ukuran jendela terlepas dari apakah ada
-gambar di viewport atau tidak. Selain itu, pekerjaan membosankan untuk melacak berapa banyak
-elemen diserahkan pada lazy load dan melepaskan pengendali peristiwa scroll diserahkan
-pada developer.
+While this code works in pretty much any browser, it has potential performance issues in that repetitive `setTimeout` calls can be wasteful, even if the code within them is throttled. In this example, a check is being run every 200 milliseconds on document scroll or window resize regardless of whether there's an image in the viewport or not. Plus, the tedious work of tracking how many elements are left to lazy load and unbinding the scroll event handler are left to the developer.
 
-Sederhananya: Gunakan intersection observer jika memungkinkan, dan kembali ke pengendali
-peristiwa jika kompatibilitas seluas mungkin adalah persyaratan aplikasi
-yang penting.
+Simply put: Use intersection observer wherever possible, and fall back to event handlers if the widest possible compatibility is a critical application requirement.
 
-### Gambar di CSS
+### Images in CSS
 
-Walaupun tag `<img>` adalah cara paling umum untuk menggunakan gambar pada halaman web, gambar
-juga dapat dipanggil melalui properti CSS
-[`background-image`](https://developer.mozilla.org/en-US/docs/Web/CSS/background-image)
-(dan properti lainnya). Tidak seperti `<img>` elemen yang memuat terlepas dari
-visibilitasnya, perilaku pemuatan gambar dalam CSS dilakukan dengan lebih banyak
-spekulasi. Ketika [model
-dokumen dan objek CSS](/web/fundamentals/performance/critical-rendering-path/constructing-the-object-model)
-dan [hierarki
-render](/web/fundamentals/performance/critical-rendering-path/render-tree-construction)
-dibuat, browser memeriksa bagaimana CSS diterapkan pada dokumen sebelum
-meminta resource eksternal. Jika browser telah menentukan aturan CSS
-yang melibatkan resource eksternal tidak sesuai untuk dokumen seperti yang saat ini
-dibangun, browser tidak memintanya.
+While `<img>` tags are the most common way of using images on web pages, images can also be invoked via the CSS [`background-image`](https://developer.mozilla.org/en-US/docs/Web/CSS/background-image) property (and other properties). Unlike `<img>` elements which load regardless of their visibility, image loading behavior in CSS is done with more speculation. When [the document and CSS object models](/web/fundamentals/performance/critical-rendering-path/constructing-the-object-model) and [render tree](/web/fundamentals/performance/critical-rendering-path/render-tree-construction) are built, the browser examines how CSS is applied to a document before requesting external resources. If the browser has determined a CSS rule involving an external resource doesn't apply to the document as it's currently constructed, the browser doesn't request it.
 
-Perilaku spekulatif ini dapat digunakan untuk menunda pemuatan gambar dalam CSS dengan
-menggunakan JavaScript untuk menentukan kapan suatu elemen berada dalam viewport, dan
-selanjutnya menerapkan class pada elemen tersebut yang menerapkan penataan gaya
-gambar latar. Hal ini menyebabkan gambar didownload pada saat dibutuhkan
-bukan pada saat pemuatan awal. Misalnya, mari kita ambil elemen yang berisi
-large hero background image:
+This speculative behavior can be used to defer the loading of images in CSS by using JavaScript to determine when an element is within the viewport, and subsequently applying a class to that element that applies styling invoking a background image. This causes the image to be downloaded at the time of need instead of at initial load. For example, let's take an element that contains a large hero background image:
 
 ```html
 <div class="lazy-background">
@@ -289,10 +166,7 @@ large hero background image:
 </div>
 ```
 
-Elemen `div.lazy-background` biasanya akan berisi hero background
-image yang dipanggil oleh beberapa CSS. Namun, dalam contoh lazy loading ini, kita dapat memisahkan
-properti `background-image` elemen `div.lazy-background` melalui class `visible`
-yang akan kita tambahkan ke elemen ketika berada di viewport:
+The `div.lazy-background` element would normally contain the hero background image invoked by some CSS. In this lazy loading example, however, we can isolate the `div.lazy-background` element's `background-image` property via a `visible` class that we'll add to the element when it's in the viewport:
 
 ```css
 .lazy-background {
@@ -304,9 +178,7 @@ yang akan kita tambahkan ke elemen ketika berada di viewport:
 }
 ```
 
-Dari sini, kita akan menggunakan JavaScript untuk memeriksa apakah elemen tersebut ada di viewport (dengan
-intersection observer!), Dan menambahkan class `visible` ke elemen
-`div.lazy-background` pada waktu itu, yang memuat gambar:
+From here, we'll use JavaScript to check if the element is in the viewport (with intersection observer!), and add the `visible` class to the `div.lazy-background` element at that time, which loads the image:
 
 ```javascript
 document.addEventListener("DOMContentLoaded", function() {
@@ -329,27 +201,15 @@ document.addEventListener("DOMContentLoaded", function() {
 });
 ```
 
-Seperti yang ditunjukkan sebelumnya, Anda harus memastikan Anda menyediakan pengganti atau
-polyfill untuk intersection observer karena tidak semua browser saat ini mendukungnya.
-Lihat [demo CodePen ini](https://codepen.io/malchata/pen/wyLMpR) untuk melihat
-kode ini diimplementasikan.
+As indicated earlier, you'll want to make sure you provide a fallback or a polyfill for intersection observer since not all browsers currently support it. Check out [this CodePen demo](https://codepen.io/malchata/pen/wyLMpR) to see this code in action.
 
-## Menjalankan lazy loading video
+## Lazy loading video
 
-Seperti halnya elemen gambar, kita juga bisa menjalankan lazy loading untuk video. Ketika menjalankan lazy loading video dalam
-keadaan normal, kita melakukannya menggunakan elemen `<video>` (meskipun [
-metode alternatif menggunakan
-`<img>`](https://calendar.perfplanet.com/2017/animated-gif-without-the-gif/) telah
-muncul dengan implementasi yang terbatas). _Bagaimana_ kita menjalankan lazy loading `<video>` bergantung pada
-kasus penggunaan. Mari kita bahas beberapa skenario yang masing-masing memerlukan
-solusi yang berbeda.
+As with image elements, we can also lazy load video. When we load video in normal circumstances, we do so using the `<video>` element (although [an alternate method using `<img>`](https://calendar.perfplanet.com/2017/animated-gif-without-the-gif/) has emerged with limited implementation). *How* we lazy load `<video>` depends on the use case, though. Let's discuss a couple of scenarios that each require a different solution.
 
-### Untuk video yang tidak autoplay
+### For video that doesn't autoplay
 
-Untuk video yang pemutarannya dimulai oleh pengguna (mis., video yang _tidak_
-autoplay), menentukan [atribut`preload`
-](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/video#attr-preload)
-di elemen `<video>` yang mungkin diinginkan:
+For videos where playback is initiated by the user (i.e., videos that *don't* autoplay), specifying the [`preload` attribute](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/video#attr-preload) on the `<video>` element may be desirable:
 
 ```html
 <video controls preload="none" poster="one-does-not-simply-placeholder.jpg">
@@ -358,50 +218,27 @@ di elemen `<video>` yang mungkin diinginkan:
 </video>
 ```
 
-Di sini, kita menggunakan atribut `preload` dengan nilai `none` untuk mencegah browser
-melakukan pramuat _data_ video apa pun. Untuk menempati ruang tersebut, kita menggunakan atribut `poster`
-untuk memberikan elemen `<video>` pada placeholder. Alasannya adalah bahwa
-perilaku default untuk memuat video dapat bervariasi dari browser ke browser:
+Here, we use a `preload` attribute with a value of `none` to prevent browsers from preloading *any* video data. To occupy the space, we use the `poster` attribute to give the `<video>` element a placeholder. The reason for this is that default behaviors for loading video can vary from browser to browser:
 
-- Di Chrome, default untuk `preload` dulu `auto`, tetapi pada Chrome 64, sekarang
-default menjadi `metadata`. Meski begitu, pada versi desktop Chrome, sebagian
-video dapat dimuat menggunakan header `Content-Range`. Firefox, Edge, dan
-Internet Explorer 11 berperilaku serupa.
-- Seperti halnya Chrome di desktop, Safari versi 11.0 desktop akan menjalankan pramuat untuk rentang
-video. Dalam versi 11.2 (saat ini versi Tech Preview Safari), hanya
-metadata video yang di-pramuat. [Di Safari di iOS, video tidak pernah
-di-pramuat](https://developer.apple.com/library/content/documentation/AudioVideo/Conceptual/Using_HTML5_Audio_Video/AudioandVideoTagBasics/AudioandVideoTagBasics.html#//apple_ref/doc/uid/TP40009523-CH2-SW9).
-- Saat [mode Penghemat Data](https://support.google.com/chrome/answer/2392284)
-diaktifkan, `preload` secara default menjadi `none`.
+- In Chrome, the default for `preload` used to be `auto`, but as of Chrome 64, it now defaults to `metadata`. Even so, on the desktop version of Chrome, a portion of the video may be preloaded using the `Content-Range` header. Firefox, Edge and Internet Explorer 11 behave similarly.
+- As with Chrome on desktop, 11.0 desktop versions of Safari will preload a range of the video. In version 11.2 (currently Safari's Tech Preview version), only the video metadata is preloaded. [In Safari on iOS, videos are never preloaded](https://developer.apple.com/library/content/documentation/AudioVideo/Conceptual/Using_HTML5_Audio_Video/AudioandVideoTagBasics/AudioandVideoTagBasics.html#//apple_ref/doc/uid/TP40009523-CH2-SW9).
+- When [Data Saver mode](https://support.google.com/chrome/answer/2392284) is enabled, `preload` defaults to `none`.
 
-Karena perilaku default browser sehubungan dengan `preload` tidak diatur,
-menjadi eksplisit mungkin pilihan terbaik bagi Anda. Dalam kasus ini di mana pengguna memulai
-pemutaran, menggunakan `preload="none"` adalah cara termudah untuk menunda pemuatan video di
-semua platform. Atribut `preload` bukan satu-satunya cara untuk menunda pemuatan
-konten video. [_Putar Ulang Cepat dengan Pramuat
-Video_](/web/fundamentals/media/fast-playback-with-video-preload) dapat memberi Anda
-beberapa ide dan insight untuk bekerja dengan pemutaran video dalam JavaScript.
+Because browser default behaviors with regard to `preload` are not set in stone, being explicit is probably your best bet. In this cases where the user initiates playback, using `preload="none"` is the easiest way to defer loading of video on all platforms. The `preload` attribute isn't the only way to defer the loading of video content. [*Fast Playback with Video Preload*](/web/fundamentals/media/fast-playback-with-video-preload) may give you some ideas and insight into working with video playback in JavaScript.
 
-Sayangnya, itu tidak terbukti berguna ketika kita ingin menggunakan video sebagai ganti
-GIF animasi, yang akan kita bahas selanjutnya.
+Unfortunately, it doesn't prove useful when we want to use video in place of animated GIFs, which we'll cover next.
 
-### Untuk video yang bertindak sebagai pengganti GIF animasi
+### For video acting as an animated GIF replacement
 
-Sementara GIF animasi dapat digunakan secara luas, mereka setara dengan video dalam
-beberapa aspek, terutama dalam ukuran file output. GIF animasi dapat mencapai
-hingga beberapa megabyte data. Video dengan kualitas visual serupa cenderung
-jauh lebih kecil.
+While animated GIFs enjoy wide use, they're subpar to video equivalents in a number of ways, particularly in output file size. Animated GIFs can stretch into the range of several megabytes of data. Videos of similar visual quality tend to be far smaller.
 
-Menggunakan elemen `<video>` sebagai pengganti GIF animasi tidak akan
-semulus elemen `<img>`. Yang melekat dalam GIF animasi adalah
-tiga perilaku ini:
+Using the `<video>` element as a replacement for animated GIF is not as straightforward as the `<img>` element. Inherent in animated GIFs are these three behaviors:
 
-1. Mereka diputar secara otomatis saat dimuat.
-2. Mereka berputar terus menerus ([meskipun itu tidak selalu
-terjadi](https://davidwalsh.name/prevent-gif-loop)).
-3. Mereka tidak memiliki trek audio.
+1. They play automatically when loaded.
+2. They loop continuously ([though that's not always the case](https://davidwalsh.name/prevent-gif-loop)).
+3. They don't have an audio track.
 
-Mencapai ini dengan elemen `<video>` terlihat seperti ini:
+Achieving this with the `<video>` element looks something like this:
 
 ```html
 <video autoplay muted loop playsinline>
@@ -410,15 +247,7 @@ Mencapai ini dengan elemen `<video>` terlihat seperti ini:
 </video>
 ```
 
-Atribut `autoplay`, `muted`, dan `loop` sedah cukup jelas.
-[`playsinline` diperlukan agar pemutaran otomatis terjadi di
-iOS](https://webkit.org/blog/6784/new-video-policies-for-ios/). Sekarang kita memiliki
-pengganti video-sebagai-GIF yang dapat digunakan di seluruh platform. Tapi bagaimana
-cara menjalankan lazy loading? [Chrome akan menjalankan lazy loading video untuk
-Anda](https://www.google.com/url?q=https://developers.google.com/web/updates/2017/03/chrome-58-media-updates%23offscreen&sa=D&ust=1521096956530000&usg=AFQjCNHPv7wM_yxmkOWKA0sZ-MXYKUdUXg),
-tetapi Anda tidak dapat mengandalkan semua browser untuk memberikan perilaku yang dioptimalkan ini.
-Bergantung pada audience Anda dan persyaratan aplikasi, Anda mungkin perlu
-mengatasi masalah Anda sendiri. Untuk memulai, ubah markup `<video>` Anda sesuai dengan:
+The `autoplay`, `muted`, and `loop` attributes are self-explanatory. [`playsinline` is necessary for autoplaying to occur in iOS](https://webkit.org/blog/6784/new-video-policies-for-ios/). Now we have a serviceable video-as-GIF replacement that works across platforms. But how to go about lazy loading it? [Chrome will lazy load video for you](https://www.google.com/url?q=https://developers.google.com/web/updates/2017/03/chrome-58-media-updates%23offscreen&sa=D&ust=1521096956530000&usg=AFQjCNHPv7wM_yxmkOWKA0sZ-MXYKUdUXg), but you can't count on all browsers to provide this optimized behavior. Depending on your audience and application requirements, you may need to take matters into your own hands. To start, modify your `<video>` markup accordingly:
 
 ```html
 <video autoplay muted loop playsinline width="610" height="254" poster="one-does-not-simply.jpg">
@@ -427,13 +256,7 @@ mengatasi masalah Anda sendiri. Untuk memulai, ubah markup `<video>` Anda sesuai
 </video>
 ```
 
-Anda akan melihat penambahan [attribut`poster`
-](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/video#attr-poster),
-yang memungkinkan Anda menentukan placeholder untuk menempati ruang elemen `<video>` hingga
-video di-lazy load. Seperti halnya contoh lazy loading `<img>` dari
-sebelumnya, kita menyimpan URL video di atribut `data-src` pada setiap elemen `<source>`
-. Dari sana, kita akan menggunakan beberapa JavaScript yang mirip dengan
-contoh lazy loading gambar berdasarkan intersection observer sebelumnya:
+You'll notice the addition of the [`poster` attribute](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/video#attr-poster), which lets you specify a placeholder to occupy the `<video>` element's space until the video is lazy loaded. As with our `<img>` lazy loading examples from before, we stash the video URL in the `data-src` attribute on each `<source>` element. From there, we'll use some JavaScript similar to the earlier intersection observer-based image lazy loading examples:
 
 ```javascript
 document.addEventListener("DOMContentLoaded", function() {
@@ -464,87 +287,35 @@ document.addEventListener("DOMContentLoaded", function() {
 });
 ```
 
-Ketika menjalankan lazy loading elemen `<video>`, kita perlu mengulangi semua elemen turunan
-`<source>` dan membalik atribut `data-src` menjadi `src`. Setelah
-selesai melakukannya, kita perlu memicu pemuatan video dengan memanggil
-metode `load` elemen, setelah itu media akan mulai memutar secara otomatis
-per atribut `autoplay`.
+When we lazy load a `<video>` element, we need to iterate through all of the child `<source>` elements and flip their `data-src` attributes to `src` attributes. Once we've done that, we need to trigger loading of the video by calling the element's `load` method, after which the media will begin playing automatically per the `autoplay` attribute.
 
-Dengan menggunakan metode ini, kita memiliki solusi video yang mengemulasi perilaku GIF animasi,
-tapi tidak menimbulkan penggunaan data intensif yang sama seperti GIF animasi, dan kita dapat
-menjalankan lazy loading pada konten itu.
+Using this method, we have a video solution that emulates animated GIF behavior, but doesn't incur the same intensive data usage as animated GIFs do, and we get to lazy load that content.
 
-## Menjalankan lazy loading library
+## Lazy loading libraries
 
-Jika Anda tidak begitu peduli tentang _bagaimana_ cara kerja lazy loading dalam sistem dan hanya
-ingin memilih library dan pergi (dan tidak masalah dengan itu!), ada banyak
-pilihan untuk dipilih. Banyak library menggunakan pola markup yang mirip dengan yang
-ditunjukkan dalam panduan ini. Berikut adalah beberapa library lazy loading yang mungkin
-berguna:
+If you're not so concerned about *how* lazy loading works under the hood and just want to pick a library and go (and there's no shame in that!), there's plenty of options to choose from. Many libraries use a markup pattern similar to the ones demonstrated in this guide. Here are some lazy loading libraries you may find useful:
 
-- [lazysizes](https://github.com/aFarkas/lazysizes) adalah library lazy
-loading berfitur lengkap yang menjalankan lazy loading gambar dan iframe. Pola yang digunakan cukup
-mirip dengan contoh kode yang ditampilkan di sini karena secara otomatis mengikat ke class
-`lazyload` pada elemen `<img>`, dan mengharuskan Anda untuk menentukan URL gambar dalam atribut
-`data-src` dan/atau `data-srcset`, yang kontennya ditukar
-menjadi atribut `src` dan/atau `srcset`, secara berurutan. Pola ini menggunakan intersection
-observer (yang dapat Anda polyfill), dan dapat diperpanjang dengan [sejumlah
-plugin](https://github.com/aFarkas/lazysizes#available-plugins-in-this-repo) untuk
-melakukan hal-hal seperti menjalankan lazy load video.
-- [lozad.js](https://github.com/ApoorvSaxena/lozad.js) adalah opsi
-super ringan yang hanya menggunakan intersection observer. Karena itu, pola sangat berkinerja,
-tapi perlu di-polyfill sebelum Anda bisa menggunakannya di browser yang lebih lama.
-- [blazy](https://github.com/dinbror/blazy) adalah pilihan lain yang menyebut
-dirinya sebagai lazy loader ringan (beratnya 1,4 KB). Seperti lazysizes,
-blazy tidak memerlukan utilitas pihak ketiga mana pun untuk dimuat, dan berfungsi untuk IE7+.
-Sayangnya, blazy tidak menggunakan intersection observer.
-- [yall.js](https://github.com/malchata/yall.js) adalah library yang saya tulis yang menggunakan
-IntersectionObserver dan beralih kembali ke pengendali peristiwa. Ini kompatibel dengan IE11
-dan browser utama.
-- Jika Anda mencari library lazy loading yang spesifik-React, Anda dapat mempertimbangkan
-[react-lazyload](https://github.com/jasonslyvia/react-lazyload). Meskipun tidak
-menggunakan intersection observer, itu _menyediakan_ metode lazy
-loading gambar yang familier bagi mereka yang terbiasa mengembangkan aplikasi dengan React.
+- [lazysizes](https://github.com/aFarkas/lazysizes) is a full-featured lazy loading library that lazy loads images and iframes. The pattern it uses is quite similar to the code examples shown here in that it automatically binds to a `lazyload` class on `<img>` elements, and requires you to specify image URLs in `data-src` and/or `data-srcset` attributes, the contents of which are swapped into `src` and/or `srcset` attributes, respectively. It uses intersection observer (which you can polyfill), and can be extended with [a number of plugins](https://github.com/aFarkas/lazysizes#available-plugins-in-this-repo) to do things like lazy load video.
+- [lozad.js](https://github.com/ApoorvSaxena/lozad.js) is a super lightweight option that uses intersection observer only. As such, it's highly performant, but will need to be polyfilled before you can use it on older browsers.
+- [blazy](https://github.com/dinbror/blazy) is another such option that bills itself as a lightweight lazy loader (weighing in at 1.4 KB). As with lazysizes, it doesn't need any third party utilities to load, and works for IE7+. Unfortunately, it doesn't use intersection observer.
+- [yall.js](https://github.com/malchata/yall.js) is a library I wrote that uses IntersectionObserver and falls back to event handlers. It's compatible with IE11 and major browsers.
+- If you're seeking a React-specific lazy loading library, you might consider [react-lazyload](https://github.com/jasonslyvia/react-lazyload). While it doesn't use intersection observer, it *does* provide a familiar method of lazy loading images for those accustomed to developing applications with React.
 
-Masing-masing library lazy loading ini didokumentasikan dengan baik, dengan banyak pola
-markup untuk berbagai upaya lazy loading Anda. Jika Anda bukan orang yang suka mengutak-atik,
-pilih library dan pergi. Itu hanya akan membutuhkan sedikit usaha.
+Each of these lazy loading libraries is well documented, with plenty of markup patterns for your various lazy loading endeavors. If you're not one to tinker, grab a library and go. It will take the least amount of effort.
 
-## Apa yang bisa salah
+## What can go wrong
 
-Sementara lazy loading gambar dan video memiliki
-manfaat kinerja yang positif dan terukur, ini bukanlah tugas yang bisa dianggap enteng. Jika Anda salah,
-ada konsekuensi yang tidak diinginkan. Karena itu, ingatlah beberapa
-hal penting berikut ini:
+While lazy loading images and video have positive and measurable performance benefits, it's not a task to be taken lightly. If you get it wrong, there could be unintended consequences. As such, it's important to keep the following concerns in mind:
 
-### Pikirkan fold-nya
+### Mind the fold
 
-Mungkin tergoda untuk menjalankan lazy loading setiap resource media tunggal pada halaman dengan
-JavaScript, tetapi Anda harus menahan godaan ini. Apa pun yang berada di atas
-fold seharusnya tidak di-lazy load. Resource semacam itu harus dianggap aset
-penting, dan karenanya harus dimuat secara normal.
+It may be tempting to lazy load every single media resource on the page with JavaScript, but you need to resist this temptation. Anything resting above the fold shouldn't be lazy loaded. Such resources should be considered critical assets, and thus should be loaded normally.
 
-Argumen utama untuk memuat resource media penting dengan cara yang biasa sebagai pengganti
-lazy loading adalah bahwa lazy loading menunda pemuatan reasurce tersebut sampai
-setelah DOM bersifat interaktif ketika skrip telah selesai memuat dan memulai
-eksekusi. Untuk gambar di bawah fold, gambar itu baik-baik saja, tetapi akan lebih cepat untuk
-memuat resource kritis di atas fold dengan elemen `<img>` standar.
+The primary argument for loading critical media resources the usual way in lieu of lazy loading is that lazy loading delays the loading of those resources until after the DOM is interactive when scripts have finished loading and begin execution. For images below the fold, this is fine, but it would be faster to load critical resources above the fold with a standard `<img>` element.
 
-Tentu saja, di mana letak fold tidak begitu jelas akhir-akhir ini saat situs web
-dilihat pada begitu banyak layar dengan berbagai ukuran. Apa yang ada di atas fold pada laptop
-mungkin terletak _di bawah_ perangkat seluler. Tidak ada saran ampuh untuk
-mengatasi ini secara optimal dalam setiap situasi. Anda harus melakukan
-inventarisasi aset penting halaman Anda, dan memuat gambar-gambar tersebut dengan mode
-khusus.
+Of course, where the fold lies is not so clear these days when websites are viewed on so many screens of varying sizes. What lies above the fold on a laptop may well lie *below* it on mobile devices. There's no bulletproof advice for addressing this optimally in every situation. You'll need to conduct an inventory of your page's critical assets, and load those images in typical fashion.
 
-Selain itu, Anda mungkin tidak ingin terlalu ketat tentang garis fold sebagai
-ambang batas untuk memicu lazy loading. Mungkin lebih ideal untuk keperluan Anda untuk
-membuat zona buffering agak jauh di bawah flod sehingga gambar mulai
-dimuat dengan baik sebelum pengguna men-scrollnya ke dalam viewport. Misalnya,
-API intersection observer memungkinkan Anda untuk menentukan properti `rootMargin` dalam
-objek pilihan saat Anda membuat instance `IntersectionObserver` baru. Cara ini
-secara efektif memberikan elemen buffering, yang memicu perilaku lazy loading sebelum
-elemen berada di viewport:
+Additionally, you may not want to be so strict about the fold line as the threshold for triggering lazy loading. It may be more ideal for your purposes to establish a buffer zone some distance below the fold so that images begin loading well before the user scrolls them into the viewport. For example, The intersection observer API allows you to specify a `rootMargin` property in an options object when you create a new `IntersectionObserver` instance. This effectively gives elements a buffer, which triggers lazy loading behavior before the element is in the viewport:
 
 ```javascript
 let lazyImageObserver = new IntersectionObserver(function(entries, observer) {
@@ -554,46 +325,19 @@ let lazyImageObserver = new IntersectionObserver(function(entries, observer) {
 });
 ```
 
-Jika nilai untuk `rootMargin` terlihat mirip dengan nilai yang Anda tentukan untuk properti
-`margin` CSS, karena memang demikian! Dalam hal ini, kita memperluas
-margin bawah dari elemen yang mengamati (browser viewport secara default, tetapi
-ini dapat diubah menjadi elemen tertentu menggunakan properti `root`) dengan 256
-piksel. Itu berarti fungsi callback akan dieksekusi ketika elemen gambar
-berukuran 256 piksel viewport, yang berarti bahwa gambar akan mulai dimuat
-sebelum pengguna benar-benar melihatnya.
+If the value for `rootMargin` looks similar to values you'd specify for a CSS `margin` property, that's because it is! In this case, we're broadening the bottom margin of the observing element (the browser viewport by default, but this can be changed to a specific element using the `root` property) by 256 pixels. That means the callback function will execute when an image element is within 256 pixels of the viewport, meaning that the image will begin to load before the user actually sees it.
 
-Untuk mendapat efek yang sama menggunakan kode penanganan peristiwa scroll, cukup sesuaikan centang
-`getBoundingClientRect` untuk memasukkan buffer, dan Anda akan mendapatkan
-efek yang sama di browser yang tidak mendukung intersection observer.
+To achieve this same effect using scroll event handling code, simply adjust your `getBoundingClientRect` check to include a buffer, and you'll get the same effect in browsers that don't support intersection observer.
 
-### Pergeseran tata letak dan placeholder
+### Layout shifting and placeholders
 
-Lazy loading media dapat menyebabkan pergeseran tata letak jika placeholder tidak digunakan.
-Perubahan ini dapat membingungkan bagi pengguna dan memicu
-operasi tata letak DOM yang mahal yang menggunakan resource sistem dan berkontribusi pada kemacetan. Setidaknya,
-pertimbangkan menggunakan placeholder warna solid yang menempati dimensi yang sama dengan
-gambar sasaran, atau teknik seperti
-[LQIP](http://www.guypo.com/introducing-lqip-low-quality-image-placeholders/) atau
-[SQIP](https://github.com/technopagan/sqip) yang menunjukkan konten media
-item sebelum dimuat.
+Lazy loading media can cause shifting in the layout if placeholders aren't used. These changes can be disorienting for users and trigger expensive DOM layout operations that consume system resources and contribute to jank. At a minimum, consider using a solid color placeholder occupying the same dimensions as the target image, or techniques such as [LQIP](http://www.guypo.com/introducing-lqip-low-quality-image-placeholders) or [SQIP](https://github.com/technopagan/sqip) that hint at the content of a media item before it loads.
 
-Untuk tag `<img>`, `src` pada awalnya harus menunjuk ke tempat placeholder sampai
-atribut itu diupdate dengan URL gambar akhir. Gunakan atribut `poster` dalam elemen
-`<video>` untuk menunjuk ke gambar placeholder. Selain itu, gunakan atribut `width` dan
-`height` pada tag `<img>` dan `<video>`. Ini memastikan bahwa
-transisi dari placeholder ke gambar akhir tidak akan mengubah ukuran yang diberikan
-dari elemen saat media dimuat.
+For `<img>` tags, `src` should initially point to a placeholder until that attribute is updated with the final image URL. Use the `poster` attribute in a `<video>` element to point to a placeholder image. Additionally, use `width` and `height` attributes on both `<img>` and `<video>` tags. This ensures that transitioning from placeholders to final images won't change the rendered size of the element as media loads.
 
-### Penundaan decoding gambar
+### Image decoding delays
 
-Memuat gambar besar dalam JavaScript dan meletakkannya ke DOM dapat mengikat
-utas utama, menyebabkan antarmuka pengguna menjadi tidak responsif untuk waktu singkat
-saat decoding terjadi. [Secara acak menyinkronkan gambar menggunakan metode `decode`
-](https://medium.com/dailyjs/image-loading-with-image-decode-b03652e7d2d2)
-sebelum memasukkannya ke DOM dapat mengurangi jenis kemacetan ini, tetapi
-berhati-hatilah: Ini belum tersedia di mana-mana, dan menambah kompleksitas logika lazy
-loading. Jika Anda ingin menggunakannya, Anda harus memeriksanya. Di bawah ini menunjukkan
-bagaimana Anda dapat menggunakan `Image.decode()` dengan pengganti:
+Loading large images in JavaScript and dropping them into the DOM can tie up the main thread, causing the user interface to be unresponsive for a short period of time while decoding occurs. [Asynchronously decoding images using the `decode` method](https://medium.com/dailyjs/image-loading-with-image-decode-b03652e7d2d2) prior to inserting them into the DOM can cut down on this sort of jank, but beware: It's not available everywhere yet, and it adds complexity to lazy loading logic. If you want to use it, you'll need to check for it. Below shows how you might use `Image.decode()` with a fallback:
 
 ```javascript
 var newImage = new Image();
@@ -610,26 +354,13 @@ if ("decode" in newImage) {
 }
 ```
 
-Lihat [link CodePen ini](https://codepen.io/malchata/pen/WzeZGW) untuk melihat
-kode yang mirip dengan contoh ini dalam implementasi. Jika sebagian besar gambar Anda cukup kecil,
-ini mungkin tidak banyak membantu Anda, tetapi tentu saja dapat membantu mengurangi kemacetan ketika
-menjalankan lazy loading gambar besar secara besar-besaran dan memasukkannya ke dalam DOM.
+Check out [this CodePen link](https://codepen.io/malchata/pen/WzeZGW) to see code similar to this example in action. If most of your images are fairly small, this may not do much for you, but it can certainly help cut down on jank when lazy loading large images and inserting them into the DOM.
 
-### Saat sesuatu tidak dimuat
+### When stuff doesn't load
 
-Terkadang resource media akan gagal dimuat karena satu atau beberapa masalah dan error
-terjadi. Kapan ini bisa terjadi? Itu tergantung, tetapi inilah satu skenario hipotetis
-untuk Anda: Anda memiliki kebijakan caching HTML untuk periode waktu yang singkat (mis., lima
-menit), dan pengguna mengunjungi situs _atau pengguna membiarkan tab basi terbuka untuk
-periode waktu yang lama (mis., beberapa jam) dan kembali untuk membaca konten Anda.
-Pada titik tertentu dalam proses ini, pemindahan terjadi. Selama penyebaran ini,
-nama resource gambar berubah karena versi berbasis hash, atau dihapus
-sama sekali. Pada saat pengguna menjalankan lazy loading gambar, resource
-tidak tersedia, lalu gagal.
+Sometimes media resources will fail to load for one reason or another and errors occur. When might this happen? It depends, but here's one hypothetical scenario for you: You have an HTML caching policy for a short period of time (e.g., five minutes), and the user visits the site *or* a user has a left a stale tab open for a long period of time (e.g., several hours) and comes back to read your content. At some point in this process, a redeployment occurs. During this deployment, an image resource's name changes due to hash-based versioning, or is removed altogether. By the time the user lazy loads the image, the resource is unavailable, and thus fails.
 
-Meskipun ini adalah kejadian yang relatif jarang, mungkin Anda harus memiliki rencana
-cadangan jika lazy loading gagal. Untuk gambar, solusi seperti itu mungkin terlihat seperti
-ini:
+While these are relatively rare occurrences, it may behoove you to have a backup plan if lazy loading fails. For images, such a solution may look something like this:
 
 ```javascript
 var newImage = new Image();
@@ -643,49 +374,36 @@ newImage.onload = function(){
 };
 ```
 
-Apa yang Anda lakukan jika terjadi error bergantung pada aplikasi Anda. Misalnya
-, Anda dapat mengganti area tempat placeholder gambar dengan tombol yang memungkinkan
-pengguna mencoba memuat gambar lagi, atau cukup menampilkan pesan error
-di area tempat placeholder gambar.
+What you decide to do in the event of an error depends on your application. For example, you could replace the image placeholder area with a button that allows the user to attempt to load the image again, or simply display an error message in the image placeholder area.
 
-Skenario lain juga bisa muncul. Apa pun yang Anda lakukan, bukanlah hal buruk untuk
-memberi tahu pengguna ketika error terjadi, dan mungkin memberi mereka tindakan untuk
-dilakukan jika terjadi lebih buruk.
+Other scenarios could arise as well. Whatever you do, it's never a bad idea to signal to the user when an error has occurred, and possibly give them an action to take if something goes awry.
 
-### Ketersediaan JavaScript
+### JavaScript availability
 
-Jangan asumsikan bahwa JavaScript selalu tersedia. Jika Anda akan
-menjalankan lazy loading gambar, pertimbangkan untuk menawarkan markup `<noscript>` yang akan menampilkan gambar
-jika JavaScript tidak tersedia. Contoh penggantian paling sederhana yang mungkin melibatkan
-elemen `<noscript>` untuk menyajikan gambar jika JavaScript dinonaktifkan:
+It shouldn't be assumed that JavaScript is always available. If you're going to lazy load images, consider offering `<noscript>` markup that will show images in case JavaScript is unavailable. The simplest possible fallback example involves using `<noscript>` elements to serve images if JavaScript is turned off:
 
 ```html
 <!-- An image that eventually gets lazy loaded by JavaScript -->
-<img class="lazy" src="placeholder-image.jpg" data-src="image-to-lazy-load.jpg" alt="Saya adalah sebuah gambar!">
+<img class="lazy" src="placeholder-image.jpg" data-src="image-to-lazy-load.jpg" alt="I'm an image!">
 <!-- An image that is shown if JavaScript is turned off -->
 <noscript>
-  <img src="image-to-lazy-load.jpg" alt="Saya adalah sebuah gambar!">
+  <img src="image-to-lazy-load.jpg" alt="I'm an image!">
 </noscript>
 ```
 
-Jika JavaScript dinonaktifkan, pengguna akan melihat _kedua_ gambar placeholder dan
-gambar yang berisi elemen `<noscript>`. Untuk menyiasatinya, kita dapat menempatkan
-class `no-js` pada tag `<html>` seperti:
+If JavaScript is turned off, users will see *both* the placeholder image and the image contained with the `<noscript>` elements. To get around this, we can place a class of `no-js` on the `<html>` tag like so:
 
 ```html
 <html class="no-js">
 ```
 
-Kemudian kita menempatkan satu baris skrip inline di `<head>` sebelum lembar gaya apa pun
-diminta melalui tag `<link>` yang menghapus class `no-js` dari elemen `<html>`
-jika JavaScript aktif:
+Then we place one line of inline script in the `<head>` before any style sheets are requested via `<link>` tags that removes the `no-js` class from the `<html>` element if JavaScript is on:
 
 ```html
 <script>document.documentElement.classList.remove("no-js");</script>
 ```
 
-Akhirnya, kita dapat menggunakan beberapa CSS untuk menyembunyikan elemen dengan class lazy ketika
-JavaScript tidak tersedia seperti:
+Finally, we can use some CSS to simply hide elements with a class of lazy when JavaScript is unavailable like so:
 
 ```css
 .no-js .lazy {
@@ -693,27 +411,12 @@ JavaScript tidak tersedia seperti:
 }
 ```
 
-Ini tidak mencegah gambar placeholder dari pemuatan, tetapi hasilnya lebih
-diinginkan. Pengguna JavaScript-nya dinonaktifkan mendapatkan sesuatu yang lebih dari sekadar gambar
-placeholder, yang lebih baik daripada placeholder dan tidak ada konten gambar yang berarti sama
-sekali.
+This doesn't prevent placeholder images from loading, but the outcome is more desirable. People with JavaScript turned off get something more than placeholder images, which is better than placeholders and no meaningful image content at all.
 
-## Kesimpulan
+## Conclusion
 
-Jika digunakan dengan hati-hati, lazy loading gambar dan video dapat mempersingkat waktu
-pemuatan awal dan payload halaman secara signifikan di situs Anda. Pengguna tidak akan memicu aktivitas
-jaringan yang tidak perlu dan biaya pemrosesan resource media yang mungkin tidak pernah mereka lihat, tetapi mereka
-masih dapat melihat resource itu jika mereka mau.
+Used with care, lazy loading images and video can seriously lower the initial load time and page payloads on your site. Users won't incur unnecessary network activity and processing costs of media resources they may never see, but they can still view those resources if they want.
 
-Selama teknik peningkatan kinerja berjalan, lazy loading cukup
-kontroversial. Jika Anda memiliki banyak gambar inline di situs Anda, ini
-cara yang sangat baik untuk mengurangi hasil download yang tidak perlu. Pengguna situs Anda dan
-para stakeholder project akan menghargai itu!
+As far as performance improvement techniques go, lazy loading is reasonably uncontroversial. If you have a lot of inline imagery in your site, it's a perfectly fine way to cut down on unnecessary downloads. Your site's users and project stakeholders will appreciate it!
 
-_Terima kasih khusus kepada [François
-Beaufort](/web/resources/contributors/beaufortfrancois), Dean Hume, [Ilya
-Grigork](/web/resources/contributors/ilyagrigorik), [Paul
-Irish](/web/resources/contributors/paulirish), [Addy
-Osmani](/web/resources/contributors/addyosmani), [Jeff
-Posnick](/web/resources/contributors/jeffposnick), dan Martin Schierle atas
-masukan mereka yang sangat berharga, yang secara signifikan meningkatkan kualitas artikel ini._
+*Special thanks to [François Beaufort](/web/resources/contributors/beaufortfrancois), Dean Hume, [Ilya Grigork](/web/resources/contributors/ilyagrigorik), [Paul Irish](/web/resources/contributors/paulirish), [Addy Osmani](/web/resources/contributors/addyosmani), [Jeff Posnick](/web/resources/contributors/jeffposnick), and Martin Schierle for their valuable feedback, which significantly improved the quality of this article.*
