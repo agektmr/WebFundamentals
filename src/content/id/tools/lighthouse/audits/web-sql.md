@@ -1,32 +1,28 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Dokumentasi referensi untuk audit Lighthouse "Situs Tidak Menggunakan Web SQL".
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Reference documentation for the "Avoids Web SQL" Lighthouse audit.
 
-{# wf_updated_on: 2016-12-05 #}
-{# wf_published_on: 2016-12-05 #}
+{# wf_updated_on: 2018-11-30 #} {# wf_published_on: 2016-12-05 #} {# wf_blink_components: N/A #}
 
-# Situs Tidak Menggunakan Web SQL  {: .page-title }
+# Avoids Web SQL {: .page-title }
 
-## Mengapa audit itu penting {: #why }
+<aside class="warning">
+  This audit is deprecated. See <a href="https://github.com/googlechrome/lighthouse/pull/6293"
+  class="external" rel="noopener">PR #6293</a>.
+</aside>
 
-Web SQL tidak digunakan lagi. Lihat [Database Web SQL][spec] untuk mengetahui selengkapnya.
+## Overview {: #overview }
 
-[spec]: https://www.w3.org/TR/webdatabase/
+The W3C stopped actively maintaining the Web SQL spec in 2010 and has no plans to maintain it any further. See [Web SQL Database](https://www.w3.org/TR/webdatabase/){: .external rel="noopener" target="_blank" }.
 
-## Cara untuk lulus audit {: #how }
+## Recommendations {: #recommendations }
 
-Pertimbangkan untuk mengganti database Web SQL dengan alternatif yang lebih modern, seperti
-[IndexedDB][indexeddb].
+Consider replacing your Web SQL database with a modern alternative, such as [IndexedDB](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API).
 
-Lihat [Ringkasan Web Storage][overview] untuk pembahasan tentang opsi penyimpanan
-lain yang tersedia.
+See [Web Storage Overview](/web/fundamentals/instant-and-offline/web-storage/) for a discussion of other available storage options.
 
-[indexeddb]: https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API
-[overview]: /web/fundamentals/instant-and-offline/web-storage/
+## More information {: #more-info }
 
-{% include "web/tools/lighthouse/audits/implementation-heading.html" %}
+Lighthouse checks if the page has a Web SQL database instance.
 
-Lighthouse memeriksa jika laman memiliki instance database Web SQL.
+## Feedback {: #feedback }
 
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
