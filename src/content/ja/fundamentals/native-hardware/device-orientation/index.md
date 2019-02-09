@@ -1,268 +1,227 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: 端末のモーション イベントおよび画面の向きのイベントによって、モバイル端末に組み込まれた加速度計、ジャイロスコープ、およびコンパスの機能を利用することができます。
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Device motion and orientation events provide access to the built-in accelerometer, gyroscope, and compass in mobile devices.
 
-{# wf_updated_on: 2017-07-12 #}
-{# wf_published_on: 2014-06-17 #}
+{# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2014-06-17 #} {# wf_blink_components: Blink>Sensor>DeviceOrientation #}
 
-# 端末画面の向きと端末のモーション {: .page-title }
+# Device Orientation & Motion {: .page-title }
 
 {% include "web/_shared/contributors/petelepage.html" %}
 
-端末のモーション イベントおよび画面の向きのイベントによって、モバイル端末に組み込まれた加速度計、ジャイロスコープ、およびコンパスの機能を利用することができます。
+Device motion and orientation events provide access to the built-in accelerometer, gyroscope, and compass in mobile devices.
 
+These events can be used for many purposes; in gaming, for example, to control the direction or action of a character. When used with geolocation, they can help create more accurate turn-by-turn navigation or provide information about a specific location.
 
-これらのイベントにはさまざまな用途があり、ゲームでキャラクターの向きやアクションを制御することもできます。
-位置情報とあわせて使用すると、より正確なターンバイターンのナビゲーションの作成や、特定の場所に関する情報提供が可能になります。
+Caution: Not all browsers use the same coordinate system, and they may report different values under identical situations. This has improved over time, but be sure to test your situation.
 
+## TL;DR
 
+* Detect which side of the device is up and how the device is rotating.
+* Learn when and how to respond to motion and orientation events.
 
-Warning: ブラウザによって使用する座標系は異なり、同じ状況下でも別の値が返される場合があります。この問題は徐々に改善されていますが、自身の状況で必ずテストを実施してください。
+## Which end is up?
 
-##TL;DR
+To use the data that the device orientation and motion events return, it is important to understand the values provided.
 
-* 端末の上端を検出し、端末の回転状態を特定します。
-* 端末のモーション イベントおよび画面の向きのイベントに応答するタイミングと方法について説明します。
+### Earth coordinate frame
 
-
-##  どちらの端が上か？
-
-端末のモーション イベントおよび画面の向きのイベントによって返されるデータを使用するためには、その値の意味を理解する必要があります。
-  
-
-###  地球の座標フレーム
-
-地球座標フレームでは、重力と標準的な磁北方向を基準とした軸を用いて、`X`、`Y`、および `Z` の値で座標を記述します。
-
+The Earth coordinate frame, described by the values `X`, `Y`, and `Z`, is aligned based on gravity and standard magnetic orientation.
 
 <table class="responsive">
-<tr><th colspan="2">座標系</th></tr>
+  
+<tr><th colspan="2">Coordinate system</th></tr>
 <tr>
   <td><code>X</code></td>
-  <td>東西方向を表します（東が正）。</td>
+  <td>Represents the east-west direction (where east is positive).</td>
 </tr>
 <tr>
   <td><code>Y</code></td>
-  <td>南北方向を表します（北が正）。</td>
+  <td>Represents the north-south direction (where north is positive).</td>
 </tr>
 <tr>
   <td><code>Z</code></td>
-  <td>地面に対して垂直な上下方向を表します（上が正）。</td>
-
-
+  <td>Represents the up-down direction, perpendicular to the ground
+      (where up is positive).
+  </td>
 </tr>
 </table>
 
-###  端末の座標フレーム
+### Device coordinate frame
 
 <div class="attempt-right">
   <figure id="fig1">
-    <img src="images/axes.png" alt="端末の座標フレームの図">
+    <img src="images/axes.png" alt="illustration of device coordinate frame">
     <figcaption>
-      端末の座標フレームの図</figcaption>
-
+      Illustration of device coordinate frame
+    </figcaption>
   </figure>
 </div>
 
 <!-- Special thanks to Sheppy (https://developer.mozilla.org/en-US/profiles/Sheppy)
   for his images which are in the public domain. -->
 
-端末の座標フレームでは、端末の中心を基準とした軸を用いて、`x`、`y`、および `z` の値で座標を記述します。
-
+The device coordinate frame, described by the values `x`, `y`, and `z`, is aligned based on the center of the device.
 
 <table class="responsive">
-<tr><th colspan="2">座標系</th></tr>
+  
+<tr><th colspan="2">Coordinate system</th></tr>
 <tr>
   <td><code>X</code></td>
-  <td>画面の水平面において右方向が正。</td>
+  <td>In the plane of the screen, positive to the right.</td>
 </tr>
 <tr>
   <td><code>Y</code></td>
-  <td>画面の水平面において上方向が正。</td>
+  <td>In the plane of the screen, positive towards the top.</td>
 </tr>
 <tr>
   <td><code>Z</code></td>
-  <td>画面またはキーボードに直交して遠ざかる方向が正。</td>
-
-
+  <td>Perpendicular to the screen or keyboard, positive extending
+    away.
+  </td>
 </tr>
 </table>
 
-携帯電話やタブレットでは、端末の向きは画面の典型的な向きを基準とします。
-携帯電話やタブレットの場合、端末が縦表示になっている状態を基準とします。
-デスクトップまたはラップトップ コンピュータの場合は、画面の向きはキーボードに対する向きとして考えられます。
+On a phone or tablet, the orientation of the device is based on the typical orientation of the screen. For phones and tablets, it is based on the device being in portrait mode. For desktop or laptop computers, the orientation is considered in relation to the keyboard.
 
+### Rotation data
 
-###  回転データ
+Rotation data is returned as a [Euler angle](https://en.wikipedia.org/wiki/Euler_angles), representing the number of degrees of difference between the device coordinate frame and the Earth coordinate frame.
 
-回転データは[オイラー角](https://en.wikipedia.org/wiki/Euler_angles)で返されます。これは、端末の座標フレームと地球の座標フレーム間の角度の差を表します。
-
-
-
-#### alpha
+#### Alpha
 
 <div class="attempt-right">
   <figure id="fig1">
-    <img src="images/alpha.png" alt="端末の座標フレームの図">
+    <img src="images/alpha.png" alt="illustration of device coordinate frame">
     <figcaption>
-      端末の座標フレームにおける alpha の図</figcaption>
-
+      Illustration of alpha in the device coordinate frame
+    </figcaption>
   </figure>
 </div>
 
-回転軸は Z 軸です。端末の上部が真北を向いている場合、`alpha` の値は 0&deg; です。
-端末が反時計回りに回転するにつれて `alpha` の値は増加します。
-
+The rotation around the z axis. The `alpha` value is 0&deg; when the top of the device is pointed directly north. As the device is rotated counter-clockwise, the `alpha` value increases.
 
 <div style="clear:both;"></div>
 
-####  beta
+#### Beta
 
 <div class="attempt-right">
   <figure id="fig1">
-    <img src="images/beta.png" alt="端末の座標フレームの図">
+    <img src="images/beta.png" alt="illustration of device coordinate frame">
     <figcaption>
-      端末の座標フレームにおける beta の図</figcaption>
-
+      Illustration of beta in the device coordinate frame
+    </figcaption>
   </figure>
 </div>
 
-回転軸は X 軸です。端末の上部と下部が地表から等距離にある場合、`beta` の値は 0&deg; です。
-端末の上部が地表に近づくように傾くにつれて、値が増加します。
-
+The rotation around the x axis. The `beta` value is 0&deg; when the top and bottom of the device are equidistant from the surface of the earth. The value increases as the top of the device is tipped toward the surface of the earth.
 
 <div style="clear:both;"></div>
 
-####  gamma
+#### Gamma
 
 <div class="attempt-right">
   <figure id="fig1">
-    <img src="images/gamma.png" alt="端末の座標フレームの図">
+    <img src="images/gamma.png" alt="illustration of device coordinate frame">
     <figcaption>
-      端末の座標フレームの gamma の図</figcaption>
-
+      Illustration of gamma in the device coordinate frame
+    </figcaption>
   </figure>
 </div>
 
-回転軸は Y 軸です。端末の左端と右端が地表から等距離にある場合、`gamma` の値は 0&deg; です。
-端末の右端が地表に近づくように傾くにつれて、値が増加します。
-
+The rotation around the y axis. The `gamma` value is 0&deg; when the left and right edges of the device are equidistant from the surface of the earth. The value increases as the right side is tipped towards the surface of the earth.
 
 <div style="clear:both;"></div>
 
-##  端末画面の向き
+## Device orientation
 
-端末画面の向きのイベントは回転データを返します。このデータには、端末の前後および左右への傾き具合、スマートフォンやノートパソコンにおけるコンパスの有無、端末画面の方向など、さまざまな情報が含まれます。
+The device orientation event returns rotation data, which includes how much the device is leaning front-to-back, side-to-side, and, if the phone or laptop has a compass, the direction the device is facing.
 
+Use sparingly. Test for support. Don't update the UI on every orientation event; instead, sync to `requestAnimationFrame`.
 
+### When to use device orientation events
 
-端末画面の向きのイベントは慎重に使用し、利用するにあたってテストを実施してください。また、このイベントが発生するたびに UI を更新することは避けて、代わりに `requestAnimationFrame` に同期するようにしてください。
+There are several uses for device orientation events. Examples include the following:
 
+* Update a map as the user moves.
+* Subtle UI tweaks, for example, adding parallax effects.
+* Combined with geolocation, can be used for turn-by-turn navigation.
 
+### Check for support and listen for events
 
-###  端末画面の向きのイベントの扱い
-
-端末画面の向きのイベントにはいくつかの用途があります。以下に例を挙げます。
-
-* ユーザーの移動に伴いマップを更新します。
-* 視差効果の追加など、UI の細かい調整を行います。
-* 位置情報と組み合わせると、ターンバイターンのナビゲーションに使用できます。
-
-###  サポート状況を確認して、イベントをリッスンする
-
-`DeviceOrientationEvent` をリッスンするには、まずこのイベントがブラウザでサポートされていることを確認します。次に、`deviceorientation` イベントを受け取る `window` オブジェクトにイベント リスナーを登録します。 
+To listen for `DeviceOrientationEvent`, first check to see if the browser supports the events. Then, attach an event listener to the `window` object listening for `deviceorientation` events.
 
     if (window.DeviceOrientationEvent) {
       window.addEventListener('deviceorientation', deviceOrientationHandler, false);
       document.getElementById("doeSupported").innerText = "Supported!";
     }
+    
 
-###  端末画面の向きのイベントを処理する
+### Handle the device orientation events
 
-端末画面の向きのイベントは、端末の位置や向きが変化したときに発生します。
-このイベントは、[地球の座標フレーム](#earth-coordinate-frame)を基準として、端末の現在位置の変化量を返します。
+The device orientation event fires when the device moves or changes orientation. It returns data about the difference between the device in its current position in relation to the [Earth coordinate frame](#earth-coordinate-frame).
 
+The event typically returns three properties: [`alpha`](#alpha), [`beta`](#beta), and [`gamma`](#gamma). On Mobile Safari, an additional parameter [`webkitCompassHeading`](https://developer.apple.com/library/ios/documentation/SafariDOMAdditions/Reference/DeviceOrientationEventClassRef/){: .external } is returned with the compass heading.
 
+## Device motion
 
-このイベントは通常、[`alpha`](#alpha)、[`beta`](#beta)、および [`gamma`](#gamma) の3 つのプロパティを返します。
-Mobile Safari では、追加のパラメータ [`webkitCompassHeading`](https://developer.apple.com/library/ios/documentation/SafariDOMAdditions/Reference/DeviceOrientationEventClassRef/){: .external } がコンパス方位とともに返されます。
+The device orientation event returns rotation data, which includes how much the device is leaning front-to-back, side-to-side, and, if the phone or laptop has a compass, the direction the device is facing.
 
+Use device motion for when the current motion of the device is needed. `rotationRate` is provided in &deg;/sec. `acceleration` and `accelerationWithGravity` are provided in m/sec<sup>2</sup>. Be aware of differences between browser implementations.
 
+### When to use device motion events
 
-##  端末のモーション 
+There are several uses for device motion events. Examples include the following:
 
-端末画面の向きのイベントは回転データを返します。このデータには、端末の前後および左右への傾き具合、スマートフォンやノートパソコンにおけるコンパスの有無、端末画面の方向など、さまざまな情報が含まれます。
+* Shake gesture to refresh data.
+* In games, to cause characters to jump or move.
+* For health and fitness apps.
 
+### Check for support and listen for events
 
-
-一方、端末の現在の動きを知りたい場合は、端末のモーション イベントを使用します。`rotationRate` は &deg;/sec 単位で、`acceleration` と `accelerationWithGravity` は m/sec<sup>2</sup> 単位で提供されます。ブラウザによって実装に差異があるので注意してください。
-
-
-
-
-###  端末モーション イベントの用途
-
-端末モーション イベントにはいくつかの用途があります。以下に例を挙げます。
-
-* データを更新するためのシェイク操作。
-* ゲームでキャラクターをジャンプさせたり動かしたりする。
-* 健康およびフィットネス用のアプリに使用する。
-
-
-###  サポート状況を確認して、イベントをリッスンする
-
-`DeviceMotionEvent` をリッスンするには、まずこのイベントがブラウザでサポートされていることを確認します。
-次に、`devicemotion` イベントをリッスンする `window` オブジェクトにイベント リスナーを登録します。
- 
+To listen for `DeviceMotionEvent`, first check to see if the events are supported in the browser. Then attach an event listener to the `window` object listening for `devicemotion` events.
 
     if (window.DeviceMotionEvent) {
       window.addEventListener('devicemotion', deviceMotionHandler);
       setTimeout(stopJump, 3*1000);
     }
+    
 
-###  端末モーション イベントの扱い
+### Handle the device motion events
 
-端末のモーション イベントは一定間隔で発生し、その時点での端末の回転（&deg;/sec）および加速度（m/sec<sup>2</sup>）のデータを返します。一部の端末では、重力の影響を除外するためのハードウェアを備えていません。
+The device motion event fires on a regular interval and returns data about the rotation (in &deg;/second) and acceleration (in m/second<sup>2</sup>) of the device, at that moment in time. Some devices do not have the hardware to exclude the effect of gravity.
 
+The event returns four properties, [`accelerationIncludingGravity`](#device-coordinate-frame), [`acceleration`](#device-coordinate-frame), which excludes the effects of gravity, [`rotationRate`](#rotation-data), and `interval`.
 
-このイベントは、[`accelerationIncludingGravity`](#device-coordinate-frame)、[`acceleration`](#device-coordinate-frame)（重力の影響を排除）、[`rotationRate`](#rotation-data)、および `interval` の 4 つのプロパティを返します。
-
-
-
-
-たとえば、平らなテーブルの上に、画面が上を向くように置かれているスマートフォンでは、以下の値になります。
-
+For example, let's take a look at a phone, lying on a flat table, with its screen facing up.
 
 <table>
   <thead>
     <tr>
-      <th data-th="State">状態</th>
-      <th data-th="Rotation">回転</th>
+      <th data-th="State">State</th>
+      <th data-th="Rotation">Rotation</th>
       <th data-th="Acceleration (m/s<sup>2</sup>)">Acceleration (m/s<sup>2</sup>)</th>
       <th data-th="Acceleration with gravity (m/s<sup>2</sup>)">Acceleration with gravity (m/s<sup>2</sup>)</th>
     </tr>
   </thead>
   <tbody>
     <tr>
-      <td data-th="State">移動していない</td>
+      <td data-th="State">Not moving</td>
       <td data-th="Rotation">[0, 0, 0]</td>
       <td data-th="Acceleration">[0, 0, 0]</td>
       <td data-th="Acceleration with gravity">[0, 0, 9.8]</td>
     </tr>
     <tr>
-      <td data-th="State">空に向かって上方向に移動</td>
+      <td data-th="State">Moving up towards the sky</td>
       <td data-th="Rotation">[0, 0, 0]</td>
       <td data-th="Acceleration">[0, 0, 5]</td>
       <td data-th="Acceleration with gravity">[0, 0, 14.81]</td>
     </tr>
     <tr>
-      <td data-th="State">右方向へのみ移動</td>
+      <td data-th="State">Moving only to the right</td>
       <td data-th="Rotation">[0, 0, 0]</td>
       <td data-th="Acceleration">[3, 0, 0]</td>
       <td data-th="Acceleration with gravity">[3, 0, 9.81]</td>
     </tr>
     <tr>
-      <td data-th="State">上方向と右方向に移動</td>
+      <td data-th="State">Moving up and to the right</td>
       <td data-th="Rotation">[0, 0, 0]</td>
       <td data-th="Acceleration">[5, 0, 5]</td>
       <td data-th="Acceleration with gravity">[5, 0, 14.81]</td>
@@ -270,39 +229,38 @@ Mobile Safari では、追加のパラメータ [`webkitCompassHeading`](https:/
   </tbody>
 </table>
 
-以下は、携帯電話の画面が地面に対して垂直になるように保持し、ユーザーに直接画面が見える向きにした場合の値です。
-
+Conversely, if the phone were held so the screen was perpendicular to the ground, and was directly visible to the viewer:
 
 <table>
   <thead>
     <tr>
-      <th data-th="State">状態</th>
-      <th data-th="Rotation">回転</th>
+      <th data-th="State">State</th>
+      <th data-th="Rotation">Rotation</th>
       <th data-th="Acceleration (m/s<sup>2</sup>)">Acceleration (m/s<sup>2</sup>)</th>
       <th data-th="Acceleration with gravity (m/s<sup>2</sup>)">Acceleration with gravity (m/s<sup>2</sup>)</th>
     </tr>
   </thead>
   <tbody>
     <tr>
-      <td data-th="State">移動していない</td>
+      <td data-th="State">Not moving</td>
       <td data-th="Rotation">[0, 0, 0]</td>
       <td data-th="Acceleration">[0, 0, 0]</td>
       <td data-th="Acceleration with gravity">[0, 9.81, 0]</td>
     </tr>
     <tr>
-      <td data-th="State">空に向かって上方向に移動</td>
+      <td data-th="State">Moving up towards the sky</td>
       <td data-th="Rotation">[0, 0, 0]</td>
       <td data-th="Acceleration">[0, 5, 0]</td>
       <td data-th="Acceleration with gravity">[0, 14.81, 0]</td>
     </tr>
     <tr>
-      <td data-th="State">右方向へのみ移動</td>
+      <td data-th="State">Moving only to the right</td>
       <td data-th="Rotation">[0, 0, 0]</td>
       <td data-th="Acceleration">[3, 0, 0]</td>
       <td data-th="Acceleration with gravity">[3, 9.81, 0]</td>
     </tr>
     <tr>
-      <td data-th="State">上方向と右方向に移動</td>
+      <td data-th="State">Moving up and to the right</td>
       <td data-th="Rotation">[0, 0, 0]</td>
       <td data-th="Acceleration">[5, 5, 0]</td>
       <td data-th="Acceleration with gravity">[5, 14.81, 0]</td>
@@ -310,11 +268,9 @@ Mobile Safari では、追加のパラメータ [`webkitCompassHeading`](https:/
   </tbody>
 </table>
 
-###  サンプル: オブジェクトの最大加速度の計算
+### Sample: Calculating the maximum acceleration of an object
 
-端末モーション イベントの 1 つの用途として、オブジェクトの最大加速度を計算することができます。
-たとえば、人がジャンプする際の最大加速度を求めることも可能です。
-
+One way to use device motion events is to calculate the maximum acceleration of an object. For example, what's the maximum acceleration of a person jumping?
 
     if (evt.acceleration.x > jumpMax.x) {
       jumpMax.x = evt.acceleration.x;
@@ -325,11 +281,10 @@ Mobile Safari では、追加のパラメータ [`webkitCompassHeading`](https:/
     if (evt.acceleration.z > jumpMax.z) {
       jumpMax.z = evt.acceleration.z;
     }
+    
 
+After tapping the Go! button, the user is told to jump. During that time, the page stores the maximum (and minimum) acceleration values, and after the jump, tells the user their maximum acceleration.
 
-[Go!] ボタンをタップした後、ユーザーにジャンプするよう指示します。この間、ページは最大（および最小）加速度値を記憶します。そしてジャンプの後、ユーザーに最大加速度を表示します。
+## Feedback {: #feedback }
 
-
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
