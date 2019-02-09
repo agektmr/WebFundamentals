@@ -1,41 +1,29 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: '자체 리소스에 HTTP/2를 사용하는 사이트' Lighthouse 감사의 참조 문서입니다.
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Reference documentation for the "Uses HTTP/2 For Its Own Resources" Lighthouse audit.
 
-{# wf_updated_on: 2016-12-05 #}
-{# wf_published_on: 2016-12-05 #}
+{# wf_updated_on: 2018-07-23 #} {# wf_published_on: 2016-12-05 #} {# wf_blink_components: N/A #}
 
-# 자체 리소스에 HTTP/2를 사용하는 사이트  {: .page-title }
+# Uses HTTP/2 For Its Own Resources {: .page-title }
 
-## 감사가 중요한 이유 {: #why }
+## Overview {: #overview }
 
-HTTP/2는 적은 데이터 전송으로 페이지 리소스를 더욱 빠르게 서비스할 수 있습니다.
+HTTP/2 can serve your page's resources faster, and with less data moving over the wire.
 
+See [HTTP/2 Frequently Asked Question](https://http2.github.io/faq/) for a list of benefits that HTTP/2 provides over HTTP/1.1.
 
-HTTP/2가 HTTP/1.1보다 나은 이유 목록은 [HTTP/2 자주 묻는 질문][faq]을
-참조하세요.
+See [Introduction to HTTP/2](/web/fundamentals/performance/http2/) for an in-depth technical overview.
 
-심층적 기술 개요는 [HTTP/2 소개][intro]를 참조하세요.
+## Recommendations {: #recommendations }
 
-[faq]: https://http2.github.io/faq/
-[intro]: /web/fundamentals/performance/http2/
+Under **URLs**, Lighthouse lists every resource that was not served over HTTP/2. To pass this audit, serve each of those resources over HTTP/2.
 
-## 감사를 통과하는 방법 {: #how }
+To learn how to enable HTTP/2 on your servers, see [Setting Up HTTP/2](https://dassur.ma/things/h2setup/).
 
-Lighthouse는 **URLs**에서 HTTP/2로 서비스되지 않는 모든 리소스의 목록을 표시합니다.
-이 감사를 통과하려면 각 리소스를 HTTP/2로 서비스하세요.
+## More information {: #more-info }
 
-서버에서 HTTP/2를 활성화하는 방법은 [HTTP/2 설정][setup]을 참조하세요.
+Lighthouse gathers all of the resources that are from the same host as the page, and then checks the HTTP protocol version of each resource.
 
-[setup]: https://dassur.ma/things/h2setup/
+Lighthouse excludes resources from other hosts from this audit, because it assumes that you have no control over how these resources are served.
 
-{% include "web/tools/lighthouse/audits/implementation-heading.html" %}
+## Feedback {: #feedback }
 
-Lighthouse는 페이지와 같은 호스트에 있는 모든 리소스를 수집하고
-각 리소스의 HTTP 프로토콜 버전을 검사합니다.
-
-Lighthouse는 이 검사에서 다른 호스트의 리소스는 제외합니다.
-개발자가 이런 리소스의 서비스 방법을 제어할 수 없다고 간주하기 때문입니다.
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
