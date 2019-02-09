@@ -1,32 +1,28 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Lighthouse の監査項目「サイトに Web SQL を使用しない」のリファレンス ドキュメント。
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Reference documentation for the "Avoids Web SQL" Lighthouse audit.
 
-{# wf_updated_on:2016-12-05 #}
-{# wf_published_on:2016-12-05 #}
+{# wf_updated_on: 2018-11-30 #} {# wf_published_on: 2016-12-05 #} {# wf_blink_components: N/A #}
 
-#  サイトに Web SQL を使用しない {: .page-title }
+# Avoids Web SQL {: .page-title }
 
-##  監査が重要である理由 {: #why }
+<aside class="warning">
+  This audit is deprecated. See <a href="https://github.com/googlechrome/lighthouse/pull/6293"
+  class="external" rel="noopener">PR #6293</a>.
+</aside>
 
-Web SQL は廃止されました。詳細は [Web SQL Database][spec] をご覧ください。
+## Overview {: #overview }
 
-[spec]: https://www.w3.org/TR/webdatabase/
+The W3C stopped actively maintaining the Web SQL spec in 2010 and has no plans to maintain it any further. See [Web SQL Database](https://www.w3.org/TR/webdatabase/){: .external rel="noopener" target="_blank" }.
 
-##  監査に合格する方法 {: #how }
+## Recommendations {: #recommendations }
 
-Web SQL Database の代わりに、[IndexedDB][indexeddb] などの最新のデータベースを使用することを検討してください。
+Consider replacing your Web SQL database with a modern alternative, such as [IndexedDB](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API).
 
+See [Web Storage Overview](/web/fundamentals/instant-and-offline/web-storage/) for a discussion of other available storage options.
 
-その他の利用可能なストレージの情報については、[Web Storage Overview][overview] をご覧ください。
+## More information {: #more-info }
 
+Lighthouse checks if the page has a Web SQL database instance.
 
-[indexeddb]: https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API
-[overview]: /web/fundamentals/instant-and-offline/web-storage/
+## Feedback {: #feedback }
 
-{% include "web/tools/lighthouse/audits/implementation-heading.html" %}
-
-Lighthouse では、ページに Web SQL Database のインスタンスが存在するかチェックされます。
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
