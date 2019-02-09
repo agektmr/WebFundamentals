@@ -1,73 +1,65 @@
-project_path: /web/_project.yaml
-book_path: /web/resources/_book.yaml
-description: Web Fundamentals を日本語化したい人は、誰でも Contribute することができます。
+project_path: /web/_project.yaml book_path: /web/resources/_book.yaml description: "If you want to translate Web Fundamentals to other languages, anyone can contribute."
 
-{# wf_updated_on: 2016-07-04 #}
-{# wf_published_on: 2000-01-01 #}
+{# wf_updated_on: 2017-10-10 #} {# wf_published_on: 2016-09-13 #}
 
-# 翻訳手順 {: .page-title }
+# Translations {: .page-title }
 
+<!--div class="attempt-right">
+  <figure>
+    <img src="/web/images/gitlocalize_image0.png">
+  </figure>
+</div--> We are experimenting with a translation tool called 
 
-## Web Fundamentals の日本語翻訳手順
-すべての記事のソースコードは `src/content` にあります。 ベースとなるコンテンツは英語で、 `src/content/en` ディレクトリにあります。翻訳は `src/content/ja` 以下に同じ構造で配置して下さい。
+[GitLocalize](https://gitlocalize.com/). Follow the steps to get started with your contribution:
 
-## 翻訳記事の追加と Pull Request の送信
-1. レポジトリを fork する。
-1. `src/content/en` から翻訳したい記事を探す。
-1. `src/content/ja` の一致するディレクトリに記事を作成、もしくは翻訳済みの記事を編集する。
-1. 記事内容およびメタデータを翻訳する。
-    * タイトル (`title`)
-    * 概要 (`description`)
-    * 導入 (`introduction`)
-    * メモ (`notes`)
-    * 主な成果 (`key-takeaways`)
-1. `translators:` に `id` を追加する。(id に対応するプロフィールは `src/content/_contributors.yaml` に追加すること。[クレジット](#section)参照)
-1. [google/WebFundamentals](https://github.com/google/WebFundamentals) の master ブランチに対して Pull Request を送る。
-その際、`type-Content-Translation` というラベルをつける。
+1. Go to [GitLocalize's Web Fundamentals repository](https://gitlocalize.com/repo/107).
+2. Sign up using your GitHub account.
+3. Find the document you are going to translate.
+4. Start translating.
+5. When you are done, send the translation for reviews.
+6. Reviewed translation will be sent as a Pull Request by language moderator in the community.
 
+To learn more about how GitLocalize works, visit [their help page](https://docs.gitlocalize.com/).
 
-    title: "はじめてのプログレッシブ ウェブアプリ"
-    description: "プログレッシブ ウェブアプリはウェブとアプリの両方の利点を兼ね備えたアプリです。このステップバイステップガイドでは、あなた自身のプログレッシブ ウェブアプリを構築し、そしてプログレッシブウェブアプリの開発で必要とされる基礎を学ぶことになります。それは、App Shellモデルや、App ShellやあなたのアプリケーションのキーデータなどをキャッシュするためのService Workerの使い方を含みます。"
-    updated_on: 2016-04-07
-    translators:
-      - yoichiro
-    notes:
-      devsummit-video: "さらに詳しくは、2015 年の Chrome Dev Summit で Alex Russell が行った、<a href='https://www.youtube.com/watch?v=MyQ8mtR9WxI'>プログレッシブ ウェブアプリ</a>についての講演内容をご覧ください。"
-    
+If you find any issues or feature requests, please file them in [GitLocalize's issue tracker](https://github.com/gitlocalize/feedback/issues).
 
-## クレジット
-`src/content/_contributors.yaml` にあなたのプロフィールを記入し、`role` 属性に - `translator` を追加して下さい。[contributors ページ](/web/resources/contributors)はこの情報を元に作成され、記事にはあなたの名前が掲載されます。例：
+To chat with other translation contributors, [register to the ChromiumDev Slack](https://join.slack.com/t/chromiumdev/shared_invite/enQtMzM3NjYwNjI0MDM4LTk2NjEyYTIxODk1MDYxMmNjNWYzMGMxZGVhMDNhY2I1ZjBhMjdlYTg0MTg4ZGE0OTQ0ZmYwNTRiMGJlYzVjOTE) and join #l10n channel.
 
+Note: It's important you find someone to review your translation. Try finding a reviewer in the Slack's #l10n channel if [no one is assigned as a language moderator yet](https://gitlocalize.com/repo/107/roles). If you are interested in becoming a moderator, ping @agektmr in #l10n.
+
+Our supported languages include: Arabic (AR), German (DE), Spanish (ES), French (FR), Hebrew (HE), Bahasa Indonesia (ID), Italian (IT), Japanese (JA), Korean (KO), Dutch (NL), Polish (PL), Portuguese (PT-BR), Russian (RU), Turkish (TR), Chinese Traditional (ZH-TW) and Chinese Simplified (ZH-CN).
+
+## Credit
+
+We want to make sure that you get the credit for the articles that you translate.
+
+Add your details to `src/data/_contributors.yaml` and add `- translator` to the `role` attribute. We use this information to populate our [contributors page](/web/resources/contributors) and also to attach your name to each article. For example:
 
     paulkinlan:
-      name:
-        given: Paul
-        family: Kinlan
-      org:
-        name: Google
-        unit: Developer Relations
-      country: UK
-      role:
-        - author
-        - engineer
-        - translator
-      homepage: http://paul.kinlan.me
-      google: +PaulKinlan
-      twitter: paul_kinlan
-      email: paulkinlan@google.com
-      description:
-      en: "Paul is a Developer Advocate"
+      name:
+        given: Paul
+        family: Kinlan
+      org:
+        name: Google
+          unit: Developer Relations
+      country: UK
+        role:
+    
+        - author
+        - engineer
+        - translator
+      homepage: http://paul.kinlan.me
+      google: +PaulKinlan
+      twitter: paul_kinlan
+      email: paulkinlan@google.com
+      description:
+        en: "Paul is a Developer Advocate"
     
 
-## 表記ルール
-* 日本語の文中に英単語が入る場合、その英単語の前後に半角空白を入れてください。
-* カタカナ表記が連続する場合、言葉の間に半角空白を入れてください。ただし、一般的に一つの言葉とみなされる場合は、空白を入れる必要はありません。  
-（例）プログレッシブ [空白] ウェブアプリ
-* コードは、文章中でもリンク文字列内でも、&#096;...&#096; で囲ってください。
+Also, make sure to append your credit to the bottom of the article. Because in GitLocalize you can't add a new section, add your credit after multiple empty lines in the existing last section like following screenshot:
 
-## ライセンス
-全てのコンテンツは、クリエイティブコモンズ3.0です。Web Fundamentals のレポジトリに初めて Pull Request 出すと、自動的に [Contributor License Agreement](https://github.com/google/WebFundamentals/blob/master/CONTRIBUTING.md) に Sign するようにコメントで促されます。指示に従って Sign してください。  
+![](/web/images/gitlocalize_image1.png)
 
-## コミュニティ
-Web Fundamentals の翻訳作業について何かわからないことがあれば、Slack の [chromiumdev.slack.com](https://chromiumdev.slack.com/) にある #l10n チャネルで質問してください。  
-（ [こちら](https://join.slack.com/t/chromiumdev/shared_invite/enQtMzM3NjYwNjI0MDM4LTk2NjEyYTIxODk1MDYxMmNjNWYzMGMxZGVhMDNhY2I1ZjBhMjdlYTg0MTg4ZGE0OTQ0ZmYwNTRiMGJlYzVjOTE) から参加できます）  
+## License
+
+All of our content is Creative Commons 3.0. Contributions and translations are very much appreciated, however you must sign our [Contributor License Agreement](https://github.com/google/WebFundamentals/blob/master/CONTRIBUTING.md) for the code to be pulled back in to the repository.
