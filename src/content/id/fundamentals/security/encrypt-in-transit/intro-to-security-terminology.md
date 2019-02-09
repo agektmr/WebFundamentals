@@ -1,67 +1,31 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Dua dari sekian kendala yang dihadapi developer saat melakukan migrasi ke HTTPS adalah konsep dan terminologi. Panduan ini memberikan ringkasan singkat mengenai kedua hal tersebut.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Two of the hurdles developers face when migrating to HTTPS are concepts and terminology. This guide provides a brief overview of both.
 
-{# wf_updated_on: 2016-08-22 #}
-{# wf_published_on: 2015-03-27 #}
+{# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2015-03-27 #} {# wf_blink_components: Blink>SecurityFeature #}
 
-# Istilah Keamanan yang Penting {: .page-title }
+# Important Security Terminology {: .page-title }
 
-{% include "web/_shared/contributors/chrispalmer.html" %}
-{% include "web/_shared/contributors/mattgaunt.html" %}
-  
+{% include "web/_shared/contributors/chrispalmer.html" %} {% include "web/_shared/contributors/mattgaunt.html" %}
+
 ### TL;DR {: .hide-from-toc }
 
-* Kunci privat/publik digunakan untuk menandatangani dan mendekripsi pesan antara browser dan server.
-* Otoritas sertifikat (CA) adalah organisasi yang bertanggung jawab terhadap pemetaan antara kunci publik dan nama DNS publik (misalnya "www.foobar.com").
-* Permintaan penandatanganan sertifikat (CSR) adalah format data yang membundel kunci publik bersama beberapa metadata tentang entitas yang memiliki kunci
+* Public/private keys are used to sign and decrypt messages between the browser and the server.
+* A certificate authority (CA) is an organization that vouches for the mapping between the public keys and public DNS names (such as "www.foobar.com").
+* A certificate signing request (CSR) is a data format that bundles a public key together with some metadata about the entity that owns the key
 
-## Apa yang dimaksud dengan pasangan kunci publik dan kunci privat?
+## What are the public and private key pairs?
 
-**Pasangan kunci privat/publik** adalah sepasang angka yang sangat besar yang digunakan
-sebagai kunci enkripsi dan dekripsi, serta sama-sama menggunakan relasi matematis
-khusus. Sistem umum untuk pasangan kunci adalah **[RSA
-cryptosystem](https://en.wikipedia.org/wiki/RSA_(cryptosystem)){: .external}**. **Kunci
-publik** digunakan untuk mengenkripsi pesan, dan pesan hanya bisa didekripsi
-dengan semestinya menggunakan **kunci privat**-nya. Server web mengiklankan
-kunci publiknya ke seluruh dunia, dan klien (misalnya, browser web) menggunakannya untuk
-mem-bootstrap saluran aman ke server.
+A **public/private key pair** is a pair of very large numbers that are used as encryption and decryption keys, and that share a special mathematical relationship. A common system for key pairs is the **[RSA cryptosystem](https://en.wikipedia.org/wiki/RSA_(cryptosystem)){: .external}**. The **public key** is used to encrypt messages, and the messages can only be feasibly decrypted with the corresponding **private key**. Your web server advertises its public key to the world, and clients (such as web browsers) use that to bootstrap a secure channel to your server.
 
-## Apa yang dimaksud dengan otoritas sertifikat (CA)?
+## What is a certificate authority?
 
-**Otoritas Sertifikat (CA)** adalah organisasi yang menjamin
-pemetaan antara kunci publik dan nama DNS publik (misalnya "www.foobar.com").
-Misalnya, bagaimana klien mengetahui apakah kunci publik tertentu memang kunci publik yang _benar_
-untuk www.foobar.com? Sebelum diteliti keadaan yang sebenarnya, tidak ada cara untuk mengetahuinya. CA menjamin
-suatu kunci sebagai kunci yang benar untuk sebuah situs dengan menggunakan
-kunci privatnya sendiri untuk **[menandatangani
-secara kriptografis](https://en.wikipedia.org/wiki/RSA_(cryptosystem)#Signing_messages){: .external}**
-kunci publik situs web. Tanda tangan ini secara komputasi tidak dapat dipalsukan.
-Browser (dan klien lainnya) memelihara **penyimpanan jangkar kepercayaan** berisi
-kunci publik yang dimiliki oleh CA terkenal, dan mereka menggunakan kunci publik itu untuk
-**memverifikasi secara kriptografis** tanda tangan CA.
+A **certification authority (CA)** is an organization that vouches for the mapping between public keys and public DNS names (such as "www.foobar.com"). For example, how is a client to know if a particular public key is the *true* public key for www.foobar.com? A priori, there is no way to know. A CA vouches for a particular key as being the true one for a particular site by using its own private key to **[cryptographically sign](https://en.wikipedia.org/wiki/RSA_(cryptosystem)#Signing_messages){: .external}** the website's public key. This signature is computationally infeasible to forge. Browsers (and other clients) maintain **trust anchor stores** containing the public keys owned by the well-known CAs, and they use those public keys to **cryptographically verify** the CA's signatures.
 
-**Sertifikat X.509** adalah format data yang membundel kunci publik bersama
-beberapa metadata tentang entitas yang memiliki kunci. Untuk kasus web,
-pemilik kunci adalah operator situs, dan metadata penting adalah nama DNS
-server web tersebut. Bila klien menghubungkan ke server web HTTPS, server
-web akan menyajikan sertifikatnya untuk diverifikasi oleh klien. Klien akan memverifikasi
-apakah sertifikat tersebut telah berakhir, apakah nama DNS sama dengan nama
-server yang berusaha dihubungi oleh klien, dan apakah trust anchor CA yang dikenal
-telah menandatangani sertifikat. Umumnya, CA tidak secara langsung menandatangani sertifikat
-server web; biasanya, ada **rangkaian sertifikat** yang menautkan trust
-anchor, ke perantara penandatangan atau penandatangan, dan akhirnya ke sertifikat milik
-server web sendiri (**entitas akhir**).
+An **X.509 certificate** is a data format that bundles a public key together with some metadata about the entity that owns the key. In the case of the web, the owner of the key is the site operator, and the important metadata is the DNS name of the web server. When a client connects to an HTTPS web server, the web server presents its certificate for the client to verify. The client verifies that the certificate has not expired, that the DNS name matches the name of the server the client is trying to connect to, and that a known trust anchor CA has signed the certificate. In most cases, CAs do not directly sign web server certificates; usually, there is a **chain of certificates** linking a trust anchor to an intermediate signer or signers, and finally to the web server's own certificate (the **end entity**).
 
-## Apa yang dimaksud dengan permintaan penandatanganan sertifikat (CSR)?
+## What is a certificate signing request?
 
-**Permintaan penandatanganan sertifikat (CSR)** adalah format data, seperti
-sertifikat, yang membundel kunci publik bersama beberapa metadata tentang entitas
-yang memiliki kunci. Akan tetapi, klien tidak menafsirkan CSR; melainkan CA yang melakukannya. Bila ingin
-mendapatkan jaminan CA untuk kunci publik server web, kirim sebuah CSR ke CA tersebut. CA
-akan memvalidasi informasi dalam CSR, dan menggunakannya untuk menghasilkan sertifikat.
-CA kemudian akan mengirimkan sertifikat final, dan Anda memasang sertifikat tersebut (atau,
-kemungkinan, rangkaian sertifikat) dan kunci privat di server web.
+A **certificate signing request (CSR)** is a data format which, like a certificate, bundles a public key together with some metadata about the entity that owns the key. However, clients do not interpret CSRs; CAs do. When you seek to have a CA vouch for your web server's public key, you send the CA a CSR. The CA validates the information in the CSR and uses it to generate a certificate. The CA then sends you the final certificate, and you install that certificate (or, more likely, a certificate chain) and your private key on your web server.
 
+## Feedback {: #feedback }
 
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
