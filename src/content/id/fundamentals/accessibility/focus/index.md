@@ -1,138 +1,74 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Ringkasan fokus layar dalam aksesibilitas
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Overview of screen focus in accessibility
 
+{# wf_blink_components: Blink>Accessibility #} {# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2016-10-04 #}
 
-{# wf_updated_on: 2016-10-04 #}
-{# wf_published_on: 2016-10-04 #}
+# Introduction to Focus {: .page-title }
 
-# Pengantar Fokus {: .page-title }
+{% include "web/_shared/contributors/megginkearney.html" %} {% include "web/_shared/contributors/dgash.html" %} {% include "web/_shared/contributors/robdodson.html" %}
 
-{% include "web/_shared/contributors/megginkearney.html" %}
-{% include "web/_shared/contributors/dgash.html" %}
-{% include "web/_shared/contributors/robdodson.html" %}
+In this lesson we'll talk about *focus* and how you can manage it in your application. Focus refers to which control on the screen (an input item such as a field, checkbox, button, or link) currently receives input from the keyboard, and from the clipboard when you paste content.
 
+This is a great place to start learning about accessibility because we all know how to use a keyboard, it's easy to relate to and test, and it benefits virtually all users.
 
+Users with motor impairments, which could be anything from permanent paralysis to a sprained wrist, may rely on a keyboard or switch device to navigate your page, so a good focus strategy is critical to providing a good experience for them.
 
-Dalam pelajaran ini, kita akan membicarakan tentang *fokus* dan cara mengelolanya dalam
-aplikasi Anda. Fokus merujuk pada kontrol mana pada layar (item masukan seperti
-bidang, kotak centang, tombol, atau tautan) yang saat ini menerima masukan dari keyboard,
-dan dari clipboard bila Anda menempelkan materi.
+And for the power users who know every keyboard shortcut on their machine, being able to quickly navigate your site with the keyboard alone will certainly make them more productive.
 
-Inilah tempat yang bagus untuk mulai mempelajari tentang aksesibilitas karena kita semua tahu
-cara menggunakan keyboard, mudah untuk menghubungkan dan menguji, serta menguntungkan
-hampir semua pengguna.
+Thus, a well implemented focus strategy ensures that everyone using your application has a better experience. We'll see in the upcoming lessons that the effort you put into focus is an important basis for supporting assistive technology users and, indeed, all users.
 
-Pengguna yang memiliki gangguan motorik, yang boleh jadi berupa paralisis permanen hingga
-pergelangan yang keseleo, mungkin mengandalkan keyboard atau perangkat switch untuk menyusuri
-laman Anda, jadi strategi fokus yang baik adalah penting untuk menyediakan
-pengalaman yang bagus bagi mereka.
+## What is focus?
 
-Dan bagi pengguna berpengalaman yang mengetahui setiap pintasan keyboard di mesin mereka, karena
-bisa dengan cepat menyusuri situs Anda menggunakan keyboard saja, tentu akan
-membuat mereka menjadi lebih produktif.
+Focus determines where keyboard events go in the page at any given moment. For instance, if you focus a text input field and begin typing, the input field receives the keyboard events and displays the characters you type. While it has focus, it will also receive pasted input from the clipboard.
 
-Karena itu, strategi fokus yang diimplementasikan dengan baik akan memastikan setiap orang yang menggunakan
-aplikasi Anda akan memiliki pengalaman yang lebih baik. Nanti akan kita lihat dalam pelajaran berikutnya bahwa
-upaya yang Anda berikan pada fokus adalah basis penting untuk mendukung
-pengguna teknologi pendukung, juga tentunya, semua pengguna.
+![keyboard focus in a text field](imgs/keyboard-focus.png)
 
-## Apa yang dimaksud dengan fokus?
+The currently focused item is often indicated by a *focus ring*, the style of which depends on both the browser and on any styling the page author has applied. Chrome, for instance, typically highlights focused elements with a blue border, whereas Firefox uses a dashed border.
 
-Fokus menentukan tempat kejadian keyboard di laman pada saat tertentu. Misalnya,
-jika Anda memfokus bidang masukan teks dan mulai mengetik, bidang masukan
-akan menerima kejadian keyboard dan menampilkan karakter yang Anda ketikkan. Walaupun memiliki
-fokus, bidang masukan juga akan menerima masukan yang ditempelkan dari clipboard.
+![sign up button](imgs/sign-up.png)
 
-![fokus keyboard di bidang teks](imgs/keyboard-focus.png)
+Some users operate their computer almost entirely with the keyboard or other input device. For those users, focus is critical; it's their primary means of reaching everything on the screen. For that reason, the Web AIM checklist states in section 2.1.1 that [all page functionality should be available using the keyboard](http://webaim.org/standards/wcag/checklist#sc2.1.1){: .external }, unless it's something you cannot do with a keyboard, such as freehand drawing.
 
-Item yang saat ini difokus sering kali ditunjukkan oleh *lingkaran fokus*, gaya yang
-bergantung pada browser maupun segala penataan gaya yang
-diterapkan oleh penulis laman tersebut. Chrome, misalnya, biasanya menyorot elemen yang difokus dengan
-border biru, sedangkan Firefox menggunakan border putus-putus.
+As a user, you can control which element is currently focused using `Tab`, `Shift+Tab`, or the arrow keys. On Mac OSX this works a little differently: while Chrome always lets you navigate with `Tab`, you need to press `Option+Tab` to change focus in other browsers like Safari. (You can change this setting in the Keyboard section of System Preferences.)
 
-![tombol sign up](imgs/sign-up.png)
+![keyboard preferences dialog](imgs/system-prefs2.png)
 
-Sebagian pengguna mengoperasikan komputer mereka hampirnya sepenuhnya dengan keyboard atau
-perangkat masukan lainnya. Bagi para pengguna tersebut, fokus sangatlah penting; inilah sarana utama mereka untuk
-melakukan apa saja di layar. Karena alasan itu, daftar periksa Web AIM menyatakan
-di bagian 2.1.1 bahwa [semua fungsionalitas laman harus tersedia menggunakan
-keyboard](http://webaim.org/standards/wcag/checklist#sc2.1.1){: .external },
-kecuali jika ada yang tidak bisa Anda lakukan dengan keyboard, misalnya menggambar bebas.
+The order in which focus proceeds forward and backward through interactive elements via `Tab` is called, not surprisingly, the *tab order*. Ensuring that you design your page with a logical tab order is an important step that we'll cover later.
 
-Sebagai pengguna, Anda bisa mengontrol elemen mana yang saat ini difokus dengan menggunakan `Tab`,
-`Shift+Tab`, atau tombol panah. Di Mac OSX, cara kerjanya sedikit berbeda:
-walaupun Chrome selalu memungkinkan Anda melakukan navigasi dengan `Tab`, Anda perlu menekan `Option+Tab`
-untuk mengubah fokus di browser lain seperti Safari. (Anda bisa mengubah setelan ini
-di bagian Keyboard pada System Preferences.)
+## What is focusable?
 
-![dialog preferensi keyboard](imgs/system-prefs2.png)
+Built-in interactive HTML elements like text fields, buttons, and select lists are *implicitly focusable*, meaning they are automatically inserted into the tab order and have built-in keyboard event handling without developer intervention.
 
-Urutan pemrosesan fokus maju dan mundur pada elemen interaktif
-lewat `Tab` disebut *urutan tab*. Langkah penting untuk memastikan bahwa
-Anda mendesain laman dengan urutan tab yang logis
-akan kita bahas nanti.
+![implicitly focusable fields](imgs/implicitly-focused.png)
 
-## Apa yang dapat difokus?
+But not all elements are focusable; paragraphs, divs, and various other page elements are not focused as you tab through the page, and that's by design. There's generally no need to focus something if the user can't interact with it.
 
-Elemen HTML interaktif bawaan seperti bidang teks, tombol, dan daftar pilihan
-*secara implisit dapat difokus*, maksudnya, secara otomatis elemen itu akan disisipkan
-ke dalam urutan tab dan memiliki penanganan kejadian keyboard bawaan tanpa intervensi developer.
+![not all elements are focusable](imgs/not-all-elements.png)
 
-![bidang yang secara implisit bisa difokus](imgs/implicitly-focused.png)
+## Experiencing focus
 
-Namun tidak semua elemen dapat difokus; paragraf, div, dan beragam elemen laman
-lainnya tidak difokus saat Anda berpindah tab di laman, dan memang didesain demikian.
-Umumnya tidak perlu memfokus sesuatu jika pengguna tidak bisa berinteraksi dengannya.
+Let's try some of the focus techniques we just discussed. Using Chrome, go to this [airline site mockup page](http://udacity.github.io/ud891/lesson2-focus/01-basic-form/){: .external } and search for a specific ticket **using only keyboard input**. The page doesn't accept mouse input, so you can't fudge the exercise (not that we don't trust you ;-).
 
-![tidak semua elemen bisa difokus](imgs/not-all-elements.png)
+![airline site mockup](imgs/airlinesite2.png)
 
-## Mencoba fokus
+The ticket parameters you should specify are:
 
-Mari kita coba beberapa teknik fokus yang baru saja kita diskusikan. Dengan
-menggunakan Chrome, masuklah ke [laman tiruan situs
-maskapai ini](http://udacity.github.io/ud891/lesson2-focus/01-basic-form/){: .external }
-dan cari tiker tertentu **hanya dengan menggunakan masukan keyboard**. Laman tersebut tidak akan
-menerima masukan mouse, jadi Anda tidak bisa memalsukan latihan (bukannya kami tidak percaya Anda
-;-).
+- one way
+- to Melbourne
+- leaving on 12 October 2017 (10/12/2017)
+- returning on 23 October 2017 (10/23/2017)
+- window seat
+- do not want to receive promotional offers
 
-![maket situs maskapai penerbangan](imgs/airlinesite2.png)
+When you successfully complete the form with no input errors and activate the Search button, the form will simply clear and reset. Go ahead and complete the form, then come back.
 
-Parameter tiket yang harus Anda tetapkan adalah:
+Let's examine how the form uses your keyboard input. Starting with your first few `Tab` presses, the browser highlights the navigation items for Flights, Hotels, and Rental Cars. As you continue to press `Tab` you proceed to the radiobutton group where you can choose from Round Trip, One Way, or Multi City using the arrow keys.
 
- - sekali jalan
- - ke Melbourne
- - berangkat tanggal 12 Oktober 2017 (10/12/2017)
- - kembali tanggal 23 Oktober 2017 (10/23/2017)
- - kursi dekat jendela
- - tidak ingin menerima penawaran promosi
+Continue through the name and address fields, filling in the required information. When you arrive at the destination select element, you can use the arrow keys to choose a city, or you can start typing to autocomplete the field. Similarly, in the date fields, you can use the arrow keys or just type a date.
 
-Bila Anda berhasil menyelesaikan formulir tanpa kesalahan masukan dan mengaktifkan tombol
-Search, formulir akan dikosongkan dan disetel ulang begitu saja. Lanjutkan dan selesaikan
-formulir, kemudian kembalilah.
+Selecting a seat type also relies on the arrow keys, or you can type "w", "a", or "n" to jump to a seat option. Then you can disable the promotional offers default by pressing the spacebar while the checkbox is focused. Finally, focus the Search button and press `Enter` to submit the form.
 
-Mari kita periksa bagaimana formulir menggunakan masukan keyboard Anda. Mulai dengan
-beberapa penekanan `Tab` pertama, browser menyorot item navigasi untuk Flights,
-Hotels, dan Rental Cars. Karena terus menekan `Tab` Anda melanjutkan ke
-grup radiobutton untuk memilih dari Round Trip, One Way, atau Multi City
-dengan menggunakan tombol panah.
+It's very handy to interact with a form using just the keyboard and to not have to switch to the mouse and back to complete a task. Because all of the elements used in the form are native HTML tags with implicit focus, the form works fine with the keyboard, and you don't have to write any code to add or manage focus behavior.
 
-Lanjutkan sampai bidang nama dan alamat, dengan mengisi informasi
-yang diperlukan. Bila sampai di elemen pemilihan tujuan, Anda bisa menggunakan
-tombol panah untuk memilih kota, atau bisa mulai mengetikkan untuk mengisi bidang pelengkapan otomatis.
-Begitu pula, dalam bidang tanggal, Anda bisa menggunakan tombol panah atau cuma mengetikkan tanggal.
+## Feedback {: #feedback }
 
-Memilih tipe kursi juga akan menggunakan tombol panah, atau Anda bisa mengetikkan "w", "a",
-atau "n" untuk lompat ke opsi kursi. Kemudian Anda bisa menonaktifkan default penawaran promosi
-dengan menekan spasi saat kotak centang difokus. Terakhir, fokus
-tombol Search dan tekan `Enter` untuk mengirim formulir.
-
-Sangat praktis berinteraksi dengan formulir cuma dengan menggunakan keyboard
-dan tidak perlu beralih ke mouse dan kembali menyelesaikan tugas. Karena semua elemen yang
-digunakan dalam formulir adalah tag HTML asli dengan fokus implisit, formulir bekerja dengan baik
-bersama keyboard, dan Anda tidak perlu menulis kode untuk menambahkan atau mengelola
-perilaku fokus.
-
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
