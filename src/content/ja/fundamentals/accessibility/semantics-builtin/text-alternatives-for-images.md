@@ -1,83 +1,60 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: alt 属性を使用して画像に代替テキストを提供する
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Using the alt attribute to provide text alternatives for images
 
+{# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2016-10-04 #} {# wf_blink_components: N/A #}
 
-{# wf_updated_on:2016-10-04 #}
-{# wf_published_on:2016-10-04 #}
+# Text Alternatives for Images {: .page-title }
 
-#  画像の代替テキスト {: .page-title }
+{% include "web/_shared/contributors/megginkearney.html" %} {% include "web/_shared/contributors/dgash.html" %} {% include "web/_shared/contributors/aliceboxhall.html" %}
 
-{% include "web/_shared/contributors/megginkearney.html" %}
-{% include "web/_shared/contributors/dgash.html" %}
-{% include "web/_shared/contributors/aliceboxhall.html" %}
-
-
-
-ほとんどのウェブページで画像は重要な要素ですが、当然のことながら、視覚に障がいがある方には特有の問題があります。ページで画像が果たす役割を検討し、どのようなタイプの代替テキストを設定して機能させるのかを検討する必要があります。
-
-
+Images are an important component of most web pages, and are of course a particular sticking point for low-vision users. We must consider the role an image plays in a page to work out what type of text alternative it should have. Take a look at this image.
 
     <article>
       <h2>Study shows 9 out of 10 cats quietly judging their owners as they sleep</h2>
       <img src="imgs/160204193356-01-cat-500.jpg">
     </article>
+    
 
 <article>
   <h2>Study shows 9 out of 10 cats quietly judging their owners as they sleep</h2>
   <img src="imgs/160204193356-01-cat-500.jpg">
 </article>
 
-猫の写真があるページでは、猫が飼い主を判断するという有名な習性に関する記事の説明をしています。スクリーン リーダーは、この画像のリテラル名、`"/160204193356-01-cat-500.jpg"` を読み上げます。正確とはいえ、まったく実用的ではありません。
+In the page we have a picture of a cat, illustrating an article on cats' well-known judgmental behavior. A screen reader will announce this image using its literal name, `"/160204193356-01-cat-500.jpg"`. That's accurate, but not at all useful.
 
-
-`alt` 属性を使用すると、たとえば「疑わしそうに凝視する猫」など、この画像に有用な代替テキストを指定できます。
-
+You can use the `alt` attribute to provide a useful text alternative to this image &mdash; for example, "A cat staring menacingly off into space."
 
     <img src="/160204193356-01-cat-500.jpg" alt="A cat staring menacingly off into space">
+    
 
-これで、スクリーン リーダーは画像の簡潔な説明を読み上げることができ（黒い VoiceOver バーを参照）、ユーザーは記事に移動するかどうかを選択できます。
+Then the screen reader can announce a succinct description of the image ( seen in the black VoiceOver bar) and the user can choose whether to move on to the article.
 
+![an image with improved alt text](imgs/funioncat2.png)
 
+A couple of comments about `alt`:
 
-![改善された alt テキスト付きの画像](imgs/funioncat2.png)
+- `alt` allows you to specify a simple string to be used any time the image isn't available, such as when the image fails to load, or is accessed by web crawling bot, or is encountered by a screen reader.
+- `alt` differs from `title`, or any type of caption, in that it is *only* used if the image is not available.
 
-`alt` に関するコメント:
+Writing useful alt text is a bit of an art. In order for a string to be a usable text alternative, it needs to convey the same concept as the image, in the same context.
 
- - `alt` を使用すると、画像が使えなくても、いつでも使用できる単純な文字列を指定できます。たとえば、画像の読み込みに失敗したり、画像がウェブ クローラー ボットにアクセスされたり、またはスクリーン リーダーからアクセスしたときなどが考えられます。
-
-
- - `alt` は `title` やその他のタイプのキャプションとは異なり、画像が使用できない場合に*のみ*使用されます。
-
-
-有用な alt テキストを記述するには少し工夫が必要です。文字列を使いやすい代替テキストにするには、画像と同じコンセプトを、同じコンテキストで伝える必要があります。
-
-
-
-上の図のように、ページの先頭にあるリンク付きのロゴ画像で考えてみましょう。この画像を正確に表すと「Funion ロゴ」のように記述できます。
-
+Consider a linked logo image in the masthead of a page like those shown above. We can describe the image pretty accurately as "The Funion logo".
 
     <img class="logo" src="logo.jpg" alt="The Funion logo">
+    
 
-「ホーム」や「メインページ」といったさらにシンプルな代替テキストも考えられますが、これは視覚障がいの有無にかかわらずデメリットがあります。
+It might be tempting to give it a simpler text alternative of "home" or "main page", but that does a disservice to both low-vision and sighted users.
 
+But imagine a screen reader user who wants to locate the masthead logo on the page; giving it an alt value of "home" actually creates a more confusing experience. And a sighted user faces the same challenge &mdash; figuring out what clicking the site logo does &mdash; as a screen reader user.
 
-ページの先頭のロゴを探しているスクリーン リーダーのユーザーの場合は、「ホーム」という alt 値を指定すると、さらに混乱する可能性があります。視覚に障がいのないユーザーも、サイトのロゴをクリックすると何が起きるかを認識するという面で、スクリーン リーダーのユーザーと同じ課題に直面します。
+On the other hand, it's not always useful to describe an image. For example, consider a magnifying glass image inside a search button that has the text "Search". If the text wasn't there, you would definitely give that image an alt value of "search". But because we have the visible text, the screen reader will pick up and read aloud the word "search"; thus, an identical `alt` value on the image is redundant.
 
-
-一方、画像を説明することが必ずしも役立つとは限りません。たとえば、「検索」というテキスト付きの検索ボタン内に、虫メガネの画像があるとします。テキストが存在しなかったとしたら、間違いなく画像に「検索」という alt 値を設定するところですが、テキストが表示されているため、スクリーン リーダーは「検索」という単語を選んで読み上げます。そのため、画像に同一の `alt` 値を設定してしまうと、冗長になります。
-
-
-
-ただし、`alt` テキストを書かなければ、代わりに画像ファイル名が読み上げられる可能性があり、意味がないうえに混乱を招きます。このような場合、単に空の `alt` 属性を使用します。そうすれば、スクリーン リーダーは画像も一緒にスキップします。
-
-
+However, we know that if we leave the `alt` text out, we'll probably hear the image file name instead, which is both useless and potentially confusing. In this case you can just use an empty `alt` attribute, and the screen reader will skip the image altogether.
 
     <img src="magnifying-glass.jpg" alt="">
+    
 
-まとめると、すべての画像に `alt` 属性を指定する必要がありますが、常にテキストが必要とは限りません。重要な画像には画像の内容を説明する alt テキストを指定する必要がありますが、装飾的な画像には空の alt、つまり `alt=""` を指定する必要があります。
+To summarize, all images should have an `alt` attribute, but they need not all have text. Important images should have descriptive alt text that succinctly describes what the image is, while decorative images should have empty alt attributes &mdash; that is, `alt=""`.
 
+## Feedback {: #feedback }
 
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
