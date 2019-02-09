@@ -1,22 +1,14 @@
-project_path: /web/_project.yaml
-book_path: /web/updates/_book.yaml
-description: Local Overrides, accessibility tools, performance and SEO audits, and more.
-{% include "web/_shared/machine-translation-start.html" %}
+project_path: /web/_project.yaml book_path: /web/updates/_book.yaml description: Local Overrides, accessibility tools, performance and SEO audits, and more.
 
-{# wf_updated_on: 2018-10-30 #}
-{# wf_published_on: 2018-01-17 #}
-{# wf_tags: chrome65,devtools,devtools-whatsnew #}
-{# wf_featured_image: /web/updates/images/generic/chrome-devtools.png #}
-{# wf_featured_snippet: Local Overrides, accessibility tools, performance and SEO audits, and more. #}
-{# wf_blink_components: Platform>DevTools #}
+{# wf_updated_on: 2018-12-03 #} {# wf_published_on: 2018-01-17 #} {# wf_tags: chrome65,devtools,devtools-whatsnew #} {# wf_featured_image: /web/updates/images/generic/chrome-devtools.png #} {# wf_featured_snippet: Local Overrides, accessibility tools, performance and SEO audits, and more. #} {# wf_blink_components: Platform>DevTools #}
 
 {% include "web/tools/chrome-devtools/_shared/styles.html" %}
 
-# DevTools（Chrome 65）の新 {: .page-title }
+# What's New In DevTools (Chrome 65) {: .page-title }
 
 {% include "web/_shared/contributors/kaycebasques.html" %}
 
-Chrome 65のDevToolsには次の新機能が含まれています。
+New features coming to DevTools in Chrome 65 include:
 
 * [**Local Overrides**](#overrides)
 * [New accessibility tools](#a11y)
@@ -25,7 +17,7 @@ Chrome 65のDevToolsには次の新機能が含まれています。
 * [Multiple recordings in the **Performance** panel](#recordings)
 * [Reliable code stepping with workers and asynchronous code](#stepping)
 
-以下のリリースノートを読んだり、ビデオ版をご覧ください。
+Read on, or watch the video version of these release notes, below.
 
 <div class="video-wrapper-full-width">
   <iframe class="devsite-embedded-youtube-video" data-video-id="D1pV7ermy6w"
@@ -33,12 +25,11 @@ Chrome 65のDevToolsには次の新機能が含まれています。
   </iframe>
 </div>
 
-Note: `chrome://version`実行しているChromeのバージョンを確認してください。以前のバージョンを使用している場合、これらの機能は存在しません。それ以降のバージョンを使用している場合は、これらの機能が変更されている可能性があります。 Chromeは6週間ごとに新しいメジャーバージョンに自動的に更新されます。
+Note: Check what version of Chrome you're running at `chrome://version`. If you're running an earlier version, these features won't exist. If you're running a later version, these features may have changed. Chrome auto-updates to a new major version about every 6 weeks.
 
-## ローカルオーバーライド{: #overrides }
+## Local Overrides {: #overrides }
 
-**ローカルオーバーライド**を使用すると、DevToolsで変更を加え、それらの変更をページ読み込み全体に保持できます。以前は、DevToolsで行った変更は、ページを再読み込みすると失われていました。
-**ローカルオーバーライド**は、ほとんどのファイルタイプで動作しますが、いくつかの例外があります。 [Limitations](#overrides-limitations)参照してください。
+**Local Overrides** let you make changes in DevTools, and keep those changes across page loads. Previously, any changes that you made in DevTools would be lost when you reloaded the page. **Local Overrides** work for most file types, with a couple of exceptions. See [Limitations](#overrides-limitations).
 
 <figure>
   <img src="https://storage.googleapis.com/webfundamentals-assets/updates/2018/01/overrides.gif"
@@ -48,40 +39,38 @@ Note: `chrome://version`実行しているChromeのバージョンを確認し�
   </figcaption>
 </figure>
 
-使い方:
+How it works:
 
-* DevToolsが変更を保存するディレクトリを指定します。
-DevToolsを変更すると、DevToolsは変更されたファイルのコピーをディレクトリに保存します。
-*ページをリロードすると、DevToolsはネットワークリソースではなくローカルの変更されたファイルを提供します。
+* You specify a directory where DevTools should save changes.
+* When you make changes in DevTools, DevTools saves a copy of the modified file to your directory.
+* When you reload the page, DevTools serves the local, modified file, rather than the network resource.
 
-**ローカルオーバーライド**を設定するには:
+To set up **Local Overrides**:
 
-1. **ソース**パネルを開きます。 1. **上書き**タブを開きます。
+1. Open the **Sources** panel.
+2. Open the **Overrides** tab.
+    
+    <figure> 
+    
+    ![The Overrides tab](/web/updates/images/2018/01/overrides.png) <figcaption> **Figure 2**. The **Overrides** tab </figcaption> </figure>
+3. Click **Setup Overrides**.
 
-     <figure>
-       <img src="/web/updates/images/2018/01/overrides.png"
-            alt="The Overrides tab"/>
-       <figcaption>
-         <b>Figure 2</b>. The <b>Overrides</b> tab
-       </figcaption>
-     </figure>
+4. Select which directory you want to save your changes to.
+5. At the top of your viewport, click **Allow** to give DevTools read and write access to the directory.
+6. Make your changes.
 
-1. **設定の上書き**をクリックします。 1.変更を保存するディレクトリを選択します。 1.ビューポートの上部で、**許可**をクリックしてDevToolsにディレクトリへの読み書きアクセスを許可します。 1.変更を加えます。
+### Limitations {: #overrides-limitations }
 
-### 制限{: #overrides-limitations }
+* DevTools doesn't save changes made in the **DOM Tree** of the **Elements** panel. Edit HTML in the **Sources** panel instead.
+* If you edit CSS in the **Styles** pane, and the source of that CSS is an HTML file, DevTools won't save the change. Edit the HTML file in the **Sources** panel instead.
 
-* DevToolsは、** Elements **パネルの** DOM Tree **の変更を保存しません。代わりに**ソース**パネルでHTMLを編集してください。
-* **スタイル**ペインでCSSを編集し、そのCSSのソースがHTMLファイルの場合、DevToolsは変更を保存しません。代わりに**ソース**パネルでHTMLファイルを編集してください。
+### Related features {: #overrides-related }
 
-### 関連機能{: #overrides-related }
+* [Workspaces](/web/updates/2017/10/devtools-release-notes#workspaces). DevTools automatically maps network resources to a local repository. Whenever you make a change in DevTools, that change gets saved to your local repository, too.
 
-* [Workspaces][WS] 。 DevToolsは自動的にネットワークリソースをローカルリポジトリにマップします。 DevToolsを変更すると、その変更もローカルリポジトリに保存されます。
+## The Changes tab {: #changes }
 
-[WS]: /web/updates/2017/10/devtools-release-notes#workspaces
-
-## [変更]タブ{: #changes }
-
-DevToolsでローカルで行った変更を新しい**変更**タブで追跡します。
+Track changes that you make locally in DevTools via the new **Changes** tab.
 
 <figure>
   <img src="/web/updates/images/2018/01/changes.png"
@@ -91,13 +80,13 @@ DevToolsでローカルで行った変更を新しい**変更**タブで追跡�
   </figcaption>
 </figure>
 
-## 新しいアクセシビリティツール{: #a11y }
+## New accessibility tools {: #a11y }
 
-新しい**アクセシビリティ**ペインを使用して、要素のアクセシビリティプロパティを検査し、**カラーピッカー**のテキスト要素のコントラスト比を調べて、低視力障害または色のあるユーザーがアクセシビリティにアクセスできるようにします - 欠陥の欠陥。
+Use the new **Accessibility** pane to inspect the accessibility properties of an element, and inspect the contrast ratio of text elements in the **Color Picker** to ensure that they're accessible to users with low-vision impairments or color-vision deficiencies.
 
-### アクセシビリティペイン{: #a11y-pane }
+### Accessibility pane {: #a11y-pane }
 
-** Elements **パネルの** Accessibility **ペインを使用して、現在選択されている要素のアクセシビリティプロパティを調べます。
+Use the **Accessibility** pane on the **Elements** panel to investigate the accessibility properties of the currently-selected element.
 
 <figure>
   <img src="/web/updates/images/2018/01/a11y-pane.png"
@@ -111,7 +100,7 @@ DevToolsでローカルで行った変更を新しい**変更**タブで追跡�
   </figcaption>
 </figure>
 
-下のラベリングのRob DodsonのA11ycastをチェックして、**アクセシビリティ**ペインを実際に見てください。
+Check out Rob Dodson's A11ycast on labeling below to see the **Accessibility** pane in action.
 
 <div class="video-wrapper-full-width">
   <iframe class="devsite-embedded-youtube-video" data-video-id="8dCUzOiMRy4"
@@ -120,11 +109,11 @@ DevToolsでローカルで行った変更を新しい**変更**タブで追跡�
   </iframe>
 </div>
 
-### カラーピッカーでのコントラスト比{: #contrast }
+### Contrast ratio in the Color Picker {: #contrast }
 
-[Color Picker][CP]はテキスト要素のコントラスト比を表示します。テキスト要素のコントラスト比を増やすと、視覚障害や色覚障害のあるユーザーがサイトにアクセスしやすくなります。コントラスト比がアクセシビリティにどのように影響するかについては、 [Color and contrast][contrast]を参照してください。
+The [Color Picker](/web/tools/chrome-devtools/css/reference#color-picker) now shows you the contrast ratio of text elements. Increasing the contrast ratio of text elements makes your site more accessible to users with low-vision impairments or color-vision deficiencies. See [Color and contrast](/web/fundamentals/accessibility/accessible-styles#color_and_contrast) to learn more about how contrast ratio affects accessibility.
 
-テキスト要素の色のコントラストを改善すると、 <i>すべての</i>ユーザーがサイトをより使いやすくすることができます。言い換えれば、テキストが白い背景で灰色である場合、誰にでも読むことは難しいです。
+Improving the color contrast of your text elements makes your site more usable for *all* users. In other words, if your text is grey with a white background, that's hard for anyone to read.
 
 <figure>
   <img src="/web/updates/images/2018/01/contrast-ratio-collapsed.png"
@@ -134,13 +123,9 @@ DevToolsでローカルで行った変更を新しい**変更**タブで追跡�
   </figcaption>
 </figure>
 
-**図5 **では、** 4.61 **の隣にある2つのチェックマークは、この要素が[enhanced recommended contrast ratio (AAA)][enhanced]{:.external}満たすことを意味します。チェックマークが1つしかない場合は、それが[minimum recommended contrast ratio (AA)][minimum]{:.external}に会ったことを意味します。
+In **Figure 5**, the two checkmarks next to **4.61** means that this element meets the [enhanced recommended contrast ratio (AAA)](https://www.w3.org/WAI/WCAG20/quickref/#qr-visual-audio-contrast7){:.external}. If it only had one checkmark, that would mean it met the [minimum recommended contrast ratio (AA)](https://www.w3.org/WAI/WCAG20/quickref/#qr-visual-audio-contrast-contrast){:.external}.
 
-[enhanced]: https://www.w3.org/WAI/WCAG20/quickref/#qr-visual-audio-contrast7
-[minimum]: https://www.w3.org/WAI/WCAG20/quickref/#qr-visual-audio-contrast-contrast
-
-**もっと見る**をクリックしてください！ **コントラスト比**セクションを拡大するには[Show More][SM]{:.cdt-inl}を[Show More][SM]{:.cdt-inl}ます。 ** Color Spectrum **ボックスの白い線は、推奨されるコントラスト比を満たす色と、そうでない色との境界を表します。例えば、
-**図6 **は推奨を満たしています。つまり、白線の下のすべての色も推奨値を満たしています。
+Click **Show More** ![Show More](/web/updates/images/2018/01/show-more.png){:.cdt-inl} to expand the **Contrast Ratio** section. The white line in the **Color Spectrum** box represents the boundary between colors that meet the recommended contrast ratio, and those that don't. For example, since the grey color in **Figure 6** meets recommendations, that means that all of the colors below the white line also meet recommendations.
 
 <figure>
   <img src="/web/updates/images/2018/01/contrast-ratio-expanded.png"
@@ -150,16 +135,11 @@ DevToolsでローカルで行った変更を新しい**変更**タブで追跡�
   </figcaption>
 </figure>
 
-[CP]: /web/tools/chrome-devtools/css/reference#color-picker
-[contrast]: /web/fundamentals/accessibility/accessible-styles#color_and_contrast
-[SM]: /web/updates/images/2018/01/show-more.png
+#### Related features {: #contrast-related }
 
-#### 関連機能{: #contrast-related }
+The **Audits** panel has an automated accessibility audit for ensuring that *every* text element on a page has a sufficient contrast ratio.
 
-**監査**パネルには、自動アクセシビリティ監査機能があります。
-*ページ上のすべての*テキスト要素は十分なコントラスト比を持っています。
-
-参照[Run Lighthouse in Chrome DevTools][audit] 、またはアクセス可能性をテストするために**監査**パネルを使用する方法については、下記のA11ycastを見ます。
+See [Run Lighthouse in Chrome DevTools](/web/tools/lighthouse/#devtools), or watch the A11ycast below, to learn how to use the **Audits** panel to test accessibility.
 
 <div class="video-wrapper-full-width">
   <iframe class="devsite-embedded-youtube-video" data-video-id="b0Q5Zp_yKaU"
@@ -168,17 +148,15 @@ DevToolsでローカルで行った変更を新しい**変更**タブで追跡�
   </iframe>
 </div>
 
-[audit]: /web/tools/lighthouse/#devtools
+## New audits {: #audits }
 
-## 新しい監査{: #audits }
+Chrome 65 ships with a whole new category of SEO audits, and many new performance audits.
 
-Chrome 65には、全く新しいカテゴリのSEO監査と多くの新しいパフォーマンス監査が付属しています。
+Note: The **Audits** panel is powered by [Lighthouse](/web/tools/lighthouse). Chrome 64 runs Lighthouse version 2.5. Chrome 65 runs Lighthouse version 2.8. So this section is simply a summary of the Lighthouse updates from 2.6, 2.7, and 2.8.
 
-Note: ** [Lighthouse][LH] **パネルは[Lighthouse][LH]によって強化されてい[Lighthouse][LH] 。 Chrome 64はLighthouseバージョン2.5を実行します。 Chrome 65はLighthouseバージョン2.8を実行します。したがって、このセクションは、2.6,2.7、および2.8からLighthouseのアップデートをまとめたものです。
+### New SEO audits {: #seo }
 
-### 新しいSEO監査{: #seo }
-
-ページが新しい** SEO **カテゴリの各監査に合格するようにすることで、検索エンジンのランキングが向上する場合があります。
+Ensuring that your pages pass each of the audits in the new **SEO** category may help improve your search engine rankings.
 
 <figure>
   <img src="/web/updates/images/2018/01/seo.png"
@@ -188,16 +166,16 @@ Note: ** [Lighthouse][LH] **パネルは[Lighthouse][LH]によって強化され
   </figcaption>
 </figure>
 
-### 新しいパフォーマンス監査{: #performance }
+### New performance audits {: #performance }
 
-Chrome 65には、多くの新しいパフォーマンス監査が付属しています。
+Chrome 65 also ships with many new performance audits:
 
-* JavaScriptの起動時間が長い
-静的資産に対する非効率なキャッシュポリシーを使用
-*ページリダイレクトを避ける
-*ドキュメントはプラグインを使用します
-* CSSの縮小
-* JavaScriptを縮小する
+* JavaScript boot-up time is high
+* Uses inefficient cache policy on static assets
+* Avoids page redirects
+* Document uses plugins
+* Minify CSS
+* Minify JavaScript
 
 <aside class="key-point">
   <b>Perf matters!</b> After Mynet improved their page load speed by 4X, users spent 43% more time
@@ -212,33 +190,23 @@ Chrome 65には、多くの新しいパフォーマンス監査が付属して�
   started</a>.
 </aside>
 
-### その他の更新{: #audits-other }
+### Other updates {: #audits-other }
 
 * [New, manual accessibility audits](/web/updates/2018/01/lighthouse#a11y)
-* [Updates to the WebP audit][webp]は他の次世代画像フォーマットをより包括的にする
-* [A rehaul of the accessibility score][a11yscore]
-*アクセシビリティ監査がページに適用されない場合、その監査はアクセシビリティスコアにカウントされなくなります
-*パフォーマンスはレポートの一番上のセクションになりました
+* [Updates to the WebP audit](/web/updates/2018/01/lighthouse#webp) to make it more inclusive of other next-generation image formats
+* [A rehaul of the accessibility score](/web/updates/2017/12/lighthouse#a11y)
+* If an accessibility audit is not applicable for a page, that audit no longer counts towards the accessibility score
+* Performance is now the top section in reports
 
-[seoaudits]: /web/updates/2018/01/lighthouse#seo
-[webp]: /web/updates/2018/01/lighthouse#webp
-[a11yscore]: /web/updates/2017/12/lighthouse#a11y
-[LH]: /web/tools/lighthouse
-[2.6]: /web/updates/2017/12/lighthouse
-[2.7]: /web/updates/2018/01/lighthouse
+## Reliable code stepping with workers and asynchronous code {: #stepping }
 
-## ワーカーと非同期コードによる信頼性の高いコードステッピング{: #stepping }
+Chrome 65 brings updates to the **Step Into** ![Step Into](/web/tools/chrome-devtools/javascript/imgs/step-into.png){:.cdt-inl} button when stepping into code that passes messages between threads, and asynchronous code. If you want the previous stepping behavior, you can use the new **Step** ![Step](/web/tools/chrome-devtools/javascript/imgs/step.png){:.cdt-inl} button, instead.
 
-Chrome 65は**ステップイン**へのアップデートをもたらします。スレッド間でメッセージを渡すコードにステップ[Step Into][into]{:.cdt-inl}際の[Step Into][into]{:.cdt-inl}ボタン、および非同期コード。以前のステップ動作をしたい場合は、新しい**ステップ**を使用することができます！代わりに[Step][step]{:.cdt-inl}ボタンを押します。
+### Stepping into code that passes messages between threads {: #workers }
 
-[into]: /web/tools/chrome-devtools/javascript/imgs/step-into.png
-[step]: /web/tools/chrome-devtools/javascript/imgs/step.png
+When you step into code that passes messages between threads, DevTools now shows you what happens in each thread.
 
-### スレッド間でメッセージを渡すコードへのステップ{: #workers }
-
-スレッド間でメッセージを渡すコードに入ると、DevToolsは各スレッドで何が起きたかを表示します。
-
-たとえば、**図8 **のアプリは、メインスレッドとワーカースレッドの間にメッセージを渡します。メインスレッドで`postMessage()`呼び出しを実行すると、 `onmessage`はワーカースレッドの`onmessage`ハンドラで一時停止します。 `onmessage`ハンドラ自体は、メインスレッドにメッセージを戻します。 *その*への呼び出しは、DevToolsをメインスレッドに戻します。
+For example, the app in **Figure 8** passes a message between the main thread and the worker thread. After stepping into the `postMessage()` call on the main thread, DevTools pauses in the `onmessage` handler in the worker thread. The `onmessage` handler itself posts a message back to the main thread. Stepping into *that* call pauses DevTools back in the main thread.
 
 <figure>
   <img src="https://storage.googleapis.com/webfundamentals-assets/updates/2018/01/new-worker-stepping.gif"
@@ -248,7 +216,7 @@ Chrome 65は**ステップイン**へのアップデートをもたらします�
   </figcaption>
 </figure>
 
-以前のバージョンのChromeでこのようなコードを使用した場合、**図9 **に示すように、Chromeはコードのメインスレッド側のみを表示しました。
+When you stepped into code like this in earlier versions of Chrome, Chrome only showed you the main-thread-side of the code, as you can see in **Figure 9**.
 
 <figure>
   <img src="https://storage.googleapis.com/webfundamentals-assets/updates/2018/01/old-worker-stepping.gif"
@@ -258,11 +226,11 @@ Chrome 65は**ステップイン**へのアップデートをもたらします�
   </figcaption>
 </figure>
 
-### 非同期コード{: #async }へのステップ{: #async }
+### Stepping into asynchronous code {: #async }
 
-非同期コードにステップインすると、DevToolsは最終的に実行される非同期コードで一時停止することを前提とします。
+When stepping into asynchronous code, DevTools now assumes that you want to pause in the the asynchronous code that eventually runs.
 
-例えば、**図10に**に足を踏み入れる後`setTimeout()` 、デベロッパーツールは舞台裏で、その点に至るまでのすべてのコードを実行し、その後に渡された機能で一時停止します`setTimeout()` 。
+For example, in **Figure 10** after stepping into `setTimeout()`, DevTools runs all of the code leading up to that point behind the scenes, and then pauses in the function that's passed to `setTimeout()`.
 
 <figure>
   <img src="https://storage.googleapis.com/webfundamentals-assets/updates/2018/01/new-async-stepping.gif"
@@ -272,7 +240,7 @@ Chrome 65は**ステップイン**へのアップデートをもたらします�
   </figcaption>
 </figure>
 
-Chrome 63でこのようなコードを実行したとき、DevToolsは**図11 **に示すように、時系列的にコードを一時停止しました。
+When you stepped into code like this in Chrome 63, DevTools paused in code as it chronologically ran, as you can see in **Figure 11**.
 
 <figure>
   <img src="https://storage.googleapis.com/webfundamentals-assets/updates/2018/01/old-async-stepping.gif"
@@ -282,11 +250,9 @@ Chrome 63でこのようなコードを実行したとき、DevToolsは**図11 *
   </figcaption>
 </figure>
 
-## パフォーマンスパネル{: #recordings }での複数録音
+## Multiple recordings in the Performance panel {: #recordings }
 
-**パフォーマンス**パネルで、最大5つの録音を一時的に保存できます。 DevToolsウィンドウを閉じると、録画が削除されます。 **パフォーマンス**パネルを快適に使用するには、 [Get Started with Analyzing Runtime Performance][runtime]を参照してください。
-
-[runtime]: /web/tools/chrome-devtools/evaluate-performance/
+The **Performance** panel now lets you temporarily save up to 5 recordings. The recordings are deleted when you close your DevTools window. See [Get Started with Analyzing Runtime Performance](/web/tools/chrome-devtools/evaluate-performance/) to get comfortable with the **Performance** panel.
 
 <figure>
   <img src="/web/updates/images/2018/01/recordings.png"
@@ -296,11 +262,11 @@ Chrome 63でこのようなコードを実行したとき、DevToolsは**図11 *
   </figcaption>
 </figure>
 
-## ボーナス:Puppeteer 1.0 {: #puppeteer } DevToolsアクションを自動化
+## Bonus: Automate DevTools actions with Puppeteer 1.0 {: #puppeteer }
 
-Note:このセクションはChrome 65とは関係ありません。
+Note: This section isn't related to Chrome 65.
 
-Chrome DevToolsチームが管理するブラウザ自動化ツールPuppeteerのバージョン1.0がリリースされました。 Puppeteerを使用すると、以前はDevToolsでしか利用できなかった、スクリーンショットのキャプチャなど、多くのタスクを自動化できます。
+Version 1.0 of Puppeteer, a browser automation tool maintained by the Chrome DevTools team, is now out. You can use Puppeteer to automate many tasks that were previously only available via DevTools, such as capturing screenshots:
 
     const puppeteer = require('puppeteer');
     (async () => {
@@ -310,8 +276,9 @@ Chrome DevToolsチームが管理するブラウザ自動化ツールPuppeteer�
       await page.screenshot({path: 'example.png'});
       await browser.close();
     })();
+    
 
-また、PDFの生成など、一般的に有用な自動化タスク用のAPIも備えています。
+It also has APIs for lots of generally useful automation tasks, such as generating PDFs:
 
     const puppeteer = require('puppeteer');
     (async () => {
@@ -321,35 +288,20 @@ Chrome DevToolsチームが管理するブラウザ自動化ツールPuppeteer�
       await page.pdf({path: 'hn.pdf', format: 'A4'});
       await browser.close();
     })();
+    
 
-詳細は、 [Quick Start][quickstart]を参照してください。
+See [Quick Start](/web/tools/puppeteer/get-started) to learn more.
 
-[quickstart]: /web/tools/puppeteer/get-started
+You can also use Puppeteer to expose DevTools features while browsing without ever explicitly opening DevTools. See [Using DevTools Features Without Opening DevTools](/web/updates/2018/01/devtools-without-devtools) for an example.
 
-また、DevToolsを明示的に開いていなくても、Puppeteerを使用してブラウズ中にDevToolsの機能を公開することもできます。例については[Using DevTools Features Without Opening DevTools][without]を参照してください。
+## A request from the DevTools team: consider Canary {: #canary }
 
-[without]: /web/updates/2018/01/devtools-without-devtools
+If you're on Mac or Windows, please consider using [Chrome Canary](https://www.google.com/chrome/browser/canary.html) as your default development browser. If you report a bug or a change that you don't like while it's still in Canary, the DevTools team can address your feedback significantly faster.
 
-## DevToolsチームからの要請:Canary {: #canary }検討する
+Note: Canary is the bleeding-edge version of Chrome. It's released as soon as its built, without testing. This means that Canary breaks from time-to-time, about once-a-month, and it's usually fixed within a day. You can go back to using Chrome Stable when Canary breaks.
 
-MacまたはWindowsの場合は、 [Chrome Canary][canary]をデフォルトの開発ブラウザとして使用することを検討してください。 Canaryに残っている間に好きではないバグや変更を報告した場合、DevToolsチームはフィードバックを大幅に早く解決できます。
+## Feedback {: #feedback }
 
-Note: CanaryはChromeの最先端バージョンです。テストなしでビルドされるとすぐにリリースされます。これは、Canaryが時々、約1ヶ月に1回壊れてしまうことを意味し、通常は1日以内に修正されます。 Canaryが壊れたときにChrome Stableを使用することに戻ることができます。
+The best place to discuss any of the features or changes you see here is the [google-chrome-developer-tools@googlegroups.com mailing list](https://groups.google.com/forum/#!forum/google-chrome-developer-tools). You can also tweet us at [@ChromeDevTools](https://twitter.com/chromedevtools) if you're short on time. If you're sure that you've encountered a bug in DevTools, please [open an issue](https://crbug.com/new).
 
-[canary]: https://www.google.com/chrome/browser/canary.html
-
-## フィードバック{: #feedback }
-
-あなたがここに見られる機能や変化を議論する最も良い場所は、 [google-chrome-developer-tools@googlegroups.com mailing list][ML]です。あなたが短時間であれば、 [@ChromeDevTools](https://twitter.com/chromedevtools)ツイートすることもできます。 DevToolsでバグが発生したと確信できる場合は、WORDS1をご[open an issue](https://crbug.com/new)ください。
-
-[ML]: https://groups.google.com/forum/#!forum/google-chrome-developer-tools
-
-## 以前のリリースノート{: #links }
-
-以前のすべてのDevToolsリリースノートへのリンクについては、 [devtools-whatsnew][tag]タグを参照してください。
-
-[tag]: /web/updates/tags/devtools-whatsnew
-
-{% include "web/_shared/rss-widget-updates.html" %}
-
-{% include "web/_shared/translation-end.html" %}
+<<../../_shared/discover.md>>
