@@ -1,51 +1,32 @@
-project_path: /web/_project.yaml
-book_path: /web/updates/_book.yaml
-description: New SEO audits and manual accessibility audits, and updates to the WebP audit.
-{% include "web/_shared/machine-translation-start.html" %}
+project_path: /web/_project.yaml book_path: /web/updates/_book.yaml description: New SEO audits and manual accessibility audits, and updates to the WebP audit.
 
-{# wf_updated_on: 2018-03-05 #}
-{# wf_published_on: 2018-01-05 #}
-{# wf_tags: lighthouse,accessibility,images #}
-{# wf_featured_image: /web/progressive-web-apps/images/pwa-lighthouse.png #}
-{# wf_featured_snippet: New SEO audits and manual accessibility audits, and updates to the WebP audit. #}
-{# wf_blink_components: N/A #}
+{# wf_updated_on: 2018-03-05 #} {# wf_published_on: 2018-01-05 #} {# wf_tags: lighthouse,accessibility,images #} {# wf_featured_image: /web/progressive-web-apps/images/pwa-lighthouse.png #} {# wf_featured_snippet: New SEO audits and manual accessibility audits, and updates to the WebP audit. #} {# wf_blink_components: N/A #}
 
 {% include "web/tools/chrome-devtools/_shared/styles.html" %}
 
-# लाइटहाउस 2.7 अपडेट {: .page-title }
+# Lighthouse 2.7 Updates {: .page-title }
 
-{% include "web/_shared/contributors/vinamratasingal.html" %}
-{% include "web/_shared/contributors/patrickhulce.html" %}
-{% include "web/_shared/contributors/kaycebasques.html" %}
+{% include "web/_shared/contributors/vinamratasingal.html" %} {% include "web/_shared/contributors/patrickhulce.html" %} {% include "web/_shared/contributors/kaycebasques.html" %}
 
-[CDT]: /web/tools/lighthouse/#devtools
-[Node]: https://github.com/GoogleChrome/lighthouse#using-programmatically
-[CLI]: /web/tools/lighthouse/#cli
-[CE]: /web/tools/lighthouse/#extension
+Lighthouse 2.7 is out! Highlights include:
 
-लाइटहाउस 2.7 बाहर है! हाइलाइट्स में शामिल हैं:
+* [New SEO audits](#seo).
+* [New, manual accessibility audits](#a11y).
+* [Updates to the WebP audit](#webp).
 
-* [New SEO audits](#seo) ।
-* [New, manual accessibility audits](#a11y) ।
-* [Updates to the WebP audit](#webp) ।
+See the [2.7 release notes](https://github.com/GoogleChrome/lighthouse/releases/tag/v2.7.0) for the full list of new features, changes, and bug fixes.
 
-नई सुविधाओं, परिवर्तनों और बग फिक्स की पूरी सूची के लिए [2.7 release notes][RN] देखें।
+## How to update to 2.7 {: #update }
 
-[RN]: https://github.com/GoogleChrome/lighthouse/releases/tag/v2.7.0
+* NPM. Run `npm update lighthouse`, or `npm update lighthouse -g` flag if you installed Lighthouse globally.
+* Chrome Extension. The extension should automatically update, but you can manually update it via `chrome://extensions`.
+* DevTools. Lighthouse 2.7 is shipping in Chrome 65. You can check what version of Chrome you're running via `chrome://version`. Chrome updates to a new version about every 6 weeks. You can run the latest Chrome code by downloading [Chrome Canary](https://www.google.com/chrome/browser/canary.html).
 
-## 2.7 {: #update } को कैसे अपडेट करें
+## New SEO audits {: #seo }
 
-* एनपीएम। यदि आपने वैश्विक स्तर पर लाइटहाउस स्थापित किया है तो `npm update lighthouse` , या `npm update lighthouse -g` ध्वज चलाएं।
-* क्रोम एक्सटेंशन। एक्सटेंशन स्वचालित रूप से अपडेट होना चाहिए, लेकिन आप इसे `chrome://extensions` माध्यम से मैन्युअल रूप से अपडेट कर सकते हैं।
-* DevTools। लाइटहाउस 2.7 क्रोम 65 में शिपिंग कर रहा है। आप `chrome://version` माध्यम से क्रोम का कौन सा संस्करण चला रहे हैं, इसकी जांच कर सकते हैं। क्रोम प्रत्येक 6 सप्ताह के बारे में एक नए संस्करण के लिए अद्यतन करता है। आप [Chrome Canary][Canary] डाउनलोड करके नवीनतम क्रोम कोड चला सकते हैं।
+The new SEO category provides audits that help improve your page's ranking in search engine results.
 
-[Canary]: https://www.google.com/chrome/browser/canary.html
-
-## नया एसईओ ऑडिट {: #seo }
-
-नई एसईओ श्रेणी लेखा परीक्षा प्रदान करती है जो खोज इंजन परिणामों में आपके पृष्ठ की रैंकिंग में सुधार करने में मदद करती है।
-
-Note: कई कारक किसी पृष्ठ की खोज इंजन रैंकिंग को प्रभावित करते हैं। लाइटहाउस इन सभी कारकों का परीक्षण नहीं करता है। लाइटहाउस में एकदम सही 100 स्कोर किसी भी खोज इंजन पर शीर्ष रैंकिंग स्पॉट की गारंटी नहीं देता है!
+Note: Many factors affect a page's search engine ranking. Lighthouse does not test all of these factors. A perfect 100 score in Lighthouse does not guarantee a top ranking spot on any search engine!
 
 <figure>
   <img src="/web/updates/images/2018/01/seo.png"
@@ -59,9 +40,9 @@ Note: कई कारक किसी पृष्ठ की खोज इं�
   </figcaption>
 </figure>
 
-## नया, मैन्युअल अभिगम्यता ऑडिट {: #a11y }
+## New, manual accessibility audits {: #a11y }
 
-नया, मैन्युअल एक्सेसिबिलिटी ऑडिट आपको उन चीज़ों के बारे में सूचित करता है जो आप अपने पृष्ठ की पहुंच में सुधार के लिए कर सकते हैं। यहां &quot;मैनुअल&quot; का अर्थ है कि लाइटहाउस इन ऑडिट को स्वचालित नहीं कर सकता है, इसलिए आपको स्वयं को मैन्युअल रूप से जांचना होगा।
+The new, manual accessibility audits inform you of things you can do to improve the accessibility of your page. "Manual" here means that Lighthouse can't automate these audits, so you need to manually test them yourself.
 
 <figure>
   <img src="/web/updates/images/2018/01/a11y.png"
@@ -77,12 +58,9 @@ Note: कई कारक किसी पृष्ठ की खोज इं�
   </figcaption>
 </figure>
 
-## ऑडिट {: #webp } लिए अपडेट
+## Updates to the WebP audit {: #webp }
 
-कुछ [community feedback][feedback] के लिए धन्यवाद, [WebP audit][webp] अब जेपीईजी 2000 और जेपीईजी एक्सआर जैसे अन्य अगली पीढ़ी, उच्च-प्रदर्शन छवि प्रारूपों सहित अधिक शामिल है।
-
-[feedback]: https://www.reddit.com/r/webdev/comments/75w7t0/so_exactly_what_do_i_do_google_put_my_css_in_js/doatllq/
-[webp]: /web/tools/lighthouse/audits/webp
+Thanks to some [community feedback](https://www.reddit.com/r/webdev/comments/75w7t0/so_exactly_what_do_i_do_google_put_my_css_in_js/doatllq/), the [WebP audit](/web/tools/lighthouse/audits/webp) is now more inclusive of other next-generation, high-performance image formats, like JPEG 2000 and JPEG XR.
 
 <figure>
   <img src="/web/updates/images/2018/01/webp.png"
@@ -93,5 +71,3 @@ Note: कई कारक किसी पृष्ठ की खोज इं�
 </figure>
 
 {% include "web/_shared/rss-widget-updates.html" %}
-
-{% include "web/_shared/translation-end.html" %}
