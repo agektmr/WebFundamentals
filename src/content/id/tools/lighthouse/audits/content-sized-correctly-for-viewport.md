@@ -1,35 +1,26 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Dokumentasi referensi untuk audit Lighthouse "Ukuran Materi Disesuaikan dengan Benar untuk Tampilan yang Terlihat".
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Reference documentation for the "Content Sized Correctly for Viewport" Lighthouse audit.
 
-{# wf_updated_on: 2016-10-04 #}
-{# wf_published_on: 2016-10-04 #}
+{# wf_updated_on: 2018-07-23 #} {# wf_published_on: 2016-10-04 #} {# wf_blink_components: N/A #}
 
-# Ukuran Materi Disesuaikan dengan Benar untuk Tampilan yang Terlihat  {: .page-title }
+# Content Sized Correctly for Viewport {: .page-title }
 
-## Mengapa audit itu penting {: #why }
+## Overview {: #overview }
 
-Audit ini memeriksa apakah lebar materi pada laman Anda sama
-dengan lebar tampilan yang terlihat. Bila lebar materi lebih kecil atau lebih besar dari
-lebar tampilan yang terlihat, sering kali itu pertanda bahwa laman tidak dioptimalkan untuk
-layar seluler.
+This audit checks that the width of the content on your page is equal to the width of the viewport. When content width is smaller or larger than viewport width, that's often a cue that the page is not optimized for mobile screens.
 
-## Cara untuk lulus audit {: #how }
+## Recommendations {: #recommendations }
 
-Audit adalah seputar cara menentukan apakah laman Anda telah dioptimalkan untuk
-perangkat seluler. Jika situs Anda tidak dioptimalkan dan memang itu yang Anda inginkan, maka lihat
-[Dasar-Dasar Desain Web Responsif](/web/fundamentals/design-and-ux/responsive/)
-untuk memulai.
+This audit is a roundabout way of determining if your page is optimized for mobile devices. If your site is not optimized and you want it to be, then see [Responsive Web Design Basics](/web/fundamentals/design-and-ux/responsive/) to get started.
 
-Anda bisa mengabaikan audit ini jika:
+You can ignore this audit if:
 
-* Situs Anda tidak perlu dioptimalkan untuk layar seluler.
-* Lebar materi laman Anda memang sengaja lebih kecil atau lebih besar dari
-  lebar tampilan yang terlihat.
+* Your site does not need to be optimized for mobile screens.
+* The content width of your page is intentionally smaller or larger than the viewport width.
 
-{% include "web/tools/lighthouse/audits/implementation-heading.html" %}
+## More information {: #more-info }
 
-Audit dianggap lulus jika `window.innerWidth === window.outerWidth`.
+The audit passes if `window.innerWidth === window.outerWidth`.
 
+## Feedback {: #feedback }
 
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
