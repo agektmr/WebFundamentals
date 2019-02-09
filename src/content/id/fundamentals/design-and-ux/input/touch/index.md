@@ -1,11 +1,8 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Layar sentuh tersedia pada semakin banyak perangkat, dari ponsel hingga layar desktop. Aplikasi Anda harus merespons setiap sentuhan secara intuitif dan indah.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Touchscreens are available on more and more devices, from phones up to desktop screens. Your app should respond to their touch in intuitive and beautiful ways.
 
-{# wf_updated_on: 2017-07-12 #}
-{# wf_published_on: 2014-01-01 #}
+{# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2014-01-01 #} {# wf_blink_components: Blink>Input #}
 
-# Menambahkan Sentuhan Ke Situs Anda {: .page-title }
+# Add Touch to Your Site {: .page-title }
 
 {% include "web/_shared/contributors/mattgaunt.html" %}
 
@@ -15,469 +12,357 @@ description: Layar sentuh tersedia pada semakin banyak perangkat, dari ponsel hi
   </iframe>
 </div>
 
-Layar sentuh tersedia pada semakin banyak perangkat, mulai dari ponsel hingga
-layar desktop. Ketika pengguna memilih untuk berinteraksi dengan UI Anda, aplikasi
-harus merespons setiap sentuhan secara intuitif.
+Touchscreens are available on more and more devices, ranging from phones to desktop screens. When your users choose to interact with your UI, your app should respond to their touch in intuitive ways.
 
 <div class="clearfix"></div>
 
-## Merespons status elemen
+## Respond to element states
 
-Apakah Anda pernah menyentuh atau mengeklik elemen pada laman web dan bertanya-tanya
-apakah situs itu benar-benar mendeteksi tindakan tersebut?
+Have you ever touched or clicked an element on a web page and questioned whether the site actually detected it?
 
-Cukup ubah warna elemen saat pengguna menyentuh atau berinteraksi dengan bagian
-UI untuk memberikan jaminan kembali bahwa situs Anda bekerja. Hal ini tidak hanya
-mengurangi frustrasi, tapi juga bisa memberikan kesan cepat dan responsif.
+Simply altering the color of an element as users touch or interact with parts of your UI gives a basic reassurance that your site is working. Not only does this alleviate frustration, it can also give a snappy and responsive feel.
 
-Elemen DOM bisa mewarisi salah satu status berikut: default, focus, hover
-dan active. Untuk mengubah UI masing-masing status, kita perlu menerapkan gaya
-ke kelas pseudo berikut `:hover`, `:focus` dan `:active` seperti yang ditampilkan di bawah ini:
+DOM elements can inherit any of the following states: default, focus, hover and active. To change our UI for each of these states, we need to apply styles to the following pseudo classes `:hover`, `:focus` and `:active` as shown below:
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/design-and-ux/input/touch/_code/states-example.html" region_tag="btnstates" adjust_indentation="auto" %}
 </pre>
 
-[Cobalah](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/input/touch/states-example.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/input/touch/states-example.html){: target="_blank" .external }
 
-![Gambar yang mengilustrasikan perbedaan warna untuk status
-tombol](images/button-states.png)
+![Image illustrating different colors for button
+states](images/button-states.png)
 
-Pada kebanyakan browser seluler, status *hover* dan/atau *focus* akan diterapkan ke elemen
-setelah diketuk.
+On most mobile browsers *hover* and/or *focus* states will apply to an element after it's been tapped.
 
-Pertimbangkan dengan hati-hati gaya yang Anda setel dan bagaimana mereka akan terlihat oleh pengguna setelah
-menyelesaikan sentuhan mereka.
+Consider carefully what styles you set and how they will look to the user after they finish their touch.
 
-Note: Tag anchor dan tombol mungkin memiliki perilaku berbeda
-di browser yang berbeda, jadi asumsikan dalam beberapa kasus **hover**
-akan aktif dan di kejadian lainnya **focus** yang akan aktif.
+Note: Anchor tags and buttons may have different behavior in different browsers, so assume in some cases **hover** will remain and in others **focus** will remain.
 
-### Meredam gaya browser default
+### Suppressing default browser styles
 
-Setelah Anda menambahkan gaya untuk status yang berbeda, Anda akan melihat bahwa kebanyakan browser
-mengimplementasikan gaya mereka sendiri dalam merespons sentuhan pengguna. Hal ini terutama
-karena saat pertama kali perangkat seluler diluncurkan, sejumlah situs tidak
-memiliki penataan gaya untuk status `:active`. Akibatnya, banyak browser menambahkan
-warna sorot atau gaya tambahan untuk memberikan masukan bagi pengguna.
+Once you add styles for the different states, you'll notice that most browsers implement their own styles in response to a user’s touch. This is largely because when mobile devices first launched, a number of sites didn’t have styling for the `:active` state. As a result, many browsers added additional highlight color or style to give the user feedback.
 
-Kebanyakan browser menggunakan properti CSS `outline` untuk menampilkan sebuah lingkaran di sekeliling
-elemen saat elemen difokuskan. Anda bisa meredamnya dengan:
+Most browsers use the `outline` CSS property to display a ring around an element when an element is focused. You can suppress it with:
 
     .btn:focus {
       outline: 0;
-
+    
       // Add replacement focus styling here (i.e. border)
     }
+    
 
-Safari dan Chrome menambahkan warna sorot ketuk yang bisa dicegah dengan properti CSS
-`-webkit-tap-highlight-color`:
+Safari and Chrome add a tap highlight color which can be prevented with the `-webkit-tap-highlight-color` CSS property:
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/design-and-ux/input/touch/_code/states-example.html" region_tag="webkit-specific" adjust_indentation="auto" %}
 </pre>
 
-[Cobalah](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/input/touch/states-example.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/input/touch/states-example.html){: target="_blank" .external }
 
-Internet Explorer pada Windows Phone memiliki perilaku yang serupa, namun diredam
-melalui tag meta:
+Internet Explorer on Windows Phone has a similar behavior, but is suppressed via a meta tag:
 
     <meta name="msapplication-tap-highlight" content="no">
+    
 
-Firefox memiliki dua efek samping yang harus diatasi.
+Firefox has two side effects to handle.
 
-Kelas pseudo `-moz-focus-inner`, yang menambahkan outline pada
-elemen bisa disentuh, dapat Anda buang dengan menyetel `border: 0`.
+The `-moz-focus-inner` pseudo class, which adds an outline on touchable elements, you can remove by setting `border: 0`.
 
-Jika Anda menggunakan elemen `<button>` pada Firefox, Anda mendapat penerapan
-sebuah gradien, yang bisa Anda buang dengan menyetel `background-image: none`.
+If you are using a `<button>` element on Firefox, you get a gradient applied, which you can remove by setting `background-image: none`.
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/design-and-ux/input/touch/_code/states-example.html" region_tag="ff-specific" adjust_indentation="auto" %}
 </pre>
 
-[Cobalah](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/input/touch/states-example.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/input/touch/states-example.html){: target="_blank" .external }
 
-Perhatian: Hanya redam gaya default yang disebutkan di atas jika Anda memiliki kelas-kelas
-pseudo untuk `:hover`, `:active` dan `:focus`!
+Caution: Only suppress the default styles mentioned above if you have pseudo classes for `:hover`, `:active` and `:focus`!
 
-### Menonaktifkan user-select
+### Disabling user-select
 
-Ketika membuat UI, mungkin ada skenario di mana Anda menginginkan pengguna
-agar berinteraksi dengan elemen namun ingin Anda redam perilaku defaultnya yaitu
-memilih teks dengan tekan lama atau menyeret mouse di atas UI.
+When you're creating your UI there may be scenarios where you want users to interact with your elements but you want to suppress the default behavior of selecting text on long press or dragging a mouse over your UI.
 
-Anda bisa melakukannya dengan properti CSS `user-select`, tapi waspadalah bahwa
-melakukan ini pada materi bisa **sangat** menyebalkan
-pengguna jika mereka *ingin* memilih teks dalam elemen.
-Jadi, pastikan Anda menggunakannya dengan hati-hati dan secukupnya.
+You can do this with the `user-select` CSS property, but beware that doing this on content can be **extremely** infuriating for users if they *want* to select the text in the element. So make sure you use it with caution and sparingly.
 
     user-select: none;
+    
 
-## Mengimplementasikan isyarat khusus
+## Implement custom gestures
 
-Jika Anda memiliki gagasan untuk interaksi dan isyarat khusus untuk situs Anda, ada
-dua hal yang harus diingat:
+If you have an idea for custom interactions and gestures for your site, there are two topics to keep in mind:
 
-1. Cara mendukung semua browser.
-1. Cara menjaga laju bingkai Anda tetap tinggi.
+1. How to support all browsers.
+2. How to keep your frame rate high.
 
-Pada artikel ini, kita akan melihat secara seksama topik mencakup API yang harus
-kita dukung untuk masuk ke semua browser dan kemudian membahas bagaimana menggunakan kejadian ini
-dengan efisien.
+In this article, we'll look at exactly these topics covering the API's we need to support to hit all browsers and then cover how we use these events efficiently.
 
-Bergantung pada isyarat yang ingin dilakukan, Anda mungkin berharap
-pengguna berinteraksi dengan satu elemen pada satu waktu *atau* Anda berharap mereka
-bisa berinteraksi dengan beberapa elemen secara bersamaan.
+Depending on what you would like your gesture to do, you likely want the user to interact with one element at a time *or* you'll want them to be able to interact with multiple elements at the same time.
 
-Perhatian: Jangan lupa bahwa beberapa pengguna menginginkan masukan keyboard dan pengguna
-yang menjalankan teknologi bantu pada perangkat layar sentuh mungkin tidak mampu
-melakukan isyarat karena mereka dicegat/dikonsumsi oleh teknologi
-bantu.
+Caution: Don't forget that some users will want keyboard input and users running assistive technology on a touchscreen device may not be able to perform gestures because they're intercepted / consumed by the assistive technology.
 
-Kita akan melihat dua contoh dalam artikel ini, keduanya menunjukkan
-dukungan untuk semua browser dan cara menjaga agar laju bingkai tetap tinggi.
+We are going to look at two examples in this article, both demonstrating support for all browsers and how to keep the frame rate high.
 
-![Contoh GIF sentuh pada dokumen](images/touch-document-level.gif){: .attempt-right }
+![Example GIF of touch on document](images/touch-document-level.gif){: .attempt-right }
 
-Contoh pertama memungkinkan pengguna untuk berinteraksi dengan satu elemen. Untuk kasus
-ini Anda mungkin menginginkan semua kejadian sentuh diberikan kepada satu elemen, selama
-isyarat itu awalnya dimulai pada elemen itu sendiri. Misalnya, memindahkan
-jari dari elemen yang bisa-digesek, masih tetap bisa mengontrol elemen.
+The first example will allow the user to interact with one element. In this case you might want all touch events to be given to that one element, as long as the gesture initially started on the element itself. For example, moving a finger off the swipe-able element can still control the element.
 
-Hal ini berguna karena menyediakan banyak fleksibilitas bagi pengguna, tetapi
-memberlakukan pembatasan tentang bagaimana pengguna bisa berinteraksi dengan UI Anda.
+This is useful as it provides a great deal of flexibility for the user, but enforces a restriction on how the user can interact with your UI.
 
 <div class="clearfix"></div>
 
-![Contoh GIF sentuh pada elemen](images/touch-element-level.gif){: .attempt-right }
+![Example GIF of touch on element](images/touch-element-level.gif){: .attempt-right }
 
-Namun, jika Anda berharap pengguna berinteraksi dengan beberapa elemen pada saat yang
-bersamaan (menggunakan multi-touch), Anda harus membatasi sentuhan ke elemen
-tertentu.
+If, however, you expect users to interact with multiple elements at the same time (using multi-touch), you should restrict the touch to the specific element.
 
-Ini lebih fleksibel bagi pengguna, namun mempersulit logika untuk memanipulasi
-UI dan kurang tahan terhadap kesalahan pengguna.
+This is more flexible for users, but complicates the logic for manipulating the UI and is less resilient to user error.
 
 <div class="clearfix"></div>
 
-### Menambahkan event listener
+### Add event listeners
 
-Di Chrome (versi 55 dan yang lebih baru), Internet Explorer & Edge,
-`PointerEvents` adalah pendekatan yang direkomendasikan untuk mengimplementasikan isyarat khusus.
+In Chrome (version 55 and later), Internet Explorer & Edge, `PointerEvents` are the recommended approach for implementing custom gestures.
 
-Di browser lainnya `TouchEvents` dan `MouseEvents` adalah pendekatan yang tepat.
+In other browsers `TouchEvents` and `MouseEvents` are the correct approach.
 
-Fitur menarik dari `PointerEvents` adalah bahwa itu menggabungkan beberapa tipe masukan,
-termasuk kejadian mouse, sentuh dan pena, menjadi satu rangkaian
-callback. Kejadian yang didengarkan adalah `pointerdown`, `pointermove`,
-`pointerup` dan `pointercancel`.
+The great feature of `PointerEvents` is that it merges multiple types of input, including mouse, touch and pen events, into one set of callbacks. The events to listen for are `pointerdown`, `pointermove`, `pointerup` and `pointercancel`.
 
-Persamaan dengan browser lainnya adalah `touchstart`, `touchmove`,
-`touchend` dan `touchcancel` untuk kejadian sentuh dan bila Anda ingin mengimplementasikan
-isyarat yang sama untuk masukan mouse, Anda harus mengimplementasikan `mousedown`,
-`mousemove`, dan `mouseup`.
+The equivalents in other browsers are `touchstart`, `touchmove`, `touchend` and `touchcancel` for touch events and if you wanted to implement the same gesture for mouse input you'd need to implement `mousedown`, `mousemove`, and `mouseup`.
 
-Jika Anda memiliki pertanyaan tentang kejadian apa yang sebaiknya digunakan, silakan lihat tabel ini
-[Kejadian sentuh, mouse dan pointer](#touch-mouse-and-pointer-events)).
+If you have questions about which events to use, check out this table of [Touch, mouse and pointer events](#touch-mouse-and-pointer-events)).
 
-Menggunakan kejadian ini membutuhkan pemanggilan metode `addEventListener()` pada elemen
-DOM, bersama dengan nama kejadian, fungsi callback dan boolean.
-Boolean menentukan apakah Anda harus menangkap kejadian sebelum atau sesudah
-elemen lain memiliki kesempatan untuk menangkap dan menginterpretasikan
-kejadian. (`true` berarti Anda menginginkan kejadian sebelum elemen lainnya.)
+Using these events requires calling the `addEventListener()` method on a DOM element, along with the name of an event, a callback function and a boolean. The boolean determines whether you should catch the event before or after other elements have had the opportunity to catch and interpret the events. (`true` means you want the event before other elements.)
 
-Berikut adalah contoh dari mendengarkan untuk memulai interaksi.
+Here's an example of listening for the start of an interaction.
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/design-and-ux/input/touch/_code/touch-demo-1.html" region_tag="addlisteners" adjust_indentation="auto" %}
 </pre>
 
-[Cobalah](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/input/touch/touch-demo-1.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/input/touch/touch-demo-1.html){: target="_blank" .external }
 
-Note: Karena desain dari API, PointerEvents hanya memerlukan kejadian
-`pointerdown` tunggal untuk menangani kejadian mouse dan sentuh.
+Note: Because of the design of the API, PointerEvents only need a single `pointerdown` event to handle both mouse and touch events.
 
-#### Menangani interaksi elemen-tunggal
+#### Handle single-element interaction
 
-Dalam cuplikan kode pendek di atas kita hanya menambahkan awal event listener
-untuk kejadian mouse. Alasan untuk hal ini adalah karena kejadian mouse hanya akan dipicu
-ketika kursor di arahkan *ke atas* elemen yang ditambahkan event listener.
+In the short snippet of code above we only added the starting event listener for mouse events. The reason for this is that mouse events will only trigger when the cursor is hovering *over* the element the event listener is added to.
 
-TouchEvents akan melacak isyarat setelah dimulai tanpa menghiraukan dari mana
-kejadian sentuh terjadi dan PointerEvents akan melacak kejadian tanpa menghiraukan dari mana kejadian sentuh
-terjadi saat kita memanggil `setPointerCapture` pada elemen DOM.
+`TouchEvents` will track a gesture after it's started regardless of where the touch occurs and `PointerEvents` will track events regardless of where the touch occurs after we call `setPointerCapture` on a DOM element.
 
-Untuk gerakan mouse dan kejadian akhir, kita menambahkan event listener *di* metode
-awal isyarat dan menambahkan listener ke dokumen, sehingga
-bisa melacak kursor sampai isyarat selesai.
+For mouse move and end events we add the event listeners *in* the gesture start method and add the listeners to the document, meaning it can track the cursor until the gesture is complete.
 
-Langkah-langkah yang harus diimplementasikan adalah:
+The steps taken to implement this are:
 
-1. Tambahkan semua listener TouchEvent dan PointerEvent. Untuk MouseEvents tambahkan **hanya**
-   kejadian awal.
-1. Di dalam callback isyarat awal, ikat gerakan mouse dan kejadian akhir ke
-   dokumen. Dengan cara ini semua kejadian mouse akan diterima terlepas dari apakah
-   kejadian itu terjadi pada elemen asli atau tidak. Untuk PointerEvents kita
-   perlu memanggil `setPointerCapture()` pada elemen asli untuk menerima
-   semua kejadian lebih lanjut. Kemudian tangani awal isyarat tersebut.
-1. Tangani kejadian gerak.
-1. Pada kejadian akhir, buang gerakan mouse dan listener akhir dari dokumen
-   dan mengakhiri isyarat itu.
+1. Add all TouchEvent and PointerEvent listeners. For MouseEvents add **only** the start event.
+2. Inside the start gesture callback, bind the mouse move and end events to the document. This way all mouse events are received regardless of whether the event occurs on the original element or not. For PointerEvents we need to call `setPointerCapture()` on our original element to receive all further events. Then handle the start of the gesture.
+3. Handle the move events.
+4. On the end event, remove the mouse move and end listeners from the document and end the gesture.
 
-Berikut adalah cuplikan metode `handleGestureStart()` kami yang menambahkan kejadian gerak
-dan kejadian akhir ke dokumen:
+Below is a snippet of our `handleGestureStart()` method which adds the move and end events to the document:
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/design-and-ux/input/touch/_code/touch-demo-1.html" region_tag="handle-start-gesture" adjust_indentation="auto" %}
 </pre>
 
-[Cobalah](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/input/touch/touch-demo-1.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/input/touch/touch-demo-1.html){: target="_blank" .external }
 
-Callback akhir yang kita tambahkan adalah `handleGestureEnd()`, yang membuang event listener gerak
-dan event listener akhir dari dokumen dan melepaskan tangkapan penunjuk
-ketika isyarat telah selesai seperti:
+The end callback we add is `handleGestureEnd()`, which removes the move and end event listeners from the document and releases the pointer capture when the gesture has finished like so:
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/design-and-ux/input/touch/_code/touch-demo-1.html" region_tag="handle-end-gesture" adjust_indentation="auto" %}
 </pre>
 
-[Cobalah](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/input/touch/touch-demo-1.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/input/touch/touch-demo-1.html){: target="_blank" .external }
 
 <div class="attempt-left">
-  <p>Dengan mengikuti pola menambahkan kejadian gerak ke dokumen ini, jika
-  pengguna mulai berinteraksi dengan elemen dan menggerakkan isyarat mereka di luar dari
-  elemen, kita akan terus mendapatkan gerakan mouse terlepas dari posisi mereka
-  di laman, karena kejadian sedang diterima dari dokumen.</p>
+  <p>By following this pattern of adding the move event to the document, if the
+  user starts interacting with an element and moves their gesture outside of
+  the element, we'll continue to get mouse movements regardless of where they
+  are on the page, because the events are being received from the document.</p>
 
-  <p>Diagram ini menunjukkan apa yang dilakukan kejadian sentuh saat kita menambahkan kejadian
-  gerak dan kejadian akhir ke dokumen setelah isyarat dimulai.</p>
+  <p>This diagram shows what the touch events are doing as we add the
+  move and end events to the document once a gesture begins.</p>
 </div>
 
-![Mengilustrasikan kejadian sentuh mengikat ke dokumen pada
-`touchstart`](images/scroll-bottleneck.gif)
+![Illustrating binding touch events to document in
+<code>touchstart</code>](images/scroll-bottleneck.gif)
 
 <div class="clearfix"></div>
 
-### Merespons sentuhan dengan efisien
+### Responding to touch efficiently
 
-Sekarang setelah kita membereskan kejadian awal dan akhir, kita bisa dengan benar
-merespons kejadian sentuh.
+Now that we have the start and end events taken care of we can actually respond to the touch events.
 
-Untuk setiap kejadian awal dan gerak, Anda bisa dengan mudah mengekstrak `x` dan `y`
-dari sebuah kejadian.
+For any of the start and move events, you can easily extract `x` and `y` from an event.
 
-Contoh berikut memeriksa apakah sebuah kejadian berasal dari `TouchEvent` dengan
-memeriksa jika terdapat `targetTouches`. Jika memang begitu, maka itu mengekstrak
-`clientX` dan `clientY` dari sentuhan pertama.
-Jika kejadiannya adalah `PointerEvent` atau `MouseEvent`, itu mengekstrak `clientX` dan
-`clientY` langsung dari kejadian itu sendiri.
+The following example checks whether the event is from a `TouchEvent` by checking if `targetTouches` exists. If it does, then it extracts the `clientX` and `clientY` from the first touch. If the event is a `PointerEvent` or `MouseEvent` it extracts `clientX` and `clientY` directly from the event itself.
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/design-and-ux/input/touch/_code/touch-demo-2.html" region_tag="extract-xy" adjust_indentation="auto" %}
 </pre>
 
-[Cobalah](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/input/touch/touch-demo-2.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/input/touch/touch-demo-2.html){: target="_blank" .external }
 
-Sebuah `TouchEvent` memiliki tiga daftar yang berisi data sentuh:
+A `TouchEvent` has three lists containing touch data:
 
-* `touches`: daftar semua sentuhan saat ini di layar, terlepas dari
-elemen DOM tempat mereka berada.
-* `targetTouches`: daftar sentuhan kejadian
-terikat pada elemen DOM saat ini.
-* `changedTouches`: daftar sentuhan yang berubah sehingga menyebabkan kejadian
-diaktifkan.
+* `touches`: list of all current touches on the screen, regardless of DOM element they are on.
+* `targetTouches`: list of touches currently on the DOM element the event is bound to.
+* `changedTouches`: list of touches which changed resulting in the event being fired.
 
-Umumnya, `targetTouches` memberikan semua yang Anda butuhkan dan inginkan. (Untuk
-informasi selengkapnya tentang daftar ini, silakan lihat [Daftar sentuhan](#touch-lists)).
+In most cases, `targetTouches` gives you everything you need and want. (For more info on these lists see [Touch lists](#touch-lists)).
 
-#### Menggunakan requestAnimationFrame
+#### Use requestAnimationFrame
 
-Karena callback kejadian diaktifkan pada thread utama, kita ingin menjalankan sesedikit
-mungkin kode dalam callback untuk kejadian kita, menjaga laju
-bingkai tetap tinggi dan mencegah sampah.
+Since the event callbacks are fired on the main thread, we want to run as little code as possible in the callbacks for our events, keeping our frame rate high and preventing jank.
 
-Dengan menggunakan `requestAnimationFrame()` kita memiliki kesempatan untuk memperbarui UI sesaat
-sebelum browser bermaksud menggambar bingkai dan akan memudahkan kita memindahkan beberapa
-pekerjaan dari callback kejadian.
+Using `requestAnimationFrame()` we have an opportunity to update the UI just before the browser is intending to draw a frame and will help us move some work out of our event callbacks.
 
-Jika Anda belum familier dengan `requestAnimationFrame()`, Anda
-bisa [mempelajari selengkapnya di sini](/web/fundamentals/performance/rendering/optimize-javascript-execution#use-requestanimationframe-for-visual-changes).
+If you are unfamiliar with `requestAnimationFrame()`, you can [learn more here](/web/fundamentals/performance/rendering/optimize-javascript-execution#use-requestanimationframe-for-visual-changes).
 
-Implementasi khusus adalah dengan menyimpan koordinat `x` dan `y` dari kejadian
-awal dan kejadian gerak serta meminta bingkai animasi di dalam callback
-kejadian gerak.
+A typical implementation is to save the `x` and `y` coordinates from the start and move events and request an animation frame inside the move event callback.
 
-Dalam demo, kami menyimpan posisi sentuh awal di `handleGestureStart()` (carilah `initialTouchPos`):
+In our demo, we store the initial touch position in `handleGestureStart()` (look for `initialTouchPos`):
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/design-and-ux/input/touch/_code/touch-demo-1.html" region_tag="handle-start-gesture" adjust_indentation="auto" %}
 </pre>
 
-Metode `handleGestureMove()` menyimpan posisi kejadiannya
-sebelum meminta bingkai animasi bila kita membutuhkannya, meneruskan fungsi
-`onAnimFrame()` sebagai callback:
+The `handleGestureMove()` method stores the position of it's event before requesting an animation frame if we need to, passing in our `onAnimFrame()` function as the callback:
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/design-and-ux/input/touch/_code/touch-demo-1.html" region_tag="handle-move" adjust_indentation="auto" %}
 </pre>
 
-Nilai `onAnimFrame` adalah sebuah fungsi yang bila dipanggil, akan mengubah UI
-untuk bergerak. Dengan meneruskan fungsi ini ke `requestAnimationFrame()`, kita
-memberitahu browser untuk memanggilnya sesaat sebelum itu memperbarui laman
-(yaitu, menggambarkan setiap perubahan ke laman).
+The `onAnimFrame` value is a function that when called, changes our UI to move it around. By passing this function into `requestAnimationFrame()`, we tell the browser to call it just before it's about to update the page (i.e. paint any changes to the page).
 
-Di callback `handleGestureMove()` kami awalnya memeriksa apakah `rafPending` bernilai false,
-yang menunjukkan jika `onAnimFrame()` telah dipanggil oleh `requestAnimationFrame()`
-sejak kejadian gerak terakhir. Ini berarti kita hanya memiliki satu `requestAnimationFrame()`
-yang menunggu dijalankan pada satu waktu.
+In the `handleGestureMove()` callback we initially check if `rafPending` is false, which indicates if `onAnimFrame()` has been called by `requestAnimationFrame()` since the last move event. This means we only have one `requestAnimationFrame()` waiting to run at any one time.
 
-Ketika callback `onAnimFrame()` dijalankan, kita menyetel transformasi pada setiap
-elemen yang ingin dipindah sebelum memperbarui `rafPending` ke `false`, memungkinkan
-kejadian sentuh berikutnya untuk meminta bingkai animasi baru.
+When our `onAnimFrame()` callback is executed, we set the transform on any elements we want to move before updating `rafPending` to `false`, allowing the the next touch event to request a new animation frame.
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/design-and-ux/input/touch/_code/touch-demo-1.html" region_tag="on-anim-frame" adjust_indentation="auto" %}
 </pre>
 
-### Mengontrol isyarat menggunakan tindakan sentuh
+### Control gestures using touch actions
 
-Properti CSS `touch-action` memungkinkan Anda untuk mengontrol perilaku
-sentuh default dari elemen. Dalam contoh, kami menggunakan `touch-action: none` untuk
-mencegah browser melakukan sesuatu dengan sentuhan pengguna, yang memungkinkan kita
-untuk mencegat semua kejadian sentuh.
+The CSS property `touch-action` allows you to control the default touch behavior of an element. In our examples, we use `touch-action: none` to prevent the browser from doing anything with a users' touch, allowing us to intercept all of the touch events.
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/design-and-ux/input/touch/_code/touch-demo-1.html" region_tag="touch-action-example" adjust_indentation="auto" %}
 </pre>
 
-Menggunakan `touch-action: none` bisa dikatakan opsi ekstrem karena mencegah semua
-perilaku browser default. Umumnya, salah satu opsi
-di bawah ini merupakan solusi yang lebih baik.
+Using `touch-action: none` is somewhat a nuclear option as it prevents all the default browser behaviors. In many cases one of the options below is a better solution.
 
-`touch-action` memungkinkan Anda untuk menonaktifkan isyarat yang diimplementasikan oleh browser.
-Misalnya, IE10+ mendukung isyarat ketuk dua kali untuk zoom. Dengan menyetel
-touch-action `manipulation` Anda mencegah perilaku
-ketuk dua kali default.
+`touch-action` allows you to disable gestures implemented by a browser. For example, IE10+ supports a double-tap to zoom gesture. By setting a touch-action of `manipulation` you prevent the default double-tap behavior.
 
-Hal ini memungkinkan Anda untuk mengimplementasikan isyarat ketuk dua kali Anda sendiri.
+This allows you to implement a double-tap gesture yourself.
 
-Di bawah ini adalah daftar nilai touch-action yang biasa digunakan:
+Below is a list of commonly used touch-action values:
 
 <table class="responsive">
   <thead>
     <tr>
-      <th colspan="2">Parameter Aksi Sentuh</th>
+      <th colspan="2">Touch Action Parameters</th>
     </tr>
   </thead>
   <tbody>
     <tr>
       <td data-th="Property"><code>touch-action: none</code></td>
-      <td data-th="Description">Tidak ada interaksi sentuh yang akan ditangani oleh
-      browser.</td>
+      <td data-th="Description">No touch interactions will be handled by
+      the browser.</td>
     </tr>
     <tr>
       <td data-th="Property"><code>touch-action: pinch-zoom</code></td>
-      <td data-th="Description">Menonaktifkan semua interaksi browser seperti
-      `touch-action: none` selain dari `pinch-zoom`, yang masih ditangani oleh
-      browser.</td>
+      <td data-th="Description">Disables all browser interactions like
+      `touch-action: none` apart from `pinch-zoom`, which is still handled by
+      the browser.</td>
     </tr>
     <tr>
       <td data-th="Property"><code>touch-action: pan-y pinch-zoom</code></td>
-      <td data-th="Description">Menangani gulir horizontal dalam JavaScript tanpa
-      menonaktifkan gulir vertikal atau cubit-untuk-zoom (mis. korsel gambar).</td>
+      <td data-th="Description">Handle horizontal scrolls in JavaScript without
+      disabling vertical scrolling or pinch-zooming (eg. image carousels).</td>
     </tr>
     <tr>
       <td data-th="Property"><code>touch-action: manipulation</code></td>
-      <td data-th="Description">Menonaktifkan isyarat ketuk dua kali untuk menghindari
-      penundaan klik oleh browser. Membiarkan gulir dan cubit-untuk-zoom ditentukan
+      <td data-th="Description">Disables double-tap gesture which avoids any
+      click delay by the browser. Leaves scrolling and pinch-zoom up to the
       browser.</td>
     </tr>
   </tbody>
 </table>
 
-## Mendukung IE versi lama
+## Supporting older versions of IE
 
-Jika Anda ingin mendukung IE10, Anda harus menangani versi awalan vendor dari
-`PointerEvents`.
+If you want to support IE10, you'll need to handle vendor prefixed versions of `PointerEvents`.
 
+To check for support of `PointerEvents` you'd typically look for `window.PointerEvent`, but in IE10, you'd look for `window.navigator.msPointerEnabled`.
 
-Untuk memeriksa dukungan `PointerEvents` biasanya Anda mencari
-`window.PointerEvent`, namun dalam IE10, Anda akan mencari
-`window.navigator.msPointerEnabled`.
+The event names with vendor prefixes are: 'MSPointerDown', 'MSPointerUp' and 'MSPointerMove'.
 
-Nama kejadian dengan awalan vendor adalah: 'MSPointerDown', 'MSPointerUp' and
-'MSPointerMove'.
-
-Contoh di bawah ini menunjukkan kepada Anda cara memeriksa dukungan dan mengganti
-nama kejadian.
+The example below shows you how to check for support and switch the event names.
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/design-and-ux/input/touch/_code/touch-demo-1.html" region_tag="pointereventsupport" adjust_indentation="auto" %}
 </pre>
 
-Untuk informasi selengkapnya, periksa [pembaruan artikel dari
-Microsoft](https://msdn.microsoft.com/en-us/library/dn304886(v=vs.85).aspx).
+For more information, checkout this [updates article from Microsoft](https://msdn.microsoft.com/en-us/library/dn304886(v=vs.85).aspx).
 
-## Referensi
+## Reference
 
-### Kelas pseudo untuk status sentuh
+### Pseudo classes for touch states
 
 <table>
   <thead>
     <tr>
-      <th>Kelas</th>
-      <th>Contoh</th>
-      <th>Keterangan</th>
+      <th>Class</th>
+      <th>Example</th>
+      <th>Description</th>
     </tr>
   </thead>
   <tbody>
     <tr>
       <td data-th="Class">:hover</td>
-      <td data-th="Example"><img alt="Tombol dengan Status Ditekan" src="images/btn-hover-state.png"></td>
+      <td data-th="Example"><img alt="Button in Pressed State" src="images/btn-hover-state.png"></td>
       <td data-th="Description">
-        Dimasukkan ketika kursor ditempatkan ke atas sebuah elemen.
-        Perubahan UI pada saat kursor di arahkan ke atas elemen mendorong pengguna untuk berinteraksi dengan
-        elemen.
+        Entered when a cursor is placed over an element.
+        Changes in the UI on hover are helpful to encourage users to interact
+        with elements.
       </td>
     </tr>
     <tr>
       <td data-th="Class">:focus</td>
       <td data-th="Example">
-        <img alt="Tombol dengan Status Focus" src="images/btn-focus-state.png">
+        <img alt="Button with Focus State" src="images/btn-focus-state.png">
       </td>
       <td data-th="Description">
-        Dimasukkan saat pengguna mengaktifkan tab melalui elemen pada laman. Status focus
-        memungkinkan pengguna untuk mengetahui elemen yang sedang berinteraksi
-        dengan mereka; juga memungkinkan pengguna untuk menavigasi UI dengan mudah menggunakan keyboard.
+        Entered when the user tabs through elements on a page. The focus state
+        allows the user to know what element they are currently interacting
+        with; also allows users to navigate your UI easily using a keyboard.
       </td>
     </tr>
     <tr>
       <td data-th="Class">:active</td>
       <td data-th="Example">
-        <img alt="Tombol dengan Status Ditekan" src="images/btn-pressed-state.png">
+        <img alt="Button in Pressed State" src="images/btn-pressed-state.png">
       </td>
       <td data-th="Description">
-        Dimasukkan saat elemen sedang dipilih,
-        misalnya, ketika pengguna mengeklik atau menyentuh elemen.
+        Entered when an element is being selected, for
+        example, when a user is clicking or touching an element.
       </td>
     </tr>
   </tbody>
 </table>
 
+The definitive touch events reference can be found here: [w3 Touch Events](http://www.w3.org/TR/touch-events/).
 
-Referensi kejadian sentuh definitif bisa dilihat disini:
-[Kejadian Sentuh w3](http://www.w3.org/TR/touch-events/).
+### Touch, mouse, and pointer events
 
-### Kejadian sentuh, mouse, dan pointer
-
-Kejadian ini adalah blok pembangun untuk menambahkan isyarat baru ke dalam aplikasi
-Anda:
+These events are the building blocks for adding new gestures into your application:
 
 <table class="responsive">
   <thead>
     <tr>
-      <th colspan="2">Kejadian Sentuh, Mouse, dan Pointer</th>
+      <th colspan="2">Touch, Mouse, Pointer Events</th>
     </tr>
   </thead>
   <tbody>
@@ -488,8 +373,8 @@ Anda:
         <code>pointerdown</code>
       </td>
       <td data-th="Description">
-        Ini dipanggil ketika jari pertama menyentuh elemen atau ketika
-        pengguna mengeklik mouse.
+        This is called when a finger first touches an element or when the
+        user clicks down on the mouse.
       </td>
     </tr>
     <tr>
@@ -499,8 +384,8 @@ Anda:
         <code>pointermove</code>
       </td>
       <td data-th="Description">
-        Ini dipanggil ketika pengguna menggerakkan jari mereka di layar atau
-        menyeret dengan mouse.
+        This is called when the user moves their finger across the screen or
+        drags with the mouse.
       </td>
     </tr>
     <tr>
@@ -510,8 +395,8 @@ Anda:
         <code>pointerup</code>
       </td>
       <td data-th="Description">
-        Ini dipanggil ketika pengguna mengangkat jari mereka dari layar
-        atau melepaskan mouse.
+        This is called when the user lifts their finger off of the screen
+        or releases the mouse.
       </td>
     </tr>
     <tr>
@@ -520,68 +405,68 @@ Anda:
         <code>pointercancel</code>
       </td>
       <td data-th="Description">
-        Ini dipanggil ketika browser membatalkan isyarat sentuh. Misalnya,
-        pengguna menyentuh aplikasi web dan kemudian berpindah tab.
+        This is called when the browser cancels the touch gestures. For example,
+        a user touch a web app and then change tabs.
       </td>
     </tr>
   </tbody>
 </table>
 
-### Daftar sentuh
+### Touch lists
 
-Setiap kejadian sentuh berisi tiga atribut daftar:
+Each touch event includes three list attributes:
 
 <table class="responsive">
   <thead>
     <tr>
-      <th colspan="2">Atribut Kejadian Sentuh</th>
+      <th colspan="2">Touch Event Attributes</th>
     </tr>
   </thead>
   <tbody>
     <tr>
       <td data-th="Attribute"><code>touches</code></td>
       <td data-th="Description">
-        Daftar semua sentuhan saat ini di layar, terlepas dari elemen
-        yang disentuh.
+        List of all current touches on the screen, regardless of elements
+        being touched.
       </td>
     </tr>
     <tr>
       <td data-th="Attribute"><code>targetTouches</code></td>
       <td data-th="Description">
-        Daftar sentuhan yang dimulai pada elemen yang merupakan target dari
-        kejadian saat ini. Misalnya, jika Anda terikat ke <code>&lt;button&gt;</code>,
-        Anda hanya akan mendapatkan sentuhan saat ini di tombol tersebut. Jika terikat ke
-        dokumen, Anda akan mendapatkan semua sentuhan saat ini pada dokumen.
+        List of touches that started on the element that is the target of
+        the current event. For example, if you bind to a <code>&lt;button&gt;</code>,
+        you'll only get touches currently on that button. If you bind to the
+        document, you'll get all touches currently on the document.
       </td>
     </tr>
     <tr>
       <td data-th="Attribute"><code>changedTouches</code></td>
       <td data-th="Description">
-        Daftar sentuhan yang berubah sehingga menyebabkan kejadian diaktifkan.
+        List of touches which changed resulting in the event being fired:
         <ul>
           <li>
-            Untuk <code>
+            For the <code>
             <a href="http://www.w3.org/TR/touch-events/#dfn-touchstart">
-            kejadian touchstart</a></code>
-            -- daftar titik sentuh yang menjadi aktif dengan
-            kejadian saat ini.
+            touchstart</a></code>
+            event-- list of the touch points that just became active with the
+            current event.
           </li>
           <li>
-            Untuk <code>
+            For the <code>
             <a href="http://www.w3.org/TR/touch-events/#dfn-touchmove">
-            kejadian touchmove</a></code>
-            -- daftar titik sentuh yang telah berpindah sejak kejadian
-            terakhir.
+            touchmove</a></code>
+            event-- list of the touch points that have moved since the last
+            event.
           </li>
           <li>
-            Untuk <code>
+            For the <code>
             <a href="http://www.w3.org/TR/touch-events/#dfn-touchend">
-            kejadian touchend</a></code>
-            dan <code>
+            touchend</a></code>
+            and <code>
             <a href="http://www.w3.org/TR/touch-events/#dfn-touchcancel">
             touchcancel</a></code>
-            -- daftar titik sentuh yang baru saja dibuang
-            dari permukaan.
+            events-- list of the touch points that have just been removed
+            from the surface.
           </li>
         </ul>
       </td>
@@ -589,28 +474,22 @@ Setiap kejadian sentuh berisi tiga atribut daftar:
   </tbody>
 </table>
 
-### Mengaktifkan dukungan status aktif pada iOS
+### Enabling active state support on iOS
 
-Sayangnya, Safari di iOS tidak menerapkan status *active* secara default, untuk
-membuatnya bekerja Anda perlu menambahkan event listener `touchstart` ke *body
-dokumen* atau ke setiap elemen.
+Unfortunately, Safari on iOS does not apply the *active* state by default, to get it working you need to add a `touchstart` event listener to the *document body* or to each element.
 
-Anda harus melakukannya di belakang pengujian agen-pengguna sehingga itu hanya berjalan pada perangkat iOS.
+You should do this behind a user agent test so it's only run on iOS devices.
 
-Menambahkan touch start ke body memiliki keuntungan karena mengaplikasikan ke semua elemen
-dalam DOM, namun ini mungkin menyebabkan masalah kinerja ketika menggulir laman.
-
+Adding a touch start to the body has the advantage of applying to all elements in the DOM, however this may have performance issues when scrolling the page.
 
     window.onload = function() {
       if(/iP(hone|ad)/.test(window.navigator.userAgent)) {
         document.body.addEventListener('touchstart', function() {}, false);
       }
     };
+    
 
-
-Alternatif-nya adalah dengan menambahkan listener touch start ke semua elemen
-bisa-berinteraksi di laman, mengurangi beberapa masalah kinerja.
-
+The alternative is to add the touch start listeners to all the interactable elements in the page, alleviating some of the performance concerns.
 
     window.onload = function() {
       if(/iP(hone|ad)/.test(window.navigator.userAgent)) {
@@ -621,6 +500,8 @@ bisa-berinteraksi di laman, mengurangi beberapa masalah kinerja.
         }
       }
     };
+    
 
+## Feedback {: #feedback }
 
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
