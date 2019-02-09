@@ -1,43 +1,33 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Dokumentasi referensi untuk audit Lighthouse "HTML Memiliki Tag Meta Viewport".
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Reference documentation for the "Has A &lt;meta name="viewport"&gt; Tag With width Or initial-scale" Lighthouse audit.
 
-{# wf_updated_on: 2016-10-04 #}
-{# wf_published_on: 2016-10-04 #}
+{# wf_updated_on: 2018-07-23 #} {# wf_published_on: 2016-10-04 #} {# wf_blink_components: N/A #}
 
-# HTML Memiliki Tag Meta Viewport {: .page-title }
+# Has A Viewport Meta Tag With width Or initial-scale {: .page-title }
 
-## Mengapa audit itu penting {: #why }
+## Overview {: #overview }
 
-Tanpa tag meta viewport, perangkat seluler akan merender laman dengan lebar layar desktop
-pada umumnya, kemudian menskalakan laman agar pas pada layar seluler. Dengan menyetel
-tampilan yang terlihat akan memungkinkan Anda mengontrol lebarnya dan menskalakan tampilan yang terlihat.
-Periksalah tautan berikut untuk mengetahui selengkapnya:
+Without a viewport meta tag, mobile devices render pages at typical desktop screen widths, and then scale the pages to fit the mobile screens. Setting the viewport enables you to control the width and scaling of the viewport. Check out the following links to learn more:
 
-* [Konfigurasikan Tampilan yang Terlihat](/speed/docs/insights/ConfigureViewport).
-* [Setel Tampilan yang Terlihat](/web/fundamentals/design-and-ux/responsive/#set-the-viewport).
+* [Configure the Viewport](/speed/docs/insights/ConfigureViewport)
+* [Set the Viewport](/web/fundamentals/design-and-ux/responsive/#set-the-viewport)
 
-## Cara untuk lulus audit {: #how }
+## Recommendations {: #recommendations }
 
-Tambahkan sebuah tag `<meta>` tampilan yang terlihat dalam `<head>` HTML Anda.
+Add a viewport `<meta>` tag in the `<head>` of your HTML.
 
     <head>
       ...
       <meta name="viewport" content="width=device-width, initial-scale=1">
       ...
     </head>
+    
 
-Pasangan nilai-kunci `width=device-width` menyetel lebar tampilan yang terlihat ke
-lebar perangkat. Pasangan nilai-kunci `initial-scale=1` menyetel level
-zoom awal saat mengunjungi laman.
+The `width=device-width` key-value pair sets the width of the viewport to the width of the device. The `initial-scale=1` key-value pair sets the initial zoom level when visiting the page.
 
-{% include "web/tools/lighthouse/audits/implementation-heading.html" %}
+## More information {: #more-info }
 
-Lighthouse akan memeriksa apakah ada tag `<meta name="viewport">` dalam `<head>`
-dokumen. Juga akan memeriksa apakah simpul berisi atribut `content` dan
-apakah nilai atribut ini berisi teks `width=`. Akan tetapi,
-Lighthouse tidak memeriksa apakah `width` sama dengan `device-width`. Lighthouse juga tidak
-memeriksa pasangan nilai-kunci `initial-scale`.
+Lighthouse checks that there's a `<meta name="viewport">` tag in the `<head>` of the document. It also checks that the node contains a `content` attribute and that the value of this attribute contains the text `width=`. However, it does not check that `width` equals `device-width`. Lighthouse also does not check for a `initial-scale` key-value pair.
 
+## Feedback {: #feedback }
 
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
