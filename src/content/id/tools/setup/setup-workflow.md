@@ -1,144 +1,112 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Siapkan penulisan persisten di Chrome DevTools sehingga Anda bisa melihat perubahan langsung dan menyiapkan perubahan tersebut di disk.
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Set up persistent authoring in Chrome DevTools so you can both see your changes immediately and save those changes to disk.
 
-{# wf_updated_on: 2015-07-30 #}
-{# wf_published_on: 2015-07-08 #}
+{# wf_updated_on: 2018-04-20 #} {# wf_published_on: 2015-07-08 #} {# wf_blink_components: Platform>DevTools #}
 
-# Menyiapkan Persistensi dengan DevTools Workspace {: .page-title }
+# Set Up Persistence with DevTools Workspaces {: .page-title }
 
-{% include "web/_shared/contributors/dgash.html" %}
-{% include "web/_shared/contributors/kaycebasques.html" %}
-{% include "web/_shared/contributors/megginkearney.html" %}
+Warning: This version of Workspaces is only available in Chrome 62 or lower. Check what version of Chrome you're running at `chrome://version`. See [Save Changes To Disk With Workspaces](/web/tools/chrome-devtools/workspaces/) to learn how to use the version of Workspaces that's available in Chrome 63 and later.
 
-Siapkan penulisan persisten di Chrome DevTools sehingga Anda bisa melihat perubahan langsung dan menyiapkan perubahan tersebut di disk.
+{% include "web/_shared/contributors/dgash.html" %} {% include "web/_shared/contributors/kaycebasques.html" %} {% include "web/_shared/contributors/megginkearney.html" %}
 
-Chrome DevTools memungkinkan Anda mengubah elemen dan gaya
-di laman web dan melihat perubahan secara langsung.
-Secara default, jika browser disegarkan perubahan akan hilang
-kecuali Anda secara manual menyalin dan menempelkannya ke editor eksternal.
+Set up persistent authoring in Chrome DevTools so you can both see your changes immediately and save those changes to disk.
 
-Dengan Workspace, Anda bisa mempersistenkan perubahan tersebut ke disk
-tanpa harus meninggalkan Chrome DevTools.
-Petakan sumber daya yang disajikan dari server web lokal ke file di disk
-dan lihat perubahan yang dibuat pada file tersebut seolah sedang disajikan.
+Chrome DevTools lets you change elements and styles on a web page and see your changes immediately. By default, refresh the browser and the changes go away unless you've manually copied and pasted them to an external editor.
 
+Workspaces lets you persist those changes to disk without having to leave Chrome DevTools. Map resources served from a local web server to files on a disk and view changes made to those files as if they were being served.
 
 ### TL;DR {: .hide-from-toc }
-- Jangan salin perubahan secara manual ke file lokal. Gunakan workspace untuk mempertahankan perubahan yang dibuat di DevTools ke sumber daya lokal Anda.
-- Dorong file lokal Anda ke browser. Petakan file ke URL.
-- Setelah workspace persisten disiapkan, perubahan gaya yang dibuat di panel Elements dipersistenkan secara otomatis; sedangkan perubahan DOM tidak dipertahankan. Sebagai gantinya, persistenkan perubahan elemen di panel Sources.
 
+* Don't manually copy changes to local files. Use workspaces to persist changes made in DevTools to your local resources.
+* Stage your local files to your browser. Map files to URLs.
+* Once persistent workspaces are set-up, style changes made in the Elements panel are persisted automatically; DOM changes aren't. Persist element changes in the Sources panel instead.
 
-## Menambahkan file sumber lokal ke workspace
+## Add local source files to workspace
 
-Untuk membuat file sumber di folder lokal bisa diedit di panel Sources:
+To make a local folder's source files editable in the Sources panel:
 
-1. Klik kanan panel sebelah kiri.
-2. Pilih **Add Folder to Workspace**.
-3. Pilih lokasi folder lokal yang ingin Anda petakan.
-4. Klik **Allow** untuk memberikan Chrome izin akses ke folder. 
+1. Right-click in the left-side panel.
+2. Select **Add Folder to Workspace**.
+3. Choose location of local folder that you want to map.
+4. Click **Allow** to give Chrome access to the folder. 
 
-![Menambahkan Folder ke Workspace](imgs/addfolder.png)
+![Add Folder to Workspace](imgs/addfolder.png)
 
-Biasanya, folder lokal berisi file sumber asli situs yang digunakan untuk mengisi situs di server. Jika Anda tidak ingin mengubah file asli tersebut melalui workspace, buat salinan folder dan sebagai gantinya, tentukan sebagai folder workspace.
+Typically, the local folder contains the site's original source files that were used to populate the site on the server. If you do not want to change those original files via the workspace, make a copy of the folder and specify it as the workspace folder instead.
 
-## Mendorong perubahan yang dipersistenkan
+## Stage persisted changes
 
-Anda sudah memetakan folder lokal ke workspace
-tetapi browser masih menyajikan materi folder jaringan.
-Untuk mendorong perubahan persisten secara otomatis di browser,
-petakan file lokal di folder ke URL:
+You've already mapped your local folder to your workspace, but the browser is still serving the network folder contents. To automatically stage persistent changes in the browser, map local files in the folder to a URL:
 
-1. Klik kanan atau Control+klik file di panel sebelah kiri Sources.
-2. Pilih **Map to File System Resource**.
-3. Pilih file lokal di workspace persisten.
-4. Muat ulang laman di Chrome.
+1. Right-click or Control+click on a file in the Sources left-side panel.
+2. Choose **Map to File System Resource**.
+3. Select the local file in the persistent workspace.
+4. Reload the page in Chrome.
 
-![Memetakan file ke URL](imgs/maptoresource.png)
+![Map file to URL](imgs/maptoresource.png)
 
-Dari sini,
-Chrome akan memuat URL yang dipetakan,
-dan menampilkan materi workspace
-sebagai ganti materi jaringan.
-Anda bisa bekerja langsung di file lokal tanpa harus
-berulang kali beralih dari Chrome dan editor eksternal dan sebaliknya.
+Thereafter, Chrome loads the mapped URL, displaying the workspace contents instead of the network contents. Work directly in the local files without having to repeatedly switch between Chrome and an external editor.
 
-## Batasan
+## Limitations
 
-Meskipun Workspace sangat canggih, ada beberapa batasan yang perlu Anda ketahui.
+As powerful as Workspaces are, there are some limitations you should be aware of.
 
-* Hanya perubahan gaya di panel Elements yang dipersistenkan; perubahan pada DOM tidak dipersistenkan.
+* Only style changes in the Elements panel are persisted; changes to the DOM are not persisted.
 
-* Hanya gaya yang didefinisikan di CSS eksternal yang bisa disimpan. Perubahan pada `element.style` atau untuk menyisipkan gaya inline. (Jika Anda memiliki gaya inline, gaya ini bisa diubah di panel Sources.)
+* Only styles defined in an external CSS file can be saved. Changes to `element.style` or to inline styles are not persisted. (If you have inline styles, they can be changed on the Sources panel.)
 
-* Perubahan di panel Elements dipersistenkan langsung tanpa penyimpanan yang eksplisit -- 
-<kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">S</kbd> atau <kbd class="kbd">Cmd</kbd> + <kbd class="kbd">S</kbd> (Mac) - jika Anda memiliki sumber daya CSS yang dipetakan ke file lokal.
+* Style changes in the Elements panel are persisted immediately without an explicit save -- 
+<kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">S</kbd> or <kbd class="kbd">Cmd</kbd> + <kbd class="kbd">S</kbd> (Mac) -- if you have the CSS resource mapped to a local file.
 
-* Jika Anda memetakan file dari server jauh, bukannya server lokal, saat Anda menyegarkan laman, Chrome memuat ulang laman dari server jauh. Perubahan Anda masih dipersistenkan di disk dan diterapkan ulang jika Anda melanjutkan pengeditan di Workspace.
+* If you are mapping files from a remote server instead of a local server, when you refresh the page, Chrome reloads the page from the remote server. Your changes still persist to disk and are reapplied if you continue editing in Workspaces.
 
-* Anda harus menggunakan jalur penuh ke file yang dipetakan di browser. Bahkan file index Anda harus menyertakan .html di URL, agar bisa melihat versi stage.
+* You must use the full path to a mapped file in the browser. Even your index files must include .html in the URL, in order to see the staged version.
 
-## Pengelolaan file lokal
+## Local file management
 
-Selain mengedit file yang sudah ada,
-Anda juga bisa menambahkan dan menghapus file
-di direktori yang dipetakan di lokal yang Anda gunakan untuk Workspace.
+In addition to editing existing files, you can also add and delete files in the local mapped directory you’re using for Workspaces.
 
-### Menambahkan file
+### Add file
 
-Untuk menambahkan file:
+To add a file:
 
-1. Klik kanan folder di panel Sources sebelah kiri.
-2. Pilih **New File**.
-3. Ketikkan nama untuk file baru, termasuk ekstensinya (mis. `newscripts.js`), lalu tekan **Enter**; file ditambahkan ke folder lokal.
+1. Right-click a folder in the left Sources pane.
+2. Select **New File**.
+3. Type a name for the new file including its extension (e.g., `newscripts.js`) and press **Enter**; the file is added to the local folder.
 
-### Menghapus file
+### Delete file
 
-Untuk menghapus file:
+To delete a file:
 
-1. Klik kanan file di panel Sources sebelah kiri.
-2. Pilih **Delete** dan klik **Yes** untuk mengonfirmasi.
+1. Right-click on the file in the left Sources pane.
+2. Choose **Delete** and click **Yes** to confirm.
 
-### Mencadangkan file
+### Back up a file
 
-Sebelum melakukan perubahan besar pada file,
-sebaiknya duplikasikan file asli untuk tujuan pencadangan.
+Before making substantial changes to a file, it's useful to duplicate the original for back-up purposes.
 
-Untuk menduplikasi file:
+To duplicate a file:
 
-1. Klik kanan file di panel Sources sebelah kiri.
-2. Pilih **Make a Copy...**.
-3. Ketikkan nama untuk file termasuk ekstensinya (mis. `mystyles-org.css`) lalu tekan **Enter**.
+1. Right-click on the file in the left Sources pane.
+2. Choose **Make a Copy...**.
+3. Type a name for the file including its extension (e.g., `mystyles-org.css`) and press **Enter**.
 
-### Menyegarkan
+### Refresh
 
-Bila Anda membuat atau menghapus file langsung di Workspace,
-direktori Sources otomatis disegarkan untuk menampilkan perubahan file.
-Untuk memaksa penyegaran kapan saja, klik kanan folder dan pilih **Refresh**.
+When you create or delete files directly in Workspaces, the Sources directory automatically refreshes to show the file changes. To force a refresh at any time, right-click a folder and choose **Refresh**.
 
-Ini juga berguna jika Anda mengubah file yang dibuka bersamaan di editor eksternal dan ingin menampilkan perubahan di DevTools. Biasanya, DevTools otomatis menangkap perubahan tersebut, tetapi jika Anda ingin memastikan, cukup segarkan folder seperti dijelaskan di atas.
+This is also useful if you change files that are concurrently open in an external editor and want the changes to show up in DevTools. Usually DevTools catches such changes automatically, but if you want to be certain, just refresh the folder as described above.
 
-### Menelusuri file atau teks
+### Search for files or text
 
-Untuk menelusuri file yang dimuat di DevTools,
-tekan <kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">O</kbd> atau <kbd class="kbd">Cmd</kbd> + <kbd class="kbd">O</kbd> (Mac)
-untuk membuka dialog penelusuran.
-Anda masih bisa melakukan ini di Workspace,
-tetapi penelusuran akan diperluas ke file yang dimuat dari jauh
-dan file lokal di folder Workspace Anda.
+To search for a loaded file in DevTools, press <kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">O</kbd> or <kbd class="kbd">Cmd</kbd> + <kbd class="kbd">O</kbd> (Mac) to open a search dialog. You can still do this in Workspaces, but the search is expanded to both the remote loaded files and the local files in your Workspace folder.
 
-Untuk menelusuri string di file:
+To search for a string across files:
 
-1. Buka jendela penelusuran: klik tombol **Show Drawer** ![Show drawer](imgs/show_drawer_button.png){:.inline}, lalu klik **Search**, atau tekan
-<kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">Shift</kbd> + <kbd class="kbd">F</kbd> atau <kbd class="kbd">Cmd</kbd> + <kbd class="kbd">Opt</kbd> + <kbd class="kbd">F</kbd> (Mac).
-2. Ketikkan string ke dalam bidang pencarian dan tekan **Enter**.
-3. Jika string adalah ekspresi reguler atau harus tidak peka huruf besar atau kecil, klik kotak yang sesuai.
+1. Open the search window: click the **Show Drawer** button ![Show drawer](imgs/show_drawer_button.png){:.inline} and then click the **Search**; or press
+<kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">Shift</kbd> + <kbd class="kbd">F</kbd> or <kbd class="kbd">Cmd</kbd> + <kbd class="kbd">Opt</kbd> + <kbd class="kbd">F</kbd> (Mac).
+2. Type a string into the search field and press **Enter**.
+3. If the string is a regular expression or needs to be case-insensitive, click the appropriate box.
 
-![Menelusuri string di file](imgs/searchacross.png)
+![Search for string across files](imgs/searchacross.png)
 
-Hasil penelusuran ditampilkan di panel samping Console, ditampilkan menurut nama file, dengan jumlah kecocokan pada setiap file ditampilkan. Gunakan tanda panah **Luaskan** ![Luaskan](imgs/expand_button.png){:.inline} dan **Ciutkan** ![Ciutkan](imgs/collapse_button.png){:.inline} untuk meluaskan atau menciutkan hasil untuk file terkait.
-
-
-
-{# wf_devsite_translation #}
+The search results are shown in the Console drawer, listed by file name, with the number of matches in each file indicated. Use the **Expand** ![Expand](imgs/expand_button.png){:.inline} and **Collapse** ![Collapse](imgs/collapse_button.png){:.inline} arrows to expand or collapse the results for a given file.
