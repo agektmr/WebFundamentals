@@ -1,51 +1,32 @@
-project_path: /web/_project.yaml
-book_path: /web/updates/_book.yaml
-description: New SEO audits and manual accessibility audits, and updates to the WebP audit.
-{% include "web/_shared/machine-translation-start.html" %}
+project_path: /web/_project.yaml book_path: /web/updates/_book.yaml description: New SEO audits and manual accessibility audits, and updates to the WebP audit.
 
-{# wf_updated_on: 2018-03-05 #}
-{# wf_published_on: 2018-01-05 #}
-{# wf_tags: lighthouse,accessibility,images #}
-{# wf_featured_image: /web/progressive-web-apps/images/pwa-lighthouse.png #}
-{# wf_featured_snippet: New SEO audits and manual accessibility audits, and updates to the WebP audit. #}
-{# wf_blink_components: N/A #}
+{# wf_updated_on: 2018-03-05 #} {# wf_published_on: 2018-01-05 #} {# wf_tags: lighthouse,accessibility,images #} {# wf_featured_image: /web/progressive-web-apps/images/pwa-lighthouse.png #} {# wf_featured_snippet: New SEO audits and manual accessibility audits, and updates to the WebP audit. #} {# wf_blink_components: N/A #}
 
 {% include "web/tools/chrome-devtools/_shared/styles.html" %}
 
-# Phare 2.7 Mises à jour {: .page-title }
+# Lighthouse 2.7 Updates {: .page-title }
 
-{% include "web/_shared/contributors/vinamratasingal.html" %}
-{% include "web/_shared/contributors/patrickhulce.html" %}
-{% include "web/_shared/contributors/kaycebasques.html" %}
+{% include "web/_shared/contributors/vinamratasingal.html" %} {% include "web/_shared/contributors/patrickhulce.html" %} {% include "web/_shared/contributors/kaycebasques.html" %}
 
-[CDT]: /web/tools/lighthouse/#devtools
-[Node]: https://github.com/GoogleChrome/lighthouse#using-programmatically
-[CLI]: /web/tools/lighthouse/#cli
-[CE]: /web/tools/lighthouse/#extension
+Lighthouse 2.7 is out! Highlights include:
 
-Phare 2.7 est sorti! Les points forts incluent:
+* [New SEO audits](#seo).
+* [New, manual accessibility audits](#a11y).
+* [Updates to the WebP audit](#webp).
 
-* [New SEO audits](#seo) .
-* [New, manual accessibility audits](#a11y) .
-* [Updates to the WebP audit](#webp) .
+See the [2.7 release notes](https://github.com/GoogleChrome/lighthouse/releases/tag/v2.7.0) for the full list of new features, changes, and bug fixes.
 
-Voir [2.7 release notes][RN] pour la liste complète des nouvelles fonctionnalités, modifications et corrections de bugs.
+## How to update to 2.7 {: #update }
 
-[RN]: https://github.com/GoogleChrome/lighthouse/releases/tag/v2.7.0
+* NPM. Run `npm update lighthouse`, or `npm update lighthouse -g` flag if you installed Lighthouse globally.
+* Chrome Extension. The extension should automatically update, but you can manually update it via `chrome://extensions`.
+* DevTools. Lighthouse 2.7 is shipping in Chrome 65. You can check what version of Chrome you're running via `chrome://version`. Chrome updates to a new version about every 6 weeks. You can run the latest Chrome code by downloading [Chrome Canary](https://www.google.com/chrome/browser/canary.html).
 
-## Mise à jour vers 2.7 {: #update }
+## New SEO audits {: #seo }
 
-* NPM. Exécutez `npm update lighthouse` ou l&#39;indicateur `npm update lighthouse -g` si vous avez installé Lighthouse globalement.
-* Extension Chrome. L&#39;extension doit être mise à jour automatiquement, mais vous pouvez la mettre à jour manuellement via `chrome://extensions` .
-* DevTools. Lighthouse 2.7 est livré dans Chrome 65. Vous pouvez vérifier quelle version de Chrome vous utilisez via `chrome://version` . Chrome met à jour une nouvelle version toutes les 6 semaines environ. Vous pouvez exécuter le dernier code Chrome en téléchargeant [Chrome Canary][Canary] .
+The new SEO category provides audits that help improve your page's ranking in search engine results.
 
-[Canary]: https://www.google.com/chrome/browser/canary.html
-
-## Nouveaux audits de référencement {: #seo }
-
-La nouvelle catégorie SEO propose des audits qui aident à améliorer le classement de votre page dans les résultats des moteurs de recherche.
-
-Note: nombreux facteurs affectent le classement du moteur de recherche d&#39;une page. Phare ne teste pas tous ces facteurs. Un score parfait de 100 dans Lighthouse ne garantit pas une place de premier rang sur les moteurs de recherche!
+Note: Many factors affect a page's search engine ranking. Lighthouse does not test all of these factors. A perfect 100 score in Lighthouse does not guarantee a top ranking spot on any search engine!
 
 <figure>
   <img src="/web/updates/images/2018/01/seo.png"
@@ -59,9 +40,9 @@ Note: nombreux facteurs affectent le classement du moteur de recherche d&#39;une
   </figcaption>
 </figure>
 
-## Nouveaux audits d’accessibilité manuels {: #a11y }
+## New, manual accessibility audits {: #a11y }
 
-Les nouvelles vérifications manuelles de l&#39;accessibilité vous informent des choses que vous pouvez faire pour améliorer l&#39;accessibilité de votre page. &quot;Manuel&quot; signifie ici que Lighthouse ne peut pas automatiser ces audits. Vous devez donc les tester manuellement.
+The new, manual accessibility audits inform you of things you can do to improve the accessibility of your page. "Manual" here means that Lighthouse can't automate these audits, so you need to manually test them yourself.
 
 <figure>
   <img src="/web/updates/images/2018/01/a11y.png"
@@ -77,12 +58,9 @@ Les nouvelles vérifications manuelles de l&#39;accessibilité vous informent de
   </figcaption>
 </figure>
 
-## Mises à jour de l&#39;audit WebP {: #webp }
+## Updates to the WebP audit {: #webp }
 
-Grâce à certains [community feedback][feedback] , le [WebP audit][webp] désormais d’autres formats d’image hautes performances de nouvelle génération, tels que JPEG 2000 et JPEG XR.
-
-[feedback]: https://www.reddit.com/r/webdev/comments/75w7t0/so_exactly_what_do_i_do_google_put_my_css_in_js/doatllq/
-[webp]: /web/tools/lighthouse/audits/webp
+Thanks to some [community feedback](https://www.reddit.com/r/webdev/comments/75w7t0/so_exactly_what_do_i_do_google_put_my_css_in_js/doatllq/), the [WebP audit](/web/tools/lighthouse/audits/webp) is now more inclusive of other next-generation, high-performance image formats, like JPEG 2000 and JPEG XR.
 
 <figure>
   <img src="/web/updates/images/2018/01/webp.png"
@@ -93,5 +71,3 @@ Grâce à certains [community feedback][feedback] , le [WebP audit][webp] désor
 </figure>
 
 {% include "web/_shared/rss-widget-updates.html" %}
-
-{% include "web/_shared/translation-end.html" %}
