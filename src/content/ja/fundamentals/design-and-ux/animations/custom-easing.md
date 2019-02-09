@@ -1,74 +1,68 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: 少し本題からそれて、プロジェクト用に完全にカスタムのアニメーションを作成します。
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Go offroad and create totally custom animations for your projects.
 
-{# wf_updated_on: 2016-08-23 #}
-{# wf_published_on: 2014-08-08 #}
+{# wf_blink_components: Blink>Animation #} {# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2014-08-08 #}
 
-# カスタム イージング {: .page-title }
+# Custom Easing {: .page-title }
 
-{% include "web/_shared/contributors/paullewis.html" %}
-{% include "web/_shared/contributors/samthorogood.html" %}
+{% include "web/_shared/contributors/paullewis.html" %} {% include "web/_shared/contributors/samthorogood.html" %}
 
-状況によっては、CSS に含まれているイージング キーワードを使用したくない場合や、ウェブ アニメーションや JavaScript フレームワークを使用したい場合などがあると思います。このような場合、一般的には独自の曲線（または式）を定義して、プロジェクトのアニメーションの雰囲気を自在に変えることができます。
+Sometimes you won't want to use the easing keywords that are included with CSS, or you will be using Web Animations or a JavaScript framework. In these cases, you can typically define your own curves (or equations), and this provides a lot of control over the feel of your project's animations.
 
 ### TL;DR {: .hide-from-toc }
-* カスタム イージングによって、より独創的なプロジェクトを作成することができます。
-* デフォルトのアニメーション曲線（ease-out、ease-in など）に類似した 3 次ベジェ曲線を作成して、異なる箇所を強調できます。
-* JavaScript を使用すると、elastic や bounce などのアニメーションのタイミングや動作を細かく制御することができます。
 
+* Custom easing allows you to give more personality to your projects.
+* You can create cubic Bézier curves that resemble the default animation curves (ease-out, ease-in, etc.), but with emphasis in different places.
+* Use JavaScript when you need more control over the animation timing and behavior, for example, elastic or bounce animations.
 
-アニメーションに CSS を使用している場合は、3 次ベジェ曲線を定義して、アニメーションのタイミングを指定することができます。実際、`ease`、`ease-in`、`ease-out`、`linear` のキーワードは、事前定義されたベジェ曲線にマッピングします。詳細については、[CSS 遷移の仕様](http://www.w3.org/TR/css3-transitions/) および[ウェブ アニメーションの仕様](https://w3c.github.io/web-animations/#scaling-using-a-cubic-bezier-curve)を参照してください。
+If you're animating with CSS, you'll find that you can define cubic Bézier curves to define the timing. In fact, the keywords `ease`, `ease-in`, `ease-out`, and `linear` map to predefined Bézier curves, which are detailed in the [CSS transitions specification](http://www.w3.org/TR/css3-transitions/) and the [Web Animations specification](https://w3c.github.io/web-animations/#scaling-using-a-cubic-bezier-curve).
 
-これらのベジェ曲線は 4 つの値、つまり 2 つの数値から成るペアを 2 つ使用して定義されます。各ペアは 3 次ベジェ曲線の制御点の X 座標と Y 座標を表します。ベジェ曲線の開始点は座標（0、0）、終了点は座標（1、1）で、2 つの制御点の X 座標と Y 座標の値をそれぞれ設定できます。2 つの制御点の X 座標の値には 0 ～ 1 の間の数値を指定します。一方、各制御点の Y 座標の値は 0 ～ 1 の範囲を超えて指定できます（上限値は仕様では明記されていません）。
+These Bézier curves take four values, or two pairs of numbers, with each pair describing the X and Y coordinates of a cubic Bézier curve’s control points. The starting point of the Bézier curve has a coordinate of (0, 0) and the end coordinate is (1, 1); you get to set the X and Y values of the two control points. The X values for the two control points must be between 0 and 1, and each control point’s Y value can exceed the [0, 1] limit, although the spec isn’t clear by how much.
 
-各制御点の X と Y の値を変更すると曲線が大幅に変化し、アニメーションの印象が大きく変わります。たとえば 1 つ目の制御点が右下にある場合、アニメーションはゆっくりと動き出します。逆に左上の領域にある場合は、最初から速く動きます。一方、2 つ目の制御点がグリッドの右下にある場合は最後の動きが速く、左上にある場合は最後の動きが遅くなります。
+Changing the X and Y value of each control point gives you a vastly different curve, and therefore a vastly different feel to your animation. For example, if the first control point is in the lower right area, the animation will be slow to start. If it’s in the top left area, it’s going to be fast to start. Conversely, if the second control point is in the bottom right area of the grid, it’s going to be fast at the end; if it’s in the top left, it will be slow to end.
 
-比較のために 2 つの曲線を示します。典型的な ease-in-out 曲線とカスタム カーブです。
+For comparison, here are two curves: a typical ease-in-out curve and a custom curve:
 
 <div class="attempt-left">
   <figure>
-    <img src="images/ease-in-out-markers.png" alt="Ease-in-out のアニメーション曲線。" />
+    <img src="images/ease-in-out-markers.png" alt="Ease-in-out animation curve." />
   </figure>
 </div>
+
 <div class="attempt-right">
   <figure>
-    <img src="images/custom.png" alt="カスタム アニメーション曲線" />
+    <img src="images/custom.png" alt="Custom animation curve." />
   </figure>
 </div>
 
-[カスタム イージングのアニメーションを見る](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/animations/box-move-custom-curve.html){: target="_blank" .external }
+[See an animation with custom easing](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/animations/box-move-custom-curve.html){: target="_blank" .external }
 
-カスタム曲線の CSS は次のとおりです。
-
+The CSS for the custom curve is:
 
     transition: transform 500ms cubic-bezier(0.465, 0.183, 0.153, 0.946);
     
 
-最初の 2 つの数字は 1 つ目の制御点の X 座標と Y 座標で、後の 2 つの数字は 2 番目の制御点の X 座標と Y 座標です。
+The first two numbers are the X and Y coordinates of the first control point, and the second two numbers are the X and Y coordinates of the second control point.
 
-カスタム曲線の作成は楽しい作業で、アニメーションの見え方を細かく制御することができます。たとえば上記のカスタム曲線は、標準的な ease-in-out 曲線に似ていますが、ease-in の時間が短く（動き出してから短時間で加速）、最後に長い時間をかけて減速しています。
+Making a custom curve is a lot of fun, and it gives you significant control over the feel of the animation. For example, given the above curve, you can see that the curve resembles a classic ease-in-out curve, but with a shortened ease-in, or "getting started," portion, and an elongated slowdown at the end.
 
-こちらの[アニメーション曲線ツール](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/animations/curve-playground.html){: target="_blank" .external }を使用して、曲線に応じてアニメーションの印象がどう変わるのかをご確認ください。
+Experiment with this [animation curve tool](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/animations/curve-playground.html){: target="_blank" .external } and see how the curve affects the feel of an animation.
 
-##  JavaScript フレームワークを使用して細かく制御する
+## Use JavaScript frameworks for more control
 
-3 次ベジエ曲線よりもさらに詳細な制御が必要になる場合があります。跳ね返り効果については、CSS や Web Animations で実現するのは難しいため、JavaScript フレームワークの使用を検討してください。
+Sometimes you need even more control than a cubic Bézier curve can provide. If you wanted an elastic bounce feel, you might consider using a JavaScript framework, because this is a difficult effect to achieve with either CSS or Web Animations.
 
-###  TweenMax
+### TweenMax
 
-強力なフレームワークの 1 つに [Greensock の TweenMax](https://github.com/greensock/GreenSock-JS/tree/master/src/minified)（または、超軽量版の TweenLite）があります。これは非常に成熟したコードベースで、小さな JavaScript ライブラリでさまざまな制御が可能です。
+One powerful framework is [GreenSock’s TweenMax](https://github.com/greensock/GreenSock-JS/tree/master/src/minified) (or TweenLite if you want to keep things really lightweight), because you get a lot of control from it in a small JavaScript library, and it’s a very mature codebase.
 
-[elastic ease アニメーションを見る](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/animations/box-move-elastic.html){: target="_blank" .external }
+[See an elastic ease animation](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/animations/box-move-elastic.html){: target="_blank" .external }
 
-TweenMax を使用するには、ページに以下のスクリプトを追加します。
-
+To use TweenMax, include this script in your page:
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/latest/TweenMax.min.js"></script>
     
 
-スクリプトの準備ができたら要素に対して TweenMax を呼び出し、使用するプロパティとイージングを通知します。使用できるイージングのオプションは多数ありますが、次のコードでは elastic ease-out を使用しています。
-
+After the script is in place, you can call TweenMax against your element and tell it which properties you’d like, along with any easing you’d like. There are many easing options that you can use; the code below uses an elastic ease-out:
 
     var box = document.getElementById('my-box');
     var animationDurationInSeconds = 1.5;
@@ -79,10 +73,8 @@ TweenMax を使用するには、ページに以下のスクリプトを追加�
     });
     
 
-[TweenMax 文のドキュメント](https://greensock.com/docs/#/HTML5/GSAP/TweenMax/)に利用できるオプションが網羅されていますので、ぜひ一読してください。
+The [TweenMax documentation](https://greensock.com/docs/#/HTML5/GSAP/TweenMax/) highlights all the options you have here, so it's well worth a read.
 
+## Feedback {: #feedback }
 
-
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
