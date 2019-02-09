@@ -1,290 +1,227 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Chrome DevTools의 Styles 창을 사용하여 요소와 연관된 CSS 스타일을 검사하고 수정합니다.
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Use the Styles pane in Chrome DevTools to inspect and modify the CSS styles associated to an element.
 
-{# wf_updated_on: 2016-02-25 #}
-{# wf_published_on: 2015-04-13 #}
+{# wf_updated_on: 2018-07-27 #} {# wf_published_on: 2015-04-13 #} {# wf_blink_components: Platform>DevTools #}
 
-# 스타일 편집 {: .page-title }
+# Edit Styles {: .page-title }
 
-{% include "web/_shared/contributors/kaycebasques.html" %}
-{% include "web/_shared/contributors/megginkearney.html" %}
+{% include "web/_shared/contributors/kaycebasques.html" %} {% include "web/_shared/contributors/megginkearney.html" %}
 
-요소에 연관된 CSS 스타일을 수정하려면 <strong>Styles</strong> 창을 사용합니다.
+Warning: This page is deprecated. See [CSS Reference](/web/tools/chrome-devtools/css/reference).
 
+Use the **Styles** pane to modify the CSS styles associated to an element.
 
-![Styles 창](imgs/styles-pane.png)
-
+![Styles pane](imgs/styles-pane.png)
 
 ### TL;DR {: .hide-from-toc }
-- Styles 창을 사용하면 가능한 가장 많은 방법으로 CSS를 로컬에서 변경할 수 있습니다. 여기에는 기존 스타일 편집, 새 스타일 추가 및 스타일 규칙 추가 등이 포함됩니다.
-- 스타일이 지속되기를 원한다면(새로고침 실행 후 없어져 버리지 않도록) 개발 작업 영역에 지속적으로 유지해야 합니다.
 
+- The styles pane lets you change your CSS in as many ways as possible, locally, including editing existing styles, adding new styles, adding rules for styles.
+- If you want styles to persist (so they don't go away on a reload), you need to persist them to your development workspace.
 
-## 요소에 적용된 스타일 검사
+## Inspect styles applied to an element
 
-[요소를 선택](edit-dom#inspect-an-element)하여 그 스타일을 검사합니다.
-**Styles** 창에는 선택한 요소에 적용된 CSS 규칙이 
-우선순위가 가장 높은 것부터 가장 낮은 순서로 표시됩니다.
+[Select an element](edit-dom#inspect-an-element) to inspect its styles. The **Styles** pane shows the CSS rules that apply to the selected element, from highest priority to lowest:
 
-* 맨 위에 `element.style`이 있습니다. 이들은 
-스타일 속성(예: 
-`<p style="color:green">`)을 사용하여 요소에 직접 적용한 스타일이거나 DevTools에서 적용된 스타일입니다.
+- At the top is `element.style`. These are styles either applied directly to the element using the style property (for example, `<p style="color:green">`), or applied in DevTools.
 
-* 그 아래에 해당 요소에 일치하는 모든 CSS 규칙이 나열됩니다. 예를 들어
-아래의 스크린샷을 보면 선택한 요소가 `tools.css`에서 정의된 규칙으로부터 
-`line-height:24px`를 수신합니다.
+- Below that are any CSS rules that match the element. For example, in the screenshot below the selected element receives `line-height:24px` from a rule defined in `tools.css`.
 
-* 그 아래는 상속한 스타일로, 여기에 선택한 요소의 상위 항목과 일치하는 
-상속 가능한 스타일이 모두 포함됩니다. 예를 들어
-아래 스크린샷에서 선택한 요소는 `user agent stylesheet`로부터
-`display:list-item`을 상속합니다.
+- Below that are inherited styles, which include any inheritable style rules that match the selected element's ancestors. For example, in the screenshot below the selected element inherits `display:list-item` from `user agent stylesheet`.
 
-아래 이미지의 레이블은 그 아래 번호가 매겨진 항목에 해당합니다.
+The labels on the image below correspond with the numbered items below it.
 
-![주석이 달린 Styles 창](/web/tools/chrome-devtools/inspect-styles/imgs/styles-annotated.png)
+![Annotated Styles pane](/web/tools/chrome-devtools/inspect-styles/imgs/styles-annotated.png)
 
-1. 요소와 일치하는 선택기와 연관된 스타일입니다.
-2. [사용자 에이전트 스타일시트](http://meiert.com/en/blog/20070922/user-agent-style-sheets/)는
-명확하게 레이블이 지정되어 있으며, 대개 웹 페이지의 CSS에 의해 재정의됩니다.
-3. **cascading 규칙**으로 재정의된 규칙은
-취소선 텍스트가 표시됩니다.
-4. **상속된** 스타일은 'Inherited
-from `<NODE>`' 헤더 아래에 그룹으로 표시됩니다. 헤더에서 DOM 노드를 클릭하면 DOM 트리 뷰에서 
-해당 노드의 위치로 이동합니다. ([CSS 2.1
-속성표](http://www.w3.org/TR/CSS21/propidx.html)를 보면 상속 가능한 속성이
-무엇인지 표시되어 있습니다.)
-5. 회색으로 처리된 항목은 정의되지 않았지만 그 대신
-**런타임에 계산된** 규칙입니다.
+1. Styles associated with a selector that matches the element.
+2. [User agent stylesheets](http://meiert.com/en/blog/20070922/user-agent-style-sheets/) are clearly labelled, and are often overridden by the CSS on your web page.
+3. Rules that have been overridden by **cascading rules** are shown with strikethrough text.
+4. **Inherited** styles are displayed as a group under the "Inherited from `<NODE>`" header. Click the DOM node in the header to navigate to its position in the DOM tree view. (The [CSS 2.1 properties table](http://www.w3.org/TR/CSS21/propidx.html) shows which properties are inheritable.)
+5. Grey colored entries are rules that are not defined but instead **computed at runtime**.
 
-cascading 및 상속이 어떤 식으로 작용하는지 이해하는 것이 스타일 디버깅에
-대단히 중요합니다. cascade는 CSS 선언에 가중치를 
-부여하는 방식과 관련되어 있습니다. 이를 통해 규칙이 또 다른 규칙과 중첩될 때 어느 쪽에 우선순위를 둬야 하는지 결정합니다. 상속은 HTML 요소가 각자의 포함 요소(상위 항목)로부터 
-CSS 속성을 상속하는 방법과 관련이 있습니다. 자세한 내용은
-[cascading에 대한 W3C  문서](http://www.w3.org/TR/CSS2/cascade.html)를 참조하세요.
+Understanding how cascading and inheritance works is essential to debugging your styles. The cascade relates to how CSS declarations are given weights to determine which rules should take precedence when they overlap with another rule. Inheritance relates to how HTML elements inherit CSS properties from their containing elements (ancestors). For more, see [W3C documentation on cascading](http://www.w3.org/TR/CSS2/cascade.html).
 
-## 선택기에 의해 영향을 받은 요소 검사
+## Inspect elements affected by a selector
 
-**Styles** 창에서 CSS 선택기 위로 마우스를 가져가면 해당 선택기에 의해 영향을 받은 모든
-요소를 볼 수 있습니다. 예를 들어 아래 스크린샷에서는 
-마우스를 선택기 
-`.wf-tools-guide__section-link a`로 가져간 상태입니다. 실제 페이지에서는 이 선택기에 의해 영향을 받은
-`<a>` 요소가 모두 표시됩니다. 
+Hover your mouse over a CSS selector in the **Styles** pane to view all elements that are affected by the selector. For example, in the screenshot below the mouse is hovering over the selector `.wf-tools-guide__section-link a`. In the live page you can see all of the `<a>` elements that are affected by the selector.
 
-![선택기에 의해 영향을 받은 요소 보기](imgs/selector-hover.png)
+![viewing elements affected by selector](imgs/selector-hover.png)
 
-**참고**: 이 기능은 요소를 뷰포트에서 강조표시할 뿐입니다. 뷰포트 외부의 다른 요소도
-해당 선택기에 의해 영향을 받을 가능성이 있습니다. 
+**Note**: this feature only highlights elements in the viewport; it's possible that other elements outside of the viewport are also affected by the selector.
 
-## CSS 클래스 추가, 활성화 및 비활성화{:#classes}
+## Add, enable, and disable CSS classes {:#classes}
 
-**.cls** 버튼을 클릭하면 현재 선택한 요소와 관련된 CSS 클래스를
-모두 볼 수 있습니다. 그러면 다음과 같은 작업을 할 수 있게 됩니다.
+Warning: This page is deprecated. See [Toggle a class](/web/tools/chrome-devtools/css/reference#toggle-class).
 
-* 현재 해당 요소와 연관된 클래스를 활성화 또는 비활성화합니다.
-* 요소에 새 클래스를 추가합니다. 
+Click on the **.cls** button to view all of the CSS classes associated to the currently selected element. From there, you can:
 
-![클래스 창](imgs/classes.png)
+- Enable or disable the classes currently associated to the element.
+- Add new classes to the element. 
 
-## 기존 이름 또는 값 편집
+![classes pane](imgs/classes.png)
 
-CSS 속성 이름 또는 값을 클릭하여 해당 항목을 편집합니다. 이름이나 값이 강조표시되어 있는 동안 
-<kbd>Tab</kbd> 키를 누르면 다음 속성, 이름 또는 
-선택기로 넘어갑니다. <kbd>Shift</kbd> 키를 누른 채로 <kbd>Tab</kbd> 키를 누르면 뒤로 이동합니다.
+## Edit an existing property name or value
 
-숫자로 된 CSS 속성 값을 편집하는 경우에는 다음과 같은 단축키를 사용하여
-숫자를 증감합니다.
+Warning: This page is deprecated. See [Change a declaration name or value](/web/tools/chrome-devtools/css/reference#change-declaration).
 
-* <kbd>Up</kbd> 및 <kbd>Down</kbd>은 값을 1씩 증감합니다.
-또는 현재 값이 -1과 1 사이인 경우 .1씩 증감합니다.
-* <kbd>Alt</kbd>+<kbd>Up</kbd> 및 <kbd>Alt</kbd>+<kbd>Down</kbd>을 사용하여 
-값을 0.1씩 증감합니다.
-* <kbd>Shift</kbd>+<kbd>Up</kbd>은 10씩 증분하고 
-<kbd>Shift</kbd>+<kbd>Down</kbd>은 10씩 감소합니다.
-* <kbd>Shift</kbd>+<kbd>Page Up</kbd>(Windows, Linux) 또는 
-<kbd>Shift</kbd>+<kbd>Function</kbd>+<kbd>Up</kbd>(Mac)을 사용하면 값을 
-100씩 증분합니다. <kbd>Shift</kbd>+<kbd>Page Down</kbd>(Windows, Linux) 또는 
-<kbd>Shift</kbd>+<kbd>Function</kbd>+<kbd>Down</kbd>(Mac)은 값을 
-100씩 감소합니다. 
+Click on a CSS property name or value to edit it. While a name or value is highlighted, press <kbd>Tab</kbd> to move forward to the next property, name, or selector. Hold <kbd>Shift</kbd> and press <kbd>Tab</kbd> to move backwards.
 
-## 새 속성 선언 추가
+When editing a numeric CSS property value, increment and decrement with the following keyboard shortcuts:
 
-편집할 수 있는 CSS 규칙 내에서 빈 공간을 클릭하여 새 선언을 만듭니다.
-타이핑해서 입력하거나 CSS를 **Styles** 창에 붙여넣습니다. 속성과 그 값은
-파싱되어 정확한 필드에 입력됩니다.
+- <kbd>Up</kbd> and <kbd>Down</kbd> to increment and decrement the value by 1, or by .1 if the current value is between -1 and 1.
+- <kbd>Alt</kbd>+<kbd>Up</kbd> and <kbd>Alt</kbd>+<kbd>Down</kbd> to increment and decrement the value by 0.1.
+- <kbd>Shift</kbd>+<kbd>Up</kbd> to increment by 10 and <kbd>Shift</kbd>+<kbd>Down</kbd> to decrement by 10.
+- <kbd>Shift</kbd>+<kbd>Page Up</kbd> (Windows, Linux) or <kbd>Shift</kbd>+<kbd>Function</kbd>+<kbd>Up</kbd> (Mac) to increment the value by 100. <kbd>Shift</kbd>+<kbd>Page Down</kbd> (Windows, Linux) or <kbd>Shift</kbd>+<kbd>Function</kbd>+<kbd>Down</kbd> (Mac) to decrement the value by 100. 
 
-참고: 스타일 선언을 활성화 또는 비활성화하려면 그 옆에 있는 확인란을 선택하거나 선택 취소합니다.
+## Add a new property declaration
 
-## 스타일 규칙 추가
+Warning: This page is deprecated. See [Add a declaration to an element](/web/tools/chrome-devtools/css/reference#add-declaration).
 
-**New Style Rule**
-(![새 스타일 규칙 버튼](imgs/new-style-rule.png){:.inline}) 버튼을 클릭하여
-새 CSS 규칙을 추가합니다. 
+Click an empty space within an editable CSS rule to create a new declaration. Type it out, or paste the CSS into the **Styles** pane. Properties and their values are parsed and entered into the correct fields.
 
-이 버튼을 길게 클릭하면 해당 규칙을 어느 스타일시트에 추가할지 선택할 수 있습니다. 
+Note: To enable or disable a style declaration, check or uncheck the checkbox next to it.
 
-## 동적 스타일(의사 클래스) 추가 또는 삭제{:#pseudo-classes}
+## Add a style rule
 
-동적 의사 클래스 선택기(예: `:active`, 
-`:focus`, `:hover` 및 `:visited`)를 요소에 수동으로 설정할 수 있습니다. 
+Warning: This page is deprecated. See [Add a style rule](/web/tools/chrome-devtools/css/reference#style-rule).
 
-요소에 이러한 동적 상태를 설정하는 두 가지 방법이 있습니다.
+Click the **New Style Rule** (![new style rule button](imgs/new-style-rule.png){:.inline}) button to add a new CSS rule.
 
-* **Elements** 패널 내에서 요소를 마우스 오른쪽 버튼으로 클릭한 다음
-메뉴에서 대상 의사 클래스를 선택하여 활성화 또는 비활성화합니다.
-  
-![요소를 마우스 오른쪽 버튼으로
-클릭하여 의사클래스 선택기 활성화](imgs/pseudoclass-rightclick.png)
+Click and hold the button to choose which stylesheet the rule is added to.
 
-* **Elements** 패널에서 요소를 선택하고
-**Styles** 창에서 **:hov** 버튼을 클릭한 다음, 확인란을 사용하여 현재 선택된 요소의 선택기를
-활성화 또는 비활성화합니다.
+## Add or remove dynamic styles (pseudo-classes) {:#pseudo-classes}
 
-  ![:hov 창](imgs/hov.png)
+Warning: This page is deprecated. See [Toggle a pseudo-class](/web/tools/chrome-devtools/css/reference#pseudo-class).
 
-## 스타일 규칙에 배경색 또는 색상 추가
+You can manually set dynamic pseudo-class selectors (such as `:active`, `:focus`, `:hover`, and `:visited`) on elements.
 
-**Styles** 창에서는 스타일 규칙에 `color` 및
-`background-color`선언을 추가하는 단축키를 제공합니다.
+There are two ways to set these dynamic states on an element:
 
-스타일 규칙의 오른쪽 아래에 세 점 아이콘이 있습니다. 스타일 규칙을 
-보려면 해당 규칙 위로 마우스를 가져가야 합니다.
+- Right-click on an element within the **Elements** panel and then select the target pseudo-class from the menu to enable or disable it.
+    
+    ![right-click on element 
+to enable pseudoclass selector](imgs/pseudoclass-rightclick.png)
 
-![규칙 집합 내의 세 점 아이콘](imgs/rule-set-three-dots-icon.png)
+- Select an element in the **Elements** panel, click the **:hov** button in the **Styles** pane, and use the checkboxes to enable or disable the selectors for the currently selected element.
+    
+    ![:hov pane](imgs/hov.png)
 
-이 아이콘 위로 마우스를 가져가면 `color` 선언
-(![색 선언 추가](imgs/add-color.png){:.inline})
-또는 `background-color` 선언(![배경색 추가
-선언](imgs/add-background-color.png){:.inline})을 추가할 수 있는 버튼이 나타납니다. 이들 버튼 중 하나를 클릭하면 
-스타일 규칙에 선언을 추가할 수 있습니다. 
+## Add background-color or color to a style rule
 
-## Color Picker로 색 수정 {:#color-picker}
+Warning: This page is deprecated. See [Add a background-color declaration](/web/tools/chrome-devtools/css/reference#background-color) and [Add a color declaration](/web/tools/chrome-devtools/css/reference#color).
 
-**Color Picker**를 열려면 색(예: `color: blue`)을
-정의하는 **Styles** 창에서 CSS 선언을 찾습니다. 선언 값의 왼쪽에 
-색이 지정된 작은 정사각형이 있습니다. 이 정사각형의 색은 
-선언 값과 일치합니다. 이 작은 정사각형을 클릭하면 **Color Picker**가 열립니다.
+The **Styles** pane provides a shortcut for adding `color` and `background-color` declarations to a style rule.
 
-![Color Picker 열기](imgs/open-color-picker.jpg)
+In the bottom-right of the style rule, there is a three-dot icon. You need to hover over the style rule in order to see it.
 
-**Color Picker**와 여러 가지 방식으로 상호작용할 수 있습니다.
+![three-dots icon in rule set](imgs/rule-set-three-dots-icon.png)
 
-1. **Eyedropper**. 자세한 내용은 [Eyedropper](#eyedropper)를 참조하세요. 
-2. **현재 색**. **현재 값**을 시각적으로 표현한 것입니다.
-3. **현재 값**. 
-**현재 색**을 16진법, RGBA 또는 HSL 형식으로 표현한 것입니다.
-4. **색상표**. 자세한 내용은 [색상표](#color-palettes)를
-참조하세요.
-5. **색조 및 음영 선택기**.
-6. **색상(Hue) 선택기**.
-7. **투명도 선택기**.
-8. **색상 값 선택기**. 클릭하면 RGBA, HSL 및
-16진법 사이를 전환합니다.
-9. **색상표 선택기**. 클릭하면 여러 가지 템플릿을 선택할 수 있습니다.
+Hover over this icon to reveal buttons for adding a `color` declaration (![add color declaration](imgs/add-color.png){:.inline}) or a `background-color` declaration (![add background-color 
+declaration](imgs/add-background-color.png){:.inline}). Click on one of these buttons to add the declaration to the style rule.
 
-![주석이 달린 Color Picker](imgs/annotated-color-picker.jpg)
+## Modify colors with the Color Picker {:#color-picker}
 
-[md]: https://www.google.com/design/spec/style/color.html
+Warning: This page is deprecated. See [Change colors with the Color Picker](/web/tools/chrome-devtools/css/reference#color-picker).
+
+To open the **Color Picker**, find a CSS declaration in the **Styles** pane that defines a color (such as `color: blue`). To the left of the declaration value there is a small, colored square. The color of the square matches the declaration value. Click on this little square to open the **Color Picker**.
+
+![opening the color picker](imgs/open-color-picker.jpg)
+
+You can interact with the **Color Picker** in multiple ways:
+
+1. **Eyedropper**. See [Eyedropper](#eyedropper) for more information.
+2. **Current color**. A visual representation of the **current value**. 
+3. **Current value**. The hexadecimal, RGBA, or HSL representation of the **current color**. 
+4. **Color palette**. See [Color palettes](#color-palettes) for more information. 
+5. **Tint and shade selector**. 
+6. **Hue selector**. 
+7. **Opacity selector**.
+8. **Color value selector**. Click to toggle between RGBA, HSL, and hexadecimal. 
+9. **Color palette selector**. Click to select different templates.
+
+![annotated color picker](imgs/annotated-color-picker.jpg)
 
 ### Eyedropper {:#eyedropper}
 
-**eyedropper** 버튼을 클릭하여
-활성화합니다(![활성화된 eyedropper](imgs/eyedropper-enabled.png){:.inline}). 실제 페이지에서
-색 위로 마우스를 가져간 뒤 클릭하면 현재 선택한
-선언 값이 마우스를 가져간 색으로 설정됩니다.
+Click on the **eyedropper** button so that it is enabled (![enabled eyedropper](imgs/eyedropper-enabled.png){:.inline}), hover over a color on the live page, and then click to set the currently selected declaration value to the color that you're hovering over.
 
-![eyedropper 실행](imgs/eyedropper.jpg)
+![the eyedropper in action](imgs/eyedropper.jpg)
 
-### 색상표 {:#color-palettes}
+### Color palettes {:#color-palettes}
 
-**Color Picker**는 다음과 같은 색상표를 제공합니다.
+The **Color Picker** provides the following color palettes:
 
-* **페이지 색**. 해당 페이지의 
-CSS에서 일련의 색이 자동으로 생성됩니다.
-* **머티리얼 디자인**. 
-[머티리얼 디자인 사양][md]과 일치하는 일련의 색입니다. 
-* **사용자설정**. 사용자가 선택한 모든 색의 집합입니다. DevTools는 사용자가 삭제할 때까지 사용자설정 
-색상표를 여러 페이지에 걸쳐서 저장합니다. 
+- **Page Colors**. A set of colors automatically generated from the page's CSS.
+- **Material Design**. A collection of colors consistent with the [Material Design spec](https://www.google.com/design/spec/style/color.html). 
+- **Custom**. A set of any colors you choose. DevTools saves your custom palette, even across pages, until you delete it. 
 
-#### 사용자설정 색상표 수정 {:#custom-color-palette}
+#### Modifying a custom color palette {:#custom-color-palette}
 
-**더하기 기호** 버튼을 눌러 현재 색을 색상표에 추가합니다.
-색을 길게 클릭하여 다른 위치로 끌어오거나 
-**휴지통** 아이콘으로 끌어와서 삭제합니다. 색을 마우스 오른쪽 버튼으로 클릭한 다음 
-**Remove color**를 선택하여 삭제합니다. **Remove all to the right**을 선택하면 
-현재 선택한 색의 오른쪽에 있는 모든 색을 삭제합니다. 색상표 영역 내
-아무 곳이나 마우스 오른쪽 버튼으로 클릭한 다음 **Clear template**을 선택하면
-템플릿의 색이 모두 삭제됩니다.
+Press the **plus sign** button to add the current color to the palette. Click and hold on a color to drag it to a different position, or drag it to the **trash can** icon to delete it. Right-click on a color and select **Remove color** to delete it. Select **Remove all to the right** to delete all of the colors to the right of the currently selected color. Right-click anywhere within the color palette region and select **Clear template** to delete all of the template's colors.
 
-## CSS 사용자설정 속성(CSS 변수) 보기 및 편집 {:#custom-properties}
+## View and edit CSS custom properties (CSS variables) {:#custom-properties}
 
-[CSS 사용자설정
-속성][intro](흔히 CSS 변수라고 부름)을 정의하거나 사용하는 선언도 다른 모든 선언과 마찬가지로 보고 편집할 수
-있습니다. 
+You can view and edit declarations that define or use [CSS custom properties](/web/updates/2016/02/css-variables-why-should-you-care) (informally known as CSS variables) just like any other declaration.
 
-사용자설정 속성은 대체로 `:root` 
-선택기에서 [정의][def]됩니다. `:root`에서 정의된 사용자설정 속성을 보려면, `html`
-요소를 검사합니다.
+Custom properties are usually [defined](https://drafts.csswg.org/css-variables/#defining-variables) in the `:root` selector. To view a custom property defined in `:root`, inspect the `html` element.
 
-![:root에서 정의된 사용자설정 속성](imgs/css-var-defined-on-root.png)
+![custom property defined on :root](imgs/css-var-defined-on-root.png)
 
-다만, 사용자설정 속성은 꼭 `:root` 선택기에서 정의해야만 하는 것은 아닙니다.
-이를 다른 곳에서 정의하는 경우, 해당 속성이 지정된 요소를 검사해야
-정의를 볼 수 있습니다.
+Custom properties do not have to be defined on the `:root` selector, however. If you defined it elsewhere, inspect the element on which it was defined to view the definition.
 
-사용자설정 속성을 사용하는 선언 값도 다른 모든 선언 값과 똑같이
-보고 편집할 수 있습니다. 
+You can view and edit declaration values that use custom properties just like any other declaration value.
 
-아래의 스크린샷처럼 `var(--main-color)`와 같은 선언 값이 표시되는 경우, 
-이는 해당 선언이 사용자설정 속성을 사용한다는 의미입니다. 이러한 
-값도 다른 모든 선언 값과 마찬가지로 편집할 수 있습니다. 현재로서는 사용자설정 정의로
-점프할 방법이 없습니다.
+If you see a declaration value like `var(--main-color)` as in the screenshot below, it means that the declaration is using custom properties. These values can be edited like any other declaration value. Currently there is no way to jump to the custom property definition.
 
-![사용자설정 속성 사용](imgs/css-var-in-use.png)
+![using a custom property](imgs/css-var-in-use.png)
 
-[intro]: /web/updates/2016/02/css-variables-why-should-you-care
-[def]: https://drafts.csswg.org/css-variables/#defining-variables
+## Edit Sass, Less or Stylus
 
-## Sass, Less 또는 Stylus 편집
+If you are using Sass, Less, Stylus or any other CSS preprocessor, editing the generated CSS output files in the Styles editor won't help as they don't map to your original source.
 
-Sass, Less, Stylus 또는 기타 CSS 전처리기를 사용하는 경우, 생성된 CSS 출력 파일을 스타일 편집기에서 편집해도 별 도움이 되지 않습니다. 이들은 원래 소스에 매핑되지 않기 때문입니다.
+With CSS source maps, DevTools can automatically map the generated files to the original source files, which lets you live-edit these in the Sources panel and view the results without having to leave DevTools or refresh the page.
 
-CSS 소스 맵의 경우, DevTools가 생성된 파일을 원래 소스 파일에 자동으로 매핑할 수 있습니다. 따라서 이를 Sources 패널에서 실시간으로 편집할 수 있고, DevTools를 나가거나 페이지를 새로 고치지 않고도 결과를 볼 수 있습니다. 
+### The preprocessor workflow
 
-### 전처리기 워크플로
+When you inspect an element whose styles are provided by a generated CSS file, the Elements panel displays a link to the original source file, not the generated CSS file.
 
-생성된 CSS 파일이 스타일을 제공한 요소를 검사하는 경우, Elements 패널에는 생성된 CSS 파일이 아니라 원래 소스 파일로 연결되는 링크가 표시됩니다.
+![Elements panel showing .scss stylesheet](imgs/sass-debugging.png)
 
-![.scss 스타일시트를 보여주는 Elements 패널](imgs/sass-debugging.png)
+To jump to the source file:
 
-소스 파일로 점프하려면:
+1. Click the link to open the (editable) source file in the Sources panel.
+2. <kbd class="kbd">Ctrl</kbd> + **Click** (or <kbd class="kbd">Cmd</kbd> + **click**) on any CSS property name or value to open the source file and jump to the appropriate line.
 
-1. 링크를 클릭하면 Sources 패널에서 (편집 가능한) 소스 파일이 열립니다.
-2. 아무 CSS 속성 이름 또는 값이나 <kbd class="kbd">Ctrl</kbd> + **클릭**(또는 <kbd class="kbd">Cmd</kbd> + **클릭**)하면 소스 파일이 열리고 해당 줄로 점프합니다.
+![Sources panel showing .scss file](imgs/sass-sources.png)
 
-![scss 파일을 보여주는 Sources 패널](imgs/sass-sources.png)
+When you save changes to a CSS preprocessor file in DevTools, the CSS preprocessor should re-generate the CSS files. Then DevTools then reloads the newly-generated CSS file.
 
-DevTools에서 CSS 전처리기 파일에 변경 내용을 저장하면 CSS 전처리기가 CSS 파일을 다시 생성합니다. 그런 다음 DevTools가 새로 생성된 CSS 파일을 다시 로드합니다.
+### Enable/Disable CSS source maps & auto-reloading
 
-### CSS 소스 맵 및 자동 새로고침 활성화/비활성화
+**CSS source maps are enabled by default**. You can choose to enable automatic reloading of generated CSS files. To enable CSS source maps and CSS reload:
 
-**CSS 소스 맵은 기본적으로 활성화되어 있습니다**. 생성된 CSS 파일의 자동 새로고침을 활성화하도록 선택할 수 있습니다. CSS 소스 맵 및 CSS 새로고침을 활성화하려면:
+1. Open DevTools Settings and click **General**.
+2. Turn on **Enable CSS source maps** and **Auto-reload generated CSS**.
 
-1. DevTools 설정을 열고 **General**을 클릭합니다.
-2. **Enable CSS source maps** 및 **Auto-reload generated CSS**를 활성화합니다.
+### Requirements & Gotchas
 
-### 요구사항 및 잠재적 문제
+- **Changes made in an external editor** are not detected by DevTools until the Sources tab containing the associated source file regains focus.
+- **Manual editing of a CSS file** generated by the Sass/LESS/other compiler will break the source map association until the page is reloaded.
+- **Using [Workspaces](/web/tools/setup/setup-workflow)?** Make sure the generated CSS file is also mapped into the workspace. You can verify this by looking in Sources panel right-side tree, and seeing the CSS is served from your local folder.
+- **For DevTools to automatically reload styles** when you change the source file, your preprocessor must be set up to regenerate CSS files whenever a source file changes. Otherwise, you must regenerate CSS files manually and reload the page to see your changes.
+- **You must be accessing your site or app from a web server** (not a **file://** URL), and the server must serve the CSS files as well as the source maps (.css.map) and source files (.scss, etc.).
+- If you are *not* using the Workspaces feature, the web server must also supply the `Last-Modified` header.
 
-- **외부 편집기에서 변경한 내용**은 연관된 소스 파일을 포함한 Sources 탭에 다시 포커스를 맞출 때까지 DevTools에서 감지되지 않습니다.
-- Sass/LESS/기타 컴파일러로 생성한 **CSS 파일을 수동 편집**하면 페이지를 새로 고칠 때까지 소스 맵과의 연관 관계가 끊어집니다.
-- **<a href="/web/tools/setup/setup-workflow">작업 영역</a>을 사용하는 경우** 생성된 CSS 파일도 해당 작업 영역에 매핑되도록 해야 합니다. 이것이 제대로 되었는지 확인하려면 Sources 패널 오른쪽 트리를 보고 CSS가 로컬 폴더에서 제공되는지 보면 됩니다.
-- 소스 파일을 변경했을 때 **DevTools가 자동으로 스타일을 새로 고치도록 하려면** 전처리기를 소스 파일이 변경될 때마다 CSS 파일을 재생성하도록 설정해야 합니다. 그렇지 않으면 CSS 파일을 수동으로 재생성하여 페이지를 새로 고쳐야 변경 내용을 확인할 수 있습니다.
-- **사이트에는 앱 또는 웹 서버에서 액세스해야 하며**(**file://** URL이 아니라), 해당 서버가 소스 맵(.css.map)과 소스 파일(.scss 등)은 물론 CSS 파일도 제공해야 합니다.
-- Workspaces 기능을 사용하지 _않는_ 경우, 웹 서버가 `Last-Modified` 헤더도 제공해야 합니다.
+Learn how to setup source maps in [Setup CSS & JS Preprocessors](/web/tools/setup/setup-preprocessors).
 
-소스 맵을 설정하는 방법을 알아보려면 [CSS 및 JS 전처리기 설정](/web/tools/setup/setup-preprocessors)을 참조하세요.
+## Emulate print media {:#emulate-print-media}
 
+Warning: This page is deprecated. See [View a page in print mode](/web/tools/chrome-devtools/css/reference#print-mode).
 
+To view a page in print mode:
 
+1. Open the **Main Menu**.
+2. Select **More Tools** > **Rendering Settings**. The Rendering Settings tab opens at the bottom of your DevTools window.
+3. Set **Emulate media** to **Print**.
 
-{# wf_devsite_translation #}
+## Feedback {: #feedback }
+
+{% include "web/_shared/helpful.html" %}
