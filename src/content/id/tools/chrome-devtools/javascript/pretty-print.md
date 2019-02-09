@@ -1,26 +1,23 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Transformasikan JavaScript Anda ke dalam bentuk yang lebih mudah dibaca dengan mengeklik ikon Pretty-Print di Chrome DevTools.
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Transform your JavaScript into a more readable form by clicking the Pretty-Print icon in Chrome DevTools.
 
-{# wf_updated_on: 2016-02-21 #}
-{# wf_published_on: 2015-04-13 #}
+{# wf_updated_on: 2018-07-27 #} {# wf_published_on: 2015-04-13 #} {# wf_blink_components: Platform>DevTools #}
 
-# Buatlah Agar JavaScript Terlihat Cantik {: .page-title }
+# Make JavaScript Look Pretty {: .page-title }
 
-{% include "web/_shared/contributors/megginkearney.html" %}
-{% include "web/_shared/contributors/kaycebasques.html" %}
+{% include "web/_shared/contributors/megginkearney.html" %} {% include "web/_shared/contributors/kaycebasques.html" %}
 
-Saat menampilkan skrip di panel **Sources**, klik ikon **Pretty-Print**
-![ikon pretty-print](imgs/prettyprint-icon.png){:.inline} 
-untuk mengubah skrip yang diminimalkan menjadi format yang lebih terbaca-manusia.
+Warning: This page is deprecated. See [Make a minified file readable](reference#format) for up-to-date information.
 
-Berikut adalah bagaimana skrip yang diminimalkan mungkin terlihat dalam panel **Sources**:
+When viewing a script in the **Sources** panel, click the **Pretty-Print** ![the pretty-print icon](imgs/prettyprint-icon.png){:.inline} icon to transform a minified script into a more human-readable form.
 
-![skrip yang diminimalkan](imgs/pretty-print-off.jpg)
+Here is how a minified script might look in the **Sources** panel:
 
-Berikut adalah bagaimana skrip yang sama akan terlihat setelah mengeklik ikon **Pretty-Print**:
+![a minified script](imgs/pretty-print-off.jpg)
 
-![skrip yang diminimalkan setelah pretty print](imgs/pretty-print-on.jpg)
+Here is how the same script looks after clicking the **Pretty-Print** icon:
 
+![a minified script after pretty print](imgs/pretty-print-on.jpg)
 
-{# wf_devsite_translation #}
+## Feedback {: #feedback }
+
+{% include "web/_shared/helpful.html" %}
