@@ -1,181 +1,134 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Banyak dari web tidak dioptimalkan untuk pengalaman multi-perangkat. Pelajari dasar-dasar agar situs Anda berjalan pada seluler, desktop atau perangkat berlayar lainnya.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Much of the web isn't optimized for those multi-device experiences. Learn the fundamentals to get your site working on mobile, desktop, or anything else with a screen.
 
-{# wf_updated_on: 2017-07-12 #}
-{# wf_published_on: 2014-04-29 #}
+{# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2014-04-29 #} {# wf_blink_components: Blink>CSS #}
 
-# Dasar-Dasar Desain Web Responsif {: .page-title }
+# Responsive Web Design Basics {: .page-title }
 
 {% include "web/_shared/contributors/petelepage.html" %}
 
-Penggunaan perangkat seluler untuk menjelajahi web tumbuh dengan kecepatan fantastis, 
-tapi sayangnya banyak web tidak dioptimalkan untuk perangkat seluler.
-Perangkat seluler sering terkendala dengan ukuran layar dan memerlukan 
-pendekatan berbeda dalam bagaimana materi ditampilkan di layar.
+The use of mobile devices to surf the web is growing at an astronomical pace, but unfortunately much of the web isn't optimized for those mobile devices. Mobile devices are often constrained by display size and require a different approach to how content is laid out on the screen.
 
-Ada banyak ukuran layar yang berbeda untuk ponsel, "phablet,"
-tablet, desktop, konsol game, TV, dan bahkan perangkat yang dapat dikenakan.  Ukuran layar selalu
-berubah, jadi sangatlah penting agar situs Anda bisa beradaptasi dengan tiap ukuran layar,
-sekarang atau di masa mendatang.
+A multitude of different screen sizes exist across phones, "phablets," tablets, desktops, game consoles, TVs, and even wearables. Screen sizes are always changing, so it's important that your site can adapt to any screen size, today or in the future.
 
 <video autoplay muted loop controls>
   <source src="videos/resize.webm" type="video/webm">
   <source src="videos/resize.mp4" type="video/mp4">
 </video>
 
-Desain web responsif, awalnya didefinisikan oleh [Ethan Marcotte di A List
-Apart](http://alistapart.com/article/responsive-web-design/), sebagai jawaban atas
-kebutuhan pengguna dan perangkat yang mereka gunakan.  Perubahan layout berdasarkan
-ukuran dan kemampuan perangkat.  Misalnya, di ponsel, pengguna
-melihat materi yang ditampilkan dalam tampilan satu kolom; tablet mungkin menampilkan materi yang sama
-dalam dua kolom.
+Responsive web design, originally defined by [Ethan Marcotte in A List Apart](http://alistapart.com/article/responsive-web-design/), responds to the needs of the users and the devices they're using. The layout changes based on the size and capabilities of the device. For example, on a phone users would see content shown in a single column view; a tablet might show the same content in two columns.
 
 {% include "web/_shared/udacity/ud893.html" %}
 
-## Menyetel tampilan yang terlihat {: #set-the-viewport }
+## Set the viewport {: #set-the-viewport }
 
-Laman yang dioptimalkan untuk berbagai perangkat harus menyertakan tag meta viewport di kepala dokumen.  Sebuah tag meta viewport memberikan petunjuk ke browser tentang cara mengontrol ukuran laman dan penskalaan.
+Pages optimized for a variety of devices must include a meta viewport tag in the head of the document. A meta viewport tag gives the browser instructions on how to control the page's dimensions and scaling.
 
 ### TL;DR {: .hide-from-toc }
-- Gunakan tag meta viewport untuk mengontrol lebar dan penskalaan tampilan yang terlihat di browser.
-- Sertakan `width=device-width` untuk mencocokkan lebar layar dalam piksel yang tidak bergantung perangkat.
-- Sertakan `initial-scale=1` untuk membentuk hubungan 1:1 antara piksel CSS dan piksel yang tidak bergantung perangkat.
-- Pastikan laman Anda bisa diakses dengan tidak menonaktifkan penskalaan pengguna.
 
+- Use the meta viewport tag to control the width and scaling of the browser's viewport.
+- Include `width=device-width` to match the screen's width in device-independent pixels.
+- Include `initial-scale=1` to establish a 1:1 relationship between CSS pixels and device-independent pixels.
+- Ensure your page is accessible by not disabling user scaling.
 
-Dalam upaya menyediakan pengalaman terbaik, browser seluler merender
-laman pada lebar layar desktop (biasanya sekitar 980 px, meskipun ini bisa berbeda
-antar perangkat), dan kemudian mencoba membuat materi terlihat lebih baik dengan memperbesar
-ukuran font dan mengubah ukuran materi agar sesuai dengan layar.  Ini berarti bahwa ukuran font mungkin tampil tidak konsisten bagi pengguna, yang mungkin harus ketuk dua kali atau
-cubit-untuk-zoom agar bisa melihat dan berinteraksi dengan materi.
-
+To attempt to provide the best experience, mobile browsers render the page at a desktop screen width (usually about 980px, though this varies across devices), and then try to make the content look better by increasing font sizes and scaling the content to fit the screen. This means that font sizes may appear inconsistent to users, who may have to double-tap or pinch-to-zoom in order to see and interact with the content.
 
     <meta name="viewport" content="width=device-width, initial-scale=1">
     
 
-
-Menggunakan nilai meta viewport `width=device-width` menginstruksikan laman untuk mencocokkan
-lebar layar dalam piksel yang tidak tergantung perangkat. Hal ini memungkinkan laman untuk meng-ubah posisi/geometri
-materi agar sesuai dengan ukuran layar yang berbeda, apakah di-render pada telepon
-seluler kecil atau monitor desktop yang besar.
+Using the meta viewport value `width=device-width` instructs the page to match the screen's width in device-independent pixels. This allows the page to reflow content to match different screen sizes, whether rendered on a small mobile phone or a large desktop monitor.
 
 <div class="attempt-left">
   <a href="https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/responsive/vp-no.html">
   <figure>
-    <img src="imgs/no-vp.png" srcset="imgs/no-vp.png 1x, imgs/no-vp-2x.png 2x" alt="Laman tanpa penyetelan tampilan yang terlihat">
+    <img src="imgs/no-vp.png" srcset="imgs/no-vp.png 1x, imgs/no-vp-2x.png 2x" alt="Page without a viewport set">
     <figcaption>
-      Laman tanpa penyetelan tampilan yang terlihat
+      Page without a viewport set
      </figcaption>
   </figure>
   </a>
 </div>
+
 <div class="attempt-right">
   <a href="https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/responsive/vp.html">
   <figure>
-    <img src="imgs/vp.png" srcset="imgs/vp.png 1x, imgs/vp-2x.png 2x" alt="Laman dengan penyetelan tampilan yang terlihat">
+    <img src="imgs/vp.png" srcset="imgs/vp.png 1x, imgs/vp-2x.png 2x" alt="Page with a viewport set">
     <figcaption>
-      Laman dengan penyetelan tampilan yang terlihat
+      Page with a viewport set
      </figcaption>
   </figure>
   </a>
 </div>
 
-Beberapa browser menjaga lebar laman konstan ketika memutar ke mode
-lanskap, dan melakukan zoom bukannya meng-ubah posisi/geometri untuk mengisi layar. Menambahkan atribut
-`initial-scale=1` menginstruksikan browser untuk membangun hubungan 1:1 antara piksel
-CSS dan piksel yang tidak tergantung perangkat terlepas dari orientasi perangkat, dan
-memungkinkan laman untuk memanfaatkan lebar lanskap penuh.
+Some browsers keep the page's width constant when rotating to landscape mode, and zoom rather than reflow to fill the screen. Adding the attribute `initial-scale=1` instructs browsers to establish a 1:1 relationship between CSS pixels and device-independent pixels regardless of device orientation, and allows the page to take advantage of the full landscape width.
 
+Note: To ensure that older browsers can properly parse the attributes, use a comma to separate attributes.
 
-Note: Untuk memastikan browser lama bisa dengan benar parse atribut, gunakan tanda koma untuk memisahkan atribut.
+### Ensure an accessible viewport
 
-### Memastikan tampilan yang terlihat bisa diakses
+In addition to setting an `initial-scale`, you can also set the following attributes on the viewport:
 
-Selain menetapkan `initial-scale`, Anda juga bisa mengatur atribut berikut pada tampilan yang terlihat:
+- `minimum-scale`
+- `maximum-scale`
+- `user-scalable`
 
-* `minimum-scale`
-* `maximum-scale`
-* `user-scalable`
+When set, these can disable the user's ability to zoom the viewport, potentially causing accessibility issues.
 
-Bila diatur, ini bisa menonaktifkan kemampuan pengguna untuk melakukan zoom tampilan yang terlihat, berpotensi menyebabkan masalah aksesibilitas.
+## Size content to the viewport
 
-
-## Menyesuaikan ukuran materi dengan tampilan yang terlihat
-
-Pada desktop dan perangkat seluler, pengguna terbiasa menggulir situs web secara vertikal, tidak secara horizontal; memaksa pengguna menggulir secara horizontal atau harus memperkecil tampilan agar bisa melihat seluruh laman akan menyebabkan pengalaman pengguna yang buruk.
+On both desktop and mobile devices, users are used to scrolling websites vertically but not horizontally; forcing the user to scroll horizontally or to zoom out in order to see the whole page results in a poor user experience.
 
 ### TL;DR {: .hide-from-toc }
-- Jangan menggunakan elemen berlebar tetap yang besar.
-- Materi tidak boleh bergantung pada lebar tampilan yang terlihat tertentu untuk merender dengan baik.
-- Gunakan kueri media CSS untuk menerapkan penataan gaya yang berbeda untuk layar kecil dan besar.
 
-Ketika mengembangkan sebuah situs seluler dengan tag `meta viewport`, terkadang kita
-secara tidak sengaja membuat materi laman yang tidak muat dalam tampilan yang terlihat
-yang ditetapkan. Misalnya, gambar yang ditampilkan mempunyai lebar yang lebih lebar dari
-tampilan yang terlihat bisa menyebabkan tampilan yang terlihat untuk menggulir secara horizontal. Anda harus menyesuaikan materi
-ini agar muat ke dalam lebar tampilan yang terlihat, sehingga pengguna tidak perlu
-menggulir secara horizontal.
+- Do not use large fixed width elements.
+- Content should not rely on a particular viewport width to render well.
+- Use CSS media queries to apply different styling for small and large screens.
 
-Oleh karena ukuran dan lebar layar dalam piksel CSS bervariasi antar perangkat
-(misalnya, antara ponsel dan tablet, dan bahkan antara ponsel yang berbeda), materi
-tidak boleh bergantung pada lebar tampilan yang terlihat tertentu untuk dirender dengan baik.
+When developing a mobile site with a `meta viewport` tag, it's easy to accidentally create page content that doesn't quite fit within the specified viewport. For example, an image that is displayed at a width wider than the viewport can cause the viewport to scroll horizontally. You should adjust this content to fit within the width of the viewport, so that the user does not need to scroll horizontally.
 
-Menyetel lebar CSS mutlak besar untuk elemen laman (seperti contoh di bawah),
-menyebabkan `div` menjadi terlalu lebar untuk tampilan yang terlihat pada perangkat yang lebih sempit (misalnya,
-perangkat dengan lebar piksel CSS 320, seperti iPhone). Sebaiknya, pertimbangkan
-untuk menggunakan nilai lebar relatif, seperti `width: 100%`.  Demikian juga, berhati-hatilah menggunakan
-nilai pemosisian absolut besar yang bisa menyebabkan elemen berada di luar
-tampilan yang terlihat pada layar kecil.  
+Since screen dimensions and width in CSS pixels vary widely between devices (for example, between phones and tablets, and even between different phones), content should not rely on a particular viewport width to render well.
+
+Setting large absolute CSS widths for page elements (such as the example below), cause the `div` to be too wide for the viewport on a narrower device (for example, a device with a width of 320 CSS pixels, such as an iPhone). Instead, consider using relative width values, such as `width: 100%`. Similarly, beware of using large absolute positioning values that may cause the element to fall outside the viewport on small screens.
 
 <div class="attempt-left">
   <a href="https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/responsive/vp-fixed.html">
   <figure>
-    <img src="imgs/vp-fixed-iph.png" srcset="imgs/vp-fixed-iph.png 1x, imgs/vp-fixed-iph-2x.png 2x" alt="Laman dengan elemen lebar tetap 344 px pada iPhone.">
+    <img src="imgs/vp-fixed-iph.png" srcset="imgs/vp-fixed-iph.png 1x, imgs/vp-fixed-iph-2x.png 2x" alt="Page with a 344px fixed width element on an iPhone.">
     <figcaption>
-      Laman dengan elemen lebar tetap 344 px pada iPhone
+      Page with a 344px fixed width element on an iPhone
     </figcaption>
   </figure>
   </a>
 </div>
+
 <div class="attempt-right">
   <a href="https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/responsive/vp-fixed.html">
   <figure>
-    <img src="imgs/vp-fixed-n5.png" srcset="imgs/vp-fixed-n5.png 1x, imgs/vp-fixed-n5-2x.png 2x" alt="Laman dengan elemen lebar tetap 344 px pada Nexus 5.">
+    <img src="imgs/vp-fixed-n5.png" srcset="imgs/vp-fixed-n5.png 1x, imgs/vp-fixed-n5-2x.png 2x" alt="Page with a 344px fixed width element on a Nexus 5.">
     <figcaption>
-      Laman dengan elemen lebar tetap 344 px pada Nexus 5
+      Page with a 344px fixed width element on a Nexus 5
     </figcaption>
   </figure>
   </a>
 </div>
+
 <div class="clearfix"></div>
-         
-## Menggunakan kueri media CSS agar responsif {: #css-media-queries }  
 
-Kueri media adalah filter sederhana yang bisa diterapkan pada gaya CSS. Kueri media memudahkan 
-kita untuk mengubah gaya berdasarkan karakteristik dari perangkat yang merender
-materi, termasuk tipe tampilan, lebar, tinggi, orientasi dan bahkan
-resolusi.
+## Use CSS media queries for responsiveness {: #css-media-queries }
 
+Media queries are simple filters that can be applied to CSS styles. They make it easy to change styles based on the characteristics of the device rendering the content, including the display type, width, height, orientation, and even resolution.
 
 ### TL;DR {: .hide-from-toc }
-- Gunakan kueri media untuk menerapkan gaya berdasarkan karakteristik perangkat.
-- Gunakan `min-width` di atas `min-device-width` untuk memastikan pengalaman yang paling luas.
-- Gunakan ukuran relatif untuk elemen agar tidak merusak layout.
 
-Misalnya, Anda bisa menempatkan semua gaya yang diperlukan untuk pencetakan
-dalam kueri media cetak:
+- Use media queries to apply styles based on device characteristics.
+- Use `min-width` over `min-device-width` to ensure the broadest experience.
+- Use relative sizes for elements to avoid breaking layout.
 
+For example, you could place all styles necessary for printing inside a print media query:
 
     <link rel="stylesheet" href="print.css" media="print">
     
 
-Selain menggunakan atribut `media` di tautan style sheet, ada dua
-cara lain untuk menerapkan kueri media yang bisa disematkan dalam file CSS: `@media`
-dan `@import`.  Karena alasan kinerja, salah satu dari dua metode pertama tersebut
-direkomendasikan pada sintaks `@import`
-(lihat [Hindari pengimporan CSS](/web/fundamentals/performance/critical-rendering-path/page-speed-rules-and-recommendations)).
-
+In addition to using the `media` attribute in the style sheet link, there are two other ways to apply media queries that can be embedded in a CSS file: `@media` and `@import`. For performance reasons, either of the first two methods are recommended over the `@import` syntax (see [Avoid CSS imports](/web/fundamentals/performance/critical-rendering-path/page-speed-rules-and-recommendations)).
 
     @media print {
       /* print style sheets go here */
@@ -184,69 +137,60 @@ direkomendasikan pada sintaks `@import`
     @import url(print.css) print;
     
 
-Logika yang berlaku untuk kueri media adalah tidak saling eksklusif, dan untuk setiap filter
-yang memenuhi kriteria tersebut maka blok CSS yang dihasilkan akan diterapkan dengan menggunakan
-aturan standar prioritas sesuai CSS.
+The logic that applies to media queries is not mutually exclusive, and for any filter meeting that criteria the resulting CSS block is applied using the standard rules of precedence in CSS.
 
-### Menggunakan kueri media berdasarkan ukuran tampilan yang terlihat
+### Apply media queries based on viewport size
 
-Kueri media memungkinkan kita untuk menciptakan pengalaman responsif ketika gaya tertentu
-diaplikasikan ke layar kecil, layar besar, dan semua layar.  Sintaks kueri
-media memungkinkan untuk pembuatan aturan yang bisa diterapkan tergantung pada
-karakteristik perangkat.
-
+Media queries enable us to create a responsive experience where specific styles are applied to small screens, large screens, and anywhere in between. The media query syntax allows for the creation of rules that can be applied depending on device characteristics.
 
     @media (query) {
       /* CSS Rules used when query matches */
     }
     
 
-Meskipun ada beberapa item berbeda yang bisa kita kueri, yang paling
-sering digunakan untuk desain web responsif adalah `min-width`, `max-width`, `min-height`, dan
-`max-height`.
-
+While there are several different items we can query on, the ones used most often for responsive web design are `min-width`, `max-width`, `min-height`, and `max-height`.
 
 <table class="responsive">
   <thead>
     <tr>
-      <th colspan="2">Parameter</th>
+      <th colspan="2">Parameters</th>
     </tr>
   </thead>
   <tbody>
     <tr>
       <td data-th="attribute"><code>min-width</code></td>
-      <td data-th="Result">Aturan diterapkan untuk setiap browser yang mempunyai lebar lebih besar dari nilai yang didefinisikan dalam kueri.</td>
+      <td data-th="Result">Rules applied for any browser width greater than the value defined in the query.</td>
     </tr>
     <tr>
       <td data-th="attribute"><code>max-width</code></td>
-      <td data-th="Result">Aturan diterapkan untuk setiap browser yang mempunyai lebar lebih kecil dari nilai yang didefinisikan dalam kueri.</td>
+      <td data-th="Result">Rules applied for any browser width less than the value defined in the query.</td>
     </tr>
     <tr>
       <td data-th="attribute"><code>min-height</code></td>
-      <td data-th="Result">Aturan diterapkan untuk setiap browser yang mempunyai tinggi lebih besar dari nilai yang didefinisikan dalam kueri.</td>
+      <td data-th="Result">Rules applied for any browser height greater than the value defined in the query.</td>
     </tr>
     <tr>
       <td data-th="attribute"><code>max-height</code></td>
-      <td data-th="Result">Aturan diterapkan untuk setiap browser yang mempunyai tinggi lebih kecil dari nilai yang didefinisikan dalam kueri.</td>
+      <td data-th="Result">Rules applied for any browser height less than the value defined in the query.</td>
     </tr>
     <tr>
       <td data-th="attribute"><code>orientation=portrait</code></td>
-      <td data-th="Result">Aturan diterapkan untuk setiap browser ketika tingginya lebih besar dari atau sama dengan lebarnya.</td>
+      <td data-th="Result">Rules applied for any browser where the height is greater than or equal to the width.</td>
     </tr>
     <tr>
       <td data-th="attribute"><code>orientation=landscape</code></td>
-      <td data-th="Result">Aturan untuk setiap browser ketika lebarnya lebih besar dari tingginya.</td>
+      <td data-th="Result">Rules for any browser where the width is greater than the height.</td>
     </tr>
   </tbody>
 </table>
 
-Mari kita lihat contoh berikut:
+Let's take a look at an example:
 
 <figure>
   <a href="https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/responsive/media-queries.html">
-    <img src="imgs/mq.png" srcset="imgs/mq.png 1x, imgs/mq-2x.png 2x" alt="Pratinjau laman menggunakan kueri media untuk mengubah properti ketika diubah ukurannya.">
+    <img src="imgs/mq.png" srcset="imgs/mq.png 1x, imgs/mq-2x.png 2x" alt="Preview of a page using media queries to change properties as it is resized.">
     <figcaption>
-      Pratinjau laman menggunakan kueri media untuk mengubah properti ketika diubah ukurannya.
+      Preview of a page using media queries to change properties as it is resized.
     </figcaption>
   </a>
 </figure>
@@ -255,159 +199,116 @@ Mari kita lihat contoh berikut:
 {% includecode content_path="web/fundamentals/design-and-ux/responsive/_code/media-queries.html" region_tag="mqueries" adjust_indentation="auto" %}
 </pre>
 
-[Cobalah](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/responsive/media-queries.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/responsive/media-queries.html){: target="_blank" .external }
 
-* Ketika browser lebarnya antara <b>0 px</b> dan <b>640 px</b>, diterapkan `max-640px.css`.
-* Ketika browser lebarnya antara <b>500 px</b> dan <b>600 px</b>, gaya dalam `@media` akan diterapkan.
-* Ketika browser lebarnya <b>640 px atau lebih</b>, diterapkan `min-640px.css`.
-* Ketika browser <b>lebarnya lebih besar daripada tingginya</b>, diterapkan `landscape.css`.
-* Ketika browser <b>tingginya lebih besar daripada lebarnya</b>, diterapkan `portrait.css`.
+- When the browser is between **0px** and **640px** wide, `max-640px.css` is applied.
+- When the browser is between **500px** and **600px** wide, styles within the `@media` is applied.
+- When the browser is **640px or wider**, `min-640px.css` is applied.
+- When the browser **width is greater than the height**, `landscape.css` is applied.
+- When the browser **height is greater than the width**, `portrait.css` is applied.
 
+### A note on `min-device-width`
 
-### Catatan tentang `min-device-width`
+It is also possible to create queries based on `min-device-width`, though this practice is **strongly discouraged**.
 
-Adalah mungkin juga membuat kueri berdasarkan
-`min-device-width`, meskipun praktik ini **sangat tidak dianjurkan**.
+The difference is subtle but very important: `min-width` is based on the size of the browser window whereas `min-device-width` is based on the size of the screen. Unfortunately some browsers, including the legacy Android browser, don't report the device width properly; they report the screen size in device pixels instead of the expected viewport width.
 
-Perbedaannya sangat kecil namun sangat penting: `min-width` didasarkan pada
-ukuran jendela browser sedangkan `min-device-width` didasarkan pada
-ukuran layar.  Sayangnya beberapa browser, termasuk browser Android
-lama, tidak melaporkan lebar perangkat dengan benar; browser tersebut melaporkan ukuran layar dalam satuan piksel perangkat, bukan dalam lebar tampilan yang terlihat yang diharapkan.
+In addition, using `min-device-width` can prevent content from adapting on desktops or other devices that allow windows to be resized because the query is based on the actual device size, not the size of the browser window.
 
-Selain itu, menggunakan `min-device-width` bisa mencegah materi diadaptasikan pada
-desktop atau perangkat lain yang memperbolehkan jendela diubah ukurannya karena kueri
-didasarkan pada ukuran perangkat yang sebenarnya, bukan ukuran jendela browser.
+### Use `any-pointer` and `any-hover` for flexible interactions
 
-### Gunakan `any-pointer` dan `any-hover` untuk interaksi yang fleksibel
+Starting with Chrome 39, your style sheets can write selectors that cover multiple pointer types and hover behaviors. The `any-pointer` and `any-hover` media features are similar to `pointer` and `hover` in that they allow you to query the capabilities of the user's pointer. However, unlike the latter, `any-pointer` and `any-hover` operate on the union of all pointer devices rather than just the primary pointer device.
 
-Dimulai dengan Chrome 39, style sheet Anda bisa menulis selektor yang mencakup
-beberapa tipe pointer dan perilaku arahkan ke atas. Fitur media `any-pointer` dan `any-hover`
-mirip dengan `pointer` dan `hover` dalam mengizinkan Anda untuk melakukan kueri
-kemampuan pointer pengguna. Namun, tidak seperti yang terakhir, `any-pointer` dan
-`any-hover` beroperasi pada gabungan dari semua perangkat pointer dan bukan hanya
-perangkat pointer utama.
+### Use relative units
 
-### Menggunakan unit relatif
+A key concept behind responsive design is fluidity and proportionality as opposed to fixed width layouts. Using relative units for measurements can help simplify layouts and prevent accidental creation of components that are too big for the viewport.
 
-Konsep penting di balik desain responsif adalah fluiditas dan proporsionalitas
-yang bertentangan dengan konsep layout lebar tetap.  Menggunakan unit relatif untuk pengukuran bisa membantu
-menyederhanakan layout dan mencegah kita secara tidak sengaja membuat komponen yang terlalu besar
-untuk tampilan yang terlihat.
+For example, setting width: 100% on a top level `div`, ensures that it spans the width of the viewport and is never too big or too small for the viewport. The `div` fits, no matter if it's a 320px wide iPhone, 342px wide Blackberry Z10, or a 360px wide Nexus 5.
 
-Misalnya, setelan lebar: 100% pada `div` tingkat atas, memastikan bahwa itu membentang meliputi
-lebar tampilan yang terlihat dan tidak terlalu besar atau terlalu kecil untuk tampilan yang terlihat.  `div`
-akan cocok, tidak peduli apakah itu iPhone berlebar 320 px, Blackberry Z10 berlebar 342 px,
-atau sebuah Nexus 5 yang berlebar 360 px.
+In addition, using relative units allows browsers to render the content based on the user's zoom level without the need for adding horizontal scroll bars to the page.
 
-Selain itu, menggunakan unit relatif memungkinkan browser untuk merender materi berdasarkan
-tingkat zoom pengguna tanpa perlu menambahkan bilah gulir horizontal ke
-laman.
-
-<span class="compare-worse">Tidak disarankan</span>&mdash;lebar tetap
+<span class="compare-worse">Not recommended</span>&mdash;fixed width
 
     div.fullWidth {
       width: 320px;
       margin-left: auto;
       margin-right: auto;
     }
+    
 
-
-<span class="compare-better">Disarankan</span>&mdash;lebar responsif
+<span class="compare-better">Recommended</span>&mdash;responsive width
 
     div.fullWidth {
       width: 100%;
     }
+    
 
+## How to choose breakpoints
 
-## Cara memilih breakpoint 
-
-Jangan mendefinisikan breakpoint berdasarkan kelas perangkat. Mendefinisikan breakpoint berdasarkan perangkat,
-produk, nama merek, atau sistem operasi tertentu yang digunakan saat ini bisa mengakibatkan
-mimpi buruk dalam pemeliharaan. Malahan, materi itu sendiri yang harus menentukan bagaimana
-layout menyesuaikan dengan kontainer.
-
+Don't define breakpoints based on device classes. Defining breakpoints based on specific devices, products, brand names, or operating systems that are in use today can result in a maintenance nightmare. Instead, the content itself should determine how the layout adjusts to its container.
 
 ### TL;DR {: .hide-from-toc }
-- Buat breakpoint berdasarkan materi, jangan pernah berdasarkan perangkat, produk, atau merek tertentu.
-- Desainlah untuk perangkat seluler terkecil lebih dahulu; kemudian secara progresif meningkatkan pengalaman pengguna seiring bertambahnya properti layar.
-- Jaga jumlah maksimum baris teks sekitar 70 atau 80 karakter.
 
+- Create breakpoints based on content, never on specific devices, products, or brands.
+- Design for the smallest mobile device first; then progressively enhance the experience as more screen real estate becomes available.
+- Keep lines of text to a maximum of around 70 or 80 characters.
 
-### Memilih breakpoint utama dengan secara bertahap mulai dari layar kecil hingga ke besar.
+### Pick major breakpoints by starting small, then working up
 
 <figure class="attempt-right">
   <img src="imgs/weather-1.png" srcset="imgs/weather-1.png 1x, imgs/weather-1-2x.png 2x" alt="">
   <figcaption>
     <a href="https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/responsive/weather-1.html">
-      Pratinjau prakiraan cuaca yang ditampilkan di layar kecil.
+      Preview of the weather forecast displayed on a small screen.
     </a>
   </figcaption>
 </figure>
 
-Desain materi agar pas dengan ukuran layar kecil terlebih dahulu, kemudian perluas layar
-sampai breakpoint menjadi diperlukan.  Ini memungkinkan Anda untuk mengoptimalkan
-breakpoint berdasarkan materi dan mempertahankan jumlah breakpoint
-sesedikit mungkin.
+Design the content to fit on a small screen size first, then expand the screen until a breakpoint becomes necessary. This allows you to optimize breakpoints based on content and maintain the least number of breakpoints possible.
 
-Mari kita bekerja melalui contoh yang kita lihat di awal:
-prakiraan cuaca. Langkah pertama adalah membuat prakiraan terlihat bagus di
-layar kecil.
+Let's work through the example we saw at the beginning: the weather forecast. The first step is to make the forecast look good on a small screen.
 
 <div style="clear:both;"></div>
 
 <figure class="attempt-right">
-  <img src="imgs/weather-2.png" class="center" srcset="imgs/weather-2.png 1x, imgs/weather-2-2x.png 2x" alt="Pratinjau prakiraan cuaca ketika laman semakin luas.">
+  <img src="imgs/weather-2.png" class="center" srcset="imgs/weather-2.png 1x, imgs/weather-2-2x.png 2x" alt="Preview of the weather forecast as the page gets wider.">
   <figcaption>
     <a href="https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/responsive/weather-1.html">
-      Pratinjau prakiraan cuaca ketika laman semakin luas.
+      Preview of the weather forecast as the page gets wider.
     </a>
   </figcaption>
 </figure>
 
-Berikutnya, ubah ukuran browser sampai ada terlalu banyak ruang putih antara
-elemen, dan tampilan prakiraan cuaca terlihat tidak bagus.  Keputusan ini sedikit
-subjektif, namun di atas 600px pasti terlalu lebar.
+Next, resize the browser until there is too much white space between the elements, and the forecast simply doesn't look as good. The decision is somewhat subjective, but above 600px is certainly too wide.
 
 <div style="clear:both;"></div>
 
-Untuk memasukkan breakpoint pada 600 px, buat dua style sheet baru, satu untuk digunakan saat
-browser 600 px dan kurang dari itu, dan satu ketika luasnya lebih dari 600 px.
+To insert a breakpoint at 600px, create two new style sheets, one to use when the browser is 600px and below, and one for when it is wider than 600px.
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/design-and-ux/responsive/_code/weather-2.html" region_tag="mqweather2" adjust_indentation="auto" %}
 </pre>
 
-[Cobalah](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/responsive/weather-2.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/responsive/weather-2.html){: target="_blank" .external }
 
 <figure class="attempt-right">
-  <img src="imgs/weather-3.png"  srcset="imgs/weather-3.png 1x, imgs/weather-3-2x.png 2x" alt="Pratinjau dari prakiraan cuaca yang dirancang untuk layar yang lebih lebar.">
+  <img src="imgs/weather-3.png"  srcset="imgs/weather-3.png 1x, imgs/weather-3-2x.png 2x" alt="Preview of the weather forecast designed for a wider screen.">
   <figcaption>
     <a href="https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/responsive/weather-2.html">
-      Pratinjau dari prakiraan cuaca yang dirancang untuk layar yang lebih lebar.
+      Preview of the weather forecast designed for a wider screen.
     </a>
   </figcaption>
 </figure>
 
-Yang terakhir, optimalisasi CSS.  Dalam contoh ini, kami telah menempatkan gaya umum
-seperti font, ikon, pemosisian dasar, dan warna di `weather.css`.  Layout tertentu
-untuk layar kecil kemudian ditempatkan di `weather-small.css`, dan model
-layar besar ditempatkan di `weather-large.css`.
+Finally, refactor the CSS. In this example, we've placed the common styles such as fonts, icons, basic positioning, and colors in `weather.css`. Specific layouts for the small screen are then placed in `weather-small.css`, and large screen styles are placed in `weather-large.css`.
 
 <div style="clear:both"></div>
 
+### Pick minor breakpoints when necessary
 
-### Memilih breakpoint kecil bila diperlukan
+In addition to choosing major breakpoints when layout changes significantly, it is also helpful to adjust for minor changes. For example, between major breakpoints it may be helpful to adjust the margins or padding on an element, or increase the font size to make it feel more natural in the layout.
 
-Selain memilih breakpoint besar ketika layout berubah secara signifikan, ini
-juga membantu untuk menyesuaikan perubahan kecil.  Misalnya, antara breakpoint
-utama mungkin ada gunanya mengatur margin atau padding pada elemen,
-atau memperbesar ukuran font agar terlihat lebih natural dalam layout.
-
-Mari kita mulai dengan mengoptimalkan layout layar kecil.  Pada kasus ini, mari kita memperbesar
-font ketika luas tampilan yang terlihat lebih besar dari 360px.  Kedua, ketika ada
-cukup ruang, kita bisa memisahkan suhu tinggi dan rendah sehingga semua berada di
-baris yang sama dan tidak tumpang tindih.  Dan juga mari kita buat ikon
-cuaca sedikit lebih besar.
+Let's start by optimizing the small screen layout. In this case, let's boost the font when the viewport width is greater than 360px. Second, when there is enough space, we can separate the high and low temperatures so that they're on the same line instead of on top of each other. And let's also make the weather icons a bit larger.
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/design-and-ux/responsive/_code/weather-small.css" region_tag="mqsmallbpsm" adjust_indentation="auto" %}
@@ -415,101 +316,78 @@ cuaca sedikit lebih besar.
 
 <div class="attempt-left">
   <figure>
-    <img src="imgs/weather-4-l.png" srcset="imgs/weather-4-l.png 1x, imgs/weather-4-l-2x.png 2x" alt="Sebelum menambahkan breakpoint kecil.">
+    <img src="imgs/weather-4-l.png" srcset="imgs/weather-4-l.png 1x, imgs/weather-4-l-2x.png 2x" alt="Before adding minor breakpoints.">
     <figcaption>
-      Sebelum menambahkan breakpoint kecil.
-     </figcaption>
-  </figure>
-</div>
-<div class="attempt-right">
-  <figure>
-    <img src="imgs/weather-4-r.png" srcset="imgs/weather-4-r.png 1x, imgs/weather-4-r-2x.png 2x" alt="Setelah menambahkan breakpoint kecil.">
-    <figcaption>
-      Setelah menambahkan breakpoint kecil.
+      Before adding minor breakpoints.
      </figcaption>
   </figure>
 </div>
 
+<div class="attempt-right">
+  <figure>
+    <img src="imgs/weather-4-r.png" srcset="imgs/weather-4-r.png 1x, imgs/weather-4-r-2x.png 2x" alt="After adding minor breakpoints.">
+    <figcaption>
+      After adding minor breakpoints.
+     </figcaption>
+  </figure>
+</div>
 
 <div style="clear:both;"></div>
 
-
-Demikian pula, untuk layar besar akan sangat baik membatasi lebar maksimum
-panel prakiraan cuaca sehingga tidak memakai seluruh lebar layar.
+Similarly, for the large screens it's best to limit to maximum width of the forecast panel so it doesn't consume the whole screen width.
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/design-and-ux/responsive/_code/weather-large.css" region_tag="mqsmallbplg" adjust_indentation="auto" %}
 </pre>
 
-### Mengoptimalkan teks untuk bacaan
+### Optimize text for reading
 
-Teori pembacaan klasik menyarankan bahwa kolom yang ideal harus berisi 70 sampai 80
-karakter per baris (sekitar 8 sampai 10 kata dalam bahasa Inggris). Jadi setiap kali lebar
-blok teks bertambah melewati 10 kata, pertimbangkan menambahkan breakpoint.
+Classic readability theory suggests that an ideal column should contain 70 to 80 characters per line (about 8 to 10 words in English). Thus, each time the width of a text block grows past about 10 words, consider adding a breakpoint.
 
 <div class="attempt-left">
   <figure>
-    <img src="imgs/reading-ph.png" srcset="imgs/reading-ph.png 1x, imgs/reading-ph-2x.png 2x" alt="Sebelum menambahkan breakpoint kecil.">
-    <figcaption>Sebelum menambahkan breakpoint kecil.</figcaption>
+    <img src="imgs/reading-ph.png" srcset="imgs/reading-ph.png 1x, imgs/reading-ph-2x.png 2x" alt="Before adding minor breakpoints.">
+    <figcaption>Before adding minor breakpoints.</figcaption>
   </figure>
 </div>
+
 <div class="attempt-right">
   <figure>
-    <img src="imgs/reading-de.png" srcset="imgs/reading-de.png 1x, imgs/reading-de-2x.png 2x" alt="Setelah menambahkan breakpoint kecil.">
-    <figcaption>Setelah menambahkan breakpoint kecil.</figcaption>
+    <img src="imgs/reading-de.png" srcset="imgs/reading-de.png 1x, imgs/reading-de-2x.png 2x" alt="After adding minor breakpoints.">
+    <figcaption>After adding minor breakpoints.</figcaption>
   </figure>
 </div>
 
 <div style="clear:both;"></div>
 
-Mari kita lihat secara lebih mendalam contoh entri blog di atas.  Pada layar yang lebih kecil,
-font Roboto dengan ukuran 1 em bekerja secara sempurna memberikan 10 kata per baris, namun layar
-yang lebih besar membutuhkan breakpoint. Pada kasus ini, jika lebar browser lebih besar
-dari 575px, lebar ideal materi adalah 550px.
+Let's take a deeper look at the above blog post example. On smaller screens, the Roboto font at 1em works perfectly giving 10 words per line, but larger screens require a breakpoint. In this case, if the browser width is greater than 575px, the ideal content width is 550px.
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/design-and-ux/responsive/_code/reading.html" region_tag="mqreading" adjust_indentation="auto" %}
 </pre>
 
-[Cobalah](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/responsive/reading.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/responsive/reading.html){: target="_blank" .external }
 
-### Jangan pernah benar-benar menyembunyikan materi
+### Never completely hide content
 
-Berhati-hatilah saat memilih materi yang disembunyikan atau ditampilkan menurut ukuran layar.
-Jangan sembunyikan materi hanya karena Anda tidak bisa memuatnya di layar.  Ukuran layar
-bukanlah indikasi pasti mengenai apa yang mungkin diinginkan pengguna.  Misalnya,
-menghilangkan hitungan serbuk sari dari prakiraan cuaca bisa menjadi masalah serius
-bagi penderita alergi musim-semi yang membutuhkan informasi untuk menentukan apakah mereka
-bisa pergi ke luar atau tidak.
+Be careful when choosing what content to hide or show depending on screen size. Don't simply hide content just because you can't fit it on the screen. Screen size is not a definitive indication of what a user may want. For example, eliminating the pollen count from the weather forecast could be a serious issue for spring-time allergy sufferers who need the information to determine if they can go outside or not.
 
-## Menampilkan breakpoint kueri media di Chrome DevTools {: #devtools }
+## View media query breakpoints in Chrome DevTools {: #devtools }
 
-Setelah Anda menyiapkan breakpoint kueri media, Anda pasti ingin melihat bagaimana
-situs akan terlihat. Anda *bisa* mengubah ukuran jendela browser untuk memicu
-breakpoint, namun ada cara yang lebih baik: Chrome DevTools. Dua
-tangkapan layar di bawah menunjukkan penggunaan DevTools untuk menampilkan bagaimana laman terlihat di bawah
-breakpoint yang berbeda.
+Once you've got your media query breakpoints set up, you'll want to see how your site looks with them. You *could* resize your browser window to trigger the breakpoints, but there's a better way: Chrome DevTools. The two screenshots below demonstrate using DevTools to view how a page looks under different breakpoints.
 
-![Contoh fitur kueri media DevTools](imgs/devtools-media-queries-example.png)
+![Example of DevTools' media queries feature](imgs/devtools-media-queries-example.png)
 
-Untuk menampilkan laman Anda di bawah breakpoint yang berbeda:
+To view your page under different breakpoints:
 
-[Buka DevTools](/web/tools/chrome-devtools/#open) kemudian hidupkan [Device
-Mode](/web/tools/chrome-devtools/device-mode/#toggle).
+[Open DevTools](/web/tools/chrome-devtools/#open) and then turn on [Device Mode](/web/tools/chrome-devtools/device-mode/#toggle).
 
-Gunakan
-[kontrol tampilan](/web/tools/chrome-devtools/device-mode/emulate-mobile-viewports#viewport-controls)
-untuk memilih **Responsive**, yang menempatkan DevTools ke mode responsif.
+Use the [viewport controls](/web/tools/chrome-devtools/device-mode/emulate-mobile-viewports#viewport-controls) to select **Responsive**, which puts DevTools into responsive mode.
 
-Terakhir, buka menu Device Mode dan pilih
-[**Show media queries**](/web/tools/chrome-devtools/device-mode/emulate-mobile-viewports#media-queries)
-untuk menampilkan breakpoint sebagai bilah berwarna di atas laman Anda.
+Last, open the Device Mode menu and select [**Show media queries**](/web/tools/chrome-devtools/device-mode/emulate-mobile-viewports#media-queries) to display your breakpoints as colored bars above your page.
 
-Klik pada salah satu bilah untuk menampilkan laman Anda saat kueri
-media aktif. Klik kanan pada bilah untuk melompat ke definisi
-kueri media. Lihat 
-[Kueri media](/web/tools/chrome-devtools/device-mode/emulate-mobile-viewports#media-queries)
-untuk bantuan lebih lanjut.
+Click on one of the bars to view your page while that media query is active. Right-click on a bar to jump to the media query's definition. See [Media queries](/web/tools/chrome-devtools/device-mode/emulate-mobile-viewports#media-queries) for more help.
 
+## Feedback {: #feedback }
 
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
