@@ -1,12 +1,8 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Chrome DevTools Network 패널 기능의 종합 레퍼런스
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: A comprehensive reference of Chrome DevTools Network panel features.
 
-{# wf_updated_on: 2019-02-06 #}
-{# wf_published_on: 2015-04-13 #}
-{# wf_blink_components: Platform>DevTools #}
+{# wf_updated_on: 2018-08-23 #} {# wf_published_on: 2015-04-13 #} {# wf_blink_components: Platform>DevTools #}
 
-{% include "web/tools/chrome-devtools/_shared/styles.html" %}
+{% include "web/tools/chrome-devtools/_shared/styles.html" %} 
 
 <style>
 figcaption {
@@ -14,870 +10,708 @@ figcaption {
 }
 </style>
 
-[ui]: #ui-overview
-[requests]: #requests
-[overview]: #overview
+ 
 
-# 네트워크 분석 레퍼런스 {: .page-title }
+# Network Analysis Reference {: .page-title }
 
 {% include "web/_shared/contributors/kaycebasques.html" %}
 
-Chrome DevTools Network 분석 기능의 종합 레퍼런스에서
-페이지 로드 방식을 분석하는 새로운 방법을 찾아보세요.
+Discover new ways to analyze how your page loads in this comprehensive reference of Chrome DevTools network analysis features.
 
-참고: 이 레퍼런스는 Chrome 58을 기준으로 합니다. 다른 버전의
-Chrome을 사용하고 있다면 DevTools의 UI 및 기능이 다를 수 있습니다.
-`chrome://help`를 확인하여 현재 어떤 버전의 Chrome을 실행 중인지 확인하세요.
+Note: This reference is based on Chrome 58. If you use another version of Chrome, the UI and features of DevTools may be different. Check `chrome://help` to see what version of Chrome you're running.
 
-## 네트워크 요청 기록 {: #record }
+## Record network requests {: #record }
 
-DevTools는 기본적으로 DevTools가 열려 있는 한
-Network 패널에 모든 네트워크 요청을 기록합니다.
+By default, DevTools records all network requests in the Network panel, so long as DevTools is open.
 
 <figure>
-  <img src="imgs/network.png" alt="Network 패널.">
+  <img src="imgs/network.png" alt="The Network panel.">
   <figcaption>
-    <b>그림 1</b>. Network 패널
+    <b>Figure 1</b>. The Network panel
   </figcaption>
 </figure>
 
-### 네트워크 요청 기록 중지 {: #stop-recording }
+### Stop recording network requests {: #stop-recording }
 
-요청 기록을 중지하려면 다음을 수행합니다.
+To stop recording requests:
 
-* Network 패널에서 **Stop recording network log** ![네트워크
-  로그 기록 중지](imgs/record-on.png)를{: .devtools-inline } 클릭합니다. 회색으로
-  변하여 DevTools이 더 이상 요청을 기록하지 않는다는 것을 나타냅니다.
-* Network 패널이 포커스 상태일 때 <kbd>Command</kbd>+<kbd>E</kbd>(Mac)를 누르거나
-  <kbd>Ctrl</kbd>+<kbd>E</kbd>(Windows, Linux)를 누릅니다.
+* Click **Stop recording network log** ![Stop recording network
+log](imgs/record-on.png){: .devtools-inline } on the Network panel. It turns grey to indicate that DevTools is no longer recording requests.
+* Press <kbd>Command</kbd>+<kbd>E</kbd> (Mac) or <kbd>Control</kbd>+<kbd>E</kbd> (Windows, Linux) while the Network panel is in focus.
 
+### Clear requests {: #clear }
 
-### 요청 모두 삭제 {: #clear }
-
-Network 패널에서 **Clear** ![모두 삭제][clear]를 클릭하여{:.devtools-inline} Requests 표의 모든 요청을
-모두 삭제합니다.
+Click **Clear** ![Clear](imgs/clear-requests.png){:.devtools-inline} on the Network panel to clear all requests from the Requests table.
 
 <figure>
-  <img src="imgs/clear.svg" alt="Clear 버튼.">
+  <img src="imgs/clear.svg" alt="The Clear button.">
   <figcaption>
-    <b>그림 2</b>. 파란색 외곽선으로 표시한 Clear
+    <b>Figure 2</b>. Clear, outlined in blue
   </figcaption>
 </figure>
 
-[clear]: imgs/clear-requests.png
+### Save requests across page loads {: #preserve-log }
 
-### 페이지 로드 전체 요청 저장 {: #preserve-log }
-
-페이지 로드 전체의 요청을 저장하려면 Network 패널의
-**Preserve log** 확인란을 선택합니다. DevTools은
-**Preserve log**를 중지할 때까지 모든 요청을 저장합니다.
+To save requests across page loads, check the **Preserve log** checkbox on the Network panel. DevTools saves all requests until you disable **Preserve log**.
 
 <figure>
-  <img src="imgs/preserve-log.svg" alt="Preserve Log 확인란">
+  <img src="imgs/preserve-log.svg" alt="The Preserve Log checkbox.">
   <figcaption>
-    <b>그림 3</b>. 파란색 외곽선으로 표시한 Preserve Log 확인란
+    <b>Figure 3</b>. The Preserve Log checkbox, outlined in blue
   </figcaption>
 </figure>
 
-### 페이지 로드 중 스크린샷 캡처 {: #screenshots }
+### Capture screenshots during page load {: #screenshots }
 
-스크린샷을 캡처하여 사용자가 페이지 로드를 기다리는 동안
-무엇을 보는지 분석합니다.
+Capture screenshots to analyze what users see as they wait for your page to load.
 
-스크린샷을 활성화하려면 Network 패널에서 **Capture screenshots** ![스크린샷
-캡처][capture]를{: .devtools-inline } 클릭합니다. 활성화되면
-파란색으로 변합니다.
+To enable screenshots, click **Capture screenshots** ![Capture
+screenshots](imgs/capture-screenshots.png){: .devtools-inline } on the Network panel. It turns blue when enabled.
 
-Network 패널이 스크린샷 캡처를 위해 포커스 상태일 때 페이지를 새로고침합니다.
+Reload the page while the Network panel is in focus to capture screenshots.
 
-캡처된 후에는 다음의 방법으로 스크린샷과 상호작용할 수 있습니다.
+Once captured, you can interact with screenshots in the following ways:
 
-* 스크린샷 위로 마우스를 가져가 스크린샷이
-  캡처된 지점을 봅니다. Overview 창에 노란색 선이 나타납니다.
-* 스크린샷의 썸네일 이미지를 클릭하여 스크린샷이 캡처된 후
-  발생한 모든 요청을 필터링합니다.
-* 썸네일 이미지를 두 번 클릭하여 확대합니다.
+* Hover over a screenshot to view the point at which that screenshot was captured. A yellow line appears on the Overview pane.
+* Click a screenshot's thumbnail to filter out any requests that occurred after the screenshot was captured.
+* Double-click a thumbnail to zoom in on it.
 
 <figure>
   <img src="imgs/screenshot-hover.png"
-       alt="스크린샷 위로 마우스를 가져간 모습.">
+       alt="Hovering over a screenshot.">
   <figcaption>
-    <b>그림 4</b>. 스크린샷 위로 마우스를 가져간 모습. Overview 창과
-  Waterfall의 노란색 세로 선은 스크린샷이 캡처된
-  시간을 나타냅니다.
+    <b>Figure 4</b>. Hovering over a screenshot. The yellow, vertical line
+    in the Overview pane and the Waterfall represent the time at which the
+    screenshot was captured.
   </figcaption>
 </figure>
 
-[capture]: imgs/capture-screenshots.png
+### Replay XHR request {: #replay-xhr }
 
-### XHR 요청 재생 {: #replay-xhr }
-
-XHR 요청을 재생하려면 Requests 표의 요청을 오른쪽 클릭한 다음
-**Replay XHR**을 선택합니다.
+To replay an XHR request, right-click the request in the Requests table and select **Replay XHR**.
 
 <figure>
-  <img src="imgs/replay-xhr.png" alt="Replay XHR 선택">
+  <img src="imgs/replay-xhr.png" alt="Selecting Replay XHR.">
   <figcaption>
-    <b>그림 5</b>. Replay XHR 선택
+    <b>Figure 5</b>. Selecting Replay XHR
   </figcaption>
 </figure>
 
-## 로딩 동작 변경
+## Change loading behavior
 
-### 브라우저 캐시 사용을 중지하여 첫 방문자 에뮬레이션 {: #disable-cache}
+### Emulate a first-time visitor by disabling the browser cache {: #disable-cache}
 
-사이트에 처음 방문한 사용자 환경을 에뮬레이션하려면 **Disable
-cache** 확인란을 선택합니다. DevTools이 브라우저 캐시를 중지합니다. 이렇게 하면 요청이 반복 방문의 브라우저 캐시로부터 제공되기 때문에
-처음 방문하는 사용자의 환경을 정확하게
-에뮬레이션할 수 있습니다.
+To emulate how a first-time user experiences your site, check the **Disable cache** checkbox. DevTools disables the browser cache. This more accurately emulates a first-time user's experience, because requests are served from the browser cache on repeat visits.
 
 <figure>
-  <img src="imgs/disable-cache.svg" alt="Disable Cache 확인란.">
+  <img src="imgs/disable-cache.svg" alt="The Disable Cache checkbox.">
   <figcaption>
-    <b>그림 6</b>. 파란색 외곽선으로 표시한 Disable Cache 확인란
+    <b>Figure 6</b>. The Disable Cache checkbox, outlined in blue
   </figcaption>
 </figure>
 
-#### Network Conditions 창에서 브라우저 캐시 사용 중지 {: #disable-cache-network-conditions }
+#### Disable the browser cache from the Network Conditions drawer {: #disable-cache-network-conditions }
 
-다른 DevTools 패널에서 작업하는 동안 캐시 사용을 중지하고 싶다면
-Network Condition 창을 사용합니다.
+If you want to disable the cache while working in other DevTools panels, use the Network Conditions drawer.
 
-1. [Network Conditions 창](#network-conditions)을 엽니다.
-1. **Disable cache** 확인란을 선택하거나 선택 해제합니다.
+1. Open the [Network Conditions drawer](#network-conditions).
+2. Check or uncheck the **Disable cache** checkbox.
 
-### 수동으로 브라우저 캐시 모두 삭제 {: #clear-cache}
+### Manually clear the browser cache {: #clear-cache}
 
-언제든지 브라우저 캐시를 수동으로 모두 삭제하고 싶다면
-Requests 표의 아무 곳이나 오른쪽 클릭한 다음 **Clear Browser Cache**를 선택합니다.
+To manually clear the browser cache at any time, right-click anywhere in the Requests table and select **Clear Browser Cache**.
 
 <figure>
   <img src="imgs/clear-browser-cache.png"
-       alt="Clear Browser Cache 선택.">
+       alt="Selecting Clear Browser Cache.">
   <figcaption>
-    <b>그림 7</b>. Clear Browser Cache 선택
+    <b>Figure 7</b>. Selecting Clear Browser Cache
   </figcaption>
 </figure>
 
-### 오프라인 에뮬레이션 {: #offline }
+### Emulate offline {: #offline }
 
-[Progressive Web Apps][pwa]라는 웹 앱의 새 클래스가 있으며,
-이 클래스는 [서비스 워커][sw]의 도움을 통해 오프라인으로 기능합니다. 이런 유형의
-앱을 빌드할 때, 데이터 연결이 전혀 없는
-기기를 빠르게 시뮬레이션하는 것이 유용합니다.
+There's a new class of web apps, called [Progressive Web Apps](/web/progressive-web-apps/), which can function offline with the help of [service workers](/web/fundamentals/getting-started/primers/service-workers). When you're building this type of app, it's useful to be able to quickly simulate a device that has no data connection.
 
-**Offline** 확인란을 선택하여 완전한 오프라인 네트워크 환경을
-시뮬레이션하세요.
+Check the **Offline** checkbox to simulate a completely offline network experience.
 
 <figure>
   <img src="imgs/offline.svg"
-       alt="Offline 확인란">
+       alt="The Offline checkbox">
   <figcaption>
-    <b>그림 8</b>. 파란색 외곽선으로 표시된 Offline 확인란
+    <b>Figure 8</b>. The Offline checkbox, outlined in blue
   </figcaption>
 </figure>
 
-[pwa]: /web/progressive-web-apps/
-[sw]: /web/fundamentals/getting-started/primers/service-workers
+### Emulate slow network connections {: #throttling }
 
-### 느린 네트워크 연결 에뮬레이션 {: #throttling }
-
-**Network Throttling**
-메뉴에서 2G, 3G 및 기타 연결 속도를 에뮬레이션합니다.
+Emulate 2G, 3G, and other connection speeds from the **Network Throttling** menu.
 
 <figure>
   <img src="imgs/network-panel-throttling-menu.svg"
-       alt="Network Throttling 메뉴.">
+       alt="The Network Throttling menu.">
   <figcaption>
-    <b>그림 9</b>. 파란색 외곽선으로 표시된 Network Throttling 메뉴
+    <b>Figure 9</b>. The Network Throttling menu, outlined in blue
   </figcaption>
 </figure>
 
-Regular 또는 Good 2G와 같은 다양한 사전 설정 값에서 선택할 수 있습니다. 또한,
-Network Throttling 메뉴를
-열고 **Custom** > **Add**를 선택하여 나만의 맞춤 사전 설정 값을 추가할 수 있습니다.
+You can select from a variety of presets, such as Regular or Good 2G. You can also add your own custom presets by opening the Network Throttling menu and selecting **Custom** > **Add**.
 
-DevTools는 **Network** 탭 옆에 경고 아이콘을 표시하여
-스로틀링이 활성화되었다는 것을 알립니다.
+DevTools displays a warning icon next to the **Network** tab to remind you that throttling is enabled.
 
-#### Network Conditions 창에서 느린 네트워크 연결 에뮬레이션 {: #throttling-network-conditions }
+#### Emulate slow network connections from the Network Conditions drawer {: #throttling-network-conditions }
 
-다른 DevTools
-패널에서 작업하는 동안 네트워크 연결 사용을 중지하고 싶다면 Network Condition 창을 사용합니다.
+If you want to throttle the network connection while working in other DevTools panels, use the Network Conditions drawer.
 
-1. [Network Conditions 창](#network-conditions)을 엽니다.
-1. **Network Throttling** 메뉴에서 원하는 연결 속도를 선택합니다.
+1. Open the [Network Conditions drawer](#network-conditions).
+2. Select your desired connection speed from the **Network Throttling** menu.
 
-### 수동으로 브라우저 쿠키 모두 삭제 {: #clear-cookies }
+### Manually clear browser cookies {: #clear-cookies }
 
-언제든지 브라우저 쿠키를 수동으로 모두 삭제하고 싶다면
-Requests 표의 아무 곳이나 오른쪽 클릭한 다음 **Clear Browser Cookies**를 클릭합니다.
+To manually clear browser cookies at any time, right-click anywhere in the Requests table and select **Clear Browser Cookies**.
 
 <figure>
   <img src="imgs/clear-browser-cookies.png"
-       alt="Clear Browser Cookies 선택.">
+       alt="Selecting Clear Browser Cookies.">
   <figcaption>
-    <b>그림 10</b>. Clear Browser Cookies 선택.
+    <b>Figure 10</b>. Selecting Clear Browser Cookies
   </figcaption>
 </figure>
 
-### 사용자 에이전트 재정의 {: #user-agent }
+### Override the user agent {: #user-agent }
 
-사용자 에이전트를 수동으로 재정의하려면 다음을 수행합니다.
+To manually override the user agent:
 
-1. [Network Conditions 창](#network-conditions)을 엽니다.
-1. **Select automatically**를 선택 해제합니다.
-1. 메뉴에서 사용자 에이전트 옵션을 선택하거나 텍스트 상자에
-  사용자 설정을 입력합니다.
+1. Open the [Network Conditions drawer](#network-conditions).
+2. Uncheck **Select automatically**.
+3. Choose a user agent option from the menu, or enter a custom one in the text box.
 
-## 요청 필터링 {: #filter }
+## Filter requests {: #filter }
 
-### 속성별 요청 필터링 {: #filter-by-property }
+### Filter requests by properties {: #filter-by-property }
 
-**Filter** 텍스트 상자를 사용하여
-도메인이나 요청의 크기와 같은 속성별로 요청을 필터링합니다.
+Use the **Filter** text box to filter requests by properties, such as the domain or size of the request.
 
-텍스트 상자가 보이지 않는다면 Filter 창이 숨겨져 있을 수 있습니다.
-[Filters 창 숨기기](#hide-filters)를 확인하세요.
+If you can't see the text box, the Filters pane is probably hidden. See [Hide the Filters pane](#hide-filters).
 
 <figure>
-  <img src="imgs/filter-text-box.svg" alt="Filters 텍스트 상자.">
+  <img src="imgs/filter-text-box.svg" alt="The Filters text box.">
   <figcaption>
-    <b>그림 11</b>. 파란색 외곽선으로 표시된 Filters 텍스트 상자
+    <b>Figure 11</b>. The Filters text box, outlined in blue
   </figcaption>
 </figure>
 
-각 속성을
-스페이스로 구분하여 여러 속성을 동시에 사용할 수 있습니다. 예를 들어, `mime-type:image/gif larger-than:1K`는
-1KB보다 큰 모든 GIF를 표시합니다. 이러한 다중 속성 필터는
-AND 연산자와 동일합니다. OR 연산자는 현재 지원되지
-않습니다.
+You can use multiple properties simultaneously by separating each property with a space. For example, `mime-type:image/gif larger-than:1K` displays all GIFs that are larger than one kilobyte. These multi-property filters are equivalent to AND operations. OR operations are currently not supported.
 
-아래는 지원되는 속성의 전체 목록입니다.
+Below is a complete list of supported properties.
 
-* `domain`. 지정된 도메인의 리소스만 표시합니다. 와일드 카드 문자
-(`*`)를  사용하여 여러 도메인을 포함할 수 있습니다. 예를 들어, `*.com`을 사용하면
-  도메인 이름이 `.com`으로 끝나는 모든 리소스가 표시됩니다. DevTools는
-  자동완성 드롭다운 메뉴를 그 동안 접한 모든 도메인으로
-  채워넣습니다.
-* `has-response-header`. 지정된 HTTP 응답 헤더가 포함된 리소스를
-  표시합니다. DevTools는
-  자동완성 드롭다운 메뉴를 그 동안 접한 모든 응답 헤더로 채워넣습니다.
-* `is`. `is:running`을 사용하여 `WebSocket` 리소스를 찾습니다.
-* `larger-than`. 지정된 크기보다 큰 리소스를 바이트 단위로
-  표시합니다. 값을 `1000`으로 설정하는 것은 값을 `1k`로 설정하는 것과 같습니다.
-* `method`. 지정된 HTTP 메서드
-  유형을 통해 검색된 리소스를 표시합니다. DevTools는 드롭다운 메뉴를 그 동안 접한 모든 HTTP 메서드로
-  채워넣습니다.
-* `mime-type`. 지정된 MIME 유형의 리소스를 표시합니다. DevTools는
-  드롭다운 메뉴를 그 동안 접한 모든 MIME 유형으로 채워넣습니다.
-* `mixed-content`. 모든 혼합 콘텐츠 리소스(`mixed-content:all`)를 표시하거나
-  현재 표시된 리소스(`mixed-content:displayed`)만 표시합니다.
-* `scheme`. 보호되지 않은 HTTP(`scheme:http`)
-  또는 보호된 HTTPS(`scheme:https`)를 통해 가져온 리소스를 표시합니다.
-* `set-cookie-domain`. 지정된 값과 일치하는 `Domain` 속성과
-  `Set-Cookie` 헤더를 가진 리소스를 표시합니다. DevTools는
-  자동완성을 그 동안 접한 모든 쿠키 도메인으로
-  채웁니다.
-* `set-cookie-name`. 이름이 지정된 값과 일치하고 `Set-Cookie` 헤더를 가진
-  리소스를 표시합니다. DevTools는
-  자동완성을 그 동안 접한 모든 쿠키 이름으로 채웁니다.
-* `set-cookie-value`. 값이 지정된 값과 일치하고 `Set-Cookie` 헤더를 가진
-  리소스를 표시합니다. DevTools는 자동완성을
-  그 동안 접한 모든 쿠키 값으로 채웁니다.
-* `status-code`. HTTP 상태 코드가 지정된 코드와 일치하는
-  리소스만 표시합니다. DevTools는 자동완성 드롭다운 메뉴를 그 동안 접한 모든
-  상태 코드로 채웁니다.
+* `domain`. Only display resources from the specified domain. You can use a wildcard character (`*`) to include multiple domains. For example, `*.com` displays resources from all domain names ending in `.com`. DevTools populates the autocomplete dropdown menu with all of the domains it has encountered.
+* `has-response-header`. Show the resources that contain the specified HTTP response header. DevTools populates the autocomplete dropdown with all of the response headers that it has encountered.
+* `is`. Use `is:running` to find `WebSocket` resources.
+* `larger-than`. Show resources that are larger than the specified size, in bytes. Setting a value of `1000` is equivalent to setting a value of `1k`.
+* `method`. Show resources that were retrieved over a specified HTTP method type. DevTools populates the dropdown with all of the HTTP methods it has encountered.
+* `mime-type`. Show resources of a specified MIME type. DevTools populates the dropdown with all MIME types it has encountered.
+* `mixed-content`. Show all mixed content resources (`mixed-content:all`) or just the ones that are currently displayed (`mixed-content:displayed`).
+* `scheme`. Show resources retrieved over unprotected HTTP (`scheme:http`) or protected HTTPS (`scheme:https`).
+* `set-cookie-domain`. Show the resources that have a `Set-Cookie` header with a `Domain` attribute that matches the specified value. DevTools populates the autocomplete with all of the cookie domains that it has encountered.
+* `set-cookie-name`. Show the resources that have a `Set-Cookie` header with a name that matches the specified value. DevTools populates the autocomplete with all of the cookie names that it has encountered.
+* `set-cookie-value`. Show the resources that have a `Set-Cookie` header with a value that matches the specified value. DevTools populates the autocomplete with all of the cookie values that it has encountered.
+* `status-code`. Only show resources whose HTTP status code match the specified code. DevTools populates the autocomplete dropdown menu with all of the status codes it has encountered.
 
-### 유형별 요청 필터링 {: #filter-by-type }
+### Filter requests by type {: #filter-by-type }
 
-요청을 요청 유형별로 필터링하려면 Network 패널에서 **XHR**, **JS**, **CSS**,
-**Img**, **Media**, **Font**, **Doc**, **WS** (WebSocket), **Manifest**, 또는
-**Other**(여기에 나열되지 않은 기타 유형) 버튼을 누릅니다.
+To filter requests by request type, click the **XHR**, **JS**, **CSS**, **Img**, **Media**, **Font**, **Doc**, **WS** (WebSocket), **Manifest**, or **Other** (any other type not listed here) buttons on the Network panel.
 
-이러한 버튼이 보이지 않는다면 Filters 창이 숨겨져 있기 때문일 수 있습니다.
-[Filters 창 숨기기](#hide-filters)를 확인하세요.
+If you can't see these buttons, the Filters pane is probably hidden. See [Hide the Filters pane](#hide-filters).
 
-여러 유형의 필터를 동시에 활성화하려면 <kbd>Cmmd</kbd>(Mac)
-혹은 <kbd>Ctrl</kbd>(Windows, Linux)을 길게 누른 다음 클릭합니다.
+To enable multiple type filters simultaneously, hold <kbd>Command</kbd> (Mac) or <kbd>Control</kbd> (Windows, Linux) and then click.
 
 <figure>
   <img src="imgs/multi-type-filter.png"
-       alt="Type 필터를 사용하여 JS, CSS, Doc[ument]
-        리소스 표시.">
+       alt="Using the Type filters to display JS, CSS, and Doc[ument]
+            resources.">
   <figcaption>
-    <b>그림 12</b>. Type 필터를 사용하여 JS, CSS, Doc[ument]
-        리소스 표시.
+    <b>Figure 12</b>. Using the Type filters to display JS, CSS, and Doc[ument]
+    resources.
   </figcaption>
 </figure>
 
-### 시간별 요청 필터링 {: #filter-by-time }
+### Filter requests by time {: #filter-by-time }
 
-Overview 창의 오른쪽이나 왼쪽을 클릭하고 드래그하여
-해당 시간 프레임 내에 활성 상태였던 요청만을 표시합니다. 이 필터는 포괄적입니다. 강조표시된 시간에 활성 상태였던 모든 요청이
-표시됩니다.
+Click and drag left or right on the Overview pane to only display requests that were active during that time frame. The filter is inclusive. Any request that was active during the highlighted time is shown.
 
 <figure>
   <img src="imgs/overview-filter.png"
-       alt="약 2500ms 간 활성 상태가 아니었던 모든 요청 제외.">
+       alt="Filtering out any requests that weren't active around 2500ms.">
   <figcaption>
-    <b>그림 13</b>. 약
-    2500ms 간 활성 상태가 아니었던 모든 요청 제외.
+    <b>Figure 13</b>. Filtering out any requests that weren't active around
+    2500ms
   </figcaption>
 </figure>
 
-### 데이터 URL 숨기기
+### Hide data URLs
 
-[데이터 URL][data-uris]은 기타 문서에 삽입된 소형 파일입니다. Requests
-표에서
-`data:`로 시작되는 모든 요청은 데이터 URL입니다.
+[Data URLs](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/Data_URIs) are small files embedded into other documents. Any request that you see in the Requests table that starts with `data:` is a data URL.
 
-**Hide data URL** 확인란을 선택하여 이러한 요청을 숨깁니다.
+Check the **Hide data URLs** checkbox to hide these requests.
 
 <figure>
-  <img src="imgs/hide-data-urls.svg" alt="Hide Data URL 확인란.">
+  <img src="imgs/hide-data-urls.svg" alt="The Hide Data URLs checkbox.">
   <figcaption>
-    <b>그림 14</b>. Hide Data URL 확인란.
+    <b>Figure 14</b>. The Hide Data URLs checkbox
   </figcaption>
 </figure>
 
-[data-uris]: https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/Data_URIs
+## Sort requests
 
-## 요청 정렬
+By default, the requests in the Requests table are sorted by initiation time, but you can sort the table using other criteria.
 
-기본적으로 Requests 표에 있는 요청은 개시
-시간별로 정렬되어 있지만, 다른 기준으로 표를 정렬할 수 있습니다.
+### Sort by column {: #sort-by-column }
 
-### 열을 기준으로 정렬 {: #sort-by-column }
+Click the header of any column in the Requests to sort requests by that column.
 
-Requests의 아무 열의 헤더를 클릭하면 해당
-열을 기준으로 요청을 정렬합니다.
+### Sort by activity phase {: #sort-by-activity }
 
-### 활동 단계를 기준으로 정렬 {: #sort-by-activity }
+To change how the Waterfall sorts requests, right-click the header of the Requests table, hover over **Waterfall**, and select one of the following options:
 
-Waterfall이 요청을 정렬하는 방식을 변경하려면,
-Requests 표의 헤더를 오른쪽 클릭하고 **Waterfall** 위로 마우스를 가져간 후, 다음 중
-하나의 옵션을 선택합니다.
+* **Start Time**. The first request that was initiated is at the top.
+* **Response Time**. The first request that started downloading is at the top.
+* **End Time**. The first request that finished is at the top.
+* **Total Duration**. The request with the shortest connection setup and request / response is at the top.
+* **Latency**. The request that waited the shortest time for a response is at the top.
 
-* **시작 시간**. 첫 번째로 개시되었던 요청이 상단에 위치합니다.
-* **응답 시간**. 첫 번째로 다운로드를 시작한 요청이 상단에 위치합니다.
-* **종료 시간**. 첫 번째로 완료된 요청이 상단에 위치합니다.
-* **총 소요 시간** 연결 설정 및 요청/반응 시간이
- 가장 짧은 요청이 상단에 위치합니다.
-* **지연 시간**. 응답을 가장 적게 기다린 요청이
-  상단에 위치합니다.
-
-이러한 설명은 각각의 옵션이 가장 짧은 것부터 가장 긴 것 순으로
-순위가 매겨진다고 가정합니다. **Waterfall** 열의 헤더를 클릭하여 순서를 변경할 수 있습니다.
+These descriptions assume that each respective option is ranked from shortest to longest. Clicking on the **Waterfall** column's header reverses the order.
 
 <figure>
   <img src="imgs/waterfall-total-duration.png"
-       alt="총 소요 시간을 기준으로 Waterfall 정렬.">
+       alt="Sorting the Waterfall by total duration.">
   <figcaption>
-    <b>그림 15</b>. 총 소요 시간을 기준으로 Waterfall 정렬. 각 막대의
-    밝은 부분은 대기에 소모한 시간입니다. 어두운 부분은
-    바이트 다운로드에 소모한 시간입니다.
+    <b>Figure 15</b>. Sorting the Waterfall by total duration. The lighter
+    portion of each bar is time spent waiting. The darker portion is time
+    spent downloading bytes.
   </figcaption>
 </figure>
 
-## 요청 분석 {: #analyze }
+## Analyze requests {: #analyze }
 
-DevTools은 창이 열려있는 한 Network 패널의 모든 요청을 로깅합니다.
-Network 패널을 이용하여 요청을 분석합니다.
+So long as DevTools is open, it logs all requests in the Network panel. Use the Network panel to analyze requests.
 
-### 요청 로그 보기 {: #requests }
+### View a log of requests {: #requests }
 
-Requests 표를 사용하여 DevTools가 열려있는 동안
-생성된 모든 요청의 로그를 봅니다. 요청을 클릭하거나 그 위로 마우스를 가져가면
-더 많은 정보를 볼 수 있습니다.
+Use the Requests table to view a log of all requests made while DevTools has been open. Clicking or hovering over requests reveals more information about them.
 
 <figure>
   <img src="imgs/requests-table.svg"
-       alt="Requests 표.">
+       alt="The Requests table.">
   <figcaption>
-    <b>그림 16</b>. 파란색 외곽선으로 표시된 Requests 표
+    <b>Figure 16</b>. The Requests table, outlined in blue
   </figcaption>
 </figure>
 
-Requests 표는 다음의 열을 기본으로 표시합니다.
+The Requests table displays the following columns by default:
 
-* **이름**. 리소스의 파일 이름이나 식별자.
-* **상태**. HTTP 상태 코드.
-* **유형**. 요청한 리소스의 MIME 유형.
-* **시작자**. 다음의 객체 또는 프로세스가 요청을 개시할 수 있습니다.
-    * **파서**. Chrome의 HTML 파서.
-    * **리디렉션**. HTTP 리디렉션.
-    * **스크립트**. 자바스크립트 함수.
-    * **기타**. 일부 다른 프로세스 또는 작업(예: 사용자가 링크를 통하거나
-      주소 표시줄에 URL 입력하여 페이지로 이동).
-* **크기**. 서버가 전달한 응답 헤더의 크기에
-  응답 본문을 더한 크기.
-* **시간**. 총 소요 시간, 즉 요청 시작부터 응답의 최종 바이트를
-  수신할 때까지 걸린 시간입니다.
-* [**Waterfall**](#waterfall). 각 요청의 활동에 대한 시각적 분석.
+* **Name**. The filename of, or an identifier for, the resource.
+* **Status**. The HTTP status code.
+* **Type**. The MIME type of the requested resource.
+* **Initiator**. The following objects or processes can initiate requests: 
+    * **Parser**. Chrome's HTML parser.
+    * **Redirect**. An HTTP redirect.
+    * **Script**. A JavaScript function.
+    * **Other**. Some other process or action, such as navigating to a page via a link or entering a URL in the address bar.
+* **Size**. The combined size of the response headers plus the response body, as delivered by the server.
+* **Time**. The total duration, from the start of the request to the receipt of the final byte in the response.
+* [**Waterfall**](#waterfall). A visual breakdown of each request's activity.
 
-#### 열 추가 또는 삭제 {: #columns }
+#### Add or remove columns {: #columns }
 
-Request 표의 헤더를 오른쪽 클릭하고 숨기거나 표시하는
-옵션을 선택합니다. 현재 표시된 옵션 옆에는 체크 표시가 있습니다.
+Right-click the header of the Requests table and select an option to hide or show it. Currently displayed options have checkmarks next to them.
 
 <figure>
   <img src="imgs/add-column.png"
-       alt="Requests 표에 열 추가.">
+       alt="Adding a column to the Requests table.">
   <figcaption>
-    <b>그림 17</b>. Requests 표에 열 추가.
+    <b>Figure 17</b>. Adding a column to the Requests table.
   </figcaption>
 </figure>
 
-#### 사용자설정 열 추가 {: #custom-columns }
+#### Add custom columns {: #custom-columns }
 
-Requests 표에 사용자설정 열을 추가하려면
-Requests 표의 헤더를 오른쪽 클릭하고 **Response Headers** > **Manage Header Columns**를 선택합니다.
+To add a custom column to the Requests table, right-click the header of the Requests table and select **Response Headers** > **Manage Header Columns**.
 
 <figure>
   <img src="imgs/custom-column.png"
-       alt="Requests 표에 사용자설정 열 추가.">
+       alt="Adding a custom column to the Requests table.">
   <figcaption>
-    <b>그림 18</b>. Requests 표에 사용자설정 열 추가.
+    <b>Figure 18</b>. Adding a custom column to the Requests table.
   </figcaption>
 </figure>
 
-### 요청 간의 타이밍 보기 {: #waterfall }
+### View the timing of requests in relation to one another {: #waterfall }
 
-Waterfall을 사용하여 요청 간의 타이밍을 봅니다.
-기본적으로 Waterfall은 요청의 시작 시간별로 정리되어 있습니다.
-따라서, 왼쪽으로 끝에 있는 요청이 오른쪽 끝에 있는 것보다
-더 먼저 시작된 것입니다.
+Use the Waterfall to view the timing of requests in relation to one another. By default, the Waterfall is organized by the start time of the requests. So, requests that are farther to the left started earlier than those that are farther to the right.
 
-[활동 단계를 기준으로 정렬](#sort-by-activity)을 참조하여
-Waterfall을 정렬하는 여러 방법을 알아보세요.
+See [Sort by activity phase](#sort-by-activity) to see the different ways that you can sort the Waterfall.
 
 <figure>
   <img src="imgs/waterfall.png"
-       alt="Requests 창의 Waterfall 열.">
+       alt="The Waterfall column of the Requests pane.">
   <figcaption>
-    <b>그림 19</b>. Requests 창의 Waterfall 열.
+    <b>Figure 19</b>. The Waterfall column of the Requests pane.
   </figcaption>
 </figure>
 
-### WebSocket Connection의 프레임 분석 {: #frames }
+### Analyze the frames of a WebSocket Connection {: #frames }
 
-WebSocket Connection의 프레임을 분석하려면 다음을 수행합니다.
+To view the frames of a WebSocket connection:
 
-1. Requests 표의 **Name** 열 아래에 있는
-   WebSocket Connection의 URL을 클릭합니다.
-1. **Frames** 탭을 클릭합니다. 표에 최근 100프레임이 표시됩니다.
+1. Click the URL of the WebSocket connection, under the **Name** column of the Requests table.
+2. Click the **Frames** tab. The table shows the last 100 frames.
 
-표를 새로고침하려면 Requests 표의 **Name** 열 아래에 있는
-WebSocket Connection의 이름을 다시 클릭합니다.
+To refresh the table, re-click the name of the WebSocket connection under the **Name** column of the Requests table.
 
 <figure>
   <img src="imgs/frames.svg"
-       alt="Frames 탭.">
+       alt="The Frames tab.">
   <figcaption>
-    <b>그림 20</b>. 파란색 외곽선으로 표시된 Frames 탭
+    <b>Figure 20</b>. The Frames tab, outlined in blue
   </figcaption>
 </figure>
 
-표에는 세 개의 열이 있습니다.
+The table contains three columns:
 
-* **데이터**. 메시지 페이로드. 메시지가 일반 텍스트인 경우
-  여기에 표시됩니다. 바이너리 연산 부호인 경우, 이 열은 해당 연산 부호의
-  이름과 코드를 표시합니다. 지원되는 연산 부호는 다음과 같습니다. Continuation Frame,
-  Binary Frame, Connection Close Frame, Ping Frame, 및 Pong Frame.
-* **길이**. 바이트 단위의 메시지 페이로드 길이.
-* **시간**. 메시지가 수신되거나 전송된 시간.
+* **Data**. The message payload. If the message is plain text, it's displayed here. For binary opcodes, this column displays the opcode's name and code. The following opcodes are supported: Continuation Frame, Binary Frame, Connection Close Frame, Ping Frame, and Pong Frame.
+* **Length**. The length of the message payload, in bytes.
+* **Time**. The time when the message was received or sent.
 
-메시지는 유형에 따라 색상이 구분됩니다.
+Messages are color-coded according to their type:
 
-* 전송 텍스트 메시지는 연두색입니다.
-* 수신 텍스트 메시지는 흰색입니다.
-* WebSocket 연산 부호는 옅은 노란색입니다.
-* 오류는 옅은 빨간색입니다.
+* Outgoing text messages are light-green.
+* Incoming text messages are white.
+* WebSocket opcodes are light-yellow.
+* Errors are light-red.
 
-### 응답 본문의 미리보기 보기 {: #preview }
+### View a preview of a response body {: #preview }
 
-응답 본문의 미리보기를 보려면 다음을 수행합니다.
+To view a preview of a response body:
 
-1. Requests 표의 **Name** 열 아래에 있는
-   요청의 URL을 클릭합니다.
-1. **Preview** 탭을 클릭합니다.
+1. Click the URL of the request, under the **Name** column of the Requests table.
+2. Click the **Preview** tab.
 
-이 탭은 주로 이미지를 보는 데 유용합니다.
+This tab is mostly useful for viewing images.
 
 <figure>
   <img src="imgs/preview.svg"
-       alt="Preview 탭.">
+       alt="The Preview tab.">
   <figcaption>
-    <b>그림 21</b>. 파란색 외곽선으로 표시된 Preview 탭
+    <b>Figure 21</b>. The Preview tab, outlined in blue
   </figcaption>
 </figure>
 
-### 응답 본문 보기 {: #response }
+### View a response body {: #response }
 
-요청에 대한 응답 본문을 보려면 다음을 수행합니다.
+To view the response body to a request:
 
-1. Requests 표의 **Name** 열 아래에 있는
-   요청의 URL을 클릭합니다.
-1. **Response** 탭을 클릭합니다.
+1. Click the URL of the request, under the **Name** column of the Requests table.
+2. Click the **Response** tab.
 
 <figure>
   <img src="imgs/response.svg"
-       alt="Response 탭.">
+       alt="The Response tab.">
   <figcaption>
-    <b>그림 22</b>. 파란색 외곽선으로 표시된 Response 탭
+    <b>Figure 22</b>. The Response tab, outlined in blue
   </figcaption>
 </figure>
 
-### HTTP 헤더 보기 {: #headers }
+### View HTTP headers {: #headers }
 
-요청에 관한 HTTP 헤더 데이터를 보려면 다음을 수행합니다.
+To view HTTP header data about a request:
 
-1. Requests 표의 **Name** 열 아래에 있는
-   요청의 URL을 클릭합니다.
-1. **Headers** 탭을 클릭합니다.
+1. Click on the URL of the request, under the **Name** column of the Requests table.
+2. Click the **Headers** tab.
 
 <figure>
   <img src="/web/tools/chrome-devtools/images/headers.svg"
-       alt="Headers 탭.">
+       alt="The Headers tab.">
   <figcaption>
-    <b>그림 23</b>. 파란색 외곽선으로 표시된 Headers 탭
+    <b>Figure 23</b>. The Headers tab, outlined in blue
   </figcaption>
 </figure>
 
-#### HTTP 헤더 소스 보기 {: #header-source }
+#### View HTTP header source {: #header-source }
 
-기본적으로 Headers 탭은 헤더 이름을 알파벳 순서로 표시합니다. HTTP 헤더 이름을 수신한 순서대로
-보려면 다음을 수행합니다.
+By default, the Headers tab shows header names alphabetically. To view the HTTP header names in the order they were received:
 
-1. 보려고 하는 요청에 대한 **Headers** 탭을 엽니다.
-[HTTP 헤더 보기](#headers)를 참조하세요.
-1. **Request Header** 또는 **Response
-   Header** 섹션 옆의 **view source**를 클릭합니다.
+1. Open the **Headers** tab for the request you're interested in. See [View HTTP headers](#headers).
+2. Click **view source**, next to the **Request Header** or **Response Header** section.
 
-### 쿼리 문자열 매개변수 보기 {: #query-string }
+### View query string parameters {: #query-string }
 
-URL 쿼리 문자열 매개변수를 읽을 수 있는 형식으로 보려면 다음을 수행합니다.
+To view the query string parameters of a URL in a human-readable format:
 
-1. 보려고 하는 요청에 대한 **Headers** 탭을 엽니다.
-[HTTP 헤더 보기](#headers)를 참조하세요.
-1. **Query String Parameters** 섹션으로 이동합니다.
+1. Open the **Headers** tab for the request you're interested in. See [View HTTP headers](#headers).
+2. Go to the **Query String Parameters** section.
 
 <figure>
-  <img src="imgs/query-string.svg" alt="Query String Parameters 섹션.">
+  <img src="imgs/query-string.svg" alt="The Query String Parameters section.">
   <figcaption>
-    <b>그림 24</b>. 파란색 외곽선으로 표시된 Query String Parameters 섹션
+    <b>Figure 24</b>. The Query String Parameters section, outlined in blue
   </figcaption>
 </figure>
 
-#### 쿼리 문자열 매개변수 소스 보기 {: #query-string-source }
+#### View query string parameters source {: #query-string-source }
 
-요청의 뭐리 문자열 매개변수 소스를 보려면 다음을 수행합니다.
+To view the query string parameter source of a request:
 
-1. Query String Parameters 섹션으로 이동합니다. [쿼리 문자열
-   매개변수 보기](#query-string)를 참조하세요.
-1. **view source**를 클릭합니다.
+1. Go to the Query String Parameters section. See [View query string parameters](#query-string).
+2. Click **view source**.
 
-#### URL 인코딩된 쿼리 문자열 매개변수 보기 {: #query-string-encodings }
+#### View URL-encoded query string parameters {: #query-string-encodings }
 
-쿼리 문자열 매개변수를 인코딩이 유지된 상태에서 읽을 수 있는 형식으로 보려면
-다음을 수행합니다.
+To view query string parameters in a human-readable format, but with encodings preserved:
 
-1. Query String Parameters 섹션으로 이동합니다. [쿼리 문자열
-   매개변수 보기](#query-string)를 참조하세요.
-1. **view URL encoded**를 클릭합니다.
+1. Go to the Query String Parameters section. See [View query string parameters](#query-string).
+2. Click **view URL encoded**.
 
-### 쿠키 보기 {: #cookies }
+### View cookies {: #cookies }
 
-요청의 HTTP 헤더로 전송된 쿠키를 보려면 다음을 수행합니다.
+To view the cookies sent in a request's HTTP header:
 
-1. Requests 표의 **Name** 열 아래에 있는
-   요청의 URL을 클릭합니다.
-1. **Cookies** 탭을 클릭합니다.
+1. Click the URL of the request, under the **Name** column of the Requests table.
+2. Click the **Cookies** tab.
 
-[필드](/web/tools/chrome-devtools/manage-data/cookies#fields)를 참조하여
-각 열의 설명을 확인하세요.
+See [Fields](/web/tools/chrome-devtools/manage-data/cookies#fields) for a description of each of the columns.
 
 <figure>
   <img src="imgs/cookies.svg"
-       alt="Cookies 탭.">
+       alt="The Cookies tab.">
   <figcaption>
-    <b>그림 25</b>. 파란색 외곽선으로 표시된 Cookies 탭
+    <b>Figure 25</b>. The Cookies tab, outlined in blue
   </figcaption>
 </figure>
 
-### 요청의 타이밍 분석 보기 {: #timing }
+### View the timing breakdown of a request {: #timing }
 
-요청의 타이밍 분석을 보려면 다음을 수행합니다.
+To view the timing breakdown of a request:
 
-1. Requests 표의 **Name** 열 아래에 있는
-   요청의 URL을 클릭합니다.
-1. **Timing** 탭을 클릭합니다.
+1. Click the URL of the request, under the **Name** column of the Requests table.
+2. Click the **Timing** tab.
 
-[타이밍 분석 미리보기](#timing-preview)를 참조하여 이 데이터에 액세스하는 더 빠른 방법을
-알아보세요.
+See [Preview a timing breakdown](#timing-preview) for a faster way to access this data.
 
-[타이밍 분석 단계 설명](#timing-explanation)을 참조하여 Timing 탭에서 볼 수 있는 각 단계에 관한 더 많은
-정보를 알아보세요.
+See [Timing breakdown phases explained](#timing-explanation) for more information about each of the phases that you may see in the Timing tab.
 
 <figure>
-  <img src="imgs/timing.svg" alt="Timing 탭.">
+  <img src="imgs/timing.svg" alt="The Timing tab.">
   <figcaption>
-    <b>그림 26</b>. 파란색 외곽선으로 표시된 Timing 탭
+    <b>Figure 26</b>. The Timing tab, outlined in blue
   </figcaption>
 </figure>
 
-각 단계에 관한 더 많은 정보가 있습니다.
+Here's more information about each of the phases.
 
-[타이밍 분석 보기](#timing-breakdown)를 참조하여 이 보기
-에 액세스하는 다른 방법을 알아보세요.
+See [View timing breakdown](#timing-breakdown) for another way to access this view.
 
-#### 타이밍 분석 미리보기 {: #timing-preview }
+#### Preview a timing breakdown {: #timing-preview }
 
-요청의 타이밍 분석 미리보기를 보려면,
-Requests 표의 **Waterfall**열에서 해당 요청의 엔트리 위에 마우스를 가져가세요.
+To view a preview of the timing breakdown of a request, hover over the request's entry in the **Waterfall** column of the Requests table.
 
-[요청의 타이밍 분석 보기](#timing)를 참조하여 마우스 오버 없이
-해당 데이터에 액세스하는 방법을 알아보세요.
+See [View the timing breakdown of a request](#timing) for a way to access this data that does not require hovering.
 
 <figure>
   <img src="imgs/waterfall-hover.png"
-       alt="요청의 타이밍 분석 미리보기.">
+       alt="Previewing the timing breakdown of a request.">
   <figcaption>
-    <b>그림 27</b>. 요청의 타이밍 분석 미리보기.
+    <b>Figure 27</b>. Previewing the timing breakdown of a request
   </figcaption>
 </figure>
 
-#### 타이밍 분석 단계 설명 {: #timing-explanation }
+#### Timing breakdown phases explained {: #timing-explanation }
 
-Timing
-탭에서 볼 수 있는 각 단계에 관한 자세한 설명은 다음과 같습니다.
+Here's more information about each of the phases you may see in the Timing tab:
 
-* **큐 추가**. 브라우저는 요청이 다음과 같을 때 큐에 추가합니다.
-    * 더 높은 우선순위의 요청이 있습니다.
-    * 이미 6개의 TCP 연결(한계)이
-      해당 출발지에서 열려 있습니다. HTTP/1.0 및 HTTP/1.1에만 해당됩니다.
-    * 브라우저가 일시적으로 디스크 캐시에 공간을 할당합니다.
-* **지연**. 요청은
-  **큐 추가**에서 설명한 이유로 지연될 수 있습니다.
-* **DNS 룩업**. 브라우저가 요청의 IP 주소를 분석하고 있습니다.
-* **프록시 협상**. 브라우저가 [프록시
-  서버](https://en.wikipedia.org/wiki/Proxy_server)와 해당 요청을 협상 중입니다.
-* **요청 전송됨**. 요청이 전송됩니다.
-* **ServiceWorker 준비**. 브라우저가 서비스 워커를 시작 중입니다.
-* **ServiceWorker에 대한 요청**. 요청이 서비스
-  워커에 전송되고 있습니다.
-**대기(TTFB)**. 브라우저가 응답의 첫 번째 바이트를 기다리고 있습니다.
-  TTFB는 Time To First Byte(첫 바이트까지의 시간)의 두문자어입니다. 이 타이밍은 지연 시간의 1회 왕복
-  및 서버가 응답을 준비하는 데 걸린 시간을 포함합니다.
-* **콘텐츠 다운로드**. 브라우저가 응답을 수신 중입니다.
-* **푸시 수신**. 브라우저가 HTTP/2
-  서버 푸시를 통해 이 응답에 대한 데이터를 수신 중입니다.
-* **푸시 읽기**. 브라우저가 이전에 수신한 로컬 데이터를 읽는 중입니다.
+* **Queueing**. The browser queues requests when: 
+    * There are higher priority requests.
+    * There are already six TCP connections open for this origin, which is the limit. Applies to HTTP/1.0 and HTTP/1.1 only.
+    * The browser is briefly allocating space in the disk cache
+* **Stalled**. The request could be stalled for any of the reasons described in **Queueing**.
+* **DNS Lookup**. The browser is resolving the request's IP address.
+* **Proxy negotiation**. The browser is negotiating the request with a [proxy server](https://en.wikipedia.org/wiki/Proxy_server).
+* **Request sent**. The request is being sent.
+* **ServiceWorker Preparation**. The browser is starting up the service worker.
+* **Request to ServiceWorker**. The request is being sent to the service worker.
+* **Waiting (TTFB)**. The browser is waiting for the first byte of a response. TTFB stands for Time To First Byte. This timing includes 1 round trip of latency and the time the server took to prepare the response.
+* **Content Download**. The browser is receiving the response.
+* **Receiving Push**. The browser is receiving data for this response via HTTP/2 Server Push.
+* **Reading Push**. The browser is reading the local data previously received.
 
-### 시작자 및 종속성 보기 {: #initiators-dependencies }
+### View initiators and dependencies {: #initiators-dependencies }
 
-요청의 시작자와 종속성을 보려면 <kbd>Shift</kbd>를
-길게 누르고 Requests 표에 있는 요청 위에 마우스를 가져갑니다. DevTools은 시작자를
-초록색으로, 종속성을 빨간색으로 표시합니다.
+To view the initiators and dependencies of a request, hold <kbd>Shift</kbd> and hover over the request in the Requests table. DevTools colors initiators green, and dependencies red.
 
 <figure>
   <img src="imgs/initiators-dependencies.png"
-       alt="요청의 시작자 및 종속성 보기">
+       alt="Viewing the initiators and dependencies of a request.">
   <figcaption>
-    <b>그림 28</b>. 요청의 시작자 및 종속성 보기
+    <b>Figure 28</b>. Viewing the initiators and dependencies of a request
   </figcaption>
 </figure>
 
-Requests 표가 시간 순서로 정리되었을 때, 마우스를 가져간 요청 위에 있는 첫 번째
-초록색 요청이 종속성의
-시작자입니다. 그 위에 다른 초록색 요청이 있다면
-그 더 높은 요청이 시작자의 시작자입니다. 이런 식으로 계속됩니다.
+When the Requests table is ordered chronologically, the first green request above the request that you're hovering over is the initiator of the dependency. If there's another green request above that, that higher request is the initiator of the initiator. And so on.
 
-### 로드 이벤트 보기 {: #load }
+### View load events {: #load }
 
-DevTools는 `DOMContentLoaded` 및 `load` 이벤트의 타이밍을
-Network 패널의 여러 곳에서 표시합니다. `DOMContentLoaded` 이벤트는
-파란색으로 표시되며 `load` 이벤트는 빨간색입니다.
+DevTools displays the timing of the `DOMContentLoaded` and `load` events in multiple places on the Network panel. The `DOMContentLoaded` event is colored blue, and the `load` event is red.
 
 <figure>
   <img src="imgs/load-events.svg"
-       alt="DOMContentLoaded 및 Network 패널의 로드 이벤트 위치.">
+       alt="The locations of the DOMContentLoaded and load events on the Network panel.">
   <figcaption>
-    <b>그림 29</b>. <code>DOMContentLoaded</code> 및
-   Network 패널의 <code>load</code> 이벤트 위치.
-   </figcaption>
+    <b>Figure 29</b>. The locations of the <code>DOMContentLoaded</code> and
+    <code>load</code> events in the Network panel
+  </figcaption>
 </figure>
 
-### 총 요청 수 보기 {: #total-number }
+### View the total number of requests {: #total-number }
 
-총 요청 수는 Network 패널 하단의
-Summary 창에 나열되어 있습니다.
+The total number of requests is listed in the Summary pane, at the bottom of the Network panel.
 
-Caution: 이 수치는 DevTools이
-열린 이후에 로깅된 요청만을 추적합니다. DevTools이 열리기 전에 다른 요청이 발생했다면, 이러한
-요청은 포함되지 않습니다.
+Caution: This number only tracks requests that have been logged since DevTools was opened. If other requests occurred before DevTools was opened, those requests aren't counted.
 
 <figure>
   <img src="imgs/total-requests.svg"
-       alt="DevTools이 열린 후의 총 요청 수">
+       alt="The total number of requests since DevTools was opened">
   <figcaption>
-    <b>그림 30</b>. DevTools이 열린 후의 총 요청 수
+    <b>Figure 30</b>. The total number of requests since DevTools was opened
   </figcaption>
 </figure>
 
-### 총 다운로드 크기 보기 {: #total-size }
+### View the total download size {: #total-size }
 
-총 다운로드 크기는 Network 패널 하단의
-Summary 창에 나열되어 있습니다.
+The total download size of requests is listed in the Summary pane, at the bottom of the Network panel.
 
-Caution: 이 수치는 DevTools이
-열린 이후에 로깅된 요청만을 추적합니다. DevTools이 열리기 전에 다른 요청이 발생했다면, 이러한
-요청은 포함되지 않습니다.
+Caution: This number only tracks requests that have been logged since DevTools was opened. If other requests occurred before DevTools was opened, those requests aren't counted.
 
 <figure>
   <img src="imgs/total-size.svg"
-       alt="요청의 총 다운로드 크기">
+       alt="The total download size of requests">
   <figcaption>
-    <b>그림 31</b>. 요청의 총 다운로드 크기
+    <b>Figure 31</b>. The total download size of requests
   </figcaption>
 </figure>
 
-[압축 해제된 리소스 크기 보기](#uncompressed)를 참조하여
-브라우저가 압축을 해제한 후의 리소스 크기를 확인하세요.
+See [View the uncompressed size of a resource](#uncompressed) to see how large resources are after the browser uncompresses them.
 
-### 요청을 발생시킨 스택 추적 보기 {: #initiator-stack-trace }
+### View the stack trace that caused a request {: #initiator-stack-trace }
 
-자바스크립트 구문이 리소스 요청을 일으켰다면, **Initiator**
-열에 마우스를 가져가 해당 요청까지의 스택 추적을 볼 수 있습니다.
+When a JavaScript statement causes a resource to be requested, hover over the **Initiator** column to view the stack trace leading up to the request.
 
 <figure>
   <img src="imgs/initiator-stack.png"
-       alt="리소스 요청까지의 스택 추적">
+       alt="The stack trace leading up to a resource request">
   <figcaption>
-    <b>그림 32</b>. 리소스 요청까지의 스택 추적
+    <b>Figure 32</b>. The stack trace leading up to a resource request
   </figcaption>
 </figure>
 
-### 압축 해제된 리소스 크기 보기 {: #uncompressed }
+### View the uncompressed size of a resource {: #uncompressed }
 
-**Use Large Request Rows** ![넓은 요청
-행 사용](imgs/large-resource-rows-button.png)을 클릭한 다음{:.inline-icon} **Size** 열의
-가장 아래 값을 봅니다.
+Click **Use Large Request Rows** ![Use Large Request
+Rows](imgs/large-resource-rows-button.png){:.inline-icon} and then look at the bottom value of the **Size** column.
 
 <figure>
   <img src="imgs/large-request-rows.png"
-       alt="압축 해제된 리소스의 예">
+       alt="An example of uncompressed resources.">
   <figcaption>
-    <b>그림 33</b>. 네트워크로 전송된 <code>jquery-bundle.js</code> 파일의 압축 크기는
-    <code>30.9 KB</code>인 반면, 압축 해제된 크기는
-   <code>86.3 KB</code>였습니다.
+    <b>Figure 33</b>. The compressed size of the <code>jquery-bundle.js</code> file
+    that was sent over the network was <code>30.9 KB</code>, whereas the uncompressed size was
+    <code>86.3 KB</code>
   </figcaption>
 </figure>
 
-## 요청 데이터 내보내기 {: #export }
+## Export requests data {: #export }
 
-### 모든 네트워크 요청을 HAR 파일에 저장하기 {: #save-as-har }
+### Save all network requests to a HAR file {: #save-as-har }
 
-모든 네트워크 요청을 HAR 파일에 저장하려면 다음을 수행합니다.
+To save all network requests to a HAR file:
 
-1. Requests 표에서 임의의 요청을 오른쪽 클릭합니다.
-1. **Save as HAR with Content**를 선택합니다. DevTools이 DevTools을 연 후에 발생한
-   모든 요청을 HAR 파일에 저장합니다. 요청을 필터링하거나 단일 요청만을 저장하는
-   방법은 없습니다.
+1. Right-click any request in the Requests table.
+2. Select **Save as HAR with Content**. DevTools saves all requests that have occurred since you opened DevTools to the HAR file. There is no way to filter requests, or to save just a single request.
 
-HAR 파일을 받으면, DevTools에 다시 가져와 분석할 수 있습니다. HAR 파일을
-Requests 표에 드래그 앤 드롭하기만 하기만 하면 됩니다. [HAR Analyzer][HAR
-Analyzer]{: .external }도 참조하세요.
-
-[HAR Analyzer]: https://toolbox.googleapps.com/apps/har_analyzer/
+Once you've got a HAR file, you can import it back into DevTools for analysis. Just drag-and-drop the HAR file into the Requests table. See also [HAR Analyzer](https://toolbox.googleapps.com/apps/har_analyzer/){: .external }.
 
 <figure>
   <img src="imgs/save-as-har.png"
-       alt="Save as HAR with Content 선택.">
+       alt="Selecting Save as HAR with Content.">
   <figcaption>
-    <b>그림 34</b>. <b>Save as HAR with Content</b> 선택
+    <b>Figure 34</b>. Selecting <b>Save as HAR with Content</b>
   </figcaption>
 </figure>
 
-### 하나 또는 여러 개의 요청을 클립보드에 복사 {: #copy }
+### Copy one or more requests to the clipboard {: #copy }
 
-Requests 표의 **Name** 열에서 요청을 오른쪽 클릭한 다음
-**Copy**에 마우스를 가져가 다음 중 하나의 옵션을 선택합니다.
+Under the **Name** column of the Requests table, right-click a request, hover over **Copy**, and select one of the following options:
 
-* **링크 주소 복사**. 요청의 URL을 클립보드에 복사합니다.
-* **응답 복사**. 응답 본문을 클립보드에 복사합니다.
-* **cURL로 복사**. 요청을 cURL 명령어로 복사합니다.
-* **전체를 cURL로 복사**. 모든 요청을 일련의 cURL 명령어로 복사합니다.
-* **전체를 HAR로 복사**. 모든 요청을 HAR 데이터로 복사합니다.
+* **Copy Link Address**. Copy the request's URL to the clipboard.
+* **Copy Response**. Copy the response body to the clipboard.
+* **Copy as cURL**. Copy the request as a cURL command.
+* **Copy All as cURL**. Copy all requests as a chain of cURL commands.
+* **Copy All as HAR**. Copy all requests as HAR data.
 
 <figure>
-  <img src="imgs/copy.png" alt="Copy Response 선택.">
+  <img src="imgs/copy.png" alt="Selecting Copy Response.">
   <figcaption>
-    <b>그림 35</b>. Copy Response 선택.
+    <b>Figure 35</b>. Selecting Copy Response
   </figcaption>
 </figure>
 
-## Network 패널의 레이아웃 변경
+## Change the layout of the Network panel
 
-Network panel UI의 섹션을 펼치거나 접어 중요한
-내용에 집중할 수 있습니다.
+Expand or collapse sections of the Network panel UI to focus on what's important to you.
 
-### Filter 창 숨기기 {: #hide-filters }
+### Hide the Filters pane {: #hide-filters }
 
-기본적으로 DevTools는 [Filters 창](#filters)을 표시합니다.
-**Filter** ![필터][filter]를 클릭하여{: .devtools-inline } 숨깁니다.
+By default, DevTools shows the [Filters pane](#filters). Click **Filter** ![Filter](imgs/filters.png){: .devtools-inline } to hide it.
 
 <figure>
-  <img src="imgs/hide-filters.svg" alt="Hide Filters 버튼">
+  <img src="imgs/hide-filters.svg" alt="The Hide Filters button">
   <figcaption>
-    <b>그림 36</b>. 파란색 외곽선으로 표시된 Hide Filters
+    <b>Figure 36</b>. Hide Filters, outlined in blue
   </figcaption>
 </figure>
 
-[filter]: imgs/filters.png
+### Use large request rows {: #request-rows }
 
-### 넓은 요청 행 사용 {: #request-rows }
-
-네트워크
-요청 테이블에 더 많은 공백을 원하는 경우, 넓은 행을 사용할 수 있습니다. 일부 열은
-넓은 행을 사용할 때 더 많은 정보를 제공하기도 합니다. 예를 들어, **Size**
-열의 하단 값은 압축 해제된 요청의 크기입니다.
+Use large rows when you want more whitespace in your network requests table. Some columns also provide a little more information when using large rows. For example, the bottom value of the **Size** column is the uncompressed size of a request.
 
 <figure>
   <img src="imgs/large-request-rows.png"
-       alt="Requests 창의 넓은 요청 행의 예.">
+       alt="An example of large request rows in the Requests pane.">
   <figcaption>
-    <b>그림 37</b>. Requests 창의 넓은 요청 행의 예.
+    <b>Figure 37</b>. An example of large request rows in the Requests pane
   </figcaption>
 </figure>
 
-**Use large request rows** ![넓은 요청 행
-사용][large]을{:.devtools-inline} 클릭하여 넓은 행의 사용을 설정합니다.
-
-[large]: imgs/large-resource-rows-button.png
+Click **Use large request rows** ![Use large request
+rows](imgs/large-resource-rows-button.png){:.devtools-inline} to enable large rows.
 
 <figure>
-  <img src="imgs/large-request-rows.svg" alt="Large Request Rows 버튼">
+  <img src="imgs/large-request-rows.svg" alt="The Large Request Rows button">
   <figcaption>
-    <b>그림 38</b>. 파란색 외곽선으로 표시된 Large Reques Rows
+    <b>Figure 38</b>. Large Request Rows, outlined in blue
   </figcaption>
 </figure>
 
-### Overview 창 숨기기 {: #hide-overview }
+### Hide the Overview pane {: #hide-overview }
 
-기본적으로 DevTools는 [Overview 창](#overview)을 표시합니다.
-**Hide overview** ![overview 숨기기][hide]를 클릭하여{:.devtools-inline} 숨깁니다.
+By default, DevTools shows the [Overview pane](#overview). Click **Hide overview** ![Hide overview](imgs/hide-overview.png){:.devtools-inline} to hide it.
 
 <figure>
-  <img src="imgs/hide-overview.svg" alt="Hide Overview 버튼">
+  <img src="imgs/hide-overview.svg" alt="The Hide Overview button">
   <figcaption>
-    <b>그림 39</b>. 파란색 외곽선으로 표시된 Hide Overview
+    <b>Figure 39</b>. Hide Overview, outlined in blue
   </figcaption>
 </figure>
 
-[hide]: imgs/hide-overview.png
-
-## 의견 {: #feedback }
+## Feedback {: #feedback }
 
 {% include "web/_shared/helpful.html" %}
