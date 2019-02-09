@@ -1,211 +1,177 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description:Chrome DevTools JavaScript コンソールの操作方法について説明します。
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Learn how to navigate the Chrome DevTools JavaScript Console.
 
-{# wf_updated_on: 2019-02-06 #}
-{# wf_published_on: 2015-05-10 #}
-{# wf_blink_components: Platform>DevTools #}
+{# wf_updated_on: 2018-07-27 #} {# wf_published_on: 2015-05-10 #} {# wf_blink_components: Platform>DevTools #}
 
-# コンソールの使用  {: .page-title }
+# Using the Console {: .page-title }
 
-{% include "web/_shared/contributors/kaycebasques.html" %}
-{% include "web/_shared/contributors/andismith.html" %}
-{% include "web/_shared/contributors/megginkearney.html" %}
-{% include "web/_shared/contributors/pbakaus.html" %}
+{% include "web/_shared/contributors/kaycebasques.html" %} {% include "web/_shared/contributors/andismith.html" %} {% include "web/_shared/contributors/megginkearney.html" %} {% include "web/_shared/contributors/pbakaus.html" %}
 
-ここでは、DevTools コンソールを開く方法、重複するメッセージをスタックするか個々の行に表示する方法、出力をクリア、保持、またはファイルに保存する方法、出力のフィルタ方法、その他のコンソール設定にアクセスする方法について説明します。
-
-
-
+Learn how to: open the DevTools Console, stack redundant messages or display them on their own lines, clear or persist output or save it to a file, filter output, and access additional Console settings.
 
 ### TL;DR {: .hide-from-toc }
-- コンソールは、専用のパネルとして開くか、または他のパネルに隣接するドロワーとして開きます。
--重複するメッセージは、スタックするか、個々の行に表示します。
-- 出力は、クリアするか、ページ間で保持するか、ファイルに保存します。
-- 出力は、重大度や正規表現パターンでフィルタしたり、ネットワーク メッセージを非表示にすることによってフィルタしたりできます。
 
-## コンソールを開く
+* Open the Console as a dedicated panel or as a drawer next to any other panel.
+* Stack redundant messages, or display them on their own lines.
+* Clear or persist output between pages, or save it to a file.
+* Filter output by severity level, by hiding network messages, or by regular expression patterns.
 
-フルスクリーンの専用パネルとしてアクセスしたコンソール:
+## Opening the Console
 
-![[Console] パネル](images/console-panel.png)
+Access the Console as a full-screen, dedicated panel:
 
-他のパネルに隣接するドロワーとして開いた場合:
+![The Console panel](images/console-panel.png)
 
-![[Console] ドロワー](images/console-drawer.png)
+Or as a drawer that opens next to any other panel:
 
-### パネルとして開く
+![The Console drawer](images/console-drawer.png)
 
-次のいずれかの方法で、専用の **[Console]** パネルとして開きます。
+### Open as panel
 
-* <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>J</kbd>（Windows / Linux）または <kbd>Cmd</kbd>+<kbd>Opt</kbd>+<kbd class="kbd">J</kbd>（Mac）を押します。
-* DevTools が既に開いている場合は、**[Console]** ボタンをクリックします。
+To open the dedicated **Console** panel, either:
 
-[Console] パネルを開くと、[Console] ドロワーは自動的に折りたたまれます。
+* Press <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>J</kbd> (Windows / Linux) or <kbd>Cmd</kbd>+<kbd>Opt</kbd>+<kbd class="kbd">J</kbd> (Mac).
+* If DevTools is already open, press the **Console** button.
 
-### ドロワーとして開く
+When you open the Console panel, the Console drawer collapses automatically.
 
-次のいずれかの方法で、コンソールを他のパネルに隣接するドロワーとして開きます。
+### Open as drawer
 
-* DevTools がフォーカスされている状態で <kbd>Esc</kbd> キーを押します。
-* **[Customize and control DevTools]** ボタンをクリックしてから **[Show console]** をクリックします。
+To open the Console as a drawer next to any other panel, either:
 
+* Press <kbd>Esc</kbd> while DevTools is in focus.
+* Press the **Customize and control DevTools** button and then press **Show console**.
 
 ![Show console](images/show-console.png)
 
-## メッセージ スタッキング
+## Message stacking
 
-連続して繰り返されるメッセージの場合は、各インスタンスが新しい行に出力されるのではなく、「スタック」されて左側の余白に数字が表示されます。
- この数字は、メッセージが繰り返された回数を示します。
+If a message is consecutively repeated, rather than printing out each instance of the message on a new line, the Console "stacks" the messages and shows a number in the left margin instead. The number indicates how many times the message has repeated.
 
+![Message stacking](images/message-stacking.png)
 
-![メッセージ スタッキング](images/message-stacking.png)
-
-メッセージが記録されるたびに 1 行ずつエントリを表示するには、DevTools の設定で **[Show timestamps]** をオンにします。
-
+If you prefer a unique line entry for every log, enable **Show timestamps** from the DevTools settings.
 
 ![Show timestamps](images/show-timestamps.png)
 
-各メッセージのタイムスタンプが異なるため、各メッセージは個々の行に表示されます。
+Since the timestamp of each message is different, each message is displayed on its own line.
 
+![Timestamped console](images/timestamped-console.png)
 
-![タイムスタンプが表示されたコンソール](images/timestamped-console.png)
+## Working with the Console history
 
-## コンソール履歴の使用
+### Clearing the history {: #clearing}
 
-### 履歴のクリア  {: #clearing}
+You can clear the console history by doing any of the following:
 
-コンソール履歴は、次のいずれかの方法でクリアできます。
+* Right-click in the Console and press **Clear console**.
+* Type `clear()` in the Console.
+* Call `console.clear()` from within your JavaScript code.
+* Type <kbd class="kbd">Ctrl</kbd>+<kbd class="kbd">L</kbd> (Mac, Windows, Linux).
 
-* コンソール内を右クリックし、**[Clear console]** をクリックします。
-* コンソールで「`clear()`」と入力します。
-* JavaScript コード内から `console.clear()` を呼び出します。
-* <kbd class="kbd">Ctrl</kbd>+<kbd class="kbd">L</kbd> を押します（Mac、Windows、Linux）。
+### Persisting the history {: #preserve-log}
 
+Enable the **Preserve log** checkbox at the top of the console to persist the console history between page refreshes or changes. Messages will be stored until you clear the Console or close the tab.
 
-### 履歴の保持  {: #preserve-log}
+### Saving the history
 
-ページを更新または変更してもコンソール履歴を保持するには、コンソールの上部にある **[Preserve log]** チェックボックスをオンにします。
- コンソールをクリアするかタブを閉じるまでメッセージは保存されます。
+Right-click in the Console and select **Save as** to save the output of the console to a log file.
 
+![Save Console to log file](images/console-save-as.png)
 
-### 履歴の保存
+## Selecting execution context {: #execution-context }
 
-コンソールの出力をログファイルに保存するには、コンソール内で右クリックして **[Save as]** を選択します。
-
-
-![コンソールを保存してログファイルに保存](images/console-save-as.png)
-
-## 実行コンテキストの選択 {: #execution-context }
-
-下記のスクリーンショットで青色にハイライト表示されたドロップダウン メニューは **[Execution Context Selector]** と呼ばれています。
-
+The dropdown menu highlighted in blue in the screenshot below is called the **Execution Context Selector**.
 
 ![Execution Context Selector](images/execution-context-selector.png)
 
-コンテキストは通常 `top`（ページの一番上のフレーム）に設定されています。
+You'll usually see the context set to `top` (the top frame of the page).
 
-他のフレームや拡張機能はそれぞれのコンテキストで動作します。 こうした他のコンテキストを使用するには、このドロップダウン メニューから選択する必要があります。
- たとえば、`<iframe>` 要素のログ出力を見てそのコンテキスト内にある変数を変更する場合は、[Execution Context Selector] ドロップダウン メニューから選択する必要があります。
+Other frames and extensions operate in their own context. To work with these other contexts you need to select them from the dropdown menu. For example, if you wanted to see the logging output of an `<iframe>` element and modify a variable that exists within that context, you'd need to select it from the Execution Context Selector dropdown menu.
 
+The Console defaults to the `top` context, unless you access DevTools by inspecting an element within another context. For example, if you inspect a `<p>` element within an `<iframe>`, then DevTools sets the Execution Context Selector to the context of that `<iframe>`.
 
+When you're working in a context other than `top`, DevTools highlights the Execution Context Selector red, as in the screenshot below. This is because developers rarely need to work in any context other than `top`. It can be pretty confusing to type in a variable, expecting a value, only to see that it's `undefined` (because it's defined in a different context).
 
+![Execution Context Selector highlighted red](images/non-top-context.png)
 
-他のコンテキスト内の要素を調査して DevTools にアクセスしない限り、コンソールはデフォルトで `top` コンテキストになります。
- たとえば、ある `<iframe>` 内で `<p>` 要素を調査した場合、DevTools では [Execution Context Selector] がその `<iframe>` のコンテキストに設定されます。
+## Filtering the Console output
 
+Click the **Filter** button (![filter button](images/filter-button.png){:.inline}) to filter console output. You can filter by severity level, by a regular expression, or by hiding network messages.
 
+![Filtered Console output](images/filtered-console.png)
 
-`top` 以外のコンテキストで作業中は、DevTools では [Execution Context Selector] が下記のスクリーンショットのように赤くハイライト表示されます。
- これは、デベロッパーが `top` 以外のコンテキストで作業する必要がほとんどないためです。
- 変数を入力して値を想定していたら、それが `undefined`（別のコンテキストで定義されているため）という結果になれば、非常に混乱するおそれがあります。
-
-
-
-![赤くハイライト表示される [Execution Context Selector]](images/non-top-context.png)
-
-## コンソール出力のフィルタリング
-
-コンソール出力をフィルタするには、**[Filter]** ボタン（![Filter ボタン](images/filter-button.png)）
-{:.inline}をクリックします。
- 重要度や正規表現でフィルタしたり、ネットワーク メッセージを非表示にすることによってフィルタできます。
-
-
-![フィルタされたコンソール出力](images/filtered-console.png)
-
-重要度によるフィルタリングは以下のとおりです。
+Filtering by severity level is equivalent to the following:
 
 <table class="responsive">
   <thead>
      <tr>
-      <th colspan="2">オプション &amp; 表示</th>
+      <th colspan="2">Option &amp; Shows</th>
     </tr>   
   </thead>
   <tbody>
   <tr>
     <td>All</td>
-    <td>すべてのコンソール出力を表示します。</td>
+    <td>Shows all console output</td>
   </tr>
   <tr>
     <td>Errors</td>
-    <td><a href="/web/tools/chrome-devtools/debug/console/console-reference#consoleerrorobject--object-">console.error()</a> からの出力のみを表示します。</td>
+    <td>Only show output from <a href="/web/tools/chrome-devtools/debug/console/console-reference#consoleerrorobject--object-">console.error()</a>.</td>
   </tr>
   <tr>
     <td>Warnings</td>
-    <td><a href="/web/tools/chrome-devtools/debug/console/console-reference#consolewarnobject--object-">console.warn()</a> からの出力のみを表示します。</td>
+    <td>Only show output from <a href="/web/tools/chrome-devtools/debug/console/console-reference#consolewarnobject--object-">console.warn()</a>.</td>
   </tr>
   <tr>
     <td>Info</td>
-    <td><a href="/web/tools/chrome-devtools/debug/console/console-reference#consoleinfoobject--object-">console.info()</a> からの出力のみを表示します。</td>
+    <td>Only show output from <a href="/web/tools/chrome-devtools/debug/console/console-reference#consoleinfoobject--object-">console.info()</a>.</td>
   </tr>
   <tr>
     <td>Logs</td>
-    <td><a href="/web/tools/chrome-devtools/debug/console/console-reference#consolelogobject--object-">console.log()</a> からの出力のみを表示します。</td>
+    <td>Only show output from <a href="/web/tools/chrome-devtools/debug/console/console-reference#consolelogobject--object-">console.log()</a>.</td>
   </tr>
   <tr>
     <td>Debug</td>
-    <td><a href="/web/tools/chrome-devtools/debug/console/console-reference#consoletimeendlabel">console.timeEnd()</a> および <a href="/web/tools/chrome-devtools/debug/console/console-reference#consoledebugobject--object-">console.debug()</a> からの出力のみを表示します。</td>
+    <td>Only show output from <a href="/web/tools/chrome-devtools/debug/console/console-reference#consoletimeendlabel">console.timeEnd()</a> and <a href="/web/tools/chrome-devtools/debug/console/console-reference#consoledebugobject--object-">console.debug()</a>.</td>
   </tr>
   </tbody>
 </table>
 
-## その他の設定
+## Additional settings
 
-DevTools の設定を開き、**[General]** タブに移動して、コンソール設定が見えるように **[Console]** セクションまでスクロール ダウンします。
-
+Open the DevTools settings, go to the **General** tab, and scroll down to the **Console** section for further Console settings.
 
 ![Console settings](images/console-settings.png)
 
 <table class="responsive">
   <thead>
      <tr>
-      <th colspan="2">設定 &amp; 説明</th>
+      <th colspan="2">Setting &amp; Description</th>
     </tr>   
   </thead>
   <tbody>
   <tr>
     <td>Hide network messages</td>
-    <td>デフォルトでは、コンソールではネットワーク問題が報告されます。 これをオンにすると、コンソールにこれらのエラーのログが表示されなくなります。 たとえば、404 シリーズや 500 シリーズのエラーはログに記録されません。</td>
+    <td>By default, the console reports network issues. Turning this on instructs the console to not show logs for these errors. For example, 404 and 500 series errors will not be logged.</td>
   </tr>
   <tr>
     <td>Log XMLHttpRequests</td>
-    <td>各 XMLHttpRequest をコンソールに記録するかどうかを決定します。</td>
+    <td>Determines if the console logs each XMLHttpRequest.</td>
   </tr>
   <tr>
     <td>Preserve log upon navigation</td>
-    <td>ページの更新または操作中にコンソール履歴を保持します。</td>
+    <td>Persists the console history during page refreshes or navigation.</td>
   </tr>
   <tr>
     <td>Show timestamps</td>
-    <td>各コンソール メッセージの前に、呼び出しの日時を示すタイムスタンプが付けられます。 特定のイベントがいつ発生したかをデバッグする場合に役立ちます。 これをオンにすると、メッセージ スタッキングは無効になります。</td>
+    <td>Prepends a timestamp to each console message showing when the call was made. Useful for debugging when a certain event occurred. This will disable message stacking.</td>
   </tr>
   <tr>
     <td>Enable custom formatters</td>
-    <td>JavaScript オブジェクトの <a href="https://docs.google.com/document/d/1FTascZXT9cxfetuPRT2eXPQKXui4nWFivUnS_335T3U/preview">フォーマット</a>を制御します。</td>
+    <td>Control the <a href="https://docs.google.com/document/d/1FTascZXT9cxfetuPRT2eXPQKXui4nWFivUnS_335T3U/preview">formatting</a> of JavaScript objects.</td>
   </tr>
   </tbody>
 </table>
 
-## フィードバック {: #feedback }
+## Feedback {: #feedback }
 
 {% include "web/_shared/helpful.html" %}
