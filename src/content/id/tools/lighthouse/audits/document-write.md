@@ -1,39 +1,23 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Dokumentasi referensi untuk audit Lighthouse "Situs Tidak Menggunakan document.write()".
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Reference documentation for the "Avoids document.write()" Lighthouse audit.
 
-{# wf_updated_on: 2016-12-01 #}
-{# wf_published_on: 2016-12-01 #}
+{# wf_updated_on: 2018-07-23 #} {# wf_published_on: 2016-12-01 #} {# wf_blink_components: N/A #}
 
-# Situs Tidak Menggunakan document.write() {: .page-title }
+# Avoids document.write() {: .page-title }
 
-## Mengapa audit itu penting {: #why }
+## Overview {: #overview }
 
-Bagi pengguna yang memiliki koneksi lambat, misalnya 2G, 3G, atau Wi-Fi yang lambat, skrip eksternal
-yang secara dinamis disuntikkan lewat `document.write()` bisa menunda penampilan
-materi laman utama selama puluhan detik.
+For users on slow connections, such as 2G, 3G, or slow Wi-Fi, external scripts dynamically injected via `document.write()` can delay the display of main page content by tens of seconds.
 
-Lihat [Ikut campur pada `document.write()`][blog] untuk mengetahui selengkapnya.
+See [Intervening against `document.write()`](/web/updates/2016/08/removing-document-write) to learn more.
 
-[blog]: /web/updates/2016/08/removing-document-write
+## Recommendations {: #recommendations }
 
-## Cara untuk lulus audit {: #how }
+In your report, Lighthouse lists out every call to `document.write()`. Review this list, and note any call that dynamically injects a script. If the script meets the criteria outlined in the introduction to [Intervening against `document.write()`](/web/updates/2016/08/removing-document-write), Chrome won't execute the injected script. These are the calls to `document.write()` that you want to change. See [How do I fix this?](/web/updates/2016/08/removing-document-write#how_do_i_fix_this) for possible solutions.
 
-Dalam laporan Anda, Lighthouse mencantumkan setiap panggilan ke `document.write()`.
-Tinjaulah daftar ini, dan catat panggilan yang secara dinamis menyuntikkan skrip.
-Jika skrip tersebut memenuhi kriteria yang dijelaskan secara singkat dalam pengantar
-[Ikut campur pada `document.write()`][blog], Chrome tidak akan mengeksekusi
-skrip yang disuntikkan. Inilah panggilan ke `document.write()` yang ingin Anda
-ubah. Lihat [Bagaimana memperbaikinya?][fix] untuk solusi yang memungkinkan. 
+## More information {: #more-info }
 
-[fix]: /web/updates/2016/08/removing-document-write#how_do_i_fix_this
+Lighthouse reports every instance of `document.write()` that it encounters. Note that Chrome's intervention against `document.write()` only applies to render-blocking, dynamically-injected scripts. Other uses of `document.write()` may be acceptable.
 
-{% include "web/tools/lighthouse/audits/implementation-heading.html" %}
+## Feedback {: #feedback }
 
-Lighthouse melaporkan setiap instance `document.write()` yang ditemukannya.
-Perhatikan, intervensi Chrome pada `document.write()` hanya berlaku untuk
-skrip yang disuntikkan secara dinamis dan memblokir rendering. Penggunaan lainnya dari `document.write()`
-mungkin dapat diterima.
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
