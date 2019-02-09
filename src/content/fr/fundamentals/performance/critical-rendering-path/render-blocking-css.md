@@ -1,57 +1,55 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Par défaut, le code CSS est traité comme ressource empêchant l'affichage, ce qui signifie que le navigateur suspend l'affichage de tout contenu traité jusqu'à ce que le modèle CSSOM soit construit. Assurez-vous de conserver un code CSS simple, faites en sorte qu'il soit transmis le plus vite possible, et utilisez des types et requêtes de média pour débloquer l'affichage.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: By default CSS is treated as a render blocking resource. Learn how to prevent it from blocking rendering.
 
-{# wf_updated_on: 2014-09-17 #}
-{# wf_published_on: 2014-03-31 #}
+{# wf_updated_on: 2018-08-17 #} {# wf_published_on: 2014-03-31 #} {# wf_blink_components: Blink>CSS #}
 
-# Code CSS empêchant l'affichage {: .page-title }
+# Render Blocking CSS {: .page-title }
 
 {% include "web/_shared/contributors/ilyagrigorik.html" %}
 
+By default, CSS is treated as a render blocking resource, which means that the browser won't render any processed content until the CSSOM is constructed. Make sure to keep your CSS lean, deliver it as quickly as possible, and use media types and queries to unblock rendering.
 
-Par défaut, le code CSS est traité comme ressource empêchant l'affichage, ce qui signifie que le navigateur suspend l'affichage de tout contenu traité jusqu'à ce que le modèle CSSOM soit construit. Assurez-vous de conserver un code CSS simple, faites en sorte qu'il soit transmis le plus vite possible, et utilisez des types et requêtes de média pour débloquer l'affichage.
-
-Dans la section précédente, nous avons vu que le chemin critique du rendu nécessite de disposer des modèles DOM et CSSOM pour construire l'arborescence d'affichage, ce qui crée une implication importante des performances : **Les balisages HTML et CSS sont des ressources empêchant l'affichage.** C'est évident pour le code HTML, puisque sans le modèle DOM nous n'aurions rien à afficher. Toutefois, cette exigence pour le code CSS peut être moins évidente. Que ce passerait-il si nous tentions d'afficher une page classique sans que le code CSS empêche l'affichage ?
+In the [render tree construction](render-tree-construction) we saw that the critical rendering path requires both the DOM and the CSSOM to construct the render tree. This creates an important performance implication: **both HTML and CSS are render blocking resources.** The HTML is obvious, since without the DOM we would not have anything to render, but the CSS requirement may be less obvious. What would happen if we try to render a typical page without blocking rendering on CSS?
 
 ### TL;DR {: .hide-from-toc }
-- Par défaut, le code CSS est traité comme ressource empêchant l''affichage.
-- Les types de média et les requêtes média nous permettent de marquer certaines ressources CSS comme n'empêchant pas l'affichage.
-- Toutes les ressources CSS, qu''elles empêchent ou non l''affichage, sont téléchargées par le navigateur.
 
+* By default, CSS is treated as a render blocking resource.
+* Media types and media queries allow us to mark some CSS resources as non-render blocking.
+* The browser downloads all CSS resources, regardless of blocking or non-blocking behavior.
 
-<figure class="attempt-left">
-  <img src="images/nytimes-css-device.png" alt="NYTimes avec code CSS">
-  <figcaption>NYTimes avec code CSS</figcaption>
-</figure>
-<figure class="attempt-right">
-  <img src="images/nytimes-nocss-device.png" alt="NYTimes sans code CSS">
-  <figcaption>NYTimes sans code CSS (FOUC)</figcaption>
-</figure>
-<div class="clearfix"></div>
+<div class="attempt-left">
+  <figure>
+    <img src="images/nytimes-css-device.png" alt="NYTimes with CSS">
+    <figcaption>The New York Times with CSS</figcaption>
+  </figure>
+</div>
 
-L'exemple ci-dessus, montrant le site Web NYTimes avec et sans code CSS, démontre pourquoi l'affichage est bloqué jusqu'à ce que le code CSS soit disponible. En effet, sans code CSS, la page est inutilisable. En fait l'expérience de droite est souvent appelée FOUC ('Flash of Unstyled Content', soit 'Flash de contenu sans style'). En conséquence, le navigateur empêche l'affichage jusqu'à ce qu'il dispose à la fois du modèle DOM et du modèle CSSOM.
+<div class="attempt-right">
+  <figure>
+    <img src="images/nytimes-nocss-device.png" alt="NYTimes without CSS">
+    <figcaption>The New York Times without CSS (FOUC)</figcaption>
+  </figure>
+</div>
 
-> **_CSS est une ressource empêchant l'affichage. Transmettez-la au client dès que possible pour optimiser la rapidité du premier affichage !_**
+<div style="clear:both;"></div>
 
-Mais que ce passe-t-il si nous disposons de styles CSS qui ne sont utilisés que dans certaines conditions, par exemple lorsque la page est imprimée ou projetée sur un grand écran ? Il serait agréable de ne pas avoir besoin d'empêcher l'affichage sur ces ressources !
+The above example, showing the NYTimes website with and without CSS, demonstrates why rendering is blocked until CSS is available\---without CSS the page is relatively unusable. The experience on the right is often referred to as a "Flash of Unstyled Content" (FOUC). The browser blocks rendering until it has both the DOM and the CSSOM.
 
-Les 'types de média' et les 'requêtes média' du code CSS nous permettent de gérer ces situations :
+> ***CSS is a render blocking resource. Get it to the client as soon and as quickly as possible to optimize the time to first render.***
 
+However, what if we have some CSS styles that are only used under certain conditions, for example, when the page is being printed or being projected onto a large monitor? It would be nice if we didn’t have to block rendering on these resources.
+
+CSS "media types" and "media queries" allow us to address these use cases:
 
     <link href="style.css" rel="stylesheet">
     <link href="print.css" rel="stylesheet" media="print">
     <link href="other.css" rel="stylesheet" media="(min-width: 40em)">
     
 
-Une [requête média](/web/fundamentals/design-and-ux/responsive/#use-media-queries) se compose d'un type de média et de zéro expression ou plus qui vérifie les conditions de fonctionnalités de média particulières. Par exemple, notre première déclaration de feuille de style ne fournit aucun type ou requête de média. Elle s'applique donc dans tous les cas, c'est-à-dire qu'elle empêche toujours l'affichage. La deuxième feuille de style, quant à elle, ne s'applique que lorsque le contenu est imprimé (vous souhaitez peut-être modifier la mise en page, les polices, etc.). Par conséquent cette feuille de style n'a pas besoin d'empêcher l'affichage de la page lorsque celle-ci est chargée pour la première fois. Enfin, la dernière déclaration de feuille de style fournit une 'requête média' exécutée par le navigateur : si les conditions sont respectées, le navigateur empêche l'affichage jusqu'à ce que la feuille de style soit téléchargée et traitée.
+A [media query](../../design-and-ux/responsive/#use-css-media-queries-for-responsiveness) consists of a media type and zero or more expressions that check for the conditions of particular media features. For example, our first stylesheet declaration doesn't provide a media type or query, so it applies in all cases; that is to say, it is always render blocking. On the other hand, the second stylesheet declaration applies only when the content is being printed\---perhaps you want to rearrange the layout, change the fonts, and so on, and hence this stylesheet declaration doesn't need to block the rendering of the page when it is first loaded. Finally, the last stylesheet declaration provides a "media query," which is executed by the browser: if the conditions match, the browser blocks rendering until the style sheet is downloaded and processed.
 
-L'utilisation de requêtes média permet d'adapter notre présentation à des utilisations spécifiques, telles que l'affichage plutôt que l'impression, mais également à des conditions dynamiques telles que la modification de l'orientation de l'écran, des événements de redimensionnement, etc. **Lorsque vous déclarez les éléments de votre feuille de style, soyez attentif au type et aux requêtes de média, car ils ont un impact significatif sur les performances du chemin critique du rendu.**
+By using media queries, we can tailor our presentation to specific use cases, such as display versus print, and also to dynamic conditions such as changes in screen orientation, resize events, and more. **When declaring your style sheet assets, pay close attention to the media type and queries; they greatly impact critical rendering path performance.**
 
-{# include shared/related_guides.liquid inline=true list=page.related-guides.media-queries #}
-
-Prenons quelques exemples concrets :
-
+Let's consider some hands-on examples:
 
     <link href="style.css"    rel="stylesheet">
     <link href="style.css"    rel="stylesheet" media="all">
@@ -59,12 +57,13 @@ Prenons quelques exemples concrets :
     <link href="print.css"    rel="stylesheet" media="print">
     
 
-* La première déclaration empêche l'affichage et respecte toutes les conditions.
-* La seconde déclaration empêche également l'affichage : 'all' est le type par défaut, et si vous ne précisez pas le type, il sera implicitement défini sur 'all'. La première et la deuxième déclaration sont donc en fait équivalentes.
-* La troisième déclaration a une requête média dynamique qui sera évaluée lors du chargement de la page. En fonction de l'orientation de l'appareil lors du chargement de la page, portrait.css peut empêcher ou non l'affichage.
-* La dernière déclaration n'est appliquée que lorsque la page est imprimée. Elle n'empêche donc pas l'affichage lors du premier chargement de la page dans le navigateur.
+* The first declaration is render blocking and matches in all conditions.
+* The second declaration is also render blocking: "all" is the default type so if you don’t specify any type, it’s implicitly set to "all". Hence, the first and second declarations are actually equivalent.
+* The third declaration has a dynamic media query, which is evaluated when the page is loaded. Depending on the orientation of the device while the page is loading, portrait.css may or may not be render blocking.
+* The last declaration is only applied when the page is being printed so it is not render blocking when the page is first loaded in the browser.
 
-Enfin, notez que l'expression 'empêche l'affichage' ne fait référence qu'au fait que le navigateur doit suspendre l'affichage initial de la page sur cette ressource. Que la page soit affichée ou non, l'élément CSS est toujours téléchargé par le navigateur, bien que les ressources n'empêchant pas l'affichage ne soient pas prioritaires.
+Finally, note that "render blocking" only refers to whether the browser has to hold the initial rendering of the page on that resource. In either case, the browser still downloads the CSS asset, albeit with a lower priority for non-blocking resources.
 
+## Feedback {: #feedback }
 
-
+{% include "web/_shared/helpful.html" %}
