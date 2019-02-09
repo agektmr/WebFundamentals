@@ -1,318 +1,161 @@
-project_path: /web/fundamentals/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: 네트워크 전송 및 자바스크립트에 대한 파싱/컴파일 비용을 낮추어 페이지를 빠르게 이용할 수 있도록 합니다.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Keep your network transmission and parse/compile cost for JavaScript low to ensure pages get interactive quickly.
 
-{# wf_updated_on: 2019-02-06 #}
-{# wf_published_on: 2017-11-30 #}
-{# wf_blink_components: Blink>JavaScript #}
+{# wf_updated_on: 2018-07-02 #} {# wf_published_on: 2017-11-30 #} {# wf_blink_components: Blink>JavaScript #}
 
-# 자바스크립트 시작 최적화 {: .page-title }
+# JavaScript Start-up Optimization {: .page-title }
 
 {% include "web/_shared/contributors/addyosmani.html" %}
 
-자바스크립트에 더욱 크게 의존하는 사이트를 빌드하면서,
-때때로 쉽게 볼 수 없는 방식으로 보낸 것에 대한 대가를 치러야 합니다. 이 글에서는
-사이트를 휴대기기에서 빠르게 로드하고 상호작용이
-가능하게 하는 데 간단한 **규칙**이 도움이 되는 이유에 대해 다룹니다. 더 적은 자바스크립트를 전달하는 것은 네트워크 전송에 걸리는
-시간, 코드 압축 해제의 비용, 자바스크립트의 파싱 및 컴파일에 드는 시간이 줄어든다는
-것을 의미합니다.
+As we build sites more heavily reliant on JavaScript, we sometimes pay for what we send down in ways that we can’t always easily see. In this article, we’ll cover why a little **discipline** can help if you’d like your site to load and be interactive quickly on mobile devices. Delivering less JavaScript can mean less time in network transmission, less spent decompressing code and less time parsing and compiling this JavaScript.
 
-## 네트워크
+## Network
 
-대부분이 개발자가 자바스크립트의 비용을 생각할 때는
-**다운로드 및 실행 비용**의 관점에서 생각합니다. 유선으로 더 많은 용량의 자바스크립트를
-전송하는 것은 사용자의 연결이 느릴수록 오래 걸립니다.
+When most developers think about the cost of JavaScript, they think about it in terms of the **download and execution cost**. Sending more bytes of JavaScript over the wire takes longer the slower a user’s connection is.
 
-<img src="images/1_U00XcnhqoczTuJ8NH8UhOw.png" alt="브라우저가
-리소스를 요청하면, 해당 리소스를 가져와 압축 해제해야 합니다. 자바스크립트와 같은
-리소스의 경우, 실행 전에
-파싱 및 컴파일되어야 합니다."/>
+![When a browser requests a
+resource, that resource needs to be fetched and then decompressed. In the case
+of resources like JavaScript, they must be parsed and compiled prior to
+execution.](images/1_U00XcnhqoczTuJ8NH8UhOw.png)
 
-선진국에서조차 이것은 문제입니다. 사용자가 이용하는 **효과적인 네트워크
-연결 유형**이 3G나 4G, Wi-Fi가 아닐 수 있기 때문입니다. 카페의
-Wi-Fi가 있지만 2G 속도의 모바일 핫스팟에 연결되어있을 수 있습니다.
+This can be a problem, even in first-world countries, as the **effective network connection type** a user has might not actually be 3G, 4G or Wi-Fi. You can be on coffee-shop Wi-Fi but connected to a cellular hotspot with 2G speeds.
 
-다음의 방법으로 자바스크립트의 네트워크 전송 비용을 **감소**시킬 수 있습니다.
+You can **reduce** the network transfer cost of JavaScript through:
 
-* **사용자에게 필요한 코드만 전송합니다**.
-    * [코드 분할](/web/updates/2017/06/supercharged-codesplit)을 사용하여
-      자바스크립트를 필수적인 부분과 그렇지 않은 부분으로 구분합니다. [webpack](https://webpack.js.org)과 같은
-      모듈 번들러는
-      [코드 분할](https://webpack.js.org/guides/code-splitting/)을 지원합니다.
-    * 필수적이지 않은 코드의 지연 로딩.
-* **최소화**
-    * [UglifyJS](https://github.com/mishoo/UglifyJS)를 사용하여
-      ES5 코드
-      [최소화](/web/fundamentals/performance/optimizing-content-efficiency/optimize-encoding-and-transfer#minification_preprocessing_context-specific_optimizations).
-    * [babel-minify](https://github.com/babel/minify) 또는
-      [uglify-es](https://www.npmjs.com/package/uglify-es)를 사용하여 ES2015+ 최소화.
-* **압축**
-    * 최소한
-      [gzip](/web/fundamentals/performance/optimizing-content-efficiency/optimize-encoding-and-transfer#text_compression_with_gzip)을
-      사용하여 텍스트 기반 리소스를 압축합니다.
-    * [Brotli](https://www.smashingmagazine.com/2016/10/next-generation-server-compression-with-brotli/)
-      ~[q11](https://twitter.com/paulcalvano/status/924660429846208514)
-      사용을 고려합니다. Brotli
-      는 압축률에서 gzip보다 우월합니다. 이 방법을 이용하여 CertSimple은 압축 자바스크립트 용량의
-      [17%](https://speakerdeck.com/addyosmani/the-browser-hackers-guide-to-instant-loading?slide=30)를
-      절약했으며, LinkedIn은 로드 시간의
-      [4%](https://engineering.linkedin.com/blog/2017/05/boosting-site-speed-using-brotli-compression)를
-      절약했습니다.
-* **사용되지 않은 코드 제거**.
-    * [DevTools 코드
-      대상 범위](/web/updates/2017/04/devtools-release-notes#coverage)에서
-      삭제되거나 지연 로드될 수 있는 코드의 기회를 식별합니다.
-    * [babel-preset-env](https://github.com/babel/babel/tree/master/packages/babel-preset-env)
-      및 브라우저 목록을
-      사용하여 이미 최신 브라우저에 있는 트랜스파일 기능을 방지합니다.
-      [웹팩
-      번들의 조심스러운 분석](https://github.com/webpack-contrib/webpack-bundle-analyzer)은
-      고급 개발자가 필요 없는 종속성을 잘라낼 기회를 식별하는 데 도움이 됩니다.
-    * 코드 스트립에 대한 정보는
-      [tree-shaking](https://webpack.js.org/guides/tree-shaking/), [Closure
-      Compiler](/closure/compiler/)의 고급 최적화 및 [lodash-babel-plugin](https://github.com/lodash/babel-plugin-lodash)과 같은 라이브러리
-      트리밍 플러그인 또는
-      Moment.js와 같은
-      라이브러리를 위한 웹팩의
-      [ContextReplacementPlugin](https://iamakulov.com/notes/webpack-front-end-size-caching/#moment-js)을
-      참조하세요.
-* **네트워크 트립 최소화를 위한 코드 캐싱.**
-    * [HTTP
-      캐싱](/web/fundamentals/performance/optimizing-content-efficiency/http-caching)을
-      이용하여 브라우저가 응답을 효율적으로 캐시하도록 합니다. 스크립트의 최적
-    수명(max-age)을 결정하고 유효 토큰(ETag)를 제공하여
-    변경되지 않은 바이트 전송을 방지합니다.
-    * 서비스 워커 캐싱은 앱 네트워크의 회복력을 높이고
-      [V8의 코드
-      캐시](https://v8project.blogspot.com/2015/07/code-caching.html)와 같은 원하는 기능에 접근할 수 있도록 합니다.
-    * 장기적인 캐싱을 사용하여 변경되지
-      않은 리소스를 다시 가져오는 일을 방지합니다. 웹팩을 사용하는 경우, [파일 이름
-      해싱](https://webpack.js.org/guides/caching/)을 참조하세요.
+* **Only sending the code a user needs**. 
+    * Use [code-splitting](/web/updates/2017/06/supercharged-codesplit) to break up your JavaScript into what is critical and what is not. Module bundlers like [webpack](https://webpack.js.org) support [code-splitting](https://webpack.js.org/guides/code-splitting/).
+    * Lazily loading in code that is non-critical.
+* **Minification** 
+    * Use [UglifyJS](https://github.com/mishoo/UglifyJS) for [minifying](/web/fundamentals/performance/optimizing-content-efficiency/optimize-encoding-and-transfer#minification_preprocessing_context-specific_optimizations) ES5 code.
+    * Use [babel-minify](https://github.com/babel/minify) or [uglify-es](https://www.npmjs.com/package/uglify-es) to minify ES2015+.
+* **Compression** 
+    * At minimum, use [gzip](/web/fundamentals/performance/optimizing-content-efficiency/optimize-encoding-and-transfer#text_compression_with_gzip) to compress text-based resources.
+    * Consider using [Brotli](https://www.smashingmagazine.com/2016/10/next-generation-server-compression-with-brotli/) ~[q11](https://twitter.com/paulcalvano/status/924660429846208514). Brotli outperforms gzip on compression ratio. It helped CertSimple save [17%](https://speakerdeck.com/addyosmani/the-browser-hackers-guide-to-instant-loading?slide=30) on the size of compressed JS bytes and LinkedIn save [4%](https://engineering.linkedin.com/blog/2017/05/boosting-site-speed-using-brotli-compression) on their load times.
+* **Removing unused code**. 
+    * Identify opportunities for code that can be removed or lazily loaded in with [DevTools code coverage](/web/updates/2017/04/devtools-release-notes#coverage).
+    * Use [babel-preset-env](https://github.com/babel/babel/tree/master/packages/babel-preset-env) and browserlist to avoid transpiling features already in modern browsers. Advanced developers may find careful [analysis of their webpack bundles](https://github.com/webpack-contrib/webpack-bundle-analyzer) helps identify opportunities to trim unneeded dependencies.
+    * For stripping code, see [tree-shaking](https://webpack.js.org/guides/tree-shaking/), [Closure Compiler](/closure/compiler/)’s advanced optimizations and library trimming plugins like [lodash-babel-plugin](https://github.com/lodash/babel-plugin-lodash) or webpack’s [ContextReplacementPlugin](https://iamakulov.com/notes/webpack-front-end-size-caching/#moment-js) for libraries like Moment.js.
+* **Caching code to minimize network trips.** 
+    * Use [HTTP caching](/web/fundamentals/performance/optimizing-content-efficiency/http-caching) to ensure browsers cache responses effectively. Determine optimal lifetimes for scripts (max-age) and supply validation tokens (ETag) to avoid transferring unchanged bytes.
+    * Service Worker caching can make your app network resilient and give you eager access to features like [V8’s code cache](https://v8project.blogspot.com/2015/07/code-caching.html).
+    * Use long-term caching to avoid having to re-fetch resources that haven't changed. If using Webpack, see [filename hashing](https://webpack.js.org/guides/caching/).
 
-## 파싱/컴파일
+## Parse/Compile
 
-일단 다운로드되면, 자바스크립트의 **가장 큰** 비용 중 하나는 JS
-엔진이 이 코드를 **파싱/컴파일**하는 시간입니다. [Chrome
-DevTools](/web/tools/chrome-devtools/)에서는 파싱과 컴파일이 Performance 패널 내 노란색
-"스크립팅" 시간에 포함됩니다.
+Once downloaded, one of JavaScript’s **heaviest** costs is the time for a JS engine to **parse/compile** this code. In [Chrome DevTools](/web/tools/chrome-devtools/), parse and compile are part of the yellow "Scripting" time in the Performance panel.
 
-<img src="images/1__4gNDmBlXxOF2-KmsOrKkw.png"/>
+![](images/1__4gNDmBlXxOF2-KmsOrKkw.png)
 
-Bottom-Up 및 Call Tree 탭은 정확한 파싱/컴파일 타이밍을 보여줍니다.
+The Bottom-Up and Call Tree tabs show you exact Parse/compile timings:<figure> 
 
-<figure> <img src="images/1_GdrVt_BTTzzBOIoyZZsQZQ.png"/> <figcaption> Chrome
-DevTools Performance 패널 > Bottom-Up. V8의 Runtime Call Stats가 활성화되면
-Parse and Compile 등의 단계에서 걸리는 시간을 볼 수 있습니다 </figcaption> </figure>
+![](images/1_GdrVt_BTTzzBOIoyZZsQZQ.png) <figcaption> Chrome DevTools Performance panel > Bottom-Up. With V8’s Runtime Call Stats enabled, we can see time spent in phases like Parse and Compile </figcaption> </figure> 
 
-참고: Runtime Call Stats를 지원하는 Performance 패널은 현재 시험용입니다.
-활성화하려면, chrome://flags/#enable-devtools-experiments -> Chrome 다시 시작 ->
-DevTools로 이동 -> Settings -> Experiments -> Shift 6번 입력 ->
-`Timeline: V8 Runtime Call Stats on Timeline`이라는 옵션 체크 후 DevTools를 닫고 다시 엽니다.
+Note: Performance panel support for Runtime Call Stats is currently experimental. To enable, go to chrome://flags/#enable-devtools-experiments -> restart Chrome -> go to DevTools -> Settings -> Experiments -> hit shift 6 times -> check the option called `Timeline: V8 Runtime Call Stats on Timeline` and close then re-open DevTools.
 
-그런데, 이것이 왜 중요할까요?
+But, why does this matter?
 
-<img src="images/1_Dirw7RdQj9Dktc-Ny6-xbA.png"/>
+![](images/1_Dirw7RdQj9Dktc-Ny6-xbA.png)
 
-코드 파싱/컴파일에 오랜 시간을 소모하는 것은 사용자가 여러분의 사이트와
-상호작용을 시작할 수 있는 시간을 크게 지연시킵니다. 더 많은 자바스크립트를 전송할수록
-사이트를 이용할 수 있기까지 파싱과 컴파일에 더 많은 시간이 소요됩니다.
+Spending a long time parsing/compiling code can heavily delay how soon a user can interact with your site. The more JavaScript you send, the longer it will take to parse and compile it before your site is interactive.
 
-> 바이트별로 보면, **자바스크립트는 같은 크기의 이미지나 웹폰트보다
-> 브라우저가 처리하는 비용이 많이 듭니다** — Tom Dale
+> Byte-for-byte, **JavaScript is more expensive for the browser to process than the equivalently sized image or Web Font** — Tom Dale
 
-자바스크립트와 비교하면
-같은 크기의 이미지(여전히 디코딩 필요) 처리에는 수많은 비용이 들지만, 평균적인 모바일
-하드웨어에서는 자바스크립트가 페이지 상호작용에 부정적인 영향을 미칠 가능성이 더 높습니다.
+Compared to JavaScript, there are numerous costs involved in processing equivalently sized images (they still have to be decoded!) but on average mobile hardware, JS is more likely to negatively impact a page’s interactivity.<figure> 
 
-<figure> <img src="images/1_PRVzNizF9jQ_QADF5lQHpA.png"/> <figcaption>자바스크립트
-및 이미지 바이트는 매우 다른 비용이 듭니다. 이미지는 보통 기본
-스레드를 차단하거나 디코딩 및 래스터링 중에
-인터페이스의 상호작용을 방지하지 않습니다. 그러나 자바스크립트는 파싱, 컴파일,
-실행 비용으로 인해 상호작용성을 지연시킵니다.</figcaption> </figure>
+![](images/1_PRVzNizF9jQ_QADF5lQHpA.png) <figcaption>JavaScript and image bytes have very different costs. Images usually don’t block the main thread or prevent interfaces from getting interactive while being decoded and rasterized. JS however can delay interactivity due to parse, compile and execution costs.</figcaption> </figure> 
 
-파싱과 컴파일이 느리다고 할 때의 맥락이 중요합니다. 여기서는
-**평균적인** 모바일 전화에 관해 이야기하고 있습니다. **평균적인 사용자는 CPU 및 GPU가 느리고, L2/L3 캐시가 없으며 메모리
-제약도 있는 전화를
-가지고 있을 수 있습니다.**
+When we talk about parse and compile being slow; context is important — we’re talking about **average** mobile phones here. **Average users can have phones with slow CPUs and GPUs, no L2/L3 cache and which may even be memory constrained.**
 
-> 네트워크 성능과 기기의 성능이 항상 일치하는 것은 아닙니다. 우수한 광통신에 연결된 사용자일지라도
-> 기기에 전송되는 자바스크립트를 파싱 및 평가하는 데 필요한
-> 최고의 CPU를 가지고 있지 않을 수 있습니다. 그 반대의 경우도
-> 마찬가지입니다. 네트워크 연결은 열악하지만 매우 빠른 CPU를 보유하고 있을 수 있습니다. — Kristofer
-> Baxter, LinkedIn
+> Network capabilities and device capabilities don’t always match up. A user with an amazing Fiber connection doesn’t necessarily have the best CPU to parse and evaluate JavaScript sent to their device. This is also true in reverse..a terrible network connection, but a blazing fast CPU. — Kristofer Baxter, LinkedIn
 
-아래는 저가 하드웨어 및 고급 하드웨어에서
-1MB 미만의 압축 해제된(심플) 자바스크립트의 파싱 비용을 나타낸 것입니다. **시중에서 판매 중인 가장 빠른 기종의 전화기와 평균적인 기종의
-코드 파싱/컴파일링 시간은 약 2~5배 정도 차이가 납니다**.
+Below we can see the cost of parsing ~1MB of decompressed (simple) JavaScript on low and high-end hardware. **There is a 2–5x difference in time to parse/compile code between the fastest phones on the market and average phones**.<figure> 
 
-<figure> <img src="images/1_8BQ3bCYu1AVvJWPR1x8Yig.png"/> <figcaption>이 그래프는
-데스크탑과 여러 등급의 휴대기기에서
-자바스크립트의 1MB 번들(~250KB gzip됨)에 대한 파싱 시간을 강조 표시한 것입니다. 파싱
-비용을 볼 때, 압축 해제된 크기를 고려해야 합니다. 예를 들어, ~250KB gzip으로 압축된 자바스크립트는
-~1MB의 코드로 압축 해제됩니다.</figcaption></figure>
+![](images/1_8BQ3bCYu1AVvJWPR1x8Yig.png) <figcaption>This graph highlights parse times for a 1MB bundle of JavaScript (~250KB gzipped) across desktop and mobile devices of differing classes. When looking at the cost of parse, it’s the decompressed figures to consider e.g ~250KB gzipped JS decompresses to ~1MB of code.</figcaption> </figure> 
 
-CNN.com과 같은 실제 사이트는 어떤가요?
+What about a real-world site, like CNN.com?
 
-**CNN의 자바스크립트 파싱/컴파일이 평균적인 전화(Moto G4)에서 최대 13초 걸리는 데 비해
-고급 iPhone 8에서는 최대 4초밖에 걸리지 않습니다**. 이는 사용자가
-얼마나 빠르게 해당 사이트와 완벽하게 상호작용할 수 있는지에 상당한 영향을 미칩니다.
+**On the high-end iPhone 8 it takes just ~4s to parse/compile CNN’s JS compared to ~13s for an average phone (Moto G4)**. This can significantly impact how quickly a user can fully interact with this site.<figure> 
 
-<figure> <img src="images/1_7ysArXJ4nN0rQEMT9yZ_Sg.png"/> <figcaption>위에서
-Apple의 A11 바이오닉 칩의 성능을
-평균적인 Android 하드웨어의 Snapdragon 617과 비교한 파싱 시간을 볼 수 있습니다.</figcaption> </figure>
+![](images/1_7ysArXJ4nN0rQEMT9yZ_Sg.png) <figcaption>Above we see parse times comparing the performance of Apple’s A11 Bionic chip to the Snapdragon 617 in more average Android hardware.</figcaption> </figure> 
 
-이 내용은 여러분이 사용하는 전화가 아니라 **평균적인** 하드웨어(Moto
-G4 등)에서 테스트하는 것의 중요성을 잘 나타냅니다. 컨텍스트도 중요하지만,
-**사용자가 보유한 기기와 네트워크 조건에 대해 최적화해야 합니다.**
+This highlights the importance of testing on **average** hardware (like the Moto G4) instead of just the phone that might be in your pocket. Context matters however: **optimize for the device and network conditions your users have.**<figure> 
 
-<figure> <img src="images/1_6oEpMEi_pjRNjmtN9i2TCA.png"/> <figcaption>Google
-애널리틱스에서 여러분의 실제 사용자가 사이트에 접근하는 데 사용하는 <a
-href="https://crossbrowsertesting.com/blog/development/use-google-analytics-find-devices-customers-use/">휴대
-기기 등급</a>의 통계를 제공합니다. 이 정보는
-사용자가 이용하는 실제 CPU/GPU의 제약을 이해하는 데
-도움이 됩니다.</figcaption></figure>
+![](images/1_6oEpMEi_pjRNjmtN9i2TCA.png) <figcaption>Google Analytics can provide insight into the [mobile device classes](https://crossbrowsertesting.com/blog/development/use-google-analytics-find-devices-customers-use/) your real users are accessing your site with. This can provide opportunities to understand the real CPU/GPU constraints they’re operating with.</figcaption> </figure> 
 
+**Are we really sending down too much JavaScript? Err, possibly :)**
 
-**너무 많은 자바스크립트를 전송하고 있지는 않나요? 음, 그럴지도 몰라요 :)**
+Using HTTP Archive (top ~500K sites) to analyze the state of [JavaScript on mobile](http://beta.httparchive.org/reports/state-of-javascript#bytesJs), we can see that 50% of sites take over 14 seconds to get interactive. These sites spend up to 4 seconds just parsing and compiling JS.
 
-HTTP 아카이브(상위 최대 500,000개 사이트)를 사용하여 [모바일의
-자바스크립트](http://beta.httparchive.org/reports/state-of-javascript#bytesJs) 상태를 분석하면, 50%의 사이트가 상호작용에 도달하기까지
-14초 이상이 소요된다는 것을 알 수 있습니다. 이러한 사이트는 자바스크립트의 파싱 및 컴파일링에만
-최대 4초를 소모합니다.
+![](images/1_sVgunAoet0i5FWEI9NSyMg.png)
 
-<img src="images/1_sVgunAoet0i5FWEI9NSyMg.png"/>
+Factor in the time it takes to fetch and process JS and other resources and it’s perhaps not surprising that users can be left waiting a while before feeling pages are ready to use. We can definitely do better here.
 
-자바스크립트와 기타 리소스를 가져오고 처리하는 데 드는 시간을 고려하면,
-사용자가 페이지를 사용할 수 있다고 느끼기 전까지 한동안
-기다려야 하는 것은 당연합니다. 이 부분은 확실히 개선할 수 있습니다.
+**Removing non-critical JavaScript from your pages can reduce transmission times, CPU-intensive parsing and compiling and potential memory overhead. This also helps get your pages interactive quicker.**
 
-**페이지에서 필수적이지 않은 자바스크립트를 제거하여 전송
-시간, CPU를 많이 소모하는 파싱과 컴파일, 잠재적인 메모리 오버헤드를 감소시킬 수 있습니다. 또한,
-페이지가 더 빠르게 상호작용할 수 있게 됩니다.**
+## Execution time
 
-## 실행 시간
+It’s not just parse and compile that can have a cost. **JavaScript execution** (running code once parsed/compiled) is one of the operations that has to happen on the main thread. Long execution times can also push out how soon a user can interact with your site.
 
-비용이 드는 것은 파싱과 컴파일뿐만이 아닙니다. **자바스크립트
-실행**(파싱/컴파일 후 코드 실행)은
-기본 스레드에서 발생해야 하는 작업 중 하나입니다. 긴 실행 시간 역시 사용자가 사이트를 이용할 수 있게 되는 데
-걸리는 시간을 늘립니다.
+![](images/1_ec0wEKKVl7iQidBks3oDKg.png)
 
-<img src="images/1_ec0wEKKVl7iQidBks3oDKg.png"/>
+> If script executes for more than 50ms, time-to-interactive is delayed by the *entire* amount of time it takes to download, compile, and execute the JS — Alex Russell
 
-> 스크립트가 50ms 이상 실행되면 상호작용까지의 시간(time-to-interactive)이
-> 자바스크립트를 다운로드, 컴파일, 실행하는 데 걸리는 *전체* 시간만큼 지연됩니다 —
-> Alex Russell
+To address this, JavaScript benefits from being in **small chunks** to avoid locking up the main thread. Explore if you can reduce how much work is being done during execution.
 
-이 문제를 해결하기 위해 자바스크립트는 **작은 크기**의 이점을 이용하여
-기본 스레드에 고정되는 것을 방지합니다. 실행 중 얼마나 많은 작업을 줄일 수 있는지
-탐색해 보세요.
+## Other costs
 
-## 기타 비용
+JavaScript can impact page performance in other ways:
 
-자바스크립트는 다른 방식으로 페이지 성능에 영향을 미칠 수 있습니다.
+* Memory. Pages can appear to jank or pause frequently due to GC (garbage collection). When a browser reclaims memory, JS execution is paused so a browser frequently collecting garbage can pause execution more frequently than we may like. Avoid [memory leaks](/web/tools/chrome-devtools/memory-problems/) and frequent gc pauses to keep pages jank free.
+* During runtime, long-running JavaScript can block the main-thread causing pages that are unresponsive. Chunking up work into smaller pieces (using `<a
+href="/web/fundamentals/performance/rendering/optimize-javascript-execution#use_requestanimationframe_for_visual_changes">requestAnimationFrame()</a>` or `<a
+href="/web/updates/2015/08/using-requestidlecallback">requestIdleCallback()</a>` for scheduling) can minimize responsiveness issues.
 
-* 메모리. GC(가비지
-컬렉션) 때문에 페이지에 쟁크(jank) 현상이 일어나거나 일시적으로 중지되는 일이 자주 있는 것처럼 보일 수 있습니다. 브라우저가 메모리를 회수할 때, 자바스크립트 실행이 일시 정지되어, 가비지를 자주 수집하는
-  브라우저가 원하는 것 보다 더 자주
-  실행을 멈출 수 있습니다. [메모리 누수](/web/tools/chrome-devtools/memory-problems/)
-  및 잦은 gc 중지를 방지하여 페이지에 쟁크 현상이 일어나지 않게 하세요.
-* 런타임 시, 장기 실행 중인 자바스크립트는 기본 스레드를 차단하여
-  페이지가 반응하지 않게 됩니다. 작업을 작은 조각으로(스케줄링에
-  <code><a
-  href="/web/fundamentals/performance/rendering/optimize-javascript-execution#use_requestanimationframe_for_visual_changes">requestAnimationFrame()</a></code>
-  또는 <code><a
-  href="/web/updates/2015/08/using-requestidlecallback">requestIdleCallback()</a></code>
-  사용) 나눔으로써 응답 문제를 최소화할 수 있습니다.
+## Patterns for reducing JavaScript delivery cost
 
-## 자바스크립트 전달 비용 감소 패턴
-
-자바스크립트의 파싱/컴파일 및 네트워크 전송 시간을
-느리게 유지하고자 할 때 도움이 되는 경로 기반 청킹 또는
-[PRPL](/web/fundamentals/performance/prpl-pattern/)과 같은 패턴이 있습니다.
+When you’re trying to keep parse/compile and network transmit times for JavaScript slow, there are patterns that can help like route-based chunking or [PRPL](/web/fundamentals/performance/prpl-pattern/).
 
 ### PRPL
 
-PRPL(푸시, 렌더링, 사전 캐시, 지연 로드)는 적극적인 코드 분할 및 캐싱을 통해
-상호작용을 최적화하는 패턴입니다.
+PRPL (Push, Render, Pre-cache, Lazy-load) is a pattern that optimizes for interactivity through aggressive code-splitting and caching:
 
-<img src="images/1_VgdNbnl08gcetpqE1t9P9w.png"/>
+![](images/1_VgdNbnl08gcetpqE1t9P9w.png)
 
-이 패턴이 미칠 수 있는 영향을 시각화해 봅시다.
+Let’s visualize the impact it can have.
 
-V8의 Runtime Call Stats를
-사용하여 인기 있는 모바일 사이트 및 프로그레시브 웹 앱의 로드 타임을 분석했습니다. 보시다시피, 파싱 시간(주황색 표시)이
-이러한 여러 사이트가 소비하는 시간의 상당 부분을 차지합니다.
+We analyze the load-time of popular mobile sites and Progressive Web Apps using V8’s Runtime Call Stats. As we can see, parse time (shown in orange) is a significant portion of where many of these sites spend their time:
 
-<img src="images/1_9BMRW5i_bS4By_JSESXX8A.png"/>
+![](images/1_9BMRW5i_bS4By_JSESXX8A.png)
 
-PRPL을 이용하는 사이트인 [Wego](https://www.wego.com)는 경로의 파싱 시간을 낮게 유지하여
-매우 빠르게 상호작용합니다. 위의
-여러 다른 사이트는 자바스크립트
-비용을 낮추기 위해 코드 분할 및 성능 예산을 적용했습니다.
+[Wego](https://www.wego.com), a site that uses PRPL, manages to maintain a low parse time for their routes, getting interactive very quickly. Many of the other sites above adopted code-splitting and performance budgets to try lowering their JS costs.
 
+### Progressive Bootstrapping
 
-### 점진적 부트스트랩
+Many sites optimize content visibility at the expensive of interactivity. To get a fast first paint when you do have large JavaScript bundles, developers sometimes employ server-side rendering; then "upgrade" it to attach event handlers when the JavaScript finally gets fetched.
 
-많은 사이트가 상호작용에 많은 비용을 들여 콘텐츠 가시성을 최적화합니다. 개발자는
-대규모 자바스크립트 번들이 있을 때 빠르게 첫 번째 페인트를 가져오기 위해
-때때로 서버 측 렌더링을 사용하며, 최종적으로 자바스크립트를 가져오면 이를 '업그레이드'하여 이벤트
-핸들러에 첨부합니다.
+Be careful — this has its own costs. You 1) generally send down a *larger* HTML response which can push our interactivity, 2) can leave the user in an uncanny valley where half the experience can’t actually be interactive until JavaScript finishes processing.
 
-주의하세요. 이 방식도 비용이 발생합니다. 왜냐하면 1) 일반적으로 *더 큰* HTML
-응답을 전송하는데 이 때문에 상호작용이 지연될 수 있고, 2) 사용자는 자바스크립트가 처리를 마칠 때까지
-환경의 절반이 실제로는 상호작용이 되지 않는
-모호하고 불안한 상태에 빠진 채 방치될 수 있기 때문입니다.
+Progressive Bootstrapping may be a better approach. Send down a minimally functional page (composed of just the HTML/JS/CSS needed for the current route). As more resources arrive, the app can lazy-load and unlock more features.<figure> 
 
-점진적 부트스트랩은 더 나은 접근 방식입니다. 최소한의
-기능 페이지(현재 경로에서 필요한 HTML/자바스크립트/CSS만으로 구성)를 전송합니다.
-더 많은 리소스가 도착하면, 앱이 더 많은 기능을 지연 로드하고 개방할 수 있습니다.
+![](images/1_zY03Y5nVEY21FXA63Qe8PA.png) <figcaption> [Progressive Bootstrapping](https://twitter.com/aerotwist/status/729712502943174657) by Paul Lewis </figcaption> </figure> 
 
-<figure> <img src="images/1_zY03Y5nVEY21FXA63Qe8PA.png"/> <figcaption> <a
-href="https://twitter.com/aerotwist/status/729712502943174657">점진적
-부트스트랩</a> by Paul Lewis </figcaption> </figure>
+Loading code proportionate to what’s in view is the holy grail. PRPL and Progressive Bootstrapping are patterns that can help accomplish this.
 
-누구나 보이는 부분에 비례하여 코드를 로딩하는 것을 원합니다. PRPL 및
-점진적 부트스트랩은 이것을 달성하는 데 도움이 되는 패턴입니다.
+## Conclusions
 
-## 결론
+**Transmission size is critical for low end networks. Parse time is important for CPU bound devices. Keeping these low matters.**
 
-**전송 크기는 저사양 네트워크에 매우 중요합니다. 파싱 시간은
-CPU 바운드 기기에 중요합니다. 이 값을 낮게 유지하는 것이 중요합니다.**
+Teams have found success adopting strict performance budgets for keeping their JavaScript transmission and parse/compile times low. See Alex Russell’s "[Can You Afford It?: Real-world Web Performance Budgets](https://infrequently.org/2017/10/can-you-afford-it-real-world-web-performance-budgets/)" for guidance on budgets for mobile.<figure> 
 
-팀에서 엄격한 성능 예산을 적용함으로써
-자바스크립트 전송 및 파싱/컴파일 시간을 낮게 유지하는 데 성공했습니다. 모바일 예산에 대한 지침은 Alex Russell의 "[Can You
-Afford It?: Real-world Web Performance
-Budgets](https://infrequently.org/2017/10/can-you-afford-it-real-world-web-performance-budgets/)"을
-참조하세요.
+![](images/1_U8PJVNrA_tYADQ6_S4HUYw.png) <figcaption>It’s useful to consider how much JS "headroom" the architectural decisions we make can leave us for app logic.</figcaption> </figure> 
 
-<figure> <img src="images/1_U8PJVNrA_tYADQ6_S4HUYw.png"/> <figcaption>이 문서는
-우리가 결정한 아키텍처가 앱 로직에 얼마나 자바스크립트 '헤드룸'을 제공하는지 고려하는 데
-유용합니다.</figcaption> </figure>
+If you’re building a site that targets mobile devices, do your best to develop on representative hardware, keep your JavaScript parse/compile times low and adopt a Performance Budget for ensuring your team are able to keep an eye on their JavaScript costs.
 
-휴대기기를 대상으로 사이트를 빌드하는 경우, 대표적인 하드웨어에서
-개발할 수 있도록 최선을 다하고
-자바스크립트 파싱/컴파일 시간을 낮게 유지하며, 자바스크립트 비용을 주시할 수 있도록 하는 성능 예산을
-적용해야 합니다.
+## Learn More
 
-## 자세히 알아보기
-
-* [Chrome Dev Summit 2017 - Modern Loading Best
-  Practices](https://www.youtube.com/watch?v=_srJ7eHS3IM)
-* [JavaScript Start-up
-  Performance](https://medium.com/reloading/javascript-start-up-performance-69200f43b201)
-* [Solving the web performance
-  crisis](https://nolanlawson.github.io/frontendday-2016/) — Nolan Lawson
-* [Can you afford it? Real-world performance
-  budgets](https://infrequently.org/2017/10/can-you-afford-it-real-world-web-performance-budgets/)
-  — Alex Russell
-* [Evaluating web frameworks and
-  libraries](https://twitter.com/kristoferbaxter/status/908144931125858304) —
-  Kristofer Baxter
-* [Cloudflare’s Results of experimenting with
-  Brotli](https://blog.cloudflare.com/results-experimenting-brotli/) 압축
- 관련(참고: 더 높은 품질에서는 동적 Brotli가 초기 페이지
-  렌더링을 지연시킬 수 있으므로 신중하게 평가해야 합니다. 그런 경우에는 대신 통계적인
-  압축을 하는 것이 나을 것입니다.)
-* [Performance
-  Futures](https://medium.com/@samccone/performance-futures-bundling-281543d9a0d5)
-  — Sam Saccone
+* [Chrome Dev Summit 2017 - Modern Loading Best Practices](https://www.youtube.com/watch?v=_srJ7eHS3IM)
+* [JavaScript Start-up Performance](https://medium.com/reloading/javascript-start-up-performance-69200f43b201)
+* [Solving the web performance crisis](https://nolanlawson.github.io/frontendday-2016/) — Nolan Lawson
+* [Can you afford it? Real-world performance budgets](https://infrequently.org/2017/10/can-you-afford-it-real-world-web-performance-budgets/) — Alex Russell
+* [Evaluating web frameworks and libraries](https://twitter.com/kristoferbaxter/status/908144931125858304) — Kristofer Baxter
+* [Cloudflare’s Results of experimenting with Brotli](https://blog.cloudflare.com/results-experimenting-brotli/) for compression (note dynamic Brotli at a higher quality can delay initial page render so evaluate carefully. You probably want to statically compress instead.)
+* [Performance Futures](https://medium.com/@samccone/performance-futures-bundling-281543d9a0d5) — Sam Saccone
