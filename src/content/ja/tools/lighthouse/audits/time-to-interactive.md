@@ -1,32 +1,50 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Lighthouse の監査項目 「操作可能になるタイミング」のリファレンス ドキュメント。
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Reference documentation for the "Time to Interactive" Lighthouse audit.
 
-{# wf_updated_on:2016-10-05 #}
-{# wf_published_on:2016-10-05 #}
+{# wf_updated_on: 2018-10-01 #} {# wf_published_on: 2018-08-16 #} {# wf_blink_components: Platform>DevTools #}
 
-# 操作可能になるタイミング {: .page-title }
+# Time to Interactive {: .page-title }
 
-##  監査が重要である理由 {: #why }
+## Overview {: #overview }
 
-ユーザーが体感するアプリのパフォーマンスは、ページの読み込み速度に大きく左右されます。
-詳細については、[Measure Performance with the RAIL Method](/web/fundamentals/performance/rail) をご覧ください。
+<blockquote>
+  <p>
+    Load is not a single moment in time — it’s an experience that no one metric can fully capture.
+    There are multiple moments during the load experience that can affect whether a user perceives
+    it as "fast" or "slow".
+  </p>
+  <p>--- <a class="external" href="https://w3c.github.io/paint-timing/">Paint Timing spec</a></p>
+</blockquote>
 
-この監査では、ページが表示され、ユーザー操作が可能になるタイミングを特定します。
+The Time to Interactive (TTI) metric measures how long it takes a page to become interactive. "Interactive" is defined as the point where:
 
+* The page has displayed useful content, which is measured with [First Contentful Paint](/web/tools/lighthouse/audits/first-contentful-paint).
+* Event handlers are registered for most visible page elements.
+* The page responds to user interactions within 50 milliseconds.
 
-##  監査に合格する方法 {: #how }
+Some sites optimize content visibility at the expense of interactivity. This can create a frustrating user experience. The site appears to be ready, but when the user tries to interact with it, nothing happens.
 
-ページの読み込み時のパフォーマンスを改善する方法ついては、Speed Index の[監査に合格する方法](speed-index#how)で紹介されているリソースをご覧ください。
-この「操作可能になるタイミング」のスコアが低いほど、パーフォーマンスが高くなります。
+## Recommendations {: #recommendations }
 
-{% include "web/tools/lighthouse/audits/implementation-heading.html" %}
+To improve your TTI score, defer or remove unnecessary JavaScript work that occurs during page load. See [Optimize JavaScript Bootup](/web/fundamentals/performance/optimizing-content-efficiency/javascript-startup-optimization/) and [Reduce JavaScript Payloads with Tree Shaking](/web/fundamentals/performance/optimizing-javascript/tree-shaking/), and [Reduce JavaScript Payloads with Code Splitting](/web/fundamentals/performance/optimizing-javascript/code-splitting/).
 
-「操作可能になるタイミング」とは、レイアウトが安定して、主要なウェブフォントが表示され、メインスレッドでユーザー入力を処理できる状態になるタイミングとして定義されます。
+### Tracking TTI in the real world {: #RUM }
 
+To measure when TTI actually occurs on your users' devices, see [Tracking TTI](/web/fundamentals/performance/user-centric-performance-metrics#tracking_tti). The code snippet describes how to programmatically access TTI data and submit it to Google Analytics.
 
+TTI can be difficult to track in the wild. You may prefer to track [First Input Delay](/web/updates/2018/05/first-input-delay), instead.
 
-この測定基準は導入されて間もないため、変更される可能性があることに注意してください。
+## More information {: #more-info }
 
+See [Definition](https://github.com/WICG/time-to-interactive#definition){: .external } for more details on how exactly TTI is calculated.
 
-{# wf_devsite_translation #}
+This metric was previously called Consistently Interactive.
+
+Sources:
+
+* [Audit source](https://github.com/GoogleChrome/lighthouse/blob/master/lighthouse-core/audits/metrics/interactive.js){:.external}
+* [Time to Interactive Explainer](https://github.com/WICG/time-to-interactive){: .external }
+* [First Interactive and Consistently Interactive](https://docs.google.com/document/d/1GGiI9-7KeY3TPqS3YT271upUVimo-XiL5mwWorDUD4c){: .external }
+
+## Feedback {: #feedback }
+
+{% include "web/_shared/helpful.html" %}
