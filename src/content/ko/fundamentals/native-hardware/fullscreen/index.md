@@ -1,11 +1,8 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: 전체 화면 보기
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Going fullscreen.
 
-{# wf_updated_on: 2017-10-06 #}
-{# wf_published_on: 2016-10-01 #}
+{# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2016-10-01 #} {# wf_blink_components: Blink>Fullscreen #}
 
-# 전체 화면 경험 구현 {: .page-title }
+# Making Fullscreen Experiences {: .page-title }
 
 <div class="video-wrapper">
   <iframe class="devsite-embedded-youtube-video" data-video-id="ZRqr5x73-ng"
@@ -13,47 +10,29 @@ description: 전체 화면 보기
   </iframe>
 </div>
 
-몰입형 전체 화면 웹사이트와 애플리케이션을 쉽게 만들 수 있지만
-웹상의 다른 기술과 마찬가지로 이를 실행하는 방법은 여러 가지가 있습니다.
-전체 화면을 실행하는 '설치형 웹 앱' 경험을 지원하는 브라우저가 늘어나고 있는 요즘에는
-이 점이 특히 중요합니다.
+We have the ability to easily make immersive fullscreen websites and applications, but like anything on the web there are a couple of ways to do it. This is especially important now that more browsers are supporting an "installed web app" experience which launch fullscreen.
 
 <div class="clearfix"></div>
 
-## 앱 또는 사이트를 전체 화면으로 구현
+## Getting your app or site fullscreen
 
-사용자 또는 개발자가 웹 앱 전체 화면을 구현하는 방법은 여러 가지가 있습니다.
+There are several ways that a user or developer can get a web app fullscreen.
 
-* 사용자 동작에 응답하여 브라우저에 전체 화면 요청
-* 홈 화면에 앱 설치
-* 주소 표시줄을 자동으로 숨겨서 가상으로 전체 화면 구성
+* Request the browser go fullscreen in response to a user gesture.
+* Install the app to the home screen.
+* Fake it: auto-hide the address bar.
 
-### 사용자 동작에 응답하여 브라우저에 전체 화면 요청
+### Request the browser go fullscreen in response to a user gesture
 
-<a href="http://caniuse.com/#feat=fullscreen">플랫폼은 동일하지 않습니다</a>.
-iOS Safari는 Fullscreen API가 없지만 Android의 Chrome과
-Firefox, IE 11+에는 있습니다. 여러분이 빌드하는 대부분 애플리케이션은 전체 화면 사양에서 제공하는
-JS API와 CSS 선택기를 함께 사용합니다. 전체 화면 경험을 빌드할 때
-주의해야 할 주요 JS API는 다음과 같습니다.
+<a href="http://caniuse.com/#feat=fullscreen">Not all platforms are equal</a>. iOS Safari doesn't have a fullscreen API, but we do on Chrome on Android, Firefox, and IE 11+. Most applications you build will use a combination of the JS API and the CSS selectors provided by the fullscreen specification. The main JS API's that you need to care about when building a fullscreen experience are:
 
-* `element.requestFullscreen()`: (현재 Chrome, Firefox, IE에서 프리픽스됨)
-  전체 화면 모드에서 요소를 표시합니다.
-* `document.exitFullscreen()`: (현재 Chrome, Firefox 및 IE에서 프리픽스됨.
-  Firefox는 `cancelFullScreen()` 사용) 전체 화면 모드를 취소합니다.
-* `document.fullscreenElement`: (현재 Chrome, Firefox 및 IE에서 프리픽스됨)
-  전체 화면 모드인 요소가 있으면 true를 반환합니다.
+* `element.requestFullscreen()` (currently prefixed in Chrome, Firefox, and IE) displays the element in fullscreen mode.
+* `document.exitFullscreen()` (currently prefixed in Chrome, Firefox and IE. Firefox uses `cancelFullScreen()` instead) cancels fullscreen mode.
+* `document.fullscreenElement` (currently prefixed in Chrome, Firefox, and IE) returns true if any of the elements are in fullscreen mode.
 
-참고: 프리픽스된 버전은
-      화면에서 'S'의 대소문자 표기가 일관적이지 못합니다. 곤란한 문제이지만,
-      현재 적용되는 사양과 관련이 있습니다.
+Note: You will notice that in the prefixed versions there is a lot of inconsistency between the casing of the 'S' in screen. This is awkward, but this is the problem with specs that are in flight.
 
-앱이 전체 화면이 되면
-브라우저의 UI 컨트롤을 더 이상 사용할 수 없게 됩니다. 이로 인해 사용자가 여러분의 경험과 상호작용하는 방식이
-변경됩니다. 앞으로, 뒤로 등과 같은 표준 탐색 컨트롤이
- 없고 탈출 수단인 새로고침 버튼도 없습니다.  이 시나리오를
-수용하는 것이 중요합니다.  몇 가지 CSS 선택기를 사용하여
-브라우저가 전체 화면 모드로 진입할 때 사이트 스타일과 표현을 변경할 수 있습니다.
-
+When your app is fullscreen you no longer have the browser's UI controls available to you. This changes the way that users interact with your experience. They don't have the standard navigation controls such as Forwards and Backwards; they don't have their escape hatch that is the Refresh button. It's important to cater for this scenario. You can use some CSS selectors to help you change the style and presentation of your site when the browser enters fullscreen mode.
 
     <button id="goFS">Go fullscreen</button>
     <script>
@@ -62,26 +41,21 @@ JS API와 CSS 선택기를 함께 사용합니다. 전체 화면 경험을 빌�
           document.body.requestFullscreen();
       }, false);
     </script>
+    
 
-위의 예시는 공급업체 프리픽스 사용과 관련된 모든 복잡한 내용을
-감추었기 때문에 다소 부자연스럽습니다.
+The above example is a little contrived; I've hidden all the complexity around the use of vendor prefixes.
 
-참고: 공급업체 프리펙스는 골치가 아픕니다!
+Note: Damn you, vendor prefixes!
 
-실제 코드는 훨씬 더 복잡합니다. <a
-href="https://developer.mozilla.org/en-US/docs/Web/Guide/API/DOM/Using_full_screen_mode">Mozilla</a>는
-전체 화면 전환에 사용할 수 있는 매우 유용한 스크립트를 개발했습니다.  보다시피
-공급업체 프리픽스 상황에서는 지정된 API에 비해
-코드가 복잡하고 느려집니다. 아래와 같이 코드를 단순화하더라도
-여전히 복잡합니다.
+The actual code is a lot more complex. [Mozilla has created](https://developer.mozilla.org/en-US/docs/Web/Guide/API/DOM/Using_full_screen_mode) a very useful script that you can use to toggle fullscreen. As you can see, the vendor prefix situation it is complex and cumbersome compared to the specified API. Even with the slightly simplified code below, it is still complex.
 
     function toggleFullScreen() {
       var doc = window.document;
       var docEl = doc.documentElement;
-
+    
       var requestFullScreen = docEl.requestFullscreen || docEl.mozRequestFullScreen || docEl.webkitRequestFullScreen || docEl.msRequestFullscreen;
       var cancelFullScreen = doc.exitFullscreen || doc.mozCancelFullScreen || doc.webkitExitFullscreen || doc.msExitFullscreen;
-
+    
       if(!doc.fullscreenElement && !doc.mozFullScreenElement && !doc.webkitFullscreenElement && !doc.msFullscreenElement) {
         requestFullScreen.call(docEl);
       }
@@ -89,49 +63,39 @@ href="https://developer.mozilla.org/en-US/docs/Web/Guide/API/DOM/Using_full_scre
         cancelFullScreen.call(doc);
       }
     }
+    
 
-우리 웹 개발자들은 복잡한 것을 싫어합니다.  여러분이 사용할 만한 멋진 고수준 추상 API로는
-<a href="http://sindresorhus.com/screenfull.js"/>Sindre Sorhus</a>의 <a
-href="https://github.com/sindresorhus/screenfull.js">Screenfull.js</a> 모듈이 있습니다.
-이 모듈은 약간 차이가 있는 JS API와 공급업체 프리픽스를
-하나의 일관적인 API로 통합합니다.
+We web developers hate complexity. A nice high-level abstract API you can use is Sindre Sorhus'</a> [Screenfull.js](https://github.com/sindresorhus/screenfull.js) module which unifies the two slightly different JS API's and vendor prefixes into one consistent API.
 
-#### Fullscreen API 팁
+#### Fullscreen API Tips
 
-##### 문서를 전체화면으로 구현
+##### Making the document fullscreen
 
 <figure class="attempt-right" style="max-width: 320px;">
   <img src="images/body.png">
-  <figcaption>그림 1: 본문 요소의 전체 화면</figcaption>
+  <figcaption>Figure 1: Fullscreen on the body element.</figcaption>
 </figure>
 
-
-본문 요소를 전체 화면으로 구현하는 것이 당연하다고 생각할 수 있지만,
-WebKit 또는 Blink 기반 렌더링 엔진을 사용하는 경우
-본문 너비가 촤대한 작은 크기로 줄어들고 그 안에 모든 콘텐츠가 들어가는 이상한 현상을
-보게 될 것입니다. (Mozilla Gecko는 괜찮습니다.)
+It is natural to think that you take the body element fullscreen, but if you are on a WebKit or Blink based rendering engine you will see it has an odd effect of shrinking the body width to the smallest possible size that will contain all the content. (Mozilla Gecko is fine.)
 
 <div class="clearfix"></div>
 
-<figure class="attempt-right" style="max-width: 320px;">
-<img src="images/document.png" >
-<figcaption>그림 2: 문서 요소의 전체 화면</figcaption>
-</figure>
+<figure class="attempt-right" style="max-width: 320px;"> 
 
-이 문제를 해결하려면 본문 요소 대신 문서 요소를 사용해야 합니다.
+<img src="images/document.png" />
+<figcaption>Figure 2: Fullscreen on the document element.</figcaption>
+</figure> 
+
+To fix this, use the document element instead of the body element:
 
     document.documentElement.requestFullscreen();
-
-
+    
 
 <div class="clearfix"></div>
 
+##### Making a video element fullscreen
 
-##### 동영상 요소를 전체 화면으로 구현
-
-동영상 요소를 전체 화면으로 구현하는 과정은 다른
-요소를 전체 화면으로 구현하는 방법과 정확히 같습니다. 동영상 요소에서 `requestFullscreen` 메서드를
-호출합니다.
+To make a video element fullscreen is exactly the same as making any other element fullscreen. You call the `requestFullscreen` method on the video element.
 
     <video id=videoElement></video>
     <button id="goFS">Go Fullscreen</button>
@@ -142,11 +106,9 @@ WebKit 또는 Blink 기반 렌더링 엔진을 사용하는 경우
           videoElement.requestFullscreen();
       }, false);
     </script>
+    
 
-`<video>` 요소에 컨트롤 속성이 정의되지 않았다면
-전체 화면일 때 사용자가 동영상을 제어할 방법이 없습니다. 권장되는 방법은
-동영상을 래핑하는 기본 컨테이너와
-사용자에게 보여줄 컨트롤을 갖는 것입니다.
+If your `<video>` element doesn't have the controls attribute defined, there's no way for the user to control the video once they are fullscreen. The recommended way to do this is to have a basic container that wraps the video and the controls that you want the user to see.
 
     <div id="container">
       <video></video>
@@ -163,9 +125,9 @@ WebKit 또는 Blink 기반 렌더링 엔진을 사용하는 경우
           container.requestFullscreen();
       }, false);
     </script>
+    
 
-이렇게 하면 컨테이너 객체를
-CSS 의사 선택기와 결합할 수 있기 때문에 유연성이 높아집니다(예: 'goFS' 버튼 숨기기).
+This gives you a lot more flexibility because you can combine the container object with the CSS pseudo selector (for example to hide the "goFS" button.)
 
     <style>
       #goFS:-webkit-full-screen #goFS {
@@ -181,80 +143,54 @@ CSS 의사 선택기와 결합할 수 있기 때문에 유연성이 높아집니
         display: none;
       }
     </style>
+    
 
-이런 패턴을 사용하면 전체 화면이 실행되는 시기를 감지하고
-사용자 인터페이스를 적절히 수정할 수 있습니다. 예를 들어, 다음과 같은 방법을 사용합니다.
+Using these patterns, you can detect when fullscreen is running and adapt your user interface appropriately, for example:
 
-* 시작 페이지로 돌아가는 링크 제공
-* 대화상자를 닫거나 되돌아가는 메커니즘 제공
+* By providing a link back to the start page
+* By Providing a mechanism to close dialogs or travel backwards
 
+### Launching a page fullscreen from home screen
 
-### 홈 화면에서 페이지 전체 화면 시작
+Launching a fullscreen web page when the user navigates to it is not possible. Browser vendors are very aware that a fullscreen experience on every page load is a huge annoyance, therefore a user gesture is required to enter fullscreen. Vendors do allow users to "install" apps though, and the act of installing is a signal to the operating system that the user wants to launch as an app on the platform.
 
-사용자가 웹 페이지를 탐색할 때 전체 화면 웹 페이지를 시작하는 것은 불가능합니다.
-브라우저 공급업체는 페이지를 로드할 때마다 전체 화면이 되면 매우 짜증을 유발할 수 있으므로
-전체 화면으로 진입하려면 사용자 동작이 필요하다는 것을 잘 알고 있습니다.
-그러나 공급업체는 사용자가 앱을 '설치'하는 것은 허용합니다.
-앱을 설치하면 사용자가 플랫폼에서 앱을 시작하고 싶다는 신호를 
-운영체제에 보내는 것과 같습니다.
-
-주요 모바일 플랫폼에서는 다음과 같이 메타 태그나 매니페스트 파일을 사용한
-구현이 매우 쉽습니다.
+Across the major mobile platforms it is pretty easy to implement using either meta tags, or manifest files as follows.
 
 #### iOS
 
-iPhone이 출시된 이후로 사용자는 웹 앱을 홈 화면에
-설치하고 전체 화면 웹 앱으로 실행할 수 있게 되었습니다.
+Since the launch of the iPhone, users have been able to install Web Apps to the home screen and have them launch as full-screen web apps.
 
     <meta name="apple-mobile-web-app-capable" content="yes">
+    
 
-> content가 yes로 설정되어 있으면 웹 애플리케이션이 전체 화면 모드에서 실행됩니다.
-> 그렇지 않을 경우에는 이 모드에서 실행되지 않습니다. 기본 동작은 Safari를 사용하여 웹
-> 콘텐츠를 표시하는 것입니다. window.navigator.standalone 읽기 전용 부울 자바스크립트 속성을 사용하면
-> 웹 페이지가 전체 화면으로 표시되는지 확인할 수 있습니다.
-> <a href="https://developer.apple.com/library/safari/documentation/AppleApplications/Reference/SafariHTMLRef/Articles/MetaTags.html">Apple</a>
+> If content is set to yes, the web application runs in full-screen mode; otherwise, it does not. The default behavior is to use Safari to display web content. You can determine whether a webpage is displayed in full-screen mode using the window.navigator.standalone read-only Boolean JavaScript property. [Apple](https://developer.apple.com/library/safari/documentation/AppleApplications/Reference/SafariHTMLRef/Articles/MetaTags.html)
 
-#### Android용 Chrome
+#### Chrome for Android
 
-최근 Chrome 팀은 사용자가 홈 화면에 앱을 추가하면 페이지를 전체 화면으로 실행하라고
-브라우저에게 알리는 기능을 구현했습니다.  이는
-iOS Safari 모델과 유사합니다.
+The Chrome team has recently implemented a feature that tells the browser to launch the page fullscreen when the user has added it to the home screen. It is similar to the iOS Safari model.
 
     <meta name="mobile-web-app-capable" content="yes">
+    
 
-> 애플리케이션 바로가기 아이콘을 기기 홈 화면에 추가하고
-> Android용 Chrome의 'Add to Home screen' 메뉴 항목을 사용하여 
-> 앱을 전체 화면으로 실행하도록 웹 앱을 설정할 수 있습니다.
->  <a href="https://developers.chrome.com/multidevice/android/installtohomescreen">Google Chrome</a>
+> You can set up your web app to have an application shortcut icon added to a device's home screen, and have the app launch in full-screen "app mode" using Chrome for Android's "Add to Home screen" menu item. [Google Chrome](https://developers.chrome.com/multidevice/android/installtohomescreen)
 
-이보다 더 좋은 방법은 웹 앱 매니페스트를 사용하는 것입니다.
+A better option is to use the Web App Manifest.
 
-#### 웹 앱 매니페스트(Chrome, Opera, Firefox, Samsung)
+#### Web App Manifest (Chrome, Opera, Firefox, Samsung)
 
-[웹 애플리케이션의 매니페스트](/web/fundamentals/web-app-manifest)
-는 원하는 영역(예: 모바일 홈 화면)에 표시되는 앱의 모양을 제어할 수 있는 기능을
-개발자에게 제공하고 실행 가능한 것과 실행 방식을
-지시하는 단순한 JSON 파일입니다.
- 미래에 매니페스트는
-앱에 대한 더 세밀한 제어 기능을 제공할 것이지만, 현재로서는 앱 실행 방식에만 집중합니다.
- 구체적인 사항은 다음과 같습니다.
+The [Manifest for Web applications](/web/fundamentals/web-app-manifest) is a simple JSON file that gives you, the developer, the ability to control how your app appears to the user in the areas that they would expect to see apps (for example the mobile home screen), direct what the user can launch and, more importantly, how they can launch it. In the future the manifest will give you even more control over your app, but right now we are just focusing on how your app can be launched. Specifically:
 
-1. 브라우저에 매니페스트에 대한 정보 전달
-2. 실행 방법 설명
+1. Telling the browser about your manifest
+2. Describing how to launch
 
-맨니페스트를 생성하고 사이트에 호스팅한 후에는 다음과 같이
-앱을 포함하는 모든 페이지에 링크 태그를 추가하는 작업만 수행하면 됩니다.
+Once you have the manifest created and it is hosted on your site, all you need to do is add a link tag from all your pages that encompass your app, as follows:
 
     <link rel="manifest" href="/manifest.json">
+    
 
-Chrome은 Android 버전 38 이후(2014년 10월)부터 매니페스트를 지원하고 있습니다.
-이 기능을 사용하면 웹 앱을 홈 화면에 설치했을 때 웹 앱이 나타나는 방식을 제어하고(`short_name`, `name` 및 `icons` 속성을 통해),
-사용자가 실행 아이콘을 클릭했을 때
-실행 방식(`start_url`,
-`display` 및 `orientation`을 통해)을 제어할 수 있습니다.
+Chrome has supported Manifests since version 38 for Android (October 2014) and it gives you the control over how your web app appears when it is installed to the home screen (via the `short_name`, `name` and `icons` properties) and how it should be launched when the user clicks on the launch icon (via `start_url`, `display` and `orientation`).
 
-다음은 예시 매니페스트입니다. 이 예시는 매니페스트에 포함할 수 있는 모든 것을
-보여주지는 않습니다.
+An example manifest is shown below. It doesn't show everything that can be in a manifest.
 
     {
       "short_name": "Kinlan's Amaze App",
@@ -270,238 +206,192 @@ Chrome은 Android 버전 38 이후(2014년 10월)부터 매니페스트를 지�
       "display": "standalone",
       "orientation": "landscape"
     }
+    
 
-이 기능은 완전히 점진적이며,
-이 기능을 지원하는 브라우저 사용자를 위해 더욱 개선되고 통합된 경험을 개발할 수 있습니다.
+This feature is entirely progressive and allows you create better, more integrated experiences for users of a browser that supports the feature.
 
-사용자가 여러분의 사이트나 앱을 홈 화면에 추가하는 것은
-앱처럼 취급하겠다는 사용자의 의도를 나타냅니다. 즉, 사용자를 제품 방문 페이지가 아니라
-앱의 기능으로 안내하는 것을 목표로 삼아야 합니다. 예를 들어
-사용자가 앱에 로그인해야 한다면
-이 페이지를 시작 페이지로 삼는 것이 좋습니다.
+When a user adds your site or app to the home screen, there is an intent by the user to treat it like an app. This means you should aim to direct the user to the functionality of your app rather than a product landing page. For example, if the user is required to sign-in to your app, then that is a good page to launch.
 
-##### 유틸리티 앱
+##### Utility apps
 
-대부분의 유틸리티 앱은 이 기능을 바로 활용할 수 있습니다. 
-다른 앱과 마찬가지로 이러한 앱이 모바일 플랫폼에서 독립적으로 실행되기를
-바랄 것입니다. 앱을 독립적으로 실행하려면
-다음 내용을 웹 앱 매니페스트에 추가하세요.
+The majority of utility apps will benefit from this immediately. For those apps you'll likely want them launched standalone just alike every other app on a mobile platform. To tell an app to launch standalone, add this the Web App Manifest:
 
     "display": "standalone"
+    
 
-##### 게임
+##### Games
 
-대부분 게임도 매니페스트를 바로 활용할 수 있습니다. 대다수 게임은
-전체 화면으로 실행하고 특정 방향을
-강제로 지정하고자 할 것입니다.
+The majority of games will benefit from a manifest immediately. The vast majority of games will want to launch full-screen and forced a specific orientation.
 
-수직 스크롤러를 개발하거나 Flappy Birds와 같은 게임을 개발 중이라면
-게임을 항상 세로 모드로 유지시켜야 합니다.
+If you are developing a vertical scroller or a game like Flappy Birds then you will most likely want your game to always be in portrait mode.
 
     "display": "fullscreen",
     "orientation": "portrait"
+    
 
-반면 퍼즐 게임이나 X-Com과 같은 게임을 개발 중이라면
-아마 게임을 항상 가로 방향으로 사용하기를 원할 것입니다.
+If on the other hand you are building a puzzler or a game like X-Com, then you will probably want the game to always use the landscape orientation.
 
     "display": "fullscreen",
     "orientation": "landscape"
+    
 
-##### 뉴스 사이트
+##### News sites
 
-대부분의 경우 뉴스 사이트는 순수한 콘텐츠 기반 환경입니다. 당연히 대부분의 개발자는
-뉴스 사이트를 매니페스트에 추가하려고 생각하지 않습니다.  매니페스트를 사용하면
-실행할 페이지(뉴스 사이트의 1면)와
-실행 방법(전체 화면 또는 일반 브라우저 탭)을 정의할 수 있습니다.
+News sites in most cases are pure content-based experiences. Most developers naturally wouldn't think of adding a manifest to a news site. The manifest will let you define what to launch (the front page of your news site) and how to launch it (fullscreen or as a normal browser tab).
 
-선택은 여러분 자신에 달려 있습니다. 또한 여러분이 생각하는 사용자가 원하는 액세스 방식에도
-영향을 받습니다. 여러분의 사이트가 다른 사이트와 같은 모든 브라우저 chrome 요소를 갖도록 하려면
-디스플레이를 `browser`로 설정하면 됩니다.
+The choice is up to you and how you think your users will like to access your experience. If you want your site to have all the browser chrome that you would expect a site to have, you can set the display to `browser`.
 
     "display": "browser"
+    
 
-여러분의 뉴스 사이트에 뉴스 중심적인 앱 느낌을 주기 위해
-앱처럼 취급하고 UI에서 모든 웹과 유사한 chrmome을 제거하고 싶다면
-디스플레이를 `standalone`으로 설정하세요.
+If you want your news site to feel like the majority of news-centric apps treat their experiences as apps and remove all web-like chrome from the UI, you can do this by setting display to `standalone`.
 
     "display": "standalone"
+    
 
-### 주소 표시줄을 자동으로 숨겨서 가상으로 전체 화면 구성
+### Fake it: auto-hide the address bar
 
-다음과 같이 주소 표시줄을 자동으로 숨겨서 '가짜 전체 화면'을 만들 수 있습니다.
+You can "fake fullscreen" by auto-hiding the address bar as follows:
 
     window.scrollTo(0,1);
+    
 
-Caution: 친구로서 말씀드립니다. 그런 방법이 있기는 합니다. 하지만
-         편법입니다. 이 방법을 사용하지 마세요. &mdash; Paul
+Caution: I am telling you this as a friend. It exists. It is a thing, but it is a hack. Please don't use it. &mdash; Paul
 
-방법은 상당히 간단합니다. 페이지가 로드되고 브라우저 메뉴에게
-사라지라고 지시합니다. 안타깝게도 이 방법은 표준이 아니고
-지원되지 않는 곳도 많습니다. 여러 가지 문제도 해결해야 합니다.
+This is a pretty simple method, the page loads and the browser bar is told to get out of the way. Unfortunately it is not standardized and not well supported. You also have to work around a bunch of quirks.
 
-예를 들어 사용자가 페이지로 돌아가면 브라우저가 해당 페이지의
-위치를 복구하는 경우가 많습니다. `window.scrollTo`를 사용하면 이 설정을 재정의하기 때문에
-사용자에게 짜증을 유발합니다. 이 문제를 해결하려면
-localStorage에 마지막 위치를 저장하고 돌발 상황을 해결해야 합니다(예를 들어 사용자가 여러 창에서 페이지를 열었을
-경우).
+For example browsers often restore the position on the page when the user navigates back to it. Using `window.scrollTo` overrides this, which annoys the user. To work around this you have to store the last position in localStorage, and deal with the edge cases (for example, if the user has the page open in multiple windows).
 
-## UX 가이드라인
+## UX guidelines
 
-여러분이 전체 화면을 사용하는 사이트를 구축하고 있을 경우
-사용자가 좋아하는 서비스를 구현하려면 알아두어야 할 잠재적 사용자 환경 변경 사항이
-여러 가지 있습니다.
+When you are building a site that takes advantage of full screen there are a number of potential user experience changes that you need to be aware of to be able to build a service your users will love.
 
-### 내비게이션 컨트롤에 의존하지 마세요.
+### Don't rely on navigation controls
 
-iOS는 하드웨어 뒤로 버튼이나 새로고침 동작이 없습니다. 그러므로
-사용자가 갇히지 않고 앱을 탐색할 수 있게 해야 합니다.
+iOS does not have a hardware back button or refresh gesture. Therefore you must ensure that users can navigate throughout the app without getting locked in.
 
-모든 주요 플랫폼에서 전체 화면 모드로 실행되는지 설치 모드로 실행되는지
-쉽게 탐지할 수 있어야 합니다.
+You can detect if you are running in a fullscreen mode or an installed mode easily on all the major platforms.
 
 #### iOS
 
-iOS에서는 `navigator.standalone` 부울을 사용하여 사용자가
-홈 화면에서 실행했는지 알 수 있습니다.
+On iOS you can use the `navigator.standalone` boolean to see if the user has launched from the home screen or not.
 
     if(navigator.standalone == true) {
       // My app is installed and therefore fullscreen
     }
+    
 
-#### 웹 앱 매니페스트(Chrome, Opera, Samsung)
+#### Web App Manifest (Chrome, Opera, Samsung)
 
-설치된 앱으로 실행하면 Chrome은 실제 전체 화면으로
-실행되지 않으므로 `document.fullscreenElement`는 null을 반환하고 CSS 선택기가
-작동하지 않습니다.
+When launching as an installed app, Chrome is not running in true fullscreen experience so `document.fullscreenElement` returns null and the CSS selectors don't work.
 
-사용자가 사이트에서 동작을 통해 전체 화면을 요청하면
-
-표준 Fullscreen API를 사용할 수 있습니다. 예를 들어, 다음과 같이 전체 화면 상태에 반응하도록 UI를 변경할 수 있는 CSS 의사 선택기 등이 있습니다.
+When the user requests fullscreen via a gesture on your site, the standard fullscreen API's are available including the CSS pseudo selector that lets you adapt your UI to react to the fullscreen state like the following
 
     selector:-webkit-full-screen {
       display: block; // displays the element only when in fullscreen
     }
-
+    
     selector {
       display: none; // hides the element when not in fullscreen mode
     }
+    
 
-사용자가 홈 화면에서 사이트를 실행하면 `display-mode` 미디어
-쿼리가 웹 앱 매니페스트에 정의된 내용으로 설정됩니다. 순수 전체 화면의 경우
-다음과 같습니다.
+If the users launches your site from the home screen the `display-mode` media query will be set to what was defined in the Web App Manifest. In the case of pure fullscreen it will be:
 
     @media (display-mode: fullscreen) {
-
+    
     }
+    
 
-사용자가 독립 모드로 애플리케이션을 실행하면 `display-mode`
-미디어 쿼리는 `standalone`이 됩니다.
+If the user launches the application in standalone mode, the `display-mode` media query will be `standalone`:
 
     @media (display-mode: standalone) {
-
+    
     }
-
+    
 
 #### Firefox
 
-사용자가 사이트에서 전체 화면을 요청하거나
-전체 화면 모드에서 앱을 실행하면 표준 Fullscreen API를 사용할 수 있습니다. 예를 들어, 다음과 같이 전체 화면 상태에 반응하도록 UI를 변경할 수 있는
-CSS 의사 선택기 등이 있습니다.
-
+When the user requests fullscreen via your site or the user launches the app in fullscreen mode all the standard fullscreen API's are available, including the CSS pseudo selector, which lets you adapt your UI to react to the fullscreen state like the following:
 
     selector:-moz-full-screen {
       display: block; // hides the element when not in fullscreen mode
     }
-
+    
     selector {
       display: none; // hides the element when not in fullscreen mode
     }
+    
 
 #### Internet Explorer
 
-IE에서 CSS 의사 클래스에 하이픈이 들어가지 않는 것을 제외하면
-Chrome 및 Firefox와 유사하게 동작합니다.
+In IE the CSS pseudo class lacks a hyphen, but otherwise works similarly to Chrome and Firefox.
 
     selector:-ms-fullscreen {
       display: block;
     }
-
+    
     selector {
       display: none; // hides the element when not in fullscreen mode
     }
+    
 
-#### 사양
+#### Specification
 
-사양의 철자는 IE가 사용하는 구문과 일치합니다.
+The spelling in the specification matches the syntax used by IE.
 
     selector:fullscreen {
       display: block;
     }
-
+    
     selector {
       display: none; // hides the element when not in fullscreen mode
     }
+    
 
-### 사용자를 전체 화면에 고정
+### Keep the user in the fullscreen experience
 
-Fullscreen API는 때로 세심한 주의가 필요합니다. 브라우저 공급업체는
-사용자를 전체 화면 페이지에 가두고 싶어 하지 않으므로 최대한 빨리 전체 화면에서 벗어나는
-메커니즘을 개발했습니다.  즉, 여러 페이지에 걸친
-전체 화면 웹사이트를 빌드할 수 없다는 뜻입니다.
+The fullscreen API can be a little finicky sometimes. Browser vendors don't want to lock users in a fullscreen page so they have developed mechanisms to break out of fullscreen as soon as they possibly can. This means you can't build a fullscreen website that spans multiple pages because:
 
-* `window.location =
-  "http://example.com"`을 사용하여 URL을 자동 변경하면 전체 화면에서 빠져나옵니다.
-* 사용자가 페이지 안의 외부 링크를 클릭해도 전체 화면이 종료됩니다.
-* `navigator.pushState` API를 통해 URL을 변경해도 전체 화면에서
-  빠져나옵니다.
+* Changing the URL programmatically by using `window.location =
+"http://example.com"` breaks out of fullscreen.
+* A user clicking on an external link inside your page will exit fullscreen.
+* Changing the URL via the `navigator.pushState` API will also break out of the fullscreen experience.
 
-사용자를 전체 화면에 고정하고 싶다면 두 가지 옵션이 있습니다.
+You have two options if you want to keep the user in a fullscreen experience:
 
-1. 설치 가능한 웹 앱 메커니즘을 사용하여 전체 화면을 실행합니다.
-2. \# 프래그먼트를 사용하여 UI와 앱 상태를 관리합니다.
+1. Use the installable web app mechanisms to go fullscreen.
+2. Manage your UI and app state using the # fragment.
 
-\#syntax를 사용하여 url (window.location = "#somestate")을 업데이트하고
-`window.onhashchange` 이벤트를 수신하면 브라우저의 자체
-기록 스택으로 애플리케이션 상태 변경을 관리할 수 있습니다. 이 방법으로 사용자가
-하드웨어 뒤로 버튼을 사용할 수 있게 하거나 다음과 같이 기록 API를 사용하여 간단한 프로그래밍 방식의 뒤로 버튼
-을 제공합니다.
+By using the #syntax to update the url (window.location = "#somestate"), and listening to the `window.onhashchange` event you can use the browser's own history stack to manage changes in the application state, allow the user to use their hardware back buttons, or offer a simple programmatic back button experience by using the history API as follows:
 
     window.history.go(-1);
+    
 
-### 전체 화면으로 이동 시 사용자에게 선택권 부여
+### Let the user choose when to go fullscreen
 
-사용자가 가장 크게 짜증을 느끼는 순간은 웹사이트가 예상치 못한 동작을 하는 때입니다.
- 사용자가 여러분의 사이트로 이동할 때 속임수로 전체 화면으로
-안내하려고 하지 마세요.
+There is nothing more annoying to the user than a website doing something unexpected. When a user navigates to your site don't try and trick them into fullscreen.
 
-첫 번째 터치 이벤트에 개입해서 `requestFullscreen()`을 호출하지 마세요.
+Don't intercept the first touch event and call `requestFullscreen()`.
 
-1. 짜증스럽습니다.
-2. 나중에 언젠가 브라우저에서 앱을 전체 화면으로 바꿀지 묻는 메시지를
-   사용자에게 표시할 수도 있습니다.
+1. It is annoying.
+2. Browsers may decided to prompt the user at some point in the future about allowing the app to take up the fullscreen.
 
-앱을 전체 화면으로 실행하고 싶다면 각 플랫폼의 설치 경험을
-활용해보세요.
+If you want to launch apps fullscreen think about using the install experiences for each platform.
 
-### 앱을 홈 화면에 설치하라는 스팸을 사용자에게 보내지 마세요
+### Don't spam the user to install your app to a home screen
 
-설치된 앱 메커니즘을 통해 전체 화면 경험을 제공하고 싶다면
-사용자를 배려하세요.
+If you plan on offering a fullscreen experience via the installed app mechanisms be considerate to the user.
 
-* 신중하게 행동해야 합니다. 배너나 바닥글을 사용하여 앱을 설치할 수 있다고 사용자에게 알리세요.
+* Be discreet. Use a banner or footer to let them know they can install the app.
+* If they dismiss the prompt, don't show it again.
+* On a users first visit they are unlikely to want to install the app unless they are happy with your service. Consider prompting them to install after a positive interaction on your site.
+* If a user visits your site regularly and they don't install the app, they are unlikely to install your app in the future. Don't keep spamming them.
 
-* 사용자가 프롬프트를 무시한다면 다시 표시하지 마세요.
-* 사용자가 처음 방문했을 때는 여러분의 서비스에 만족하지 않는다면
-앱을 설치하려고 할 가능성이 낮습니다. 여러분의 사이트에서 긍정적인 상호작용을 한 후에
-사용자에게 설치 메시지를 보여주세요.
-* 사용자가 여러분의 사이트를 정기적으로 방문하고 앱을 설치하지 않는다면
-앞으로도 설치할 가능성은 낮습니다. 계속 스팸을 보내지 마세요.
+## Conclusion
 
-## 결론
+While we don't have a fully standardized and implemented API, using some of the guidance presented in this article you can easily build experiences that take advantage of the user's entire screen, irrespective of the client.
 
-완벽히 표준화되어 구현된 API가 있는 것은 아니지만
-이 문서에 있는 지침을 몇 가지 활용하면 클라이언트와 관계없이 사용자의 화면 전체를 활용하는
-경험을 쉽게 빌드할 수 있습니다.
+## Feedback {: #feedback }
 
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
