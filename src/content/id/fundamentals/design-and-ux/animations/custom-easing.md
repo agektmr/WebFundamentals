@@ -1,74 +1,68 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Bertualanglah dan buat animasi yang benar-benar khusus untuk proyek Anda.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Go offroad and create totally custom animations for your projects.
 
-{# wf_updated_on: 2016-08-23 #}
-{# wf_published_on: 2014-08-08 #}
+{# wf_blink_components: Blink>Animation #} {# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2014-08-08 #}
 
-# Easing Khusus {: .page-title }
+# Custom Easing {: .page-title }
 
-{% include "web/_shared/contributors/paullewis.html" %}
-{% include "web/_shared/contributors/samthorogood.html" %}
+{% include "web/_shared/contributors/paullewis.html" %} {% include "web/_shared/contributors/samthorogood.html" %}
 
-Terkadang Anda tidak ingin menggunakan kata kunci easing yang disertakan dengan CSS, atau Anda akan menggunakan Animasi Web atau kerangka kerja JavaScript. Dalam hal ini, Anda biasanya bisa menentukan kurva (atau persamaan), dan ini memberikan Anda banyak kontrol terhadap nuansa animasi proyek.
+Sometimes you won't want to use the easing keywords that are included with CSS, or you will be using Web Animations or a JavaScript framework. In these cases, you can typically define your own curves (or equations), and this provides a lot of control over the feel of your project's animations.
 
 ### TL;DR {: .hide-from-toc }
-* Easing khusus memungkinkan Anda untuk memberikan lebih banyak kepribadian dalam proyek Anda.
-* Anda bisa membuat kurva cubic Bézier yang menyerupai kurva animasi default (ease-out, ease-in, dll.) tapi dengan penekanan pada tempat yang berbeda.
-* Gunakan JavaScript ketika Anda membutuhkan lebih banyak kontrol atas pengaturan waktu dan perilaku animasi, misalnya, animasi elastis atau memantul.
 
+* Custom easing allows you to give more personality to your projects.
+* You can create cubic Bézier curves that resemble the default animation curves (ease-out, ease-in, etc.), but with emphasis in different places.
+* Use JavaScript when you need more control over the animation timing and behavior, for example, elastic or bounce animations.
 
-Jika membuat animasi dengan CSS, Anda akan mendapati bahwa Anda bisa menentukan kurva cubic Bézier untuk menetapkan waktunya. Faktanya, kata kunci `ease`, `ease-in`, `ease-out` dan `linear` memetakan ke kurva Bézier yang sudah ditetapkan, yang dijelaskan terperinci dalam [spesifikasi transisi CSS](http://www.w3.org/TR/css3-transitions/) dan [spesifikasi Animasi Web](https://w3c.github.io/web-animations/#scaling-using-a-cubic-bezier-curve).
+If you're animating with CSS, you'll find that you can define cubic Bézier curves to define the timing. In fact, the keywords `ease`, `ease-in`, `ease-out`, and `linear` map to predefined Bézier curves, which are detailed in the [CSS transitions specification](http://www.w3.org/TR/css3-transitions/) and the [Web Animations specification](https://w3c.github.io/web-animations/#scaling-using-a-cubic-bezier-curve).
 
-Kurva Bézier ini mengambil empat nilai, atau dua pasang angka, dengan setiap pasangan menggambarkan koordinat X dan Y dari titik kontrol kurva cubic Bézier. Titik awal dari kurva Bézier memiliki koordinat (0, 0) dan titik akhir koordinat adalah (1, 1); Anda bisa menyetel nilai-nilai X dan Y dari dua titik kontrol. Nilai X untuk dua titik kontrol harus antara 0 dan 1, dan nilai Y setiap titik kontrol bisa melebihi batas [0, 1], meskipun spesifikasinya tidak menyebutkan seberapa banyak.
+These Bézier curves take four values, or two pairs of numbers, with each pair describing the X and Y coordinates of a cubic Bézier curve’s control points. The starting point of the Bézier curve has a coordinate of (0, 0) and the end coordinate is (1, 1); you get to set the X and Y values of the two control points. The X values for the two control points must be between 0 and 1, and each control point’s Y value can exceed the [0, 1] limit, although the spec isn’t clear by how much.
 
-Mengubah setiap nilai X dan Y dari titik kontrol memberikan kurva yang sangat berbeda, dan karena itu memberikan nuansa sangat berbeda terhadap animasi Anda. Misalnya, jika titik kontrol pertama ada di daerah kanan bawah, maka animasinya akan dimulai dengan lambat. Jika ada di sudut kiri atas, animasi akan dimulai dengan cepat. Sebaliknya, jika titik kontrol kedua ada di daerah kanan bawah grid, animasi akan cepat di bagian akhir; jika di kiri atas, animasi akan lambat di bagian akhir.
+Changing the X and Y value of each control point gives you a vastly different curve, and therefore a vastly different feel to your animation. For example, if the first control point is in the lower right area, the animation will be slow to start. If it’s in the top left area, it’s going to be fast to start. Conversely, if the second control point is in the bottom right area of the grid, it’s going to be fast at the end; if it’s in the top left, it will be slow to end.
 
-Sebagai perbandingan, di sini ada dua kurva: kurva ease-in-out biasa dan kurva khusus:
+For comparison, here are two curves: a typical ease-in-out curve and a custom curve:
 
 <div class="attempt-left">
   <figure>
-    <img src="images/ease-in-out-markers.png" alt="Kurva animasi ease-in-out." />
+    <img src="images/ease-in-out-markers.png" alt="Ease-in-out animation curve." />
   </figure>
 </div>
+
 <div class="attempt-right">
   <figure>
-    <img src="images/custom.png" alt="Kurva animasi khusus." />
+    <img src="images/custom.png" alt="Custom animation curve." />
   </figure>
 </div>
 
-[Melihat animasi dengan easing khusus](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/animations/box-move-custom-curve.html){: target="_blank" .external }
+[See an animation with custom easing](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/animations/box-move-custom-curve.html){: target="_blank" .external }
 
-CSS untuk kurva khusus adalah:
-
+The CSS for the custom curve is:
 
     transition: transform 500ms cubic-bezier(0.465, 0.183, 0.153, 0.946);
     
 
-Dua angka pertama adalah koordinat X dan Y dari titik kontrol pertama, dan dua angka kedua adalah koordinat X dan Y dari titik kontrol kedua.
+The first two numbers are the X and Y coordinates of the first control point, and the second two numbers are the X and Y coordinates of the second control point.
 
-Membuat kurva khusus sangat menyenangkan, dan memberikan Anda kontrol yang banyak atas nuansa animasi. Misalnya, pada kurva di atas, Anda bisa melihat bahwa kurva menyerupai kurva ease-in-out klasik, namun dengan ease-in dipersingkat, atau bagian "memulai," dan perlambatan panjang di bagian akhir.
+Making a custom curve is a lot of fun, and it gives you significant control over the feel of the animation. For example, given the above curve, you can see that the curve resembles a classic ease-in-out curve, but with a shortened ease-in, or "getting started," portion, and an elongated slowdown at the end.
 
-Lakukan eksperimen dengan [alat (bantu) kurva animasi](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/animations/curve-playground.html){: target="_blank" .external } dan lihat bagaimana kurva memengaruhi nuansa animasi.
+Experiment with this [animation curve tool](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/animations/curve-playground.html){: target="_blank" .external } and see how the curve affects the feel of an animation.
 
-## Gunakan kerangka kerja JavaScript untuk lebih banyak kontrol
+## Use JavaScript frameworks for more control
 
-Terkadang Anda membutuhkan lebih banyak kontrol daripada yang disediakan oleh kurva cubic Bézier. Jika Anda ingin efek memantul elastis, Anda bisa mempertimbangkan menggunakan kerangka kerja JavaScript, karena ini adalah efek yang sulit dicapai dengan CSS atau Web Animations.
+Sometimes you need even more control than a cubic Bézier curve can provide. If you wanted an elastic bounce feel, you might consider using a JavaScript framework, because this is a difficult effect to achieve with either CSS or Web Animations.
 
 ### TweenMax
 
-Salah satu kerangka kerja yang efektif adalah [TweenMax dari GreenSock](https://github.com/greensock/GreenSock-JS/tree/master/src/minified) (atau TweenLite jika ingin membuat segalanya sangat ringan), karena Anda mendapatkan banyak kontrol dalam pustaka JavaScript yang ringan, dan basis kode yang sangat matang.
+One powerful framework is [GreenSock’s TweenMax](https://github.com/greensock/GreenSock-JS/tree/master/src/minified) (or TweenLite if you want to keep things really lightweight), because you get a lot of control from it in a small JavaScript library, and it’s a very mature codebase.
 
-[Lihat animasi ease elastis](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/animations/box-move-elastic.html){: target="_blank" .external }
+[See an elastic ease animation](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/animations/box-move-elastic.html){: target="_blank" .external }
 
-Untuk menggunakan TweenMax, sertakan skrip berikut di laman Anda:
-
+To use TweenMax, include this script in your page:
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/latest/TweenMax.min.js"></script>
     
 
-Setelah skrip ditempatkan, Anda bisa memanggil TweenMax terhadap elemen Anda dan memberitahukan properti yang diinginkan, bersama tiap easing yang Anda inginkan. Ada banyak pilihan easing yang bisa Anda gunakan; kode di bawah menggunakan ease-out elastis:
-
+After the script is in place, you can call TweenMax against your element and tell it which properties you’d like, along with any easing you’d like. There are many easing options that you can use; the code below uses an elastic ease-out:
 
     var box = document.getElementById('my-box');
     var animationDurationInSeconds = 1.5;
@@ -79,10 +73,8 @@ Setelah skrip ditempatkan, Anda bisa memanggil TweenMax terhadap elemen Anda dan
     });
     
 
-[Dokumentasi TweenMax](https://greensock.com/docs/#/HTML5/GSAP/TweenMax/) menyoroti semua pilihan yang Anda miliki, sehingga layak dibaca.
+The [TweenMax documentation](https://greensock.com/docs/#/HTML5/GSAP/TweenMax/) highlights all the options you have here, so it's well worth a read.
 
+## Feedback {: #feedback }
 
-
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
