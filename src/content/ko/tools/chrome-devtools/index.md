@@ -1,155 +1,209 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Option 1
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Get started with Google Chrome's built-in web developer tools.
 
-{# wf_updated_on: 2017-02-01 #}
-{# wf_published_on: 2016-03-28 #}
+{# wf_updated_on: 2018-12-20 #} {# wf_published_on: 2016-03-28 #} {# wf_blink_components: Platform>DevTools #}
 
 # Chrome DevTools {: .page-title }
 
-Chrome DevTools는 Google Chrome에 내장되어있는 웹 저작 및 디버깅 도구셋입니다.
-DevTools를 이용하여 사이트를 반복하고, 디버깅하고, 프로파일링할 수 있습니다.
+Chrome DevTools is a set of web developer tools built directly into the [Google Chrome](https://www.google.com/chrome/){: .external } browser. DevTools can help you edit pages on-the-fly and diagnose problems quickly, which ultimately helps you build better websites, faster.
 
-Note: 많은 DevTools 문서는 최신 Chrome 피쳐를 제공하는 [Chrome Canary][canary]를 기반으로 작성했습니다.
+<div class="video-wrapper">
+  <iframe class="devsite-embedded-youtube-video" data-video-id="G_P6rpRSr4g"
+          data-autohide="1" data-showinfo="0" frameborder="0" allowfullscreen>
+  </iframe>
+</div>
 
-[canary]: https://www.google.com/intl/en/chrome/browser/canary.html
+With DevTools you can view and change any page. Even the Google homepage, as the video demonstrates.
 
-## Chrome DevTools 열기 {: #open }
+## Open DevTools {: #open }
 
-* Chrome 메뉴에서 **도구 더보기** > **개발자 도구** 선택
-* 페이지 요소를 오른 클릭하고 검사를 선택
-* [키보드 단축키](/web/tools/chrome-devtools/inspect-styles/shortcuts)
-<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>I</kbd> (Windows)나 <kbd>Cmd</kbd>+<kbd>Opt</kbd>+<kbd>I</kbd> (Mac)를 사용할 수 있습니다.
+There are many ways to open DevTools, because different users want quick access to different parts of the DevTools UI.
 
-## DevTools 더 알아보기
+* When you want to work with the DOM or CSS, right-click an element on the page and select **Inspect** to jump into the **Elements** panel. Or press <kbd>Command</kbd>+<kbd>Option</kbd>+<kbd>C</kbd> (Mac) or <kbd>Control</kbd>+<kbd>Shift</kbd>+<kbd>C</kbd> (Windows, Linux, Chrome OS).
+* When you want to see logged messages or run JavaScript, press <kbd>Command</kbd>+<kbd>Option</kbd>+<kbd>J</kbd> (Mac) or <kbd>Control</kbd>+<kbd>Shift</kbd>+<kbd>J</kbd> (Windows, Linux, Chrome OS) to jump straight into the **Console** panel.
 
-### 기기 모드
+See [Open Chrome DevTools](/web/tools/chrome-devtools/open) for more details and workflows.
 
-<img src="images/device-mode.png" alt="Device Mode" class="attempt-right">
-완전히 반응하는 모바일 우선 웹 경험을 만드세요.</p>
+## DevTools for Beginners {: #beginners }
 
-* [기기 모드](/web/tools/chrome-devtools/device-mode/)
-* [반응형 및 기기별 뷰포트 테스트](/web/tools/chrome-devtools/device-mode/emulate-mobile-viewports)
-* [센서 에뮬레이션: Geolocation &amp; Accelerometer](/web/tools/chrome-devtools/device-mode/device-input-and-sensors)
+DevTools for Beginners teaches you the **fundamentals of web development** as well as the basics of DevTools. Check out [Get started](#get-started) below if you'd prefer tutorials that focus on DevTools.
 
-<div style="clear:both;"></div>
+* [Get Started with HTML and the DOM](/web/tools/chrome-devtools/beginners/html)
+* [Get Started with CSS](/web/tools/chrome-devtools/beginners/css)
 
-### Elements 패널
+## Get started {: #get-started }
 
-<img src="images/panels/elements.png" alt="Elements Panel" class="attempt-right">
-DOM과 CSS를 자유롭게 조작하여 사이트의 레이아웃과 디자인을 반복하십시오.
+If you're a more experienced web developer, here are the recommended starting points for learning how DevTools can improve your productivity:
 
-* [페이지 검사 및 조정](/web/tools/chrome-devtools/inspect-styles/)
-* [스타일 수정](/web/tools/chrome-devtools/inspect-styles/edit-styles)
-* [DOM 수정](/web/tools/chrome-devtools/inspect-styles/edit-dom)
-* [애니메이션 검사](/web/tools/chrome-devtools/inspect-styles/animations)
+* [View and Change a Page's Styles (CSS)](/web/tools/chrome-devtools/css/)
+* [Debug JavaScript](/web/tools/chrome-devtools/javascript/)
+* [View Messages and Run JavaScript in the Console](console/get-started)
+* [Optimize Website Speed](/web/tools/chrome-devtools/speed/get-started)
 
-<div style="clear:both;"></div>
+## Discover DevTools {: #discover }
 
-### Console 패널 
+The DevTools UI can be a little overwhelming... there are so many tabs! But, if you take some time to get familiar with each tab to understand what's possible, you may discover that DevTools can seriously boost your productivity.
 
-<img src="images/panels/console.png" alt="Console Panel" class="attempt-right">
-개발 중 진단 정보를 남기고 페이지의 자바스크립트와 상호작용합니다.
+Note: In the DevTools docs, the top-level tabs are called panels.
 
-* [Console 사용하기](/web/tools/chrome-devtools/console/)
-* [커맨드 라인으로 상호작용하기](/web/tools/chrome-devtools/console/command-line-reference)
+### Device Mode {: #device-mode }
 
-<div style="clear:both;"></div>
+<img src="images/device-mode.png" alt="Device Mode" class="attempt-right" />
 
-### Sources 패널 
+Simulate mobile devices.
 
-<img src="images/panels/sources.png" alt="Sources Panel" class="attempt-right">
-브레이크 포인트를 사용해 자바스크립트를 디버깅하거나 Workspace를 로컬파일에 연결하여 DevTools를 코드 에디터로 사용하세요.
-
-* [자바스크립트 디버깅 시작하기](/web/tools/chrome-devtools/javascript)
-* [브레이크 포인트를 사용한 디버깅](/web/tools/chrome-devtools/javascript/add-breakpoints)
-* [DevTools Workspace로 지속성 설정](/web/tools/setup/setup-workflow)
-* [모든 페이지에서 코드 스니펫 실행](/web/tools/chrome-devtools/snippets)
+* [Device Mode](/web/tools/chrome-devtools/device-mode/)
+* [Test Responsive and Device-specific Viewports](/web/tools/chrome-devtools/device-mode/emulate-mobile-viewports)
+* [Emulate Sensors: Geolocation & Accelerometer](/web/tools/chrome-devtools/device-mode/device-input-and-sensors)
 
 <div style="clear:both;"></div>
 
-### Network 패널 
+### Elements panel {: #elements }
 
-<img src="images/panels/network.png" alt="Network Panel" class="attempt-right">
+<img src="images/panels/elements.png" alt="Elements Panel" class="attempt-right" />
 
-요청 관련 문제의 디버깅과 페이지 로딩 성능을 최적화하세요.
+View and change the DOM and CSS.
 
-* [시작하기](/web/tools/chrome-devtools/network-performance/)
-* [네트워크 이슈 가이드](/web/tools/chrome-devtools/network-performance/issues)
-* [Network 패널 참조](/web/tools/chrome-devtools/network-performance/reference)
-
-<div style="clear:both;"></div>
-
-### Performance 패널 (이전의 Timeline 패널)
-
-Note: Chrome 57부터 Timeline 패널이 Performance 패널로 이름이 바뀌었습니다.
-
-<img src="images/panels/performance.png" alt="Timeline Panel" class="attempt-right">
-사이트의 라이프사이클 동안 발생한 다양한 이벤트를 기록하고 탐색하여 페이지의 런타임 성능을 향상합니다.
-
-* [성능 보는 법](/web/tools/chrome-devtools/evaluate-performance/timeline-tool)
-* [런타임 성능 분석](/web/tools/chrome-devtools/rendering-tools/)
-* [강제 동기 레이아웃 분석](/web/tools/chrome-devtools/rendering-tools/forced-synchronous-layouts)
+* [Get Started With Viewing And Changing CSS](/web/tools/chrome-devtools/css/)
+* [Inspect and Tweak Your Pages](/web/tools/chrome-devtools/inspect-styles/)
+* [Edit Styles](/web/tools/chrome-devtools/inspect-styles/edit-styles)
+* [Edit the DOM](/web/tools/chrome-devtools/inspect-styles/edit-dom)
+* [Inspect Animations](/web/tools/chrome-devtools/inspect-styles/animations)
 
 <div style="clear:both;"></div>
 
-### Memory 패널 (이전의 Profiles 패널)
+### Console panel {: #console }
 
-Note: Chrome 57부터 Profile 패널이 Memory 패널로 이름이 바뀌었습니다.
+<img src="images/panels/console.png" alt="Console Panel" class="attempt-right" />
 
-<img src="images/panels/memory.png" alt="Profiles Panel" class="attempt-right">
-메모리 사용 행태를 작성하고, 누수를 탐색합니다.
+View messages and run JavaScript from the Console.
 
-* [메모리 문제 해결](/web/tools/chrome-devtools/memory-problems/)
-* [자바스크립트 CPU 프로파일러](/web/tools/chrome-devtools/rendering-tools/js-execution)
-
-<div style="clear:both;"></div>
-
-### Application 패널 (이전의 Resources 패널)
-
-Note: Chrome 52부터 Resources 패널이 Application 패널로 이름이 바뀌었습니다.
-
-<img src="images/panels/application.png" alt="Application Panel" class="attempt-right">
-IndexedDB와 웹 SQL 데이터베이스, 로컬 및 세션 스토리지, 쿠키, 어플리케이션 캐시, 이미지, 폰트, 스타일시트를 포함한 로딩된 모든 리소스를 검사합니다.
-
-* [프로그레시브 웹 앱 디버깅](/web/tools/chrome-devtools/progressive-web-apps)
-* [스토리지, 데이터베이스, 캐시 관리 및 검사](/web/tools/chrome-devtools/manage-data/local-storage)
-* [쿠키 삭제 및 검사](/web/tools/chrome-devtools/manage-data/cookies)
-* [리소스 검사](/web/tools/chrome-devtools/manage-data/page-resources)
+* [Get Started With The Console](/web/tools/chrome-devtools/console/get-started)
+* [Using the Console](/web/tools/chrome-devtools/console/)
+* [Interact from Command Line](/web/tools/chrome-devtools/console/command-line-reference)
+* [Console API Reference](/web/tools/chrome-devtools/console/console-reference)
 
 <div style="clear:both;"></div>
 
-### Security 패널 
+### Sources panel {: #sources }
 
-<img src="images/panels/security.png" alt="Security Panel" class="attempt-right">
-Mixed content 이슈, 인증서 문제 등을 디버깅합니다.
+<img src="images/panels/sources.png" alt="Sources Panel" class="attempt-right" />
 
-* [보안 이슈 이해하기](/web/tools/chrome-devtools/security)
+Debug JavaScript, persist changes made in DevTools across page reloads, save and run snippets of JavaScript, and save changes that you make in DevTools to disk.
+
+* [Get Started With Debugging JavaScript](/web/tools/chrome-devtools/javascript)
+* [Pause Your Code With Breakpoints](/web/tools/chrome-devtools/javascript/breakpoints)
+* [Save Changes to Disk with Workspaces](/web/tools/setup/setup-workflow)
+* [Run Snippets Of Code From Any Page](/web/tools/chrome-devtools/snippets)
+* [JavaScript Debugging Reference](/web/tools/chrome-devtools/javascript/reference)
+* [Persist Changes Across Page Reloads with Local Overrides](/web/updates/2018/01/devtools#overrides)
 
 <div style="clear:both;"></div>
 
-## 참여하기 
+### Network panel {: #network }
 
-DevTools(나 이 문서)에 대한 피드백이나 질문은 아래 채널들에서 할 수 있습니다.
+<img src="images/panels/network.png" alt="Network Panel" class="attempt-right" />
 
-<a class="button button-white gc-analytics-event"
+View and debug network activity.
+
+* [Get Started](/web/tools/chrome-devtools/network-performance/)
+* [Network Issues Guide](/web/tools/chrome-devtools/network-performance/issues)
+* [Network Panel Reference](/web/tools/chrome-devtools/network-performance/reference)
+
+<div style="clear:both;"></div>
+
+### Performance panel {: #performance }
+
+Note: In Chrome 58 the Timeline panel was renamed to the Performance panel.
+
+<img src="images/panels/performance.png" alt="Timeline Panel" class="attempt-right" />
+
+Find ways to improve load and runtime performance.
+
+* [Optimize Website Speed](/web/tools/chrome-devtools/speed/get-started)
+* [Get Started With Analyzing Runtime Performance](/web/tools/chrome-devtools/evaluate-performance/)
+* [Performance Analysis Reference](/web/tools/chrome-devtools/evaluate-performance/reference)
+* [Analyze runtime performance](/web/tools/chrome-devtools/rendering-tools/)
+* [Diagnose Forced Synchronous Layouts](/web/tools/chrome-devtools/rendering-tools/forced-synchronous-layouts)
+
+<div style="clear:both;"></div>
+
+### Memory panel {: #memory }
+
+Note: In Chrome 58 the Profiles panel was renamed to the Memory panel.
+
+<img src="images/panels/memory.png" alt="Profiles Panel" class="attempt-right" /> Profile memory usage and track down leaks.
+
+* [Fix Memory Problems](/web/tools/chrome-devtools/memory-problems/)
+* [JavaScript CPU Profiler](/web/tools/chrome-devtools/rendering-tools/js-execution)
+
+<div style="clear:both;"></div>
+
+### Application panel {: #application }
+
+<img src="images/panels/application.png" alt="Application Panel" class="attempt-right" />
+
+Inspect all resources that are loaded, including IndexedDB or Web SQL databases, local and session storage, cookies, Application Cache, images, fonts, and stylesheets.
+
+* [Debug Progressive Web Apps](/web/tools/chrome-devtools/progressive-web-apps)
+* [Inspect and Manage Storage, Databases, and Caches](/web/tools/chrome-devtools/manage-data/local-storage)
+* [Inspect and Delete Cookies](/web/tools/chrome-devtools/manage-data/cookies)
+* [Inspect Resources](/web/tools/chrome-devtools/manage-data/page-resources)
+
+<div style="clear:both;"></div>
+
+### Security panel {: #security }
+
+<img src="images/panels/security.png" alt="Security Panel" class="attempt-right" />
+
+Debug mixed content issues, certificate problems, and more.
+
+* [Understand Security Issues](/web/tools/chrome-devtools/security)
+
+<div style="clear:both;"></div>
+
+## Join the DevTools community {: #community }
+
+<style>
+  .cdt-but {
+    display: inline-block;
+  }
+</style>
+
+The best place to file feature requests for Chrome DevTools is the mailing list. The team needs to understand use cases, gauge community interest, and discuss feasibility before implementing any new features.
+
+<a class="button button-primary gc-analytics-event cdt-but"
+   href="https://groups.google.com/forum/#!forum/google-chrome-developer-tools"
+   data-category="DevTools" data-label="Home / Mailing List">Mailing List</a>
+
+File bug reports in Crbug, which is the engineering team's bug tracker.
+
+<a class="button button-primary gc-analytics-event" href="https://crbug.com"
+   data-category="DevTools" data-label="Home / Crbug">Crbug</a>
+
+If you want to alert us to a bug or feature request but don't have much time, you're welcome to send a tweet to @ChromeDevTools. We reply and send announcements from the account regularly.
+
+<a class="button button-primary gc-analytics-event"
    data-category="DevTools" data-label="Home / Twitter"
    href="https://twitter.com/ChromeDevTools">Twitter</a>
 
-<a class="button button-white gc-analytics-event"
-   href="https://groups.google.com/forum/#!topic/google-chrome-developer-tools"
-   data-category="DevTools" data-label="Home / Mailing List">Mailing List</a>
+For help with using DevTools, Stack Overflow is the best channel.
 
-<a class="button button-white gc-analytics-event"
-   href="https://stackoverflow.com/questions/tagged/google-chrome-devtools"
-   data-category="DevTools" data-label="Home / Stack Overflow">
-  Stack Overflow
-</a>
+<a class="button button-primary gc-analytics-event cdt-but"
+   href="https://stackoverflow.com/questions/ask?tags=google-chrome-devtools"
+   data-category="DevTools" data-label="Home / Stack Overflow"> Stack Overflow </a>
 
-<a class="button button-white gc-analytics-event"
+To file bugs or feature requests on the DevTools docs, open a GitHub issue on the Web Fundamentals repository.
+
+<a class="button button-primary gc-analytics-event"
+   href="https://github.com/google/webfundamentals/issues/new"
+   data-category="DevTools" data-label="Home / GitHub">Docs Issues</a>
+
+DevTools also has a Slack channel, but the team doesn't monitor it consistently.
+
+<a class="button button-primary gc-analytics-event"
    href="https://chromiumdev.slack.com/messages/devtools/"
    data-category="DevTools" data-label="Home / Slack">Slack</a>
 
-<a class="button button-white gc-analytics-event"
-   href="https://github.com/google/webfundamentals/issues/new"
-   data-category="DevTools" data-label="Home / GitHub">GitHub</a>
+## Feedback {: #feedback }
+
+{% include "web/_shared/helpful.html" %}
