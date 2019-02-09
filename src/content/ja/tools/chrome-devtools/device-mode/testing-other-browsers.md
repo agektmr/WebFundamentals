@@ -1,103 +1,89 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description:Chrome と Android でサイトがうまく実行できることを確認したら作業完了というわけではありません。 Device Mode では iPhone などの他のさまざまな端末をシミュレートできますが、他のブラウザ ソリューションでエミュレーションを行ってみることをおすすめします。
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Your job doesn't end with ensuring your site runs great across Chrome and Android. Even though Device Mode can simulate a range of other devices like iPhones, we encourage you to check out other browsers solutions for emulation.
 
-{# wf_updated_on: 2019-02-06 #}
-{# wf_published_on: 2015-04-13 #}
-{# wf_blink_components: Platform>DevTools #}
+{# wf_updated_on: 2018-07-27 #} {# wf_published_on: 2015-04-13 #} {# wf_blink_components: Platform>DevTools #}
 
-# 他のブラウザのエミュレートとテスト {: .page-title }
+# Emulate and Test Other Browsers {: .page-title }
 
-{% include "web/_shared/contributors/megginkearney.html" %}
-{% include "web/_shared/contributors/pbakaus.html" %}
+{% include "web/_shared/contributors/megginkearney.html" %} {% include "web/_shared/contributors/pbakaus.html" %}
 
-Chrome と Android でサイトがうまく実行できることを確認したら作業完了というわけではありません。 Device Mode では iPhone などの他のさまざまな端末をシミュレートできますが、他のブラウザ ソリューションでエミュレーションを行ってみることをおすすめします。
-
+Your job doesn't end with ensuring your site runs great across Chrome and Android. Even though Device Mode can simulate a range of other devices like iPhones, we encourage you to check out other browsers solutions for emulation.
 
 ### TL;DR {: .hide-from-toc }
-- 特定の端末がない場合、または何らかのスポット チェックを行いたい場合は、ブラウザ内で端末をエミュレートするのが最適です。
-- 端末エミュレータとシミュレータを使用すると、ワークステーションからさまざまな端末での開発サイトの動きを模倣できます。
-- クラウドベースのエミュレータを使用すると、さまざまなプラットフォームにおけるサイトのユニットテストを自動化できます。
 
+* When you don’t have a particular device, or want to do a spot check on something, the best option is to emulate the device right inside your browser.
+* Device emulators and simulators let you mimic your development site on a range of devices from your workstation.
+* Cloud-based emulators let you automate unit tests for your site across different platforms.
 
-## ブラウザ エミュレータ
+## Browser emulators
 
-ブラウザ エミュレータは、サイトがレスポンシブであるかをテストするのに最適ですが、モバイル ブラウザの API、CSS サポート、および特定の動作の相違はエミュレートされません。
- 実際の端末でブラウザを実行してサイトをテストし、すべてが想定どおりに動作することを確認してください。
+Browser emulators are great for testing a site's responsiveness, but they don’t emulate differences in API, CSS support, and certain behaviors that you'd see on a mobile browser. Test your site on browsers running on real devices to be certain everything behaves as expected.
 
+### Firefox' Responsive Design View
 
-### Firefox のレスポンシブ デザイン ビュー
+Firefox has a [responsive design view](https://developer.mozilla.org/en-US/docs/Tools/Responsive_Design_View) that encourages you to stop thinking in terms of specific devices and instead explore how your design changes at common screen sizes or your own size by dragging the edges.
 
-Firefox の[レスポンシブ デザイン ビュー](https://developer.mozilla.org/en-US/docs/Tools/Responsive_Design_View)を使用すると、特定の端末を対象に考えるのではなく、縁をドラッグして一般的な画面サイズや独自のサイズでデザインがどのように変わるかを調べることができます。
+### Edge's F12 Emulation
 
+To emulate Windows Phones, use Microsoft Edge's [built-in emulation](https://dev.modern.ie/platform/documentation/f12-devtools-guide/emulation/).
 
+Since Edge does not ship with legacy compatibility, use [IE 11's Emulation](https://msdn.microsoft.com/en-us/library/dn255001(v=vs.85).aspx) to simulate how your page would look in older versions of Internet Explorer.
 
+## Device emulators and simulators
 
-### Edge の F12 エミュレーション
+Device simulators and emulators simulate not just the browser environment but the entire device. They're useful to test things that require OS integration, for example form input with virtual keyboards.
 
-Windows Phone をエミュレートするには、Microsoft Edge の [組み込みエミュレーション](https://dev.modern.ie/platform/documentation/f12-devtools-guide/emulation/)を使用します。
-
-Edge にはレガシー互換性がないため、古いバージョンの Internet Explorer でページがどのように表示されるかをシミュレートするには、[IE 11 のエミュレーション](https://msdn.microsoft.com/en-us/library/dn255001(v=vs.85).aspx) を使用します。
-
-## 端末エミュレータとシミュレータ
-
-端末エミュレータとシミュレータは、ブラウザ環境だけではなく、端末全体をシミュレートします。 仮想キーボードを使用したフォーム入力など、OS との統合が必要な機能をテストするのに役立ちます。
-
-### Android エミュレータ
+### Android Emulator
 
 <figure class="attempt-right">
-  <img src="imgs/android-emulator-stock-browser.png" alt="Android エミュレータの Stock Browser">
-  <figcaption>Android エミュレータの Stock Browser</figcaption>
+  <img src="imgs/android-emulator-stock-browser.png" alt="Android Emulator Stock Browser">
+  <figcaption>Stock Browser in Android Emulator</figcaption>
 </figure>
 
-現時点では、Android エミュレータに Chrome をインストールする方法はありません。 ただし、Android ブラウザ、Chromium Content Shell、およびこのガイドで後述する Android 版 Firefox を使用できます。 Chromium Content Shell では、同じ Chrome レンダリング エンジンを使用しますが、ブラウザ固有機能は一切付属していません。
+At the moment, there is no way to install Chrome on an Android emulator. However, you can use the Android Browser, the Chromium Content Shell and Firefox for Android which we'll cover later in this guide. Chromium Content Shell uses the same Chrome rendering engine, but comes without any of the browser specific features.
 
-Android エミュレータは、<a href="http://developer.android.com/sdk/installing/studio.html">ここからダウンロード</a>できる Android SDK に含まれています。
- 手順に従って<a href="http://developer.android.com/tools/devices/managing-avds.html">仮想端末を設定</a>し、<a href="http://developer.android.com/tools/devices/emulator.html">エミュレータを起動</a>します。
+The Android emulator comes with the Android SDK which you need to [download from here](http://developer.android.com/sdk/installing/studio.html). Then follow the instructions to [setup a virtual device](http://developer.android.com/tools/devices/managing-avds.html) and [start the emulator](http://developer.android.com/tools/devices/emulator.html).
 
-エミュレータが起動したら、ブラウザ アイコンをクリックします。これで Android 版の古い Stock Browser でサイトをテストできます。
+Once your emulator is booted, click on the Browser icon and you'll be able to test your site on the old Stock Browser for Android.
 
-#### Android 上の Chromium Content Shell
+#### Chromium Content Shell on Android
 
 <figure class="attempt-right">
-  <img src="imgs/android-avd-contentshell.png" alt="Android エミュレータの Content Shell">
-  <figcaption>Android エミュレータの Content Shell</figcaption>
+  <img src="imgs/android-avd-contentshell.png" alt="Android Emulator Content Shell">
+  <figcaption>Android Emulator Content Shell</figcaption>
 </figure>
 
-Android 用の Chromium Content Shell をインストールするには、エミュレータを実行した状態で、コマンド プロンプトで次のコマンドを実行します。
-
+To install the Chromium Content Shell for Android, leave your emulator running and run the following commands at a command prompt:
 
     git clone https://github.com/PaulKinlan/chromium-android-installer.git
     chmod u+x ./chromium-android-installer/\*.sh
     ./chromium-android-installer/install-chromeandroid.sh
+    
 
-これで、Chromium Content Shell でサイトをテストできます。
+Now you can test your site with the Chromium Content Shell.
 
-
-#### Android 上の Firefox
+#### Firefox on Android
 
 <figure class="attempt-right">
-  <img src="imgs/ff-on-android-emulator.png" alt="Android エミュレータ上の Firefox アイコン">
-  <figcaption>Android エミュレータ上の Firefox アイコン</figcaption>
+  <img src="imgs/ff-on-android-emulator.png" alt="Firefox Icon on Android Emulator">
+  <figcaption>Firefox Icon on Android Emulator</figcaption>
 </figure>
 
-Chromium の Content Shell と同様に、APK を取得してエミュレータに Firefox をインストールできます。
+Similar to Chromium's Content Shell, you can get an APK to install Firefox onto the emulator.
 
-<a href="https://ftp.mozilla.org/pub/mozilla.org/mobile/releases/latest/">https://ftp.mozilla.org/pub/mozilla.org/mobile/releases/latest/</a> から適切な .apk ファイルをダウンロードします。
+Download the right .apk file from <https://ftp.mozilla.org/pub/mozilla.org/mobile/releases/latest/>.
 
-ここから、次のコマンドを使用して、開いているエミュレータまたは接続されている Android 端末にファイルをインストールできます。
+From here, you can install the file onto an open emulator or connected Android device with the following command:
 
     adb install &lt;path to APK&gt;/fennec-XX.X.XX.android-arm.apk
+    
 
+### iOS Simulator
 
-### iOS シミュレータ
+The iOS simulator for Mac OS X comes with Xcode, which you can [install from the App Store](https://itunes.apple.com/us/app/xcode/id497799835?ls=1&mt=12).
 
-Mac OS X 用の iOS シミュレータは、[App Store からインストール](https://itunes.apple.com/us/app/xcode/id497799835?ls=1&mt=12)できる Xcode に含まれています。
+When you're done, learn how to work with the simulator through [Apple's documentation](https://developer.apple.com/library/prerelease/ios/documentation/IDEs/Conceptual/iOS_Simulator_Guide/Introduction/Introduction.html).
 
-
-インストールしたら [Apple のドキュメント](https://developer.apple.com/library/prerelease/ios/documentation/IDEs/Conceptual/iOS_Simulator_Guide/Introduction/Introduction.html)でシミュレータの操作方法を確認してください。
-
-注: iOS シミュレータを使用するたびに Xcode を開かなくても済むようにするには、Xcode を開いてからドックで iOS シミュレータのアイコンを右クリックし、[`Keep in Dock`] を選択します。 これで、必要なときにこのアイコンをクリックするだけで済みます。
+Note: To avoid having to open Xcode every time you want to use the iOS Simulator, open it, then right click the iOS Simulator icon in your dock and select `Keep in Dock`. Now just click this icon whenever you need it.
 
 ### Modern.IE
 
@@ -106,19 +92,16 @@ Mac OS X 用の iOS シミュレータは、[App Store からインストール]
   <figcaption>Modern IE VM</figcaption>
 </figure>
 
-Modern.IE 仮想マシンを使用すると、VirtualBox（または VMWare）を使用してコンピュータでさまざまなバージョンの IE にアクセスできます。 <a href="https://modern.ie/en-us/virtualization-tools#downloads">このダウンロード ページ</a>で仮想マシンを選択します。
+Modern.IE Virtual Machines let you access different versions of IE on your computer via VirtualBox (or VMWare). Choose a virtual machine on the [download page here](https://modern.ie/en-us/virtualization-tools#downloads).
 
+## Cloud-based emulators and simulators
 
-## クラウドベースのエミュレータとシミュレータ
+If you can’t use the emulators and don't have access to real devices, then cloud-based emulators are the next best thing. A big advantage of cloud-based emulators over real devices and local emulators is that you can automate unit tests for your site across different platforms.
 
-エミュレータを使用できず、実際の端末も使用できない場合は、クラウドベースのエミュレータが次善の策となります。 クラウドベースのエミュレータが実際の端末とローカル エミュレータよりも優れている点は、さまざまなプラットフォームにおけるサイトのユニットテストを自動化できることです。
+* [BrowserStack (commercial)](https://www.browserstack.com/automate) is the easiest to use for manual testing. You select an operating system, select your browser version and device type, select a URL to browse, and it spins up a hosted virtual machine that you can interact with. You can also fire up multiple emulators in the same screen, letting you test how your app looks and feels across multiple devices at the same time.
+* [SauceLabs (commercial)](https://saucelabs.com/){: .external } allows you to run unit tests inside of an emulator, which can be really useful for scripting a flow through your site and watch the video recording of this afterwards on various devices. You can also do manual testing with your site.
+* [Device Anywhere (commercial)](http://www.keynote.com/solutions/testing/mobile-testing) doesn't use emulators but real devices which you can control remotely. This is very useful in the event where you need to reproduce a problem on a specific device and can't see the bug on any of the options in the previous guides.
 
-* [BrowserStack（商用）](https://www.browserstack.com/automate)は、手動テストに最も簡単に使用できます。 オペレーティング システム、ブラウザ バージョンと端末タイプ、およびブラウジングする URL を選択すると、ホストされている操作可能な仮想マシンが起動します。 複数のエミュレータを同じ画面で起動して、同時に複数の端末でアプリのルック アンド フィールをテストすることもできます。
-* [SauceLabs（商用）](https://saucelabs.com/){: .external } を使用すると、エミュレータの内部でユニットテストを実行できます。これは、サイト全体のフローのスクリプトを作成するのに非常に便利で、録画した実行時の動画を後でさまざまな端末上で視聴できます。 サイトの手動テストを実行することもできます。
-* [Device Anywhere（商用）](http://www.keynote.com/solutions/testing/mobile-testing)ではエミュレータは使用されませんが、リモートで制御できる実際の端末が使用されます。
- これは、特定の端末で問題を再現する必要があり、これまでのガイドのオプションではバグが見つからない場合に非常に便利です。
-
-
-## フィードバック {: #feedback }
+## Feedback {: #feedback }
 
 {% include "web/_shared/helpful.html" %}
