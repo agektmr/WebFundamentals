@@ -1,131 +1,96 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Chrome DevTools には、例外をスローしているウェブページの修正や JavaScript のエラーのデバッグに役立つツールが用意されています。
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Chrome DevTools provides tools to help you fix web pages throwing exceptions and debug errors in your JavaScript.
 
-{# wf_updated_on:2015-05-12 #}
-{# wf_published_on:2015-04-13 #}
+{# wf_updated_on: 2018-07-27 #} {# wf_published_on: 2015-04-13 #} {# wf_blink_components: Platform>DevTools #}
 
-#  例外とエラーの処理 {: .page-title }
+# Exception and Error Handling {: .page-title }
 
-{% include "web/_shared/contributors/megginkearney.html" %}
-{% include "web/_shared/contributors/flaviocopes.html" %}
-Chrome DevTools には、例外をスローしているウェブページの修正や JavaScript のエラーのデバッグに役立つツールが用意されています。
+{% include "web/_shared/contributors/megginkearney.html" %} {% include "web/_shared/contributors/flaviocopes.html" %} Chrome DevTools provides tools to help you fix web pages throwing exceptions and debug errors in your JavaScript.
 
-ページの例外や JavaScript のエラーの詳細を把握できれば、実際に非常に便利です。ページで例外がスローされたり、スクリプトでエラーが生成されたりした場合、コンソールで提供される具体的で信頼性の高い情報を使用して、問題を特定し、修正することができます。 
+Page exceptions and JavaScript errors are actually quite useful - if you can get to the details behind them. When a page throws an exception or a script produces an error, the Console provides specific, reliable information to help you locate and correct the problem.
 
-コンソールでは、例外を追跡し、その原因となった実行パスをトレースして、明示的または暗黙的にそれらの例外を捕捉（または無視）することができます。さらに、例外データを自動的に収集、処理するエラーハンドラを設定することもできます。
-
+In the Console you can track exceptions and trace the execution path that led to them, explicitly or implicitly catch them (or ignore them), and even set error handlers to automatically collect and process exception data.
 
 ### TL;DR {: .hide-from-toc }
-- 例外が発生したときにコード コンテキストをデバッグするには、[Pause on exceptions] を有効にします。
-- 現在の JavaScript コールスタックを出力するには、 <code>console.trace</code> を使用します。
-- コードにアサーションを追加して例外をスローするには、 <code>console.assert()</code> を使用します。
-- ブラウザで発生しているエラーをログに記録するには、 <code>window.onerror</code> を使用します。
 
+- Turn on Pause on Exceptions to debug the code context when the exception triggered.
+- Print current JavaScript call stack using `console.trace`.
+- Place assertions in your code and throw exceptions using `console.assert()`.
+- Log errors happening in the browser using `window.onerror`.
 
-## 例外の追跡
+## Track exceptions
 
->問題が発生した場合、DevTools コンソールを開いて（`Ctrl+Shift+J` / `Cmd+Option+J`）、JavaScript エラー メッセージを確認します。メッセージごとに行番号とファイル名のリンクが表示され、該当する場所に移動することができます。
+When something goes wrong, open the DevTools console (`Ctrl+Shift+J` / `Cmd+Option+J`) to view the JavaScript error messages. Each message has a link to the file name with the line number you can navigate to.
 
+An example of an exception: ![Exception example](images/track-exceptions-tracking-exceptions.jpg)
 
-例外の例:
-![例外の例](images/track-exceptions-tracking-exceptions.jpg)
+### View exception stack trace
 
-### 例外のスタックトレースの表示
+It's not always obvious which execution path lead to an error. Complete JavaScript call stacks accompany exceptions in the console. Expand these console messages to see the stack frames and navigate to the corresponding locations in the code:
 
-どの実行パスがエラーの原因かわからない場合もあります。コンソールでは、JavaScript コールスタック全体に例外が関連付けられます。これらのコンソール メッセージを展開してスタック フレームを表示し、コード内の該当する場所に移動します。
+![Exception stack trace](images/track-exceptions-exception-stack-trace.jpg)
 
+### Pause on JavaScript exceptions
 
+The next time an exception is thrown, pause JavaScript execution and inspect its call stack, scope variables, and state of your app. A tri-state stop button at the bottom of the Scripts panel enables you to switch among different exception handling modes: ![Pause button](images/track-exceptions-pause-gray.png){:.inline}
 
-![例外のスタックトレース](images/track-exceptions-exception-stack-trace.jpg)
+Choose to either pause on all exceptions or only on the uncaught ones or you can ignore exceptions altogether.
 
-### JavaScript 例外での一時停止
+![Pause execution](images/track-exceptions-pause-execution.jpg)
 
-次に例外がスローされたときに、JavaScript の実行を一時停止し、そのコールスタック、スコープ変数、アプリケーションの状態を調べます。[Scripts] パネルの下部にある 3 ステート停止ボタン ![[Pause] ボタン](images/track-exceptions-pause-gray.png){:.inline} を使用すると、それぞれの例外処理モードに切り替えることができます。
+## Print stack traces
 
-
-
-
-すべての例外で一時停止するか、捕捉されない例外のみで一時停止するかを選択します。例外をまとめて無視することもできます。
-
-![例外の一時停止](images/track-exceptions-pause-execution.jpg)
-
-## スタックトレースの出力
-
-ウェブページの動作をより的確に把握するには、ログメッセージをコンソールに出力します。関連するスタックトレースを含め、ログエントリにさらに情報を組み込みます。
-これにはいくつかの方法があります。
+Better understand how your web page behaves by printing log messages to the console. Make the log entries more informative by including associated stack traces. There are several ways of doing that.
 
 ### Error.stack
-各 Error オブジェクトには、スタックトレースを格納する、stack という文字列プロパティがあります。
 
-![Error.stack の例](images/track-exceptions-error-stack.jpg)
+Each Error object has a string property named stack that contains the stack trace:
+
+![Error.stack example](images/track-exceptions-error-stack.jpg)
 
 ### console.trace()
 
-現在の JavaScript コールスタックを出力する [`console.trace()`](./console-reference#consoletraceobject) の呼び出しをコードに追加します。
+Instrument your code with [`console.trace()`](./console-reference#consoletraceobject) calls that print current JavaScript call stacks:
 
-![console.trace() の例](images/track-exceptions-console-trace.jpg)
+![console.trace() example](images/track-exceptions-console-trace.jpg)
 
 ### console.assert()
 
-最初のパラメータとしてエラー条件を指定して [`console.assert()`](./console-reference#consoleassertexpression-object) を呼び出すことにより、JavaScript コードにアサーションを挿入します。この式が false として評価されると、対応するコンソール レコードが表示されます。
+Place assertions in your JavaScript code by calling [`console.assert()`](./console-reference#consoleassertexpression-object) with the error condition as the first parameter. When this expression evaluates to false, you will see a corresponding console record:
 
+![console.assert() example](images/track-exceptions-console-assert.jpg)
 
+## How to examine stack trace to find triggers
 
+Let's see how to use the tools you've just learned about, and find the real cause of an error. Here's a simple HTML page that includes two scripts:
 
-![console.assert() の例](images/track-exceptions-console-assert.jpg)
+![Example code](images/track-exceptions-example-code.png)
 
-## スタックトレースを調べて原因を特定する方法
+When the user clicks on the page, the paragraph changes its inner text, and the `callLibMethod()` function provided by `lib.js` is called.
 
-ここで紹介したツールを使用して、エラーの実際の原因を特定する方法を確認しましょう。2 つのスクリプトを含む簡単な HTML ページを次に示します。
+This function prints a `console.log`, and then calls `console.slog`, a method not provided by the Console API. This should trigger an error.
 
+When the page is run and you click on it, this error is triggered:
 
+![Error triggered](images/track-exceptions-example-error-triggered.png)
 
-![コード例](images/track-exceptions-example-code.png)
+Click the arrow to can expand the error message:
 
-ユーザーがページをクリックすると、段落の内部テキストが変更され、`lib.js` で提供される `callLibMethod()` 関数が呼び出されます。
+![Error message expanded](images/track-exceptions-example-error-message-expanded.png)
 
+The Console tells you the error was triggered in `lib.js`, line 4, which was called by `script.js` in the `addEventListener` callback, an anonymous function, in line 3.
 
+This is a very simple example, but even the most complicated log trace debugging follows the same process.
 
-この関数は `console.log` を出力した後、`console.slog` を呼び出しますが、このメソッドはコンソール API にはありません。その結果、エラーが発生します。
+## Handle runtime exceptions using window.onerror
 
+Chrome exposes the `window.onerror` handler function, called whenever an error happens in the JavaScript code execution. Whenever a JavaScript exception is thrown in the window context and is not caught by a try/catch block, the function is invoked with the exception's message, the URL of the file where the exception was thrown, and the line number in that file, passed as three arguments in that order.
 
+You may find it useful to set an error handler that would collect information about uncaught exceptions and report it back to your server using an AJAX POST call, for example. In this way, you can log all the errors happening in the user's browser, and be notified about them.
 
+Example of using `window.onerror`:
 
-ページが実行されているときに、ページをクリックすると、次のエラーが発生します。
+![Example of window.onerror handler](images/runtime-exceptions-window-onerror.jpg)
 
+## Feedback {: #feedback }
 
-![発生したエラー](images/track-exceptions-example-error-triggered.png)
-
-矢印をクリックすると、エラー メッセージを展開できます。
-
-![展開されたエラー メッセージ](images/track-exceptions-example-error-message-expanded.png)
-
-エラーが `lib.js` の 4 行目で発生しており、これは、``addEventListener` のコールバックである不明な関数で `script.js` によって 3 行目で呼び出されていることがわかります。
-
-
-
-これは簡単な例ですが、複雑なログ トレース デバッグでもプロセスは同じです。
-
-
-## window.onerror を使用した実行時例外の処理
-
-Chrome では、JavaScript コードの実行でエラーが発生したときに呼び出される `window.onerror` ハンドラ関数を公開しています。JavaScript 例外がウィンドウ コンテキストでスローされ、try/catch ブロックによって捕捉されない場合、この関数が呼び出され、例外のメッセージ、例外がスローされたファイルの URL、そのファイル内の行番号が、この順番で 3 つの引数として渡されます。
-
-
-
-
-
-
-
-
-捕捉されない例外に関する情報を収集し、AJAX POST の呼び出しなどを使用してサーバーに報告するエラー ハンドラを設定すると、効果的な場合があります。この方法では、ユーザーのブラウザで発生しているすべてのエラーをログに記録し、それらについて通知を受け取ることができます。
-
-`window.onerror` の使用例:
-
-![window.onerror ハンドラの例](images/runtime-exceptions-window-onerror.jpg)
-
-
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
