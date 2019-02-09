@@ -1,43 +1,34 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: 레이아웃은 브라우저가 요소의 기하학적 정보(페이지에서 차지하는 크기 및 위치)를 파악하는 장소입니다. 각 요소는 사용한 CSS, 요소의 콘텐츠 또는 상위 요소에 따라 명시적 또는 암시적 크기 지정 정보를 갖게 됩니다. 이 프로세스는 Chrome에서 레이아웃이라고 합니다.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Layout is where the browser figures out the geometric information for elements: their size and location in the page. Each element will have explicit or implicit sizing information based on the CSS that was used, the contents of the element, or a parent element. The process is called Layout in Chrome.
 
-# 크고 복잡한 레이아웃 및 레이아웃 스래싱 피하기 {: .page-title }
+# Avoid Large, Complex Layouts and Layout Thrashing {: .page-title }
 
-{# wf_updated_on: 2015-03-20 #}
-{# wf_published_on: 2015-03-20 #}
+{# wf_updated_on: 2018-08-17 #} {# wf_published_on: 2015-03-20 #} {# wf_blink_components: Blink>Layout #}
 
 {% include "web/_shared/contributors/paullewis.html" %}
 
-레이아웃은 브라우저가 요소의 기하학적 정보(페이지에서 차지하는 
-크기 및 위치)를 파악하는 장소입니다. 각 요소는 사용한 CSS, 요소의
-콘텐츠 또는 상위 요소에 따라
-명시적 또는 암시적 크기 지정 정보를 갖게 됩니다. 이 프로세스는 
-Chrome, Opera, Safari 및 Internet Explorer에서 레이아웃이라고 합니다. Firefox에서는
-리플로우(reflow)라고 하지만 실제로는 동일한 프로세스입니다.
+Layout is where the browser figures out the geometric information for elements: their size and location in the page. Each element will have explicit or implicit sizing information based on the CSS that was used, the contents of the element, or a parent element. The process is called Layout in Chrome, Opera, Safari, and Internet Explorer. In Firefox it’s called Reflow, but effectively the process is the same.
 
-스타일 계산과 마찬가지로 다음 레이아웃 비용을 고려하세요.
+Similarly to style calculations, the immediate concerns for layout cost are:
 
-1. 레이아웃이 필요한 요소 수.
-2. 해당 레이아웃의 복잡성.
+1. The number of elements that require layout.
+2. The complexity of those layouts.
 
 ### TL;DR {: .hide-from-toc }
 
-* 레이아웃의 범위는 일반적으로 전체 문서로 지정됩니다.
-* DOM 요소 수는 성능에 영향을 주므로 가급적 레이아웃 트리거를 피해야 합니다.
-* 레이아웃 모델 성능을 평가합니다. 새 Flexbox는 일반적으로 이전 Flexbox 또는 부동 요소 기반 레이아웃 모델보다 빠릅니다.
-* 강제 동기식 레이아웃 및 레이아웃 스래싱(thrashing)을 피하세요. 스타일 값을 읽은 다음 스타일을 변경하세요.
+* Layout is normally scoped to the whole document.
+* The number of DOM elements will affect performance; you should avoid triggering layout wherever possible.
+* Assess layout model performance; new Flexbox is typically faster than older Flexbox or float-based layout models.
+* Avoid forced synchronous layouts and layout thrashing; read style values then make style changes.
 
-## 가급적 레이아웃 피하기
+## Avoid layout wherever possible
 
-스타일을 변경하면 브라우저가 변경 시 레이아웃 계산이 필요한지, 해당 렌더링 트리를 업데이트해야 하는지 확인합니다. 너비, 높이, 왼쪽 또는 상단 등과 같은 '기하학적 속성'의 변경은 모두 레이아웃이 필요합니다.
-
+When you change styles the browser checks to see if any of the changes require layout to be calculated, and for that render tree to be updated. Changes to “geometric properties”, such as widths, heights, left, or top all require layout.
 
     .box {
       width: 20px;
       height: 20px;
     }
-
+    
     /**
      * Changing width and height
      * triggers layout.
@@ -46,115 +37,112 @@ Chrome, Opera, Safari 및 Internet Explorer에서 레이아웃이라고 합니�
       width: 200px;
       height: 350px;
     }
+    
 
+**Layout is almost always scoped to the entire document.** If you have a lot of elements, it’s going to take a long time to figure out the locations and dimensions of them all.
 
-**레이아웃의 범위는 거의 항상 전체 문서로 지정됩니다.** 많은 요소가 있는 경우, 모든 요소의 위치와 크기를 파악하는 데 오랜 시간이 걸립니다.
+If it’s not possible to avoid layout then the key is to once again use Chrome DevTools to see how long it’s taking, and determine if layout is the cause of a bottleneck. Firstly, open DevTools, go to the Timeline tab, hit record and interact with your site. When you stop recording you’ll see a breakdown of how your site performed:
 
-레이아웃을 피할 수 없는 경우 Chrome DevTools를 다시 사용하여 시간이 얼마나 걸리는지 확인하고 레이아웃이 병목 현상의 원인인지 여부를 파악하는 것이 중요합니다. 먼저 DevTools를 열고 Timeline 탭으로 가서 레코드를 누르고 사이트와 상호작용합니다. 레코딩을 중단하면 사이트에서 수행된 분석 정보가 표시됩니다.
+![DevTools showing a long time in Layout](images/avoid-large-complex-layouts-and-layout-thrashing/big-layout.jpg)
 
-<img src="images/avoid-large-complex-layouts-and-layout-thrashing/big-layout.jpg" alt="DevTools에서 장시간 레이아웃 표시" />
+When digging into the frame in the above example, we see that over 20ms is spent inside layout, which, when we have 16ms to get a frame on screen in an animation, is far too high. You can also see that DevTools will tell you the tree size (1,618 elements in this case), and how many nodes were in need of layout.
 
-위 예의 프레임을 분석하면 레이아웃 내부에서 20ms 이상 소요된 것을 확인할 수 있습니다. 이는 애니메이션의 화면에서 프레임에 16ms가 필요한 경우 이에 비해 훨씬 높은 값입니다. 또한 DevTools에서 트리 크기(이 예에서는 1,618 요소) 및 레이아웃에 필요한 노드 수도 확인할 수 있습니다.
+Note: Want a definitive list of which CSS properties trigger layout, paint, or composite? Check out [CSS Triggers](https://csstriggers.com).
 
-참고: 레이아웃, 페인트 또는 합성을 트리거하는 명확한 CSS 속성 목록이 필요한 경우 [CSS 트리거](https://csstriggers.com)를 참조하세요.
+## Use flexbox over older layout models
 
-## 이전 레이아웃 모델 대신 Flexbox 사용
+The web has a range of layout models, some being more widely supported than others. The oldest CSS layout model allows us to position elements on screen relatively, absolutely, and by floating elements.
 
-웹에는 레이아웃 모델의 범위가 있고 일부 모델은 다른 모델보다 널리 지원됩니다. 가장 오래된 CSS 레이아웃 모델은 요소를 상대적으로, 절대적으로 및 부동 요소별로 화면에 배치할 수 있습니다.
+The screenshot below shows the layout cost when using floats on 1,300 boxes. It is, admittedly, a contrived example, because most applications will use a variety of means to position elements.
 
-아래의 스크린샷은 1,300개의 상자에서 부동 요소를 사용할 경우 레이아웃 비용을 보여줍니다. 대부분의 애플리케이션은 다양한 방법을 사용하여 요소를 배치하기 때문에 이 예는 부자연스러운 점이 있습니다.
+![Using floats as layout](images/avoid-large-complex-layouts-and-layout-thrashing/layout-float.jpg)
 
-<img src="images/avoid-large-complex-layouts-and-layout-thrashing/layout-float.jpg" alt="부동 요소를 레이아웃으로 사용" />
+If we update the sample to use Flexbox, a more recent addition to the web platform, we get a different picture:
 
-더 최근에 웹 플랫폼에 추가된 Flexbox를 사용하도록 샘플을 업데이트하면 다른 결과를 얻게 됩니다.
+![Using flexbox as layout](images/avoid-large-complex-layouts-and-layout-thrashing/layout-flex.jpg)
 
-<img src="images/avoid-large-complex-layouts-and-layout-thrashing/layout-flex.jpg" alt="Flexbox를 레이아웃으로 사용" />
+Now we spend far less time (3.5ms vs 14ms in this case) in layout for the *same number of elements* and the same visual appearance. It’s important to remember that for some contexts you may not be able to choose Flexbox, since it’s [less widely supported than floats](http://caniuse.com/#search=flexbox), but where you can you should at least investigate the layout model’s impact on your performance, and go with the one that minimizes the cost of performing it.
 
-이제 _동일한 수의 요소_ 에 대해 레이아웃 시간을 훨씬 덜 소모하고(이 경우 14ms에서 3.5ms로 단축) 동일한 시각적 모양을 나타낼 수 있습니다. 일부 경우에 [부동 요소보다 덜 지원](http://caniuse.com/#search=flexbox)되기 때문에 Flexbox를 선택할 수 없지만, 최소한 레이아웃 모델의 성능에 미치는 영향을 조사하고 수행 비용을 최소화할 수 있는 레이아웃 모델을 사용해야 합니다.
+In any case, whether you choose Flexbox or not, you should still **try and avoid triggering layout altogether** during high pressure points of your application!
 
-어떤 경우이든 Flexbox 선택 여부에 상관없이 애플리케이션에 많은 부담을 주는 경우 **레이아웃 트리거를 완전히 피하려고 노력**해야 합니다!
+## Avoid forced synchronous layouts
 
-## 강제 동기식 레이아웃 피하기
+Shipping a frame to screen has this order:
 
-화면에 프레임을 추가하는 순서는 다음과 같습니다.
+![Using flexbox as layout](images/avoid-large-complex-layouts-and-layout-thrashing/frame.jpg)
 
-<img src="images/avoid-large-complex-layouts-and-layout-thrashing/frame.jpg" alt="Flexbox를 레이아웃으로 사용" />
+First the JavaScript runs, *then* style calculations, *then* layout. It is, however, possible to force a browser to perform layout earlier with JavaScript. It is called a **forced synchronous layout**.
 
-자바스크립트를 실행한 _후_ 스타일 계산을 수행한 _후_ 에 레이아웃을 실행합니다. 하지만 자바스크립트를 사용하여 브라우저가 레이아웃을 더 일찍 수행하도록 하는 것도 가능합니다. 이를 **강제 동기식 레이아웃**이라고 합니다.
-
-자바스크립트가 실행할 때 이전 프레임의 모든 이전 레이아웃 값은 알려져 있고 쿼리에 사용할 수 있습니다. 따라서 예를 들어, 프레임 시작 시 요소('상자'라고 합시다)의 높이를 기록하려면 다음과 같은 코드를 작성할 수 있습니다.
-
+The first thing to keep in mind is that as the JavaScript runs all the old layout values from the previous frame are known and available for you to query. So if, for example, you want to write out the height of an element (let’s call it “box”) at the start of the frame you may write some code like this:
 
     // Schedule our function to run at the start of the frame.
     requestAnimationFrame(logBoxHeight);
-
+    
     function logBoxHeight() {
       // Gets the height of the box in pixels and logs it out.
       console.log(box.offsetHeight);
     }
+    
 
-
-높이를 요청하기 _전에_ 상자의 스타일을 변경한 경우 문제가 발생할 수 있습니다.
-
+Things get problematic if you’ve changed the styles of the box *before* you ask for its height:
 
     function logBoxHeight() {
-
+    
       box.classList.add('super-big');
-
+    
       // Gets the height of the box in pixels
       // and logs it out.
       console.log(box.offsetHeight);
     }
+    
 
+Now, in order to answer the height question, the browser must *first* apply the style change (because of adding the `super-big` class), and *then* run layout. Only then will it be able to return the correct height. This is unnecessary and potentially expensive work.
 
-이제 높이 질문에 답변하기 위해 브라우저는 _먼저_ 스타일 변경을 적용한 _후에_(`super-big` 클래스를 추가했기 때문에), 레이아웃을 실행해야 합니다. 그래야만 정확한 높이를 반환할 수 있습니다. 이는 불필요하고 잠재적으로 비용이 많이 드는 작업입니다.
+Because of this you should always batch your style reads and do them first (where the browser can use the previous frame’s layout values) and then do any writes:
 
-이 때문에 항상 스타일 읽기를 일괄 처리하고 먼저 수행한 다음(이때 브라우저가 이전 프레임의 레이아웃 값을 사용할 수 있음) 쓰기를 수행해야 합니다.
-
-위의 기능을 정확히 수행하면 다음과 같이 됩니다.
-
+Done correctly the above function would be:
 
     function logBoxHeight() {
       // Gets the height of the box in pixels
       // and logs it out.
       console.log(box.offsetHeight);
-
+    
       box.classList.add('super-big');
     }
+    
 
+For the most part you shouldn’t need to apply styles and then query values; using the last frame’s values should be sufficient. Running the style calculations and layout synchronously and earlier than the browser would like are potential bottlenecks, and not something you will typically want to do.
 
-대부분의 경우 스타일을 적용한 다음 값을 쿼리할 필요가 없습니다. 마지막 프레임의 값을 사용하면 충분합니다. 브라우저가 원하는 시간보다 일찍 스타일 계산과 레이아웃을 동시에 실행하면 잠재적 병목 현상이 발생할 수 있으므로 일반적으로 바람직하지 않습니다.
+## Avoid layout thrashing
 
-## 레이아웃 스래싱 피하기
-_많은 레이아웃을 연속적으로 빠르게 실행_ 하면 강제 동기식 레이아웃이 더 악화됩니다. 다음 코드를 살펴봅시다.
-
+There’s a way to make forced synchronous layouts even worse: *do lots of them in quick succession*. Take a look at this code:
 
     function resizeAllParagraphsToMatchBlockWidth() {
-
+    
       // Puts the browser into a read-write-read-write cycle.
       for (var i = 0; i < paragraphs.length; i++) {
         paragraphs[i].style.width = box.offsetWidth + 'px';
       }
     }
+    
 
+This code loops over a group of paragraphs and sets each paragraph’s width to match the width of an element called “box”. It looks harmless enough, but the problem is that each iteration of the loop reads a style value (`box.offsetWidth`) and then immediately uses it to update the width of a paragraph (`paragraphs[i].style.width`). On the next iteration of the loop, the browser has to account for the fact that styles have changed since `offsetWidth` was last requested (in the previous iteration), and so it must apply the style changes, and run layout. This will happen on *every single iteration!*.
 
-이 코드는 단락 그룹을 반복 실행하고 각 단락의 너비를 “box” 요소의 너비와 일치하도록 설정합니다. 무해한 것처럼 보이지만 각 루프 반복이 스타일 값(`box.offsetWidth`)을 읽은 다음 즉시 이 값을 사용하여 단락의 너비(`paragraphs[i].style.width`)를 업데이트하는 문제가 있습니다. 다음 루프 반복에서 브라우저는 (이전 반복에서) `offsetWidth`가 마지막으로 요청된 이후 스타일이 변경되었고 따라서 스타일 변경을 적용하고 레이아웃을 실행해야 한다는 사실을 고려해야 합니다. 이는 _모든 단일 반복_에서 발생합니다!
-
-이 샘플을 수정하려면 값을 다시 _읽은_ 다음 _써야_ 합니다.
-
+The fix for this sample is to once again *read* then *write* values:
 
     // Read.
     var width = box.offsetWidth;
-
+    
     function resizeAllParagraphsToMatchBlockWidth() {
       for (var i = 0; i < paragraphs.length; i++) {
         // Now write.
         paragraphs[i].style.width = width + 'px';
       }
     }
+    
 
+If you want to guarantee safety you should check out [FastDOM](https://github.com/wilsonpage/fastdom), which automatically batches your reads and writes for you, and should prevent you from triggering forced synchronous layouts or layout thrashing accidentally.
 
-안전을 보장하려면 읽기 및 쓰기를 자동으로 일괄 처리하는 [FastDOM](https://github.com/wilsonpage/fastdom)을 확인하고, 실수로 강제 동기식 레이아웃 또는 레이아웃 스래싱을 트리거하지 않도록 해야 합니다.
+## Feedback {: #feedback }
 
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
