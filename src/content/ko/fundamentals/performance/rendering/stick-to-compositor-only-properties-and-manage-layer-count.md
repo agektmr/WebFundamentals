@@ -1,99 +1,93 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: 합성(compositing)은 화면에 표시하기 위해 페이지에서 페인트된 부분을 합치는 과정입니다.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Compositing is where the painted parts of the page are put together for displaying on screen.
 
-{# wf_updated_on: 2017-07-12 #}
-{# wf_published_on: 2015-03-20 #}
+{# wf_updated_on: 2018-08-17 #} {# wf_published_on: 2015-03-20 #} {# wf_blink_components: Blink>Compositing #}
 
-# 컴포지터(compositor) 전용 속성 고수 및 레이어 수 관리 {: .page-title }
+# Stick to Compositor-Only Properties and Manage Layer Count {: .page-title }
 
 {% include "web/_shared/contributors/paullewis.html" %}
 
-합성(compositing)은 화면에 표시하기 위해 페이지에서 페인트된 부분을
-합치는 과정입니다.
+Compositing is where the painted parts of the page are put together for displaying on screen.
 
-이 영역에서 페이지 성능에 영향을 주는 두 가지 핵심 요소가 있습니다. 관리가 필요한 컴포지터 레이어 수와 애니메이션에 사용하는 속성이 바로 그것입니다.
+There are two key factors in this area that affect page performance: the number of compositor layers that need to be managed, and the properties that you use for animations.
 
 ### TL;DR {: .hide-from-toc }
 
-* 애니메이션에 변형 및 불투명도 변경 사용을 고수합니다.
-* `will-change` 또는 `translateZ`를 사용하여 이동 요소를 승격합니다.
-* 승격 규칙의 남용을 피합니다. 레이어는 메모리와 관리가 필요합니다.
+* Stick to transform and opacity changes for your animations.
+* Promote moving elements with `will-change` or `translateZ`.
+* Avoid overusing promotion rules; layers require memory and management.
 
-## 애니메이션에 변형 및 불투명도 변경 사용
+## Use transform and opacity changes for animations
 
-레이아웃과 페인트를 모두 피하고 합성 변경만 요구하는 픽셀 파이프라인 버전이 최고의 성능을 제공합니다.
+The best-performing version of the pixel pipeline avoids both layout and paint, and only requires compositing changes:
 
-<img src="images/stick-to-compositor-only-properties-and-manage-layer-count/frame-no-layout-paint.jpg"  alt="레이아웃과 페인트가 없는 픽셀 파이프라인">
+<img src="images/stick-to-compositor-only-properties-and-manage-layer-count/frame-no-layout-paint.jpg"  alt="The pixel pipeline with no layout or paint." />
 
-이를 달성하기 위해 컴포지터가 단독으로 처리할 수 있는 변경 속성을 고수해야 합니다. 현재 부합되는 속성으로는 **`transforms`** 및 **`opacity`**라는 두 개의 속성만 있습니다.
+In order to achieve this you will need to stick to changing properties that can be handled by the compositor alone. Today there are only two properties for which that is true - `transform`s and `opacity`:
 
-<img src="images/stick-to-compositor-only-properties-and-manage-layer-count/safe-properties.jpg"  alt="레이아웃 또는 페인트를 트리거하지 않고 애니메이션을 적용할 수 있는 속성">
+<img src="images/stick-to-compositor-only-properties-and-manage-layer-count/safe-properties.jpg"  alt="The properties you can animate without triggering layout or paint." />
 
-`transform` 및 `opacity` 사용 시 주의할 점은 이러한 속성을 변경하는 요소가 _자체 컴포지터 레이어_ 에 있어야 한다는 것입니다. 레이어를 만들기 위해 요소를 승격해야 합니다. 이에 대해서는 다음 섹션에서 설명합니다.
+The caveat for the use of `transform`s and `opacity` is that the element on which you change these properties should be on *its own compositor layer*. In order to make a layer you must promote the element, which we will cover next.
 
-참고: 애니메이션을 해당 속성으로 제한할 수 없을지도 모른다고 염려되면 [FLIP 원칙](https://aerotwist.com/blog/flip-your-animations)을 참조하세요. 여기에서 애니메이션을 비용이 많이 드는 속성의 변형 및 불투명도 변경에 다시 매핑할 수 있습니다.
+Note: If you’re concerned that you may not be able to limit your animations to just those properties, take a look at the [FLIP principle](https://aerotwist.com/blog/flip-your-animations), which may help you remap animations to changes in transforms and opacity from more expensive properties.
 
-## 애니메이션을 적용할 요소 승격
+## Promote elements that you plan to animate
 
-'[페인트 복잡성 단순화 및 페인트 영역 줄이기](simplify-paint-complexity-and-reduce-paint-areas)' 섹션에서 언급한 것처럼, 애니메이션을 적용할 요소를 자체 레이어로 승격해야 합니다(합당한 사유가 있는 경우에만 시도하고 남용하지 마세요!).
-
+As we mentioned in the “[Simplify paint complexity and reduce paint areas](simplify-paint-complexity-and-reduce-paint-areas)” section, you should promote elements that you plan to animate (within reason, don’t overdo it!) to their own layer:
 
     .moving-element {
       will-change: transform;
     }
+    
 
-
-또는 이전 브라우저나 will-change를 지원하지 않는 브라우저의 경우에는 다음을 사용합니다.
-
+Or, for older browsers, or those that don’t support will-change:
 
     .moving-element {
       transform: translateZ(0);
     }
+    
 
+This gives the browser the forewarning that changes are incoming and, depending on what you plan to change, the browser can potentially make provisions, such as creating compositor layers.
 
-그러면 변경이 들어오는 중이고 변경하려는 항목에 따라 브라우저가 잠재적으로 컴포지터 레이어 생성 등 프로비전을 만들 수 있음을 브라우저에게 사전 경고합니다.
+## Manage layers and avoid layer explosions
 
-## 레이어 관리 및 레이어 급증 피하기
-
-레이어가 성능 개선에 도움이 된다는 사실을 인지하고 다음을 사용하여 페이지의 모든 요소를 승격하는 것은 매력적입니다.
-
+It’s perhaps tempting, then, knowing that layers often help performance, to promote all the elements on your page with something like the following:
 
     * {
       will-change: transform;
       transform: translateZ(0);
     }
+    
 
+Which is a roundabout way of saying that you’d like to promote every single element on the page. The problem here is that every layer you create requires memory and management, and that’s not free. In fact, on devices with limited memory the impact on performance can far outweigh any benefit of creating a layer. Every layer’s textures needs to be uploaded to the GPU, so there are further constraints in terms of bandwidth between CPU and GPU, and memory available for textures on the GPU.
 
-이는 페이지의 모든 단일 요소를 승격하고 싶다는 우회적인 표현입니다. 여기에서 문제는 생성하는 모든 레이어가 메모리와 관리가 필요하며 이는 공짜가 아니라는 점입니다. 실제로 제한된 메모리를 가진 기기에서 성능에 미치는 영향이 레이어 생성의 이점을 훨씬 상회할 수 있습니다. 모든 레이어의 텍스처는 GPU로 업로드되어야 하며, 따라서 CPU와 GPU 간의 대역폭과 GPU에서 텍스처에 사용할 수 있는 메모리에 추가적인 제약이 있습니다.
+Warning: Do not promote elements unnecessarily.
 
-Warning: 요소를 불필요하게 승격하지 마세요.
-
-## Chrome DevTools를 사용하여 앱의 레이어 이해
+## Use Chrome DevTools to understand the layers in your app
 
 <div class="attempt-right">
   <figure>
-    <img src="images/stick-to-compositor-only-properties-and-manage-layer-count/paint-profiler.jpg" alt="Chrome DevTools에서 페인트 프로파일러 전환">
+    <img src="images/stick-to-compositor-only-properties-and-manage-layer-count/paint-profiler.jpg" alt="The toggle for the paint profiler in Chrome DevTools.">
   </figure>
 </div>
 
-요소가 레이어를 가지는 이유와 애플리케이션의 레이어를 이해하려면 Chrome DevTools의 Timeline에서 페인트 프로파일러를 활성화해야 합니다.
+To get an understanding of the layers in your application, and why an element has a layer you must enable the Paint profiler in Chrome DevTools’ Timeline:
 
 <div style="clear:both;"></div>
 
-이 기능이 활성화된 상태에서 레코딩을 수행해야 합니다. 레코딩이 완료되면 개별 프레임을 클릭할 수 있습니다. 이 프레임은 초당 프레임 막대와 세부정보 사이에 있습니다.
+With this switched on you should take a recording. When the recording has finished you will be able to click individual frames, which is found between the frames-per-second bars and the details:
 
-<img src="images/stick-to-compositor-only-properties-and-manage-layer-count/frame-of-interest.jpg"  alt="개발자가 프로파일링할 프레임">
+<img src="images/stick-to-compositor-only-properties-and-manage-layer-count/frame-of-interest.jpg"  alt="A frame the developer is interested in profiling." />
 
-이 항목을 클릭하면 세부정보: 레이어 탭에 새 옵션이 제공됩니다.
+Clicking on this will provide you with a new option in the details: a layer tab.
 
-<img src="images/stick-to-compositor-only-properties-and-manage-layer-count/layer-tab.jpg"  alt="Chrome DevTools의 레이어 탭 버튼">
+<img src="images/stick-to-compositor-only-properties-and-manage-layer-count/layer-tab.jpg"  alt="The layer tab button in Chrome DevTools." />
 
-이 옵션은 각 레이어가 생성된 이유와 함께 해당 프레임 동안 모든 레이어에서 이동, 스캔 및 확대/축소를 수행할 수 있는 새 보기를 표시합니다.
+This option will bring up a new view that allows you to pan, scan and zoom in on all the layers during that frame, along with reasons that each layer was created.
 
-<img src="images/stick-to-compositor-only-properties-and-manage-layer-count/layer-view.jpg"  alt="Chrome DevTools의 레이어 보기">
+<img src="images/stick-to-compositor-only-properties-and-manage-layer-count/layer-view.jpg"  alt="The layer view in Chrome DevTools." />
 
-이 보기를 사용하여 레이어 수를 추적할 수 있습니다. 스크롤이나 전환처럼 성능이 중요한 작업 동안 합성에 많은 시간을 소모한 경우(약 **4-5ms**를 목표로 설정해야 함), 여기에 나오는 정보를 사용하여 몇 개의 레이어가 있는지, 왜 생성되었는지 확인하여 앱에서 레이어 수를 관리할 수 있습니다.
+Using this view you can track the number of layers you have. If you’re spending a lot time in compositing during performance-critical actions like scrolling or transitions (you should aim for around **4-5ms**), you can use the information here to see how many layers you have, why they were created, and from there manage layer counts in your app.
 
+## Feedback {: #feedback }
 
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
