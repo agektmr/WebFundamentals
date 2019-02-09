@@ -1,16 +1,12 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Lighthouse の監査項目「サイトの独自スクリプトで変更イベントを使用しない」のリファレンス ドキュメント。
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Reference documentation for the "Avoids Mutation Events In Its Own Scripts" Lighthouse audit.
 
-{# wf_updated_on:2016-10-04 #}
-{# wf_published_on:2016-10-04 #}
+{# wf_updated_on: 2018-07-23 #} {# wf_published_on: 2016-10-04 #} {# wf_blink_components: N/A #}
 
-#  サイトの独自スクリプトで変更イベントを使用しない {: .page-title }
+# Avoids Mutation Events In Its Own Scripts {: .page-title }
 
-##  監査が重要である理由 {: #why }
+## Overview {: #overview }
 
-以下の変更イベントはパフォーマンスを低下させるため、DOM イベントの仕様において廃止されました。
-
+The following mutation events harm performance and are deprecated in the DOM events spec:
 
 * `DOMAttrModified`
 * `DOMAttributeNameChanged`
@@ -22,19 +18,14 @@ description: Lighthouse の監査項目「サイトの独自スクリプトで�
 * `DOMNodeRemovedFromDocument`
 * `DOMSubtreeModified`
 
-##  監査に合格する方法 {: #how }
+## Recommendations {: #recommendations }
 
-Lighthouse のレポートでは、コード内で検出された各変更イベントのリスナが **URLs** の下に表示されます。
-これらの変更イベントを、それぞれ `MutationObserver` で置き換えます。
-詳細は MDN の[`MutationObserver`][mdn] をご覧ください。
+Under **URLs**, Lighthouse reports each mutation event listener that it found in your code. Replace each of these mutation events with a `MutationObserver`. See [`MutationObserver`](https://developer.mozilla.org/en-US/docs/Web/API/MutationObserver) on MDN for more help.
 
-[mdn]: https://developer.mozilla.org/en-US/docs/Web/API/MutationObserver
+## More information {: #more-info }
 
-{% include "web/tools/lighthouse/audits/implementation-heading.html" %}
+Lighthouse collects all of the event listeners on the page, and flags any listener that uses one of the types listed above.
 
-Lighthouse
-では、ページ上のイベントリスナをすべて検出して、[監査が重要である理由](#why)に列挙されているタイプのイベントリスナについて警告をします。
+## Feedback {: #feedback }
 
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
