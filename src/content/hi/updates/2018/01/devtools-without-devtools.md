@@ -1,37 +1,24 @@
-project_path: /web/_project.yaml
-book_path: /web/updates/_book.yaml
-description: Use Puppeteer to launch Chromium with DevTools features enabled.
-{% include "web/_shared/machine-translation-start.html" %}
+project_path: /web/_project.yaml book_path: /web/updates/_book.yaml description: Use Puppeteer to launch Chromium with DevTools features enabled.
 
-{# wf_updated_on: 2018-03-05 #}
-{# wf_published_on: 2018-01-22 #}
-{# wf_tags: devtools #}
-{# wf_featured_image: /web/updates/images/generic/chrome-devtools.png #}
-{# wf_featured_snippet: Use Puppeteer to launch Chromium with DevTools features enabled. #}
-{# wf_blink_components: Platform>DevTools, Internals>Headless #}
+{# wf_updated_on: 2018-03-05 #} {# wf_published_on: 2018-01-22 #} {# wf_tags: devtools #} {# wf_featured_image: /web/updates/images/generic/chrome-devtools.png #} {# wf_featured_snippet: Use Puppeteer to launch Chromium with DevTools features enabled. #} {# wf_blink_components: Platform>DevTools, Internals>Headless #}
 
 {% include "web/tools/chrome-devtools/_shared/styles.html" %}
 
-# DevTools खोले बिना DevTools सुविधाओं का उपयोग करना {: .page-title }
+# Using DevTools Features Without Opening DevTools {: .page-title }
 
 {% include "web/_shared/contributors/kaycebasques.html" %}
 
-मैं आमतौर पर &quot;मुझे वास्तव में DevTools की विशेषता एक्स पसंद है, लेकिन यह DevTools बंद करते समय काम करना बंद कर देता है। मैं DevTools बंद होने पर भी सुविधा एक्स को कैसे चला सकता हूं?&quot;
+I commonly see questions along the lines of "I really like feature X of DevTools, but it stops working when I close DevTools. How do I keep feature X running even when DevTools is closed?"
 
-संक्षिप्त जवाब है: आप शायद नहीं कर सकते हैं।
+The short answer is: you probably can't.
 
-हालांकि, आप * [Puppeteer][puppeteer]{:.external} स्क्रिप्ट को एक साथ जोड़ सकते हैं जो क्रोमियम लॉन्च करता है, एक रिमोट डीबगिंग क्लाइंट खोलता है, फिर DevTools को स्पष्ट रूप से खोलने के बिना, जिसे आप पसंद करते हैं ( [Chrome DevTools Protocol][CDP]{:.external} माध्यम से) DevTools सुविधा को चालू करता है।
+However, you *can* hack together a [Puppeteer](https://github.com/GoogleChrome/puppeteer){:.external} script that launches Chromium, opens a remote debugging client, then turns on the DevTools feature that you like (via the [Chrome DevTools Protocol](https://chromedevtools.github.io/devtools-protocol/){:.external}), without ever explicitly opening DevTools.
 
-[puppeteer]: https://github.com/GoogleChrome/puppeteer
-[CDP]: https://chromedevtools.github.io/devtools-protocol/
-
-उदाहरण के लिए, नीचे दी गई स्क्रिप्ट मुझे व्यूपोर्ट के ऊपरी दाएं [FPS Meter][FPS] पर [FPS Meter][FPS] को ओवरले करने [FPS Meter][FPS] , भले ही DevTools कभी नहीं खुलती है, जैसा कि आप नीचे दिए गए वीडियो में देख सकते हैं।
-
-[FPS]: /web/tools/chrome-devtools/evaluate-performance/reference#fps-meter
+For example, the script below lets me overlay the [FPS Meter](/web/tools/chrome-devtools/evaluate-performance/reference#fps-meter) over the top-right of the viewport, even though DevTools never opens, as you can see in the video below.
 
     // Node.js version: 8.9.4
     const puppeteer = require('puppeteer'); // version 1.0.0
-
+    
     (async () => {
       // Prevent Puppeteer from showing the "Chrome is being controlled by automated test
       // software" prompt, but otherwise use Puppeteer's default args.
@@ -46,6 +33,7 @@ description: Use Puppeteer to launch Chromium with DevTools features enabled.
       await devtoolsProtocolClient.send('Overlay.setShowFPSCounter', { show: true });
       await page.goto('https://developers.google.com/web/tools/chrome-devtools');
     })();
+    
 
 <style>
   video { width: 100%; }
@@ -55,21 +43,12 @@ description: Use Puppeteer to launch Chromium with DevTools features enabled.
   <source src="https://storage.googleapis.com/webfundamentals-assets/updates/2018/01/devtools.mp4">
 </video>
 
-यह केवल कई में से एक है, कई देवटूल की विशेषताएं हैं जिन्हें आप संभावित रूप से क्रोम देवटूल प्रोटोकॉल के माध्यम से एक्सेस कर सकते हैं।
+This is just one of many, many DevTools features that you can potentially access via the Chrome DevTools Protocol.
 
-एक सामान्य सुझाव: DevTools प्रोटोकॉल क्लाइंट बनाने का सहारा लेने से पहले [Puppeteer API][API]{:.external} । Puppeteer पहले से ही कई DevTools सुविधाओं, जैसे [code coverage][coverage]{:.external} और [intercepting **Console** messages][console]{:.external} लिए समर्पित एपीआई है।
+A general suggestion: check out the [Puppeteer API](https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md){:.external} before resorting to creating a DevTools Protocol client. Puppeteer already has dedicated APIs for many DevTools features, such as [code coverage](https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md#class-coverage){:.external} and [intercepting **Console** messages](https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md#event-console){:.external}.
 
-[API]: https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md
-[coverage]: https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md#class-coverage
-[console]: https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md#event-console
+If you need help accessing a DevTools feature via Puppeteer, [ask a question on Stack Overflow](https://stackoverflow.com/questions/ask?tags=google-chrome-devtools,puppeteer){:.external}.
 
-यदि आपको [ask a question on Stack Overflow][SO]{:.external} , [ask a question on Stack Overflow][SO]{:.external} माध्यम से DevTools सुविधा तक पहुंचने में सहायता [ask a question on Stack Overflow][SO]{:.external} ।
-
-यदि आप एक Puppeteer स्क्रिप्ट को दिखाना चाहते हैं जो DevTools प्रोटोकॉल का उपयोग करता है, तो हमें [@ChromeDevTools][twitter]{:.external} पर ट्वीट करें।
-
-[SO]: https://stackoverflow.com/questions/ask?tags=google-chrome-devtools,puppeteer
-[twitter]: https://twitter.com/chromedevtools
+If you want to show off a Puppeteer script that makes use of the DevTools Protocol, tweet us at [@ChromeDevTools](https://twitter.com/chromedevtools){:.external}.
 
 {% include "web/_shared/rss-widget-updates.html" %}
-
-{% include "web/_shared/translation-end.html" %}
