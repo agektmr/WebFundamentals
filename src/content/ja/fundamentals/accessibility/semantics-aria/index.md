@@ -1,90 +1,65 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: ARIA と非ネイティブ HTML セマンティクスの概要
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Introduction to ARIA and non-native HTML semantics
 
+{# wf_blink_components: Blink>Accessibility #} {# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2016-10-04 #}
 
-{# wf_updated_on:2016-10-04 #}
-{# wf_published_on:2016-10-04 #}
+# Introduction to ARIA {: .page-title }
 
-# ARIA の概要 {: .page-title }
+{% include "web/_shared/contributors/megginkearney.html" %} {% include "web/_shared/contributors/dgash.html" %} {% include "web/_shared/contributors/aliceboxhall.html" %}
 
-{% include "web/_shared/contributors/megginkearney.html" %}
-{% include "web/_shared/contributors/dgash.html" %}
-{% include "web/_shared/contributors/aliceboxhall.html" %}
+So far, we've encouraged using native HTML elements because they give you focus, keyboard support, and built-in semantics, but there are times when a simple layout and native HTML won't do the job. For example, currently there's no standardized HTML element for a very common UI construct, the pop-up menu. Nor is there an HTML element that provides a semantic characteristic such as "the user needs to know about this as soon as possible".
 
+In this lesson, then, we'll explore how to express semantics that HTML can't express on its own.
 
+The [Web Accessibility Initiative's Accessible Rich Internet Applications specification](https://www.w3.org/TR/wai-aria/){: .external } (WAI-ARIA, or just ARIA) is good for bridging areas with accessibility issues that can't be managed with native HTML. It works by allowing you to specify attributes that modify the way an element is translated into the accessibility tree. Let's look at an example.
 
-これまで Google は、ネイティブ HTML 要素の使用を推奨してきました。フォーカス、キーボードのサポート、組み込みのセマンティクスを利用できるからです。しかしここからは、シンプルなレイアウトとネイティブ HTML では実行できないジョブが登場します。たとえば、現在のところ、使用頻度が非常に高い UI 構造のポップアップ メニュー向けに標準化された HTML 要素はありません。また、「ユーザーはこの情報を速やかに知る必要がある」といった、セマンティックな特性を提供する HTML 要素もありません。
-
-
-
-このレッスンでは次に、HTML 自体で表現できないセマンティクスを表現する方法について説明します。
-
-
-[Web Accessibility Initiative's Accessible Rich Internet Applications 仕様](https://www.w3.org/TR/wai-aria/){: .external }（WAI-ARIA、または単に ARIA）は、ネイティブ HTML で対応できないアクセシビリティの問題がある領域を仲介するのに適しており、アクセシビリティ ツリーでの要素の解釈方法を変更する属性を指定することで機能します。例をあげて説明します。
-
-
-次のスニペットで、カスタム チェックボックスとしてリストアイテムを使用します。CSS "checkbox" クラスは、要素に必要な視覚特性を提供します。
-
-
+In the following snippet, we use a list item as a kind of custom checkbox. The CSS "checkbox" class gives the element the required visual characteristics.
 
     <li tabindex="0" class="checkbox" checked>
       Receive promotional offers
     </li>
     
 
-これは、視覚に障がいのないユーザーにはうまく動作しますが、スクリーン リーダーでは要素がチェックボックスであることを伝えられないため、低視力のユーザーは要素にまったく気づかない可能性があります。
+While this works fine for sighted users, a screen reader will give no indication that the element is meant to be a checkbox, so low-vision users may miss the element entirely.
 
-
-
-しかし ARIA 属性を使用すれば、スクリーン リーダーが適切に解釈できるように、要素に不足している情報を提供できます。ここで、`role` 属性と `aria-checked` 属性を追加し、要素を明示的にチェックボックスとして示し、デフォルトでチェックがオンになるよう指定します。これで、リスト アイテムがアクセシビリティ ツリーに追加され、スクリーン リーダーで正しくチェックボックスとして報告されます。
-
-
+Using ARIA attributes, however, we can give the element the missing information so the screen reader can properly interpret it. Here, we've added the `role` and `aria-checked` attributes to explicitly identify the element as a checkbox and to specify that it is checked by default. The list item will now be added to the accessibility tree and a screen reader will correctly report it as a checkbox.
 
     <li tabindex="0" class="checkbox" role="checkbox" checked aria-checked="true">
       Receive promotional offers
     </li>
     
 
-注: ARIA 属性のリストと使用するタイミングについては、[後で](#what-can-aria-do)説明します。
+Note: We'll cover the list of ARIA attributes and when to use them [later](#what-can-aria-do).
 
-ARIA は、標準の DOM アクセシビリティ ツリーを変更および拡張することで機能します。
+ARIA works by changing and augmenting the standard DOM accessibility tree.
 
-![標準の DOM アクセシビリティ ツリー](imgs/acctree1.jpg){: .attempt-right }
+![the standard DOM accessibility tree](imgs/acctree1.jpg){: .attempt-right }
 
-![ARIA の拡張アクセシビリティ ツリー](imgs/acctree2.jpg){: .attempt-right }
+![the ARIA augmented accessibility tree](imgs/acctree2.jpg){: .attempt-right }
 
-ARIA を使用すれば、ページのどの要素のアクセシビリティ ツリーでも微妙な（または大幅な）変更ができますが、ARIA が変更するのはアクセシビリティ ツリーのみです。**ARIA は、要素の継承の動作を拡張しません**。要素をフォーカス可能にしたり、キーボード イベントリスナにフォーカスを渡したりすることはありません。これは依然として、開発側のタスクです。
+Although ARIA allows us to subtly (or even radically) modify the accessibility tree for any element on the page, that is the only thing it changes. **ARIA doesn't augment any of the element's inherent behavior**; it won't make the element focusable or give it keyboard event listeners. That is still part of our development task.
 
+It's important to understand that there is no need to redefine default semantics. Regardless of its use, a standard HTML `<input type="checkbox">` element doesn't need an additional `role="checkbox"` ARIA attribute to be correctly announced.
 
-デフォルトのセマンティクスを再定義する必要はありません。この点を理解しておくことが重要です。その用途にかかわらず、標準の HTML `<input type="checkbox">` 要素は、追加の `role="checkbox"` ARIA 属性がなくても正しくアナウンスされます。
+It's also worth noting that certain HTML elements have restrictions on what ARIA roles and attributes can be used on them. For example, a standard `<input
+type="text">` element may not have any additional role/attribute applied to it.
 
+> See the [ARIA in HTML spec](https://www.w3.org/TR/html-aria/#sec-strong-native-semantics){: .external } for more information.
 
+Let's see what other capabilities ARIA has to offer.
 
-また注意が必要なのは、特定の HTML 要素では、ARIA の役割や属性が要素で実行する動作に対して制限があるということです。たとえば、標準の `<input
-type="text">` 要素は、追加した役割や属性が適用されない場合があります。
+## What can ARIA do?
 
-> 詳細については、[HTML における ARIA の仕様](https://www.w3.org/TR/html-aria/#sec-strong-native-semantics){: .external }をご覧ください。
+As you saw with the checkbox example, ARIA can modify existing element semantics or add semantics to elements where no native semantics exist. It can also express semantic patterns that don't exist at all in HTML, like a menu or a tab panel. Often, ARIA lets us create widget-type elements that wouldn't be possible with plain HTML.
 
-
-ARIA が提供するその他の機能を見てみましょう。
-
-##  ARIA の機能
-
-チェックボックスの例でご覧になったとおり、ARIA は既存の要素のセマンティクスを変更したり、ネイティブのセマンティクスが存在しない要素にセマンティクスを追加したりできます。また、HTML にまったく存在しない、メニューやタブ パネルといったセマンティクス パターンも表現できます。多くの場合、ARIA を使用すると、プレーン HTML では作成できないウィジェットタイプの要素を作成できます。
-
-
- - たとえば ARIA は、支援技術 API だけに提供される追加のラベルや説明テキストを追加できます。<br>
-
+- For example, ARIA can add extra label and description text that is only exposed to assistive technology APIs.  
+    
 
 <div class="clearfix"></div>
-      
+
     <button aria-label="screen reader only label"></button>
+    
 
-
- - ARIA は、標準の親 / 子接続を拡張する要素の間で、特定の領域を制御するカスタム スクロールバーなど、セマンティクスの関係を表現できます。
-
-
+- ARIA can express semantic relationships between elements that extend the standard parent/child connection, such as a custom scrollbar that controls a specific region.
 
 <div class="clearfix"></div>
 
@@ -92,50 +67,31 @@ ARIA が提供するその他の機能を見てみましょう。
     <div id="main">
     . . .
     </div>
-
     
 
- - ARIA はページの一部を "live" に指定し、その領域が変更されたら即座に支援技術に知らせることができます。
-
+- And ARIA can make parts of the page "live", so they immediately inform assistive technology when they change.
 
 <div class="clearfix"></div>
 
     <div aria-live="true">
       <span>GOOG: $400</span>
     </div>
-
     
-ARIA システムの主要な側面の 1 つは、*role* のコレクションです。アクセシビリティの観点で、role は特定の UI パターンを簡潔に表す指標になります。ARIA には、任意の HTML 要素で `role` 属性を使用して表現できるさまざまなパターンの定義があります。
 
+One of the core aspects of the ARIA system is its collection of *roles*. A role in accessibility terms amounts to a shorthand indicator for a particular UI pattern. ARIA provides a vocabulary of patterns we can use via the `role` attribute on any HTML element.
 
-前の例では、`role="checkbox"` を適用したとき、その要素が「checkbox」パターンに従う必要があることを支援技術に伝えています。つまり、チェックの状態（オンまたはオフ）が存在し、標準 HTML の checkbox 要素のように、その状態をマウスやスペースバーで切り替えられることを保証しています。
+When we applied `role="checkbox"` in the previous example, we were telling assistive technology that the element should follow the "checkbox" pattern. That is, we're guaranteeing that it will have a checked state (either checked or not checked), and that the state may be toggled using the mouse or the spacebar, just like a standard HTML checkbox element.
 
+In fact, because keyboard interactions feature so prominently in screen reader usage, it's very important to make sure that, when creating a custom widget, the `role` attribute is always applied in the same place as the `tabindex` attribute; this ensures that keyboard events go to the right place and that when focus lands on an element its role is conveyed accurately.
 
+The [ARIA spec](https://www.w3.org/TR/wai-aria/){: .external } describes a taxonomy of possible values for the `role` attribute and associated ARIA attributes that may be used in conjunction with those roles. This is the best source of definitive information about how the ARIA roles and attributes work together and how they can be used in a way that is supported by browsers and assistive technologies.
 
+![a list of all the available ARIA roles](imgs/aria-roles.jpg)
 
-実際、キーボードのインタラクション機能はスクリーン リーダーの用途の中でも突出しているため、カスタム ウィジェットを作成したとき、`role` 属性を常に `tabindex` 属性と同じ場所で適用する必要があります。これにより、キーボード イベントが適切な場所に伝わり、フォーカスが要素に移動したとき、その役割が正確に伝わるようになります。
+However, the spec is very dense; a more approachable place to start is the [ARIA Authoring Practices document](https://www.w3.org/TR/wai-aria-practices-1.1/){: .external } , which explores best practices for using the available ARIA roles and properties.
 
+ARIA also offers landmark roles that extend the options available in HTML5. See the [Landmark Roles Design Patterns](https://www.w3.org/TR/wai-aria-practices-1.1#kbd_layout_landmark_XHTML){: .external } spec for more information.
 
+## Feedback {: #feedback }
 
-
-
-[ARIA 仕様](https://www.w3.org/TR/wai-aria/){: .external } には、`role` 属性に使用できる分類と、その役割と組み合わせて使用できる関連 ARIA 属性について記載されています。これは、ARIA の役割と属性がどう連動するのか、また、ブラウザや支援技術でサポートされる使用方法について確実な情報を得るための最良の情報ソースです。
-
-
-
-
-![使用可能なすべての ARIA の役割のリスト](imgs/aria-roles.jpg)
-
-ただし、この仕様は非常に細かいため、使用を開始するにあたっては [ARIA
-Authoring Practices ドキュメント](https://www.w3.org/TR/wai-aria-practices-1.1/){: .external }のほうが読みやすいでしょう。これは、使用可能な ARIA の役割とプロパティを使用する際のベスト プラクティスについて説明しています。
-
-
-
-ARIA では、HTML5 で使用できるオプションを拡張するランドマークの役割も提供しています。詳細については、[ランドマークの役割のデザイン パターン](https://www.w3.org/TR/wai-aria-practices-1.1#kbd_layout_landmark_XHTML){: .external }で仕様をご覧ください。
-
-
-
-
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
