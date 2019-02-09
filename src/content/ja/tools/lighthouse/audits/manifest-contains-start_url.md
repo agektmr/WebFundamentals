@@ -1,40 +1,32 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description:Ligjthouse の監査項目「マニフェストで start_url を指定する」のリファレンス ドキュメント。
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Reference documentation for the "Manifest Contains start_url" Lighthouse audit.
 
-{# wf_updated_on:2016-09-21 #}
-{# wf_published_on:2016-09-21 #}
+{# wf_updated_on: 2018-07-23 #} {# wf_published_on: 2016-09-21 #} {# wf_blink_components: N/A #}
 
-#  マニフェストで開始 URL を指定する {: .page-title }
+# Manifest Contains Start URL {: .page-title }
 
-##  監査が重要である理由 {: #why }
+## Overview {: #overview }
 
-ユーザーのホーム画面にウェブアプリが追加されたあと、ホーム画面からアプリが起動された際に最初に読み込まれるページは、ウェブアプリ マニフェストの `start_url`
-プロパティによって決まります。
+After your web app has been added to a user's homescreen, the `start_url` property in the Web App Manifest determines what page of your app loads first when the user launches your app from the homescreen.
 
+If the `start_url` property is absent, then the browser defaults to whatever page was active when the user decided to add the app to the homescreen.
 
-`start_url` プロパティを指定していない場合は、ユーザーがアプリをホーム画面に追加したときにアクティブだったページのいずれかが、ブラウザによってデフォルトのページとして設定されます。
+## Recommendations {: #recommendations }
 
-
-##  監査に合格する方法 {: #how }
-
-ウェブアプリ マニフェストに `start_url` プロパティを追加します。
+Add a `start_url` property in your Web App Manifest.
 
     {
       ...
       "start_url": ".",
       ...
     }
+    
 
-アプリに "Add to Homescreen"
-機能を適切に実装して、テストを実施する方法については、[マニフェストを使用する](manifest-exists#how)で紹介しているガイドをご覧ください。
+Check out [Manifest Exists](manifest-exists#recommendations) for a list of guides that teach you how to properly implement and test "Add to Homescreen" support in your app.
 
+## More information {: #more-info }
 
-{% include "web/tools/lighthouse/audits/implementation-heading.html" %}
+Lighthouse fetches the manifest and verifies that it has a `start_url` property. The manifest that Lighthouse fetches is separate from the one that Chrome is using on the page, which can possibly cause inaccurate results.
 
-Lighthouse ではマニフェストを取得して、`start_url` プロパティがあるか検証します。
-なお、Lighthouse で取得するマニフェストは、Chrome がページで使用するマニフェストとは別のファイルであるため、正確な結果が出ない場合があります。
+## Feedback {: #feedback }
 
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
