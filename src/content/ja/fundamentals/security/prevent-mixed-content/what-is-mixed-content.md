@@ -1,270 +1,202 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: 最初の HTML が安全な HTTPS 接続で読み込まれ、その他のリソースが安全ではない HTTP 接続で読み込まれると、混合コンテンツが発生します。
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Mixed occurs when initial HTML is loaded over a secure HTTPS connection, but other resources are loaded over an insecure HTTP connection.
 
-{# wf_updated_on:2018-02-12 #}
-{# wf_published_on:2015-09-25 #}
+{# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2015-09-25 #} {# wf_blink_components: Blink>SecurityFeature #}
 
-# 混合コンテンツとは {: .page-title }
+# What Is Mixed Content? {: .page-title }
 
 {% include "web/_shared/contributors/johyphenel.html" %}
 
-最初の HTML が安全な HTTPS 接続で読み込まれ、その他のリソース（画像、動画、スタイルシート、スクリプトなど）が安全ではない HTTP 接続で読み込まれると、**混合コンテンツ**が発生します。
-これが混合コンテンツと呼ばれるのは、同じページを表示するために HTTP と HTTPS 両方のコンテンツが読み込まれているためで、最初のリクエストは HTTPS で保護されています。
-最新のブラウザでは、この種のコンテンツに関する警告が表示され、このページに安全でないリソースが含まれていることがユーザーに示されます。
-
-
+**Mixed content** occurs when initial HTML is loaded over a secure HTTPS connection, but other resources (such as images, videos, stylesheets, scripts) are loaded over an insecure HTTP connection. This is called mixed content because both HTTP and HTTPS content are being loaded to display the same page, and the initial request was secure over HTTPS. Modern browsers display warnings about this type of content to indicate to the user that this page contains insecure resources.
 
 ### TL;DR {: .hide-from-toc }
 
-* HTTPS は、サイトとユーザーの両方を攻撃から保護するために重要です。
-* 混合コンテンツは、HTTPS サイトのセキュリティとユーザー エクスペリエンスを低下させます。
+* HTTPS is important to protect both your site and your users from attack.
+* Mixed content degrades the security and user experience of your HTTPS site.
 
-##  リソース リクエストとウェブブラウザ
+## Resource requests and web browsers
 
-ブラウザがウェブサイト ページにアクセスすると、ブラウザは HTML リソースをリクエストします。これに対してウェブサーバーは HTML コンテンツを返し、ブラウザはこれを解析して、ユーザーに表示します。多くの場合、完全なページを表示するには単一の HTML ファイルでは不十分です。このため、HTML ファイルにはその他のリソースへの参照が含まれますが、これをブラウザがリクエストする必要があります。これらのサブリソースには、画像、動画、追加の HTML、CSS、JavaScript などがあり、それぞれ個別のリクエストを使用して取得されます。
+When a browser *visits* a website page, it is requesting for an HTML resource. The web server then returns the HTML content, which the browser parses and displays to users. Often a single HTML file isn't enough to display a complete page, so the HTML file includes references to other resources that the browser needs to request. These subresources can be things like images, videos, extra HTML, CSS, or JavaScript, which are each fetched using separate requests.
 
-## HTTPS のメリット
+## HTTPS benefits
 
-ブラウザは HTTPS（HTTP Secure の略）でリソースをリクエストする場合、暗号化された接続を使用してウェブサーバーと通信します。
+When a browser requests resources over HTTPS&mdash;which stands for HTTP Secure&mdash;it uses an encrypted connection to communicate with the web server.
 
+Using HTTPS has three main benefits:
 
-HTTPS を使用すると、主に次の 3 つのメリットがあります。
+* Authentication
+* Data integrity
+* Secrecy
 
-* 認証
-* データの整合性
-* 秘密保護
+### Authentication
 
-### 認証
+*Is the website I'm talking to who they claim to be?*
 
-アクセスしているウェブサイトは、本当に相手が名乗っているとおりのウェブサイトでしょうか。
+HTTPS lets the browser check that it has opened the correct website and hasn't been redirected to a malicious site. When navigating to your bank's website, your browser *authenticates* the website, thus preventing an attacker from impersonating your bank and stealing your login credentials.
 
-HTTPS を使用する場合、ブラウザは、正しいウェブサイトを開いており、悪意のあるサイトにリダイレクトされていないことを確認します。
-銀行のウェブサイトにアクセスした場合、ブラウザはそのウェブサイトを認証し、攻撃者が銀行になりすましてログイン認証情報を盗むことを防ぎます。
+### Data integrity
 
+*Has anyone tampered with the content that I'm sending or receiving?*
 
+HTTPS lets the browser detect if an attacker has changed any data the browser receives. When transferring money using your bank's website, this prevents an attacker from changing the destination account number while your request is in transit.
 
-### データの整合性
+### Secrecy
 
-送受信しているコンテンツをだれかが改ざんしていないでしょうか。
+*Can anyone see the content I am sending or receiving?*
 
-HTTPS を使用する場合、ブラウザは、受信したデータが攻撃者によって変更されている場合はこれを検出します。
-これにより、銀行のウェブサイトを使って送金する場合に、リクエストの送信中に宛先の口座番号が攻撃者によって変更されることが防止されます。
+HTTPS prevents an attacker from eavesdropping on the browser's requests, tracking the websites visited, or stealing information sent or received.
 
+### HTTPS, TLS, and SSL
 
+HTTPS stands for HTTP Secure, Hyper(t)ext Transfer Protocol Secure. The **secure** portion here comes from the encryption added to the requests sent and received by the browser. Currently, most browsers use the TLS protocol to provide encryption; **TLS** is sometimes referred to as SSL.
 
-### 秘密保護
-
-送受信しているコンテンツを誰かに見られないでしょうか。
-
-HTTPS によって、攻撃者は、ブラウザのリクエストを盗聴したり、アクセス先のウェブサイトを追跡したり、送受信された情報を盗んだりすることができなくなります。
-
-
-### HTTPS、TLS、および SSL
-
-HTTPS は、HTTP Secure、つまり Hyper(t)ext Transfer Protocol Secure の略です。この **secure**（安全）の部分は、ブラウザによって送受信されるリクエストが暗号化されることを意味します。
-現在、ほとんどのブラウザは TLS プロトコルを使用して暗号化を提供しています。**TLS** は SSL と呼ばれることもあります。
-
-
-HTTPS、TLS、および SSL の詳細についてはこの記事では取り上げませんが、詳細を知りたい場合は、以下のリソースから始めるとよいでしょう。
-
+Details of HTTPS, TLS, and SSL are beyond the scope of this article, but if you want to learn more, the following resources are a good place to start:
 
 * [Wikipedia HTTPS](https://en.wikipedia.org/wiki/HTTPS){: .external}
 * [Wikipedia TLS](https://en.wikipedia.org/wiki/Transport_Layer_Security){: .external}
-* [Khan Academy の暗号コース](https://www.khanacademy.org/computing/computer-science/cryptography){: .external}
-* [『High Performance Browser Networking』](https://hpbn.co/){: .external}の [TLS の章](https://hpbn.co/transport-layer-security-tls/){: .external}（Ilya Grigorik 著）
+* [Khan Academy Cryptography course](https://www.khanacademy.org/computing/computer-science/cryptography){: .external}
+* [TLS chapter](https://hpbn.co/transport-layer-security-tls/){: .external} in [High Performance Browser Networking](https://hpbn.co/){: .external} by Ilya Grigorik
 
-## 混合コンテンツにより HTTPS の効果が弱まる
+## Mixed content weakens HTTPS
 
-安全でない HTTP プロトコルを使用してサブリソースをリクエストすると、ページ全体のセキュリティが低下します。これは、このようなリクエストが **man-in-the-middle 攻撃**に対して脆弱であるためです。この攻撃では、攻撃者がネットワーク接続を盗聴して、2 人の関係者間の通信を表示または変更します。
-多くの場合、攻撃者はこれらのリソースを使用することにより、侵害されたリソースだけでなく、ページ全体を制御できるようになります。
+Requesting subresources using the insecure HTTP protocol weakens the security of the entire page, as these requests are vulnerable to **man-in-the-middle attacks**, where an attacker eavesdrops on a network connection and views or modifies the communication between two parties. Using these resources, an attacker can often take complete control over the page, not just the compromised resource.
 
-
-
-多くのブラウザでユーザーに混合コンテンツの警告が報告されますが、報告されたときには手遅れです。安全でないリクエストは既に実行され、ページのセキュリティが侵害されています。
-このような状況は、残念なことにウェブでは非常によく見られます。この理由から、すべての混合リクエストを単にブロックすることはできません。ブロックすると多数のサイトの機能が制限されてしまいます。
-
-
+Although many browsers report mixed content warnings to the user, by the time this happens, it is too late: the insecure requests have already been performed and the security of the page is compromised. This scenario is, unfortunately, quite common on the web, which is why browsers can't just block all mixed requests without restricting the functionality of many sites.
 
 <figure>
-  <img src="imgs/image-gallery-warning.png" alt="混合コンテンツ:ページは HTTPS 経由で読み込まれましたが、安全でない画像がリクエストされました。このコンテンツも HTTPS 経由で提供する必要があります。">
+  <img src="imgs/image-gallery-warning.png" alt="Mixed Content: The page was loaded over HTTPS, but requested an insecure image. This content should also be served over HTTPS.">
   <figcaption>
-    アプリケーションで混合コンテンツの問題を解決するかは、デベロッパーの判断に委ねられています。
-</figcaption>
+    It's up to you, the developer, to fix mixed content issues in your application.
+  </figcaption>
 </figure>
 
-### 単純な例
+### A simple example
 
-HTTPS ページから安全でないスクリプトを読み込みます。
+Loading an insecure script from an HTTPS page.
 
-このサンプルページを **HTTPS**&mdash; 経由で表示すると（[**https**://googlesamples.github.io/web-fundamentals/.../simple-example.html](https://googlesamples.github.io/web-fundamentals/fundamentals/security/prevent-mixed-content/simple-example.html){: .external}&mdash;）、混合コンテンツを読み込もうとする **HTTP** スクリプトタグが含まれています。
+Viewing this sample page over **HTTPS**&mdash;[**https**://googlesamples.github.io/web-fundamentals/.../simple-example.html](https://googlesamples.github.io/web-fundamentals/fundamentals/security/prevent-mixed-content/simple-example.html){: .external}&mdash;includes an **HTTP** script tag which attempts to load mixed content.
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/security/prevent-mixed-content/_code/simple-example.html" adjust_indentation="auto" %}
 </pre>
 
-[サンプルを見る](https://googlesamples.github.io/web-fundamentals/fundamentals/security/prevent-mixed-content/simple-example.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/security/prevent-mixed-content/simple-example.html){: target="_blank" .external }
 
-この例では、スクリプト `simple-example.js` が **HTTP** URL で読み込まれます。これが混合コンテンツの最も単純な例です。ブラウザが `simple-example.js` ファイルをリクエストすると、攻撃者は返されたコンテンツにコードを注入して、ページ全体を制御できるようになります。
+In this example, the script `simple-example.js` is loaded with an **HTTP** URL. This is the simplest case of mixed content. When the browser requests the `simple-example.js` file, an attacker can inject code into the returned content and take control of the entire page.
 
-
-幸いなことに、ほとんどの最新ブラウザでは、この種の危険なコンテンツは既定でブロックされます。
-[混合コンテンツに対するブラウザの動作](#browser-behavior-with-mixed-content){: .external}を参照してください。
+Thankfully, most modern browsers block this type of dangerous content by default. See [browser behavior with mixed content](#browser-behavior-with-mixed-content){: .external}.
 
 <figure>
-  <img src="imgs/simple-mixed-content-error.png" alt="混合コンテンツ:ページは HTTPS 経由で読み込まれましたが、安全でないスクリプトがリクエストされました。このリクエストはブロックされました。コンテンツは HTTPS 経由で提供する必要があります。">
-  <figcaption>Chrome により安全でないスクリプトがブロックされます。</figcaption>
+  <img src="imgs/simple-mixed-content-error.png" alt="Mixed Content: The page was loaded over HTTPS, but requested an insecure script. This request has been blocked; the content must be served over HTTPS.">
+  <figcaption>Chrome blocks the insecure script.</figcaption>
 </figure>
 
-### XMLHttpRequest の例
+### An XMLHttpRequest example
 
-XMLHttpRequest で安全でないデータを読み込みます。
+Loading insecure data with XMLHttpRequest.
 
-このサンプルページを **HTTPS**&mdash; 経由で表示すると（[**https**://googlesamples.github.io/web-fundamentals/.../xmlhttprequest-example.html](https://googlesamples.github.io/web-fundamentals/fundamentals/security/prevent-mixed-content/xmlhttprequest-example.html){: .external}）、混合コンテンツの `JSON` データを取得する **HTTP** 経由の `XMLHttpRequest` が含まれています。
+Viewing this sample page over **HTTPS**&mdash;[**https**://googlesamples.github.io/web-fundamentals/.../xmlhttprequest-example.html](https://googlesamples.github.io/web-fundamentals/fundamentals/security/prevent-mixed-content/xmlhttprequest-example.html){: .external}&mdash;includes an `XMLHttpRequest` over **HTTP** to fetch mixed content `JSON` data.
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/security/prevent-mixed-content/_code/xmlhttprequest-example.html" adjust_indentation="auto" %}
 </pre>
 
-[サンプルを見る](https://googlesamples.github.io/web-fundamentals/fundamentals/security/prevent-mixed-content/xmlhttprequest-example.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/security/prevent-mixed-content/xmlhttprequest-example.html){: target="_blank" .external }
 
-この場合、**HTTP** URL が JavaScript で動的に作成され、最終的に `XMLHttpRequest` によって安全でないリソースを読み込むために使用されます。
-上記の単純な例のように、ブラウザが `xmlhttprequest-data.js` ファイルをリクエストすると、攻撃者は返されたコンテンツにコードを注入して、ページ全体を制御できるようになります。
+Here the **HTTP** URL is constructed dynamically in JavaScript, and is eventually used by `XMLHttpRequest` to load an insecure resource. Like the simple example above, when the browser requests the `xmlhttprequest-data.js` file, an attacker can inject code into the returned content and take control of the entire page.
 
-ほとんどの最新ブラウザでは、このような危険なリクエストもブロックされます。
+Most modern browsers block these dangerous requests as well.
 
 <figure>
-  <img src="imgs/xmlhttprequest-mixed-content-error.png" alt="混合コンテンツ:ページは HTTPS 経由で読み込まれましたが、安全でない XMLHttpRequest エンドポイントがリクエストされました。このリクエストはブロックされました。コンテンツは HTTPS 経由で提供する必要があります。">
-  <figcaption>Chrome により安全でない XMLHttpRequest がブロックされます。</figcaption>
+  <img src="imgs/xmlhttprequest-mixed-content-error.png" alt="Mixed Content: The page was loaded over HTTPS, but requested an insecure XMLHttpRequest endpoint. This request has been blocked; the content must be served over HTTPS.">
+  <figcaption>Chrome blocks the insecure XMLHttpRequest.</figcaption>
 </figure>
 
-### 画像ギャラリーの例
+### An image gallery example
 
-jQuery ライトボックスに安全でない画像を読み込みます。
+Loading insecure images with jQuery lightbox.
 
-このサンプルページを **HTTPS**&mdash; 経由で表示すると（[**https**://googlesamples.github.io/web-fundamentals/.../image-gallery-example.html](https://googlesamples.github.io/web-fundamentals/fundamentals/security/prevent-mixed-content/image-gallery-example.html){: .external}&mdash;）、最初は混合コンテンツの問題はありませんが、サムネイル画像がクリックされたときに、フルサイズの混合コンテンツの画像が **HTTP** 経由で読み込まれます。
+When viewing this sample page over **HTTPS**&mdash;[**https**://googlesamples.github.io/web-fundamentals/.../image-gallery-example.html](https://googlesamples.github.io/web-fundamentals/fundamentals/security/prevent-mixed-content/image-gallery-example.html){: .external}&mdash;initially it does not have any mixed content problems; however, when the thumbnail image is clicked, a full size mixed content image is loaded over **HTTP**.
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/security/prevent-mixed-content/_code/image-gallery-example.html" adjust_indentation="auto" %}
 </pre>
 
-[サンプルを見る](https://googlesamples.github.io/web-fundamentals/fundamentals/security/prevent-mixed-content/image-gallery-example.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/security/prevent-mixed-content/image-gallery-example.html){: target="_blank" .external }
 
-画像ギャラリーでは一般に、`<img>` タグの `src` 属性を利用してページにサムネイル画像を表示し、ギャラリーにオーバーレイ表示するフルサイズの画像を読み込むためにはアンカー（`<a>`）タグの `href` 属性が使用されます。
-通常は `<a>` タグによって混合コンテンツが生じることはありませんが、この場合は、jQuery コードによって新しいページに移動するという既定のリンク動作がオーバーライドされ、代わりにこのページに **HTTP** 画像が読み込まれます。
-
-
-
+Image galleries often rely on the `<img>` tag `src` attribute to display thumbnail images on the page, the anchor (`<a>`) tag `href` attribute is then used to load the full sized image for the gallery overlay. Normally `<a>` tags do not cause mixed content, but in this case, the jQuery code overrides the default link behavior&mdash;to navigate to a new page&mdash;and instead loads the **HTTP** image on this page.
 
 <figure>
-  <img src="imgs/image-gallery-warning.png" alt="混合コンテンツ:ページは HTTPS 経由で読み込まれましたが、安全でない画像がリクエストされました。このコンテンツも HTTPS 経由で提供する必要があります。">
+  <img src="imgs/image-gallery-warning.png" alt="Mixed Content: The page was loaded over HTTPS, but requested an insecure image. This content should also be served over HTTPS.">
 </figure>
 
-安全でない画像はサイトのセキュリティを低下させますが、その他の種類の混合コンテンツほど危険ではありません。
-最新ブラウザでは混合コンテンツの画像は引き続き読み込まれますが、ユーザーへの警告も表示されます。
+Insecure images degrade the security of your site, but they are not as dangerous as other types of mixed content. Modern browsers still load mixed content images, but display warnings to the user as well.
 
+## Mixed content types & security threats associated
 
-## 混合コンテンツの種類と関連するセキュリティ上の脅威
+The two types of mixed content are: active and passive.
 
-混合コンテンツには、アクティブとパッシブの 2 種類があります。
+**Passive mixed content** refers to content that doesn't interact with the rest of the page, and thus a man-in-the-middle attack is restricted to what they can do if they intercept or change that content. Passive mixed content includes images, video, and audio content, along with other resources that cannot interact with the rest of the page.
 
-**パッシブな混合コンテンツ**とは、ページの残りの部分と対話しないコンテンツのことです。そのため man-in-the-middle 攻撃は、攻撃者がそのコンテンツを傍受または変更した場合に実行できる操作に限定されます。
-パッシブな混合コンテンツには、画像、動画、音声コンテンツと、ページの残りの部分と対話できないその他のリソースが含まれます。
+**Active mixed content** interacts with the page as a whole and allows an attacker to do almost anything with the page. Active mixed content includes scripts, stylesheets, iframes, flash resources, and other code that the browser can download and execute.
 
+### Passive mixed content
 
+Passive mixed content still poses a security threat to your site and your users. For example, an attacker can intercept HTTP requests for images on your site and swap or replace these images; the attacker can swap the *save* and *delete* button images, causing your users to delete content without intending to; replace your product diagrams with lewd or pornographic content, defacing your site; or replace your product pictures with ads for a different site or product.
 
-**アクティブな混合コンテンツ**は、ページ全体に関係するため、攻撃者はそのページに対してほぼあらゆる操作を実行できます。
-アクティブな混合コンテンツには、スクリプト、スタイルシート、iframe、Flash リソースと、ブラウザがダウンロードして実行できるその他のコードが含まれます。
+Even if the attacker doesn't alter the content of your site, you still have a large privacy issue where an attacker can track users using mixed content requests. The attacker can tell which pages a user visits and which products they view based on images or other resources that the browser loads.
 
-
-
-### パッシブな混合コンテンツ
-
-パッシブな混合コンテンツであっても、サイトとそのユーザーにセキュリティ上の脅威をもたらします。
-たとえば、攻撃者はサイトの画像に対する HTTP リクエストを傍受して、それらの画像を入れ替えたり、置き換えたりすることができます。攻撃者が保存ボタンと削除ボタンの画像を入れ替えた場合、ユーザーは意図せずコンテンツを削除することになります。製品の図をわいせつなコンテンツや性的なコンテンツで置き換えた場合、サイトの評判が損なわれます。製品の写真を別のサイトや製品の広告で置き換えることもあります。
-
-
-
-
-
-攻撃者がサイトのコンテンツを改ざんしなくても、攻撃者が混合コンテンツ リクエストを使用してユーザーを追跡できるという、重大なプライバシーの問題があります。
-攻撃者は、ブラウザにより読み込まれる画像などのリソースに基づいて、ユーザーがアクセスしたページや表示した製品を知ることができます。
-
-
-次に、パッシブな混合コンテンツの例を示します。
+The following is an example of passive mixed content:
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/security/prevent-mixed-content/_code/passive-mixed-content.html" adjust_indentation="auto" %}
 </pre>
 
-[サンプルを見る](https://googlesamples.github.io/web-fundamentals/fundamentals/security/prevent-mixed-content/passive-mixed-content.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/security/prevent-mixed-content/passive-mixed-content.html){: target="_blank" .external }
 
-ほとんどのブラウザでは、まだこの種の混合コンテンツがユーザーに表示されますが、これによってサイトとユーザーにセキュリティとプライバシーのリスクが生じるため、警告も表示されます。
-
-
+Most browsers still render this type of mixed content to the user, however a warning is also displayed as this poses a security and privacy risk to your site and users.
 
 <figure>
-  <img src="imgs/passive-mixed-content-warnings.png" alt="混合コンテンツ:ページは HTTPS 経由で読み込まれましたが、安全でない動画がリクエストされました。このコンテンツも HTTPS 経由で提供する必要があります。">
-  <figcaption>Chrome JavaScript コンソールからの混合コンテンツの警告。</figcaption>
+  <img src="imgs/passive-mixed-content-warnings.png" alt="Mixed Content: The page was loaded over HTTPS, but requested an insecure video. This content should also be served over HTTPS.">
+  <figcaption>Mixed content warnings from the Chrome JavaScript console.</figcaption>
 </figure>
 
-### アクティブな混合コンテンツ
+### Active mixed content
 
-アクティブな混合コンテンツは、パッシブな混合コンテンツより大きな脅威をもたらします。攻撃者はアクティブなコンテンツを傍受して書き換えることができるため、ページや場合によってはウェブサイト全体を完全に制御できるようになります。
-これにより攻撃者は、ページに関するあらゆるものを変更できます。たとえば、まったく異なるコンテンツを表示したり、ユーザーのパスワードやその他のログイン認証情報を盗んだり、ユーザーのセッション Cookie を盗んだり、ユーザーをまったく異なるサイトにリダイレクトしたりすることができます。
+Active mixed content poses a greater threat than passive. An attacker can intercept and rewrite active content, thereby taking full control of your page or even your entire website. This allows the attacker to change anything about the page, including displaying entirely different content, stealing user passwords or other login credentials, stealing user session cookies, or redirecting the user to a different site entirely.
 
+Due to the severity of this threat, many browsers block this type of content by default to protect users, but functionality varies between browser vendors and versions.
 
-
-
-この脅威の深刻さから、多くのブラウザがユーザーを保護するためにこの種のコンテンツを既定でブロックしていますが、その機能はブラウザのベンダーとバージョンによって異なります。
-
-
-
-以下に、アクティブな混合コンテンツの例を示します。
+The following contains examples of active mixed content:
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/security/prevent-mixed-content/_code/active-mixed-content.html" adjust_indentation="auto" %}
 </pre>
 
-[サンプルを見る](https://googlesamples.github.io/web-fundamentals/fundamentals/security/prevent-mixed-content/active-mixed-content.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/security/prevent-mixed-content/active-mixed-content.html){: target="_blank" .external }
 
 <figure>
-  <img src="imgs/active-mixed-content-errors.png" alt="混合コンテンツ:ページは HTTPS 経由で読み込まれましたが、安全でないリソースがリクエストされました。このリクエストはブロックされました。コンテンツは HTTPS 経由で提供する必要があります。">
-  <figcaption>Chrome JavaScript コンソールからの混合コンテンツのエラー。</figcaption>
+  <img src="imgs/active-mixed-content-errors.png" alt="Mixed Content: The page was loaded over HTTPS, but requested an insecure resource. This request has been blocked; the content must be served over HTTPS.">
+  <figcaption>Mixed content errors from the Chrome JavaScript console.</figcaption>
 </figure>
 
-## 混合コンテンツに対するブラウザの動作
+## Browser behavior with mixed content
 
-前述した脅威があるため、ブラウザですべての混合コンテンツをブロックすることが理想的です。
-ただし、そうすると、何百万人ものユーザーが毎日利用している多数のウェブサイトが台無しになってしまいます。
-現時点の妥協点は、最も危険な種類の混合コンテンツをブロックし、危険性が少ないものについては引き続きリクエストを許可するというものです。
+Due to the threats described above, it would be ideal for browsers to block all mixed content. However, this would break a large number of websites that millions of users rely on every day. The current compromise is to block the most dangerous types of mixed content and allow the less dangerous types to still be requested.
 
+Modern browsers follow [mixed content specification](https://w3c.github.io/webappsec/specs/mixedcontent/){: .external }, which defines [**optionally blockable content**](https://w3c.github.io/webappsec/specs/mixedcontent/#category-optionally-blockable){: .external} and [**blockable content**](https://w3c.github.io/webappsec/specs/mixedcontent/#category-blockable){: .external} categories.
 
+From the spec, a resource qualifies as optionally blockable content "when the risk of allowing its usage as mixed content is outweighed by the risk of breaking significant portions of the web"; this is a subset of the [passive mixed content](#passive-mixed-content) category described above. At the time of this writing, images, video, and audio resources, as well as prefetched links, are the only resource types included in optionally blockable content. This category is likely to get smaller as time goes on.
 
-最新のブラウザは、[混合コンテンツの仕様](https://w3c.github.io/webappsec/specs/mixedcontent/){: .external }に従っています。この仕様では、[**任意でブロック可能なコンテンツ**](https://w3c.github.io/webappsec/specs/mixedcontent/#category-optionally-blockable){: .external}と[**ブロック可能なコンテンツ**](https://w3c.github.io/webappsec/specs/mixedcontent/#category-blockable){: .external}のカテゴリが定義されています。
+All content that is not **optionally blockable** is considered **blockable**, and is blocked by the browser.
 
-仕様から、リソースが任意でブロック可能なコンテンツと見なされるのは、「混合コンテンツとしての使用を許可するリスクよりも、ウェブの大部分が損なわれるリスクの方が大きい場合」です。これは、前述した[パッシブな混合コンテンツ](#passive-mixed-content) カテゴリのサブセットです。
-この記事の執筆時には、画像、動画、音声リソースとプリフェッチされたリンクのみが、任意でブロック可能なコンテンツに含まれるリソースの種類です。
-このカテゴリは、時間の経過とともに縮小すると考えられます。
+### Browser versions
 
+It is important to remember that not every visitor to your website use the most up-to-date browsers. Different versions from different browser vendors each behave differently with mixed content. At worst, some browsers and versions don't block any mixed content at all, which is very unsafe for the user.
 
-**任意でブロック可能**でないすべてのコンテンツは**ブロック可能**であると見なされ、ブラウザによりブロックされます。
+The exact behavior of each browser is constantly changing, so we won't include specifics here. If you're interested in how a specific browser behaves, look for information published by the vendors directly.
 
+Note: Your users are counting on you to protect them when they visit your website. It is important to fix your mixed content issues to protect **all** your visitors, including those on older browsers.
 
-### ブラウザのバージョン
+## Feedback {: #feedback }
 
-ウェブサイトにアクセスするすべてのユーザーが最新のブラウザ使用しているとは限らないと認識しておくことが重要です。
-ブラウザ ベンダーやバージョンごとに、混合コンテンツに対する動作がそれぞれ異なっています。
-混合コンテンツをまったくブロックないブラウザとバージョンもあります。これはユーザーにとって非常に危険です。
-
-
-各ブラウザの具体的な動作は絶えず変化しているので、ここでは詳細に説明しません。
-特定のブラウザの動作を知りたい場合は、そのベンダーが公開している情報を直接ご覧ください。
-
-
-注: ウェブサイトにアクセスする際、ユーザーは、サイトの運営者による保護を期待しています。古いブラウザを使用しているユーザーも含め、<b>すべて</b>の訪問者を保護するためには、混合コンテンツの問題を解決することが重要です。
-
-
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
