@@ -1,87 +1,58 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: サイト上のすべてのリソースが HTTPS で保護されていることを確認するには、[Security] パネルを使用します。
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Use the Security Panel to ensure that all resources on your site are protected with HTTPS.
 
-{# wf_updated_on:2016-03-09 #}
-{# wf_published_on:2015-12-21 #}
+{# wf_updated_on: 2018-07-27 #} {# wf_published_on: 2015-12-21 #} {# wf_blink_components: Security #}
 
-# セキュリティの問題を理解する {: .page-title }
+# Understand Security Issues {: .page-title }
 
 {% include "web/_shared/contributors/kaycebasques.html" %}
 
-ウェブサイトと、ウェブサイトに個人情報の管理を任せているユーザーの両方にとって、HTTPS は[重要なセキュリティとデータ整合性][why-https]を与えるものです。
-セキュリティの問題をデバッグしたり、ウェブサイトに HTTPS が正しく実装されていることを確認したりするには、Chrome DevTools の [Security] パネルを使用します。
-
-
-
+HTTPS provides [critical security and data integrity](/web/fundamentals/security/encrypt-in-transit/why-https) both for your websites and for the people that entrust your websites with their personal information. Use the Security Panel in Chrome DevTools to debug security issues and ensure that you have properly implemented HTTPS on your websites.
 
 ### TL;DR {: .hide-from-toc }
-- 現在のページが安全であるかをすぐに確認するには、[Security Overview] を使用します。
-- 個々のオリジンを調べ、安全なオリジンの場合は接続や証明書の詳細を表示し、安全ではないオリジンの場合はどのリクエストが保護されていないかを正確に把握します。
 
+- Use the Security Overview to instantly find out whether the current page is secure or non-secure.
+- Inspect individual origins to view connection and certificate details (for secure origins) or to find out exactly which requests are unprotected (for non-secure origins).
 
-##  セキュリティの概要
+## Security Overview
 
-ページの全体的なセキュリティを表示するには、DevTools を開いて [Security] パネルに移動します。
- 
+To view the overall security of a page, open DevTools and go to the Security Panel.
 
-最初に表示されるのは [Security Overview] です。[Security Overview] では、ページが安全かどうかを一目で確認できます。
-安全なページの場合は、「`This page is secure (valid HTTPS).`」というメッセージが表示されます。
+The first thing you see is the Security Overview. At a glance, the Security Overview tells you whether the page is secure. A secure page is indicated with the message `This page is secure (valid HTTPS).`
 
+![security overview, secure page](images/overview-secure.png)
 
-![[Security Overview]、安全なページ](images/overview-secure.png)
+Click **View certificate** to view the server certificate for the [main origin](https://en.wikipedia.org/wiki/Same-origin_policy).
 
-[**View certificate**] をクリックして、[メインオリジン][same-origin-policy]のサーバー証明書を表示します。
- 
+![view certificate](images/view-certificate.png)
 
-![証明書の表示](images/view-certificate.png)
+A non-secure page is indicated with the message `This page is not secure.`
 
-安全ではないページの場合は、「`This page is not secure.`」というメッセージが表示されます。
+The Security Panel distinguishes between two types of non-secure pages. If the requested page is served over HTTP, then the main origin is flagged as not secure.
 
-[Security] パネルでは、安全ではないページについて 2 つのタイプで区別しています。
-リクエストされたページが HTTP を介して提供されている場合、メインオリジンには非セキュアのフラグが付けられます。
- 
+![security overview, non-secure main origin](images/overview-non-secure.png)
 
-![[Security Overview]、セキュアでないメインオリジン](images/overview-non-secure.png)
+If the requested page is retrieved over HTTPS, but the page then goes on to retrieve content from other origins using HTTP, then the page is still flagged as not secure. This is known as a [mixed content](/web/fundamentals/security/prevent-mixed-content/what-is-mixed-content) page. Mixed content pages are only partially protected because the HTTP content is accessible to sniffers and vulnerable to man-in-the-middle attacks.
 
-リクエストされたページが HTTPS を介して取得され、次にそのページが HTTP を使用して他のオリジンからコンテンツを取得する場合も、ページに非セキュアのフラグが付けられます。
-これは、[混合コンテンツ][mixed-content] ページと呼ばれています。
-混合コンテンツ ページは、HTTP コンテンツが盗聴者からアクセス可能で、man-in-the-middle 攻撃に対して脆弱であるため、部分的にしか保護されていません。
- 
+![security overview, mixed content](images/overview-mixed.png)
 
-![[Security Overview]、混合コンテンツ](images/overview-mixed.png)
+Click **View request in Network Panel** to open up a filtered view of the Network Panel and see exactly which requests were served over HTTP. This shows all unprotected requests from all origins.
 
-[**View request in Network Panel**] をクリックして [Network] パネルのフィルタされたビューを開き、HTTP で提供されているリクエストを正確に把握します。
-ここでは、すべてのオリジンからの保護されていないリクエストがすべて表示されます。
- 
+## Inspect origins
 
-![[Network] パネル、安全ではないリソース、すべてのオリジン](images/network-all.png)
+Use the left panel to inspect an individual secure or non-secure origin.
 
-##  オリジンの調査
+Click on a secure origin to view the connection and certificate details for that origin.
 
-安全なオリジンまたは安全ではないオリジンを個別に調べるには、左側のパネルを使用します。 
+![origin details, secure](images/origin-detail-secure.png)
 
-安全なオリジンをクリックし、そのオリジンの接続と証明書の詳細を表示します。
+If you click on a non-secure origin, the Security Panel provides a link to a filtered view of the Network Panel.
 
+![origin details, non-secure](images/origin-detail-non-secure.png)
 
-![オリジンの詳細、安全](images/origin-detail-secure.png)
+Click on the link to see exactly which requests from that origin were served over HTTP.
 
-安全ではないオリジンをクリックすると、[Security] パネルに [Network] パネルのフィルタされたビューへのリンクが表示されます。 
+![network panel, non-secure resources, one origin](images/network-one.png)
 
-![オリジンの詳細、安全ではない](images/origin-detail-non-secure.png)
+## Feedback {: #feedback }
 
-このリンクをクリックすると、そのオリジンからのリクエストのうち、HTTP で提供されたものを正確に把握できます。
- 
-
-![[Network] パネル、安全ではないリソース、1 つのオリジン](images/network-one.png)
-
-
-
-
-
-[mixed-content]: /web/fundamentals/security/prevent-mixed-content/what-is-mixed-content
-[same-origin-policy]: https://en.wikipedia.org/wiki/Same-origin_policy
-[why-https]: /web/fundamentals/security/encrypt-in-transit/why-https
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
