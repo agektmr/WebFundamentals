@@ -1,117 +1,59 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Shadow DOM memungkinkan developer web membuat DOM dan CSS yang terkategori untuk komponen web
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Shadow DOM allows web developers to create compartmentalized DOM and CSS for web components
 
-{# wf_updated_on: 2017-07-12 #}
-{# wf_published_on: 2016-08-01 #}
+{# wf_updated_on: 2018-11-05 #} {# wf_published_on: 2016-08-01 #} {# wf_blink_components: Blink>DOM #}
 
-# Shadow DOM v1: Komponen Web Mandiri {: .page-title }
+# Shadow DOM v1: Self-Contained Web Components {: .page-title }
 
 {% include "web/_shared/contributors/ericbidelman.html" %}
 
 ### TL;DR {: #tldr .hide-from-toc}
 
-Shadow DOM menghilangkan keringkihan membangun aplikasi web. Keringkihan
-tersebut bersumber dari sifat global HTML, CSS, dan JS. Setelah bertahun-tahun, kami
-menemukan begitu [banyak](http://getbem.com/introduction/) 
-[dari](https://github.com/css-modules/css-modules)
-[alat](https://www.smashingmagazine.com/2011/12/an-introduction-to-object-oriented-css-oocss/)
-untuk mengatasi masalah. Misalnya, bila Anda menggunakan id/kelas HTML baru,
-Anda tidak akan diberi tahu jika itu mengalami konflik dengan nama yang ada yang digunakan oleh laman.
-[Bug halus](http://www.2ality.com/2012/08/ids-are-global.html) tersembunyi,
-kekhususan CSS menjadi masalah yang sangat besar (`!important` dalam semua hal!), pemilih
-gaya berkembang tidak terkontrol, dan
-[kinerja bisa terpengaruh](/web/updates/2016/06/css-containment). Daftar
-masalahnya terus bertambah.
+Shadow DOM removes the brittleness of building web apps. The brittleness comes from the global nature of HTML, CSS, and JS. Over the years we've invented an exorbitant [number](http://getbem.com/introduction/) [of](https://github.com/css-modules/css-modules) [tools](https://www.smashingmagazine.com/2011/12/an-introduction-to-object-oriented-css-oocss/) to circumvent the issues. For example, when you use a new HTML id/class, there's no telling if it will conflict with an existing name used by the page. [Subtle bugs](http://www.2ality.com/2012/08/ids-are-global.html) creep up, CSS specificity becomes a huge issue (`!important` all the things!), style selectors grow out of control, and [performance can suffer](/web/updates/2016/06/css-containment). The list goes on.
 
-**Shadow DOM memperbaiki CSS dan DOM**. Ia memperkenalkan **gaya bercakupan** ke platform
-web. Tanpa alat atau konvensi penamaan, Anda bisa **membundel CSS bersama
-markup**, menyembunyikan detail implementasi, dan **menulis komponen
-mandiri** dalam JavaScript biasa.
+**Shadow DOM fixes CSS and DOM**. It introduces **scoped styles** to the web platform. Without tools or naming conventions, you can **bundle CSS with markup**, hide implementation details, and **author self-contained components** in vanilla JavaScript.
 
-## Pengantar {: #intro}
+## Introduction {: #intro}
 
-Note: **Sudah mengerti Shadow DOM?** Artikel ini menjelaskan spesifikasi
-<a href="http://w3c.github.io/webcomponents/spec/shadow/" target="_blank">
-Shadow DOM v1</a> yang baru. Jika Anda menggunakan Shadow DOM, kemungkinan Anda sudah
-familier dengan <a href="https://www.chromestatus.com/features/4507242028072960">
-versi v0 yang disertakan di Chrome 35</a>, dan polyfill webcomponents.js.
-Konsepnya sama, namun spesifikasi v1 memiliki perbedaan API yang penting. Versi ini
-juga yang disepakati untuk diimplementasikan oleh semua browser, dan yang sudah
-diimplementasikan di Safari Tech Preview dan Chrome Canary. Bacalah terus
-untuk mengetahui apa saja yang baru atau lihat bagian ini di <a href="#historysupport">
-Riwayat dan dukungan browser</a> untuk informasi selengkapnya.
+Note: **Already familiar with Shadow DOM?** This article describes the new <a href="http://w3c.github.io/webcomponents/spec/shadow/" target="_blank"> Shadow DOM v1 spec</a>. If you've been using Shadow DOM, chances are you're familiar with the [ v0 version that shipped in Chrome 35](https://www.chromestatus.com/features/4507242028072960), and the webcomponents.js polyfills. The concepts are the same, but the v1 spec has important API differences. It's also the version that all major browsers have agreed to implement, with implementations already in Safari, Chrome and Firefox. Keep reading to see what's new or check out the section on [ History and browser support](#historysupport) for more info.
 
-Shadow DOM adalah salah satu dari empat standar Komponen Web: 
-[Template HTML](https://www.html5rocks.com/en/tutorials/webcomponents/template/),
-[Shadow DOM][sd_spec_whatwg],
-[Elemen khusus](/web/fundamentals/getting-started/primers/customelements) dan
-[Impor HTML](https://www.html5rocks.com/en/tutorials/webcomponents/imports/).
+Shadow DOM is one of the four Web Component standards: [HTML Templates](https://www.html5rocks.com/en/tutorials/webcomponents/template/), [Shadow DOM](https://dom.spec.whatwg.org/#shadow-trees), [Custom elements](/web/fundamentals/web-components/customelements) and [HTML Imports](https://www.html5rocks.com/en/tutorials/webcomponents/imports/).
 
-Anda tidak harus menulis komponen web yang menggunakan shadow DOM. Namun bila melakukannya,
-Anda bisa memanfaatkan keuntungannya (pelingkupan CSS, enkapsulasi DOM,
-komposisi) dan membangun
-[elemen khusus](/web/fundamentals/getting-started/primers/customelements) yang dapat digunakan kembali,
-luwes, sangat mudah dikonfigurasi, dan sangat mudah digunakan kembali. Jika elemen
-khusus menjadi cara untuk membuat HTML baru (dengan JS API), maka shadow DOM menjadi
-cara Anda menyediakan HTML dan CSS-nya. Kedua API bergabung untuk membuat komponen
-dengan HTML, CSS, dan JavaScript mandiri.
+You don't have to author web components that use shadow DOM. But when you do, you take advantage of its benefits (CSS scoping, DOM encapsulation, composition) and build reusable [custom elements](/web/fundamentals/web-components/customelements), which are resilient, highly configurable, and extremely reusable. If custom elements are the way to create a new HTML (with a JS API), shadow DOM is the way you provide its HTML and CSS. The two APIs combine to make a component with self-contained HTML, CSS, and JavaScript.
 
-Shadow DOM dirancang sebagai alat untuk membangun aplikasi berbasis komponen. Karena itu,
-ini memberikan solusi untuk masalah umum dalam development web:
+Shadow DOM is designed as a tool for building component-based apps. Therefore, it brings solutions for common problems in web development:
 
-- **DOM Terisolasi**: DOM komponen bersifat mandiri (mis. 
-  `document.querySelector()` tidak akan mengembalikan simpul dalam shadow DOM komponen).
-- **CSS Bercakupan**: CSS yang didefinisikan dalam shadow DOM akan menjadi cakupannya. Aturan gaya 
-  tidak bocor dan gaya laman tetap tertata.
-- **Komposisi**: Merancang API deklaratif yang berbasis markup untuk komponen Anda.
-- **CSS Sederhana** - DOM bercakupan artinya Anda bisa menggunakan pemilih CSS sederhana, nama 
-  id/kelas yang lebih generik, dan tidak khawatir dengan konflik penamaan.
-- **Produktivitas** - Pertimbangkan aplikasi dalam beberapa potongan DOM bukannya satu laman 
-  (global) yang besar.
+- **Isolated DOM**: A component's DOM is self-contained (e.g. `document.querySelector()` won't return nodes in the component's shadow DOM).
+- **Scoped CSS**: CSS defined inside shadow DOM is scoped to it. Style rules don't leak out and page styles don't bleed in.
+- **Composition**: Design a declarative, markup-based API for your component.
+- **Simplifies CSS** - Scoped DOM means you can use simple CSS selectors, more generic id/class names, and not worry about naming conflicts.
+- **Productivity** - Think of apps in chunks of DOM rather than one large (global) page.
 
-Note: Walaupun Anda bisa menggunakan shadow DOM API dan kegunaannya di luar komponen
-web, saya hanya akan memfokuskan pada contoh-contoh yang dibangun pada elemen khusus.
-Saya akan menggunakan elemen khusus v1 API dalam semua contoh.
-
+Note: Although you can use the shadow DOM API and its benefits outside of web components, I'm only going to focus on examples that build on custom elements. I'll be using the custom elements v1 API in all examples.
 
 #### `fancy-tabs` demo {: #demo}
 
-Sepanjang artikel ini, saya akan merujuk ke komponen demo (`<fancy-tabs>`)
-dan merujuk cuplikan kode dari sana. Jika browser Anda mendukung API, Anda
-akan melihat demonya langsung di bawah ini. Jika tidak, lihat 
+Throughout this article, I'll be referring to a demo component (`<fancy-tabs>`) and referencing code snippets from it. If your browser supports the APIs, you should see a live demo of it just below. Otherwise, check out the
 <a href="https://gist.github.com/ebidel/2d2bb0cdec3f2a16cf519dbaa791ce1b" target="_blank">
-sumber lengkapnya di Github</a>.
+full source on Github</a>.</p>
 
 <figure class="demoarea">
-  <iframe style="height:360px;width:100%;border:none" src="https://rawgit.com/ebidel/2d2bb0cdec3f2a16cf519dbaa791ce1b/raw/fancy-tabs-demo.html"></iframe>
+  <iframe
+    style="height:360px;width:100%;border:none"
+    src="https://rawgit.com/ebidel/2d2bb0cdec3f2a16cf519dbaa791ce1b/raw/fancy-tabs-demo.html">
+  </iframe>
   <figcaption>
     <a href="https://gist.github.com/ebidel/2d2bb0cdec3f2a16cf519dbaa791ce1b" target="_blank">
-      Lihat sumbernya di Github
+      View source on Github
     </a>
-  </figcaption>
-</figure>
+ </figcaption> </figure> 
 
-## Apa yang dimaksud dengan shadow DOM? {: #what}
+## What is shadow DOM? {: #what}
 
-#### Latar belakang DOM {: #sdbackground}
+#### Background on DOM {: #sdbackground}
 
-HTML menjadi kekuatan web karena mudah digunakan. Dengan mendeklarasikan beberapa tag, Anda
-bisa menulis laman dalam sekejap yang memiliki presentasi maupun struktur. Walau demikian,
-HTML itu sendiri tidaklah seberguna itu. Orang mudah memahami bahasa berbasis
-teks, namun mesin memerlukan lebih dari itu. Masuklah ke Document Object
-Model, atau DOM.
+HTML powers the web because it's easy to work with. By declaring a few tags, you can author a page in seconds that has both presentation and structure. However, by itself HTML isn't all that useful. It's easy for humans to understand a text- based language, but machines need something more. Enter the Document Object Model, or DOM.
 
-Saat browser memuat laman web, ia melakukan banyak hal menarik. Salah satu
-yang dilakukannya adalah mengubah HTML penulis ke dalam dokumen langsung.
-Pada dasarnya, untuk memahami struktur laman, browser mem-parse HTML (string
-statis teks) ke dalam model data (objek/simpul). Browser mempertahankan
-hierarki HTML dengan membuat turunan dari simpul-simpul ini: DOM. Yang keren
-tentang DOM adalah karena ia merupakan representasi langsung dari laman Anda. Tidak seperti HTML
-statis yang kita tulis, simpul buatan browser berisi properti, metode, dan
-terutama...bisa dimanipulasi oleh program! Itulah sebabnya kita dapat membuat elemen
-DOM secara langsung menggunakan JavaScript:
-
+When the browser loads a web page it does a bunch of interesting stuff. One of the things it does is transform the author's HTML into a live document. Basically, to understand the page's structure, the browser parses HTML (static strings of text) into a data model (objects/nodes). The browser preserves the HTML's hierarchy by creating a tree of these nodes: the DOM. The cool thing about DOM is that it's a live representation of your page. Unlike the static HTML we author, the browser-produced nodes contain properties, methods, and best of all...can be manipulated by programs! That's why we're able to create DOM elements directly using JavaScript:
 
     const header = document.createElement('header');
     const h1 = document.createElement('h1');
@@ -120,8 +62,7 @@ DOM secara langsung menggunakan JavaScript:
     document.body.appendChild(header);
     
 
-menghasilkan markup HTML berikut:
-
+produces the following HTML markup:
 
     <body>
       <header>
@@ -130,26 +71,15 @@ menghasilkan markup HTML berikut:
     </body>
     
 
-Semua itu memang bagus. Lalu 
-[bagaimana dengan _shadow DOM_](https://glazkov.com/2011/01/14/what-the-heck-is-shadow-dom/)?
+All that is well and good. Then [what the heck is *shadow DOM*](https://glazkov.com/2011/01/14/what-the-heck-is-shadow-dom/)?
 
-#### DOM...yang membayangi {: #sddom}
+#### DOM...in the shadows {: #sddom}
 
-Shadow DOM cuma DOM biasa dengan dua perbedaan: 1) bagaimana pembuatan/penggunaannya dan
-2) bagaimana perilakunya sehubungan dengan bagian laman selebihnya. Biasanya, Anda membuat simpul
-DOM dan menambahkannya sebagai anak elemen lain. Dengan shadow DOM, Anda
-membuat pohon DOM bercakupan yang dilampirkan ke elemen, namun terpisah dari
-anak sesungguhnya. Subpohon bercakupan ini disebut **pohon bayangan**. Elemen
-tempat melampirkannya adalah **shadow host**. Apa saja yang Anda tambahkan dalam bayangan akan bersifat
-lokal untuk elemen hosting, termasuk `<style>`. Seperti inilah cara shadow DOM
-menghasilkan pelingkupan gaya CSS.
+Shadow DOM is just normal DOM with two differences: 1) how it's created/used and 2) how it behaves in relation to the rest of the page. Normally, you create DOM nodes and append them as children of another element. With shadow DOM, you create a scoped DOM tree that's attached to the element, but separate from its actual children. This scoped subtree is called a **shadow tree**. The element it's attached to is its **shadow host**. Anything you add in the shadows becomes local to the hosting element, including `<style>`. This is how shadow DOM achieves CSS style scoping.
 
-## Membuat shadow DOM {: #create}
+## Creating shadow DOM {: #create}
 
-**Shadow root** adalah fragmen dokumen yang akan melekat pada elemen "host".
-Tindakan melampirkan shadow root adalah cara elemen memperoleh shadow DOM-nya. Untuk
-membuat shadow DOM bagi sebuah elemen, panggil `element.attachShadow()`:
-
+A **shadow root** is a document fragment that gets attached to a “host” element. The act of attaching a shadow root is how the element gains its shadow DOM. To create shadow DOM for an element, call `element.attachShadow()`:
 
     const header = document.createElement('header');
     const shadowRoot = header.attachShadow({mode: 'open'});
@@ -159,40 +89,31 @@ membuat shadow DOM bagi sebuah elemen, panggil `element.attachShadow()`:
     // shadowRoot.host === header
     
 
-Saya menggunakan `.innerHTML` untuk mengisi shadow root, namun Anda juga bisa menggunakan DOM
-API yang lain. Inilah web. Kita punya pilihan.
+I'm using `.innerHTML` to fill the shadow root, but you could also use other DOM APIs. This is the web. We have choice.
 
-Spesifikasi [mendefinisikan daftar elemen](http://w3c.github.io/webcomponents/spec/shadow/#h-methods)
-yang tidak bisa menjadi host shadow tree. Ada sejumlah alasan suatu elemen berada
-dalam daftar:
+The spec [defines a list of elements](https://dom.spec.whatwg.org/#dom-element-attachshadow) that can't host a shadow tree. There are several reasons an element might be on the list:
 
-- Browser sudah menjadi host bagi shadow DOM internalnya sendiri untuk elemen 
-  (`<textarea>`, `<input>`).
-- Tidak mungkin bagi elemen menjadi host shadow DOM (`<img>`).
+- The browser already hosts its own internal shadow DOM for the element (`<textarea>`, `<input>`).
+- It doesn't make sense for the element to host a shadow DOM (`<img>`).
 
-Misalnya, ini tidak bekerja:
-
+For example, this doesn't work:
 
     document.createElement('input').attachShadow({mode: 'open'});
     // Error. `<input>` cannot host shadow dom.
     
 
-### Membuat shadow DOM untuk elemen khusus {: #elements}
+### Creating shadow DOM for a custom element {: #elements}
 
-Shadow DOM sangat berguna saat membuat
-[elemen khusus](/web/fundamentals/getting-started/primers/customelements).
-Gunakan shadow DOM untuk membagi-bagi HTML, CSS, dan JS elemen, sehingga
-menghasilkan "komponen web".
+Shadow DOM is particularly useful when creating [custom elements](/web/fundamentals/web-components/customelements). Use shadow DOM to compartmentalize an element's HTML, CSS, and JS, thus producing a "web component".
 
-**Contoh** - elemen khusus **melampirkan shadow DOM ke dirinya sendiri**,
-mengenkapsulasi DOM/CSS-nya:
+**Example** - a custom element **attaches shadow DOM to itself**, encapsulating its DOM/CSS:
 
     // Use custom elements API v1 to register a new HTML tag and define its JS behavior
     // using an ES6 class. Every instance of <fancy-tab> will have this same prototype.
     customElements.define('fancy-tabs', class extends HTMLElement {
       constructor() {
         super(); // always call super() first in the constructor.
-
+    
         // Attach a shadow root to <fancy-tabs>.
         const shadowRoot = this.attachShadow({mode: 'open'});
         shadowRoot.innerHTML = `
@@ -203,63 +124,36 @@ mengenkapsulasi DOM/CSS-nya:
       }
       ...
     });
+    
 
-Ada beberapa hal menarik yang terjadi di sini. Yang pertama adalah bahwa
-elemen khusus **membuat shadow DOM sendiri** bila instance `<fancy-tabs>`
-dibuat. Itu dilakukan dalam `constructor()`. Kedua, karena kita sedang membuat
-shadow root, aturan CSS di dalam `<style>` akan bercakupan `<fancy-tabs>`.
+There are a couple of interesting things going on here. The first is that the custom element **creates its own shadow DOM** when an instance of `<fancy-tabs>` is created. That's done in the `constructor()`. Secondly, because we're creating a shadow root, the CSS rules inside the `<style>` will be scoped to `<fancy-tabs>`.
 
-Note: Bila Anda mencoba menjalankan contoh ini, mungkin Anda akan melihat bahwa tidak ada yang
-dirender. Markup pengguna seakan menghilang! Itu karena **shadow DOM
-elemen dirender menggantikan anaknya**. Jika Anda ingin menampilkan
-anaknya, Anda perlu memberi tahu browser tempat merendernya dengan memasukkan
-[elemen `<slot>`](#slots) dalam shadow DOM Anda. Selengkapnya mengenai hal itu
-[nanti](#composition_slot).
+Note: When you try to run this example, you'll probably notice that nothing renders. The user's markup seemingly disappears! That's because the **element's shadow DOM is rendered in place of its children**. If you want to display the children, you need to tell the browser where to render them by placing a [`<slot>` element](#slots) in your shadow DOM. More on that [later](#composition_slot).
 
+## Composition and slots {: #composition_slot}
 
-## Komposisi dan slot {: #composition_slot}
+Composition is one of the least understood features of shadow DOM, but it's arguably the most important.
 
-Komposisi adalah salah satu fitur yang paling kurang dipahami pada shadow DOM, namun
-barangkali menjadi yang paling penting.
+In our world of web development, composition is how we construct apps, declaratively out of HTML. Different building blocks (`<div>`s, `<header>`s, `<form>`s, `<input>`s) come together to form apps. Some of these tags even work with each other. Composition is why native elements like `<select>`, `<details>`, `<form>`, and `<video>` are so flexible. Each of those tags accepts certain HTML as children and does something special with them. For example, `<select>` knows how to render `<option>` and `<optgroup>` into dropdown and multi-select widgets. The `<details>` element renders `<summary>` as a expandable arrow. Even `<video>` knows how to deal with certain children: `<source>` elements don't get rendered, but they do affect the video's behavior. What magic!
 
-Dalam dunia development web kita, komposisi adalah cara kita membangun aplikasi
-dari HTML secara deklaratif. Berbagai blok pembangun (`<div>`, `<header>`,
-`<form>`, `<input>`) bersama-sama membentuk aplikasi. Sebagian dari tag ini bahkan
-saling bekerja sama. Komposisilah yang membuat elemen asli seperti `<select>`,
-`<details>`, `<form>`, dan `<video>` jadi begitu fleksibel. Masing-masing tag tersebut menerima
-HTML tertentu sebagai anak dan melakukan sesuatu yang spesial dengannya. Misalnya,
-`<select>` mengetahui cara merender `<option>` dan `<optgroup>` menjadi widget tarik-turun dan
-widget multi-pilih. Elemen `<details>` merender `<summary>` sebagai
-panah yang dapat diperluas. Bahkan `<video>` mengetahui cara menangani anak tertentu: elemen
-`<source>` tidak akan dirender, namun mereka memengaruhi perilaku video.
-Memang ajaib!
+### Terminology: light DOM vs. shadow DOM {: #lightdom}
 
-### Terminologi: light DOM vs. shadow DOM {: #lightdom}
-
-Komposisi Shadow DOM memperkenalkan sekumpulan dasar-dasar baru dalam development
-web. Sebelum melangkah lebih jauh, mari kita standarkan beberapa
-terminologi agar kita berbicara dalam bahasa yang sama.
+Shadow DOM composition introduces a bunch of new fundamentals in web development. Before getting into the weeds, let's standardize on some terminology so we're speaking the same lingo.
 
 **Light DOM**
 
-Markup yang ditulis pengguna komponen Anda. DOM ini berada
-di luar shadow DOM komponen. Inilah anak sesungguhnya dari elemen.
+The markup a user of your component writes. This DOM lives outside the component's shadow DOM. It is the element's actual children.
 
-
-    <button is="better-button">
+    <better-button>
       <!-- the image and span are better-button's light DOM -->
       <img src="gear.svg" slot="icon">
       <span>Settings</span>
-    </button>
+    </better-button>
     
 
 **Shadow DOM**
 
-DOM yang ditulis oleh penulis komponen. Shadow DOM bersifat lokal untuk komponen dan
-mendefinisikan struktur internalnya, CSS bercakupan, dan mengenkapsulasi detail
-implementasi Anda. Ia juga mendefinisikan cara merender markup yang ditulis oleh pemakai
-komponen Anda.
-
+The DOM a component author writes. Shadow DOM is local to the component and defines its internal structure, scoped CSS, and encapsulates your implementation details. It can also define how to render markup that's authored by the consumer of your component.
 
     #shadow-root
       <style>...</style>
@@ -271,50 +165,36 @@ komponen Anda.
 
 **Flattened DOM tree**
 
-Hasil dari browser yang mendistribusikan light DOM pengguna ke dalam shadow
-DOM Anda, yang merender produk akhir. Flattened tree adalah yang pada akhirnya Anda lihat
-di DevTools dan yang dirender pada laman.
+The result of the browser distributing the user's light DOM into your shadow DOM, rendering the final product. The flattened tree is what you ultimately see in the DevTools and what's rendered on the page.
 
-
-    <button is="better-button">
+    <better-button>
       #shadow-root
         <style>...</style>
         <slot name="icon">
           <img src="gear.svg" slot="icon">
         </slot>
-        <slot>
-          <span>Settings</span>
-        </slot>
-    </button>
+        <span id="wrapper">
+          <slot>
+            <span>Settings</span>
+          </slot>
+        </span>
+    </better-button>
     
 
-### Elemen &lt;slot&gt; {: #slots}
+### The &lt;slot&gt; element {: #slots}
 
-Shadow DOM menggabung berbagai DOM tree yang berbeda menggunakan elemen `<slot>`.
-**Slot adalah Placeholder di dalam komponen Anda yang _bisa_ diisi pengguna dengan
-markup mereka sendiri**. Dengan mendefinisikan satu atau beberapa slot, Anda mengundang markup luar untuk merender
-dalam shadow DOM komponen Anda. Pada dasarnya, Anda mengatakan _"Render markup
-pengguna di sini"_.
+Shadow DOM composes different DOM trees together using the `<slot>` element. **Slots are placeholders inside your component that users *can* fill with their own markup**. By defining one or more slots, you invite outside markup to render in your component's shadow DOM. Essentially, you're saying *"Render the user's markup over here"*.
 
-Note: Slot adalah cara membuat "API deklaratif" untuk komponen web. Slot
-menggabung DOM pengguna untuk membantu merender komponen keseluruhan, sehingga, **menggabung
-berbagai DOM tree**.
+Note: Slots are a way of creating a "declarative API" for a web component. They mix-in the user's DOM to help render the overall component, thus, **composing different DOM trees together**.
 
+Elements are allowed to "cross" the shadow DOM boundary when a `<slot>` invites them in. These elements are called **distributed nodes**. Conceptually, distributed nodes can seem a bit bizarre. Slots don't physically move DOM; they render it at another location inside the shadow DOM.
 
-Elemen diizinkan "melintasi" batas shadow DOM bila `<slot>` mengundangnya
-masuk. Elemen-elemen ini disebut **simpul terdistribusi**. Secara konseptual,
-simpul terdistribusi boleh jadi terlihat agak ganjil. Slot tidak secara fisik memindah DOM; mereka
-merendernya di lokasi lain dalam shadow DOM.
-
-Sebuah komponen bisa mendefinisikan nol atau beberapa slot dalam shadow DOM-nya. Slot bisa kosong
-atau menyediakan materi fallback. Jika pengguna tidak menyediakan materi [light DOM](#lightdom)
-, slot akan merender materi fallback-nya.
-
+A component can define zero or more slots in its shadow DOM. Slots can be empty or provide fallback content. If the user doesn't provide [light DOM](#lightdom) content, the slot renders its fallback content.
 
     <!-- Default slot. If there's more than one default slot, the first is used. -->
     <slot></slot>
     
-    <slot>Fancy button</slot> <!-- default slot with fallback content -->
+    <slot>fallback content</slot> <!-- default slot with fallback content -->
     
     <slot> <!-- default slot entire DOM tree as fallback -->
       <h2>Title</h2>
@@ -322,23 +202,20 @@ atau menyediakan materi fallback. Jika pengguna tidak menyediakan materi [light 
     </slot>
     
 
-Anda juga bisa membuat **slot bernama**. Slot bernama adalah lubang spesifik dalam
-shadow DOM Anda yang dirujuk pengguna melalui nama.
+You can also create **named slots**. Named slots are specific holes in your shadow DOM that users reference by name.
 
-**Contoh** - slot bernama dalam shadow DOM `<fancy-tabs>`:
-
+**Example** - the slots in `<fancy-tabs>`'s shadow DOM:
 
     #shadow-root
       <div id="tabs">
-        <slot id="tabsSlot" name="title"></slot>
+        <slot id="tabsSlot" name="title"></slot> <!-- named slot -->
       </div>
       <div id="panels">
         <slot id="panelsSlot"></slot>
       </div>
     
 
-Pengguna komponen mendeklarasikan `<fancy-tabs>` dengan demikian:
-
+Component users declare `<fancy-tabs>` like so:
 
     <fancy-tabs>
       <button slot="title">Title</button>
@@ -360,8 +237,7 @@ Pengguna komponen mendeklarasikan `<fancy-tabs>` dengan demikian:
     </fancy-tabs>
     
 
-Dan jika Anda ingin tahu, flattened tree akan terlihat seperti ini:
-
+And if you're wondering, the flattened tree looks something like this:
 
     <fancy-tabs>
       #shadow-root
@@ -382,31 +258,22 @@ Dan jika Anda ingin tahu, flattened tree akan terlihat seperti ini:
     </fancy-tabs>
     
 
-Perhatikan bahwa komponen kita bisa menangani berbagai konfigurasi, namun
-flattened DOM tree tetap sama. Kita juga bisa beralih dari `<button>` ke
-`<h2>`. Komponen ini ditulis untuk menangani aneka tipe anak...seperti
-yang dilakukan `<select>`!
+Notice our component is able to handle different configurations, but the flattened DOM tree remains the same. We can also switch from `<button>` to `<h2>`. This component was authored to handle different types of children...just like `<select>` does!
 
-## Penataan gaya  {: #styling}
+## Styling {: #styling}
 
-Ada banyak opsi untuk menata gaya komponen web. Komponen yang menggunakan shadow
-DOM bisa diberi gaya oleh laman utama, mendefinisikan gayanya sendiri, atau menyediakan sangkutan (dalam
-bentuk [properti khusus CSS][css_props]) bagi pengguna untuk menggantikan default-nya.
+There are many options for styling web components. A component that uses shadow DOM can be styled by the main page, define its own styles, or provide hooks (in the form of [CSS custom properties](https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_variables)) for users to override defaults.
 
-### Gaya yang didefinisikan komponen {: #host}
+### Component-defined styles {: #host}
 
-Warisan fitur paling berguna dari shadow DOM adalah **CSS bercakupan**:
+Hands down the most useful feature of shadow DOM is **scoped CSS**:
 
-- Pemilih CSS dari laman luar tidak berlaku di dalam komponen Anda.
-- Gaya yang didefinisikan di dalam tidak akan bocor keluar (bleed out). Gaya itu akan menjadi cakupan elemen host.
+- CSS selectors from the outer page don't apply inside your component.
+- Styles defined inside don't bleed out. They're scoped to the host element.
 
-**Pemilih CSS yang digunakan dalam shadow DOM berlaku lokal untuk komponen Anda**.  Pada
-praktiknya, ini berarti kita bisa menggunakan lagi nama-nama id/kelas biasa, tanpa khawatir
-terjadi konflik di laman. Pemilih CSS yang lebih sederhana adalah praktik terbaik
-dalam Shadow DOM. Kinerjanya juga bagus.
+**CSS selectors used inside shadow DOM apply locally to your component**. In practice, this means we can use common id/class names again, without worrying about conflicts elsewhere on the page. Simpler CSS selectors are a best practice inside Shadow DOM. They're also good for performance.
 
-**Contoh** - gaya yang didefinisikan dalam akar bayangan bersifat lokal
-
+**Example** - styles defined in a shadow root are local
 
     #shadow-root
       <style>
@@ -428,12 +295,9 @@ dalam Shadow DOM. Kinerjanya juga bagus.
       </div>
     
 
-Stylesheet juga dijadikan cakupan pohon bayangan:
-
+Stylesheets are also scoped to the shadow tree:
 
     #shadow-root
-      <!-- Available in Chrome 54+ -->
-      <!-- WebKit bug: https://bugs.webkit.org/show_bug.cgi?id=160683 -->
       <link rel="stylesheet" href="styles.css">
       <div id="tabs">
         ...
@@ -443,8 +307,7 @@ Stylesheet juga dijadikan cakupan pohon bayangan:
       </div>
     
 
-Pernahkah membayangkan bagaimana elemen `<select>` merender widget multi-pilih (sebagai ganti
-tarik-turun) bila Anda menambahkan atribut `multiple`:
+Ever wonder how the `<select>` element renders a multi-select widget (instead of a dropdown) when you add the `multiple` attribute:
 
 <select multiple>
   <option>Do</option>
@@ -454,12 +317,9 @@ tarik-turun) bila Anda menambahkan atribut `multiple`:
   <option>So</option>
 </select>
 
-`<select>` dapat menata gaya pada _dirinya sendiri_ secara berbeda, berdasarkan atribut yang Anda
-deklarasikan padanya. Komponen web juga bisa menata gaya dirinya sendiri, dengan menggunakan pemilih `:host`
-.
+`<select>` is able to style *itself* differently based on the attributes you declare on it. Web components can style themselves too, by using the `:host` selector.
 
-**Contoh** - komponen yang menata gaya untuk dirinya sendiri
-
+**Example** - a component styling itself
 
     <style>
     :host {
@@ -469,17 +329,9 @@ deklarasikan padanya. Komponen web juga bisa menata gaya dirinya sendiri, dengan
     </style>
     
 
-Satu keistimewaan dengan `:host` adalah bahwa aturan di laman induk memiliki kekhususan lebih tinggi
-daripada aturan `:host` yang didefinisikan dalam elemen. Yakni, gaya luar yang menang. Hal ini
-memungkinkan pengguna mengganti penataan gaya tingkat atas dari luar. Selain itu, `:host`
-hanya bekerja dalam konteks shadow root, sehingga Anda tidak bisa menggunakannya di luar
-shadow DOM.
+One gotcha with `:host` is that rules in the parent page have higher specificity than `:host` rules defined in the element. That is, outside styles win. This allows users to override your top-level styling from the outside. Also, `:host` only works in the context of a shadow root, so you can't use it outside of shadow DOM.
 
-Bentuk fungsional `:host(<selector>)` memungkinkan Anda menargetkan host jika
-cocok dengan `<selector>`. Ini merupakan cara yang bagus bagi komponen Anda untuk mengenkapsulasi
-perilaku yang bereaksi pada interaksi pengguna atau status atau simpul internal gaya berdasarkan
-host.
-
+The functional form of `:host(<selector>)` allows you to target the host if it matches a `<selector>`. This is a great way for your component to encapsulate behaviors that react to user interaction or state or style internal nodes based on the host.
 
     <style>
     :host {
@@ -504,13 +356,9 @@ host.
     </style>
     
 
-### Menata gaya berdasarkan konteks {: #contextstyling}
+### Styling based on context {: #contextstyling}
 
-`:host-context(<selector>)` mencocokkan dengan komponen jika ia atau pendahulunya ada yang
-cocok `<selector>`. Ini biasanya digunakan untuk pengaturan tema berdasarkan komponen
-sekitarnya. Misalnya, banyak orang mengatur tema dengan mengaplikasikan kelas ke
-`<html>` atau `<body>`:
-
+`:host-context(<selector>)` matches the component if it or any of its ancestors matches `<selector>`. A common use for this is theming based on a component's surroundings. For example, many people do theming by applying a class to `<html>` or `<body>`:
 
     <body class="darktheme">
       <fancy-tabs>
@@ -519,9 +367,7 @@ sekitarnya. Misalnya, banyak orang mengatur tema dengan mengaplikasikan kelas ke
     </body>
     
 
-`:host-context(.darktheme)` akan menata gaya `<fancy-tabs>` bila ia adalah turunan
-dari `.darktheme`:
-
+`:host-context(.darktheme)` would style `<fancy-tabs>` when it's a descendant of `.darktheme`:
 
     :host-context(.darktheme) {
       color: white;
@@ -529,16 +375,13 @@ dari `.darktheme`:
     }
     
 
-`:host-context()` bisa berguna untuk pengaturan tema, namun pendekatan yang lebih baik adalah untuk
-[membuat sangkutan gaya menggunakan properti khusus CSS](#stylehooks).
+`:host-context()` can be useful for theming, but an even better approach is to [create style hooks using CSS custom properties](#stylehooks).
 
-### Menata gaya simpul terdistribusi {: #stylinglightdom}
+### Styling distributed nodes {: #stylinglightdom}
 
-`::slotted(<compound-selector>)` mencocokkan simpul yang didistribusikan ke dalam
-`<slot>`.
+`::slotted(<compound-selector>)` matches nodes that are distributed into a `<slot>`.
 
-Anggaplah kita telah membuat komponen lencana nama:
-
+Let's say we've created a name badge component:
 
     <name-badge>
       <h2>Eric Bidelman</h2>
@@ -548,8 +391,7 @@ Anggaplah kita telah membuat komponen lencana nama:
     </name-badge>
     
 
-Shadow DOM komponen itu bisa memberi gaya pada `<h2>` dan `.title` milik pengguna:
-
+The component's shadow DOM can style the user's `<h2>` and `.title`:
 
     <style>
     ::slotted(h2) {
@@ -570,14 +412,9 @@ Shadow DOM komponen itu bisa memberi gaya pada `<h2>` dan `.title` milik penggun
     <slot></slot>
     
 
-Jika Anda ingat dari bahasan sebelumnya, `<slot>` tidak memindahkan light DOM milik pengguna. Bila
-simpul didistribusikan ke dalam `<slot>`, `<slot>` akan merender DOM-nya namun
-simpul secara fisik tetap diam. **Gaya yang diterapkan sebelum distribusi akan terus
-diterapkan setelah distribusi**. Akan tetapi, bila light DOM didistribusikan, ia _bisa_
-menerima gaya tambahan (gaya yang didefinisikan oleh shadow DOM).
+If you remember from before, `<slot>`s do not move the user's light DOM. When nodes are distributed into a `<slot>`, the `<slot>` renders their DOM but the nodes physically stay put. **Styles that applied before distribution continue to apply after distribution**. However, when the light DOM is distributed, it *can* take on additional styles (ones defined by the shadow DOM).
 
-Satu lagi, contoh yang lebih detail dari `<fancy-tabs>`:
-
+Another, more in-depth example from `<fancy-tabs>`:
 
     const shadowRoot = this.attachShadow({mode: 'open'});
     shadowRoot.innerHTML = `
@@ -618,17 +455,11 @@ Satu lagi, contoh yang lebih detail dari `<fancy-tabs>`:
     `;
     
 
-Dalam contoh ini, ada dua slot: slot bernama untuk judul tab, dan slot
-bernama untuk materi tab. Bila pengguna memilih tab, kita akan mencetak tebal pilihan mereka
-dan menampilkan panelnya. Itu dilakukan dengan memilih simpul terdistribusi yang memiliki atribut
-`selected`. Elemen khusus JS (tidak ditampilkan di sini) menambahkan atribut
-tersebut pada waktu yang tepat.
+In this example, there are two slots: a named slot for the tab titles, and a slot for the tab panel content. When the user selects a tab, we bold their selection and reveal its panel. That's done by selecting distributed nodes that have the `selected` attribute. The custom element's JS (not shown here) adds that attribute at the correct time.
 
-### Menata gaya komponen dari luar {: #stylefromoutside}
+### Styling a component from the outside {: #stylefromoutside}
 
-Ada dua cara untuk menata gaya komponen dari luar. Cara
-termudah adalah menggunakan nama tag sebagai pemilih:
-
+There are a couple of ways to style a component from the outside. The easiest way is to use the tag name as a selector:
 
     fancy-tabs {
       width: 500px;
@@ -639,22 +470,15 @@ termudah adalah menggunakan nama tag sebagai pemilih:
     }
     
 
-**Gaya luar selalu menang dari gaya yang didefinisikan dalam shadow DOM**. Misalnya,
-jika pengguna menulis pemilih `fancy-tabs { width: 500px; }`, ia akan mengalahkan
-aturan komponen: `:host { width: 650px;}`.
+**Outside styles always win over styles defined in shadow DOM**. For example, if the user writes the selector `fancy-tabs { width: 500px; }`, it will trump the component's rule: `:host { width: 650px;}`.
 
-Menata gaya komponen itu sendiri hanya akan membawa Anda sejauh ini. Namun apa yang terjadi jika Anda
-ingin menata gaya internal komponen? Untuk itu, kita memerlukan properti
-khusus CSS.
+Styling the component itself will only get you so far. But what happens if you want to style the internals of a component? For that, we need CSS custom properties.
 
-#### Membuat sangkutan gaya menggunakan properti khusus CSS {: #stylehooks}
+#### Creating style hooks using CSS custom properties {: #stylehooks}
 
-Pengguna bisa mengutak-atik gaya internal jika penulis komponen menyediakan sangkutan penataan gaya dengan
-menggunakan [properti khusus CSS][css_props]. Secara konseptual, idenya mirip dengan
-`<slot>`. Anda bisa membuat "placeholder gaya" untuk diganti oleh pengguna.
+Users can tweak internal styles if the component's author provides styling hooks using [CSS custom properties](https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_variables). Conceptually, the idea is similar to `<slot>`. You create "style placeholders" for users to override.
 
-**Contoh** - `<fancy-tabs>` memungkinkan pengguna mengganti warna latar belakang:
-
+**Example** - `<fancy-tabs>` allows users to override the background color:
 
     <!-- main page -->
     <style>
@@ -666,8 +490,7 @@ menggunakan [properti khusus CSS][css_props]. Secara konseptual, idenya mirip de
     <fancy-tabs background>...</fancy-tabs>
     
 
-Di dalam shadow DOM:
-
+Inside its shadow DOM:
 
     :host([background]) {
       background: var(--fancy-tabs-bg, #9E9E9E);
@@ -676,26 +499,17 @@ Di dalam shadow DOM:
     }
     
 
-Dalam hal ini, komponen akan menggunakan `black` sebagai nilai latar belakang karena
-pengguna telah menyediakannya. Jika tidak maka menggunakan `#9E9E9E` default.
+In this case, the component will use `black` as the background value since the user provided it. Otherwise, it would default to `#9E9E9E`.
 
-Note: Sebagai penulis komponen, Anda bertanggung jawab memberi tahu developer
-tentang properti khusus CSS yang bisa mereka gunakan. Anggaplah ini bagian dari antarmuka publik
-komponen Anda. Pastikan untuk mendokumentasikan sangkutan penataan gaya!
+Note: As the component author, you're responsible for letting developers know about CSS custom properties they can use. Consider it part of your component's public interface. Make sure to document styling hooks!
 
+## Advanced topics {: #advanced}
 
-## Topik lanjutan {: #advanced}
+### Creating closed shadow roots (should avoid) {: #closed}
 
-### Membuat akar bayangan tertutup (sebaiknya dihindari) {: #closed}
+There's another flavor of shadow DOM called "closed" mode. When you create a closed shadow tree, outside JavaScript won't be able to access the internal DOM of your component. This is similar to how native elements like `<video>` work. JavaScript cannot access the shadow DOM of `<video>` because the browser implements it using a closed-mode shadow root.
 
-Ada ragam shadow DOM lain yang disebut mode "tertutup". Saat Anda membuat
-shadow tree tertutup, JavaScript luar tidak akan bisa mengakses DOM internal
-komponen Anda. Ini mirip dengan bagaimana elemen native seperti `<video>` bekerja.
-JavaScript tidak bisa mengakses shadow DOM `<video>` karena browser
-mengimplementasikannya menggunakan shadow root mode tertutup.
-
-**Contoh** - membuat pohon bayangan tertutup:
-
+**Example** - creating a closed shadow tree:
 
     const div = document.createElement('div');
     const shadowRoot = div.attachShadow({mode: 'closed'}); // close shadow tree
@@ -703,29 +517,19 @@ mengimplementasikannya menggunakan shadow root mode tertutup.
     // shadowRoot.host === div
     
 
-API lainnya juga dipengaruhi oleh mode tertutup:
+Other APIs are also affected by closed-mode:
 
-- `Element.assignedSlot` / `TextNode.assignedSlot` akan mengembalikan `null`
-- `Event.composedPath()` untuk kejadian yang berkaitan dengan elemen di dalam shadow
-  DOM, akan mengembalikan []
+- `Element.assignedSlot` / `TextNode.assignedSlot` returns `null`
+- `Event.composedPath()` for events associated with elements inside the shadow DOM, returns []
 
-Note: Akar bayangan tertutup tidak begitu berguna. Sebagian developer akan menganggap mode
-tertutup sebagai fitur keamanan semu. Namun mari kita perjelas, ini **bukan** fitur
-keamanan. Mode tertutup cuma mencegah JS luar masuk ke dalam
-DOM internal elemen.
+Note: Closed shadow roots are not very useful. Some developers will see closed mode as an artificial security feature. But let's be clear, it's **not** a security feature. Closed mode simply prevents outside JS from drilling into an element's internal DOM.
 
+Here's my summary of why you should never create web components with `{mode: 'closed'}`:
 
-Inilah rangkuman mengapa Anda jangan sampai membuat komponen web dengan
-`{mode: 'closed'}`:
+1. Artificial sense of security. There's nothing stopping an attacker from hijacking `Element.prototype.attachShadow`.
 
-1. Rasa keamanan semu. Tidak ada yang menghentikan penyerang untuk
-   membajak `Element.prototype.attachShadow`.
-
-2. Mode tertutup **mencegah kode elemen khusus Anda mengakses
-   shadow DOM-nya sendiri**. Itu berarti gagal total. Sebagai gantinya, Anda harus menyembunyikan referensi
-   untuk nanti jika Anda ingin menggunakan sesuatu seperti `querySelector()`. Hal ini sepenuhnya 
-   menggagalkan tujuan awal dari mode tertutup!
-
+2. Closed mode **prevents your custom element code from accessing its own shadow DOM**. That's complete fail. Instead, you'll have to stash a reference for later if you want to use things like `querySelector()`. This completely defeats the original purpose of closed mode!
+    
         customElements.define('x-element', class extends HTMLElement {
           constructor() {
             super(); // always call super() first in the constructor.
@@ -739,102 +543,81 @@ Inilah rangkuman mengapa Anda jangan sampai membuat komponen web dengan
           }
           ...
         });
+        
 
-3. **Closed mode makes your component less flexible for end users**. Karena Anda
-   membangun komponen web, ada saatnya Anda lupa menambahkan
-   fitur. Opsi konfigurasi. Kasus penggunaan yang diinginkan pengguna. Contoh 
-   umum adalah lupa menyertakan sangkutan penataan gaya yang memadai untuk simpul internal.
-   Dengan mode tertutup, tidak ada cara bagi pengguna untuk mengganti default dan memodifikasi
-   gaya. Kemampuan mengakses internal komponen akan sangat membantu.
-   Pada akhirnya, pengguna akan memecah komponen Anda, mencari yang lain, atau membuat komponen
-   mereka sendiri jika komponen tersebut tidak melakukan apa yang mereka inginkan :(
+3. **Closed mode makes your component less flexible for end users**. As you build web components, there will come a time when you forget to add a feature. A configuration option. A use case the user wants. A common example is forgetting to include adequate styling hooks for internal nodes. With closed mode, there's no way for users to override defaults and tweak styles. Being able to access the component's internals is super helpful. Ultimately, users will fork your component, find another, or create their own if it doesn't do what they want :(
 
-### Menggunakan slot di JS {: #workwithslots}
+### Working with slots in JS {: #workwithslots}
 
-Shadow DOM API menyediakan utilitas untuk menggunakan slot dan simpul
-terdistribusi. Ini sudah siap pakai saat menulis elemen khusus.
+The shadow DOM API provides utilities for working with slots and distributed nodes. These come in handy when authoring a custom element.
 
-#### Kejadian slotchange {: #slotchange}
+#### slotchange event {: #slotchange}
 
-Kejadian `slotchange` akan terpicu bila simpul terdistribusi slot berubah. Misalnya
-, jika pengguna menambahkan/membuang anak dari light DOM.
-
+The `slotchange` event fires when a slot's distributed nodes changes. For example, if the user adds/removes children from the light DOM.
 
     const slot = this.shadowRoot.querySelector('#slot');
     slot.addEventListener('slotchange', e => {
       console.log('light dom children changed!');
     });
     
-Note: `slotchange` tidak akan terpicu bila instance komponen
-telah diinisialisasi lebih dahulu.
 
-Untuk memantau tipe perubahan lain pada light DOM, Anda bisa menyetel
-[`MutationObserver`](https://developer.mozilla.org/en-US/docs/Web/API/MutationObserver)
-dalam konstruktor elemen Anda.
+Note: `slotchange` does not fire when an instance of the component is first initialized.
 
-#### Elemen apa saja yang sedang di-render dalam slot? {: #slotnodes}
+To monitor other types of changes to light DOM, you can setup a [`MutationObserver`](https://developer.mozilla.org/en-US/docs/Web/API/MutationObserver) in your element's constructor.
 
-Kadang-kadang ada gunanya mengetahui elemen apa saja yang terkait dengan sebuah slot. Panggil
-`slot.assignedNodes()` untuk menemukan elemen apa saja yang sedang dirender slot. Opsi
-`{flatten: true}` juga akan mengembalikan materi fallback slot (jika tidak ada simpul
-yang sedang didistribusikan).
+#### What elements are being rendering in a slot? {: #slotnodes}
 
-Sebagai contoh, anggaplah shadow DOM Anda seperti ini:
+Sometimes it's useful to know what elements are associated with a slot. Call `slot.assignedNodes()` to find which elements the slot is rendering. The `{flatten: true}` option will also return a slot's fallback content (if no nodes are being distributed).
+
+As an example, let's say your shadow DOM looks like this:
 
     <slot><b>fallback content</b></slot>
+    
 
 <table>
-  <thead><th>Penggunaan</th><th>Panggil</th><th>Hasil</th></tr></thead>
+  <thead><th>Usage</th><th>Call</th><th>Result</th></thead>
   <tr>
-    <td>&lt;button is="better-button"&gt;My button&lt;/button&gt;</td>
+    <td>&lt;my-component&gt;component text&lt;/my-component&gt;</td>
     <td><code>slot.assignedNodes();</code></td>
-    <td><code>[text]</code></td>
+    <td><code>[component text]</code></td>
   </tr>
   <tr>
-    <td>&lt;button is="better-button">&lt;/button&gt;</td>
+    <td>&lt;my-component>&lt;/my-component&gt;</td>
     <td><code>slot.assignedNodes();</code></td>
     <td><code>[]</code></td>
   </tr>
   <tr>
-    <td>&lt;button is="better-button"&gt;&lt;/button&gt;</td>
+    <td>&lt;my-component&gt;&lt;/my-component&gt;</td>
     <td><code>slot.assignedNodes({flatten: true});</code></td>
     <td><code>[&lt;b&gt;fallback content&lt;/b&gt;]</code></td>
   </tr>
 </table>
 
-#### Ke slot manakah elemen ditetapkan? {: #assignedslot}
+#### What slot is an element assigned to? {: #assignedslot}
 
-Boleh juga menjawab pertanyaan sebaliknya. `element.assignedSlot` akan memberi tahu
-Anda ke slot komponen manakah elemen Anda ditetapkan.
+Answering the reverse question is also possible. `element.assignedSlot` tells you which of the component slots your element is assigned to.
 
-### Model kejadian Shadow DOM {: #events}
+### The Shadow DOM event model {: #events}
 
-Bila sebuah kejadian menggelembung naik dari shadow DOM, targetnya akan disesuaikan untuk menjaga
-enkapsulasi yang disediakan shadow DOM. Yaitu, kejadian ditargetkan ulang agar
-seolah berasal dari komponen, bukannya dari elemen internal dalam
-shadow DOM Anda. Sebagian kejadian bahkan tidak menyebarkan shadow DOM.
+When an event bubbles up from shadow DOM it's target is adjusted to maintain the encapsulation that shadow DOM provides. That is, events are re-targeted to look like they've come from the component rather than internal elements within your shadow DOM. Some events do not even propagate out of shadow DOM.
 
-Kejadian yang **malah** melewati batas bayangan adalah:
+The events that **do** cross the shadow boundary are:
 
-- Kejadian Fokus: `blur`, `focus`, `focusin`, `focusout`
-- Kejadian Mouse: `click`, `dblclick`, `mousedown`, `mouseenter`, `mousemove`, dll.
-- Kejadian Roda: `wheel`
-- Kejadian Input: `beforeinput`, `input`
-- Kejadian Keyboard: `keydown`, `keyup`
-- Kejadian Komposisi: `compositionstart`, `compositionupdate`, `compositionend`
-- Kejadian Seret: `dragstart`, `drag`, `dragend`, `drop`, dll.
+- Focus Events: `blur`, `focus`, `focusin`, `focusout`
+- Mouse Events: `click`, `dblclick`, `mousedown`, `mouseenter`, `mousemove`, etc.
+- Wheel Events: `wheel`
+- Input Events: `beforeinput`, `input`
+- Keyboard Events: `keydown`, `keyup`
+- Composition Events: `compositionstart`, `compositionupdate`, `compositionend`
+- DragEvent: `dragstart`, `drag`, `dragend`, `drop`, etc.
 
-**Tip**
+**Tips**
 
-Jika shadow tree terbuka, memanggil `event.composedPath()` akan mengembalikan selarik
-simpul yang telah dilalui kejadian.
+If the shadow tree is open, calling `event.composedPath()` will return an array of nodes that the event traveled through.
 
-#### Menggunakan kejadian khusus {: #customevents}
+#### Using custom events {: #customevents}
 
-Kejadian DOM khusus yang dipicu pada simpul internal di shadow tree tidak
-menggelembung keluar dari batas bayangan kecuali jika kejadian dibuat menggunakan flag
-`composed: true`:
-
+Custom DOM events which are fired on internal nodes in a shadow tree do not bubble out of the shadow boundary unless the event is created using the `composed: true` flag:
 
     // Inside <fancy-tab> custom element class definition:
     selectTab() {
@@ -843,9 +626,7 @@ menggelembung keluar dari batas bayangan kecuali jika kejadian dibuat menggunaka
     }
     
 
-Jika `composed: false` (default), konsumen tidak akan dapat mendengarkan kejadian
-di luar shadow root Anda.
-
+If `composed: false` (default), consumers won't be able to listen for the event outside of your shadow root.
 
     <fancy-tabs></fancy-tabs>
     <script>
@@ -856,29 +637,21 @@ di luar shadow root Anda.
     </script>
     
 
-### Menangani fokus {: #focus}
+### Handling focus {: #focus}
 
-Jika Anda mengingat kembali dari [model kejadian shadow DOM](#events), kejadian yang diaktifkan
-dalam shadow DOM disesuaikan agar terlihat seperti datang dari elemen hosting.
-Misalnya, Anda mengeklik `<input>` dalam shadow root:
-
+If you recall from [shadow DOM's event model](#events), events that are fired inside shadow DOM are adjusted to look like they come from the hosting element. For example, let's say you click an `<input>` inside a shadow root:
 
     <x-focus>
       #shadow-root
         <input type="text" placeholder="Input inside shadow dom">
     
 
-Kejadian `focus` akan terlihat seperti itu berasal dari `<x-focus>`, bukan `<input>`.
-Begitu juga, `document.activeElement` akan menjadi `<x-focus>`. Jika shadow root
-dibuat dengan `mode:'open'` (lihat [mode tertutup](#closed)), Anda juga
-bisa mengakses simpul internal yang mendapatkan fokus:
+The `focus` event will look like it came from `<x-focus>`, not the `<input>`. Similarly, `document.activeElement` will be `<x-focus>`. If the shadow root was created with `mode:'open'` (see [closed mode](#closed)), you'll also be able access the internal node that gained focus:
 
     document.activeElement.shadowRoot.activeElement // only works with open mode.
+    
 
-Jika terdapat beberapa tingkatan shadow DOM (misalnya elemen khusus dalam
-elemen khusus lain), Anda harus secara rekursif masuk lebih dalam ke shadow root untuk
-menemukan `activeElement`:
-
+If there are multiple levels of shadow DOM at play (say a custom element within another custom element), you need to recursively drill into the shadow roots to find the `activeElement`:
 
     function deepActiveElement() {
       let a = document.activeElement;
@@ -889,16 +662,12 @@ menemukan `activeElement`:
     }
     
 
-Alternatif lain untuk mendapatkan fokus adalah opsi `delegatesFocus: true`, yang meluaskan perilaku
-fokus elemen dalam shadow tree:
+Another option for focus is the `delegatesFocus: true` option, which expands the focus behavior of element's within a shadow tree:
 
-- Jika Anda mengeklik sebuah simpul dalam shadow DOM dan simpul itu bukanlah area yang dapat difokuskan,
-  area pertama yang dapat difokuskan akan menjadi fokus.
-- Ketika simpul di dalam shadow DOM memperoleh fokus, `:focus` diterapkan ke host
-  selain elemen yang difokuskan.
+- If you click a node inside shadow DOM and the node is not a focusable area, the first focusable area becomes focused.
+- When a node inside shadow DOM gains focus, `:focus` applies to the host in addition to the focused element.
 
-**Contoh** - cara `delegatesFocus: true` mengubah perilaku fokus
-
+**Example** - how `delegatesFocus: true` changes focus behavior
 
     <style>
       :focus {
@@ -938,51 +707,44 @@ fokus elemen dalam shadow tree:
     </script>
     
 
-**Hasil**
+**Result**
 
-<img src="imgs/delegateFocusTrue.png" title="delegatesFocus: true behavior">
+<img src="imgs/delegateFocusTrue.png" title="delegatesFocus: true behavior" />
 
-Di atas merupakan hasil ketika `<x-focus>` difokuskan (klik pengguna, dimasukkan dalam tab,
-`focus()`, dll.), "Clickable Shadow DOM text" diklik, atau
-`<input>` internal difokuskan (termasuk `autofocus`).
+Above is the result when `<x-focus>` is focused (user click, tabbed into, `focus()`, etc.), "Clickable Shadow DOM text" is clicked, or the internal `<input>` is focused (including `autofocus`).
 
-Jika Anda menyetel `delegatesFocus: false`, inilah yang akan Anda lihat sebagai gantinya:
+If you were to set `delegatesFocus: false`, here's what you would see instead:
 
 <figure>
   <img src="imgs/delegateFocusFalse.png">
   <figcaption>
-    <code>delegatesFocus: false</code> dan  <code>&lt;input></code> internal difokuskan.
+    <code>delegatesFocus: false</code> and the internal <code>&lt;input></code> is focused.
   </figcaption>
 </figure>
 
 <figure>
   <img src="imgs/delegateFocusFalseFocus.png">
   <figcaption>
-    <code>delegatesFocus: false</code> dan  <code>&lt;x-focus></code>
-    mendapatkan fokus (mis. memiliki <code>tabindex="0"</code>).
+    <code>delegatesFocus: false</code> and <code>&lt;x-focus></code>
+    gains focus (e.g. it has <code>tabindex="0"</code>).
   </figcaption>
 </figure>
 
 <figure>
   <img src="imgs/delegateFocusNothing.png">
   <figcaption>
-    <code>delegatesFocus: false</code> dan "Clickable Shadow DOM text"
-    diklik (atau area kosong lain dalam elemen shadow DOM diklik).
+    <code>delegatesFocus: false</code> and "Clickable Shadow DOM text" is
+    clicked (or other empty area within the element's shadow DOM is clicked).
   </figcaption>
 </figure>
 
-## Tip & Trik {: #tricks}
+## Tips & Tricks {: #tricks}
 
-Setelah bertahun-tahun saya belajar suatu atau beberapa hal tentang penulisan komponen web. Menurut saya
-Anda akan menemukan banyak tip berguna untuk penulisan komponen dan
-men-debug shadow DOM.
+Over the years I've learned a thing or two about authoring web components. I think you'll find some of these tips useful for authoring components and debugging shadow DOM.
 
-### Gunakan pengekangan CSS {: #containment}
+### Use CSS containment {: #containment}
 
-Biasanya, layout/style/paint komponen web benar-benar mandiri. Gunakan
-[pengekangan CSS](/web/updates/2016/06/css-containment) di `:host` untuk perf
-win:
-
+Typically, a web component's layout/style/paint is fairly self-contained. Use [CSS containment](/web/updates/2016/06/css-containment) in `:host` for a perf win:
 
     <style>
     :host {
@@ -992,13 +754,9 @@ win:
     </style>
     
 
-### Menyetel ulang gaya yang tidak dapat diwariskan {: #reset}
+### Resetting inheritable styles {: #reset}
 
-Gaya yang tidak dapat diwariskan (`background`, `color`, `font`, `line-height`, dll.) terus
-diwariskan dalam shadow DOM. Artinya, mereka menembus batas shadow DOM secara
-default. Jika Anda ingin memulai dari dasar, gunakan `all: initial;` untuk menyetel ulang
-gaya yang tidak dapat diwariskan ke nilai awal mereka bila mereka melewati batas bayangan.
-
+Inheritable styles (`background`, `color`, `font`, `line-height`, etc.) continue to inherit in shadow DOM. That is, they pierce the shadow DOM boundary by default. If you want to start with a fresh slate, use `all: initial;` to reset inheritable styles to their initial value when they cross the shadow boundary.
 
     <style>
       div {
@@ -1012,7 +770,7 @@ gaya yang tidak dapat diwariskan ke nilai awal mereka bila mereka melewati batas
     
     <div>
       <p>I'm outside the element (big/white)</p>
-      <my-element>Materi Light DOM juga terpengaruh.</my-element>
+      <my-element>Light DOM content is also affected.</my-element>
       <p>I'm outside the element (big/white)</p>
     </div>
     
@@ -1031,8 +789,10 @@ gaya yang tidak dapat diwariskan ke nilai awal mereka bila mereka melewati batas
       <slot></slot>
     `;
     </script>
+    
 
 {% framebox height="195px" %}
+
 <div class="demoarea">
   <style>
     #initialdemo {
@@ -1046,7 +806,7 @@ gaya yang tidak dapat diwariskan ke nilai awal mereka bila mereka melewati batas
 
   <div id="initialdemo">
     <p>I'm outside the element (big/white)</p>
-    <my-element>Materi Light DOM juga terpengaruh.</my-element>
+    <my-element>Light DOM content is also affected.</my-element>
     <p>I'm outside the element (big/white)</p>
   </div>
 </div>
@@ -1075,14 +835,15 @@ if (supportsShadowDOM()) {
     self.frameElement.style.display = 'none';
   }
 }
-</script>
+ </script>
+
+ 
+
 {% endframebox %}
 
-### Menemukan semua elemen khusus yang digunakan oleh laman {: #findall}
+### Finding all the custom elements used by a page {: #findall}
 
-Kadang-kadang ada gunanya juga menemukan elemen khusus yang digunakan di laman. Caranya, Anda
-harus berulang-ulang menyusuri shadow DOM dari semua elemen yang digunakan di laman.
-
+Sometimes it's useful to find custom elements used on the page. To do so, you need to recursively traverse the shadow DOM of all elements used on the page.
 
     const allCustomElements = [];
     
@@ -1107,76 +868,38 @@ harus berulang-ulang menyusuri shadow DOM dari semua elemen yang digunakan di la
     findAllCustomElements(document.querySelectorAll('*'));
     
 
-{% comment %}
-Beberapa browser juga mendukung penggunaan kombinator `/deep/` shadow DOM v0 di `querySelectorAll()`:
+### Creating elements from a &lt;template&gt; {: #fromtemplate}
 
+Instead of populating a shadow root using `.innerHTML`, we can use a declarative `<template>`. Templates are an ideal placeholder for declaring the structure of a web component.
 
-    const allCustomElements = Array.from(document.querySelectorAll('html /deep/ *')).filter(el => {
-      const isAttr = el.getAttribute('is');
-      return el.localName.includes('-') || isAttr && isAttr.includes('-');
-    });
-    
+See the example in ["Custom elements: building reusable web components"](/web/fundamentals/web-components/customelements).
 
-Untuk sekarang, `/deep/` [teruslah bekerja di panggilan `querySelectorAll()`](https://bugs.chromium.org/p/chromium/issues/detail?id=633007).
-{% endcomment %}
+## History & browser support {: #historysupport}
 
-### Membuat elemen dari &lt;template> {: #fromtemplate}
+If you've been following web components for the last couple of years, you'll know that Chrome 35+/Opera have been shipping an older version of shadow DOM for some time. Blink will continue to support both versions in parallel for some time. The v0 spec provided a different method to create a shadow root (`element.createShadowRoot` instead of v1's `element.attachShadow`). Calling the older method continues to create a shadow root with v0 semantics, so existing v0 code won't break.
 
-Sebagai ganti mengisi shadow root menggunakan `.innerHTML`, kita bisa menggunakan
-`<template>` deklaratif. Template adalah Placeholder ideal untuk mendeklarasikan struktur
-komponen web.
+If you happen to be interested in the old v0 spec, check out the html5rocks articles: [1](https://www.html5rocks.com/en/tutorials/webcomponents/shadowdom/), [2](https://www.html5rocks.com/en/tutorials/webcomponents/shadowdom-201/), [3](https://www.html5rocks.com/en/tutorials/webcomponents/shadowdom-301/). There's also a great comparison of the [differences between shadow DOM v0 and v1](http://hayato.io/2016/shadowdomv1/).
 
-Lihat contoh di 
-["Elemen khusus: membangun komponen web pakai-ulang"](/web/fundamentals/getting-started/primers/customelements).
+### Browser support {: #support}
 
-## Riwayat & dukungan browser {: #historysupport}
+Shadow DOM v1 is shipped in Chrome 53 ([status](https://www.chromestatus.com/features/4667415417847808)), Opera 40, Safari 10, and Firefox 63. Edge [has started development](https://developer.microsoft.com/en-us/microsoft-edge/platform/status/shadowdom/).
 
-Jika Anda mengikuti komponen web selama dua tahun terakhir, Anda akan
-mengetahui bahwa Chrome 35+/Opera telah menyertakan versi lama shadow DOM untuk
-sekian lama. Blink akan terus mendukung kedua versi secara paralel untuk sekian
-lama. Spesifikasi v0 menyediakan metode berbeda untuk membuat shadow root
-(`element.createShadowRoot` sebagai ganti `element.attachShadow` v1). Memanggil
-metode lama akan terus membuat shadow root dengan semantik v0, jadi
-kode v0 tidak akan putus.
-
-Jika Anda tertarik dengan spesifikasi v0 lama, lihat artikel
-html5rocks: 
-[1](https://www.html5rocks.com/en/tutorials/webcomponents/shadowdom/),
-[2](https://www.html5rocks.com/en/tutorials/webcomponents/shadowdom-201/),
-[3](https://www.html5rocks.com/en/tutorials/webcomponents/shadowdom-301/).
-Ada juga perbandingan penting tentang 
-[perbedaan antara shadow DOM v0 dan v1][differences].
-
-### Dukungan browser {: #support}
-
-Chrome 53 ([status](https://www.chromestatus.com/features/4667415417847808)), 
-Opera 40, dan Safari 10 menyertakan shadow DOM v1. Edge sedang mempertimbangkan
-[dengan prioritas tinggi](https://developer.microsoft.com/en-us/microsoft-edge/platform/status/shadowdom/).
-Mozilla memiliki [bug terbuka](https://bugzilla.mozilla.org/show_bug.cgi?id=811542)
-untuk diimplementasikan.
-
-Untuk mendeteksi shadow DOM, periksa eksistensi `attachShadow`:
-
+To feature detect shadow DOM, check for the existence of `attachShadow`:
 
     const supportsShadowDOMV1 = !!HTMLElement.prototype.attachShadow;
     
 
-    
 #### Polyfill {: #polyfill}
 
-Sampai dukungan browser tersedia secara luas, polyfill
-[shadydom](https://github.com/webcomponents/shadydom) dan 
-[shadycss](https://github.com/webcomponents/shadycss) memberikan 
-fitur v1. Shady DOM meniru pelingkupan DOM dari Shadow DOM dan properti khusus CSS
-polyfill shadycss dan pelingkupan gaya yang disediakan API bawaan.
+Until browser support is widely available, the [shadydom](https://github.com/webcomponents/shadydom) and [shadycss](https://github.com/webcomponents/shadycss) polyfills give you v1 feature. Shady DOM mimics the DOM scoping of Shadow DOM and shadycss polyfills CSS custom properties and the style scoping the native API provides.
 
-Pemasangan polyfill:
+Install the polyfills:
 
     bower install --save webcomponents/shadydom
     bower install --save webcomponents/shadycss
+    
 
-Penggunaan polyfill:
-
+Use the polyfills:
 
     function loadScript(src) {
      return new Promise(function(resolve, reject) {
@@ -1188,7 +911,7 @@ Penggunaan polyfill:
        document.head.appendChild(script);
      });
     }
-
+    
     // Lazy load the polyfill if necessary.
     if (!supportsShadowDOMV1) {
       loadScript('/bower_components/shadydom/shadydom.min.js')
@@ -1199,62 +922,43 @@ Penggunaan polyfill:
     } else {
       // Native shadow dom v1 support. Go to go!
     }
+    
 
+See the [https://github.com/webcomponents/shadycss#usage](https://github.com/webcomponents/shadycss) for instructions on how to shim/scope your styles.
 
-Lihat [https://github.com/webcomponents/shadycss#usage](https://github.com/webcomponents/shadycss)
-untuk petunjuk tentang cara melakukan shim/mencakup gaya Anda.
+## Conclusion
 
+For the first time ever, we have an API primitive that does proper CSS scoping, DOM scoping, and has true composition. Combined with other web component APIs like custom elements, shadow DOM provides a way to author truly encapsulated components without hacks or using older baggage like `<iframe>`s.
 
-## Kesimpulan
+Don't get me wrong. Shadow DOM is certainly a complex beast! But it's a beast worth learning. Spend some time with it. Learn it and ask questions!
 
-Untuk pertama kalinya, kita memiliki primitif API yang melakukan pelingkupan CSS dan
-pelingkupan DOM dengan benar, serta memiliki komposisi sesungguhnya. Digabung dengan API komponen web lain
-seperti elemen khusus, shadow DOM menyediakan cara untuk menulis komponen
-yang benar-benar dienkapsulasi tanpa hack atau menggunakan pemuat lama seperti `<iframe>`.
+#### Further reading
 
-Jangan salah paham. Shadow DOM tentu saja hewan buas yang rumit! Namun layak
-dipelajari. Sisihkan waktu untuk mempelajarinya. Pelajari dan tanyakan!
-
-#### Bacaan lebih lanjut
-
-- [Perbedaan antara Shadow DOM v1 dan v0][differences]
-- ["Introducing Slot-Based Shadow DOM API"](https://webkit.org/blog/4096/introducing-shadow-dom-api/)
- dari Blog WebKit.
-- [Web Components and the future of Modular CSS](https://philipwalton.github.io/talks/2015-10-26/)
-  oleh [Philip Walton](https://twitter.com/@philwalton)
-- ["Elemen khusus: membangun komponen web pakai-ulang"](/web/fundamentals/getting-started/primers/customelements)
- dari WebFundamentals Google.
-- [Spesifikasi Shadow DOM v1][sd_spec_whatwg]
-- [Spesifikasi elemen khusus v1][ce_spec]
+- [Differences between Shadow DOM v1 and v0](http://hayato.io/2016/shadowdomv1/)
+- ["Introducing Slot-Based Shadow DOM API"](https://webkit.org/blog/4096/introducing-shadow-dom-api/) from the WebKit Blog.
+- [Web Components and the future of Modular CSS](https://philipwalton.github.io/talks/2015-10-26/) by [Philip Walton](https://twitter.com/@philwalton)
+- ["Custom elements: building reusable web components"](/web/fundamentals/web-components/customelements) from Google's WebFundamentals.
+- [Shadow DOM v1 spec](https://dom.spec.whatwg.org/#shadow-trees)
+- [Custom elements v1 spec](https://html.spec.whatwg.org/multipage/scripting.html#custom-elements)
 
 ## FAQ
 
-**Bisakah saya menggunakan Shadow DOM v1 saat ini?**
+**Can I use Shadow DOM v1 today?**
 
-Ya, bersama polyfill. Lihat [Dukungan browser](#support).
+With a polyfill, yes. See [Browser support](#support).
 
-**Fitur keamanan apa yang disediakan shadow DOM?**
+**What security features does shadow DOM provide?**
 
-Shadow DOM bukanlah fitur keamanan. Ini adalah alat bantu ringan untuk pelingkupan CSS
-dan menyembunyikan pohon DOM di komponen. Jika Anda menginginkan batas keamanan sesungguhnya,
-gunakan `<iframe>`.
+Shadow DOM is not a security feature. It's a lightweight tool for scoping CSS and hiding away DOM trees in component. If you want a true security boundary, use an `<iframe>`.
 
-**Apakah komponen web harus menggunakan shadow DOM?**
+**Does a web component have to use shadow DOM?**
 
-Tidak! Anda tidak harus membuat komponen web yang menggunakan shadow DOM. Akan tetapi,
-dengan menulis [elemen khusus yang menggunakan Shadow DOM](#elements) berarti Anda bisa
-memanfaatkan berbagai fitur seperti pelingkupan CSS, enkapsulasi DOM, dan komposisi.
+Nope! You don't have to create web components that use shadow DOM. However, authoring [custom elements that use Shadow DOM](#elements) means you can take advantage of features like CSS scoping, DOM encapsulation, and composition.
 
-**Apakah perbedaan antara akar bayangan terbuka dan tertutup?**
+**What's the difference between open and closed shadow roots?**
 
-Lihat [Akar bayangan tertutup](#closed).
+See [Closed shadow roots](#closed).
 
-[ce_spec]: https://html.spec.whatwg.org/multipage/scripting.html#custom-elements
-[ce_article]: (/web/fundamentals/getting-started/primers/customelements)
-[sd_spec]: http://w3c.github.io/webcomponents/spec/shadow/
-[sd_spec_whatwg]: https://dom.spec.whatwg.org/#shadow-trees
-[differences]: http://hayato.io/2016/shadowdomv1/
-[css_props]: https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_variables
+## Feedback {: #feedback }
 
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
