@@ -1,34 +1,31 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: 앱에서 모달 뷰에 애니메이션을 적용하는 방법을 알아봅니다.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Learn how to animate modal views in your apps.
 
-{# wf_updated_on: 2016-08-24 #}
-{# wf_published_on: 2014-08-08 #}
+{# wf_blink_components: Blink>Animation #} {# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2014-08-08 #}
 
-# 모달 뷰 애니메이션 {: .page-title }
+# Animating Modal Views {: .page-title }
 
 {% include "web/_shared/contributors/paullewis.html" %}
 
 <div class="attempt-right">
   <figure>
-    <img src="images/dont-press.gif" alt="모달 뷰 애니메이션" />
+    <img src="images/dont-press.gif" alt="Animating a modal view." />
     <figcaption>
-      <a href="https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/animations/modal-view-animation.html" target="_blank" class="external">체험해 보기</a>
+      <a href="https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/animations/modal-view-animation.html" target="_blank" class="external">Try it</a>
     </figcaption>
   </figure>
 </div>
 
-모달 뷰는 중요한 메시지를 전달하고 사용자 인터페이스를 차단해야 하는 경우에 적합합니다. 이 뷰는 남용할 경우 사용자에게 방해가 되고 쉽게 거부감을 줄 수 있으므로 사용 시 주의해야 합니다. 하지만 일부 경우에는 이 뷰를 사용하는 것이 합리적이고 애니메이션을 추가하면 생명력을 불어넣을 수 있습니다.
+Modal views are for important messages, and for which you have very good reasons to block the user interface. Use them carefully, because they're disruptive and can easily ruin the user’s experience if overused. But, in some circumstances, they’re the right views to use, and adding some animation will bring them to life.
 
 ### TL;DR {: .hide-from-toc }
-* 모달 뷰는 드물게 사용해야 하며, 불필요한 방해는 사용자를 성가시게 만들 수 있습니다.
-* 애니메이션에 배율을 추가하면 멋진 '낙하' 효과가 발생합니다.
-* 사용자가 모달 뷰를 해제할 때 재빨리 모달 뷰를 제거합니다. 하지만 사용자가 놀라지 않도록 약간 더 느리게 모달 뷰를 화면으로 가져옵니다.
+
+* Use modal views sparingly; users get frustrated if you interrupt their experience unnecessarily.
+* Adding scale to the animation gives a nice "drop on" effect.
+* Get rid of the modal view quickly when the user dismisses it. However, bring the modal view onto the screen a little more slowly so that it doesn't surprise the user.
 
 <div class="clearfix"></div>
 
-모달 오버레이는 뷰포트에 정렬해야 하므로, `position`을 `fixed`로 설정합니다.
-
+The modal overlay should be aligned to the viewport, so set its `position` to `fixed`:
 
     .modal {
       position: fixed;
@@ -44,10 +41,9 @@ description: 앱에서 모달 뷰에 애니메이션을 적용하는 방법을 �
     }
     
 
-초기 `opacity`가 0이므로 뷰에서 숨겨지지만, 클릭과 터치가 통과하도록 `pointer-events`를 `none`으로 설정해야 합니다. 그렇지 않으면 모든 상호작용이 차단되고 전체 페이지가 응답하지 않습니다. 마지막으로, `opacity` 및 `transform`에 애니메이션을 적용하기 때문에 `will-change`에 의한 변경으로 표시되어야 합니다([will-change 속성 사용](animations-and-performance#using-the-will-change-property) 참조).
+It has an initial `opacity` of 0, so it's hidden from view, but then it also needs `pointer-events` set to `none` so that clicks and touches pass through. Without that, it blocks all interactions, rendering the whole page unresponsive. Finally, because it animates its `opacity` and `transform`, those need to be marked as changing with `will-change` (see also [Using the will-change property](animations-and-performance#using-the-will-change-property)).
 
-뷰가 표시되면 상호작용을 허용해야 하며 `opacity`가 1이어야 합니다.
-
+When the view is visible, it needs to accept interactions and have an `opacity` of 1:
 
     .modal.visible {
       pointer-events: auto;
@@ -55,15 +51,12 @@ description: 앱에서 모달 뷰에 애니메이션을 적용하는 방법을 �
     }
     
 
-이제 모달 뷰가 필요할 때마다 자바스크립트를 사용하여 'visible' 클래스를 전환할 수 있습니다.
-
+Now whenever the modal view is required, you can use JavaScript to toggle the "visible" class:
 
     modal.classList.add('visible');
     
 
-이 시점에서 모달 뷰는 애니메이션이 없이 나타나므로 이제 추가가 가능합니다
-([사용자설정 Easing](custom-easing) 참조).
-
+At this point, the modal view appears without any animation, so you can now add that in (see also [Custom Easing](custom-easing)):
 
     .modal {
       -webkit-transform: scale(1.15);
@@ -80,10 +73,9 @@ description: 앱에서 모달 뷰에 애니메이션을 적용하는 방법을 �
     }
     
 
-`scale`을 transform에 추가하면 뷰가 화면에 약간 낙하하듯이 보이는 멋진 효과가 연출됩니다. 기본 전환은 transform 및 opacity 속성에 모두 적용되며 사용자설정 곡선을 가지며 기간은 0.1초입니다.
+Adding `scale` to the transform makes the view appear to drop onto the screen slightly, which is a nice effect. The default transition applies to both transform and opacity properties with a custom curve and a duration of 0.1 seconds.
 
-기간은 아주 짧지만, 사용자가 뷰를 종료하고 앱으로 돌아가려는 경우에 적합합니다. 단점은 모달 뷰가 나타날 때 너무 공격적이라는 점입니다. 이를 해결하려면 `visible` 클래스의 전환 값을 재정의합니다.
-
+The duration is pretty short, though, but it's ideal for when the user dismisses the view and wants to get back to your app. The downside is that it’s probably too aggressive for when the modal view appears. To fix this, override the transition values for the `visible` class:
 
     .modal.visible {
     
@@ -101,10 +93,8 @@ description: 앱에서 모달 뷰에 애니메이션을 적용하는 방법을 �
     }
     
 
-이제 모달 뷰가 화면에 표시되는 데 0.3초가 걸리고 덜 공격적이지만 빠르게 해제되므로, 사용자가 높이 평가할 것입니다.
+Now the modal view takes 0.3 seconds to come onto the screen, which is a bit less aggressive, but it is dismissed quickly, which the user will appreciate.
 
+## Feedback {: #feedback }
 
-
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
