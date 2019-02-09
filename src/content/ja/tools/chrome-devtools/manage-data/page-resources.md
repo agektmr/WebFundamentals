@@ -1,72 +1,57 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: リソースをフレーム、ドメイン、タイプなどの基準で整理します。
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Organize resources by frame, domain, type, or other criteria.
 
-{# wf_updated_on:2016-07-28 #}
-{# wf_published_on:2015-04-13 #}
+{# wf_updated_on: 2018-07-27 #} {# wf_published_on: 2015-04-13 #} {# wf_blink_components: Platform>DevTools #}
 
-# リソースの調査 {: .page-title }
+# Inspect Resources {: .page-title }
 
 {% include "web/_shared/contributors/kaycebasques.html" %}
 
-リソースをフレーム、ドメイン、タイプなどの基準で整理します。
-
-
+Organize resources by frame, domain, type, or other criteria.
 
 ### TL;DR {: .hide-from-toc }
-- リソースをフレームで整理するには、[<strong>Application</strong>] パネルの [<strong>Frames</strong>] ペインを使用します。
-- [<strong>Sources</strong>] パネルで [<strong>group by folder</strong>] オプションを無効にしてリソースをフレームごとに表示することもできます。
-- リソースをドメインまたはフォルダごとに表示するには、[<strong>Sources</strong>] パネルを使用します。
-- リソースを名前または [<strong>Network</strong>] パネル内の他の基準でフィルタします。
 
+* Use the **Frames** pane of the **Application** panel to organize resources by frame.
+* You can also view resources by frame from the **Sources** panel by disabling the **group by folder** option.
+* To view resources by domain and folder, use the **Sources** panel.
+* Filter resources by name or other criteria in the **Network** panel.
 
-##  フレームによるリソースの整理{:#frames}
+## Organize resources by frame {:#frames}
 
-ページのリソースをフレームで整理して表示するには、[**Application**] パネルの [**Frames**] ペインを使用します。
+Use the **Frames** pane on the **Application** panel for a frame-organized representation of your page's resources.
 
+![frames detail](/web/tools/chrome-devtools/manage-data/imgs/frames.png)
 
-![フレームの詳細][frames]
+* The top-level (`top` in the screenshot above) is the main document.
+* Below that (e.g. `widget2` in the screenshot above) are subframes of the main document. Expand one of these subframes to view the resources originating from that frame.
+* Below the subframes are the images, scripts, and other resources of the main document.
+* Last is the main document itself.
 
-* トップレベル（上記のスクリーンショットの `top`）は、メイン ドキュメントです。
-* その下にメイン ドキュメントのサブフレーム（上記のスクリーンショットの `widget2` など）があります。
-これらのサブフレームのいずれかを展開すると、そのフレームからのリソースが表示されます。
-* サブフレームの下には、メイン ドキュメントの画像、スクリプト、およびその他のリソースがあります。
-* 最後はメイン ドキュメント自体です。
+Click on a resource to view a preview of it.
 
-リソースをクリックすると、そのプレビューが表示されます。
+Right-click on a resource to view it in the **Network** panel, open it in a new tab, copy its URL, or save it.
 
-リソースを右クリックして、そのリソースを [**Network**] パネルに表示したり、新しいタブで開いたり、その URL をコピーしたり、保存したりできます。
+![view resource](/web/tools/chrome-devtools/manage-data/imgs/resource.png)
 
+You can also view resources by frame in the **Sources** panel, by clicking on the overflow menu in the navigator and disabling the **Group by folder** option to stop grouping resources by folder.
 
-![リソースの表示][resource]
+![group by folder option](imgs/group-by-folder.png)
 
-リソースは、[**Sources**] パネルにフレームごとに表示することもできます。そのためには、ナビゲータのオーバーフローメニューをクリックし、[**Group by folder**] オプションを無効にしてフォルダによるリソースのグループ化を止めます。
+The resources will be listed by frame only.
 
+![no folders](imgs/no-folders.png)
 
+## Organize resources by domain and folder {:#sources}
 
-![[Group by folder] オプション](imgs/group-by-folder.png)
+To view resources organized by domain and directory, use the **Sources** panel.
 
-リソースは、フレームごとにリストされます。
+![sources panel](imgs/sources.png)
 
-![フォルダなし](imgs/no-folders.png)
+## Filter resources by name, type, or other criteria {:#filter}
 
-[frames-pane]: /web/tools/chrome-devtools/manage-data/imgs/frames-pane.png
-[frames]: /web/tools/chrome-devtools/manage-data/imgs/frames.png
-[resource]: /web/tools/chrome-devtools/manage-data/imgs/resource.png
-
-##  ドメインとフォルダによるリソースの整理{:#sources}
-
-ドメインとディレクトリごとに整理されたリソースを表示するには、[**Sources**] パネルを使用します。
-
-
-![[Sources] パネル](imgs/sources.png)
-
-##  名前、タイプなどの基準によるリソースのフィルタ{:#filter}
-
-リソースを名前、タイプなどのさまざまな基準でフィルタするには、[**Network**] パネルを使用します。
-詳細については、次のガイドを参照してください。
+Use the **Network** panel to filter resources by name, type, and a whole range of other criteria. Check out the guide below to learn more.
 
 {# include shared/related_guides.liquid inline=true list=page.related-guides.filter #}
 
+## Feedback {: #feedback }
 
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
