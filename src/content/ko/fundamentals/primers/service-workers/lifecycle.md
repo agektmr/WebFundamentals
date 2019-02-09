@@ -1,40 +1,37 @@
-project_path: /web/fundamentals/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: 서비스 워커 수명 주기에 대해 자세히 알아봅니다.
-{# wf_updated_on: 2019-02-06 #}
-{# wf_published_on: 2016-09-29 #}
-{# wf_blink_components: Blink>ServiceWorker #}
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: A deep-dive into the service worker lifecycle.
 
-# 서비스 워커 수명 주기 {: .page-title }
+{# wf_updated_on: 2018-12-05 #} {# wf_published_on: 2016-09-29 #} {# wf_blink_components: Blink>ServiceWorker #}
+
+# The Service Worker Lifecycle {: .page-title }
 
 {% include "web/_shared/contributors/jakearchibald.html" %}
 
-수명 주기는 서비스 워커의 가장 복잡한 부분입니다. 서비스 워커가 무엇을 하려고 하는지, 어떤 이점이 있는지 모른다면 전쟁을 하는 것 같은 느낌이 들 수 있습니다. 그러나 작동 방식을 알게 되면 웹과 기본 패턴의 장점을 혼합하여 사용자에게 원활하고 지나치지 않은 업데이트를 제공할 수 있습니다.
+The lifecycle of the service worker is its most complicated part. If you don't know what it's trying to do and what the benefits are, it can feel like it's fighting you. But once you know how it works, you can deliver seemless, unobtrusive updates to users, mixing the best of web and native patterns.
 
-심도 있게 살펴보겠지만, 각 섹션의 시작 부분에 있는 글머리 기호에서 알아야 할 대부분의 항목을 다루고 있습니다.
+This is a deep dive, but the bullets at the start of each section cover most of what you need to know.
 
-## 목적
+## The intent
 
-목적 수명 주기는 다음을 목적으로 합니다.
+The intent of the lifecycle is to:
 
-* 오프라인 우선을 가능하게 합니다.
-* 현재 서비스 워커를 중단하지 않고 새로운 서비스 워커를 준비할 수 있게 합니다.
-* 범위 내 페이지가 모두 동일한 서비스 워커로 제어됩니다(또는 제어하는 서비스 워커가 없음).
-* 한 번에 한 버전의 사이트만 실행합니다.
+* Make offline-first possible.
+* Allow a new service worker to get itself ready without disrupting the current one.
+* Ensure an in-scope page is controlled by the same service worker (or no service worker) throughout.
+* Ensure there's only one version of your site running at once.
 
-마지막 목적은 매우 중요합니다. 서비스 워커가 없는 경우, 사용자가 탭에 사이트를 로드한 다음, 다른 탭에 사이트를 새로 열 수 있습니다. 이 경우 두 버전의 사이트가 동시에 실행될 수 있습니다. 문제가 없는 경우도 있지만, 저장소에 관한 한, 두 개의 탭의 공유 저장소를 관리하는 방법이 매우 다를 수 있습니다. 이로 인해 오류가 발생하거나 최악의 경우에는 데이터 손실이 발생할 수 있습니다.
+That last one is pretty important. Without service workers, users can load one tab to your site, then later open another. This can result in two versions of your site running at the same time. Sometimes this is ok, but if you're dealing with storage you can easily end up with two tabs having very different opinions on how their shared storage should be managed. This can result in errors, or worse, data loss.
 
-Caution: 사용자는 데이터 손실을 매우 싫어합니다. 데이터 손실이 발생하면 큰 슬픔에 빠질 수 있습니다.
+Caution: Users actively dislike data loss. It causes them great sadness.
 
-## 첫 번째 서비스 워커
+## The first service worker
 
-요약:
+In brief:
 
-* `install` 이벤트는 서비스 워커가 받는 첫 번째 이벤트이며 한 번만 발생합니다.
-* `installEvent.waitUntil()`에 전달된 프라미스는 설치 기간과 설치 성공 또는 실패를 알립니다.
-* 서비스 워커는 설치가 완료된 후 '활성화'될 때까지 `fetch` 및 `push`와 같은 이벤트를 수신하지 않습니다.
-* 페이지 요청 자체가 서비스 워커를 거치지 않는 한 기본적으로 페이지 가져오기는 서비스 워커를 거치지 않습니다. 따라서 서비스 워커의 효과를 보려면 페이지를 새로 고쳐야 합니다.
-* `clients.claim()`은 이 기본값을 재정의하고 제어되지 않는 페이지를 제어할 수 있습니다.
+* The `install` event is the first event a service worker gets, and it only happens once.
+* A promise passed to `installEvent.waitUntil()` signals the duration and success or failure of your install.
+* A service worker won't receive events like `fetch` and `push` until it successfully finishes installing and becomes "active".
+* By default, a page's fetches won't go through a service worker unless the page request itself went through a service worker. So you'll need to refresh the page to see the effects of the service worker.
+* `clients.claim()` can override this default, and take control of non-controlled pages. 
 
 <style>
   .framebox-container-container {
@@ -55,21 +52,23 @@ Caution: 사용자는 데이터 손실을 매우 싫어합니다. 데이터 손�
     filter: drop-shadow(0 6px 4px rgba(0,0,0,0.2));
   }
 </style>
+
+ 
+
 <div class="framebox-container-container">
-<div class="framebox-container">
-{% framebox height="100%" %}
-<link href="https://fonts.googleapis.com/css?family=Just+Another+Hand" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/TweenLite.min.js"
-  integrity="sha384-al3qvxiX1jQs5ZPPnL8UubdkVRFveHNxF3ZNTbMXFxd8JBFwMIq8BVaVOW/CEUKB"
-  crossorigin="anonymous" defer>
+  <div class="framebox-container">
+    {% framebox height="100%" %} 
+    
+    <link href="https://fonts.googleapis.com/css?family=Just+Another+Hand" rel="stylesheet" />
+    
+<script src="https://www.gstatic.com/external_hosted/gsap/v1_18_0/TweenLite.min.js"
+  defer>
 </script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/TimelineLite.min.js"
-  integrity="sha384-fw2pCo41nKTwSnKUUxW43cI1kDLRw2qLaZQR2ZEQnh1s6xM6pP3H+SbM/Ehm6uI7"
-  crossorigin="anonymous" defer></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/plugins/CSSPlugin.min.js"
-  integrity="sha384-yn7MLKNpLL+YDD9r3YvNFKEBhs/bzA4i51f28+h6KCYsZIhbif9+JcdK/lZOlnEY"
-  crossorigin="anonymous" defer></script>
-<style>
+ <script src="https://www.gstatic.com/external_hosted/gsap/v1_18_0/TimelineLite.min.js"
+  defer></script>
+ <script src="https://www.gstatic.com/external_hosted/gsap/v1_18_0/plugins/CSSPlugin.min.js"
+  defer></script>
+ <style>
 .lifecycle-diagram {
   width: 100%;
   height: auto;
@@ -112,21 +111,7 @@ Caution: 사용자는 데이터 손실을 매우 싫어합니다. 데이터 손�
   opacity: 0;
 }
 </style>
-<svg class="lifecycle-diagram" style="display:none">
-  <defs>
-    <g id="diagram-static">
-      <text y="6.7" x="14.5" class="label">설치</text><text y="6.7" x="81.1" class="label">활성</text><circle r="14" cy="25.8" cx="14.5" class="state-placeholder"/><circle r="14" cy="25.8" cx="47.8" class="state-placeholder"/><circle r="14" cy="25.8" cx="81.2" class="state-placeholder"/>
-    </g>
-    <g id="diagram-page">
-      <path d="M 191.3,0 12.8,0 C 5.8,0 0,5.7 0,12.8 L 0,167 c 0,7.2 5.7,13 12.8,13 l 178.5,0 c 7,0 12.8,-5.8 12.8,-13 l 0,-154 C 204,6 198.7,0.2 191.6,0.2 Z M 11,11 c 0.5,-0.5 1,-0.7 1.8,-0.8 l 178.5,0 c 0.7,0 1.3,0.3 1.8,0.8 0.8,0.5 1,1 1,1.8 l 0,13.5 -184.1,0 0,-13.5 c 0,-0.7 0.3,-1.3 0.8,-1.8 z m 182,158 c -0.4,0.4 -1,0.7 -1.7,0.7 l -178.5,0 c -0.7,0 -1.3,-0.3 -1.8,-0.8 -0.5,-0.8 -0.8,-1.4 -0.8,-2 l 0,-130.4 183.6,0 0,130.5 c 0,0.8 -0.2,1.4 -0.7,2 z" />
-      <path d="m 26.5,18.6 c 0,2.8 -2.3,5 -5,5 -3,0 -5.2,-2.2 -5.2,-5 0,-3 2.2,-5.2 5,-5.2 3,0 5.2,2.3 5.2,5.2 z m 15.2,0 c 0,2.8 -2.3,5 -5,5 -3,0 -5.2,-2.2 -5.2,-5 0,-3 2.3,-5.2 5,-5.2 3,0 5.2,2.3 5.2,5.2 z m 15.3,0 c 0,2.8 -2.3,5 -5.2,5 -2.8,0 -5,-2.2 -5,-5 0,-3 2.2,-5.2 5,-5.2 3,0 5.2,2.3 5.2,5.2 z m -5.2,111 102.7,0 0,10.4 -102.7,0 0,-10.3 z m 0,-16.8 102.7,0 0,10.2 -102.7,0 0,-10 z M 52,96 l 45.4,0 0,10.2 -45.4,0 0,-10.2 z m 0,-17 45.4,0 0,10.3 -45.4,0 0,-10.3 z m 0,-16.8 45.6,0 0,10.3 -45.6,0 0,-10.3 z m 100.2,1.3 -45.4,0 0,42 45.4,0 0,-42 z m -10.2,31.8 -25,0 0,-21.5 25,0 0,21.5 z" />
-    </g>
-    <path id="diagram-sw" d="m 19.43,12.98 c 0.04,-0.32 0.07,-0.64 0.07,-0.98 0,-0.34 -0.03,-0.66 -0.07,-0.98 l 2.11,-1.65 c 0.19,-0.15 0.24,-0.42 0.12,-0.64 l -2,-3.46 C 19.54,5.05 19.27,4.97 19.05,5.05 l -2.49,1 C 16.04,5.65 15.48,5.32 14.87,5.07 L 14.49,2.42 C 14.46,2.18 14.25,2 14,2 L 10,2 C 9.75,2 9.54,2.18 9.51,2.42 L 9.13,5.07 C 8.52,5.32 7.96,5.66 7.44,6.05 l -2.49,-1 C 4.72,4.96 4.46,5.05 4.34,5.27 l -2,3.46 C 2.21,8.95 2.27,9.22 2.46,9.37 l 2.11,1.65 C 4.53,11.34 4.5,11.67 4.5,12 c 0,0.33 0.03,0.66 0.07,0.98 l -2.11,1.65 c -0.19,0.15 -0.24,0.42 -0.12,0.64 l 2,3.46 c 0.12,0.22 0.39,0.3 0.61,0.22 l 2.49,-1 c 0.52,0.4 1.08,0.73 1.69,0.98 l 0.38,2.65 C 9.54,21.82 9.75,22 10,22 l 4,0 c 0.25,0 0.46,-0.18 0.49,-0.42 l 0.38,-2.65 c 0.61,-0.25 1.17,-0.59 1.69,-0.98 l 2.49,1 c 0.23,0.09 0.49,0 0.61,-0.22 l 2,-3.46 c 0.12,-0.22 0.07,-0.49 -0.12,-0.64 L 19.43,12.98 Z M 12,15.5 c -1.93,0 -3.5,-1.57 -3.5,-3.5 0,-1.93 1.57,-3.5 3.5,-3.5 1.93,0 3.5,1.57 3.5,3.5 0,1.93 -1.57,3.5 -3.5,3.5 z"/>
-    <g id="diagram-refresh"><circle id="page-action-circle" cx="81.2" cy="58.1" r="3.5" fill="#fff" stroke="#000" stroke-width=".5"/><path d="M82.76 56.48c-.4-.4-.97-.66-1.6-.66-1.23 0-2.23 1-2.23 2.24 0 1.24 1 2.25 2.24 2.25 1.05 0 1.92-.7 2.17-1.68h-.58c-.23.66-.86 1.13-1.6 1.13-.92 0-1.67-.76-1.67-1.7 0-.92.74-1.67 1.67-1.67.47 0 .88.2 1.2.5l-.92.9h1.97v-1.96l-.66.66z"/></g>
-    <g id="diagram-close"><use xlink:href="#page-action-circle"/><path id="path5062" d="M83 56.58l-.37-.37-1.46 1.47-1.45-1.46-.37.38 1.46 1.46-1.45 1.46.37.36 1.45-1.45 1.46 1.46.37-.36-1.46-1.46z"/></g>
-  </defs>
-</svg>
-<svg class="lifecycle-diagram register" viewBox="0 0 96.9 73"><rect ry="15.8" y="10" x="65.4" height="63" width="31.6" class="controlled"/><use xlink:href="#diagram-static"/><g transform="matrix(1.1187 0 0 1.1187 1.078 12.408)" class="cog cog-new"><use height="10" width="10" xlink:href="#diagram-sw"/></g><use transform="matrix(.09532 0 0 .09532 71.44 48.39)" xlink:href="#diagram-page" width="10" height="10" class="diagram-page"/><path d="M78.6 47.7c-1-6-2-11.6-1.6-17" class="fetch"/><path d="M83 47.5c1.4-5.4 3.3-10.8 2.4-16.2" class="fetch"/><path d="M75.7 47c-2.3-6.3-3.2-12.5-2-18.2" class="fetch"/><path d="M89.5 29.5c.3 6-.4 12-4 18" class="fetch"/><path d="M75.4 30.3c0 4-1 6 2 17.2" class="fetch"/><path d="M86.6 31C88 37 86 42 84 47.4" class="fetch"/><g class="refresh-rotator"><use xlink:href="#diagram-refresh" class="diagram-refresh"/></g></svg>
+ <svg class="lifecycle-diagram" style="display:none"> <defs> <g id="diagram-static"> <text y="6.7" x="14.5" class="label">Installing</text><text y="6.7" x="81.1" class="label">Active</text><circle r="14" cy="25.8" cx="14.5" class="state-placeholder"/><circle r="14" cy="25.8" cx="47.8" class="state-placeholder"/><circle r="14" cy="25.8" cx="81.2" class="state-placeholder"/> </g> <g id="diagram-page"> <path d="M 191.3,0 12.8,0 C 5.8,0 0,5.7 0,12.8 L 0,167 c 0,7.2 5.7,13 12.8,13 l 178.5,0 c 7,0 12.8,-5.8 12.8,-13 l 0,-154 C 204,6 198.7,0.2 191.6,0.2 Z M 11,11 c 0.5,-0.5 1,-0.7 1.8,-0.8 l 178.5,0 c 0.7,0 1.3,0.3 1.8,0.8 0.8,0.5 1,1 1,1.8 l 0,13.5 -184.1,0 0,-13.5 c 0,-0.7 0.3,-1.3 0.8,-1.8 z m 182,158 c -0.4,0.4 -1,0.7 -1.7,0.7 l -178.5,0 c -0.7,0 -1.3,-0.3 -1.8,-0.8 -0.5,-0.8 -0.8,-1.4 -0.8,-2 l 0,-130.4 183.6,0 0,130.5 c 0,0.8 -0.2,1.4 -0.7,2 z" /> <path d="m 26.5,18.6 c 0,2.8 -2.3,5 -5,5 -3,0 -5.2,-2.2 -5.2,-5 0,-3 2.2,-5.2 5,-5.2 3,0 5.2,2.3 5.2,5.2 z m 15.2,0 c 0,2.8 -2.3,5 -5,5 -3,0 -5.2,-2.2 -5.2,-5 0,-3 2.3,-5.2 5,-5.2 3,0 5.2,2.3 5.2,5.2 z m 15.3,0 c 0,2.8 -2.3,5 -5.2,5 -2.8,0 -5,-2.2 -5,-5 0,-3 2.2,-5.2 5,-5.2 3,0 5.2,2.3 5.2,5.2 z m -5.2,111 102.7,0 0,10.4 -102.7,0 0,-10.3 z m 0,-16.8 102.7,0 0,10.2 -102.7,0 0,-10 z M 52,96 l 45.4,0 0,10.2 -45.4,0 0,-10.2 z m 0,-17 45.4,0 0,10.3 -45.4,0 0,-10.3 z m 0,-16.8 45.6,0 0,10.3 -45.6,0 0,-10.3 z m 100.2,1.3 -45.4,0 0,42 45.4,0 0,-42 z m -10.2,31.8 -25,0 0,-21.5 25,0 0,21.5 z" /> </g> <path id="diagram-sw" d="m 19.43,12.98 c 0.04,-0.32 0.07,-0.64 0.07,-0.98 0,-0.34 -0.03,-0.66 -0.07,-0.98 l 2.11,-1.65 c 0.19,-0.15 0.24,-0.42 0.12,-0.64 l -2,-3.46 C 19.54,5.05 19.27,4.97 19.05,5.05 l -2.49,1 C 16.04,5.65 15.48,5.32 14.87,5.07 L 14.49,2.42 C 14.46,2.18 14.25,2 14,2 L 10,2 C 9.75,2 9.54,2.18 9.51,2.42 L 9.13,5.07 C 8.52,5.32 7.96,5.66 7.44,6.05 l -2.49,-1 C 4.72,4.96 4.46,5.05 4.34,5.27 l -2,3.46 C 2.21,8.95 2.27,9.22 2.46,9.37 l 2.11,1.65 C 4.53,11.34 4.5,11.67 4.5,12 c 0,0.33 0.03,0.66 0.07,0.98 l -2.11,1.65 c -0.19,0.15 -0.24,0.42 -0.12,0.64 l 2,3.46 c 0.12,0.22 0.39,0.3 0.61,0.22 l 2.49,-1 c 0.52,0.4 1.08,0.73 1.69,0.98 l 0.38,2.65 C 9.54,21.82 9.75,22 10,22 l 4,0 c 0.25,0 0.46,-0.18 0.49,-0.42 l 0.38,-2.65 c 0.61,-0.25 1.17,-0.59 1.69,-0.98 l 2.49,1 c 0.23,0.09 0.49,0 0.61,-0.22 l 2,-3.46 c 0.12,-0.22 0.07,-0.49 -0.12,-0.64 L 19.43,12.98 Z M 12,15.5 c -1.93,0 -3.5,-1.57 -3.5,-3.5 0,-1.93 1.57,-3.5 3.5,-3.5 1.93,0 3.5,1.57 3.5,3.5 0,1.93 -1.57,3.5 -3.5,3.5 z"/> <g id="diagram-refresh"><circle id="page-action-circle" cx="81.2" cy="58.1" r="3.5" fill="#fff" stroke="#000" stroke-width=".5"/><path d="M82.76 56.48c-.4-.4-.97-.66-1.6-.66-1.23 0-2.23 1-2.23 2.24 0 1.24 1 2.25 2.24 2.25 1.05 0 1.92-.7 2.17-1.68h-.58c-.23.66-.86 1.13-1.6 1.13-.92 0-1.67-.76-1.67-1.7 0-.92.74-1.67 1.67-1.67.47 0 .88.2 1.2.5l-.92.9h1.97v-1.96l-.66.66z"/></g> <g id="diagram-close"><use xlink:href="#page-action-circle"/><path id="path5062" d="M83 56.58l-.37-.37-1.46 1.47-1.45-1.46-.37.38 1.46 1.46-1.45 1.46.37.36 1.45-1.45 1.46 1.46.37-.36-1.46-1.46z"/></g> </defs> </svg> <svg class="lifecycle-diagram register" viewbox="0 0 96.9 73"><rect ry="15.8" y="10" x="65.4" height="63" width="31.6" class="controlled"/><use xlink:href="#diagram-static"/><g transform="matrix(1.1187 0 0 1.1187 1.078 12.408)" class="cog cog-new"><use height="10" width="10" xlink:href="#diagram-sw"/></g><use transform="matrix(.09532 0 0 .09532 71.44 48.39)" xlink:href="#diagram-page" width="10" height="10" class="diagram-page"/><path d="M78.6 47.7c-1-6-2-11.6-1.6-17" class="fetch"/><path d="M83 47.5c1.4-5.4 3.3-10.8 2.4-16.2" class="fetch"/><path d="M75.7 47c-2.3-6.3-3.2-12.5-2-18.2" class="fetch"/><path d="M89.5 29.5c.3 6-.4 12-4 18" class="fetch"/><path d="M75.4 30.3c0 4-1 6 2 17.2" class="fetch"/><path d="M86.6 31C88 37 86 42 84 47.4" class="fetch"/><g class="refresh-rotator"><use xlink:href="#diagram-refresh" class="diagram-refresh"/></g></svg> 
 
 <script>
   document.addEventListener("DOMContentLoaded", function() {
@@ -199,11 +184,11 @@ Caution: 사용자는 데이터 손실을 매우 싫어합니다. 데이터 손�
     }
   });
 </script>
-{% endframebox %}
-</div>
+ {% endframebox %}
+  </div>
 </div>
 
-다음 HTML을 사용해 봅시다.
+Take this HTML:
 
     <!DOCTYPE html>
     An image will appear here in 3 seconds:
@@ -211,115 +196,113 @@ Caution: 사용자는 데이터 손실을 매우 싫어합니다. 데이터 손�
       navigator.serviceWorker.register('/sw.js')
         .then(reg => console.log('SW registered!', reg))
         .catch(err => console.log('Boo!', err));
-
+    
       setTimeout(() => {
         const img = new Image();
         img.src = '/dog.svg';
         document.body.appendChild(img);
       }, 3000);
     </script>
+    
 
-이 코드는 서비스 워커를 등록하고 3초 후에 개 이미지를 추가합니다.
+It registers a service worker, and adds image of a dog after 3 seconds.
 
-다음은 해당 서비스 워커입니다. `sw.js`:
+Here's its service worker, `sw.js`:
 
     self.addEventListener('install', event => {
       console.log('V1 installing…');
-
+    
       // cache a cat SVG
       event.waitUntil(
         caches.open('static-v1').then(cache => cache.add('/cat.svg'))
       );
     });
-
+    
     self.addEventListener('activate', event => {
       console.log('V1 now ready to handle fetches!');
     });
-
+    
     self.addEventListener('fetch', event => {
       const url = new URL(event.request.url);
-
+    
       // serve the cat SVG from the cache if the request is
       // same-origin and the path is '/dog.svg'
       if (url.origin == location.origin && url.pathname == '/dog.svg') {
         event.respondWith(caches.match('/cat.svg'));
       }
     });
+    
 
-이는 고양이 이미지를 캐시하고 `/dog.svg` 요청이 있을 때마다 고양이 이미지를 제공합니다. 그러나 [위의 예시를 실행](https://cdn.rawgit.com/jakearchibald/80368b84ac1ae8e229fc90b3fe826301/raw/ad55049bee9b11d47f1f7d19a73bf3306d156f43/){: .external }하면 페이지를 처음으로 로드할 때 개가 표시됩니다. 새로고침하면 고양이가 표시됩니다.
+It caches an image of a cat, and serves it whenever there's a request for `/dog.svg`. However, if you [run the above example](https://cdn.rawgit.com/jakearchibald/80368b84ac1ae8e229fc90b3fe826301/raw/ad55049bee9b11d47f1f7d19a73bf3306d156f43/){: .external }, you'll see a dog the first time you load the page. Hit refresh, and you'll see the cat.
 
-참고: 고양이가 개보다 낫습니다. 정말 *그렇습니다*.
+Note: Cats are better than dogs. They just *are*.
 
-### 범위 및 제어
+### Scope and control
 
-서비스 워커 등록의 기본 범위는 `./` 스크립트 URL에 상대적입니다. 즉, `//example.com/foo/bar.js`에 서비스 워커를 등록한 경우 기본 범위는 `//example.com/foo/`입니다.
+The default scope of a service worker registration is `./` relative to the script URL. This means if you register a service worker at `//example.com/foo/bar.js` it has a default scope of `//example.com/foo/`.
 
-페이지, 워커 및 공유 워커를 `clients`라고 부릅니다. 서비스 워커는 범위 내에 있는 클라이언트(Client)만 제어할 수 있습니다. 클라이언트가 '제어되면' 가져오기는 범위 내 서비스 워커를 거칩니다. `navigator.serviceWorker.controller`를 통해 클라이언트의 제어 여부를 탐지할 수 있으며, null 또는 서비스 워커 인스턴스 중 하나로 나타납니다.
+We call pages, workers, and shared workers `clients`. Your service worker can only control clients that are in-scope. Once a client is "controlled", its fetches go through the in-scope service worker. You can detect if a client is controlled via `navigator.serviceWorker.controller` which will be null or a service worker instance.
 
-### 다운로드, 파싱, 실행
+### Download, parse, and execute
 
-`.register()`를 호출하면 첫 번째 서비스 워커가 다운로드됩니다. 스크립트가 다운로드 또는 파싱하지 못하거나 초기 실행에서 오류가 발생하는 경우 레지스터 프라미스가 거부되고 서비스 워커가 삭제됩니다.
+Your very first service worker downloads when you call `.register()`. If your script fails to download, parse, or throws an error in its initial execution, the register promise rejects, and the service worker is discarded.
 
-Chrome의 DevTools는 콘솔과 애플리케이션 탭의 서비스 워커 섹션에 오류를 표시합니다.
+Chrome's DevTools shows the error in the console, and in the service worker section of the application tab:<figure> 
 
-<figure>
-  <img src="images/register-fail.png" class="browser-screenshot" alt="서비스 워커 DevTools 탭에 표시된 오류"/>
-</figure>
+<img src="images/register-fail.png" class="browser-screenshot" alt="Error displayed in service worker DevTools tab" /> </figure> 
 
-### 설치
+### Install
 
-서비스 워커가 가져오는 첫 번째 이벤트는 `install`입니다. 해당 이벤트는 서비스 워커가 실행되는 즉시 트리거되고 서비스 워커당 한 번만 호출됩니다. 서비스 워커 스크립트를 변경하면 브라우저에서 다른 서비스 워커로 간주되며 고유한 `install` 이벤트를 가져옵니다. [업데이트](#updates)에 대해서는 나중에 자세히 다루겠습니다.
+The first event a service worker gets is `install`. It's triggered as soon as the worker executes, and it's only called once per service worker. If you alter your service worker script the browser considers it a different service worker, and it'll get its own `install` event. I'll cover [updates in detail later](#updates).
 
-`install` 이벤트는 클라이언트를 제어하기 전에 필요한 모든 것을 캐시할 수 있는 기회입니다. `event.waitUntil()`에 전달한 프라미스는 설치 완료 시점과 성공 여부를 브라우저에 알립니다.
+The `install` event is your chance to cache everything you need before being able to control clients. The promise you pass to `event.waitUntil()` lets the browser know when your install completes, and if it was successful.
 
-프라미스가 거부되면 설치가 실패했다는 것을 알리고 브라우저가 서비스 워커를 버립니다. 이것은 클라이언트를 제어하지 않습니다. 즉, `fetch` 이벤트 캐시에 있는 'cat.svg'에 의존할 수 없다는 뜻입니다. 이는 종속성에 해당합니다.
+If your promise rejects, this signals the install failed, and the browser throws the service worker away. It'll never control clients. This means we can't rely on "cat.svg" being present in the cache in our `fetch` events. It's a dependency.
 
-### 활성화
+### Activate
 
-서비스 워커가 클라이언트를 제어하고 `push` 및 `sync`와 같은 함수 이벤트를 처리할 준비가 되면 `activate` 이벤트가 발생합니다. 그러나 `.register()`를 호출한 페이지가 제어된다는 의미는 아닙니다.
+Once your service worker is ready to control clients and handle functional events like `push` and `sync`, you'll get an `activate` event. But that doesn't mean the page that called `.register()` will be controlled.
 
-[데모](https://cdn.rawgit.com/jakearchibald/80368b84ac1ae8e229fc90b3fe826301/raw/ad55049bee9b11d47f1f7d19a73bf3306d156f43/){: .external }를 처음 로드할 때는 서비스 워커가 활성화된 지 한참 후에 `dog.svg`를 요청하더라도 요청을 처리하지 않고 여전히 개 이미지가 나타납니다. 기본값은 *일관성*이며, 페이지가 서비스 워커 없이 로드되면 하위 리소스의 경우에도 마찬가지입니다. [데모](https://cdn.rawgit.com/jakearchibald/80368b84ac1ae8e229fc90b3fe826301/raw/ad55049bee9b11d47f1f7d19a73bf3306d156f43/){: .external }를 다시 로드하면(즉, 페이지를 새로 고치면) 페이지가 제어됩니다. 페이지와 이미지가 모두 `fetch` 이벤트를 거치고, 고양이가 대신 표시됩니다.
+The first time you load [the demo](https://cdn.rawgit.com/jakearchibald/80368b84ac1ae8e229fc90b3fe826301/raw/ad55049bee9b11d47f1f7d19a73bf3306d156f43/){: .external }, even though `dog.svg` is requested long after the service worker activates, it doesn't handle the request, and you still see the image of the dog. The default is *consistency*, if your page loads without a service worker, neither will its subresources. If you load [the demo](https://cdn.rawgit.com/jakearchibald/80368b84ac1ae8e229fc90b3fe826301/raw/ad55049bee9b11d47f1f7d19a73bf3306d156f43/){: .external } a second time (in other words, refresh the page), it'll be controlled. Both the page and the image will go through `fetch` events, and you'll see a cat instead.
 
 ### clients.claim
 
-서비스 워커가 활성화되면 서비스 워커 내에서 `clients.claim()`을 호출하여 제어되지 않은 클라이언트를 제어할 수 있습니다.
+You can take control of uncontrolled clients by calling `clients.claim()` within your service worker once it's activated.
 
-다음은 `activate` 이벤트에서 `clients.claim()`을 호출하는 [위 데모의 변형](https://cdn.rawgit.com/jakearchibald/80368b84ac1ae8e229fc90b3fe826301/raw/df4cae41fa658c4ec1fa7b0d2de05f8ba6d43c94/){: .external }입니다. 처음에는 고양이가 *보여야 합니다*. 이것을 강조하는 이유는 타이밍이 중요하기 때문입니다. 이미지가 로드를 시도하기 전에 서비스 워커가 활성화되고 `clients.claim()`이 적용될 경우에만 고양이를 보게 됩니다.
+Here's [a variation of the demo above](https://cdn.rawgit.com/jakearchibald/80368b84ac1ae8e229fc90b3fe826301/raw/df4cae41fa658c4ec1fa7b0d2de05f8ba6d43c94/){: .external } which calls `clients.claim()` in its `activate` event. You *should* see a cat the first time. I say "should", because this is timing sensitive. You'll only see a cat if the service worker activates and `clients.claim()` takes effect before the image tries to load.
 
-네트워크를 통한 로드와 다른 방식으로 페이지를 로드하도록 서비스 워커를 사용하는 경우, 서비스 워커 없이 로드한 일부 클라이언트를 서비스 워커가 제어하기 때문에 `clients.claim()`이 번거로울 수 있습니다.
+If you use your service worker to load pages differently than they'd load via the network, `clients.claim()` can be troublesome, as your service worker ends up controlling some clients that loaded without it.
 
-참고: 많은 사람들이 `clients.claim()`을 상용구로 포함하지만 저는 좀처럼 그렇게 하지 않습니다. 이는 첫 번째 로드에서만 문제가 되며, 점진적 개선 덕분에 페이지는 일반적으로 서비스 워커 없이도 정상적으로 작동합니다.
+Note: I see a lot of people including `clients.claim()` as boilerplate, but I rarely do so myself. It only really matters on the very first load, and due to progressive enhancement the page is usually working happily without service worker anyway.
 
-## 서비스 워커 업데이트 {: #updates}
+## Updating the service worker {: #updates}
 
-요약:
+In brief:
 
-* 다음의 경우에 업데이트가 트리거됩니다.
-    * 범위 내 페이지 탐색 시
-    * 이전 24시간 내에 업데이트 확인이 없는 한, `push` 및 `sync`와 같은 함수 이벤트 시
-    * `.register()` 호출 시(서비스 워커 URL이 변경된 *경우에만*)
-* [Chrome 68 이후 버전](/web/updates/2018/06/fresher-sw)을 비롯한 대부분의 브라우저는 등록된 서비스 워커 스크립트의 업데이트를 확인할 때 캐싱 헤더를 무시하는 것이 기본값입니다. `importScripts()`를 통해 서비스 워커 내에서 로드되는 리소스를 가져올 때는 여전히 캐싱 헤더를 고려합니다. 이 기본 동작은 서비스 워커를 등록할 때 [`updateViaCache`](/web/updates/2018/06/fresher-sw#updateviacache) 옵션을 설정하여 재정의할 수 있습니다.
-* 서비스 워커는 브라우저에 이미 있는 것과 바이트 하나만 달라도 업데이트된 것으로 간주됩니다. (이를 확장하여 가져온 스크립트/모듈도 포함할 것입니다)
-* 업데이트된 서비스 워커는 기존 서비스 워커와 함께 시작되며 고유한 `install` 이벤트를 가져옵니다.
-* 새 워커가 비정상 상태 코드(예: 404)이거나 파싱에 실패하거나 실행 중에 오류가 발생하거나 설치 중에 거부되면 새 워커는 버려지고 현재 워커는 활성 상태를 계속 유지합니다.
-* 성공적으로 설치되면 업데이트된 워커는 기존 워커가 제로 클라이언트를 제어할 때까지 `wait`을 수행합니다. (새로 고치는 동안 클라이언트가 중첩됩니다)
-* `self.skipWaiting()`은 대기를 방지합니다. 즉, 설치를 마치자마자 서비스 워커가 활성화됩니다.
+* An update is triggered if any of the following happens: 
+    * A navigation to an in-scope page.
+    * A functional events such as `push` and `sync`, unless there's been an update check within the previous 24 hours.
+    * Calling `.register()` *only if* the service worker URL has changed. However, you should [avoid changing the worker URL](#avoid-url-change).
+* Most browsers, including [Chrome 68 and later](/web/updates/2018/06/fresher-sw), default to ignoring caching headers when checking for updates of the registered service worker script. They still respect caching headers when fetching resources loaded inside a service worker via `importScripts()`. You can override this default behavior by setting the [`updateViaCache`](/web/updates/2018/06/fresher-sw#updateviacache) option when registering your service worker.
+* Your service worker is considered updated if it's byte-different to the one the browser already has. (We're extending this to include imported scripts/modules too.)
+* The updated service worker is launched alongside the existing one, and gets its own `install` event.
+* If your new worker has a non-ok status code (for example, 404), fails to parse, throws an error during execution, or rejects during install, the new worker is thrown away, but the current one remains active.
+* Once successfully installed, the updated worker will `wait` until the existing worker is controlling zero clients. (Note that clients overlap during a refresh.)
+* `self.skipWaiting()` prevents the waiting, meaning the service worker activates as soon as it's finished installing.
 
 <div class="framebox-container-container">
-<div class="framebox-container">
-{% framebox height="100%" %}
-<link href="https://fonts.googleapis.com/css?family=Just+Another+Hand" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/TweenLite.min.js"
-  integrity="sha384-al3qvxiX1jQs5ZPPnL8UubdkVRFveHNxF3ZNTbMXFxd8JBFwMIq8BVaVOW/CEUKB"
-  crossorigin="anonymous" defer>
+  <div class="framebox-container">
+    {% framebox height="100%" %} 
+    
+    <link href="https://fonts.googleapis.com/css?family=Just+Another+Hand" rel="stylesheet" />
+    
+<script src="https://www.gstatic.com/external_hosted/gsap/v1_18_0/TweenLite.min.js" defer>
 </script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/TimelineLite.min.js"
-  integrity="sha384-fw2pCo41nKTwSnKUUxW43cI1kDLRw2qLaZQR2ZEQnh1s6xM6pP3H+SbM/Ehm6uI7"
-  crossorigin="anonymous" defer></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/plugins/CSSPlugin.min.js"
-  integrity="sha384-yn7MLKNpLL+YDD9r3YvNFKEBhs/bzA4i51f28+h6KCYsZIhbif9+JcdK/lZOlnEY"
-  crossorigin="anonymous" defer></script>
-<style>
+ <script src="https://www.gstatic.com/external_hosted/gsap/v1_18_0/TimelineLite.min.js" defer>
+</script>
+ <script src="https://www.gstatic.com/external_hosted/gsap/v1_18_0/plugins/CSSPlugin.min.js" defer>
+</script>
+ <style>
 .lifecycle-diagram {
   width: 100%;
   height: auto;
@@ -362,21 +345,7 @@ Chrome의 DevTools는 콘솔과 애플리케이션 탭의 서비스 워커 섹�
   opacity: 0;
 }
 </style>
-<svg class="lifecycle-diagram" style="display:none">
-  <defs>
-    <g id="diagram-static">
-      <text y="6.7" x="14.5" class="label">설치</text><text y="6.7" x="81.1" class="label">활성</text><circle r="14" cy="25.8" cx="14.5" class="state-placeholder"/><circle r="14" cy="25.8" cx="47.8" class="state-placeholder"/><circle r="14" cy="25.8" cx="81.2" class="state-placeholder"/>
-    </g>
-    <g id="diagram-page">
-      <path d="M 191.3,0 12.8,0 C 5.8,0 0,5.7 0,12.8 L 0,167 c 0,7.2 5.7,13 12.8,13 l 178.5,0 c 7,0 12.8,-5.8 12.8,-13 l 0,-154 C 204,6 198.7,0.2 191.6,0.2 Z M 11,11 c 0.5,-0.5 1,-0.7 1.8,-0.8 l 178.5,0 c 0.7,0 1.3,0.3 1.8,0.8 0.8,0.5 1,1 1,1.8 l 0,13.5 -184.1,0 0,-13.5 c 0,-0.7 0.3,-1.3 0.8,-1.8 z m 182,158 c -0.4,0.4 -1,0.7 -1.7,0.7 l -178.5,0 c -0.7,0 -1.3,-0.3 -1.8,-0.8 -0.5,-0.8 -0.8,-1.4 -0.8,-2 l 0,-130.4 183.6,0 0,130.5 c 0,0.8 -0.2,1.4 -0.7,2 z" />
-      <path d="m 26.5,18.6 c 0,2.8 -2.3,5 -5,5 -3,0 -5.2,-2.2 -5.2,-5 0,-3 2.2,-5.2 5,-5.2 3,0 5.2,2.3 5.2,5.2 z m 15.2,0 c 0,2.8 -2.3,5 -5,5 -3,0 -5.2,-2.2 -5.2,-5 0,-3 2.3,-5.2 5,-5.2 3,0 5.2,2.3 5.2,5.2 z m 15.3,0 c 0,2.8 -2.3,5 -5.2,5 -2.8,0 -5,-2.2 -5,-5 0,-3 2.2,-5.2 5,-5.2 3,0 5.2,2.3 5.2,5.2 z m -5.2,111 102.7,0 0,10.4 -102.7,0 0,-10.3 z m 0,-16.8 102.7,0 0,10.2 -102.7,0 0,-10 z M 52,96 l 45.4,0 0,10.2 -45.4,0 0,-10.2 z m 0,-17 45.4,0 0,10.3 -45.4,0 0,-10.3 z m 0,-16.8 45.6,0 0,10.3 -45.6,0 0,-10.3 z m 100.2,1.3 -45.4,0 0,42 45.4,0 0,-42 z m -10.2,31.8 -25,0 0,-21.5 25,0 0,21.5 z" />
-    </g>
-    <path id="diagram-sw" d="m 19.43,12.98 c 0.04,-0.32 0.07,-0.64 0.07,-0.98 0,-0.34 -0.03,-0.66 -0.07,-0.98 l 2.11,-1.65 c 0.19,-0.15 0.24,-0.42 0.12,-0.64 l -2,-3.46 C 19.54,5.05 19.27,4.97 19.05,5.05 l -2.49,1 C 16.04,5.65 15.48,5.32 14.87,5.07 L 14.49,2.42 C 14.46,2.18 14.25,2 14,2 L 10,2 C 9.75,2 9.54,2.18 9.51,2.42 L 9.13,5.07 C 8.52,5.32 7.96,5.66 7.44,6.05 l -2.49,-1 C 4.72,4.96 4.46,5.05 4.34,5.27 l -2,3.46 C 2.21,8.95 2.27,9.22 2.46,9.37 l 2.11,1.65 C 4.53,11.34 4.5,11.67 4.5,12 c 0,0.33 0.03,0.66 0.07,0.98 l -2.11,1.65 c -0.19,0.15 -0.24,0.42 -0.12,0.64 l 2,3.46 c 0.12,0.22 0.39,0.3 0.61,0.22 l 2.49,-1 c 0.52,0.4 1.08,0.73 1.69,0.98 l 0.38,2.65 C 9.54,21.82 9.75,22 10,22 l 4,0 c 0.25,0 0.46,-0.18 0.49,-0.42 l 0.38,-2.65 c 0.61,-0.25 1.17,-0.59 1.69,-0.98 l 2.49,1 c 0.23,0.09 0.49,0 0.61,-0.22 l 2,-3.46 c 0.12,-0.22 0.07,-0.49 -0.12,-0.64 L 19.43,12.98 Z M 12,15.5 c -1.93,0 -3.5,-1.57 -3.5,-3.5 0,-1.93 1.57,-3.5 3.5,-3.5 1.93,0 3.5,1.57 3.5,3.5 0,1.93 -1.57,3.5 -3.5,3.5 z"/>
-    <g id="diagram-refresh"><circle id="page-action-circle" cx="81.2" cy="58.1" r="3.5" fill="#fff" stroke="#000" stroke-width=".5"/><path d="M82.76 56.48c-.4-.4-.97-.66-1.6-.66-1.23 0-2.23 1-2.23 2.24 0 1.24 1 2.25 2.24 2.25 1.05 0 1.92-.7 2.17-1.68h-.58c-.23.66-.86 1.13-1.6 1.13-.92 0-1.67-.76-1.67-1.7 0-.92.74-1.67 1.67-1.67.47 0 .88.2 1.2.5l-.92.9h1.97v-1.96l-.66.66z"/></g>
-    <g id="diagram-close"><use xlink:href="#page-action-circle"/><path id="path5062" d="M83 56.58l-.37-.37-1.46 1.47-1.45-1.46-.37.38 1.46 1.46-1.45 1.46.37.36 1.45-1.45 1.46 1.46.37-.36-1.46-1.46z"/></g>
-  </defs>
-</svg>
-<svg class="lifecycle-diagram update" viewBox="0 0 96.9 73"><rect ry="15.8" y="10" x="65.4" height="63" width="31.6" class="controlled"/><use xlink:href="#diagram-static"/><text x="47.7" y="6.7" class="label">대기</text><g transform="matrix(1.1187 0 0 1.1187 1.078 12.408)" class="cog cog-new"><use height="10" width="10" xlink:href="#diagram-sw"/></g><g transform="matrix(1.1187 0 0 1.1187 67.745 12.408)" class="cog cog-old"><use xlink:href="#diagram-sw" width="10" height="10"/></g><use transform="matrix(.09532 0 0 .09532 71.44 48.39)" xlink:href="#diagram-page" width="10" height="10" class="diagram-page"/><path d="M78.6 47.7c-1-6-2-11.6-1.6-17" class="fetch"/><path d="M83 47.5c1.4-5.4 3.3-10.8 2.4-16.2" class="fetch"/><path d="M75.7 47c-2.3-6.3-3.2-12.5-2-18.2" class="fetch"/><path d="M89.5 29.5c.3 6-.4 12-4 18" class="fetch"/><path d="M75.4 30.3c0 4-1 6 2 17.2" class="fetch"/><path d="M86.6 31C88 37 86 42 84 47.4" class="fetch"/><g class="refresh-rotator"><use xlink:href="#diagram-refresh" class="diagram-refresh"/></g><use xlink:href="#diagram-close" class="diagram-close"/></svg>
+ <svg class="lifecycle-diagram" style="display:none"> <defs> <g id="diagram-static"> <text y="6.7" x="14.5" class="label">Installing</text><text y="6.7" x="81.1" class="label">Active</text><circle r="14" cy="25.8" cx="14.5" class="state-placeholder"/><circle r="14" cy="25.8" cx="47.8" class="state-placeholder"/><circle r="14" cy="25.8" cx="81.2" class="state-placeholder"/> </g> <g id="diagram-page"> <path d="M 191.3,0 12.8,0 C 5.8,0 0,5.7 0,12.8 L 0,167 c 0,7.2 5.7,13 12.8,13 l 178.5,0 c 7,0 12.8,-5.8 12.8,-13 l 0,-154 C 204,6 198.7,0.2 191.6,0.2 Z M 11,11 c 0.5,-0.5 1,-0.7 1.8,-0.8 l 178.5,0 c 0.7,0 1.3,0.3 1.8,0.8 0.8,0.5 1,1 1,1.8 l 0,13.5 -184.1,0 0,-13.5 c 0,-0.7 0.3,-1.3 0.8,-1.8 z m 182,158 c -0.4,0.4 -1,0.7 -1.7,0.7 l -178.5,0 c -0.7,0 -1.3,-0.3 -1.8,-0.8 -0.5,-0.8 -0.8,-1.4 -0.8,-2 l 0,-130.4 183.6,0 0,130.5 c 0,0.8 -0.2,1.4 -0.7,2 z" /> <path d="m 26.5,18.6 c 0,2.8 -2.3,5 -5,5 -3,0 -5.2,-2.2 -5.2,-5 0,-3 2.2,-5.2 5,-5.2 3,0 5.2,2.3 5.2,5.2 z m 15.2,0 c 0,2.8 -2.3,5 -5,5 -3,0 -5.2,-2.2 -5.2,-5 0,-3 2.3,-5.2 5,-5.2 3,0 5.2,2.3 5.2,5.2 z m 15.3,0 c 0,2.8 -2.3,5 -5.2,5 -2.8,0 -5,-2.2 -5,-5 0,-3 2.2,-5.2 5,-5.2 3,0 5.2,2.3 5.2,5.2 z m -5.2,111 102.7,0 0,10.4 -102.7,0 0,-10.3 z m 0,-16.8 102.7,0 0,10.2 -102.7,0 0,-10 z M 52,96 l 45.4,0 0,10.2 -45.4,0 0,-10.2 z m 0,-17 45.4,0 0,10.3 -45.4,0 0,-10.3 z m 0,-16.8 45.6,0 0,10.3 -45.6,0 0,-10.3 z m 100.2,1.3 -45.4,0 0,42 45.4,0 0,-42 z m -10.2,31.8 -25,0 0,-21.5 25,0 0,21.5 z" /> </g> <path id="diagram-sw" d="m 19.43,12.98 c 0.04,-0.32 0.07,-0.64 0.07,-0.98 0,-0.34 -0.03,-0.66 -0.07,-0.98 l 2.11,-1.65 c 0.19,-0.15 0.24,-0.42 0.12,-0.64 l -2,-3.46 C 19.54,5.05 19.27,4.97 19.05,5.05 l -2.49,1 C 16.04,5.65 15.48,5.32 14.87,5.07 L 14.49,2.42 C 14.46,2.18 14.25,2 14,2 L 10,2 C 9.75,2 9.54,2.18 9.51,2.42 L 9.13,5.07 C 8.52,5.32 7.96,5.66 7.44,6.05 l -2.49,-1 C 4.72,4.96 4.46,5.05 4.34,5.27 l -2,3.46 C 2.21,8.95 2.27,9.22 2.46,9.37 l 2.11,1.65 C 4.53,11.34 4.5,11.67 4.5,12 c 0,0.33 0.03,0.66 0.07,0.98 l -2.11,1.65 c -0.19,0.15 -0.24,0.42 -0.12,0.64 l 2,3.46 c 0.12,0.22 0.39,0.3 0.61,0.22 l 2.49,-1 c 0.52,0.4 1.08,0.73 1.69,0.98 l 0.38,2.65 C 9.54,21.82 9.75,22 10,22 l 4,0 c 0.25,0 0.46,-0.18 0.49,-0.42 l 0.38,-2.65 c 0.61,-0.25 1.17,-0.59 1.69,-0.98 l 2.49,1 c 0.23,0.09 0.49,0 0.61,-0.22 l 2,-3.46 c 0.12,-0.22 0.07,-0.49 -0.12,-0.64 L 19.43,12.98 Z M 12,15.5 c -1.93,0 -3.5,-1.57 -3.5,-3.5 0,-1.93 1.57,-3.5 3.5,-3.5 1.93,0 3.5,1.57 3.5,3.5 0,1.93 -1.57,3.5 -3.5,3.5 z"/> <g id="diagram-refresh"><circle id="page-action-circle" cx="81.2" cy="58.1" r="3.5" fill="#fff" stroke="#000" stroke-width=".5"/><path d="M82.76 56.48c-.4-.4-.97-.66-1.6-.66-1.23 0-2.23 1-2.23 2.24 0 1.24 1 2.25 2.24 2.25 1.05 0 1.92-.7 2.17-1.68h-.58c-.23.66-.86 1.13-1.6 1.13-.92 0-1.67-.76-1.67-1.7 0-.92.74-1.67 1.67-1.67.47 0 .88.2 1.2.5l-.92.9h1.97v-1.96l-.66.66z"/></g> <g id="diagram-close"><use xlink:href="#page-action-circle"/><path id="path5062" d="M83 56.58l-.37-.37-1.46 1.47-1.45-1.46-.37.38 1.46 1.46-1.45 1.46.37.36 1.45-1.45 1.46 1.46.37-.36-1.46-1.46z"/></g> </defs> </svg> <svg class="lifecycle-diagram update" viewbox="0 0 96.9 73"><rect ry="15.8" y="10" x="65.4" height="63" width="31.6" class="controlled"/><use xlink:href="#diagram-static"/><text x="47.7" y="6.7" class="label">Waiting</text><g transform="matrix(1.1187 0 0 1.1187 1.078 12.408)" class="cog cog-new"><use height="10" width="10" xlink:href="#diagram-sw"/></g><g transform="matrix(1.1187 0 0 1.1187 67.745 12.408)" class="cog cog-old"><use xlink:href="#diagram-sw" width="10" height="10"/></g><use transform="matrix(.09532 0 0 .09532 71.44 48.39)" xlink:href="#diagram-page" width="10" height="10" class="diagram-page"/><path d="M78.6 47.7c-1-6-2-11.6-1.6-17" class="fetch"/><path d="M83 47.5c1.4-5.4 3.3-10.8 2.4-16.2" class="fetch"/><path d="M75.7 47c-2.3-6.3-3.2-12.5-2-18.2" class="fetch"/><path d="M89.5 29.5c.3 6-.4 12-4 18" class="fetch"/><path d="M75.4 30.3c0 4-1 6 2 17.2" class="fetch"/><path d="M86.6 31C88 37 86 42 84 47.4" class="fetch"/><g class="refresh-rotator"><use xlink:href="#diagram-refresh" class="diagram-refresh"/></g><use xlink:href="#diagram-close" class="diagram-close"/></svg> 
 
 <script>
   document.addEventListener("DOMContentLoaded", function() {
@@ -477,23 +446,23 @@ Chrome의 DevTools는 콘솔과 애플리케이션 탭의 서비스 워커 섹�
     }
   });
 </script>
-{% endframebox %}
-</div>
+ {% endframebox %}
+  </div>
 </div>
 
-고양이가 아닌 말 그림으로 응답하도록 서비스 워커 스크립트를 변경했다고 가정합시다.
+Let's say we changed our service worker script to respond with a picture of a horse rather than a cat:
 
     const expectedCaches = ['static-v2'];
-
+    
     self.addEventListener('install', event => {
       console.log('V2 installing…');
-
+    
       // cache a horse SVG into a new cache, static-v2
       event.waitUntil(
         caches.open('static-v2').then(cache => cache.add('/horse.svg'))
       );
     });
-
+    
     self.addEventListener('activate', event => {
       // delete any caches that aren't in expectedCaches
       // which will get rid of static-v1
@@ -509,148 +478,147 @@ Chrome의 DevTools는 콘솔과 애플리케이션 탭의 서비스 워커 섹�
         })
       );
     });
-
+    
     self.addEventListener('fetch', event => {
       const url = new URL(event.request.url);
-
+    
       // serve the horse SVG from the cache if the request is
       // same-origin and the path is '/dog.svg'
       if (url.origin == location.origin && url.pathname == '/dog.svg') {
         event.respondWith(caches.match('/horse.svg'));
       }
     });
+    
 
-참고: 저는 말을 좋아하지도 싫어하지도 않습니다. [위의 데모를 확인해 보세요](https://cdn.rawgit.com/jakearchibald/80368b84ac1ae8e229fc90b3fe826301/raw/ad55049bee9b11d47f1f7d19a73bf3306d156f43/index-v2.html){: .external }. 여전히 고양이 이미지가 표시될 것입니다. 그 이유는 다음과 같습니다.
+Note: I have no strong opinions on horses.
 
-### 설치
+[Check out a demo of the above](https://cdn.rawgit.com/jakearchibald/80368b84ac1ae8e229fc90b3fe826301/raw/ad55049bee9b11d47f1f7d19a73bf3306d156f43/index-v2.html){: .external }. You should still see an image of a cat. Here's why…
 
-캐시 이름을 `static-v1`에서 `static-v2`로 변경했습니다. 즉, 기존 서비스 워커가 계속 사용 중인 현재 캐시를 덮어쓰지 않고 새 캐시를 설정할 수 있다는 것을 의미합니다.
+### Install
 
-이 패턴은 네이티브 앱이 실행 파일과 함께 번들로 제공하는 자산과 유사한 버전 특정 캐시를 만듭니다. `avatars`와 같은 버전 불특정 캐시도 있을 수 있습니다.
+Note that I've changed the cache name from `static-v1` to `static-v2`. This means I can set up the new cache without overwriting things in the current one, which the old service worker is still using.
 
-### 대기
+This patterns creates version-specific caches, akin to assets a native app would bundle with its executable. You may also have caches that aren't version specific, such as `avatars`.
 
-설치 후 업데이트된 서비스 워커는 기존 서비스 워커가 더 이상 클라이언트를 제어하지 않을 때까지 활성화를 지연시킵니다. 이 상태를 '대기'라고 하며, 브라우저가 한 번에 한 버전의 서비스 워커만 실행되도록 보장하는 방법입니다.
+### Waiting
 
-[업데이트된 데모](https://cdn.rawgit.com/jakearchibald/80368b84ac1ae8e229fc90b3fe826301/raw/ad55049bee9b11d47f1f7d19a73bf3306d156f43/index-v2.html){: .external }를 실행한 경우 V2 워커가 아직 활성화되지 않았으므로 고양이 그림이 계속 표시될 것입니다. DevTools의 'Application' 탭에서 대기 중인 새 서비스 워커를 볼 수 있습니다.
+After it's successfully installed, the updated service worker delays activating until the existing service worker is no longer controlling clients. This state is called "waiting", and it's how the browser ensures that only one version of your service worker is running at a time.
 
-<figure>
-  <img src="images/waiting.png" class="browser-screenshot" alt="새 서비스 워커가 대기 중임을 보여주는 DevTools"/>
-</figure>
+If you ran [the updated demo](https://cdn.rawgit.com/jakearchibald/80368b84ac1ae8e229fc90b3fe826301/raw/ad55049bee9b11d47f1f7d19a73bf3306d156f43/index-v2.html){: .external }, you should still see a picture of a cat, because the V2 worker hasn't yet activated. You can see the new service worker waiting in the "Application" tab of DevTools:<figure> 
 
-데모에 열린 탭이 하나뿐인 경우에도 페이지를 새로 고치는 것만으로는 새 버전으로 덮어 쓰기에 충분하지 않습니다. 이것은 브라우저 탐색이 작동 방식 때문입니다. 탐색할 때 응답 헤더가 수신될 때까지 현재 페이지가 사라지지 않으며, 응답에 `Content-Disposition` 헤더가 있으면 현재 페이지가 유지될 수 있습니다. 이 중첩 때문에 현재 서비스 워커는 새로 고치는 동안 항상 클라이언트를 제어합니다. 업데이트를 가져오려면 현재 서비스 워커를 사용하는 모든 탭을 닫거나 탭에서 벗어난 곳으로 이동합니다.
+<img src="images/waiting.png" class="browser-screenshot" alt="DevTools showing new service worker waiting" /> </figure> 
 
-그런 다음 [다시 데모로 이동](https://cdn.rawgit.com/jakearchibald/80368b84ac1ae8e229fc90b3fe826301/raw/ad55049bee9b11d47f1f7d19a73bf3306d156f43/index-v2.html){: .external }하면 말이 표시될 것입니다.
+Even if you only have one tab open to the demo, refreshing the page isn't enough to let the new version take over. This is due to how browser navigations work. When you navigate, the current page doesn't go away until the response headers have been received, and even then the current page may stay if the response has a `Content-Disposition` header. Because of this overlap, the current service worker is always controlling a client during a refresh.
 
-이 패턴은 Chrome의 업데이트 방식과 유사합니다. Chrome 업데이트는 백그라운드에서 다운로드되지만 Chrome이 다시 시작될 때까지 적용되지 않습니다. 그 동안 현재 버전을 중단 없이 계속 사용할 수 있습니다. 개발 단계에서는 고통스러운 작업이지만 DevTools는 이것을 훨씬 쉽게 만드는 방법을 제공합니다. 이에 대해서는 [이 글의 뒷부분](#devtools)에서 다루겠습니다.
+To get the update, close or navigate away from all tabs using the current service worker. Then, when you [navigate to the demo again](https://cdn.rawgit.com/jakearchibald/80368b84ac1ae8e229fc90b3fe826301/raw/ad55049bee9b11d47f1f7d19a73bf3306d156f43/index-v2.html){: .external }, you should see the horse.
 
-### 활성화
+This pattern is similar to how Chrome updates. Updates to Chrome download in the background, but don't apply until Chrome restarts. In the mean time, you can continue to use the current version without disruption. However, this is a pain during development, but DevTools has ways to make it easier, which I'll cover [later in this article](#devtools).
 
-이전 서비스 워커가 사라지고 새 서비스 워커가 클라이언트를 제어할 수 있는 경우 이 작업이 시작됩니다. 이때가 이전 워커가 아직 사용 중인 동안 할 수 없던 작업(예: 데이터베이스 마이그레이션 및 캐시 지우기)을 수행하기에 이상적인 시간입니다.
+### Activate
 
-위의 데모에서 있을 것으로 예상되는 캐시 목록을 유지하고 `activate` 이벤트에서 다른 캐시를 제거하여 이전 `static-v1` 캐시를 제거합니다.
+This fires once the old service worker is gone, and your new service worker is able to control clients. This is the ideal time to do stuff that you couldn't do while the old worker was still in use, such as migrating databases and clearing caches.
 
-Caution: 이전 버전에서 업데이트하지 않을 수도 있습니다. 한참 전 버전의 서비스 워커에서 업데이트하는 것일 수 있습니다.
+In the demo above, I maintain a list of caches that I expect to be there, and in the `activate` event I get rid of any others, which removes the old `static-v1` cache.
 
-`event.waitUntil()`에 프라미스를 전달하면 프라미스가 해결될 때까지 함수 이벤트(`fetch`, `push`, `sync` 등)가 버퍼링됩니다. 따라서 `fetch` 이벤트가 발생하면 활성화가 완전히 완료된 것입니다.
+Caution: You may not be updating from the previous version. It may be a service worker many versions old.
 
-Caution: 캐시 저장소 API는 '원본 저장소'(예: localStorage 및IndexedDB)입니다. 동일한 원본(예: `yourname.github.io/myapp`)에서 많은 사이트를 실행하는 경우 다른 사이트의 캐시를 삭제하지 않도록 주의하세요. 이를 피하려면 캐시 이름에 현재 사이트 고유의 접두사(예: `myapp-static-v1`)를 지정하고 `myapp-`로 시작하지 않는 한 캐시를 건드리지 마세요.
+If you pass a promise to `event.waitUntil()` it'll buffer functional events (`fetch`, `push`, `sync` etc.) until the promise resolves. So when your `fetch` event fires, the activation is fully complete.
 
-### 대기 단계 건너뛰기
+Caution: The cache storage API is "origin storage" (like localStorage, and IndexedDB). If you run many sites on the same origin (for example, `yourname.github.io/myapp`), be careful that you don't delete caches for your other sites. To avoid this, give your cache names a prefix unique to the current site, eg `myapp-static-v1`, and don't touch caches unless they begin with `myapp-`.
 
-대기 단계는 한 번에 하나의 사이트 버전만 실행하고 있음을 의미하지만 해당 기능이 필요하지 않은 경우 `self.skipWaiting()`을 호출하여 새 서비스 워커를 더 빨리 활성화할 수 있습니다.
+### Skip the waiting phase
 
-그러면 서비스 워커가 현재 진행 중인 워커를 퇴장시키고 대기 단계에 진입하자마자(또는 이미 대기 단계에 있는 경우 즉시) 활성화됩니다. 이 경우 워커가 설치를 건너뛰는 것이 *아니라* 단지 대기할 뿐입니다.
+The waiting phase means you're only running one version of your site at once, but if you don't need that feature, you can make your new service worker activate sooner by calling `self.skipWaiting()`.
 
-대기 중 또는 대기 전에 해당하는 한 `skipWaiting()` 호출 시간은 별로 중요하지 않습니다. `install` 이벤트에서 이를 호출하는 것은 매우 흔한 경우입니다.
+This causes your service worker to kick out the current active worker and activate itself as soon as it enters the waiting phase (or immediately if it's already in the waiting phase). It *doesn't* cause your worker to skip installing, just waiting.
+
+It doesn't really matter when you call `skipWaiting()`, as long as it's during or before waiting. It's pretty common to call it in the `install` event:
 
     self.addEventListener('install', event => {
       self.skipWaiting();
-
+    
       event.waitUntil(
         // caching etc
       );
     });
+    
 
-그러나 서비스 워커에 대한 `postMessage()`의 결과로 이를 호출하기를 원할 수도 있습니다. 현 상태 그대로, 사용자 상호작용에 따라 `skipWaiting()`을 수행할 수 있습니다.
+But you may want to call it as a results of a `postMessage()` to the service worker. As in, you want to `skipWaiting()` following a user interaction.
 
-[`skipWaiting()`를 이용하는 데모는 이것을 참조하세요](https://cdn.rawgit.com/jakearchibald/80368b84ac1ae8e229fc90b3fe826301/raw/ad55049bee9b11d47f1f7d19a73bf3306d156f43/index-v3.html){: .external }. 다른 곳을 탐색하지 않아도 소 그림이 표시될 것입니다. `clients.claim()`과 마찬가지로 이것은 경쟁이므로 페이지가 이미지를 로드하려고 시도하기 전에 새 서비스 워커가 가져와서 설치하고 활성화하는 경우에만 소가 표시됩니다.
+[Here's a demo that uses `skipWaiting()`](https://cdn.rawgit.com/jakearchibald/80368b84ac1ae8e229fc90b3fe826301/raw/ad55049bee9b11d47f1f7d19a73bf3306d156f43/index-v3.html){: .external }. You should see a picture of a cow without having to navigate away. Like `clients.claim()` it's a race, so you'll only see the cow if the new service worker fetches, installs and activates before the page tries to load the image.
 
-Caution: `skipWaiting()`은 새 서비스 워커가 이전 버전으로 로드된 페이지를 제어할 가능성이 높음을 의미합니다. 즉, 페이지 가져오기의 일부는 이전 서비스 워커가 처리했지만 후속 가져오기는 새 서비스 워커가 처리합니다. 중단 현상이 발생하는 경우에는 `skipWaiting()`을 사용하지 마세요.
+Caution: `skipWaiting()` means that your new service worker is likely controlling pages that were loaded with an older version. This means some of your page's fetches will have been handled by your old service worker, but your new service worker will be handling subsequent fetches. If this might break things, don't use `skipWaiting()`.
 
-### 수동 업데이트
+### Manual updates
 
-이전에 언급했듯이 브라우저는 탐색 및 함수 이벤트 후에 자동으로 업데이트를 확인하지만 수동으로 트리거할 수도 있습니다.
+As I mentioned earlier, the browser checks for updates automatically after navigations and functional events, but you can also trigger them manually:
 
     navigator.serviceWorker.register('/sw.js').then(reg => {
       // sometime later…
       reg.update();
     });
+    
 
-사용자가 다시 로드하지 않고 오랫동안 사이트를 사용할 것으로 예상되는 경우 특정 간격(예: 매시간)으로 `update()`를 호출할 수 있습니다.
+If you expect the user to be using your site for a long time without reloading, you may want to call `update()` on an interval (such as hourly).
 
-### 서비스 워커의 URL 변경 금지
+### Avoid changing the URL of your service worker script {: #avoid-url-change}
 
-[캐싱 모범 사례에 대한 저자의 게시물](https://jakearchibald.com/2016/caching-best-practices/){: .external }을 읽었다면 서비스 워커의 각 버전에 고유한 URL을 제공하는 것을 고려할 수 있습니다. **그렇게 하지 마세요!** 일반적으로 서비스 워커에 좋지 않은 방법입니다. 현재 위치에서 스크립트를 업데이트하기만 하면 됩니다.
+If you've read [my post on caching best practices](https://jakearchibald.com/2016/caching-best-practices/){: .external }, you may consider giving each version of your service worker a unique URL. **Don't do this!** This is usually bad practice for service workers, just update the script at its current location.
 
-이 경우 다음과 같은 문제가 발생할 수 있습니다.
+It can land you with a problem like this:
 
-1. `index.html`은 `sw-v1.js`를 서비스 워커로 등록합니다.
-1. 오프라인 우선으로 작동하도록 `sw-v1.js`는 `index.html`을 캐시하고 제공합니다.
-1. `index.html`을 업데이트하여 새롭고 멋진 `sw-v2.js`를 등록하도록 합니다.
+1. `index.html` registers `sw-v1.js` as a service worker.
+2. `sw-v1.js` caches and serves `index.html` so it works offline-first.
+3. You update `index.html` so it registers your new and shiny `sw-v2.js`.
 
-위의 작업을 수행하면 `sw-v1.js`가 캐시에서 이전 버전의 `index.html`을 제공하기 때문에 사용자는 `sw-v2.js`를 받지 못합니다. 서비스 워커를 업데이트하기 위해 서비스 워커를 업데이트해야 하는 상황에 놓였습니다. 이런.
+If you do the above, the user never gets `sw-v2.js`, because `sw-v1.js` is serving the old version of `index.html` from its cache. You've put yourself in a position where you need to update your service worker in order to update your service worker. Ew.
 
-그러나 [위의 데모](https://cdn.rawgit.com/jakearchibald/80368b84ac1ae8e229fc90b3fe826301/raw/ad55049bee9b11d47f1f7d19a73bf3306d156f43/index-v2.html){: .external }에서는 서비스 워커의 URL을 변경 *했습니다*. 이렇게 한 것은 버전을 전환하는 데모를 위해서 입니다. 프로덕션에서는 이렇게 하지 않습니다.
+However, for [the demo above](https://cdn.rawgit.com/jakearchibald/80368b84ac1ae8e229fc90b3fe826301/raw/ad55049bee9b11d47f1f7d19a73bf3306d156f43/index-v2.html){: .external }, I *have* changed the URL of the service worker. This is so, for the sake of the demo, you can switch between the versions. It isn't something I'd do in production.
 
-## 개발 쉽게 하기 {: #devtools}
+## Making development easy {: #devtools}
 
-서비스 워커 수명 주기는 사용자를 염두에 두고 작성되었지만 개발에는 살짝 골치가 아픕니다. 고맙게도 도움이 되는 몇 가지 도구가 있습니다.
+The service worker lifecycle is built with the user in mind, but during development it's a bit of a pain. Thankfully there are a few tools to help out:
 
 ### Update on reload
 
-제가 가장 좋아하는 도구입니다.
+This one's my favourite.<figure> 
 
-<figure>
-  <img src="images/update-on-reload.png" class="browser-screenshot" alt="'Update on reload'를 표시하는 DevTools"/>
-</figure>
+<img src="images/update-on-reload.png" class="browser-screenshot" alt="DevTools showing 'update on reload'" /> </figure> 
 
-이 도구는 개발자 친화적으로 수명 주기를 변경합니다. 각 탐색은 다음을 수행합니다.
+This changes the lifecycle to be developer-friendly. Each navigation will:
 
-1. 서비스 워커를 다시 가져옵니다.
-1. 바이트 하나하나가 동일한 경우에도 새 버전으로 설치합니다. 즉, `install` 이벤트가 실행되고 캐시가 업데이트됩니다.
-1. 새로운 서비스 워커가 활성화되도록 대기 단계를 건너뜁니다.
-1. 페이지를 탐색합니다.
+1. Refetch the service worker.
+2. Install it as a new version even if it's byte-identical, meaning your `install` event runs and your caches update.
+3. Skip the waiting phase so the new service worker activates.
+4. Navigate the page.
 
-즉, 두 번 새로 고치거나 탭을 닫지 않고도 각 탐색(새로고침 포함)에 대한 업데이트를 받습니다.
+This means you'll get your updates on each navigation (including refresh) without having to reload twice or close the tab.
 
-### Skip waiting
+### Skip waiting<figure> 
 
-<figure>
-  <img src="images/skip-waiting.png" class="browser-screenshot" alt="'Skip waiting'을 표시하는 DevTools"/>
-</figure>
+<img src="images/skip-waiting.png" class="browser-screenshot" alt="DevTools showing 'skip waiting'" /> </figure> 
 
-워커가 대기 중인 경우 DevTools에서 'skip waiting'을 눌러 즉시 '활성' 상태로 승격할 수 있습니다.
+If you have a worker waiting, you can hit "skip waiting" in DevTools to immediately promote it to "active".
 
 ### Shift-reload
 
-페이지를 강제로 새로 고치면(Shift-reload) 서비스 워커를 완전히 우회합니다. 이는 통제가 안 될 것입니다. 이 기능은 사양에 있으므로 서비스 워커를 지원하는 다른 브라우저에서도 작동합니다.
+If you force-reload the page (shift-reload) it bypasses the service worker entirely. It'll be uncontrolled. This feature is in the spec, so it works in other service-worker-supporting browsers.
 
 ## Handling updates
 
-이 서비스 워커는 [확장 가능한 웹](https://extensiblewebmanifesto.org/){: .external }의 일부로 설계되었습니다. 일반적으로 우리들, 그러니까 브라우저 개발자들은 웹 개발자에 비해 웹 개발 실력이 떨어진다는 것을 염두에 둔 것입니다. 따라서 브라우저 개발자는 *자신*이 좋아하는 패턴을 사용하여 특정 문제를 해결하는 협소한 고수준 API를 제공하는 대신, 브라우저의 기능에 대한 액세스를 허용하고 사용자에게 가장 적합한 방식을 고려하여 작업을 허용해야 합니다.
+The service worker was designed as part of the [extensible web](https://extensiblewebmanifesto.org/){: .external }. The idea is that we, as browser developers, acknowledge that we are not better at web development than web developers. And as such, we shouldn't provide narrow high-level APIs that solve a particular problem using patterns *we* like, and instead give you access to the guts of the browser and let you do it how you want, in a way that works best for *your* users.
 
-따라서 가능한 한 많은 패턴을 활성화하려면 전체 업데이트 주기를 식별할 수 있어야 합니다.
+So, to enable as many patterns as we can, the whole update cycle is observable:
 
     navigator.serviceWorker.register('/sw.js').then(reg => {
       reg.installing; // the installing worker, or undefined
       reg.waiting; // the waiting worker, or undefined
       reg.active; // the active worker, or undefined
-
+    
       reg.addEventListener('updatefound', () => {
         // A wild service worker has appeared in reg.installing!
         const newWorker = reg.installing;
-
+    
         newWorker.state;
         // "installing" - the install event has fired, but not yet complete
         // "installed"  - install complete
@@ -658,23 +626,24 @@ Caution: `skipWaiting()`은 새 서비스 워커가 이전 버전으로 로드�
         // "activated"  - fully active
         // "redundant"  - discarded. Either failed install, or it's been
         //                replaced by a newer version
-
+    
         newWorker.addEventListener('statechange', () => {
           // newWorker.state has changed
         });
       });
     });
-
+    
     navigator.serviceWorker.addEventListener('controllerchange', () => {
       // This fires when the service worker controlling this page
       // changes, eg a new worker has skipped waiting and become
       // the new active worker.
     });
+    
 
-## 수고하셨습니다!
+## You survived!
 
-휴우! 기술적인 이론이 정말 많았네요. 이와 관련된 몇 가지 실제 적용 사례에 대해 조만간 심도 있게 살펴볼 예정이니 기대하세요.
+Phew! That was a lot of technical theory. Stay tuned in the coming weeks where we'll dive into some practical applications of the above.
 
-## 의견 {: #feedback }
+## Feedback {: #feedback }
 
 {% include "web/_shared/helpful.html" %}
