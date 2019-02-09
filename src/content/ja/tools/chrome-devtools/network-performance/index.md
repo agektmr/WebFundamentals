@@ -1,10 +1,6 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description:ネットワーク パフォーマンスを分析してみましょう。
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Get started analyzing network performance.
 
-{# wf_updated_on: 2019-02-06 #}
-{# wf_published_on: 2017-01-17 #}
-{# wf_blink_components: Platform>DevTools #}
+{# wf_updated_on: 2018-07-27 #} {# wf_published_on: 2017-01-17 #} {# wf_blink_components: Platform>DevTools #} 
 
 <style>
 .devtools-inline {
@@ -16,223 +12,149 @@ figcaption {
 }
 </style>
 
-# Chrome DevTools でネットワーク パフォーマンスを分析する {: .page-title }
+ 
+
+# Get Started with Analyzing Network Performance in Chrome DevTools {: .page-title }
 
 {% include "web/_shared/contributors/kaycebasques.html" %}
 
-注: 読み込み速度を改善する総合的なアプローチについては、[ウェブサイトの速度の最適化](/web/tools/chrome-devtools/speed/get-started)を参照してください。
- そのチュートリアルでは、読み込みパフォーマンスを分析する推奨ワークフローが説明されています。
+Note: See [Optimize Website Speed](/web/tools/chrome-devtools/speed/get-started) for a comprehensive approach to improving load speed. That tutorial contains the recommended workflow for analyzing load performance.
 
+Learn how to use the Chrome DevTools Network panel to understand why a page loads slowly in this step-by-step, interactive tutorial.
 
-このチュートリアルでは、Chrome DevTools の [Network] パネルを使用してページの読み込みが遅い理由を理解する方法を、手順を追ってインタラクティブに説明します。
+## Step 1: Set up DevTools {: #set-up }
 
+Suppose that you're receiving reports from mobile users that a particular page on your site is slow. Your job is to make the page fast.
 
-## ステップ 1: DevTools をセットアップする {: #set-up }
+1. Click **Open Slow Page**. The page opens in a new tab.
+    
+    <a href="https://googlechrome.github.io/devtools-samples/network/gs/v1.html"
+   target="devtools" class="gc-analytics-event" rel="noopener noreferrer"
+   data-category="DevTools / Network / Get Started"
+   data-label="Slow Page Opened"> <button>Open Slow Page</button> </a>
 
-モバイル ユーザーからあなたのサイトの特定のページが遅いという報告を受けたと仮定しましょう。
- このときあなたがしなければならないことは、そのページ速くすることです。
+2. While the page is in focus, press <kbd>Command</kbd>+<kbd>Option</kbd>+<kbd>I</kbd> (Mac) or <kbd>Control</kbd>+<kbd>Shift</kbd>+<kbd>I</kbd> (Windows, Linux) to open DevTools on the page.
 
-1. 次の**「遅いページを開く」** をクリックします。 新しいタブでそのページが開きます。
+3. In DevTools, click the **Network** tab.
+    
+    <figure> 
+    
+    ![The Chrome DevTools Network panel, opened on the slow
+          page that you're going to diagnose.](imgs/get-started-network-panel.png) <figcaption> **Figure 1**. The Chrome DevTools Network panel, opened next to the slow page that you're going to diagnose. </figcaption> </figure> 
+    <aside class="note"> 
+    
+    **Note:** For the rest of the screenshots, DevTools is <a
+   href="/web/tools/chrome-devtools/ui#placement" target="_blank"> undocked to a separate window</a>, so that you can see its contents better. </aside>
+4. Enable **Capture Screenshots** ![Capture
+Screenshots](imgs/capture-screenshots.png){:.devtools-inline}, which turns blue when enabled. DevTools captures screenshots during the page load.
 
-     <a href="https://googlechrome.github.io/devtools-samples/network/gs/v1.html"
-       target="devtools" class="gc-analytics-event" rel="noopener noreferrer"
-       data-category="DevTools / Network / Get Started"
-       data-label="Slow Page Opened">
-       <button>遅いページを開く</button>
-     </a>
+## Step 2: Emulate a mobile user's experience {: #emulate }
 
-1. そのページにフォーカスがある状態で <kbd>Command</kbd>+<kbd>Option</kbd>+<kbd>I</kbd>（Mac）または <kbd>Control</kbd>+<kbd>Shift</kbd>+<kbd>I</kbd>（Windows、Linux）を押して、そのページで DevTools を開きます。
+Testing network performance on a laptop or desktop can be deceiving. Your internet connection is much faster than a mobile user's, and your browser caches resources from previous visits.
 
-1. DevTools の **[Network]** タブをクリックします。
+1. Check the **Disable Cache** checkbox. When this checkbox is enabled, DevTools doesn't serve any resources from the cache. This more accurately emulates what first-time users experience when they view your page.
 
-     <figure>
-       <img src="imgs/get-started-network-panel.png"
-         alt="診断しようとしている遅いページで開かれた、Chrome DevTools の [Network] パネル。
-">
-       <figcaption>
-         <b>図 1</b>。 診断しようとしている遅いページの横に開かれた、Chrome DevTools の [Network] パネル。
-
-       </figcaption>
-     </figure>
-
-     <aside class="note">
-       <b>注: </b> 残りのスクリーンショットでは、DevTools は<a
-       href="/web/tools/chrome-devtools/ui#placement" target="_blank">
-       ドッキングを解除されて別個のウィンドウになっているため、</a>その内容がはっきりと表示されています。
-
-     </aside>
-
-1. **[Capture Screenshots]** ![Capture
-   Screenshots][screenshots] を有効にします。{:.devtools-inline}有効になると青色に変わります。
-   DevTools はページ読み込み中のスクリーンショットをキャプチャします。
-
-## ステップ 2: モバイル ユーザーのエクスペリエンスをエミュレートする {: #emulate }
-
-ノートパソコンやデスクトップ パソコンでネットワーク パフォーマンスをテストしても、思い通りの結果が得られない場合があります。 使用するインターネット接続がモバイル ユーザーの接続よりも速すぎたり、使用するブラウザのキャッシュに以前に訪問したときのリソースが残っていたりすることがあるからです。
-
-
-
-1. **[Disable Cache]** チェックボックスにチェックを入れます。 このチェックボックスを有効にした場合、DevTools はキャッシュにあるリソースを使用しません。
-   こうすることで、初めてサイトを訪問したユーザーがページを表示したときのユーザー エクスペリエンスが正確にエミュレートされます。
-
-1. 現在の設定が **[No Throttling]** となっているドロップダウンで、**[Regular 2G]** を選択します。
- DevTools はネットワーク接続をスロットリングして、通常の 2G エクスペリエンスとなるようにシミュレートします。
- これが、接続状態の悪い場所でモバイル ユーザーがサイトを使用したときの操作性です。
-
+2. From the dropdown menu that currently says **No Throttling**, select **Regular 2G**. DevTools throttles the network connection to simulate a regular 2G experience. This is how mobile users experience your site in places with poor connections.
 
 <figure>
   <img src="imgs/get-started-setup.svg"
-    alt="スクリーンショットを設定し、キャッシュ無効にし、スロットリングを行った状態の Chrome DevTools [Network] パネル。">
-
+    alt="The Chrome DevTools Network panel, after setting up screenshots,
+         cache disabling, and throttling.">
   <figcaption>
-    <b>図 2</b>。 モバイル ユーザーの操作性をエミュレートするように設定された Chrome DevTools の [Network] パネル。
- 左から右に、スクリーンショット、キャッシュ無効、スロットリングの設定がそれぞれ青い囲みで示されています。
-
-
+    <b>Figure 2</b>. The Chrome DevTools Network panel, set up to emulate
+    a mobile user's experience. Screenshots, cache
+    disabling, and throttling are outlined in blue, from left to right,
+    respectively.
   </figcaption>
 </figure>
 
-これは最悪のケースのセットアップです。 このセットアップ状態でページ読み込みを速くできたら、すべてのユーザーの読み込みが速くなるはずです。
+This is a worst-case setup. If you can get your page loading fast on this setup, it'll be fast for all your users!
 
+## Step 3: Analyze requests {: #analyze }
 
-[screenshots]: imgs/capture-screenshots.png
+Figure out what's making the page slow by reloading the page and analyzing the requests that come in.
 
-## ステップ 3: リクエストを分析する {: #analyze }
+### Part A: Find render-blocking scripts
 
-ページを再読み込みし、読み込まれるリクエストを分析して、ページが遅くなる理由を見つけます。
+When the browser encounters a `<script>` tag, it must pause rendering and execute the script immediately. Find scripts that aren't needed for page load and mark them asynchronous or defer their execution to speed up load time.
 
+1. Press <kbd>Command</kbd>+<kbd>R</kbd> (Mac) or <kbd>Control</kbd>+<kbd>R</kbd> (Windows, Linux) to reload the page. On a good Wi-Fi connection, the page takes more than 10 seconds to load completely.
+    
+    <figure> 
+    
+    ![The Chrome DevTools Network panel, after reloading the page.](imgs/get-started-post-load.png) <figcaption> **Figure 3**. The Chrome DevTools Network panel, after reloading the page. </figcaption> </figure>
+2. Note the value for [`DOMContentLoaded`](https://developer.mozilla.org/en-US/docs/Web/Events/DOMContentLoaded) in the [Summary pane](reference#summary), on the bottom of the Network panel. You should see a value of at least 4 seconds. When you see this event firing late like this, be on the lookout for scripts that are delaying the main document's load and parse.
 
-### パート A:レンダリング ブロック スクリプトを見つける
+3. Click **main.js** to investigate that request further. DevTools shows a set of new tabs that provide more information about this request.
 
-ブラウザは `<script>` タグを検出すると、直ちにレンダリングを一時停止してスクリプトを実行します。
- ページ読み込みに必要ないスクリプトを見つけて、それらを非同期にして実行を遅らせ、読み込み時間を速くします。
+4. Click the **Preview** tab to view the request's source code. You can see that the script just hangs for 4000ms. By marking this script with the `async` attribute and moving it to the bottom of the document's `<body>`, the page can load without waiting for the script.
+    
+    <figure> 
+    
+    ![Viewing the source code for main.js in the Preview pane.](imgs/get-started-preview.png) <figcaption> **Figure 4**. Viewing the source code for `main.js` in the Preview pane. </figcaption> </figure>
 
+See [Parser-blocking versus asynchronous JavaScript](/web/fundamentals/performance/critical-rendering-path/adding-interactivity-with-javascript#parser_blocking_versus_asynchronous_javascript) to learn more about render-blocking scripts.
 
-1. <kbd>Command</kbd>+<kbd>R</kbd>（Mac）または <kbd>Control</kbd>+<kbd>R</kbd>（Windows、Linux）を押して、ページを再読み込みします。
+### Part B: Find large requests
 
-   Wi-Fi 接続の条件が良い状態で、ページを完全に読み込むのに 10 秒以上かかります。
+When the page loaded, did you notice that the DevTools logo took a long time to load? It's not blocking the load, but it's making the page *appear* slow. Users like it when pages *appear* fast.
 
-     <figure>
-       <img src="imgs/get-started-post-load.png"
-         alt="ページ再読み込み後の Chrome DevTools [Network] パネル。">
-       <figcaption>
-         <b>図 3</b>。 ページ再読み込み後の Chrome DevTools [Network] パネル。
+1. Click **Close** ![Close](imgs/close.png){:.devtools-inline} so that you can see the [**Requests pane**](reference#requests) again.
 
-       </figcaption>
-     </figure>
+2. Double-click on the top-left screenshot.
 
-1. [Network] パネルの下部にある [[Summary]
- ペイン](reference#summary) の [`DOMContentLoaded`][DOMContentLoaded] の値を確認します。
-   値は 4 秒以上になっているはずです。 このように、このイベントの動作が遅い場合、メイン ドキュメントの読み込みと解析を遅らせているスクリプトに注意してください。
+3. Press your right-arrow key to scan through the set of screenshots. The time below the screenshot indicates when the screenshot was taken. The screenshot takes multiple seconds to load. That means it's probably too large of a file.
 
-1. **main.js** をクリックして、リクエストをさらに調査します。 DevTools に新しいタブが表示され、このリクエストに関する詳細情報が提供されます。
+4. Click anywhere outside of the screenshot to minimize it.
 
-1. **[Preview]** タブをクリックすると、リクエストのソースコードが表示されます。 スクリプトが 4000 ミリ秒の間ハングしていることがわかります。
+5. Hover over the [Waterfall](reference#waterfall) for the `logo-1024px.png` request. The request spends most of its time downloading the image. This confirms that the image is too large.
+    
+    <figure> 
+    
+    ![The waterfall for logo-1024px.png.](imgs/get-started-waterfall.png) <figcaption> **Figure 5**. The waterfall for `logo-1024px.png`. </figcaption> </figure>
 
-   このスクリプトを `async` 属性でマーキングし、ドキュメントの `<body>` の最下部に移動することで、このスクリプトで待機状態にならずにページを読み込めます。
+## Step 4: Verify fixes on updated page {: #verify }
 
-     <figure>
-       <img src="imgs/get-started-preview.png"
-         alt="[Preview] ペインでの main.js のソースコードの表示。">
-       <figcaption>
-         <b>図 4</b>。 [Preview] ペインでの <code>main.js</code> のソースコードの表示。
+You're just about done. Suppose now that you've already made two changes to the page:
 
-       </figcaption>
-     </figure>
+* You moved the script to the bottom of the `<body>` and marked it `async` to prevent it from blocking the page load.
+* You converted the logo to SVG to reduce its size.
 
-レンダリング ブロック スクリプトについて詳しくは、[Parser-blocking versus asynchronous JavaScript][async]をご覧ください。
+All that's left to do is to test out the updated page to verify that your fixes do indeed make the page load faster.
 
+1. Click **Open Fast Page**. The fixed page opens in a new tab.
+    
+    <a href="https://googlechrome.github.io/devtools-samples/network/gs/v2.html"
+   target="devtools" class="gc-analytics-event" rel="noopener noreferrer"
+   data-category="DevTools / Network / Get Started"
+   data-label="Fast Page Opened"> <button>Open Fast Page</button> </a>
 
-### パート B:サイズの大きいリクエストの検出
+2. Set up DevTools the same as before. Screenshots and cache disabling should be on, and network throttling should be set to **Regular 2G**.
 
-ページを読み込んだときに、DevTools ロゴの読み込みにかなり時間がかかったことにお気づきになりましたか。
-ページの読み込みがブロックされているわけではなく、実はページの*表示*が遅くなるようにしています。
- ユーザーはページが速く*表示される*ことを好みます。
-
-1. **[Close]** ![Close][close] をクリックして、{:.devtools-inline} [**[Requests] ペイン**](reference#requests)を再度表示します。
-
-1. 左上のスクリーンショットをダブルクリックします。
-
-1. 右矢印キーを押して、スクリーンショット全体を概観します。 スクリーンショットの下の時刻は、スクリーンショットを撮った時間を表します。
- スクリーンショットの読み込みに 2 秒以上かかっています。
- これは、ファイルのサイズが大きいことを意味しているようです。
-
-1. スクリーンショットの外をクリックして、スクリーンショットを最小表示にします。
-
-1. `logo-1024px.png`
- リクエストの [Waterfall](reference#waterfall) の上にマウスポインターを置きます。 リクエストの処理にかかる時間のほとんどが画像のダウンロードに費やされています。
- このことから、画像が非常に大きいことがわかります。
-
-     <figure>
-       <img src="imgs/get-started-waterfall.png"
-         alt="logo-1024px.png のウォーターフォール。">
-       <figcaption>
-         <b>図 5</b>。 <code>logo-1024px.png</code> のウォーターフォール。
-       </figcaption>
-     </figure>
-
-[DOMContentLoaded]: https://developer.mozilla.org/en-US/docs/Web/Events/DOMContentLoaded
-
-[async]: /web/fundamentals/performance/critical-rendering-path/adding-interactivity-with-javascript#parser_blocking_versus_asynchronous_javascript
-
-[close]: imgs/close.png 
-
-## ステップ 4: 更新されたページ上で修正を検証する {: #verify }
-
-作業の完了は間近です。 ページに 2 箇所の変更を行ったとしましょう。
-
-
-* スクリプトを `<body>` の最下部に移動し、`async` のマークを付けて、ページ読み込みの邪魔をしないようにしました。
-* ロゴを SVG に変換してファイルのサイズを小さくしました。
-
-あとは、更新したページをテストして、修正したページの読み込みが実際に速くなっているかを検証する作業が残っています。
-
-
-1. **[速いページを開く]** をクリックします。 新しいタブで修正したページが開きます。
-
-     <a href="https://googlechrome.github.io/devtools-samples/network/gs/v2.html"
-       target="devtools" class="gc-analytics-event" rel="noopener noreferrer"
-       data-category="DevTools / Network / Get Started"
-       data-label="Fast Page Opened">
-       <button>速いページを開く</button>
-     </a>
-
-1. 先ほどと同じように DevTools をセットアップします。 スクリーンショットとキャッシュ無効をオンにし、ネットワーク スロットリングを **Regular 2G** に設定します。
-
-1. ページを再読み込みします。 ページの読み込みがとても速くなっています。
-
-     <figure>
-       <img src="imgs/get-started-post-fix.png"
-         alt="修正適用後のページ読み込みの記録。">
-       <figcaption>
-         <b>図 6</b>。 修正適用後のページ読み込みの記録。
- このページは完全に表示されるまでに 10 秒ほどかかっていました。
- それがたった 1 秒で表示されるようになりました。
-       </figcaption>
-     </figure>
+3. Reload the page. The page loads much faster.
+    
+    <figure> 
+    
+    ![A recording of the page's load, after applying the fixes.](imgs/get-started-post-fix.png) <figcaption> **Figure 6**. A recording of the page's load, after applying the fixes. The page used to take about 10 seconds to appear visually complete. Now it only takes about 1 second. </figcaption> </figure>
 
 <aside class="note">
-  <b>注</b>: ページの読み込みは非序に速くなりましたが、約 5 秒かかっており、依然として使用には堪えません。
- これは、ページのメインスレッドでハングするスクリプトが実行されているためです。
-
+  <b>Note</b>: Although the page loads much faster, it's still unusable for
+  about 5 seconds. This is because it still runs the script that hangs
+  the main thread of the page.
 </aside>
 
-## 次のステップ {: #next-steps }
+## Next Steps {: #next-steps }
 
-お疲れ様でした。 これで、あなたも Chrome DevTools [Network] パネルの正真正銘のエキスパートになりました。
- いや...、 まだエキスパートではないかもしれませんね。 でも、スキルと知識のしっかりとした土台を据えることはできました。
+Good job. You are now a bona fide expert in the Chrome DevTools Network panel. Well... maybe not an expert. You do have an excellent foundation of skills and knowledge, though.
 
+* See <a class="gc-analytics-event" data-category="DevTools / Network /
+Get Started" data-label="Next Steps / CRP"
+href="/web/fundamentals/performance/critical-rendering-path">Critical Rendering Path</a> to learn more about the theory of lightning-fast page loading.
+* See <a class="gc-analytics-event" data-category="DevTools / Network /
+Get Started" data-label="Next Steps / Issues Guide" href="issues">Network Issues Guide</a> to learn how to spot more network issues.
+* See <a class="gc-analytics-event" data-category="DevTools / Network /
+Get Started" data-label="Next Steps / Reference" href="reference">Network Panel Reference</a> for a comprehensive list of Network panel features.
 
-* 軽快なページ読み込みの理論について詳しくは、<a class="gc-analytics-event" data-category="DevTools / Network /
-  Get Started" data-label="Next Steps / CRP"
-  href="/web/fundamentals/performance/critical-rendering-path">クリティカル レンディング パス</a>をご覧ください。
-* 種々のネットワークの問題を適格に見極める方法については、<a class="gc-analytics-event" data-category="DevTools / Network /
-  Get Started" data-label="Next Steps / Issues Guide" href="issues">Network
-  Issues Guide</a>をご覧ください。
-* [Network] パネルの全機能については、<a class="gc-analytics-event" data-category="DevTools / Network /
-  Get Started" data-label="Next Steps / Reference" href="reference">Network
-  Panel Reference</a>をご覧ください。
-
-## フィードバック {: #feedback }
+## Feedback {: #feedback }
 
 {% include "web/_shared/helpful.html" %}
