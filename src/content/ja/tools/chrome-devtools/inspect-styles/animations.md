@@ -1,148 +1,112 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Chrome DevTools のアニメーション インスペクターでアニメーションを調査して変更します。
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Inspect and modify animations with the Chrome DevTools Animation Inspector.
 
-{# wf_updated_on: 2016-05-02 #}
-{# wf_published_on: 2016-05-02 #}
+{# wf_updated_on: 2018-07-27 #} {# wf_published_on: 2016-05-02 #} {# wf_blink_components: Platform>DevTools #}
 
-# アニメーションの調査 {: .page-title }
+# Inspect animations {: .page-title }
 
 {% include "web/_shared/contributors/kaycebasques.html" %}
 
-Chrome DevTools のアニメーション インスペクターでアニメーションを調査して変更します。
+Inspect and modify animations with the Chrome DevTools Animation Inspector.
 
-
-![アニメーション インスペクター](imgs/animation-inspector.png)
-
+![animation inspector](imgs/animation-inspector.png)
 
 ### TL;DR {: .hide-from-toc }
-- アニメーション インスペクターを開いてアニメーションを取得します。アニメーションが自動的に検出され、グループに分けられます。
-- アニメーションの速度を遅くしたり、再生したり、ソースコードを表示したりして、アニメーションを調査します。
-- タイミング、遅延、長さ、またはキーフレーム オフセットを変えて、アニメーションを変更します。
 
+* Capture animations by opening the Animation Inspector. It automatically detects animations and sorts them into groups.
+* Inspect animations by slowing them down, replaying them, or viewing their source code.
+* Modify animations by changing their timing, delay, duration, or keyframe offsets.
 
-##  概要{:#overview}
+## Overview {:#overview}
 
-Chrome DevTools のアニメーション インスペクターの目的は主に次の 2 つです。 
+The Chrome DevTools Animation Inspector has two main purposes.
 
-* アニメーションの調査。アニメーション グループの速度を遅くしたり、再生したり、ソースコードを調べたりします。
-* アニメーションの変更。アニメーション グループのタイミング、遅延、長さ、またはキーフレーム オフセットを変更します。
-ベジエ編集とキーフレーム編集は、現在サポートされていません。
- 
+* Inspecting animations. You want to slow down, replay, or inspect the source code for an animation group. 
+* Modifying animations. You want to modify the timing, delay, duration, or keyframe offsets of an animation group. Bezier editing and keyframe editing are currently not supported. 
 
-アニメーション インスペクターは、CSS アニメーション、CSS 遷移、ウェブ アニメーションをサポートしています。`requestAnimationFrame` アニメーションは現在サポートされていません。
+The Animation Inspector supports CSS animations, CSS transitions, and web animations. `requestAnimationFrame` animations are currently not supported.
 
+### What's an animation group?
 
+An animation group is a group of animations that *appear* to be related to each other. Currently, the web has no real concept of a group animation, so motion designers and developers have to compose and time individual animations so that they appear to be one coherent visual effect. The Animation Inspector predicts which animations are related based on start time (excluding delays, and so on) and groups them all side-by-side. In other words, a set of animations all triggered in the same script block are grouped together, but if they're asynchronous then they're grouped separately.
 
-###  アニメーション グループとは
+## Get started
 
-アニメーション グループは、互いに*関連しているように見える*アニメーションのグループです。
-現在、ウェブにはグループ アニメーションという概念は実際にはないため、モーション デザイナーとデベロッパーは、個々のアニメーションが一貫性のある 1 つの視覚効果として見えるようにこれらを構成し、タイミングを調整する必要があります。
-アニメーション インスペクターは、開始時間（遅延などは除く）に基づいて、どれが関連するアニメーションかを予測し、それらをグループ化して順に並べます。
-言い換えると、同じスクリプト ブロック内でトリガーされるすべてのアニメーションが同じグループにまとめられますが、それらが非同期の場合は、別のグループにまとめられます。
+There are two ways to open the Animation Inspector:
 
- 
+* Go to the **Styles** pane (on the **Elements** panel) and press the **Animations** button (![animations 
+button](imgs/animations-button.png){:.inline}). 
+* Open the Command Menu and type `Drawer: Show Animations`. 
 
-##  使ってみる
+The Animation Inspector opens up as a tab next to the Console Drawer. Since it's a Drawer tab, you can use it from any DevTools panel.
 
-アニメーション インスペクターを開くには、次の 2 つの方法があります。
+![Empty Animation Inspector](imgs/empty-ai.png)
 
-* [**Elements**] パネルの [**Styles**] ペインにアクセスし、[**Animations**] ボタン（![[animations] ボタン](imgs/animations-button.png){:.inline}）ボタンを押します。
+The Animation Inspector is grouped into four main sections (or panes). This guide refers to each pane as follows:
 
- 
-* [Command Menu] を開き、`Drawer: Show Animations` と入力します。 
+1. **Controls**. From here you can clear all currently captured Animation Groups, or change the speed of the currently selected Animation Group. 
+2. **Overview**. Select an Animation Group here to inspect and modify it in the **Details** pane.
+3. **Timeline**. Pause and start an animation from here, or jump to a specific point in the animation.
+4. **Details**. Inspect and modify the currently selected Animation Group. 
 
-アニメーション インスペクターが、[Console] ドロワーの隣にタブとして開きます。これはドロワー タブであるため、任意の DevTools パネルから使用できます。
- 
+![annotation Animation Inspector](imgs/annotated-animation-inspector.png)
 
-![空のアニメーション インスペクター](imgs/empty-ai.png)
-
-アニメーション インスペクターは、4 つのメイン セクション（ペイン）に分かれています。このガイドでは、各ペインを次のように呼びます。
-
-
-1. **コントロール**。ここから、現在取得されているすべてのアニメーション グループを消去したり、現在選択されているアニメーション グループの速度を変更したりできます。
-2. **概要**。ここでアニメーション グループを選択し、**詳細**ペインで調査して変更します。
-3. **タイムライン**。
-ここからアニメーションを一時停止および開始したり、アニメーションの特定の時点にジャンプしたりします。
-4. **詳細**。
-現在選択されているアニメーション グループを調査して変更します。
- 
-
-![注釈付きアニメーション インスペクター](imgs/annotated-animation-inspector.png)
-
-アニメーションを取得するには、アニメーション インスペクターが開いている状態で、単純にアニメーションをトリガーする操作を実行します。
-ページの読み込み時にアニメーションがトリガーされた場合は、ページを再読み込みすることで、アニメーション インスペクターがアニメーションを検出できるようにすることができます。
-
- 
+To capture an animation, just perform the interaction that triggers the animation while the Animation Inspector is open. If an animation is triggered on page load, you can help the Animation Inspector detect the animation by reloading the page.
 
 <video src="animations/capture-animations.mp4"
        autoplay loop muted controls></video>
 
-##  アニメーションの調査{:#inspect}
+## Inspect animations {:#inspect}
 
-取得したアニメーションは、複数の方法で再生できます。
+Once you've captured an animation, there are a few ways to replay it:
 
-* **概要**ペインでサムネイルにカーソルを合わせると、プレビューが表示されます。
-* **概要**ペインからアニメーション グループを選択し（選択すると**詳細**ペインに表示されます）、**再生**ボタン（![再生ボタン](imgs/replay-button.png){:.inline}）を押します。アニメーションがビューポートで再生されます。現在選択されているアニメーション グループのプレビュー速度を変更するには、**アニメーション速度**ボタン（![アニメーション速度ボタン](imgs/animation-speed-buttons.png){:.inline}）をクリックします。赤い縦線を使用すると、現在の位置を変更できます。
-* 赤い縦線をクリックしてドラッグすると、ビューポートのアニメーションを自由に動かすことができます。 
+* Hover over its thumbnail in the **Overview** pane to view a preview of it.
+* Select the Animation Group from the **Overview** pane (so that it's displayed in the **Details** pane) and press the **replay** button (![replay button](imgs/replay-button.png){:.inline}). The animation is replayed in the viewport. Click on the **animation speed** buttons (![animation speed 
+buttons](imgs/animation-speed-buttons.png){:.inline}) to change the preview speed of the currently selected Animation Group. You can use the red vertical bar to change your current position. 
+* Click and drag the red vertical bar to scrub the viewport animation. 
 
-###  アニメーションの詳細の表示
+### View animation details
 
-アニメーション グループを取得したら、**概要**ペインでそのグループをクリックすると、詳細が表示されます。
-**詳細**ペインでは、各アニメーションが個別の行に表示されます。
- 
+Once you've captured an Animation Group, click on it from the **Overview** pane to view its details. In the **Details** pane each individual animation gets its own row.
 
-![アニメーション グループの詳細](imgs/animation-group-details.png)
+![animation group details](imgs/animation-group-details.png)
 
-アニメーションにカーソルを合わせると、ビューポートでハイライト表示されます。アニメーションをクリックすると、[**Elements**] パネルでアニメーションが選択されます。
- 
+Hover over an animation to highlight it in the viewport. Click on the animation to select it in the **Elements** panel.
 
-![アニメーションにカーソルを合わせてビューポートでハイライト表示する](imgs/highlight-animation.png)
+![hover over animation to highlight it in 
+viewport](imgs/highlight-animation.png)
 
+The leftmost, darker section of an animation is its definition. The right, more faded section represents iterations. For example, in the screenshot below, sections two and three represent iterations of section one.
 
-アニメーションの左端にある、色が濃いセクションはアニメーションの定義です。右側の、色が薄いセクションは反復を表します。
-たとえば、以下のスクリーンショットでは、セクション 2 と 3 がセクション 1 の反復を表しています。
- 
+![diagram of animation iterations](imgs/animation-iterations.png)
 
-![アニメーションの反復の図](imgs/animation-iterations.png)
+If two elements have the same animation applied to them, the Animation Inspector assigns them the same color. The color itself is random and has no significance. For example, in the screenshot below the two elements `div.eye.left::after` and `div.eye.right::after` have the same animation (`eyes`) applied to them, as do the `div.feet::before` and `div.feet::after` elements.
 
-2 つの要素に同じアニメーションが適用されている場合、アニメーション インスペクターではそれらに同じ色が割り当てられます。
-色そのものはランダムに割り当てられ、意味はありません。たとえば、以下のスクリーンショットでは、`div.eye.left::after` と `div.eye.right::after` の 2 つの要素に同じアニメーション（`eyes`）が適用されており、`div.feet::before` と `div.feet::after` 要素に同じアニメーションが適用されています。
+![color-coded animations](imgs/color-coded-animations.png)
 
+## Modify animations {:#modify}
 
+There are three ways you can modify an animation with the Animation Inspector:
 
- 
+* Animation duration.
+* Keyframe timings.
+* Start time delay.
 
-![色分けされたアニメーション](imgs/color-coded-animations.png)
+For this section suppose that the screenshot below represents the original animation:
 
-##  アニメーションの変更{:#modify}
+![original animation before modification](imgs/modify-original.png)
 
-アニメーション インスペクターでは、次の 3 つの方法でアニメーションを変更できます。
+To change the duration of an animation, click and drag the first or last circle.
 
-* アニメーションの長さ。
-* キーフレームのタイミング。
-* 開始時間の遅延。
+![modified duration](imgs/modify-duration.png)
 
-このセクションでは、以下のスクリーンショットが元のアニメーションを表しているとします。
+If the animation defines any keyframe rules, then these are represented as white inner circles. Click and drag one of these to change the timing of the keyframe.
 
+![modified keyframe](imgs/modify-keyframe.png)
 
-![変更前の元のアニメーション](imgs/modify-original.png)
+To add a delay to an animation, click and drag it anywhere except the circles.
 
-アニメーションの長さを変更するには、最初の円または最後の円をクリックしてドラッグします。
+![modified delay](imgs/modify-delay.png)
 
+## Feedback {: #feedback }
 
-![長さの変更](imgs/modify-duration.png)
-
-アニメーションでキーフレーム ルールが定義されている場合、それらのルールは内側が白い円で表されます。
-キーフレームのタイミングを変更するには、それらの円のいずれかをクリックしてドラッグします。
-
-
-![変更されたキーフレーム](imgs/modify-keyframe.png)
-
-アニメーションに遅延を追加するには、円以外の任意の場所をクリックしてドラッグします。
- 
-
-![遅延の変更](imgs/modify-delay.png)
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
