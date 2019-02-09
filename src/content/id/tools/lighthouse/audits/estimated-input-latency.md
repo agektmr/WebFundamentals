@@ -1,63 +1,33 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Dokumentasi referensi untuk audit Lighthouse "Perkiraan Latensi Masukan".
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Reference documentation for the "Estimated Input Latency" Lighthouse audit.
 
-{# wf_updated_on: 2016-10-05 #}
-{# wf_published_on: 2016-10-05 #}
+{# wf_updated_on: 2018-12-17 #} {# wf_published_on: 2016-10-05 #} {# wf_blink_components: N/A #}
 
-# Perkiraan Latensi Masukan  {: .page-title }
+# Estimated Input Latency {: .page-title }
 
-## Mengapa audit itu penting {: #why }
+## Overview {: #overview }
 
-Responsivitas masukan adalah faktor utama dalam cara pengguna mempersepsi
-kinerja aplikasi Anda. Aplikasi memiliki waktu 100 md untuk merespons masukan pengguna. Bila lebih lama dari itu,
-maka pengguna akan mempersepsi aplikasi itu sebagai lambat. Lihat [Mengukur Kinerja dengan Model
-RAIL](/web/fundamentals/performance/rail) untuk informasi selengkapnya.
+Input responsiveness is a key factor in how users perceive the performance of your app. Apps have 100ms to respond to user input. Any longer than that, and the user perceives the app as laggy. See [Measure Performance with the RAIL Model](/web/fundamentals/performance/rail) for more information.
 
-Lihat bagian [Untuk apa pengujian audit](#what) pada dokumen ini
-untuk penjelasan mengenai audit ini menguji dengan target skor 50 md (bukannya
-100 md, yang merupakan saran model RAIL).
+See [More information](#more-info) for an explanation of why this audit tests for a target score of 50ms (rather than 100ms, which is what the RAIL model recommends).
 
-## Cara untuk lulus audit {: #how }
+## Recommendations {: #recommendations }
 
-Agar aplikasi Anda merespons masukan pengguna lebih cepat, Anda perlu mengoptimalkan cara
-menjalankan kode Anda di browser. Lihat serangkaian teknik yang dijelaskan secara singkat
-dalam dokumen [Kinerja Rendering](/web/fundamentals/performance/rendering/).
- Tip ini beragam, mulai dari pemindahan beban komputasi ke web worker untuk
-membebaskan thread utama, hingga pemaktoran ulang pemilih CSS Anda untuk melakukan
-perhitungan yang lebih sedikit, hingga penggunaan properti CSS yang meminimalkan jumlah
-operasi yang mengandalkan browser.
+To make your app respond to user input faster, you need to optimize how your code runs in the browser. Check out the series of techniques outlined in the [Rendering Performance](/web/fundamentals/performance/rendering/) docs. These tips range from offloading computation to web workers in order to free up the main thread, to refactoring your CSS selectors to perform less calculations, to using CSS properties that minimize the amount of browser-intensive operations.
 
-Satu keberatan penting dari audit ini adalah karena bukan suatu pengukuran lengkap
-dari latensi masukan. Sebagaimana dijelaskan di bagian [Untuk apa pengujian dokumen ini](#what) pada
-dokumen ini, audit ini tidak mengukur berapa lama sesungguhnya waktu yang diperlukan aplikasi Anda
-untuk merespons masukan pengguna. Dengan kata lain, pengujian ini tidak mengukur apakah
-respons aplikasi Anda terhadap masukan pengguna telah lengkap secara visual.
+One important caveat of this audit is that it's not a complete measurement of input latency. As explained in the [More information](#more-info) section of this doc, this audit does not measure how long your app truly takes to respond to a user input. In other words, it does not measure that your app's response to the user's input is visually complete.
 
-Untuk mengukurnya secara manual, buatlah sebuah rekaman dengan
-Timeline di Chrome DevTools. Lihat [Cara Menggunakan Alat (Bantu)
-Timeline](/web/tools/chrome-devtools/evaluate-performance/timeline-tool) untuk bantuan
-selengkapnya. Ide dasarnya adalah mulai sebuah rekaman, lakukan masukan pengguna
-yang ingin Anda ukur, hentikan perekaman, kemudian analisis bagan kobaran api
-untuk memastikan semua tahapan [saluran
-piksel](/web/fundamentals/performance/rendering/#the_pixel_pipeline) lengkap
-dalam waktu 50 md.
+To measure this manually, make a recording with the Chrome DevTools Timeline. See [Do less main thread work](/web/tools/chrome-devtools/speed/get-started#main) for an example of the workflow. The basic idea is to start a recording, perform the user input that you want to measure, stop the recording, and then analyze the flame chart to ensure that all stages of [the pixel pipeline](/web/fundamentals/performance/rendering/#the_pixel_pipeline) are complete within 50ms.
 
-{% include "web/tools/lighthouse/audits/implementation-heading.html" %}
+## More information {: #more-info }
 
-Model kinerja RAIL menyarankan agar aplikasi merespons masukan pengguna dalam waktu
-100 md, sementara target skor Lighthouse adalah 50 md. Mengapa?
+The RAIL performance model recommends that apps respond to user input within 100ms, whereas Lighthouse's target score is 50ms. Why?
 
-Alasan Lighthouse menggunakan metrik proxy untuk mengukur seberapa bagus
-aplikasi Anda merespons masukan pengguna: ketersediaan thread utama. Lighthouse
-beranggapan bahwa aplikasi Anda membutuhkan 50 md untuk merespons masukan pengguna secara lengkap
-(dari melakukan eksekusi JavaScript hingga penggambaran piksel baru
-secara fisik ke layar). Jika thread utama Anda tidak tersedia selama 50 md atau lebih,
-maka itu tidak menyisakan waktu yang cukup bagi aplikasi untuk menyelesaikan respons.
+The reason is that Lighthouse uses a proxy metric to measure how well your app responds to user input: availability of the main thread. Lighthouse assumes that your app needs 50ms to completely respond to the user's input (from performing any JavaScript executions to physically painting the new pixels to the screen). If your main thread is unavailable for 50ms or more, that does not leave enough time for your app to complete the response.
 
-Ada probabilitas 90% pengguna akan menemukan latensi masukan dengan
-jumlah yang dilaporkan Lighthouse, atau malah kurang. 10% pengguna bisa mengharapkan latensi
-tambahan.
+There is a 90% probability a user would encounter input latency of the amount that Lighthouse reports, or less. 10% of users can expect additional latency.
 
+The timing of this audit is from First Meaningful Paint to the end of the [trace](https://www.chromium.org/developers/how-tos/trace-event-profiling-tool), which is roughly 5 seconds after the time to [Consistently Interactive](/web/tools/lighthouse/audits/consistently-interactive).
 
-{# wf_devsite_translation #}
+## Feedback {: #feedback }
+
+{% include "web/_shared/helpful.html" %}
