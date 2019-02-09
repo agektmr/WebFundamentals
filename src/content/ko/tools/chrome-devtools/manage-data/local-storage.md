@@ -1,180 +1,115 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Application 패널에서 저장소, 데이터베이스 및 캐시를 검사하고 관리합니다.
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Inspect and manage storage, databases, and caches from the Application panel.
 
-{# wf_updated_on: 2016-07-28 #}
-{# wf_published_on: 2015-04-13 #}
+{# wf_updated_on: 2018-07-27 #} {# wf_published_on: 2015-04-13 #} {# wf_blink_components: Platform>DevTools #}
 
-# 저장소, 데이터베이스 및 캐시를 검사하고 관리 {: .page-title }
+# Inspect and Manage Storage, Databases, and Caches {: .page-title }
 
-{% include "web/_shared/contributors/kaycebasques.html" %}
-<strong>Application</strong> 패널에서 저장소, 데이터베이스 및 캐시를 검사하고 관리합니다.
-
-
+{% include "web/_shared/contributors/kaycebasques.html" %} Inspect and manage storage, databases, and caches from the
+<strong>Application</strong> panel.
 
 ### TL;DR {: .hide-from-toc }
-- 로컬 및 세션 저장소를 보고 편집합니다.
-- IndexedDB 데이터베이스를 검사하고 수정합니다.
-- Web SQL 데이터베이스에서 명령문을 실행합니다.
-- 애플리케이션 및 서비스 워커 캐시를 봅니다.
-- 한 번의 버튼 클릭으로 모든 저장소, 데이터베이스, 캐시 및 서비스 워커를 한꺼번에 지웁니다.
 
+* View and edit local and session storage.
+* Inspect and modify IndexedDB databases.
+* Execute statements on a Web SQL database.
+* View Application and Service Worker Caches.
+* Clear all storage, databases, caches, and service workers with a single button click.
 
-## 로컬 저장소 {:#local-storage}
+## Local storage {:#local-storage}
 
-로컬 저장소 키-값 쌍(KVP)을 저장하기 위해 [로컬 저장소][ls]를 사용하는 경우, 이와 같은 KVP를 
-**Local Storage** 창에서 검사, 수정 및 삭제할 수 있습니다.
+If you're using [local storage](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage) to store key-value pairs (KVPs), you can inspect, modify, and delete these KVPs from the **Local Storage** pane.
 
-![Local Storage 창][ls-pane]
+![local storage pane](/web/tools/chrome-devtools/manage-data/imgs/local-storage.png)
 
-* 키 또는 값을 두 번 클릭하면 해당 값을 편집할 수 있습니다.
-* 빈 셀을 두 번 클릭하면 새 KVP를 추가할 수 있습니다.
-* KVP를 클릭하고 **delete** 버튼
-(![delete 버튼][delete]{:.inline})을 누르면 해당 KVP가 삭제됩니다. [**Clear storage** 창](#clear-storage)에서 
-한 번의 버튼 클릭으로 로컬 저장소 데이터를 
-모두 지울 수 있습니다.
-* 페이지와 상호작용하면서 KVP를 생성, 삭제 또는 수정하면 
-변경 내용이 실시간으로 업데이트되는 것을 확인할 수 없습니다. 변경 내용을 확인하려면
-**refresh** 버튼(![refresh 버튼][refresh]{:.inline})을 클릭합니다.
+* Double-click on a key or value to edit that value.
+* Double-click on an empty cell to add a new KVP.
+* Click on a KVP and then press the **delete** button (![delete button](/web/tools/chrome-devtools/manage-data/imgs/delete.png){:.inline}) to delete that KVP. You can wipe all of your local storage data with a single button click from the [**Clear storage** pane](#clear-storage).
+* If you're interacting with a page in a way that creates, deletes, or modifies KVPs, you won't see those changes get updated in realtime. Click the **refresh** button (![refresh button](/web/tools/chrome-devtools/manage-data/imgs/refresh.png){:.inline}) to see your changes.
 
-[ls]: https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage
-[ls-pane]: /web/tools/chrome-devtools/manage-data/imgs/local-storage.png
-[refresh]: /web/tools/chrome-devtools/manage-data/imgs/refresh.png
-[delete]: /web/tools/chrome-devtools/manage-data/imgs/delete.png
+## Session storage {:#session-storage}
 
-## 세션 저장소{:#session-storage}
-
-**Session Storage** 창도 **Local Storage**
-창과 똑같이 작용합니다. 위의 [로컬 저장소](#local-storage) 섹션에서
-[세션 저장소][ss]를 보고 편집하는 방법을 알 수 있습니다.
-
-[ss]: https://developer.mozilla.org/en-US/docs/Web/API/Window/sessionStorage
+The **Session Storage** pane works the same as the **Local Storage** pane. Check out the [Local storage](#local-storage) section above to learn how to view and edit [session storage](https://developer.mozilla.org/en-US/docs/Web/API/Window/sessionStorage).
 
 ## IndexedDB {:#indexeddb}
 
-**IndexedDB** 창을 사용하면 IndexedDB 데이터를 검사, 수정 및 삭제할 수 있습니다.
+Use the **IndexedDB** pane to inspect, modify, and delete IndexedDB data.
 
-**IndexedDB** 창을 확장하면 그 아래 맨 첫 단계가
-데이터베이스입니다. 활성 상태인 데이터베이스가 여러 개인 경우에는 항목이 여러 개 
-표시됩니다. 아래 스크린샷에서는 페이지에 대한 활성 데이터베이스가 하나뿐입니다.
+When you expand the **IndexedDB** pane, the first level below that are databases. If there are multiple databases active, then you'll see multiple entries. In the screenshot below there's only one database active for the page.
 
-![indexeddb 탭][idb-tab]
+![indexeddb tab](/web/tools/chrome-devtools/manage-data/imgs/idb-tab.png)
 
-데이터베이스의 이름을 클릭하면 해당 데이터베이스의 보안 시작점, 이름 및 버전을
-볼 수 있습니다.
+Click on the name of a database to view the security origin, name, and version of that database.
 
-![indexeddb 데이터베이스][idb-db]
+![indexeddb database](/web/tools/chrome-devtools/manage-data/imgs/idb-db.png)
 
-데이터베이스를 확장하면 해당 데이터베이스의 키-값 쌍(KVP)을 볼 수 있습니다.
+Expand a database to view its key-value pairs (KVPs).
 
-![indexeddb 키-값 쌍][idb-kvps]
+![indexeddb key-value pairs](/web/tools/chrome-devtools/manage-data/imgs/idb-kvps.png)
 
-**Start from key** 텍스트 입력란 옆에 있는 화살표 버튼을 사용하면 여러 개의 KVP 페이지 사이를
-이동할 수 있습니다.
+Use the arrow buttons next to the **Start from key** textfield to move between pages of KVPs.
 
-값을 확장하고 두 번 클릭하면 해당 값을 편집할 수 있습니다.
-값을 추가, 수정 또는 삭제하는 경우 변경 내용이 실시간으로 업데이트되지
-않습니다. 데이터베이스를 업데이트하려면 **refresh** 버튼을 클릭합니다.
-![indexeddb kvp 편집][idb-edit]
+Expand a value and double-click to edit that value. When you add, modify, or delete values, those changes won't get updated in realtime. Click the **refresh** button to update a database. ![editing an indexeddb kvp](/web/tools/chrome-devtools/manage-data/imgs/idb-edit.png)
 
-**Start from key** 텍스트 입력란에 키를 입력하면 해당 키보다 값이 작은 모든 키를 필터링하여
-걸러내게 됩니다.
+Enter a key in the **Start from key** textfield to filter out all keys with a value smaller than that one.
 
-![필터링된 kvp][idb-filter]
+![filtered kvps](/web/tools/chrome-devtools/manage-data/imgs/idb-filter.png)
 
-값을 추가, 수정 또는 삭제해도 변경 내용이 실시간으로 업데이트되지
-않습니다. 데이터베이스를 업데이트하려면 **refresh** 버튼(![refresh 버튼][refresh]{:.inline})
-을 클릭합니다.
+When you add, modify, or delete values, those changes won't get updated in realtime. Click the **refresh** button (![refresh button](/web/tools/chrome-devtools/manage-data/imgs/refresh.png){:.inline}) to update a database.
 
-**clear object store** 버튼(![clear object store][cos]{:.inline})
-을 클릭하면 데이터베이스에서 모든 데이터가 삭제됩니다. 이는 서비스 워커 등록을 해제하고
-다른 저장소와 캐시를 삭제하는 방법으로도 가능합니다. 그러려면
-[**Clear storage** 창](#clear-storage)에서 한 번만 클릭하면 됩니다.
-
-[idb-tab]: /web/tools/chrome-devtools/manage-data/imgs/idb-tab.png
-[idb-db]: /web/tools/chrome-devtools/manage-data/imgs/idb-db.png
-[idb-kvps]: /web/tools/chrome-devtools/manage-data/imgs/idb-kvps.png
-[idb-edit]: /web/tools/chrome-devtools/manage-data/imgs/idb-edit.png
-[idb-filter]: /web/tools/chrome-devtools/manage-data/imgs/idb-filter.png
-[cos]: /web/tools/chrome-devtools/manage-data/imgs/clear-object-store.png
+Click the **clear object store** button (![clear object store](/web/tools/chrome-devtools/manage-data/imgs/clear-object-store.png){:.inline}) to delete all data from your database. You can also accomplish this as well as unregistering service workers and removing other storage and caches with a single click from the [**Clear storage** pane](#clear-storage).
 
 ## Web SQL {:#web-sql}
 
-**Web SQL** 창은 Web SQL 데이터베이스를 쿼리하고 수정하는 데 사용합니다.
+Use the **Web SQL** pane to query and modify Web SQL databases.
 
-데이터베이스 이름을 클릭하면 해당 데이터베이스의 콘솔이 열립니다. 여기에서
-해당 데이터베이스의 명령문을 실행할 수 있습니다.
+Click on a database name to open a console for that database. From here you can execute statements on the database.
 
-![web sql 콘솔][wsc]
+![web sql console](/web/tools/chrome-devtools/manage-data/imgs/web-sql-console.png)
 
-데이터베이스 테이블을 클릭하면 해당 테이블의 데이터를 볼 수 있습니다.
+Click on a database table to view that table's data.
 
-![web sql 테이블][wst]
+![web sql table](/web/tools/chrome-devtools/manage-data/imgs/web-sql-table.png)
 
-* 여기에서 값을 업데이트할 수 없지만, 데이터베이스 콘솔을 통해 
-할 수 있습니다(위 내용 참조).
-* 열 헤더를 클릭하면 테이블이 해당 열을 기준으로 정렬됩니다.
-* 테이블을 변경해도 변경 내용이 실시간으로 업데이트되지 않습니다. 업데이트한 내용을 확인하려면 
-**refresh** 버튼(![refresh 버튼][refresh]{:.inline})을 
-클릭합니다.
-* 공백으로 구분되거나 쉼표로 구분된 열 이름 목록을
-**Visibile columns** 텍스트 입력란에 입력하면 해당 열만 표시됩니다.
+* You can't update values from here, but you can do so via the database console (see above).
+* Click on a column's header to sort the table by that column.
+* Changes that you make to a table won't update in realtime. Click the **refresh** button (![refresh button](/web/tools/chrome-devtools/manage-data/imgs/refresh.png){:.inline}) to view your updates.
+* Enter a space-separated or comma-separated list of column names in the **Visible columns** textfield to only display those columns.
 
-[wsc]: /web/tools/chrome-devtools/manage-data/imgs/web-sql-console.png
-[wst]: /web/tools/chrome-devtools/manage-data/imgs/web-sql-table.png
+## Application Cache {:#application-cache}
 
-## 애플리케이션 캐시 {:#application-cache}
+Use the **Application Cache** pane to inspect resources and rules that have been created via the [Application Cache API](https://developer.mozilla.org/en-US/docs/Web/HTML/Using_the_application_cache).
 
-**Application Cache** 창을 사용하면
-[Application Cache API][appcache-api]를 통해 생성된 리소스와 규칙을 검사할 수 있습니다.
+![application cache pane](/web/tools/chrome-devtools/manage-data/imgs/appcache.png)
 
-![Application Cache 창][appcache]
+Each row represents a resource.
 
-각 행은 리소스를 나타냅니다.
+The **Type** column will have one of the following values:
 
-**Type** 열에는 다음 값 중 하나가 표시됩니다.
+* **Master**. The `manifest` attribute on the resource indicated that this cache is its master.
+* **Explicit**. This resource was explicitly listed in the manifest.
+* **Network**. The manifest specified that this resource must come from the network.
+* **Fallback**. The URL in the **Resource** column was listed as a fallback for another URL (not shown in DevTools).
 
-* **Master**. 리소스에 `manifest` 속성이 있으면 이 캐시가 
-해당 리소스의 마스터라는 뜻입니다.
-* **Explicit**. 이 리소스가 매니페스트에 명시적으로 나열되어 있습니다.
-* **Network**. 매니페스트에 이 리소스는 네트워크에서 가져와야 한다고 지정되어 
-있습니다.
-* **Fallback**. **Resource** 열의 URL이 또 다른 URL(DevTools에 표시되지 않음)
-을 대체하여 나열되어 있습니다.
+At the bottom of the table there are status icons indicating your network connection and the status of the application cache. The application cache can have the following statuses:
 
-테이블 맨 아래를 보면 상태 아이콘이 있고, 네트워크
-연결 및 애플리케이션 캐시의 상태를 나타냅니다. 애플리케이션 캐시의 상태는 
-다음과 같습니다.
+* **IDLE**. The cache has no new changes.
+* **CHECKING**. The manifest is being fetched and checked for updates.
+* **DOWNLOADING**. Resources are being added to the cache.
+* **UPDATEREADY**. A new version of the cache is available.
+* **OBSOLETE**. The cache is being deleted.
 
-* **IDLE**. 캐시에 새 변경 사항이 없습니다.
-* **CHECKING**. 매니페스트를 가져오는 중이며 업데이트된 내용이 있는지 확인 중입니다.
-* **DOWNLOADING**. 캐시에 리소스가 추가되는 중입니다.
-* **UPDATEREADY**. 캐시의 새 버전을 이용할 수 있습니다.
-* **OBSOLETE**. 캐시를 삭제하는 중입니다.
+## Service Worker Caches {:#service-worker-caches}
 
-[appcache-api]: https://developer.mozilla.org/en-US/docs/Web/HTML/Using_the_application_cache
-[appcache]: /web/tools/chrome-devtools/manage-data/imgs/appcache.png
-
-## 서비스 워커 캐시 {:#service-worker-caches}
-
-**Application** 패널에 있는 **Cache Storage** 창을 사용하면 (서비스 워커) Cache API로 생성한 캐시를 검사, 
-수정 및 디버그할 수 있습니다. 추가 도움이
-필요하면 아래의 가이드를 참조하세요.
+The **Cache Storage** pane on the **Application** panel lets you inspect, modify, and debug caches created with the (service worker) Cache API. Check out the guide below for more help.
 
 {# include shared/related_guides.liquid inline=true list=page.related-guides.pwa #}
 
-## 서비스 워커, 저장소, 데이터베이스 및 캐시 지우기 {:#clear-storage}
+## Clear service workers, storage, databases, and caches {:#clear-storage}
 
-때로는 주어진 출처에서 가져온 데이터를 모두 지워야 하는 경우가 있습니다. **Application** 패널의 **Clear 
-Storage** 창을 사용하면 서비스 워커 저장소 및 캐시를 선택적으로 등록 해제할 수 
-있습니다. 데이터를 지우려면 지우고자 하는 구성 요소 옆에 있는 확인란을 
-선택한 다음 **Clear site 
-data**를 클릭하기만 하면 됩니다. 이 작업은 
-**Clear storage** 레이블 아래 나열된 출처의 데이터를 모두 지웁니다.
+Sometimes you just need to wipe all of the data for a given origin. The **Clear Storage** pane on the **Application** panel lets you selectively unregister service workers, storage, and caches. To clear data, just enable the checkboxes next to the components that you want to wipe, and then click **Clear site data**. The action wipes all of the data for the origin listed under the **Clear storage** label.
 
-![clear storage][clear]
+![clear storage](/web/tools/chrome-devtools/manage-data/imgs/clear-storage.png)
 
-[clear]: /web/tools/chrome-devtools/manage-data/imgs/clear-storage.png
+## Feedback {: #feedback }
 
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
