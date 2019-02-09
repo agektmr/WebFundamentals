@@ -1,231 +1,368 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml
 
-{# wf_updated_on: 2016-09-28 #}
-{# wf_published_on: 2016-09-28 #}
+{# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2016-09-28 #} {# wf_blink_components: Blink>Storage #}
 
-# Ringkasan Web Storage {: .page-title }
+# Web Storage Overview {: .page-title }
 
 {% include "web/_shared/contributors/mco.html" %}
 
-Mekanisme storage yang tepat perlu dipilih, baik untuk storage perangkat lokal
-maupun untuk storage server berbasis awan.  Mesin storage yang baik akan memastikan
-informasi Anda disimpan secara meyakinkan, mengurangi bandwidth, dan meningkatkan
-responsivitas. Strategi caching storage yang tepat merupakan blok pembangunan utama untuk
-memungkinkan pengalaman web seluler. 
+It’s important to choose the right storage mechanisms, both for local device storage and for cloud based server storage. A good storage engine makes sure your information is saved reliably, reduces bandwidth, and improves responsiveness. The right storage caching strategy is a core building block for enabling offline mobile web experiences.
 
-Artikel ini menyediakan fondasi ringkas untuk mengevaluasi layanan dan API
-storage, setelah itu kami akan menyediakan tabel perbandingan dan beberapa
-panduan umum. Tidak lama lagi, kami berencana menambahkan sumber daya untuk memahami
-berbagai topik storage pilihan lebih jauh lagi.
+This article provides a brief foundation for evaluating storage APIs and services, after which we’ll provide a comparison table and some general guidance. In the near future, we plan to add resources for understanding selected storage topics in greater depth.
 
-## Taksonomi Storage
+## Storage Taxonomy
 
-Mari kita mulai dengan memahami sebagian dimensi yang nanti bisa digunakan untuk
-menganalisis storage data aplikasi web. Nanti, kita akan menggunakan kerangka kerja ini untuk menguraikan satu per satu dan mengevaluasi
-berbagai opsi storage yang tersedia untuk developer web.
+Let’s start by understanding some of the dimensions by which we can analyze data storage for web apps. Later, we’ll use this framework to enumerate and evaluate the many storage options available to web developers.
 
-### Model Data
+### Data Model
 
-Model untuk menyimpan unit data menentukan cara menyusun data secara internal,
-yang memengaruhi kemudahan penggunaan, biaya serta kinerja permintaan storage dan
-pengambilan. 
+The model for storing units of data determines how data is organized internally, which impacts ease of use, cost and performance of storage and retrieval requests.
 
-* **Terstruktur: **Data yang disimpan dalam tabel dengan bidang-bidang yang telah
-didefinisikan sebelumnya, sebagaimana umumnya
-sistem manajemen database berbasis SQL, mendukung penggunaan kueri yang fleksibel dan dinamis, ketika beragam tipe kueri mungkin tidak dikenali secara a
-priori. Contoh jelas datastore terstruktur adalah IndexedDB di
-browser.
+* **Structured:** Data stored in tables with predefined fields, as is typical of SQL based database management systems, lends itself well to flexible and dynamic queries, where the full range of query types may not be be known a priori. A prominent example of a structured datastore in the browser is IndexedDB.
 
-* **Kunci/Nilai:** Datastore Kunci/Nilai dan database NoSQL terkait, menawarkan
-kemampuan menyimpan dan mengambil data tidak terstruktur yang diindeks dengan kunci unik.
-Datastore Kunci/Nilai seperti tabel hash karena memungkinkan akses waktu-konstanta
-ke data kabur yang telah diindeks. Contoh menonjol datastore kunci/nilai adalah
-Cache API di browser dan Apache Cassandra di server.
+* **Key/Value:** Key/Value datastores, and related NoSQL databases, offer the ability to store and retrieve unstructured data indexed by a unique key. Key/Value datastores are like hash tables in that they allow constant-time access to indexed, opaque data. Prominent examples of key/value datastores are the Cache API in the browser and Apache Cassandra on the server.
 
-* **Aliran Byte:** Model sederhana ini menyimpan data sebagai string byte kabur dengan
-panjang bervariasi yang menyerahkan segala bentuk pengorganisasian internal
-ke layer aplikasi. Model ini terutama bagus untuk sistem file dan blob data lainnya yang tersusun
-secara hierarkis. Contoh menonjol dari datastore aliran byte antara lain
-sistem file dan layanan cloud storage.
+* **Byte Streams:** This simple model stores data as a variable length, opaque string of bytes, leaving any form of internal organization to the application layer. This model is particularly good for file systems and other hierarchically organized blobs of data. Prominent examples of byte stream datastores include file systems and cloud storage services.
 
-### Persistensi
+### Persistence
 
-Metode storage untuk aplikasi web bisa dianalisis sesuai dengan cakupan persistensi
-yang dibuat untuk data.
+Storage methods for web apps can be analyzed according to the scope over which data is made persistent.
 
-* **Persistensi Sesi: **Data dalam kategori ini hanya disimpan selama
-sesi web tunggal atau selama tab browser masih aktif. Contoh mekanisme storage
-dengan persistensi sesi adalah Session Storage API.
+* **Session Persistence:** Data in this category is retained only as long as a single web session or browser tab remains active. An example of a storage mechanism with session persistence is the Session Storage API.
 
-* **Persistensi Perangkat:** Data dalam kategori ini dipertahankan di semua sesi dan
-tab/jendela browser, dalam perangkat tertentu. Contoh mekanisme storage
-dengan persistensi perangkat adalah Cache API.
+* **Device Persistence:** Data in this category is retained across sessions and browser tabs/windows, within a particular device. An example of a storage mechanism with device persistence is the Cache API.
 
-* **Persistensi Global:** Data dalam kategori ini dipertahankan di semua sesi dan
-perangkat. Dengan demikian, inilah bentuk persistensi data yang paling sempurna. Contoh
-mekanisme storage dengan persistensi global adalah Google Cloud Storage.
+* **Global Persistence:** Data in this category is retained across sessions and devices. As such, it is the most robust form of data persistence. An example of a storage mechanism with global persistence is Google Cloud Storage.
 
-### Dukungan Browser
+### Browser Support
 
-Developer harus memilih API yang paling cocok dengan domain masalah mereka; akan tetapi,
-mereka juga harus memperhitungkan kenyataan bahwa API yang telah distandardisasi dan
-sudah mapan lebih disukai pada antarmuka khusus atau kepemilikan, karena
-cenderung bertahan lebih lama dan didukung lebih luas. Mereka juga memperoleh
-basis pengetahuan yang lebih luas dan ekosistem developer yang lebih kaya.
+Developers should choose an API best suited to their problem domain; however, they should also take into account the fact that standardized and well established APIs are preferable to custom or proprietary interfaces, because they tend to be longer lived and more widely supported. They may also enjoy a broader knowledge base and a richer developer ecosystem.
 
-### Transaksi
+### Transactions
 
-Sering kali, suatu kumpulan operasi storage yang berkaitan dengan
-harus berhasil atau gagal secara atomik. Sistem manajemen database umumnya mendukung
-fitur ini dengan menggunakan model transaksi, di mana pembaruan yang berkaitan dapat
-dikelompokkan ke dalam unit-unit arbitrer. Walaupun tidak selalu diperlukan, ini adala fitur yang praktis,
-dan kadang-kadang esensial, di beberapa domain masalah.
+Often, it is important for a collection of related storage operations to succeed or fail atomically. Database management systems have traditionally supported this feature using the transaction model, where related updates may be grouped into arbitrary units. While not always necessary, this is a convenient, and sometimes essential, feature in some problem domains.
 
-### Sinkron/Asinkron
+### Sync/Async
 
-Sebagian API storage bersifat sinkronus dalam artian bahwa permintaan storage atau pengambilan
-memblokir thread yang saat ini aktif hingga permintaan diselesaikan. Hal
-ini sangat memberatkan di browser web, karena permintaan storage menggunakan
-thread utama bersama UI. Karena alasan efisiensi dan kinerja,
-API storage asinkronus lebih disukai.
+Some storage APIs are synchronous in the sense that storage or retrieval requests block the currently active thread until the request is completed. This is particularly onerous in web browsers, where the storage request is sharing the main thread with the UI. For efficiency and performance reasons, asynchronous storage APIs are to be preferred.
 
-## Perbandingan
+## Comparison
 
-Di bagian ini, kita mengamati API yang saat ini tersedia untuk para developer web
-dan membandingkannya dengan berbagai dimensi yang dijelaskan di atas.
+In this section we take a look at the current APIs available for web developers and compare them across the dimensions described above.
 
 <table>
-  <thead>
-    <th>API</th>
-    <th>Model 
-Data</th>
-    <th>Persistensi</th>
-    <th>Dukungan
-Browser</th>
-    <th>Transaksi</th>
-    <th>Sinkron/Asinkron</th>
-  </thead>
-  <tbody>
-    <tr>
-      <td><a href="https://developer.mozilla.org/en-US/docs/Web/API/FileSystem">File system</a></td>
-      <td>Aliran byte</td>
-      <td>perangkat</td>
-      <td><a href="http://caniuse.com/#feat=filesystem">52%</a></td>
-      <td>Tidak</td>
-      <td>Asinkron</td>
-    </tr>
-    <tr>
-      <td><a href="https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage">Local Storage</a></td>
-      <td>kunci/nilai</td>
-      <td>perangkat</td>
-      <td><a href="http://caniuse.com/#feat=namevalue-storage">93%</a></td>
-      <td>Tidak</td>
-      <td>Sinkron</td>
-    </tr>
-    <tr>
-      <td><a href="https://developer.mozilla.org/en-US/docs/Web/API/Window/sessionStorage">Session Storage</a></td>
-      <td>kunci/nilai</td>
-      <td>sesi</td>
-      <td><a href="http://caniuse.com/#feat=namevalue-storage">93%</a></td>
-      <td>Tidak</td>
-      <td>Sinkron</td>
-    </tr>
-    <tr>
-      <td><a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies">Cookies</a></td>
-      <td>terstruktur</td>
-      <td>perangkat</td>
-      <td>100%</td>
-      <td>Tidak</td>
-      <td>Sinkron</td>
-    </tr>
-    <tr>
-      <td><a href="https://www.w3.org/TR/webdatabase/">WebSQL</a></td>
-      <td>terstruktur</td>
-      <td>perangkat</td>
-      <td><a href="http://caniuse.com/#feat=sql-storage">77%</a></td>
-      <td>Ya</td>
-      <td>Asinkron</td>
-    </tr>
-    <tr>
-      <td><a href="https://developer.mozilla.org/en-US/docs/Web/API/CacheStorage">Cache</a></td>
-      <td>kunci/nilai</td>
-      <td>perangkat</td>
-      <td><a href="http://caniuse.com/#feat=serviceworkers">60%</a></td>
-      <td>Tidak</td>
-      <td>Asinkron</td>
-    </tr>
-    <tr>
-      <td><a href="https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API">IndexedDB</a></td>
-      <td>hibrid</td>
-      <td>perangkat</td>
-      <td><a href="http://caniuse.com/#feat=indexeddb">83%</a></td>
-      <td>Ya</td>
-      <td>Asinkron</td>
-    </tr>
-    <tr>
-      <td><a href="https://cloud.google.com/storage/">cloud storage</a></td>
-      <td>aliran byte</td>
-      <td>global</td>
-      <td>100%</td>
-      <td>Tidak</td>
-      <td>Keduanya</td>
-    </tr>
-  <tbody>
-</table>
-
-Seperti disebutkan di atas, sebaiknya pilih API yang didukung luas di
-sebanyak mungkin browser dan yang menawarkan model panggilan asinkronus, untuk memaksimalkan
-interoperabilitas dengan UI. Kriteria ini dengan sendirinya membawa pada pilihan
-teknologi berikut:
-
-* Untuk kunci/nilai lokal perangkat, gunakan Cache API.
-
-* Untuk storage terstruktur lokal perangkat: gunakan IndexedDB.
-
-* Untuk storage aliran byte global: gunakan layanan Cloud Storage.
-
-Kombinasi ini memenuhi kebutuhan storage dasar bagi banyak aplikasi web seluler.
-Nantikan artikel mendatang yang akan membahas cara menangani pola storage
-umum secara detail, bersama contoh kode penyerta.
-
-## Men-debug storage di Chrome DevTools {: #devtools }
-
-Periksalah dokumentasi berikut untuk mengetahui selengkapnya tentang penggunaan Chrome DevTools untuk
-memeriksa dan men-debug API web storage yang Anda pilih. API yang tidak disebutkan
-di sini berarti tidak didukung di DevTools atau tidak berlaku.
-
-* [Local Storage](/web/tools/chrome-devtools/manage-data/local-storage#local-storage)
-* [Session Storage](/web/tools/chrome-devtools/manage-data/local-storage#session-storage)
-* [Cookie](/web/tools/chrome-devtools/manage-data/cookies)
-* [Web SQL](/web/tools/chrome-devtools/manage-data/local-storage#web-sql)
-* [Cache](/web/tools/chrome-devtools/progressive-web-apps#caches)
-* [IndexedDB](/web/tools/chrome-devtools/manage-data/local-storage#indexeddb)
-
-Jika Anda menggunakan beberapa API storage, periksalah fitur Clear Storage dari
-DevTools. Fitur ini memungkinkan Anda mengosongkan beberapa storage
-sekaligus dengan sekali klik tombol. Lihat [Kosongkan service worker, storage, database, dan
-cache](/web/tools/chrome-devtools/manage-data/local-storage#clear-storage) untuk
-informasi selengkapnya.
-
-## Berikutnya ke mana…
-
-Karena kini telah mengulas sebagian cara pikir yang relevan tentang mekanisme storage
-dan membandingkan API yang paling populer dan layanan yang tersedia saat ini,
-tidak lama lagi kami akan menambahkan materi lebih banyak untuk lebih mendalami satu atau beberapa topik
-perhatian:
-
-* [Saran Storage Offline untuk Progressive Web App](offline-for-pwa)
-
-* Pola Storage Umum (segera hadir)
-
-* Metode Storage Back-End yang Disarankan (segera hadir)
-
-* Mendalami: IndexedDB (segera hadir)
-
-* Mendalami: Cache API (segera hadir)
-
-* Analisis Kerangka Kerja Storage Populer (segera hadir)
-
-
-{# wf_devsite_translation #}
+  <th>
+    API
+  </th>
+  
+  <th>
+    Data Model
+  </th>
+  
+  <th>
+    Persistence
+  </th>
+  
+  <th>
+    Browser Support
+  </th>
+  
+  <th>
+    Transactions
+  </th>
+  
+  <th>
+    Sync/Async
+  </th>
+  
+  <tr>
+    <td>
+      <a href="https://developer.mozilla.org/en-US/docs/Web/API/FileSystem">File system</a>
+    </td>
+    
+    <td>
+      Byte stream
+    </td>
+    
+    <td>
+      device
+    </td>
+    
+    <td>
+      <a href="http://caniuse.com/#feat=filesystem">52%</a>
+    </td>
+    
+    <td>
+      No
+    </td>
+    
+    <td>
+      Async
+    </td>
+  </tr>
+  
+  <tr>
+    <td>
+      <a href="https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage"> Local Storage </a>
+    </td>
+    
+    <td>
+      key/value
+    </td>
+    
+    <td>
+      device
+    </td>
+    
+    <td>
+      <a href="http://caniuse.com/#feat=namevalue-storage">93%</a>
+    </td>
+    
+    <td>
+      No
+    </td>
+    
+    <td>
+      Sync
+    </td>
+  </tr>
+  
+  <tr>
+    <td>
+      <a href="https://developer.mozilla.org/en-US/docs/Web/API/Window/sessionStorage"> Session Storage </a>
+    </td>
+    
+    <td>
+      key/value
+    </td>
+    
+    <td>
+      session
+    </td>
+    
+    <td>
+      <a href="http://caniuse.com/#feat=namevalue-storage">93%</a>
+    </td>
+    
+    <td>
+      No
+    </td>
+    
+    <td>
+      Sync
+    </td>
+  </tr>
+  
+  <tr>
+    <td>
+      <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies">Cookies</a>
+    </td>
+    
+    <td>
+      structured
+    </td>
+    
+    <td>
+      device
+    </td>
+    
+    <td>
+      100%
+    </td>
+    
+    <td>
+      No
+    </td>
+    
+    <td>
+      Sync
+    </td>
+  </tr>
+  
+  <tr>
+    <td>
+      <a href="https://www.w3.org/TR/webdatabase/">WebSQL</a>
+    </td>
+    
+    <td>
+      structured
+    </td>
+    
+    <td>
+      device
+    </td>
+    
+    <td>
+      <a href="http://caniuse.com/#feat=sql-storage">77%</a>
+    </td>
+    
+    <td>
+      Yes
+    </td>
+    
+    <td>
+      Async
+    </td>
+  </tr>
+  
+  <tr>
+    <td>
+      <a href="https://developer.mozilla.org/en-US/docs/Web/API/CacheStorage">Cache</a>
+    </td>
+    
+    <td>
+      key/value
+    </td>
+    
+    <td>
+      device
+    </td>
+    
+    <td>
+      <a href="http://caniuse.com/#feat=serviceworkers">60%</a>
+    </td>
+    
+    <td>
+      No
+    </td>
+    
+    <td>
+      Async
+    </td>
+  </tr>
+  
+  <tr>
+    <td>
+      <a href="https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API">IndexedDB</a>
+    </td>
+    
+    <td>
+      hybrid
+    </td>
+    
+    <td>
+      device
+    </td>
+    
+    <td>
+      <a href="http://caniuse.com/#feat=indexeddb">83%</a>
+    </td>
+    
+    <td>
+      Yes
+    </td>
+    
+    <td>
+      Async
+    </td>
+  </tr>
+  
+  <tr>
+    <td>
+      <a href="https://cloud.google.com/storage/">cloud storage</a>
+    </td>
+    
+    <td>
+      byte stream
+    </td>
+    
+    <td>
+      global
+    </td>
+    
+    <td>
+      100%
+    </td>
+    
+    <td>
+      No
+    </td>
+    
+    <td>
+      Both
+    </td>
+  </tr></table> 
+  
+  <p>
+    As noted above, it’s wise to choose APIs that are widely supported across as many browsers as possible and which offer asynchronous call models, to maximize interoperability with the UI. These criteria lead naturally to the following technology choices:
+  </p>
+  
+  <ul>
+    <li>
+      <p>
+        For offline storage, use the <a href="cache-api">Cache API</a>. This API is available in any browser that supports <a href="https://jakearchibald.github.io/isserviceworkerready/">Service Worker technology</a> necessary for creating offline apps. The Cache API is ideal for storing resources associated with a known URL.
+      </p>
+    </li>
+    <li>
+      <p>
+        For storing application state and user-generated content, use IndexedDB. This enables users to work offline in more browsers than just those that support the Cache API.
+      </p>
+    </li>
+    <li>
+      <p>
+        For global byte stream storage: use a Cloud Storage service.
+      </p>
+    </li>
+  </ul>
+  
+  <p>
+    This combination satisfies the basic storage needs for many mobile web apps.
+  </p>
+  
+  <h2>
+    Debugging storage in Chrome DevTools {: #devtools }
+  </h2>
+  
+  <p>
+    Check out the following docs to learn more about using Chrome DevTools to inspect and debug your web storage API of choice. APIs not mentioned here are either not supported in DevTools or are not applicable.
+  </p>
+  
+  <ul>
+    <li>
+      <a href="/web/tools/chrome-devtools/manage-data/local-storage#local-storage">Local Storage</a>
+    </li>
+    <li>
+      <a href="/web/tools/chrome-devtools/manage-data/local-storage#session-storage">Session Storage</a>
+    </li>
+    <li>
+      <a href="/web/tools/chrome-devtools/manage-data/cookies">Cookies</a>
+    </li>
+    <li>
+      <a href="/web/tools/chrome-devtools/manage-data/local-storage#web-sql">Web SQL</a>
+    </li>
+    <li>
+      <a href="/web/tools/chrome-devtools/progressive-web-apps#caches">Cache</a>
+    </li>
+    <li>
+      <a href="/web/tools/chrome-devtools/manage-data/local-storage#indexeddb">IndexedDB</a>
+    </li>
+  </ul>
+  
+  <p>
+    If you're using multiple storage APIs, check out the Clear Storage feature of DevTools. This feature lets you clear multiple stores with a single button click. See <a href="/web/tools/chrome-devtools/manage-data/local-storage#clear-storage">Clear service workers, storage, databases, and caches</a> for more information.
+  </p>
+  
+  <h2>
+    Where to go next…
+  </h2>
+  
+  <p>
+    Now that we’ve reviewed some of the relevant ways to think about storage mechanisms and compared the most popular APIs and services available today, we'll be adding more content soon to dive more deeply into one or more topics of interest:
+  </p>
+  
+  <ul>
+    <li>
+      <a href="offline-for-pwa">Offline Storage Recommendations for Progressive Web Apps</a>
+    </li>
+    <li>
+      <a href="cache-api">Deep Dive: Cache API</a>
+    </li>
+  </ul>
+  
+  <h2>
+    Feedback {: #feedback }
+  </h2>
+  
+  <p>
+    {% include "web/_shared/helpful.html" %}
+  </p>
