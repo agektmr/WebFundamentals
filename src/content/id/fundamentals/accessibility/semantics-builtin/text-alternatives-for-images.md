@@ -1,93 +1,60 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Menggunakan atribut alt dalam menyediakan alternatif berupa teks untuk gambar
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Using the alt attribute to provide text alternatives for images
 
+{# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2016-10-04 #} {# wf_blink_components: N/A #}
 
-{# wf_updated_on: 2016-10-04 #}
-{# wf_published_on: 2016-10-04 #}
+# Text Alternatives for Images {: .page-title }
 
-# Alternatif Berupa Teks untuk Gambar {: .page-title }
+{% include "web/_shared/contributors/megginkearney.html" %} {% include "web/_shared/contributors/dgash.html" %} {% include "web/_shared/contributors/aliceboxhall.html" %}
 
-{% include "web/_shared/contributors/megginkearney.html" %}
-{% include "web/_shared/contributors/dgash.html" %}
-{% include "web/_shared/contributors/aliceboxhall.html" %}
-
-
-
-Gambar adalah komponen penting pada sebagian besar laman web, dan tentu saja
-menjadi titik-lekat khusus bagi pengguna yang lemah penglihatannya. Kita harus mempertimbangkan peran yang
-dimainkan gambar di laman untuk merencanakan tipe alternatif berupa teks yang harus digunakan.
-Perhatikan gambar ini.
+Images are an important component of most web pages, and are of course a particular sticking point for low-vision users. We must consider the role an image plays in a page to work out what type of text alternative it should have. Take a look at this image.
 
     <article>
       <h2>Study shows 9 out of 10 cats quietly judging their owners as they sleep</h2>
       <img src="imgs/160204193356-01-cat-500.jpg">
     </article>
+    
 
 <article>
   <h2>Study shows 9 out of 10 cats quietly judging their owners as they sleep</h2>
   <img src="imgs/160204193356-01-cat-500.jpg">
 </article>
 
-Di laman, kita memiliki gambar seekor kucing, yang mengilustrasikan
-perilaku kecenderungan menilai yang sudah dikenali pada kucing. Pembaca layar akan membacakan gambar ini dengan menggunakan
-nama literalnya, `"/160204193356-01-cat-500.jpg"`. Itu memang akurat, namun tidak berguna
-sama sekali.
+In the page we have a picture of a cat, illustrating an article on cats' well-known judgmental behavior. A screen reader will announce this image using its literal name, `"/160204193356-01-cat-500.jpg"`. That's accurate, but not at all useful.
 
-Anda bisa menggunakan atribut `alt` untuk menyediakan alternatif berupa teks yang berguna bagi
-gambar &mdash; misalnya, "A cat staring menacingly off into space."
+You can use the `alt` attribute to provide a useful text alternative to this image &mdash; for example, "A cat staring menacingly off into space."
 
     <img src="/160204193356-01-cat-500.jpg" alt="A cat staring menacingly off into space">
+    
 
-Kemudian pembaca layar bisa membacakan keterangan singkat mengenai gambar tersebut (
-terlihat di bilah hitam VoiceOver) dan pengguna bisa memilih apakah akan berpindah
-ke artikel tersebut.
+Then the screen reader can announce a succinct description of the image ( seen in the black VoiceOver bar) and the user can choose whether to move on to the article.
 
-![Gambar dengan teks alternatif yang diperbaiki](imgs/funioncat2.png)
+![an image with improved alt text](imgs/funioncat2.png)
 
-Sepasang komentar tentang `alt`:
+A couple of comments about `alt`:
 
- - `alt` memungkinkan Anda menetapkan string sederhana untuk digunakan bila
-   gambar tidak tersedia, misalnya bila gambar gagal dimuat, atau diakses melalui
-   bot perayapan web, atau kebetulan ditemukan oleh pembaca layar.
- - `alt` berbeda dengan `title`, atau tipe teks, yang *hanya* akan digunakan
-   jika gambar tidak tersedia.
+- `alt` allows you to specify a simple string to be used any time the image isn't available, such as when the image fails to load, or is accessed by web crawling bot, or is encountered by a screen reader.
+- `alt` differs from `title`, or any type of caption, in that it is *only* used if the image is not available.
 
-Menulis teks alternatif yang berguna ada seninya. Agar string bisa digunakan,
-alternatif berupa teks perlu menyampaikan konsep yang sama dengan gambarnya, dalam konteks
-yang sama.
+Writing useful alt text is a bit of an art. In order for a string to be a usable text alternative, it needs to convey the same concept as the image, in the same context.
 
-Perhatikan gambar logo yang ditautkan di masthead laman seperti yang ditampilkan di atas.
-Kita bisa menjelaskan gambar tersebut dengan sangat akurat sebagai "logo The Funion".
+Consider a linked logo image in the masthead of a page like those shown above. We can describe the image pretty accurately as "The Funion logo".
 
-    <img class="logo" src="logo.jpg" alt="Logo The Funion">
+    <img class="logo" src="logo.jpg" alt="The Funion logo">
+    
 
-Mungkin kita tergoda untuk memberikan alternatif berupa teks yang lebih sederhana berupa "beranda" atau "laman
-utama", namun itu tidak menguntungkan bagi pengguna yang penglihatannya lemah maupun tajam.
+It might be tempting to give it a simpler text alternative of "home" or "main page", but that does a disservice to both low-vision and sighted users.
 
-Namun bayangkan seorang pengguna pembaca layar yang ingin mencari logo masthead di
-laman; memberinya nilai alt berupa "beranda" sesungguhnya malah akan
-menambah bingung. Pengguna yang berpenglihatan tajam pun akan menghadapi kendala yang sama &mdash; yang mengetahui
-logo situs dengan mengekliknya &mdash; seperti halnya pengguna pembaca layar.
+But imagine a screen reader user who wants to locate the masthead logo on the page; giving it an alt value of "home" actually creates a more confusing experience. And a sighted user faces the same challenge &mdash; figuring out what clicking the site logo does &mdash; as a screen reader user.
 
-Di lain pihak, menjelaskan gambar tidak selalu berguna. Misalnya,
-perhatikan gambar kaca pembesar di dalam tombol telusur yang berisi teks
-"Telusur". Jika teks itu tidak ada, Anda pasti akan memberi gambar itu nilai
-alternatif berupa "telusur". Namun karena kita memiliki teks yang terlihat, pembaca layar akan
-mengambil dan membacakan kata "telusur"; sehingga, nilai `alt` yang identik pada
-gambar menjadi berlebihan.
+On the other hand, it's not always useful to describe an image. For example, consider a magnifying glass image inside a search button that has the text "Search". If the text wasn't there, you would definitely give that image an alt value of "search". But because we have the visible text, the screen reader will pick up and read aloud the word "search"; thus, an identical `alt` value on the image is redundant.
 
-Akan tetapi, kita tahu bahwa jika membiarkan teks `alt`, mungkin kita akan mendengar
-nama file gambar sebagai gantinya, yang tidak ada gunanya dan mungkin akan membingungkan. Dalam hal ini,
-Anda bisa menggunakan atribut `alt` kosong saja, dan pembaca layar akan
-melewati gambar sama sekali.
+However, we know that if we leave the `alt` text out, we'll probably hear the image file name instead, which is both useless and potentially confusing. In this case you can just use an empty `alt` attribute, and the screen reader will skip the image altogether.
 
     <img src="magnifying-glass.jpg" alt="">
+    
 
-Singkatnya, semua gambar harus memiliki atribut `alt`, namun tidak semuanya
-harus memiliki teks. Gambar penting harus memiliki teks alternatif penjelas yang menjelaskan
-secara singkat mengenai gambar itu, sedangkan gambar dekoratif harus memiliki atribut alt
-yang kosong &mdash; yakni, `alt=""`.
+To summarize, all images should have an `alt` attribute, but they need not all have text. Important images should have descriptive alt text that succinctly describes what the image is, while decorative images should have empty alt attributes &mdash; that is, `alt=""`.
 
+## Feedback {: #feedback }
 
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
