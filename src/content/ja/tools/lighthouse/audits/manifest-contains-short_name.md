@@ -1,41 +1,32 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Ligjthouse の監査項目「マニフェストでアプリの省略名を定義する」のリファレンス ドキュメント。
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Reference documentation for the "Manifest Contains short_name" Lighthouse audit.
 
-{# wf_updated_on:2016-09-21 #}
-{# wf_published_on:2016-09-21 #}
+{# wf_updated_on: 2018-07-23 #} {# wf_published_on: 2016-09-21 #} {# wf_blink_components: N/A #}
 
-#  マニフェストでアプリの省略名を定義する {: .page-title }
+# Manifest Contains short_name {: .page-title }
 
-##  監査が重要である理由 {: #why }
+## Overview {: #overview }
 
-ユーザーがアプリをホーム画面に追加すると、ホーム画面上でアプリ アイコンの下に `short_name` のテキストが表示されます。
-一般的に、アプリの正式名称を表示するにはスペースが足りない場合に、省略名が使用されます。
+After a user adds your app to the homescreen, the `short_name` is the text that is displayed on the homescreen next to your app icon. In general, it is used wherever there is insufficient space to display the full name of your app.
 
+## Recommendations {: #recommendations }
 
-##  監査に合格する方法 {: #how }
-
-ウェブアプリ マニフェストに `short_name` プロパティを追加します。
+Add a `short_name` property in your Web App Manifest.
 
     {
       ...
       "short_name": "Air Horner",
       ...
     }
+    
 
-Chrome
-で[推奨される最大文字数](https://developer.chrome.com/apps/manifest/name#short_name)は 12
-文字です。
+Chrome's [maximum recommended length](https://developer.chrome.com/apps/manifest/name#short_name) is 12 characters.
 
-アプリに "Add to Homescreen"
-機能を適切に実装して、テストを実施する方法については、[マニフェストを使用する](manifest-exists#how)で紹介しているガイドをご覧ください。
+Check out [Manifest Exists](manifest-exists#recommendations) for a list of guides that teach you how to properly implement and test "Add to Homescreen" support in your app.
 
+## More information {: #more-info }
 
-{% include "web/tools/lighthouse/audits/implementation-heading.html" %}
+Audit passes if the manifest contains either `short_name` or `name` property. The manifest that Lighthouse fetches is separate from the one that Chrome is using on the page, which can possibly cause inaccurate results.
 
-マニフェストに `short_name` か `name` プロパティのいずれかが含まれていれば、監査に合格します。
-なお、Lighthouse で取得するマニフェストは、Chrome がページで使用するマニフェストとは別のファイルであるため、正確な結果が出ない場合があります。
+## Feedback {: #feedback }
 
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
