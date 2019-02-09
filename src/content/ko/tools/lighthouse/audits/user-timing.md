@@ -1,38 +1,25 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: 'User Timing 마크 및 측정' Lighthouse 감사의 참조 문서입니다.
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Reference documentation for the "User Timing Marks and Measures" Lighthouse audit.
 
-{# wf_updated_on: 2016-10-06 #}
-{# wf_published_on: 2016-10-06 #}
+{# wf_updated_on: 2018-07-23 #} {# wf_published_on: 2016-10-06 #} {# wf_blink_components: N/A #}
 
-# User Timing 마크 및 측정  {: .page-title }
+# User Timing Marks and Measures {: .page-title }
 
-## 감사가 중요한 이유 {: #why }
+## Overview {: #overview }
 
-User Timing API를 사용하면 앱의 자바스크립트 성능을 측정할 수 있습니다.
-기본적으로 스크립트에서 어느 부분을 최적화할지 결정한 다음,
-User Timing API로 해당 스크립트를 계측합니다.
- 여기서 API를 사용하여 자바스크립트 결과에 액세스하거나
-[Chrome DevTools 타임라인
-기록](/web/tools/chrome-devtools/evaluate-performance/timeline-tool)에서 확인할 수 있습니다.
+The User Timing API enables you to measure your app's JavaScript performance. The basic idea is that you decide which parts of your scripts you want to optimize, and then you instrument those parts of your scripts with the User Timing API. From there, you can access the results from JavaScript using the API, or view them on your [Chrome DevTools Timeline Recordings](/web/tools/chrome-devtools/evaluate-performance/timeline-tool).
 
-## 감사를 통과하는 방법 {: #how }
+## Recommendations {: #recommendations }
 
-이 감사는 '통과' 또는 '실패' 테스트로 구성되지 않았습니다. 앱의 성능을 측정하는 데 도움이 되는
-유용한 API를 발견할 기회입니다.
- 이 감사에서 Lighthouse가 보고하는 점수는
-앱에서 발견한 User Timing 마크 및 측정 횟수와 같습니다.
+This audit is not structured as a "pass" or "fail" test. It's just an opportunity to discover a useful API that can aid you in measuring your app's performance. The score that Lighthouse reports for this audit corresponds to the number of User Timing Marks and Measures that it finds in your app.
 
-앱에 User Timing 마크 및 측정이 포함되어 있으면
-Lighthouse 보고서에서 이들을 확인할 수 있습니다.
+When your app does include User Timing Marks and Measures, you'll see these Marks and Measures in your Lighthouse report.
 
-User Timing API를 사용하여 앱의 자바스크립트 성능을 측정하는 방법에 대한 안내는 [User Timing API](https://www.html5rocks.com/en/tutorials/webperformance/usertiming/)를
-참조하세요.
+Check out [User Timing API](https://www.html5rocks.com/en/tutorials/webperformance/usertiming/) for an introduction on using the User Timing API to measure your app's JavaScript performance.
 
+## More information {: #more-info }
 
-{% include "web/tools/lighthouse/audits/implementation-heading.html" %}
+Lighthouse extracts User Timing data from Chrome's Trace Event Profiling Tool.
 
-Lighthouse는 Chrome의 추적 이벤트 프로파일링 도구에서 User Timing 데이터를 추출합니다.
+## Feedback {: #feedback }
 
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
