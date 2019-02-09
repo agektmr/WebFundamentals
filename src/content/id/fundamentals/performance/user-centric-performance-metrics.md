@@ -1,28 +1,20 @@
-project_path: /web/fundamentals/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Metrik Kinerja yang Berfokus pada Pengguna
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: User-centric Performance Metrics
 
-{# wf_updated_on: 2019-02-06 #}
-{# wf_published_on: 2017-06-01 #}
-{# wf_tags: performance #}
-{# wf_blink_components: Blink>PerformanceAPIs #}
+{# wf_updated_on: 2018-08-17 #} {# wf_published_on: 2017-06-01 #} {# wf_tags: performance #} {# wf_blink_components: Blink>PerformanceAPIs #}
 
 {% include "web/tools/chrome-devtools/_shared/styles.html" %}
 
-# Metrik Kinerja yang Berfokus pada Pengguna {: .page-title }
+# User-centric Performance Metrics {: .page-title }
 
 {% include "web/_shared/contributors/philipwalton.html" %}
 
-Anda mungkin kerap mendengar bahwa kinerja itu penting, dan
-yang teramat penting adalah bahwa aplikasi web Anda harus cepat.
+You've probably heard time and time again that performance matters, and that it's critical your web apps are fast.
 
-Tetapi ketika Anda mencoba menjawab pertanyaan: *seberapa cepat aplikasi saya?*, Anda akan menyadari bahwa cepat
-adalah istilah yang samar-samar. Apa sebenarnya yang dimaksud dengan kata cepat? Dalam konteks
-apa? Dan cepat untuk siapa?
+But as you try to answer the question: *how fast is my app?*, you'll realize that fast is a vague term. What exactly do we mean when we say fast? In what context? And fast for whom?
 
 <aside>
-  <strong>Note:</strong> Jika Anda lebih suka menonton video daripada membaca artikel,
- saya membahas topik ini di Google I/O 2017 dengan rekan saya
+  <strong>Note:</strong> If you'd rather watch a video than read an article,
+  I spoke on this topic at Google I/O 2017 with my colleague
   <a href="https://twitter.com/shubhie">Shubhie Panicker</a>.
 </aside>
 
@@ -32,766 +24,528 @@ apa? Dan cepat untuk siapa?
   </iframe>
 </div>
 
-Berbicara tentang kinerja, ketepatan adalah hal yang sangat penting agar kita tidak memunculkan
-miskonsepsi atau menyebarkan mitos yang kadang dapat menyebabkan
-developer yang sebenarnya memiliki maksud baik justru mengoptimalkan hal-hal yang keliru&mdash;yang pada akhirnya akan membahayakan pengalaman pengguna
-dan bukan justru memperbaikinya.
+When talking about performance it's important to be precise so we don't create misconceptions or spread myths that can sometimes lead to well-intentioned developers optimizing for the wrong things&mdash;ultimately harming the user experience rather than improving it.
 
-Untuk menawarkan contoh spesifik, saat ini sering kita dengar orang mengatakan sesuatu
-seperti: __*Saya menguji aplikasi saya, dan perlu waktu X.XX detik untuk memuatnya*__.
+To offer a specific example, it's common today to hear people say something like: ***I tested my app, and it loads in X.XX seconds***.
 
-Masalah dengan pernyataan ini *tidak* pada inti bahwa pernyataan itu palsu, tetapi pada inti bahwa
-pernyataan ini tidak sesuai dalam merepresentasikan kenyataan. Waktu muat aplikasi sangat berbeda dari satu pengguna ke pengguna yang lain,
-tergantung kemampuan perangkat dan kondisi jaringan yang digunakan. Mempresentasikan waktu
-muat sebagai angka tunggal akan mengabaikan pengguna yang mengalami waktu muat lebih lama.
+The problem with this statement is *not* that it's false, it's that it misrepresents reality. Load times vary dramatically from user to user, depending on their device capabilities and network conditions. Presenting load times as a single number ignores the users who experienced much longer loads.
 
-Dalam kenyataan, waktu muat aplikasi Anda adalah kumpulan waktu muat dari setiap
-pengguna, dan satu-satunya cara untuk merepresentasikannya adalah dengan distribusi
-seperti histogram di bawah:
+In reality, your app's load time is the collection of all load times from every individual user, and the only way to fully represent that is with a distribution like in the histogram below:
 
 <figure>
   <img src="/web/fundamentals/performance/images/perf-metrics-histogram.png"
-       alt="Histogram waktu muat untuk pengunjung situs"/>
+       alt="A histogram of load times for website visitors"/>
 </figure>
 
-Angka pada sumbu X menunjukkan waktu muat, dan tinggi batang pada
-sumbu Y menunjukkan angka relatif pengguna yang mengalami waktu muat
-dalam bucket waktu khusus. Seperti ditampilkan dalam bagan ini, ketika sebagian besar pengguna
-mengalami waktu muat kurang dari satu atau dua detik, tidak sedikit dari mereka masih mengalami
-waktu muat jauh lebih lama.
+The numbers along the X-axis show load times, and the height of the bars on the y-axis show the relative number of users who experienced a load time in that particular time bucket. As this chart shows, while the largest segment of users experienced loads of less than one or two seconds, many of them still saw much longer load times.
 
-Alasan lain mengapa "situs saya dimuat dalam X.XX detik" merupakan mitos adalah bahwa pemuatan bukanlah
-momen tunggal&mdash;tetapi merupakan pengalaman bahwa tidak satu pun metrik yang benar-benar mampu menangkap
-sepenuhnya. Ada beberapa momen selama pengalaman pemuatan yang bisa memengaruhi
-apakah pengguna mempersepsikannya sebagai "cepat", dan jika Anda hanya berfokus pada satu momen saja, Anda mungkin
-melewatkan pengalaman buruk yang terjadi selama sisa waktu.
+The other reason "my site loads in X.XX seconds" is a myth is that load is not a single moment in time&mdash;it's an experience that no one metric can fully capture. There are multiple moments during the load experience that can affect whether a user perceives it as "fast", and if you just focus on one you might miss bad experiences that happen during the rest of the time.
 
-Sebagai contoh, pertimbangkan aplikasi yang mengoptimalkan render awal cepat,
-yang mengirimkan konten kepada pengguna dengan segera. Jika aplikasi tersebut memuat bundle
-JavaScript besar untuk mem-parse dan mengeksekusinya, konten
-di halaman tidak akan interaktif hingga setelah JavaScript tersebut dijalankan. Jika pengguna
-bisa melihat link di halaman tersebut tetapi tidak bisa mengkliknya, atau jika ia dapat melihat kotak teks
-tapi tidak bisa mengetik di dalamnya, pengguna tersebut mungkin tidak akan tahu seberapa cepat halaman dirender.
+For example, consider an app that optimizes for a fast initial render, delivering content to the user right away. If that app then loads a large JavaScript bundle that takes several seconds to parse and execute, the content on the page will not be interactive until after that JavaScript runs. If a user can see a link on the page but can't click on it, or if they can see a text box but can't type in it, they probably won't care how fast the page rendered.
 
-Jadi, alih-alih mengukur pemuatan dengan satu metrik saja, sebaiknya kita mengukur
-waktu dari setiap momen di semua pengalaman yang bisa berdampak terhadap
-*persepsi* pemuatan pengguna.
+So rather than measuring load with just one metric, we should be measuring the times of every moment throughout the experience that can have an affect on the user's load *perception*.
 
-Contoh kedua mitos kinerja adalah bahwa __*kinerja adalah satu-satunya perhatian
-pada waktu muat*__.
+A second example of a performance myth is that ***performance is only a concern at load time***.
 
-Kita sebagai tim telah bersalah karena membuat kekeliruan ini, dan bisa diperbesar oleh
-fakta bahwa sebagian besar alat kinerja *hanya* mengukur kinerja pemuatan.
+We as a team have been guilty of making this mistake, and it can be magnified by the fact that most performance tools *only* measure load performance.
 
-Tetapi kenyataannya kinerja buruk dapat terjadi kapan saja, tidak hanya selama
-pemuatan. Aplikasi yang tidak merespons dengan cepat terhadap ketukan atau klik, dan aplikasi yang tidak
-ter-scroll atau bergerak dengan lancar bisa sama buruknya dengan aplikasi yang dimuat dengan lambat. Pengguna
-sangat memperhatikan seluruh pengalaman, dan kita sebagai developer juga harus demikian.
+But the reality is poor performance can happen at any time, not just during load. Apps that don't respond quickly to taps or clicks and apps that don't scroll or animate smoothly can be just as bad as apps that load slowly. Users care about the entire experience, and we developers should too.
 
-Tema umum dalam semua miskonsepsi kinerja ini adalah bahwa fokus diberikan pada
-hal-hal yang memiliki sedikit atau tidak ada sama sekali dengan pengalaman pengguna. Demikian pula,
-metrik kinerja tradisional seperti waktu
-[muat](https://developer.mozilla.org/en-US/docs/Web/Events/load) atau waktu
-[DOMContentLoaded](https://developer.mozilla.org/en-US/docs/Web/Events/DOMContentLoaded)
-sangat tidak dapat diandalkan, karena ketika hal itu terjadi, mungkin berkaitan atau
-mungkin tidak berkaitan dengan saat pengguna berpikir bahwa aplikasi tersebut dimuat.
+A common theme in all of these performance misconceptions is they focus on things that have little or nothing to do with the user experience. Likewise, traditional performance metrics like [load](https://developer.mozilla.org/en-US/docs/Web/Events/load) time or [DOMContentLoaded](https://developer.mozilla.org/en-US/docs/Web/Events/DOMContentLoaded) time are extremely unreliable since when they occur may or may not correspond to when the user thinks the app is loaded.
 
-Dengan demikian, untuk memastikan bahwa kita tidak mengulang kesalahan ini, maka kita harus menjawab pertanyaan-pertanyaan
-berikut:
+So to ensure we don't repeat this mistake, we have to answer these questions:
 
-1. Metrik apa yang paling akurat mengukur kinerja seperti yang dirasakan oleh manusia?
-2. Bagaimana kita mengukur metrik-metrik ini pada pengguna aktual kita?
-3. Bagaimana kita menginterpretasikan pengukuran kita untuk menentukan apakah aplikasi itu "cepat"?
-4. Setelah memahami kinerja pengguna nyata aplikasi kita, apa yang harus kita lakukan untuk mencegah terjadinya
-  regresi dan berharap bisa meningkatkan kinerja di masa mendatang?
+1. What metrics most accurately measure performance as perceived by a human?
+2. How do we measure these metrics on our actual users?
+3. How do we interpret our measurements to determine whether an app is "fast"?
+4. Once we understand our app's real-user performance, what do we do to prevent regressions and hopefully improve performance in the future?
 
-## Metrik kinerja yang berfokus pada Pengguna
+## User-centric performance metrics
 
-Ketika pengguna membuka ke halaman web, mereka biasanya mencari umpan balik
-visual untuk meyakinkan mereka bahwa semuanya akan berfungsi seperti yang diharapkan.
+When a user navigates to a web page, they're typically looking for visual feedback to reassure them that everything is going to work as expected.
 
 <table>
   <tr>
-   <td><strong>Apakah terjadi?</strong></td>
-   <td>Apakah berhasil terbuka? Apakah server menanggapi?</td>
+   <td><strong>Is it happening?</strong></td>
+   <td>Did the navigation start successfully? Has the server responded?</td>
   </tr>
   <tr>
-   <td><strong>Apakah berguna?</strong></td>
-   <td>Apakah sudah cukup konten yang dirender bisa disukai oleh pengguna?</td>
+   <td><strong>Is it useful?</strong></td>
+   <td>Has enough content rendered that users can engage with it?</td>
   </tr>
   <tr>
-   <td><strong>Apakah bisa digunakan?</strong></td>
-   <td>Apakah pengguna bisa berinteraksi dengan halaman, atau apakah masih sibuk memuat?</td>
+   <td><strong>Is it usable?</strong></td>
+   <td>Can users interact with the page, or is it still busy loading?</td>
   </tr>
   <tr>
-   <td><strong>Apakah menyenangkan?</strong></td>
-   <td>Apakah interaksi lancar dan natural, bebas lambat dan tersendat?</td>
+   <td><strong>Is it delightful?</strong></td>
+   <td>Are the interactions smooth and natural, free of lag and jank?</td>
   </tr>
 </table>
 
-Untuk memahami kapan sebuah halaman mengirimkan umpan balik ini kepada para penggunanya, kami telah mendefinisikan
-banyak metrik baru:
+To understand when a page delivers this feedback to its users, we've defined several new metrics:
 
-### First paint dan first contentful paint
+### First paint and first contentful paint
 
-[Paint Timing](https://github.com/WICG/paint-timing) API mendefinisikan dua
-metrik: *first paint* (FP) dan *first contentful paint* (FCP). Metrik ini
-menandai titik-titik, segera setelah navigasi, ketika browser merender piksel
-ke layar. Ini penting bagi pengguna karena menjawab pertanyaan:
-*apakah terjadi?*
+The [Paint Timing](https://github.com/WICG/paint-timing) API defines two metrics: *first paint* (FP) and *first contentful paint* (FCP). These metrics mark the points, immediately after navigation, when the browser renders pixels to the screen. This is important to the user because it answers the question: *is it happening?*
 
-Perbedaan utama antara kedua metrik adalah bahwa FP menandai titik ketika
-browser merender *apa saja* yang secara visual berbeda dari apa yang ada di
-layar sebelum navigasi. Sebaliknya, FCP adalah titik ketika browser
-merender bit pertama konten dari DOM, yang mungkin berupa teks, gambar, SVG,
-atau bahkan elemen `<canvas>`.
+The primary difference between the two metrics is FP marks the point when the browser renders *anything* that is visually different from what was on the screen prior to navigation. By contrast, FCP is the point when the browser renders the first bit of content from the DOM, which may be text, an image, SVG, or even a `<canvas>` element.
 
-### First meaningful paint dan hero element timing
+### First meaningful paint and hero element timing
 
-First meaningful paint (FMP) adalah metrik yang menjawab pertanyaan: "apakah
-berguna?". Sementara konsep "berguna" sangat sulit ditentukan dengan cara yang
-berlaku umum untuk semua halaman web (dan dengan demikian tidak ada ketentuan), cukup
-mudah bagi developer web itu sendiri untuk mengetahui bagian apa dari halaman mereka yang akan
-paling berguna bagi penggunanya.
+First meaningful paint (FMP) is the metric that answers the question: "is it useful?". While the concept of "useful" is very hard to spec in a way that applies generically to all web pages (and thus no spec exists, yet), it's quite easy for web developers themselves to know what parts of their pages are going to be most useful to their users.
 
 <figure>
   <img src="/web/fundamentals/performance/images/perf-metrics-hero-elements.png"
-       alt="Contoh hero element pada berbagai situs"/>
+       alt="Examples of hero elements on various websites"/>
 </figure>
 
-"Bagian terpenting" dari suatu halaman web sering disebut sebagai *hero
-element*. Sebagai contoh, di halaman tontonan YouTube, hero element berupa
-video utama. Di Twitter hero element tersebut mungkin berupa badge notifikasi dan tweet
-pertama. Di aplikasi cuaca, hero element tersebut berupa ramalan untuk lokasi tertentu. Dan di
-situs berita, hero element berupa kabar utama dan gambar unggulan.
+These "most important parts" of a web page are often referred to as *hero elements*. For example, on the YouTube watch page, the hero element is the primary video. On Twitter it's probably the notification badges and the first tweet. On a weather app it's the forecast for the specified location. And on a news site it's likely the primary story and featured image.
 
-Halaman hampir selalu memiliki bagian-bagian yang lebih penting daripada bagian-bagian lainnya. Jika
-bagian terpenting dari sebuah halaman dapat dimuat dengan cepat, pengguna mungkin tidak menyadari bahwa
-bagian halaman lainnya tidak dimuat dengan cepat.
+Web pages almost always have parts that are more important than others. If the most important parts of a page load quickly, the user may not even notice if the rest of the page doesn't.
 
-### Tugas yang berjalan lama
+### Long tasks
 
-Browser menanggapi input pengguna dengan menambahkan tugas ke antrean pada thread utama untuk
-dieksekusi satu per satu. Ini juga tempat browser mengeksekusi
-JavaScript aplikasi Anda, sehingga dalam pengertian itu browser tersebut thread tunggal.
+Browsers respond to user input by adding tasks to a queue on the main thread to be executed one by one. This is also where the browser executes your application's JavaScript, so in that sense the browser is single-threaded.
 
-Dalam beberapa kasus, tugas-tugas ini dapat memakan waktu lama untuk dijalankan, dan jika hal itu terjadi, thread
-utama diblokir dan semua tugas lain yang sedang dalam antrean harus menunggu.
+In some cases, these tasks can take a long time to run, and if that happens, the main thread is blocked and all other tasks in the queue have to wait.
 
 <figure>
   <img src="/web/fundamentals/performance/images/perf-metrics-long-tasks.png"
-       alt="Tugas yang berjalan lama sebagaimana dilihat di alat developer Chrome"/>
+       alt="Long tasks as seen in the Chrome developer tools"/>
 </figure>
 
-Pengguna akan melihat ini sebagai lambat atau tersendat, dan itu adalah sumber utama pengalaman
-buruk di web saat ini.
+To the user this appears as lag or jank, and it's a major source of bad experiences on the web today.
 
-[Long tasks API](https://w3c.github.io/longtasks/) mengidentifikasi setiap tugas
-melebihi 50 milidetik sebagai berpotensi bermasalah, dan menampilkan tugas-tugas
-tersebut ke developer aplikasi. Waktu 50 milidetik dipilih agar aplikasi
-bisa memenuhi [panduan RAIL](/web/fundamentals/performance/rail)
-dengan menanggapi input pengguna dalam 100 milidetik.
+The [long tasks API](https://w3c.github.io/longtasks/) identifies any task longer than 50 milliseconds as potentially problematic, and it exposes those tasks to the app developer. The 50 millisecond time was chosen so applications could meet the [RAIL guidelines](/web/fundamentals/performance/rail) of responding to user input within 100 ms.
 
 ### Time to interactive
 
-Metrik *Time to interactive* (TTI) menandai poin saat aplikasi Anda
-dirender secara visual dan mampu menanggapi input pengguna secara meyakinkan.
-Aplikasi mungkin tidak bisa menanggapi input pengguna karena beberapa alasan:
+The metric *Time to interactive* (TTI) marks the point at which your application is both visually rendered and capable of reliably responding to user input. An application could be unable to respond to user input for a couple of reasons:
 
-* JavaScript yang diperlukan untuk membuat komponen yang diperlukan untuk membuat di halaman belum
-  dimuat.
-* Ada tugas-tugas yang berjalan lama yang memblokir thread utama (seperti yang dijelaskan di bagian
-  terakhir).
+* The JavaScript needed to make the components on the page work hasn't yet loaded.
+* There are long tasks blocking the main thread (as described in the last section).
 
-Metrik TTI mengidentifikasi titik ketika JavaScript awal halaman
-dimuat dan thread utama dalam keadaan idle (bebas tugas yang berjalan lama).
+The TTI metric identifies the point at which the page's initial JavaScript is loaded and the main thread is idle (free of long tasks).
 
-### Memetakan metrik untuk pengalaman pengguna
+### Mapping metrics to user experience
 
-Kembali ke pertanyaan-pertanyaan yang sebelumnya kita identifikasi sebagai hal yang paling
-penting bagi pengalaman pengguna, tabel ini menguraikan bagaimana masing-masing metrik
-hanya mencantumkan peta ke pengalaman yang kita harap dapat dioptimalkan:
+Getting back to the questions we previously identified as being the most important to the user experience, this table outlines how each of the metrics we just listed maps to the experience we hope to optimize:
 
 <table>
   <tr>
-    <th>Pengalaman</th>
-    <th>Metrik</th>
+    <th>The Experience</th>
+    <th>The Metric</th>
   </tr>
   <tr>
-    <td>Apakah terjadi?</td>
+    <td>Is it happening?</td>
     <td>First Paint (FP) / First Contentful Paint (FCP)</td>
   </tr>
   <tr>
-    <td>Apakah berguna?</td>
+    <td>Is it useful?</td>
     <td>First Meaningful Paint (FMP) / Hero Element Timing</td>
   </tr>
   <tr>
-    <td>Apakah bisa digunakan?</td>
+    <td>Is it usable?</td>
     <td>Time to Interactive (TTI)</td>
   </tr>
   <tr>
-    <td>Apakah menyenangkan?</td>
-    <td>Tugas yang Berjalan Lama (secara teknis tidak ada tugas yang berjalan lama)</td>
+    <td>Is it delightful?</td>
+    <td>Long Tasks (technically the absence of long tasks)</td>
   </tr>
 </table>
 
-Dan screenshot timeline pemuatan ini akan membantu Anda memvisualkan di mana
-metrik pemuatan cocok dalam pengalaman pemuatan:
+And these screenshots of a load timeline should help you better visualize where the load metrics fit in the load experience:
 
 <figure>
   <img src="/web/fundamentals/performance/images/perf-metrics-load-timeline.png"
-       alt="Screenshot ketika metrik-metrik ini terjadi di pengalaman pemuatan"/>
+       alt="Screenshots of where these metrics occur in the load experience"/>
 </figure>
 
-Bagian berikutnya memerinci cara mengukur metrik-metrik ini pada perangkat pengguna nyata.
+The next section details how to measure these metrics on real users' devices.
 
-## Mengukur metrik-metrik ini pada perangkat pengguna nyata
+## Measuring these metrics on real users' devices
 
-Salah satu alasan utama kami secara historis mengoptimalkan metrik seperti pemuatan dan
-`DOMContentLoaded` adalah karena metrik-metrik tersebut terekspos sebagai peristiwa di browser dan mudah
-mengukur pengguna nyata.
+One of the main reasons we've historically optimized for metrics like load and `DOMContentLoaded` is because they're exposed as events in the browser and easy to measure on real users.
 
-Sebaliknya, banyak metrik lain yang secara historis sangat sulit untuk
-diukur. Sebagai contoh, kode ini adalah jalan pintas yang sering kita lihat digunakan oleh developer untuk mendeteksi
-tugas yang berjalan lama:
+By contrast, a lot of other metrics have been historically very hard to measure. For example, this code is a hack we often see developers use to detect long tasks:
 
-```
-(function detectLongFrame() {
-  var lastFrameTime = Date.now();
-  requestAnimationFrame(function() {
-    var currentFrameTime = Date.now();
+    (function detectLongFrame() {
+      var lastFrameTime = Date.now();
+      requestAnimationFrame(function() {
+        var currentFrameTime = Date.now();
+    
+        if (currentFrameTime - lastFrameTime > 50) {
+          // Report long frame here...
+        }
+    
+        detectLongFrame(currentFrameTime);
+      });
+    }());
+    
 
-    if (currentFrameTime - lastFrameTime > 50) {
-      // Report long frame here...
-    }
+This code starts an infinite `requestAnimationFrame` loop and records the time on each iteration. If the current time is more than 50 milliseconds after the previous time, it assumes it was the result of a long task. While this code mostly works, it has a lot of downsides:
 
-    detectLongFrame(currentFrameTime);
-  });
-}());
-```
+* It adds overhead to every frame.
+* It prevents idle blocks.
+* It's terrible for battery life.
 
-Kode ini dimulai dengan loop `requestAnimationFrame` tanpa batas dan merekam waktu
-pada setiap iterasi. Jika waktu saat ini lebih dari 50 milidetik setelah
-waktu sebelumnya, kita bisa berasumsi bahwa waktu tersebut adalah hasil dari tugas yang berjalan lama. Meskipun kode ini
-umumnya berfungsi, namun memiliki banyak kelemahan:
+The most important rule of performance measurement code is that it shouldn't make performance worse.
 
-* Menambah overhead ke setiap frame.
-* Mencegah idle block.
-* Sangat tidak baik untuk masa pakai baterai.
+Services like [Lighthouse](/web/tools/lighthouse/) and [Web Page Test](https://www.webpagetest.org/) have offered some of these new metrics for a while now (and in general they're great tools for testing performance on features prior to releasing them), but these tools don't run on your user's devices, so they don't reflect the actual performance experience of your users.
 
-Aturan terpenting pengukuran kinerja adalah bahwa aturan tersebut tidak membuat kinerja
-menjadi lebih buruk.
+Luckily, with the addition of a few new browser APIs, measuring these metrics on real devices is finally possible without a lot of hacks or workarounds that can make performance worse.
 
-Layanan seperti [Lighthouse](/web/tools/lighthouse/) dan [Uji Halaman
-](https://www.webpagetest.org/) sudah menawarkan beberapa metrik baru ini
-untuk saat ini (dan secara umum merupakan alat yang hebat untuk menguji kinerja pada
-fitur sebelum merilisnya), tetapi alat ini tidak berjalan di perangkat
-pengguna Anda, jadi mereka tidak mencerminkan pengalaman kinerja aktual pengguna Anda.
+These new APIs are [`PerformanceObserver`](https://developer.mozilla.org/en-US/docs/Web/API/PerformanceObserver), [`PerformanceEntry`](https://developer.mozilla.org/en-US/docs/Web/API/PerformanceEntry), and [`DOMHighResTimeStamp`](https://developer.mozilla.org/en-US/docs/Web/API/DOMHighResTimeStamp). To show some code with these new APIs in action, the following code example creates a new `PerformanceObserver` instance and subscribes to be notified about paint entries (e.g. FP and FCP) as well as any long tasks that occur:
 
-Untungnya, dengan penambahan beberapa API browser baru, mengukur metrik ini
-pada perangkat nyata akhirnya sangat mungkin tanpa banyak jalan pintas atau solusi yang dapat
-memperburuk kinerja.
+    const observer = new PerformanceObserver((list) => {
+      for (const entry of list.getEntries()) {
+        // `entry` is a PerformanceEntry instance.
+        console.log(entry.entryType);
+        console.log(entry.startTime); // DOMHighResTimeStamp
+        console.log(entry.duration); // DOMHighResTimeStamp
+      }
+    });
+    
+    // Start observing the entry types you care about.
+    observer.observe({entryTypes: ['resource', 'paint']});
+    
 
-API baru ini adalah
-[`PerformanceObserver`](https://developer.mozilla.org/en-US/docs/Web/API/PerformanceObserver),
-[`PerformanceEntry`](https://developer.mozilla.org/en-US/docs/Web/API/PerformanceEntry),
-dan
-[`DOMHighResTimeStamp`](https://developer.mozilla.org/en-US/docs/Web/API/DOMHighResTimeStamp).
-Untuk menampilkan beberapa kode dengan penerapan API baru ini, contoh kode berikut
-menciptakan instance `PerformanceObserver` baru dan subscribe dinotifikasi
-tanpa entri paint (mis. FP dan FCP) serta semua tugas yang berjalan lama yang terjadi:
+What `PerformanceObserver` gives us that we've never had before is the ability to subscribe to performance events as they happen and respond to them in an asynchronous fashion. This replaces the older [PerformanceTiming](https://www.w3.org/TR/navigation-timing/#sec-navigation-timing-interface) interface, which often required polling to see when the data was available.
 
-```
-const observer = new PerformanceObserver((list) => {
-  for (const entry of list.getEntries()) {
-    // `entry` is a PerformanceEntry instance.
-    console.log(entry.entryType);
-    console.log(entry.startTime); // DOMHighResTimeStamp
-    console.log(entry.duration); // DOMHighResTimeStamp
-  }
-});
+### Tracking FP/FCP
 
-// Start observing the entry types you care about.
-observer.observe({entryTypes: ['resource', 'paint']});
-```
+Once you have the data for a particular performance event, you can send it to whatever analytics service you use to capture the metric for the current user. For example, using Google Analytics you might track first paint times as follows:
 
-Apa yang diberikan `PerformanceObserver` kepada kita yang belum pernah kita miliki sebelumnya adalah kemampuan
-subscribe ke peristiwa-peristiwa kinerja saat peristiwa-peristiwa itu terjadi dan menanggapinya dengan cara
-asinkron. Ini menggantikan antarmuka
-[PerformanceTiming](https://www.w3.org/TR/navigation-timing/#sec-navigation-timing-interface)
-lama, yang sering meminta polling untuk melihat ketika data
-tersedia.
+    <head>
+      <!-- Add the async Google Analytics snippet first. -->
+      <script>
+      window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+      ga('create', 'UA-XXXXX-Y', 'auto');
+      ga('send', 'pageview');
+      </script>
+      <script async src='https://www.google-analytics.com/analytics.js'></script>
+    
+      <!-- Register the PerformanceObserver to track paint timing. -->
+      <script>
+      const observer = new PerformanceObserver((list) => {
+        for (const entry of list.getEntries()) {
+          // `name` will be either 'first-paint' or 'first-contentful-paint'.
+          const metricName = entry.name;
+          const time = Math.round(entry.startTime + entry.duration);
+    
+          ga('send', 'event', {
+            eventCategory: 'Performance Metrics',
+            eventAction: metricName,
+            eventValue: time,
+            nonInteraction: true,
+          });
+        }
+      });
+      observer.observe({entryTypes: ['paint']});
+      </script>
+    
+      <!-- Include any stylesheets after creating the PerformanceObserver. -->
+      <link rel="stylesheet" href="...">
+    </head>
+    
 
-### Melacak FP/FCP
+<aside>
+  <p><strong>Important:</strong> you must ensure your <code>PerformanceObserver
+  </code> is registered in the <code>&lt;head&gt;</code> of your document
+  before any stylesheets, so it runs before FP/FCP happens.<p>
+  <p>This will no longer be necessary once Level 2 of the <a
+  href="https://w3c.github.io/performance-timeline/">Performance Observer spec
+  </a> is implemented, as it introduces a <a
+  href="https://w3c.github.io/performance-timeline/#dom-performanceobserverinit-
+  buffered"><code>buffered</code></a> flag that allows you to access performance
+  entries queued prior to the <code>PerformanceObserver</code>
+  being created.</p>
+</aside>
 
-Setelah Anda memiliki data untuk peristiwa kinerja tertentu, Anda dapat mengirimnya ke
-layanan analisis yang Anda gunakan untuk mengambil metrik bagi pengguna saat ini.
-Sebagai contoh, dengan Google Analytics, Anda bisa melacak waktu first paint sebagai
-berikut:
+### Tracking FMP using hero elements
 
-```
-<head>
-  <!-- Add the async Google Analytics snippet first. -->
-  <script>
-  window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
-  ga('create', 'UA-XXXXX-Y', 'auto');
-  ga('send', 'pageview');
-  </script>
-  <script async src='https://www.google-analytics.com/analytics.js'></script>
+Once you've identified what elements on the page are the hero elements, you'll want to track the point at which they're visible to your users.
 
-  <!-- Register the PerformanceObserver to track paint timing. -->
-  <script>
-  const observer = new PerformanceObserver((list) => {
-    for (const entry of list.getEntries()) {
-      // `name` will be either 'first-paint' or 'first-contentful-paint'.
-      const metricName = entry.name;
-      const time = Math.round(entry.startTime + entry.duration);
+We don't yet have a standardized definition for FMP (and thus no performance entry type either). This is in part because of how difficult it is to determine, in a generic way, what "meaningful" means for all pages.
 
+However, in the context of a single page or a single application, it's generally best to consider FMP to be the moment when your hero elements are visible on the screen.
+
+Steve Souders has a great article called [User Timing and Custom Metrics](https://speedcurve.com/blog/user-timing-and-custom-metrics/) that details many of the techniques for using browser's performance APIs to determine in code when various types of media are visible.
+
+### Tracking TTI
+
+In the long term, we hope to have a TTI metric standardized and exposed in the browser via PerformanceObserver. In the meantime, we've developed a polyfill that can be used to detect TTI today and works in any browser that supports the [Long Tasks API](https://w3c.github.io/longtasks/).
+
+The polyfill exposes a `getFirstConsistentlyInteractive()` method, which returns a promise that resolves with the TTI value. You can track TTI using Google Analytics as follows:
+
+    import ttiPolyfill from './path/to/tti-polyfill.js';
+    
+    ttiPolyfill.getFirstConsistentlyInteractive().then((tti) => {
       ga('send', 'event', {
         eventCategory: 'Performance Metrics',
-        eventAction: metricName,
-        eventValue: time,
+        eventAction: 'TTI',
+        eventValue: tti,
         nonInteraction: true,
       });
-    }
-  });
-  observer.observe({entryTypes: ['paint']});
-  </script>
+    });
+    
 
-  <!-- Include any stylesheets after creating the PerformanceObserver. -->
-  <link rel="stylesheet" href="...">
-</head>
-```
+The `getFirstConsistentlyInteractive()` method accepts an optional `startTime` configuration option, allowing you to specify a lower bound for which you know your app cannot be interactive before. By default the polyfill uses DOMContentLoaded as the start time, but it's often more accurate to use something like the moment your hero elements are visible or the point when you know all your event listeners have been added.
+
+Refer to the [TTI polyfill documentation](https://github.com/GoogleChrome/tti-polyfill) for complete installation and usage instructions.
 
 <aside>
-  <p><strong>Penting:</strong> Anda harus memastikan <code>PerformanceObserver
- Anda </code> terdaftar di <code>&lt;head&gt;</code> dokumen Anda
-  sebelum stylesheet, sehingga dijalankan sebelum FP/FCP terjadi.<p>
-  <p>Ini tidak diperlukan lagi setelah Level 2 <a
-  href="https://w3c.github.io/performance-timeline/">spesifikasi Performance Observer
-  </a> diterapkan, saat memperkenalkan flag <a
-  href="https://w3c.github.io/performance-timeline/#dom-performanceobserverinit-
-  buffered"><code>buffered</code></a> yang mengizinkan Anda mengakses entri kinerja
-  yang diatrekan sebelum <code>PerformanceObserver</code>
-  dibuat.</p>
+  <strong>Note:</strong> As with FMP, it's quite hard to spec a TTI metric
+  definition that works perfectly for all web pages. The version we've
+  implemented in the polyfill will work for most apps, but it's possible it
+  won't work for your particular app. It's important that you test it before
+  relying on it. If you want more details on the specifics of the TTI
+  definition and implementation you can read the
+  <a href="https://goo.gl/OSmrPk">TTI metric definition doc</a>.
 </aside>
 
-### Melacak FMP menggunakan hero element
+### Tracking long tasks
 
-Setelah mengidentifikasi elemen apa di halaman tersebut yang merupakan hero element,
-Anda perlu melacak titik di mana hero element itu terlihat oleh pengguna.
+I mentioned above that long tasks will often cause some sort of negative user experience (e.g. a sluggish event handler or a dropped frame). It's good to be aware of how often this is happening, so you can make efforts to minimize it.
 
-Kami belum memiliki definisi standar untuk FMP (dan dengan demikian juga tidak ada jenis entri
-kinerja). Ini tidak bisa diabaikan karena betapa sulitnya menentukan,
-dengan cara umum, apa arti "berguna" untuk semua halaman.
+To detect long tasks in JavaScript you create a new `PerformanceObserver` and observe entries of type `longtask`. One nice feature of long task entries is they contain an [attribution property](https://w3c.github.io/longtasks/#sec-TaskAttributionTiming), so you can more easily track down which code caused the long task:
 
-Namun, dalam konteks halaman tunggal atau aplikasi tunggal, secara umum
-paling baik untuk mempertimbangkan FMP menjadi momen ketika hero element Anda terlihat
-di layar.
-
-Steve Souders memiliki artikel hebat yang disebut [Metrik User Timing dan Kustom
-](https://speedcurve.com/blog/user-timing-and-custom-metrics/) yang
-menjelaskan banyak teknik untuk menggunakan API kinerja browser guna untuk ditentukan
-dalam kode ketika berbagai jenis media terlihat.
-
-### Melacak TTI
-
-Dalam jangka panjang, kami berharap memiliki metrik TTI yang terstadardisasi dan diekspos dalam
-browser melalui PerformanceObserver. Sementara itu, kami sudah mengembangkan polyfill
-yang dapat digunakan untuk mendeteksi TTI saat ini dan dapat berfungsi di browser apa pun yang mendukung
-[Long Tasks API](https://w3c.github.io/longtasks/).
-
-Polyfill mengekspos metode `getFirstConsistentlyInteractive()`, yang menampilkan
-promise yang dipecahkan dengan nilai TTI. Anda bisa melacak TTI menggunakan Google
-Analytics berikut:
-
-```
-import ttiPolyfill from './path/to/tti-polyfill.js';
-
-ttiPolyfill.getFirstConsistentlyInteractive().then((tti) => {
-  ga('send', 'event', {
-    eventCategory: 'Performance Metrics',
-    eventAction: 'TTI',
-    eventValue: tti,
-    nonInteraction: true,
-  });
-});
-```
-
-Metode `getFirstConsistentlyInteractive()` menerima opsi konfigurasi `startTime`
-opsional, yang mengizinkan Anda menentukan ikatan yang lebih rendah yang Anda tahu
-aplikasi Anda tidak bisa interaktif sebelumnya. Secara default, polyfill menggunakan
-DOMContentLoaded sebagai waktu mulai, tetapi seringkali lebih akurat untuk digunakan
-sesuatu seperti saat hero element Anda terlihat atau titik ketika Anda
-mengetahui semua event listener Anda telah ditambahkan.
-
-Lihat [dokumentasi polyfill
-TTI](https://github.com/GoogleChrome/tti-polyfill) untuk petunjuk lengkap
-pemasangan dan penggunaan.
-
-<aside>
-  <strong>Note:</strong> Seperti dengan FMP, sangat sulit untuk menentukan definisi metrik TTI
-  yang bekerja sempurna untuk semua halaman. Versi yang sudah kami
-  terapkan dalam polyfill akan dapat berfungsi untuk hampir di semua aplikasi, tetapi mungkin
-  tidak bisa berfungsi untuk aplikasi tertentu Anda. Sebaiknya Anda mengujinya terlebih dahulu
-  mengandalkannya. Jika Anda ingin mendapatkan informasi lebih lengkap tentang spesifikasi dan implementasi TTI
-, Anda bisa membaca
-  <a href="https://goo.gl/OSmrPk">dokumen definisi metrik </a>.
-</aside>
-
-### Melacak tugas yang berjalan lama
-
-Saya menyebutkan di atas bahwa tugas yang berjalan lama sering menyebabkan pengalaman pengguna negatif
-(mis. pengendali peristiwa yang lamban atau penurunan frame). Sebaiknya Anda tahu
-seberapa sering ini terjadi, sehingga Anda bisa melakukan upaya untuk meminimalkannya.
-
-Untuk mendeteksi tugas yang berjalan lama di JavaScript, buat `PerformanceObserver` baru dan
-amati entri jenis `longtask`. Salah satu fitur menarik entri tugas yang berjalan lama adalah
-bahwa tugas itu berisi [properti
-atribusi](https://w3c.github.io/longtasks/#sec-TaskAttributionTiming), sehingga
-Anda bisa dengan mudah melacak kode mana yang menyebabkan tugas berjalan lama:
-
-```
-const observer = new PerformanceObserver((list) => {
-  for (const entry of list.getEntries()) {
-    ga('send', 'event', {
-      eventCategory: 'Performance Metrics',
-      eventAction: 'longtask',
-      eventValue: Math.round(entry.startTime + entry.duration),
-      eventLabel: JSON.stringify(entry.attribution),
+    const observer = new PerformanceObserver((list) => {
+      for (const entry of list.getEntries()) {
+        ga('send', 'event', {
+          eventCategory: 'Performance Metrics',
+          eventAction: 'longtask',
+          eventValue: Math.round(entry.startTime + entry.duration),
+          eventLabel: JSON.stringify(entry.attribution),
+        });
+      }
     });
-  }
-});
+    
+    observer.observe({entryTypes: ['longtask']});
+    
 
-observer.observe({entryTypes: ['longtask']});
-```
+The attribution property will tell you what frame context was responsible for the long task, which is helpful in determining if third party iframe scripts are causing issues. Future versions of the spec are planning to add more granularity and expose script URL, line, and column number, which will be very helpful in determining if your own scripts are causing slowness.
 
-Properti atribusi akan menjelaskan konteks frame mana sebagai penyebab
-tugas yang berjalan lama, yang berguna dalam menentukan apakah skrip iframe pihak ketiga yang
-menyebabkan masalah. Versi masa depan spesifikasi berencana untuk menambahkan lebih banyak granularitas
-dan mengekspos URL, baris, dan jumlah kolom skrip, yang akan sanagt membantu dalam
-menentukan apakah skrip Anda menyebabkan pelambatan.
+### Tracking input latency
 
-### Melacak latensi input
+Long tasks that block the main thread can prevent your event listeners from executing in a timely manner. The [RAIL performance model](/web/fundamentals/performance/rail) teaches us that in order for a user interface to feel smooth, it should respond within 100 ms of user input, and if this isn't happening, it's important to know about it.
 
-Tugas yang berjalan lama yang memblokir thread utama dapat mencegah event listener Anda
-melakukan eksekusi secara tepat waktu. [Model kinerja
-RAIL](/web/fundamentals/performance/rail) mengajarkan bahwa order untuk satu antarmuka
-pengguna terasa lancar, maka harus menanggapi dalam 100 milidetik input pengguna, dan jika
-ini tidak terjadi, maka penting untuk mengetahuinya.
+To detect input latency in code you can compare the event's time stamp to the current time, and if the difference is larger than 100 ms, you can (and should) report it.
 
-Untuk mendeteksi latensi input dalam kode, Anda bisa membandingkan stempel waktu dengan
-waktu sekarang, dan jika perbedaanya melebihi 100 milidetik, Anda bisa (dan harus)
-melaporkannya.
-
-```
-const subscribeBtn = document.querySelector('#subscribe');
-
-subscribeBtn.addEventListener('click', (event) => {
-  // Event listener logic goes here...
-
-  const lag = performance.now() - event.timeStamp;
-  if (lag > 100) {
-    ga('send', 'event', {
-      eventCategory: 'Performance Metric'
-      eventAction: 'input-latency',
-      eventLabel: '#subscribe:click',
-      eventValue: Math.round(lag),
-      nonInteraction: true,
+    const subscribeBtn = document.querySelector('#subscribe');
+    
+    subscribeBtn.addEventListener('click', (event) => {
+      // Event listener logic goes here...
+    
+      const lag = performance.now() - event.timeStamp;
+      if (lag > 100) {
+        ga('send', 'event', {
+          eventCategory: 'Performance Metric'
+          eventAction: 'input-latency',
+          eventLabel: '#subscribe:click',
+          eventValue: Math.round(lag),
+          nonInteraction: true,
+        });
+      }
     });
-  }
-});
-```
+    
 
-Karena latensi acara biasanya merupakan hasil dari tugas yang berjalan lama, Anda dapat menggabungkan logika
-deteksi latensi laten Anda dengan logika deteksi tugas yang berjalan lama: jika tugas yang berjalan lama
-memblokir thread utama pada saat yang sama dengan `event.timeStamp`, Anda
-juga bisa melaporkan nilai atribusi tugas yang berjalan lama tersebut. Ini akan mengizinkan Anda
-menggambar garis yang jelas antara pengalaman kinerja neatif dan kode
-penyebabnya.
+Since event latency is usually the result of a long task, you can combine your event latency detection logic with your long task detection logic: if a long task was blocking the main thread at the same time as `event.timeStamp` you could report that long task's attribution value as well. This would allow you to draw a very clear line between negative performance experiences and the code that caused it.
 
-Meskipun teknik ini tidak sempurna (tidak menangani event listener yang berlangsung lama
-pada fase propagasi, dan tidak berfungsi untuk scrolling atau animasi
-komposit yang tidak dijalankan di thread utama), namun menjadi langkah bagus pertama
-untuk memahami seberapa sering kode JavaScript yang berjalan dalam waktu lama mempengaruhi pengalaman
-pengguna.
+While this technique isn't perfect (it doesn't handle long event listeners later in the propagation phase, and it doesn't work for scrolling or composited animations that don't run on the main thread), it's a good first step into better understanding how often long running JavaScript code affects user experience.
 
-## Mengintepretasikan data
+## Interpreting the data
 
-Setelah Anda mulai mengumpulkan metrik kinerja untuk pengguna nyata, Anda harus
-menjalankan data tersebut. Data kinerja pengguna nyata berguna untuk beberapa
-alasan utama:
+Once you've started collecting performance metrics for real users, you need to put that data into action. Real-user performance data is useful for a few primary reasons:
 
-* Memvalidasi bahwa aplikasi Anda berkinerja sesuai harapan.
-* Mengidentifikasi tempat-tempat di mana kinerja buruk berdampak negatif terhadap konversi
-  (apa pun maknanya bagi aplikasi Anda).
-* Mencari peluang untuk menyempurnakan pengalaman pengguna dan membuat pengguna nyaman.
+* Validating that your app performs as expected.
+* Identifying places where poor performance is negatively affecting conversions (whatever that means for your app).
+* Finding opportunities to improve the user experience and delight your users.
 
-Satu hal yang pasti patut diperbandingkan adalah bagaimana kinerja aplikasi Anda di desktop
-vs perangkat seluler. Bagan berikut menunjukkan distribusi TTI
-di desktop (biru) dan seluler (jingga). Seperti yang Anda lihat dari contoh ini, nilai TTI
-di perangkat seluler sedikit lebih lama daripada di desktop:
+One thing definitely worth comparing is how your app performs on mobile devices vs desktop. The following chart shows the distribution of TTI across desktop (blue) and mobile (orange). As you can see from this example, the TTI value on mobile was quite a bit longer than on desktop:
 
 <figure>
   <img src="/web/fundamentals/performance/images/perf-metrics-tti-mobile-v-desktop.png"
-       alt="Distribusi TTI di desktop dan seluler"/>
+       alt="TTI distribution across desktop and mobile"/>
 </figure>
 
-Karena angka-angka di sini spesifik aplikasi (dan Anda sebaiknya tidak berasumsi angka-angka itu cocok
-dengan angka Anda, maka Anda harus menguji sendiri), hal ini memberi Anda contoh bagaimana
-Anda dapat melihat laporan pada metrik penggunaan Anda:
+While the numbers here are app-specific (and you shouldn't assume they'd match your numbers, you should test for yourself), this gives you an example of how you might approach reporting on your usage metrics:
 
 #### Desktop
 
 <table>
   <tr>
-   <td><strong>Persentil</strong></td>
-   <td align="right"><strong>TTI (detik)</strong></td>
+   <td><strong>Percentile</strong></td>
+   <td align="right"><strong>TTI (seconds)</strong></td>
    </td>
   </tr>
   <tr>
    <td>50%</td>
-   <td align="right">2,3</td>
+   <td align="right">2.3</td>
   </tr>
   <tr>
    <td>75%</td>
-   <td align="right">4,7</td>
+   <td align="right">4.7</td>
   </tr>
   <tr>
    <td>90%</td>
-   <td align="right">8,3</td>
+   <td align="right">8.3</td>
   </tr>
 </table>
 
-#### Seluler
+#### Mobile
 
 <table>
   <tr>
-   <td><strong>Persentil</strong></td>
-   <td align="right"><strong>TTI (detik)</strong></td>
+   <td><strong>Percentile</strong></td>
+   <td align="right"><strong>TTI (seconds)</strong></td>
    </td>
   </tr>
   <tr>
    <td>50%</td>
-   <td align="right">3,9</td>
+   <td align="right">3.9</td>
   </tr>
   <tr>
    <td>75%</td>
-   <td align="right">8,0</td>
+   <td align="right">8.0</td>
   </tr>
   <tr>
    <td>90%</td>
-   <td align="right">12,6</td>
+   <td align="right">12.6</td>
   </tr>
 </table>
 
-Memerinci hasil Anda di seluler dan desktop dan menganalisis data sebagai distribusi
-memungkinkan Anda mendapatkan wawasan cepat tentang pengalaman pengguna yang sebenarnya.
-Misalnya, berdasarkan tabel di atas, saya dapat dengan mudah melihat bahwa, untuk aplikasi ini,
-**10% pengguna ponsel membutuhkan waktu lebih dari 12 detik untuk menjadi interaktif!**
+Breaking your results down across mobile and desktop and analyzing the data as a distribution allows you to get quick insight into the experiences of real users. For example, looking at the above table, I can easily see that, for this app, **10% of mobile users took longer than 12 seconds to become interactive!**
 
-### Bagaimana kinerja mempengaruhi bisnis
+### How performance affects business
 
-Satu manfaat besar pelacakan kinerja dalam fitur analytics Anda adalah bahwa Anda bisa
-menggunakan data tersebut untuk menganalisis bagaimana kinerja mempengaruhi bisnis.
+One huge advantage of tracking performance in your analytics tools is you can then use that data to analyze how performance affects business.
 
-Jika Anda melacak penyelesaian tujuan
-atau konversi ecommerce dalam analytics, Anda dapat membuat laporan yang mengeksplorasi korelasinya dengan metrik
-kinerja aplikasi. Misalnya:
+If you're tracking goal completions or ecommerce conversions in analytics, you could create reports that explore any correlations between these and the app's performance metrics. For example:
 
-* Apakah pengguna dengan waktu interaktif yang lebih cepat membeli lebih banyak barang?
-* Apakah pengguna yang mengalami lebih banyak tugas yang berjalan lama saat alur proses pembayaran mengalami penurunan dengan laju lebih tinggi?
+* Do users with faster interactive times buy more stuff?
+* Do users who experience more long tasks during the checkout flow drop off at higher rates?
 
-Jika ditemukan korelasi, akan jauh lebih mudah untuk menetapkan
-pada bisnis tersebut bahwa kinera itu penting dan harus diprioritaskan.
+If correlations are found, it'll be substantially easier to make the business case that performance is important and should be prioritized.
 
-### Pengabaian pemuatan
+### Load abandonment
 
-Kita tahu bahwa pengguna sering meninggalkan aplikasi ketika waktu muat terlalu lama.
-Sayangnya, ini berarti bahwa semua metrik kinerja kita memiliki masalah
-[bias survivorship](https://en.wikipedia.org/wiki/Survivorship_bias) yang sama, di mana
-data tidak mencakup metrik pemuatan dari orang-orang yang tidak menunggu halaman tersebut untuk
-menyelesaikan pemuatan (yang kemungkinan angkanya terlalu rendah).
+We know that users will often leave if a page takes too long to load. Unfortunately, this means that all of our performance metrics share the problem of [survivorship bias](https://en.wikipedia.org/wiki/Survivorship_bias), where the data doesn't include load metrics from people who didn't wait for the page to finish loading (which likely means the numbers are too low).
 
-Meskipun Anda tidak dapat melacak berapa angka yang seharusnya jika pengguna tersebut
-macet, Anda dapat melacak seberapa sering hal ini terjadi serta berapa lama setiap pengguna
-menunggu sementara.
+While you can't track what the numbers would have been if those users had stuck around, you can track how often this happens as well as how long each user stayed for.
 
-Ini agak sulit dilakukan dengan Google Analytics karena library analytics.js
-biasanya dimuat secara asinkron, dan mungkin tidak tersedia ketika
-pengguna memutuskan untuk keluar. Namun demikian, Anda tidak perlu menunggu analytics.js
-memuat sebelum mengirim data ke Google Analytics. Anda bisa mengirimkannya secara langsung melalui
-[Protokol Pengukuran](/analytics/devguides/collection/protocol/v1/).
+This is a bit tricky to do with Google Analytics since the analytics.js library is typically loaded asynchronously, and it may not be available when the user decides to leave. However, you don't need to wait for analytics.js to load before sending data to Google Analytics. You can send it directly via the [Measurement Protocol](/analytics/devguides/collection/protocol/v1/).
 
-Kode ini menambahkan listener ke
-[`visibilitychange`](https://developer.mozilla.org/en-US/docs/Web/Events/visibilitychange)
-peristiwa (yang terpicu jika halaman dikosongkan atau masuk ke latar belakang)
-dan mengirimkan nilai `performance.now()` pada poin tersebut.
+This code adds a listener to the [`visibilitychange`](https://developer.mozilla.org/en-US/docs/Web/Events/visibilitychange) event (which fires if the page is being unloaded or goes into the background) and it sends the value of `performance.now()` at that point.
 
-```
-<script>
-window.__trackAbandons = () => {
-  // Remove the listener so it only runs once.
-  document.removeEventListener('visibilitychange', window.__trackAbandons);
-  const ANALYTICS_URL = 'https://www.google-analytics.com/collect';
-  const GA_COOKIE = document.cookie.replace(
-    /(?:(?:^|.*;)\s*_ga\s*\=\s*(?:\w+\.\d\.)([^;]*).*$)|^.*$/, '$1');
-  const TRACKING_ID = 'UA-XXXXX-Y';
-  const CLIENT_ID =  GA_COOKIE || (Math.random() * Math.pow(2, 52));
+    <script>
+    window.__trackAbandons = () => {
+      // Remove the listener so it only runs once.
+      document.removeEventListener('visibilitychange', window.__trackAbandons);
+      const ANALYTICS_URL = 'https://www.google-analytics.com/collect';
+      const GA_COOKIE = document.cookie.replace(
+        /(?:(?:^|.*;)\s*_ga\s*\=\s*(?:\w+\.\d\.)([^;]*).*$)|^.*$/, '$1');
+      const TRACKING_ID = 'UA-XXXXX-Y';
+      const CLIENT_ID =  GA_COOKIE || (Math.random() * Math.pow(2, 52));
+    
+      // Send the data to Google Analytics via the Measurement Protocol.
+      navigator.sendBeacon && navigator.sendBeacon(ANALYTICS_URL, [
+        'v=1', 't=event', 'ec=Load', 'ea=abandon', 'ni=1',
+        'dl=' + encodeURIComponent(location.href),
+        'dt=' + encodeURIComponent(document.title),
+        'tid=' + TRACKING_ID,
+        'cid=' + CLIENT_ID,
+        'ev=' + Math.round(performance.now()),
+      ].join('&'));
+    };
+    document.addEventListener('visibilitychange', window.__trackAbandons);
+    </script>
+    
 
-  // Send the data to Google Analytics via the Measurement Protocol.
-  navigator.sendBeacon && navigator.sendBeacon(ANALYTICS_URL, [
-    'v=1', 't=event', 'ec=Load', 'ea=abandon', 'ni=1',
-    'dl=' + encodeURIComponent(location.href),
-    'dt=' + encodeURIComponent(document.title),
-    'tid=' + TRACKING_ID,
-    'cid=' + CLIENT_ID,
-    'ev=' + Math.round(performance.now()),
-  ].join('&'));
-};
-document.addEventListener('visibilitychange', window.__trackAbandons);
-</script>
-```
+You can use this code by copying it into `<head>` of your document and replacing the `UA-XXXXX-Y` placeholder with your [tracking ID](https://support.google.com/analytics/answer/1008080).
 
-Anda bisa menggunakan kode ini dengan menyalinnya ke dalam `<head>` dokumen Anda dan mengganti
-placeholder `UA-XXXXX-Y` dengan
-[ID pelacakan](https://support.google.com/analytics/answer/1008080) Anda.
+You'll also want to make sure you remove this listener once the page becomes interactive or you'll be reporting abandonment for loads where you were also reporting TTI.
 
-Anda juga akan memastikan bahwa Anda menghapus listener ini setelah halaman
-tersebut menjadi interaktif atau Anda akan melaporkan pengabaian pemuatan di mana Anda
-juga melaporkan TTI.
+    document.removeEventListener('visibilitychange', window.__trackAbandons);
+    
 
-```
-document.removeEventListener('visibilitychange', window.__trackAbandons);
-```
+## Optimizing performance and preventing regression
 
-## Mengoptimalkan kinerja dan mencegah regresi
+The great thing about defining user-centric metrics is when you optimize for them, you inevitably improve user experience as well.
 
-Hal hebat tentang mendefinisikan metrik yang berfokus pada pengguna adalah ketika Anda mengoptimalkan untuk
-mereka, Anda pasti juga meningkatkan pengalaman pengguna.
+One of the simplest ways to improve performance is to just ship less JavaScript code to the client, but in cases where reducing code size is not an option, it's critical that you think about *how* you deliver your JavaScript.
 
-Salah satu cara paling sederhana untuk meningkatkan kinerja adalah dengan hanya mengirimkan lebih sedikit kode JavaScript
-ke klien, tetapi dalam kasus di mana mengurangi ukuran kode bukan merupakan pilihan, maka penting bahwa Anda untuk berpikir tentang *bagaimana* Anda mengirimkan
-JavaScript Anda.
+### Optimizing FP/FCP
 
-### Mengoptimalkan FP/FCP
+You can lower the time to first paint and first contentful paint by removing any render blocking scripts or stylesheets from the `<head>` of your document.
 
-Anda dapat menurunkan waktu untuk first paint dan first contentful paint dengan menghapus
-skrip pemblokiran atau stylesheet apa pun dari `<head>` dokumen Anda.
+By taking the time to identify the minimal set of styles needed to show the user that "it's happening" and inlining them in the `<head>` (or using [HTTP/2 server push](/web/fundamentals/performance/http2/#server_push)), you can get incredibly fast first paint times.
 
-Dengan meluangkan waktu untuk mengidentifikasi set minimal gaya yang diperlukan untuk menunjukkan kepada pengguna bahwa
-"itu terjadi" dan menampilkannya di `<head>` (atau menggunakan [push server
-HTTP/2](/web/fundamentals/performance/http2/#server_push)), Anda bisa mendapatkan waktu
-first paint yang cepat.
+The [app shell pattern](/web/updates/2015/11/app-shell) is a great example of how to do this for [Progressive Web Apps](/web/progressive-web-apps/).
 
-[Pola shell aplikasi](/web/updates/2015/11/app-shell) adalah contoh bagus
-cara melakukan ini untuk [Aplikasi Web Progresif](/web/progressive-web-apps/).
+### Optimizing FMP/TTI
 
-### Mengoptimalkan FMP/TTI
+Once you've identified the most critical UI elements on your page (the hero elements), you should ensure that your initial script load contains just the code needed to get those elements rendered and make them interactive.
 
-Setelah Anda mengidentifikasi elemen UI yang paling penting di halaman Anda (hero
-element), Anda harus memastikan bahwa pemuatan skrip awal Anda hanya berisi
-kode yang diperlukan untuk mendapatkan elemen-elemen yang dirender dan membuatnya interaktif.
+Any code unrelated to your hero elements that is included in your initial JavaScript bundle will slow down your time to interactivity. There's no reason to force your user's devices to download and parse JavaScript code they don't need right away.
 
-Kode apa pun yang tidak terkait dengan hero element Anda yang disertakan dalam bundle awal
-Javascript Anda akan memperlambat waktu Anda untuk interaktivitas. Tidak ada alasan untuk memaksa
-perangkat pengguna Anda untuk mengunduh dan mem-parse kode JavaScript yang
-tidak langsung mereka dapatkan.
+As a general rule, you should try as hard as possible to minimize the time between FMP and TTI. In cases where it's not possible to minimize this time, it's absolutely critical that your interfaces make it clear that the page isn't yet interactive.
 
-Sebagai aturan umum, Anda harus berusaha sekeras mungkin untuk meminimalkan waktu
-antara FMP dan TTI. Jika tidak mungkin untuk meminimalkan waktu ini,
-benar-benar penting antarmuka Anda membuatnya jelas bahwa halaman tersebut belum
-interaktif.
+One of the most frustrating experiences for a user is tapping on an element and then having nothing happen.
 
-Salah satu pengalaman yang paling membuat frustrasi bagi pengguna adalah mengetuk elemen dan
-tidak ada reaksi yang terjadi.
+### Preventing long tasks
 
-### Mencegah tugas yang berjalan lebih lama
+By splitting up your code and prioritizing the order in which it's loaded, not only can you get your pages interactive faster, but you can reduce long tasks and then hopefully have less input latency and fewer slow frames.
 
-Dengan memecah kode dan memprioritaskan urutan pemuatannya, Anda tidak
-hanya bisa membuat halaman Anda lebih cepat interaktif, tetapi Anda juga dapat mengurangi tugas yang berjalan lebih lama
-dan diharapkan memiliki latensi input yang lebih sedikit dan lebih sedikit frame lambat.
+In addition to splitting up code into separate files, you can also split up large chunks of synchronous code into smaller chunks that can execute asynchronously or be [deferred to the next idlepoint](/web/updates/2015/08/using-requestidlecallback). By executing this logic asynchronously in smaller chunks, you leave room on the main thread for the browser to respond to user input.
 
-Selain memecah kode menjadi file yang terpisah, Anda juga dapat memecah
-bongkahan besar kode ke dalam potongan-potongan yang lebih kecil yang dapat
-dijalankan secara asinkron atau
-[ditangguhkan ke idlepoint selanjutnya](/web/updates/2015/08/using-requestidlecallback).
-Dengan menjalankan logika ini secara asinkron dalam potongan yang lebih kecil, Anda menyisakan ruang pada
-thread utama untuk browser guna menanggapi input pengguna.
+Lastly, you should make sure you're testing your third party code and holding any slow running code accountable. Third party ads or tracking scripts that cause lots of long tasks may end up hurting your business more than they're helping it.
 
-Terakhir, Anda harus memastikan bahwa Anda menguji kode pihak ketiga dan memastikan
-kode yang berjalan lambat dengan cara yang dapat dipertanggungjawabkan. Iklan pihak ketiga atau skrip pelacakan yang
-menyebabkan banyak tugas yang berjalan lama dapat lebih banyak dampak negatifnya dibandingkan
-positifnya bagi perusahaan Anda.
+## Preventing regressions
 
-## Mencegah regresi
+This article has focused heavily on performance measurement on real users, and while it's true that RUM data is the performance data that ultimately matters, lab data is still critical in ensuring your app performs well (and doesn't regress) prior to releasing new features. Lab tests are ideal for regression detection, as they run in a controlled environment and are far less prone to the random variability of RUM tests.
 
-Artikel ini telah banyak berfokus pada pengukuran kinerja pada pengguna nyata, dan
-benar bahwa data RUM adalah data kinerja yang pada akhirnya penting, data
-lab masih penting dalam memastikan aplikasi Anda berkinerja baik (dan
-tidak beregresi) sebelum merilis fitur baru. Uji laboratorium adalah uji yang ideal untuk
-mendeteksi regresi, karena banyak dijalankan di lingkungan yang terkendali dan jauh lebih rentan terhadap variabilitas acak
-uji RUM.
+Tools like [Lighthouse](/web/tools/lighthouse/) and [Web Page Test](https://www.webpagetest.org/) can be integrated into your continuous integration server, and you can write tests that fail a build if key metrics regress or drop below a certain threshold.
 
-Fitur seperti [Lighthouse](/web/tools/lighthouse/) dan [Uji
-Halaman](https://www.webpagetest.org/) dapat diintegrasikan ke dalam server integrasi kontinu
-Anda, dan dapat menulis uji yang menggagalkan build jika metrik kunci
-beregresi atau turun di bawah ambang tertentu.
+And for code already released, you can add [custom alerts](https://support.google.com/analytics/answer/1033021) to inform you if there are unexpected spikes in the occurrence of negative performance events. This could happen, for example, if a third party releases a new version of one of their services and suddenly your users start seeing significantly more long tasks.
 
-Dan untuk kode yang sudah dirilis, Anda dapat menambahkan [Peringatan
-kustom](https://support.google.com/analytics/answer/1033021) untuk memberi tahu Anda jika
-ada lonjakan yang tak terduga dalam terjadinya peristiwa kinerja negatif.
-Ini dapat terjadi, misalnya, jika pihak ketiga merilis versi baru dari
-salah satu layanannya dan tiba-tiba pengguna Anda mulai melihat lebih banyak tugas yang berjalan
-lama.
-
-Agar berhasil mencegah terjadinya regresi, Anda perlu menguji kinerja di lab dan
-di lapangan dengan setiap rilis fitur baru.
+To successfully prevent regressions you need to be testing performance in both the lab and the wild with every new feature releases.
 
 <figure>
   <img src="/web/fundamentals/performance/images/perf-metrics-test-cycle.png"
-       alt="Diagram alur RUM dan pengujian laboratorium dalam proses rilis"/>
+       alt="A flow chart RUM and lab testing in the release process"/>
 </figure>
 
-## Mengemas dan meneruskan
+## Wrapping up and looking forward
 
-Kami telah membuat langkah signifikan pada tahun lalu dalam mengekspos metrik yang berfokus pada pengguna
-untuk developer di browser, tetapi kami belum selesai, dan kami memiliki lebih banyak lagi yang
-direncanakan
+We've made significant strides in the last year in exposing user-centric metrics to developers in the browser, but we're not done yet, and we have a lot more planned.
 
-Kami benar-benar ingin menstandardisasi metrik time to interactive dan hero element, sehingga
-developer tidak perlu mengukurnya sendiri atau bergantung pada polyfill. Kami juga
-ingin memudahkan developer untuk mengatributkan penurunan frame dan latensi
-input ke tugas yang berjalan lama dan kode yang menyebabkannya.
+We'd really like to standardize time to interactive and hero element metrics, so developers won't have to measure these themselves or depend on polyfills. We'd also like to make it easier for developers to attribute dropped frames and input latency to particular long tasks and the code that caused them.
 
-Meskipun banyak hal yang harus kami lakukan, kami senang dengan kemajuan yang telah kami buat. Dengan API
-baru seperti `PerformanceObserver` dan tugas yang berjalan lama yang didukung secara native di
-browser, developer akhirnya memiliki primitif yang diperlukan untuk mengukur kinerja
-pengguna nyata tanpa mengganggu pengalaman mereka.
+While we have more work to do, we're excited about the progress we've made. With new APIs like `PerformanceObserver` and long tasks supported natively in the browser, developers finally have the primitives they need to measure performance on real users without degrading their experience.
 
-Metrik yang paling penting adalah metrik yang mewakili pengalaman
-pengguna nyata, dan kami ingin menjadikannya semudah mungkin bagi developer untuk
-memuaskan pengguna mereka dan membuat aplikasi hebat.
+The metrics that matter the most are the ones that represent real user experiences, and we want to make it as easy as possible for developers to delight their users and create great applications.
 
-## Tetap terhubung
+## Staying connected
 
 {% include "web/_shared/helpful.html" %}
 
-Masalah spesifikasi file:
+File spec issues:
 
-* [https://github.com/w3c/longtasks/issues](https://github.com/w3c/longtasks/issues)
-* [https://github.com/WICG/paint-timing/issues](https://github.com/WICG/paint-timing/issues)
-* [https://github.com/w3c/performance-timeline/issues](https://github.com/w3c/performance-timeline/issues)
+* <https://github.com/w3c/longtasks/issues>
+* <https://github.com/WICG/paint-timing/issues>
+* <https://github.com/w3c/performance-timeline/issues>
 
-Masalah polyfill file:
+File polyfill issues:
 
-* [https://github.com/GoogleChrome/tti-polyfill/issues](https://github.com/GoogleChrome/tti-polyfill/issues)
+* <https://github.com/GoogleChrome/tti-polyfill/issues>
 
-Ajukan pertanyaan:
+Ask questions:
 
-* [progressive-web-metrics@chromium.org](mailto:progressive-web-metrics@chromium.org)
-* [public-web-perf@w3.org](mailto:public-web-perf@w3.org)
+* <progressive-web-metrics@chromium.org>
+* <public-web-perf@w3.org>
 
-Berikan masukan Anda tentang usualan API baru:
+Voice your support on concerns on new API proposals:
 
-* [https://github.com/w3c/charter-webperf/issues](https://github.com/w3c/charter-webperf/issues)
+* <https://github.com/w3c/charter-webperf/issues>
