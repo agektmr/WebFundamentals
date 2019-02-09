@@ -1,78 +1,81 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Penting bagi Anda untuk memahami fase tempat sumber daya dikumpulkan di jaringan. Ini adalah dasar memperbaiki masalah pemuatan.
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: It is crucial to understand the phases in which resources are gathered over the network. This is the foundation for fixing load issues.
 
-{# wf_published_on: 2016-02-03 #}
-{# wf_updated_on: 2017-07-12 #}
+{# wf_published_on: 2016-12-29 #} {# wf_updated_on: 2018-07-27 #} {# wf_blink_components: Platform>DevTools #}
 
-# Memahami Resource Timing {: .page-title }
+# Understanding Resource Timing {: .page-title }
 
 {% include "web/_shared/contributors/jonathangarbee.html" %}
 
-Penting bagi Anda untuk memahami fase tempat sumber daya dikumpulkan di jaringan. Ini adalah dasar memperbaiki masalah pemuatan.
+<aside class="note">
+  <b>Note:</b> This page is deprecated. At the top of each section, there's a
+  link to an up-to-date page where you can find similar information.
+</aside>
 
+It is crucial to understand the phases in which resources are gathered over the network. This is the foundation for fixing load issues.
 
 ### TL;DR {: .hide-from-toc }
-- Memahami fase pengaturan waktu sumber daya.
-- Mengetahui yang disediakan oleh setiap fase bagi Resource Timing API.
-- Mengetahui berbagai indikator masalah kinerja di grafik timeline, seperti rangkaian bilah transparan atau blok hijau besar.
 
+* Understand the phases of resource timing.
+* Know what each phase provides to the Resource Timing API.
+* Realize different indicators of performance problems in the timeline graph, such as series of transparent bars or large green chunks.
 
-Semua permintaan jaringan dianggap sebagai sumber daya.
-Saat diambil melalui jaringan, sumber daya memiliki daur hidup yang diekspresikan dalam bentuk pengaturan waktu sumber daya.
-Panel Network menggunakan [Resource Timing API](http://www.w3.org/TR/resource-timing) yang sama, yang tersedia untuk developer aplikasi.
+All network requests are considered resources. As they are retrieved over the network, resources have distinct lifecycles expressed in terms of resource timing. The Network Panel uses the same [Resource Timing API](http://www.w3.org/TR/resource-timing) that is available to application developers.
 
-Note: saat menggunakan Resource Timing API dengan sumber daya lintas-sumber, pastikan
-bahwa semua sumber daya memiliki header CORS.
+Note: when using the Resource Timing API with cross origin resources, make sure that all of the resources have CORS headers.
 
-Resource Timing API menyediakan tingkat detail yang lengkap tentang setiap waktu aset yang akan diterima.
-Fase utama daur hidup permintaan adalah:
+The Resource Timing API provides a rich level of detail about each individual asset's time to be received. The primary phases of the request lifecycle are:
 
-* Pengalihan
-  * Langsung memulai `startTime`.
-  * Jika pengalihan terjadi, `redirectStart` juga dimulai.
-  * Jika pengalihan terjadi di akhir fase ini, `redirectEnd` akan diambil.
-* Cache Aplikasi
-  * Jika cache aplikasi yang memenuhi permintaan, waktu `fetchStart` akan diambil.
-* DNS
-  * Waktu `domainLookupStart` diambil di awal permintaan DNS.
-  * Waktu `domainLookupEnd` diambil di akhir permintaan DNS.
-* TCP
-  * `connectStart` diambil saat pertama kali terhubung ke server.
-  * Jika TLS dan SSL sedang digunakan, `secureConnectionStart` akan dimulai saat handshake dimulai untuk mengamankan koneksi.
-  * `connectEnd` diambil saat koneksi ke server selesai.
-* Permintaan
-  * `requestStart` diambil setelah permintaan sumber daya dikirim ke server.
-* Respons
-  * `responseStart` adalah waktu saat server pertama kali merespons permintaan.
-  * `responseEnd` adalah waktu saat permintaan selesai dan data diambil.
+* Redirect 
+    * Immediately begins `startTime`.
+    * If a redirect is happening, `redirectStart` begins as well.
+    * If a redirect is occurring at the end of this phase then `redirectEnd` will be taken.
+* App Cache 
+    * If it’s application cache fulfilling the request, a `fetchStart` time will be taken.
+* DNS 
+    * `domainLookupStart` time is taken at the beginning of the DNS request.
+    * `domainLookupEnd` time is taken at the end of the DNS request.
+* TCP 
+    * `connectStart` is taken when initially connecting to the server.
+    * If TLS or SSL are in use then `secureConnectionStart` will start when the handshake begins for securing the connection.
+    * `connectEnd` is taken when the connection to the server is complete.
+* Request 
+    * `requestStart` is taken once the request for a resource has been sent to the server.
+* Response 
+    * `responseStart` is the time when the server initially responds to the request.
+    * `responseEnd` is the time when the request ends and the data is retrieved.
 
-![Diagram Resource Timing API](imgs/resource-timing-api.png)
+![Resource Timing API diagram](imgs/resource-timing-api.png)
 
-## Menampilkan di DevTools
+## Viewing in DevTools
 
-Untuk melihat informasi pengaturan waktu penuh untuk entri tertentu di Panel Network, Anda memiliki tiga opsi.
+<aside class="note">
+  <b>Note:</b> This page is deprecated. See following sections for up-to-date
+  information:
+  <ul>
+    <li><a href="reference#timing-breakdown">View timing breakdown</a></li>
+    <li><a href="reference#timing">Timing tab</a></li>
+  </ul>
+</aside>
 
-1. Arahkan kursor ke atas grafik pengaturan waktu di bawah kolom timeline. Ini akan menampilkan munculan yang menampilkan data pengaturan waktu penuh.
-2. Klik entri mana pun dan buka tab Timing entri tersebut.
-3. Gunakan Resource Timing API untuk mengambil data mentah dari JavaScript.
+To view the full timing information for a given entry of the Network Panel you have three options.
 
-![Informasi Resource Timing](imgs/resource-timing-data.png)
+1. Hover the timing graph under the timeline column. This will present a popup that shows the full timing data.
+2. Click on any entry and open the Timing tab of that entry.
+3. Use the Resource Timing API to retrieve the raw data from JavaScript.
 
-<figure>
-<figcaption>
+![Resource Timing Information](imgs/resource-timing-data.png)<figure> <figcaption>
 <p>
-  Kode ini bisa dijalankan di konsol DevTools.
-  Ini akan menggunakan API Network Timing untuk mengambil semua sumber daya.
-  Lalu kode ini akan memfilter entri yang mencari yang memiliki nama yang mengandung "syle.css".
-  Jika ditemukan, ini akan dikembalikan.
+  This code can be ran in the DevTools console.
+  It will use the network timing API to retrieve all resources.
+  Then it filters the entries looking for one with a name that contains "style.css".
+  If found it will be returned.
 </p>
 <code>
   performance.getEntriesByType('resource').filter(item => item.name.includes("style.css"))
 </code>
-</figcaption>
-<img src="imgs/resource-timing-entry.png" alt="Entri Resource Timing">
-</figure>
+</figcaption> 
+
+<img src="imgs/resource-timing-entry.png" alt="Resource Timing Entry" /> </figure> 
 
 <style>
 dt:before {
@@ -102,120 +105,105 @@ dt.content-download:before {
 
   <dt class="queued"><strong>Queuing</strong></dt>
   <dd>
-    Permintaan yang masuk antrean menunjukkan bahwa:
- <ul>
+    A request being queued indicates that:
+      <ul>
         <li>
-        Permintaan ditunda oleh mesin rendering karena prioritasnya dianggap lebih rendah daripada sumber daya kritis (misalnya skrip/gaya).
-        Ini sering terjadi pada gambar.
- </li>
-        <li>
-        Permintaan ditangguhkan untuk menunggu soket TCP yang tidak tersedia yang akan segera dibebaskan.
+        The request was postponed by the rendering engine because it's considered lower priority than critical resources (such as scripts/styles).
+        This often happens with images.
         </li>
         <li>
-        Permintaan ditangguhkan karena browser hanya mengizinkan <a href="https://crbug.com/12066">enam koneksi TCP</a> per asalnya di HTTP 1.
- </li>
+        The request was put on hold to wait for an unavailable TCP socket that's about to free up.
+        </li>
         <li>
-        Waktu yang dihabiskan untuk membuat entri cache disk (biasanya sangat cepat.)
- </li>
+        The request was put on hold because the browser only allows <a href="https://crbug.com/12066">six TCP connections</a> per origin on HTTP 1.
+        </li>
+        <li>
+        Time spent making disk cache entries (typically very quick.)
+        </li>
       </ul>
   </dd>
 
   <dt class="stalled"><strong> Stalled/Blocking</strong></dt>
   <dd>
-    Waktu yang dihabiskan oleh permintaan untuk menunggu sebelum bisa dikirimkan.
-    Permintaan bisa menunggu karena alasan apa pun yang dijelaskan untuk Mengantre.
-    Selain itu, waktu ini termasuk waktu apa pun yang dihabiskan saat negosiasi proxy.
- </dd>
+    Time the request spent waiting before it could be sent.
+    It can be waiting for any of the reasons described for Queueing.
+    Additionally, this time is inclusive of any time spent in proxy negotiation.
+  </dd>
 
   <dt class="proxy-negotiation"><strong> Proxy Negotiation</strong></dt>
-  <dd>Waktu yang dihabiskan untuk bernegosiasi dengan koneksi server proxy.</dd>
+  <dd>Time spent negotiating with a proxy server connection.</dd>
 
   <dt class="dns-lookup"><strong><abbr title="Domain Name System"> DNS</abbr> Lookup</strong></dt>
   <dd>
-    Waktu yang dihabiskan untuk melakukan pencarian DNS.
-    Setiap domain baru pada laman memerlukan perjalanan bolak-balik penuh untuk melakukan pencarian DNS.
- </dd>
+    Time spent performing the DNS lookup.
+    Every new domain on a page requires a full roundtrip to do the DNS lookup.
+  </dd>
 
   <dt class="initial-connection"><strong> Initial Connection / Connecting</strong></dt>
-  <dd>Waktu yang diperlukan untuk membuat koneksi, termasuk handshake/percobaan <abbr title="Transmission Control Protocol">TCP</abbr> dan menegosiasikan <abbr title="Secure Sockets Layer">SSL</abbr>.</dd>
+  <dd>Time it took to establish a connection, including <abbr title="Transmission Control Protocol">TCP</abbr> handshakes/retries and negotiating a <abbr title="Secure Sockets Layer">SSL</abbr>.</dd>
 
   <dt class="ssl"><strong> SSL</strong></dt>
-  <dd>Waktu yang dihabiskan untuk melakukan handshake SSL.</dd>
+  <dd>Time spent completing a SSL handshake.</dd>
 
   <dt class="request-sent"><strong> Request Sent / Sending</strong></dt>
   <dd>
-    Waktu yang dihabiskan untuk menerbitkan permintaan jaringan.
-    Biasanya sepersekian milidetik.
+    Time spent issuing the network request.
+    Typically a fraction of a millisecond.
   </dd>
 
   <dt class="ttfb"><strong> Waiting (<abbr title="Time To First Byte">TTFB</abbr>)</strong></dt>
   <dd>
-    Waktu yang dihabiskan untuk respons awal, atau dikenal sebagai Time To First Byte.
-    Waktu ini merekam latensi perjalanan bolak-balik ke server, di samping waktu yang dihabiskan untuk menunggu server mengirimkan respons.
+    Time spent waiting for the initial response, also known as the Time To First Byte.
+    This time captures the latency of a round trip to the server in addition to the time spent waiting for the server to deliver the response.
   </dd>
 
   <dt class="content-download"><strong> Content Download / Downloading</strong></dt>
-  <dd>Waktu yang dihabiskan untuk menerima data respons.</dd>
+  <dd>Time spent receiving the response data.</dd>
 </dl>
 
+## Diagnosing Network Issues
 
-## Mendiagnosis Masalah Jaringan
+<aside class="note">
+  <b>Note:</b> This page is deprecated. See
+  <a href="issues">Network Issues Guide</a>
+  for up-to-date information.
+</aside>
 
-Ada beragam kemungkinan masalah yang dapat diungkap melalui Network Panel.
-Untuk menemukan masalah seperti ini memerlukan pemahaman yang baik tentang cara klien dan server berkomunikasi dan batasan yang diterapkan oleh protokol.
+There are numerous possible issues that can be uncovered through the Network Panel. Being able to find these requires a good understanding of how clients and servers communicate and the limitations imposed by the protocols.
 
-### Rangkaian yang Mengantre atau Tertahan
+### Queued or Stalled series
 
-Masalah yang paling umum adalah serangkaian item yang mengantre atau tertahan.
-Ini menunjukkan bahwa terlalu banyak sumber daya yang sedang diambil dari satu domain.
-Di koneksi HTTP 1.0/1.1, Chrome menerapkan maksimum enam koneksi TCP per host.
-Jika Anda meminta dua belas item sekaligus, enam permintaan pertama akan dimulai dan enam yang terakhir akan diantrekan.
-Setelah salah satu dari enam permintaan pertama selesai, item pertama di antrean akan mulai proses permintaannya.
+The most common issue seen is a series of items that are queued or stalled. This indicates that too many resources are being retrieved from a single domain. On HTTP 1.0/1.1 connections, Chrome enforces a maximum of six TCP connections per host. If you are requesting twelve items at once, the first six will begin and the last half will be queued. Once one of the original half is finished, the first item in the queue will begin its request process.
 
-![Rangkaian permintaan tertahan](imgs/stalled-request-series.png)
+![Stalled series of requests](imgs/stalled-request-series.png)
 
-Untuk memperbaiki masalah ini untuk lalu lintas HTTP 1, Anda perlu mengimplementasikan [domain sharding](https://www.maxcdn.com/one/visual-glossary/domain-sharding-2/).
-Artinya, membuat beberapa subdomain di aplikasi Anda agar menyajikan sumber daya.
-Lalu pecah sumber daya agar disajikan secara merata di semua subdomain.
+To fix this problem for traditional HTTP 1 traffic, you would need to implement [domain sharding](https://www.maxcdn.com/one/visual-glossary/domain-sharding-2/). That is making multiple subdomains on your application to serve resources from. Then split the resources being served evenly among the subdomains.
 
-Solusi untuk koneksi HTTP 1 **tidak** tidak berlaku untuk koneksi HTTP 2.
-Sebaliknya, ini akan berdampak negatif. Jika Anda menerapkan HTTP 2, jangan lakukan domain sharding pada sumber daya karena ini bertentangan dengan rancangan operasi HTTP 2.
-Pada HTTP 2, ada satu koneksi TCP ke server yang berfungsi sebagai koneksi multipleks.
-Ini menghapus batas enam koneksi pada HTTP 1 dan beberapa sumber daya bisa ditransfer melalui satu koneksi secara bersamaan.
+The fix for HTTP 1 connections does **not** apply to HTTP 2 connections. In fact, it hurts them. If you have HTTP 2 deployed, don’t domain-shard your resources as it works against how HTTP 2 is engineered to operate. In HTTP 2, there is a single TCP connection to the server that acts as a multiplexed connection. This gets rid of the six connection limit of HTTP 1 and multiple resources can be transferred over the single connection simultaneously.
 
-### Time to First Byte Lambat
+### Slow Time to First Byte
 
-<small>Alias: banyak sekali warna hijau</small>
+<small>AKA: lots of green</small>
 
-![Indikator TTFB Tinggi](imgs/indicator-of-high-ttfb.png)
+![High TTFB Indicator](imgs/indicator-of-high-ttfb.png)
 
-Time to first byte (TTFB) yang lambat ditandai oleh waktu tunggu yang tinggi.
-Waktu tunggu sebaiknya [kurang dari 200 md](/speed/docs/insights/Server).
-TTFB yang tinggi menunjukkan salah satu dari dua masalah utama. Gunakan salah satu cara berikut:
+A slow time to first byte (TTFB) is recognized by a high waiting time. It is recommended that you have this [under 200ms](/speed/docs/insights/Server). A high TTFB reveals one of two primary issues. Either:
 
-1. Kondisi jaringan antara klien dan server buruk, atau
-2. Respons aplikasi server yang lambat
+1. Bad network conditions between client and server, or
+2. A slowly responding server application
 
-Untuk mengatasi TTFB yang tinggi, kurangi sebanyak mungkin jaringan.
-Idealnya, host aplikasi secara lokal dan lihat jika masih terjadi TTFB tinggi.
-Jika demikian, artinya aplikasi perlu dioptimalkan agar kecepatan respons membaik.
-Ini bisa berarti mengoptimalkan kueri database, mengimplementasikan cache untuk beberapa bagian materi, atau mengubah konfigurasi server web Anda.
-Ada banyak alasan mengapa backend menjadi lambat.
-Anda harus meneliti perangkat lunak Anda dan mencari tahu apa yang tidak memenuhi anggaran kinerja Anda.
+To address a high TTFB, first cut out as much network as possible. Ideally, host the application locally and see if there is still a big TTFB. If there is, then the application needs to be optimized for response speed. This could mean optimizing database queries, implementing a cache for certain portions of content, or modifying your web server configuration. There are many reasons a backend can be slow. You will need to do research into your software and figure out what is not meeting your performance budget.
 
-Jika TTFB rendah di lokal, artinya masalahnya terletak di jaringan antara klien dan server.
-Pelintasan jaringan bisa dihambat oleh berbagai hal.
-Ada begitu banyak titik antara klien dan server, dan setiap titik ini memiliki batasan koneksi dan bisa menyebabkan masalah.
-Metode paling sederhana untuk menguji cara menguranginya adalah menempatkan aplikasi Anda di host lain dan lihat apakah TTFB membaik.
+If the TTFB is low locally then the networks between your client and the server are the problem. The network traversal could be hindered by any number of things. There are a lot of points between clients and servers and each one has its own connection limitations and could cause a problem. The simplest method to test reducing this is to put your application on another host and see if the TTFB improves.
 
-### Mencapai kapasitas throughput
+### Hitting throughput capacity
 
-<small>Alias: banyak sekali biru</small>
+<small>AKA: lots of blue</small>
 
-![Indikator kapasitas throughput](imgs/indicator-of-large-content.png)
+![Throughput capacity Indicator](imgs/indicator-of-large-content.png)
 
-Jika Anda melihat banyak waktu dihabiskan di fase Content Download, meningkatkan respons server atau melakukan penyatuan tidak akan membantu.
-Solusi utamanya adalah mengirimkan byte lebih sedikit.
+If you see lots of time spent in the Content Download phases, then improving server response or concatenating won't help. The primary solution is to send fewer bytes.
 
+## Feedback {: #feedback }
 
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
