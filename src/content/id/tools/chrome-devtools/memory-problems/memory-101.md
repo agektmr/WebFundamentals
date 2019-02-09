@@ -1,150 +1,139 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Bagian ini menjelaskan istilah utama yang digunakan dalam analisis memori dan berlaku untuk berbagai alat pembuat profil memori untuk bahasa yang berbeda.
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: This section describes common terms used in memory analysis, and is applicable to a variety of memory profiling tools for different languages.
 
-{# wf_updated_on: 2017-07-12 #}
-{# wf_published_on: 2015-05-18 #}
+{# wf_updated_on: 2018-07-27 #} {# wf_published_on: 2015-05-18 #} {# wf_blink_components: Platform>DevTools #}
 
-# Terminologi Memori {: .page-title }
+# Memory Terminology {: .page-title }
 
 {% include "web/_shared/contributors/megginkearney.html" %}
 
-Bagian ini menjelaskan istilah utama yang digunakan dalam analisis memori dan berlaku untuk berbagai alat pembuat profil memori untuk bahasa yang berbeda.
+This section describes common terms used in memory analysis, and is applicable to a variety of memory profiling tools for different languages.
 
-Istilah dan gagasan yang dijelaskan di sini mengacu pada
-[Profiler Heap pada Chrome DevTools](/web/tools/chrome-devtools/profile/memory-problems/heap-snapshots).
-Jika Anda pernah menggunakan Java, .NET, atau profiler memori lainnya, artikel ini mungkin bisa menyegarkan ingatan.
+The terms and notions described here refer to the [Chrome DevTools Heap Profiler](/web/tools/chrome-devtools/profile/memory-problems/heap-snapshots). If you have ever worked with either the Java, .NET, or some other memory profiler, then this may be a refresher.
 
+## Object sizes
 
-## Ukuran objek
+Think of memory as a graph with primitive types (like numbers and strings) and objects (associative arrays). It might visually be represented as a graph with a number of interconnected points as follows:
 
-Bayangkan memori sebagai grafik yang berisi jenis primitif (seperti angka dan string) dan objek (larik yang berkaitan). Memori bisa digambarkan secara visual sebagai grafik dengan sejumlah titik yang saling berkaitan sebagai berikut:
+![Visual representation of memory](imgs/thinkgraph.png)
 
-![Representasi visual dari memori](imgs/thinkgraph.png)
+An object can hold memory in two ways:
 
-Objek bisa menyimpan memori dengan dua cara:
+* Directly by the object itself.
 
-* Langsung oleh objek itu sendiri.
+* Implicitly by holding references to other objects, and therefore preventing those objects from being automatically disposed by a garbage collector (**GC** for short).
 
-* Secara implisit dengan memiliki referensi ke objek lainnya, dan dengan demikian mencegah objek tersebut otomatis dibuang oleh pengumpul sampah (atau disingkat menjadi **GC**).
+When working with the Heap Profiler in DevTools (a tool for investigating memory issues found under "Profiles"), you will likely find yourself looking at a few different columns of information. Two that stand out are **Shallow Size** and **Retained Size**, but what do these represent?
 
-Saat menggunakan Profiler Heap di DevTools (alat (bantu) untuk menginvestigasi masalah memori yang terdapat di "Profiles"), Anda akan melihat beberapa kolom informasi. Dua yang penting adalah <strong>Shallow Size</strong> dan <strong>Retained Size</strong>, tetapi apa yang diwakili oleh keduanya?
-
-![Ukuran Shallow dan Retained](imgs/shallow-retained.png)
+![Shallow and Retained Size](imgs/shallow-retained.png)
 
 ### Shallow size
 
-Ini adalah ukuran memori yang dimiliki oleh objek itu sendiri.
+This is the size of memory that is held by the object itself.
 
-Objek JavaScript secara umum memiliki memori yang dicadangkan untuk keterangannya dan untuk menyimpan nilai langsung. Biasanya hanya larik dan string yang bisa memiliki ukuran dangkal yang besar. Akan tetapi, string dan larik eksternal sering kali memiliki penyimpanan utama di memori renderer, yang hanya memaparkan objek wrapper kecil di heap JavaScript.
+Typical JavaScript objects have some memory reserved for their description and for storing immediate values. Usually, only arrays and strings can have a significant shallow size. However, strings and external arrays often have their main storage in renderer memory, exposing only a small wrapper object on the JavaScript heap.
 
-Memori renderer adalah semua memori proses tempat laman yang diinspeksi di-render: memori bawaan + memori heap JS laman + memori heap JS semua worker khusus yang dimulai oleh laman. Meskipun demikian, objek kecil pun dapat memiliki jumlah memori yang besar secara tidak langsung, dengan mencegah objek lain dibuang oleh proses pengumpulan sampah otomatis.
+Renderer memory is all memory of the process where an inspected page is rendered: native memory + JS heap memory of the page + JS heap memory of all dedicated workers started by the page. Nevertheless, even a small object can hold a large amount of memory indirectly, by preventing other objects from being disposed of by the automatic garbage collection process.
 
-### Retained Size
+### Retained size
 
-Ini adalah ukuran memori yang dibebaskan setelah objek itu sendiri dihapus beserta objek yang tergantung padanya dan tidak bisa dijangkau dari **GC roots**.
+This is the size of memory that is freed once the object itself is deleted along with its dependent objects that were made unreachable from **GC roots**.
 
-**GC roots** terdiri atas *tuas* yang dibuat (baik lokal atau global) saat membuat referensi dari kode bawaan ke objek JavaScript di luar V8. Semua handle tersebut bisa ditemukan di dalam cuplikan heap di **GC roots** > **Handle scope** dan **GC roots** > **Global handles**. Menjelaskan handle di dokumentasi ini tanpa mempelajari detail implementasi browser bisa membingungkan. Akar GC dan tuasnya tidak perlu dikhawatirkan.
+**GC roots** are made up of *handles* that are created (either local or global) when making a reference from native code to a JavaScript object outside of V8. All such handles can be found within a heap snapshot under **GC roots** > **Handle scope** and **GC roots** > **Global handles**. Describing the handles in this documentation without diving into details of the browser implementation may be confusing. Both GC roots and the handles are not something you need to worry about.
 
-Ada banyak akar GC internal yang sebagian besar tidak menarik bagi pengguna. Dari sudut pandang aplikasi, ada beberapa jenis akar berikut:
+There are lots of internal GC roots most of which are not interesting for the users. From the applications standpoint there are following kinds of roots:
 
-* Objek global jendela (di setiap iframe). Terdapat bidang jarak di cuplikan heap yang merupakan jumlah referensi properti di jalur penahan terpendek dari jendela.
+* Window global object (in each iframe). There is a distance field in the heap snapshots which is the number of property references on the shortest retaining path from the window.
 
-* Pohon DOM dokumen terdiri dari semua simpul DOM bawaan yang bisa dijangkau dengan melintaskan dokumen. Tidak semuanya memiliki wrapper JS tetap jika semuanya memiliki, wrapper akan hidup saat dokumen hidup.
+* Document DOM tree consisting of all native DOM nodes reachable by traversing the document. Not all of them may have JS wrappers but if they have the wrappers will be alive while the document is alive.
 
-* Terkadang, objek dapat ditahan dengan konteks debugger dan konsol DevTools (mis. setelah evaluasi konsol). Buat cuplikan heap dengan konsol bersih dan tanpa breakpoint aktif di debugger.
+* Sometimes objects may be retained by debugger context and DevTools console (e.g. after console evaluation). Create heap snapshots with clear console and no active breakpoints in the debugger.
 
-Grafik memori dimulai dengan akar, yang mungkin berupa objek `window` browser atau objek `Global` modul Node.js. Anda tidak bisa mengontrol bagaimana objek akar ini dikumpulkan sampahnya.
+The memory graph starts with a root, which may be the `window` object of the browser or the `Global` object of a Node.js module. You don't control how this root object is GC'd.
 
-![Objek root tidak dapat dikontrol](imgs/dontcontrol.png)
+![Root object can't be controlled](imgs/dontcontrol.png)
 
-Apa pun yang tidak bisa dijangkau dari akar akan dikumpulkan sampahnya.
+Whatever is not reachable from the root gets GC.
 
-Note: Kolom ukuran Shallow dan Retained menampilkan data dalam satuan byte.
+Note: Both the Shallow and Retained size columns represent data in bytes.
 
-## Pohon penahan objek
+## Objects retaining tree
 
-Heap adalah jaringan objek yang saling terkait. Dalam dunia matematika, struktur ini disebut sebagai *grafik* atau grafik memori. Grafik tersusun dari "simpul" yang dihubungkan oleh "edge", dan keduanya diberi label.
+The heap is a network of interconnected objects. In the mathematical world, this structure is called a *graph* or memory graph. A graph is constructed from *nodes* connected by means of *edges*, both of which are given labels.
 
-* **Simpul** (*atau objek) diberi label menggunakan nama fungsi *konstruktor* yang digunakan untuk membangunnya.
-* **Edge** diberi label menggunakan nama *properti*.
+* **Nodes** (*or objects*) are labelled using the name of the *constructor* function that was used to build them.
+* **Edges** are labelled using the names of *properties*.
 
-Pelajari [cara merekam profil menggunakan Profiler Heap](/web/tools/chrome-devtools/profile/memory-problems/heap-snapshots).
-Hal mencolok yang terlihat
-di rekaman Profiler Heap di bawah ini termasuk jarak:
-jarak dari akar GC.
-Jika hampir semua objek yang berjenis sama berada dalam jarak yang sama,
-dan ada sedikit yang berjarak lebih jauh, ini perlu diinvestigasi.
+Learn [how to record a profile using the Heap Profiler](/web/tools/chrome-devtools/profile/memory-problems/heap-snapshots). Some of the eye-catching things we can see in the Heap Profiler recording below include distance: the distance from the GC root. If almost all the objects of the same type are at the same distance, and a few are at a bigger distance, that's something worth investigating.
 
-![Jarak dari akar](imgs/root.png)
+![Distance from root](imgs/root.png)
 
-## Dominator
+## Dominators
 
-Objek dominator terdiri atas struktur pohon karena setiap objek memiliki tepat satu dominator. Dominator sebuah objek belum tentu memiliki referensi langsung ke objek yang didominasinya. Dengan kata lain, pohon dominator bukanlah pohon bentang grafik.
+Dominator objects are comprised of a tree structure because each object has exactly one dominator. A dominator of an object may lack direct references to an object it dominates; that is, the dominator's tree is not a spanning tree of the graph.
 
-Di diagram berikut:
+In the diagram below:
 
-* Simpul 1 mendominasi simpul 2
-* Simpul 2 mendominasi simpul 3, 4, dan 6
-* Simpul 3 mendominasi simpul 5
-* Simpul 5 mendominasi simpul 8
-* Simpul 6 mendominasi simpul 7
+* Node 1 dominates node 2
+* Node 2 dominates nodes 3, 4 and 6
+* Node 3 dominates node 5
+* Node 5 dominates node 8
+* Node 6 dominates node 7
 
-![Struktur pohon Dominator](imgs/dominatorsspanning.png)
+![Dominator tree structure](imgs/dominatorsspanning.png)
 
-Di contoh berikut, simpul `#3` adalah dominator `#10`, tetapi `#7` juga hadir di setiap jalur sederhana dari GC ke `#10`. Dengan demikian, objek B adalah dominator objek A jika B hadir di setiap jalur sederhana dari akar ke objek A.
+In the example below, node `#3` is the dominator of `#10`, but `#7` also exists in every simple path from GC to `#10`. Therefore, an object B is a dominator of an object A if B exists in every simple path from the root to the object A.
 
-![Ilustrasi dominator animasi](imgs/dominators.gif)
+![Animated dominator illustration](imgs/dominators.gif)
 
-## Detail V8
+## V8 specifics
 
-Saat membuat profil memori, sebaiknya kita memahami makna di balik tampilan cuplikan heap. Bagian ini menjelaskan beberapa topik terkait memori khususnya yang terkait dengan **mesin virtual JavaScript V8** (V8 VM atau VM).
+When profiling memory, it is helpful to understand why heap snapshots look a certain way. This section describes some memory-related topics specifically corresponding to the **V8 JavaScript virtual machine** (V8 VM or VM).
 
-### Representasi objek JavaScript
+### JavaScript object representation
 
-Ada tiga jenis primitif:
+There are three primitive types:
 
-* Angka (mis., 3.14159..)
-* Boolean (true atau false)
-* String (mis. 'Werner Heisenberg')
+* Numbers (e.g., 3.14159..)
+* Booleans (true or false)
+* Strings (e.g., 'Werner Heisenberg')
 
-String tidak bisa mereferensi nilai lain dan selalu menjadi 'daun' atau simpul ujung.
+They cannot reference other values and are always leafs or terminating nodes.
 
-**Angka** bisa disimpan sebagai:
+**Numbers** can be stored as either:
 
-* nilai integer 31-bit langsung yang disebut sebagai **integer kecil** (*SMI*), atau
-* objek heap, yang disebut sebagai **angka heap**. Angka heap digunakan untuk menyimpan nilai yang tidak cocok dengan bentuk SMI, misalnya *rangkap*, atau bila nilai perlu *dikotakkan*, seperti menyetel properti padanya.
+* an immediate 31-bit integer values called **small integers** (*SMIs*), or
+* heap objects, referred to as **heap numbers**. Heap numbers are used for storing values that do not fit into the SMI form, such as *doubles*, or when a value needs to be *boxed*, such as setting properties on it.
 
-**String** bisa disimpan di:
+**Strings** can be stored in either:
 
-* **heap VM**, atau
-* secara eksternal di **memori renderer**. *Objek wrapper* dibuat dan digunakan untuk mengakses penyimpanan eksternal tempat, misalnya, sumber skrip dan materi lain yang diterima dari Web disimpan, bukan disalin ke heap VM.
+* the **VM heap**, or
+* externally in the **renderer’s memory**. A *wrapper object* is created and used for accessing external storage where, for example, script sources and other content that is received from the Web is stored, rather than copied onto the VM heap.
 
-Memori untuk objek JavaScript baru dialokasikan dari heap JavaScript khusus (atau **heap VM**). Objek ini dikelola oleh pengumpul sampah V8 dan dengan demikian, akan tetap hidup selama ada paling tidak satu referensi kuat kepadanya.
+Memory for new JavaScript objects is allocated from a dedicated JavaScript heap (or **VM heap**). These objects are managed by V8's garbage collector and therefore, will stay alive as long as there is at least one strong reference to them.
 
-**Objek bawaan** adalah semua hal lain yang tidak ada di dalam heap JavaScript. Berbeda dengan berlainan dengan objek heap, objek bawaan tidak dikelola oleh pengumpul sampah V8 selama masa hidupnya, dan hanya bisa diakses dari JavaScript menggunakan objek wrapper JavaScript-nya.
+**Native objects** are everything else which is not in the JavaScript heap. Native object, in contrast to heap object, is not managed by the V8 garbage collector throughout its lifetime, and can only be accessed from JavaScript using its JavaScript wrapper object.
 
-**String cons** adalah objek yang terdiri atas pasangan string yang disimpan lalu disambungkan, dan merupakan hasil penggabungan. Penggabungan materi *string cons* terjadi hanya saat diperlukan. Contohnya, saat substring dari string yang digabungkan harus dibuat.
+**Cons string** is an object that consists of pairs of strings stored then joined, and is a result of concatenation. The joining of the *cons string* contents occurs only as needed. An example would be when a substring of a joined string needs to be constructed.
 
-Misalnya, jika Anda menggabungkan **a** dan **b**, Anda akan mendapatkan string (a, b) yang mewakili hasil penggabungan. Jika Anda nanti menggabungkan **d** dengan hasil tersebut, Anda akan mendapatkan string cons yang lain ((a, b), d).
+For example, if you concatenate **a** and **b**, you get a string (a, b) which represents the result of concatenation. If you later concatenated **d** with that result, you get another cons string ((a, b), d).
 
-**Larik** - Larik adalah objek dengan kunci numerik. Larik sangat sering digunakan di VM V8 untuk menyimpan data yang sangat besar. Rangkaian pasangan nilai-kunci yang digunakan seperti kamus dicadangkan oleh larik.
+**Arrays** - An Array is an Object with numeric keys. They are used extensively in the V8 VM for storing large amounts of data. Sets of key-value pairs used like dictionaries are backed up by arrays.
 
-Objek JavaScript yang umum bisa menjadi satu dari dua jenis larik yang digunakan untuk menyimpan:
+A typical JavaScript object can be one of two array types used for storing:
 
-* properti yang diberi nama, dan
-* elemen numerik
+* named properties, and
+* numeric elements
 
-Apabila jumlahnya sangat kecil, properti bisa disimpan secara internal di objek JavaScript sendiri.
+In cases where there is a very small number of properties, they can be stored internally in the JavaScript object itself.
 
-**Peta** - objek yang menjelaskan jenis objek dan layoutnya. Misalnya, peta digunakan untuk menjelaskan hierarki objek implisit untuk [mengakses properti secara cepat](/v8/design.html#prop_access).
+**Map** - an object that describes the kind of object and its layout. For example, maps are used to describe implicit object hierarchies for [fast property access](/v8/design.html#prop_access).
 
-### Grup objek
+### Object groups
 
-Setiap grup objek bawaan terdiri atas objek yang saling mereferensi. Pertimbangkan, misalnya, subpohon DOM tempat setiap simpul memiliki tautan ke induknya dan tautan ke anak selanjutnya dan seinduk selanjutnya, sehingga membentuk grafik yang terhubung. Perhatikan bahwa objek bawaan tidak direpresentasikan di heap JavaScript, itulah mengapa objek ini berukuran nol. Sebagai gantinya, objek wrapper dibuat.
+Each native objects group is made up of objects that hold mutual references to each other. Consider, for example, a DOM subtree where every node has a link to its parent and links to the next child and next sibling, thus forming a connected graph. Note that native objects are not represented in the JavaScript heap — that's why they have zero size. Instead, wrapper objects are created.
 
-Setiap objek wrapper memiliki referensi ke objek bawaan yang terkait, untuk mengalihkan perintah padanya. Pada gilirannya sendiri, grup objek menahan objek wrapper. Meskipun demikian, grup objek tidak membuat siklus yang tidak bisa dikumpulkan, karena GC cukup pintar untuk melepaskan grup objek yang wrapper-nya tidak lagi direferensikan. Akan tetapi, lupa melepaskan satu wrapper akan menahan seluruh grup dan wrapper terkait.
+Each wrapper object holds a reference to the corresponding native object, for redirecting commands to it. In its own turn, an object group holds wrapper objects. However, this doesn't create an uncollectable cycle, as GC is smart enough to release object groups whose wrappers are no longer referenced. But forgetting to release a single wrapper will hold the whole group and associated wrappers.
 
+## Feedback {: #feedback }
 
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
