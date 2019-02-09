@@ -1,66 +1,47 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: tabindex로 DOM 순서 변경
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Modifying the DOM order with tabindex
 
+{# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2016-10-04 #} {# wf_blink_components: N/A #}
 
-{# wf_updated_on: 2016-10-04 #}
-{# wf_published_on: 2016-10-04 #}
+# Using tabindex {: .page-title }
 
-# tabindex 사용 {: .page-title }
+{% include "web/_shared/contributors/megginkearney.html" %} {% include "web/_shared/contributors/dgash.html" %} {% include "web/_shared/contributors/robdodson.html" %}
 
-{% include "web/_shared/contributors/megginkearney.html" %}
-{% include "web/_shared/contributors/dgash.html" %}
-{% include "web/_shared/contributors/robdodson.html" %}
+The default tab order provided by the DOM position of native elements is convenient, but there are times when you'll want to modify the tab order, and physically moving elements in the HTML isn't always an optimal, or even a feasible, solution. For these cases you can use the `tabindex` HTML attribute to explicitly set an element's tab position.
 
+`tabindex` can be applied to any element &mdash; although it is not necessarily useful on every element &mdash; and takes a range of integer values. Using `tabindex`, you can specify an explicit order for focusable page elements, insert an otherwise unfocusable element into the tab order, and remove elements from the tab order. For example:
 
-
-네이티브 요소의 DOM 위치가 제공하는 기본 탭 순서가
-편리하기는 하지만 탭 순서를 수정하고 싶은 경우도 있을 것입니다.
-HTML에서 요소를 물리적으로 이동하는 것은 때로 적합하지 못하거나 심지어
-실현 불가능할 수도 있습니다. 이런 경우에는 `tabindex` HTML 속성을 사용하여
-요소의 탭 위치를 설정합니다.
-
-`tabindex`는 어떤 요소에든 적용할 수 있습니다. 그러나
-모든 요소에서 반드시 필요한 것은 아니며 다양한 정수값 범위를 취합니다.
-`tabindex`를 사용하면 포커스 가능한 요소에 대해 명시적 순서를 지정하고
-포커스 불가능한 요소를 탭 순서에 삽입하고 탭 순서에서
-요소를 제거합니다. 예를 들면 다음과 같습니다.
-
-`tabindex="0"`: 일반적인 탭 순서에 요소를 삽입합니다. `Tab` 키를 누르거나
-`focus()` 메서드를 호출하는 방식으로 요소에 포커스를
-맞출 수 있습니다.
+`tabindex="0"`: Inserts an element into the natural tab order. The element can be focused by pressing the `Tab` key, and the element can be focused by calling its `focus()` method
 
     <custom-button tabindex="0">Press Tab to Focus Me!</custom-button>
+    
 
 {% framebox height="60px" %}
+
 <style>
   custom-button {
     margin: 10px;
   }
 </style>
-<custom-button tabindex="0">Press Tab to Focus Me!</custom-button>
-{% endframebox %}
 
-`tabindex="-1"`: 일반적인 탭 순서에서 요소를 삭제하더라도
-`focus()` 메서드를 호출하여 계속 요소에 포커스를 맞출 수 있습니다.
+<custom-button tabindex="0">Press Tab to Focus Me!</custom-button> {% endframebox %}
+
+`tabindex="-1"`: Removes an element from the natural tab order, but the element can still be focused by calling its `focus()` method
 
     <button id="foo" tabindex="-1">I'm not keyboard focusable</button>
     <button onclick="foo.focus();">Focus my sibling</button>
+    
 
 {% framebox height="80px" %}
 <button id="foo" tabindex="-1">I'm not keyboard focusable</button>
 <button onclick="foo.focus();">Focus my sibling</button>
 {% endframebox %}
 
-`tabindex="5"`: tabindex가 0보다 크면 요소가 일반적인 탭 순서 앞으로
-점프합니다. tabindex가 0보다 큰
-요소가 여러 개 있다면 탭 순서는 0보다 크고 가장 낮은 값부터 시작해서
-계속 높은 값으로 이동합니다. 0보다 큰 tabindex를 사용하는 것은
-**안티패턴**으로 간주됩니다.
+`tabindex="5"`: Any tabindex greater than 0 jumps the element to the front of the natural tab order. If there are multiple elements with a tabindex greater than 0, the tab order starts from the lowest value that is greater than zero and works its way up. Using a tabindex greater than 0 is considered an **anti-pattern**.
 
     <button>I should be first</button>
     <button>And I should be second</button>
     <button tabindex="5">But I jumped to the front!</button>
+    
 
 {% framebox height="80px" %}
 <button>I should be first</button>
@@ -68,42 +49,21 @@ HTML에서 요소를 물리적으로 이동하는 것은 때로 적합하지 못
 <button tabindex="5">But I jumped to the front!</button>
 {% endframebox %}
 
-헤더, 이미지 또는 문서 제목과 같은 비입력
-요소에는 더욱 그렇습니다. 이런 종류의 요소에 `tabindex`를 추가하면 오히려 역효과를 낳습니다. 가능하면
-DOM 시퀀스가 논리적인 탭 순서를 제공하도록 소스 코드를 적절히 배치하는 것이
-좋습니다. `tabindex`를 사용한다면 버튼, 탭, 드롭다운, 텍스트 필드와
-같이 사용자가 입력을 제공할 것으로 예상되는 요소인 사용자설정 대화형 컨트롤로 제한하세요.
+This is particularly true of non-input elements like headers, images, or article titles. Adding `tabindex` to those kinds of elements is counter-productive. If possible, it's best to arrange your source code so the DOM sequence provides a logical tab order. If you do use `tabindex`, restrict it to custom interactive controls like buttons, tabs, dropdowns, and text fields; that is, elements the user might expect to provide input to.
 
+Don't worry about screen reader users missing important content because it doesn't have a `tabindex`. Even if the content is very important, like an image, if it's not something the user can interact with, there's no reason to make it focusable. Screen reader users can still understand the content of the image so long as you provide proper `alt` attribute support, which we'll cover shortly.
 
-스크린 리더에는
-`tabindex`가 없으므로 사용자가 중요한 콘텐츠를 놓치지 않을까 걱정하지 마세요. 이미지와 같이 매우 중요한 콘텐츠라도
-사용자가 상호작용할 수 있는 대상이 아니라면 포커스 가능하게 만들 이유가 없습니다.
- 스크린 리더 사용자는 적절한 `alt` 속성 지원을 제공하기만 한다면
-이미지 콘텐츠를 이해하는 데는 문제가 없습니다. 이 속성 지원에 대해서는 잠시 후 다룰 것입니다.
+## Managing focus at the page level
 
-## 페이지 수준에서 포커스 관리
+Here's a scenario where `tabindex` is not only useful, but necessary. You might be building a robust single page with different content sections, not all of which are simultaneously visible. In this kind of page, clicking a navigation link might change the visible content without doing a page refresh.
 
-`tabindex`가 단순히 유용할 뿐 아니라 꼭 필요할 때가 있습니다. 다 표시할 수는 없지만
-여러 가지 다른 콘텐츠 섹션을 한 페이지에 통합하는 강력한
-기능을 구현할 수 있습니다. 이 페이지에서는 내비게이션 링크를 클릭하면
-페이지 새로고침을 수행하지 않고도 화면에 표시되는 콘텐츠를 변경할 수 있습니다.
+When this happens, you would probably identify the selected content area, give it a `tabindex` of -1 so that it doesn't appear in the natural tab order, and call its `focus` method. This technique, called *managing focus*, keeps the user's perceived context in sync with the site's visual content.
 
-이 경우, 여러분은 아마도 선택한 콘텐츠 영역을 식별하고
-`tabindex`를 -1로 부여해서 일반적인 탭 순서에 나타나지 않게 한 다음
-`focus` 메서드를 호출할 것입니다. 이 기술은 *포커스 관리*라고 하는데
-사용자가 인지한 컨텍스트를 사이트의 시각적 콘텐츠와 일치된 상태로 유지할 수 있습니다.
+## Managing focus in components
 
-## 구성 요소에서 포커스 관리
+Managing focus when you change something on the page is important, but sometimes you need to manage focus at the control level &mdash; for example, if you're building a custom component.
 
-페이지에서 무언가를 변경할 때 포커스를 관리하는 것은 중요합니다. 그러나 때로는
-컨트롤 수준에서 포커스를 관리해야 할 경우도 있습니다. 예를 들어,
-사용자설정 구성 요소를 빌드하는 경우가 이에 해당합니다.
-
-네이티브 `select` 요소를 생각해 보세요. 이 요소는 기본적인 포커스를 받을 수 있지만,
-포커스를 받으면 화살표 키를 사용하여 추가적인 기능(선택 가능한 옵션)을
-노출할 수 있습니다. 사용자설정 `select` 요소를 빌드한다면
-주로 키보드를 사용하는 사용자가 여전히 컨트롤과 상호작용할 수 있도록 이와 동일한 유형의 동작을
-노출하고 싶을 것입니다.
+Consider the native `select` element. It can receive basic focus but, once there, you can use the arrow keys to expose additional functionality (the selectable options). If you were building a custom `select` element, you would want to expose these same kinds of behaviors so that users who rely primarily on the keyboard could still interact with your control.
 
     <!-- Focus the element using Tab and use the up/down arrow keys to navigate -->
     <select>
@@ -111,6 +71,7 @@ DOM 시퀀스가 논리적인 탭 순서를 제공하도록 소스 코드를 적
       <option>Window seat</option>
       <option>No preference</option>
     </select>
+    
 
 <select>
   <option>Aisle seat</option>
@@ -118,17 +79,9 @@ DOM 시퀀스가 논리적인 탭 순서를 제공하도록 소스 코드를 적
   <option>No preference</option>
 </select>
 
-어떤 키보드 동작을 구현할지 알기 어려울 수 있지만
-참조하면 도움이 될 만한 문서가 있습니다.
-[Accessible Rich Internet Applications(ARIA) Authoring Practices](https://www.w3.org/TR/wai-aria-practices/){: .external }
-가이드는 구성 요소 유형과 이들이 지원하는 키보드 동작 유형을 보여줍니다.
-나중에 ARIA에 대해서는 더욱 상세히 설명하겠지만 지금 이 가이드는
-새로운 구성 요소에 키보드 지원을 추가하는 데 활용하겠습니다.
+Knowing which keyboard behaviors to implement can be difficult, but there is a helpful document you can refer to. The [Accessible Rich Internet Applications (ARIA) Authoring Practices](https://www.w3.org/TR/wai-aria-practices/){: .external } guide lists types of components and what kinds of keyboard actions they support. We will cover ARIA in more detail later, but for now let's use the guide to help us add keyboard support to a new component.
 
-라디오 버튼 모음과 비슷하지만 개발자 자신의 고유한 모양과 동작을 구현하는 [사용자설정
-요소](/web/fundamentals/getting-started/primers/customelements)를
-만들고 고유한 외형과
-동작을 적용할 수 있습니다.
+Perhaps you're working on some new [Custom Elements](/web/fundamentals/web-components/customelements) that resemble a set of radio buttons, but with your unique take on appearance and behavior.
 
     <radio-group>
       <radio-button>Water</radio-button>
@@ -137,21 +90,15 @@ DOM 시퀀스가 논리적인 탭 순서를 제공하도록 소스 코드를 적
       <radio-button>Cola</radio-button>
       <radio-button>Ginger Ale</radio-button>
     </radio-group>
+    
 
-어떤 종류의 키보드 지원이 필요할지 결정하려면
-[ARIA Authoring Practices 가이드](https://www.w3.org/TR/wai-aria-practices/){: .external }를 참조하세요.
-섹션 2에는 디자인 패턴 목록이 있으며, 이 목록에는
-[라디오 그룹의 특성표](https://www.w3.org/TR/wai-aria-practices/#radiobutton){: .external }가 있습니다.
-이들은 새로운 요소에 가장 근접하게 일치하는 기존 구성 요소입니다.
+To determine what kind of keyboard support they need, you would check the [ARIA Authoring Practices guide](https://www.w3.org/TR/wai-aria-practices/){: .external }. Section 2 contains a list of design patterns, and in that list is a [characteristics table for radio groups](https://www.w3.org/TR/wai-aria-practices/#radiobutton){: .external }, the existing component that most closely matches your new element.
 
-표에 나와 있듯이, 공통적으로 지원해야 할 키보드 동작 중에
-위쪽/아래쪽/왼쪽/오른쪽 화살표 키가 있습니다. 새로운 구성 요소에 이 동작을 추가할 때는
-*이동 tabindex*라는 기술을 사용할 것입니다.
+As you can see in the table, one of the common keyboard behaviors that should be supported is the up/down/left/right arrow keys. To add this behavior to the new component, we'll use a technique called *roving tabindex*.
 
-![W3C 사양에서 라디오 버튼에 대한 부분 발췌](imgs/radio-button.png)
+![W3C spec excerpt for radio buttons](imgs/radio-button.png)
 
-현재 활성 상태인 하위 항목을 제외한 모든 하위 항목에 대해 `tabindex`를 -1로 설정하면
-이동 tabindex가 작동합니다.
+Roving tabindex works by setting `tabindex` to -1 for all children except the currently-active one.
 
     <radio-group>
       <radio-button tabindex="0">Water</radio-button>
@@ -160,11 +107,9 @@ DOM 시퀀스가 논리적인 탭 순서를 제공하도록 소스 코드를 적
       <radio-button tabindex="-1">Cola</radio-button>
       <radio-button tabindex="-1">Ginger Ale</radio-button>
     </radio-group>
+    
 
-이 구성 요소는 키보드 이벤트 리스너를 사용하여 사용자가 어느 키를 눌렀는지 확인합니다.
-이때 이전에 포커스를 맞춘 하위 항목의
-`tabindex`를 -1로 설정하고 포커스를 맞출 하위 항목의 `tabindex`를 0으로 설정한 다음
-여기에 포커스 메서드를 호출합니다.
+The component then uses a keyboard event listener to determine which key the user presses; when this happens, it sets the previously focused child's `tabindex` to -1, sets the to-be-focused child's `tabindex` to 0, and calls the focus method on it.
 
     <radio-group>
       // Assuming the user pressed the down arrow, we'll focus the next available child
@@ -174,15 +119,14 @@ DOM 시퀀스가 논리적인 탭 순서를 제공하도록 소스 코드를 적
       <radio-button tabindex="-1">Cola</radio-button>
       <radio-button tabindex="-1">Ginger Ale</radio-button>
     </radio-group>
+    
 
-사용자가 마지막(또는 첫 번째, 포커스 이동 방향에 따라 달라짐)
-하위 요소에 도달하면 첫 번째(또는 마지막)
-하위 요소로 다시 루프를 실행하여 포커스를 맞춥니다.
+When the user reaches the last (or first, depending on the direction they're moving the focus) child, you will loop around and focus the first (or last) child again.
 
-아래에서 완성된 예시를 실행해 볼 수 있습니다. DevTools에서 이 요소를
-검사해 보면서 tabindex가 라디오 버튼 사이를 이동하는지 살펴보세요.
+You can give the completed example a try down below. Inspect the element in the DevTools to observe the tabindex moving from one radio to the next.
 
 {% framebox height="130px" %}
+
 <style>
   .demo {
     margin-left: 80px;
@@ -232,7 +176,8 @@ DOM 시퀀스가 논리적인 탭 순서를 제공하도록 소스 코드를 적
   </radio-group>
 </div>
 
-<script src="https://www.gstatic.com/devrel-devsite/v9dcc115658e2b070ea1ae9baed63d566/developers/js/custom-elements.min.js"></script>
+<script src="https://www.gstatic.com/devrel-devsite/v9dcc115658e2b070ea1ae9baed63d566/developers/js/custom-elements.min.js">
+</script>
 
 <script>
   class RadioButton extends HTMLElement {
@@ -343,72 +288,40 @@ DOM 시퀀스가 논리적인 탭 순서를 제공하도록 소스 코드를 적
 
   window.customElements.define('radio-group', RadioGroup);
 </script>
+
 {% endframebox %}
 
-GitHub에서
-[이 요소의 전체 소스](https://gist.github.com/robdodson/85deb2f821f9beb2ed1ce049f6a6ed47){: .external }를
-확인할 수 있습니다.
+You can view [the complete source for this element](https://gist.github.com/robdodson/85deb2f821f9beb2ed1ce049f6a6ed47){: .external } over on GitHub.
 
-## 모달 및 키보드 트랩
+## Modals and keyboard traps
 
-포커스를 관리할 때 때로는 피할 수 없는 상황에 직면할 수
-있습니다. 포커스를 관리하고 탭 동작을 캡처하면서
-이를 완료할 때까지 사용자가 떠나지 못하게 하는 자동완성 위젯을 생각해봅시다.
-이것을 *키보드 트랩*이라고 하고 이는 사용자에게 매우 불만스러울 수 있습니다.
-Web AIM 검사 목록의 섹션 2.1.2에서는 이 문제에 대해
-[키보드 포커스는 특정 페이지 요소에서 잠그거나 트랩되어서는 안 됩니다](http://webaim.org/standards/wcag/checklist#sc2.1.2){: .external }라고 되어 있습니다.
-사용자는 키보드만 사용하여 모든 페이지 요소를 이동할 수
-있어야 합니다.
+Sometimes when you're managing focus you can get into a situation you can't get out of. Consider an autocomplete widget that tries to manage focus and captures the tab behavior, but prevents the user from leaving it until it's complete. This is called a *keyboard trap*, and it can be very frustrating for the user. Section 2.1.2 of the Web AIM checklist addresses this issue, stating that [keyboard focus should never be locked or trapped at one particular page element](http://webaim.org/standards/wcag/checklist#sc2.1.2){: .external }. The user should be able to navigate to and from all page elements using only the keyboard.
 
-이상한 점은, 모달 창에서처럼 이 동작이 실제로 바람직할 때가 있다는
-것입니다. 보통은 모달이 표시될 때 사용자가 모달 이면의 콘텐츠에
-액세스할 수 있도록 하지는 않습니다. 오버레이를 추가하여 페이지를 시각적으로 덮을 수는 있지만
-키보드 포커스가 우연히 모달 밖으로 나가지 못하게 막지는 못합니다.
+Oddly, there are times when this behavior is actually desirable, like in a modal window. Normally, when the modal is displayed, you don't want the user to access the content behind it. You might add an overlay to cover the page visually, but that doesn't stop keyboard focus from accidentally traveling outside the modal.
 
-![사용자에게 작업을 저장할지 묻는 모달 창](imgs/modal-example.png)
+![a modal window asking the user to save their work](imgs/modal-example.png)
 
-이 경우, 임시 키보드 트랩을 구현하여
-모달이 표시되는 동안만 포커스를 트랩하고
-모달이 닫히면 이전에 포커스를 받았던 항목으로 다시 포커스가 돌아가게 할 수 있습니다.
+In instances like this you can implement a temporary keyboard trap to ensure that you trap focus only while the modal is displayed and then restore focus to the previously-focused item when the modal is closed.
 
->개발자 입장에서 이 작업을 더욱 쉽게 처리할 수 있게 해주는 방법이 있지만(예:
-`<dialog>` 요소), 브라우저에서 아직은 널리 지원되지 않습니다.
->
->>이 [MDN 기사](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dialog){: .external }에서
-`<dialog>`에 대한 추가 정보를 얻을 수 있고
-[모달 예시](https://github.com/gdkraus/accessible-modal-dialog){: .external }에서
-모달 창에 대한 추가 정보를 얻을 수 있습니다.
+> There are some proposals on how to make this easier for developers, including the `<dialog>` element, but they don't yet have widespread browser support.
+> 
+> See this [MDN article](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dialog){: .external } for more information on `<dialog>`, and this [modal example](https://github.com/gdkraus/accessible-modal-dialog){: .external } for more information on modal windows.
 
-몇몇 요소를 포함한 `div`와 배경 오버레이를 나타내는
-또 다른 `div`로 표시되는 모달 대화상자를 생각해 봅시다. 이 상황에서 임시 키보드 트랩 구현에
-필요한 기본적인 단계를 수행해 봅시다.
+Consider a modal dialog represented by a `div` that contains a few elements, and another `div` that represents a background overlay. Let's walk through the basic steps needed to implement a temporary keyboard trap in this situation.
 
- 1. `document.querySelector`를 사용하여 모달 및 오버레이 div를 선택하고
-    관련 참조를 저장합니다.
- 1. 모달이 열렸을 때 포커스가 주어졌던 요소에 대한 참조를 저장하여
-    모달이 열릴 때 그 요소로 포커스를 되돌릴 수 있도록 합니다.
- 1. *keydown listener*를 사용하여 모달이 열려 있는 동안 키를 누를 때 키를 인식하도록
-    합니다. 배경 오버레이에서 클릭 동작을 수신하여
-    사용자가 배경 오버레이를 클릭하면 모달을 닫을 수도 있습니다.
- 1. 다음으로, 모달 내에서 포커스 가능한 요소 모음을 가져옵니다. 첫 번째와
-    마지막의 포커스 가능한 요소는 포커스를 앞뒤로 루프 순환하면서 모달 내에 머무르도록
-    할 시점을 알 수 있게 해주는 '센티널' 역할을 합니다.
- 1. 모달 창을 표시하고 포커스 가능한 첫 번째 요소를 포커스합니다.
- 1. 사용자가 `Tab` 또는 `Shift+Tab`을 누를 때 포커스를 앞이나 뒤로 이동하면서
-    마지막 요소나 첫 번째 요소에서 적절히 루프를 수행하도록 합니다.
- 1. 사용자가 `Esc` 키를 누르면 모달을 닫습니다. 이렇게 하면 사용자가 닫기 버튼을 찾지 않고도
-    모달을 닫을 수 있으므로 매우 유용합니다.
-    이는 마우스를 사용할 때도 유용한 기능입니다.
- 1. 모달이 닫힐 때 모달과 배경 오버레이를 숨기고
-    앞서 저장한 이전에 포커스를 받던 요소로 포커스를 복원합니다.
+1. Using `document.querySelector`, select the modal and overlay divs and store their references.
+2. As the modal opens, store a reference to the element that was focused when the modal was opened so you can return focus to that element.
+3. Use a *keydown listener* to grab keys as they are pressed while the modal is open. You could also listen for a click on the background overlay, and close the modal if the user clicks it.
+4. Next, get the collection of focusable elements within the modal. The first and last focusable elements will act as "sentinels" to let you know when to loop focus forward or backward to stay inside the modal.
+5. Display the modal window and focus the first focusable element.
+6. As the user presses `Tab` or `Shift+Tab`, move focus forward or backward, looping at the last or first elements as appropriate.
+7. If the user presses `Esc`, close the modal. This is very helpful because it allows the user to close the modal without searching for a specific close button, and it benefits even users who are using a mouse.
+8. When the modal is closed, hide it and the background overlay, and restore focus to the previously-focused element saved earlier.
 
-이 절차에 따르면 모든 사용자가 유용하고 쉽게 효과적으로 사용할 수 있는
-모달 창을 제공할 수 있습니다.
+This procedure gives you a usable, non-frustrating modal window that everyone can use effectively.
 
-더 자세한 내용은 이 [샘플 코드](https://github.com/udacity/ud891/blob/gh-pages/lesson2-focus/07-modals-and-keyboard-traps/solution){: .external }를
-살펴보고
-[완료된 페이지](http://udacity.github.io/ud891/lesson2-focus/07-modals-and-keyboard-traps/solution/index.html){: .external }의 라이브 예시를 살펴보세요.
+For more details, you can examine this [sample code](https://github.com/udacity/ud891/blob/gh-pages/lesson2-focus/07-modals-and-keyboard-traps/solution){: .external }, and view a live example from a [completed page](http://udacity.github.io/ud891/lesson2-focus/07-modals-and-keyboard-traps/solution/index.html){: .external }.
 
+## Feedback {: #feedback }
 
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
