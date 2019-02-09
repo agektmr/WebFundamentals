@@ -1,62 +1,44 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: マルチデバイス サイトをゼロから構築します。ここでは、一連のビルドプロセス ツールを使用して、開発をスピードアップしたり、高速読み込みサイトを作成したりする方法について説明します。
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Build your multi-device site from the ground up. Learn how to speed up development and create a fast loading site with a set of build process tools.
 
-{# wf_updated_on:2015-04-13 #}
-{# wf_published_on:2014-09-24 #}
+{# wf_updated_on: 2017-07-24 #} {# wf_published_on: 2014-09-24 #}
 
-# ビルドツールのセットアップ {: .page-title }
+# Set Up Your Build Tools {: .page-title }
 
-{% include "web/_shared/contributors/megginkearney.html" %}
-{% include "web/_shared/contributors/mattgaunt.html" %}
-マルチデバイス サイトをゼロから構築します。ここでは、一連のビルドプロセス ツールを使用して、開発をスピードアップしたり、高速読み込みサイトを作成したりする方法について説明します。どのサイトにも開発バージョンと本番向けバージョンがあります。<br /><br />開発バージョンには、作業しやすいクリーン形式のサイトを構成する HTML、CSS、JS、および画像ファイルが含まれています。<br /><br />本番向けバージョンでは、これらのファイルを取得したり、縮小化したり、結合または統合したり、画像のように最適化したりします。
+{% include "web/_shared/contributors/megginkearney.html" %} {% include "web/_shared/contributors/mattgaunt.html" %} Build your multi-device site from the ground up. Learn how to speed up development and create a fast loading site with a set of build process tools. Every site should have a development version and a production version.  
+  
+The development version has all the HTML, CSS, JS and image files that make up your site in a clean format that you are happy to work on.  
+  
+A production version will take these files, minify them, concatenate / merge them and optimize files like images.
 
-ウェブ デベロッパーは一度に多くのことを考える必要があり、ビルドステップは最も重要ですが、始めるのが面倒なものです。
-画像圧縮、CSS の縮小化、JavaScript の結合、レスポンシブ テスト、単体テストなどを自動化
-するために必要なすべてのタスクを処理する必要があります。
+Web developers have to think about a million things at once and the build step is one of the most critical, yet most cumbersome to get started with. You have to work out all the tasks that you need to automate such as: Image compression, CSS minification, JavaScript concatenation, Responsive testing, Unit testing, the list goes on...
 
-
-
-このガイドに従って、作成済みのサイトが開始時からすべてのベスト プラクティスに従うようにワークフローを構築するための最良の方法を習得してください。
-
-
-
+Follow this guide to learn the best way to structure your workflow so that the sites you create already follow all the best practices from the minute you start.
 
 ### TL;DR {: .hide-from-toc }
-- ビルドプロセス ツールは、パフォーマンスを最適化するものである必要があります。つまり、JavaScript、CSS、HTML、および画像を自動的に縮小化および結合する必要があります。
-- LiveReload などのツールを使用して、開発プロセスをスムーズにします。
 
+* Your build process tools must optimize for performance; they should automatically minify and concatenate JavaScript, CSS, HTML, and images.
+* Use tools like LiveReload to make your development process smoother.
 
-コーディングを始める前に、サイトの本番向けバージョンを最適化および構築する方法を検討する必要があります。
-このワークフローを最初から設定すると、プロジェクトの終了時に予期しない状況になるのを防ぐことができます。また、単調なタスクを自動で実行して開発をスピードアップするツールをワークフローに追加できます。
+Before you start coding, you need to consider how to optimize and build the production version of your site. Setting up this workflow from the start prevents any nasty surprises at the end of the project and you can add tools into your workflow that speed up your development, doing the monotonous tasks for you.
 
+## What is a build process?
 
+A build process is a set of tasks which run over your projects files, compiling and testing code during development and used to create the deployment version of your site. Your build process shouldn't be a set of tasks you run at the end of your development workflow.
 
+The most popular tools for implementing a build process are [Gulp](http://gulpjs.com/){: .external } and [Grunt](http://gruntjs.com/), both of which are command line tools. If you have no experience of either, use Gulp, we use it for [Web Starter Kit](/web/tools/starter-kit/) and recommend you do the same.
 
-##  ビルドプロセスとは
-
-ビルドプロセスは、プロジェクト ファイルに対して実行される一連のタスクで、開発中にサイトの開発バージョンを作成するために使用されるコードをコンパイルしたりテストしたりします。
-ビルドプロセスでは、開発ワークフローの終了時に実行する一連のタスクを実行しないでください。
-
-
-ビルドプロセスを実装するための最も一般的なツールは [Gulp](http://gulpjs.com/){: .external } と [Grunt](http://gruntjs.com/) で、両方ともコマンドライン ツールです。
-どちらも使用経験がない場合は、[Web Starter Kit](/web/tools/starter-kit/) で Gulp が使用されているため、Gulp を使用することをお勧めします。
-
-
-
-GUI を備えていて、取り組みやすいツールがありますが、柔軟性は低くくなります。
-
+There are tools which have GUIs and may be a bit easier to get to grips with but will be less flexible.
 
 <table class="responsive">
   <thead>
     <tr>
-      <th colspan="2">サポートされているプラットフォーム &amp; ツール名</th>
+      <th colspan="2">Supported Platforms &amp; Tool Name</th>
     </tr>
   </thead>
   <tbody>
     <tr>
       <td data-th="Supported Platforms">OS X / Windows</td>
-      <td data-th="Gulp"><a href="http://alphapixels.com/prepros/">Prepros</a></td>
+      <td data-th="Gulp"><a href="https://prepros.io/">Prepros</a></td>
     </tr>
     <tr>
       <td data-th="Supported Platforms">OS X</td>
@@ -69,43 +51,31 @@ GUI を備えていて、取り組みやすいツールがありますが、柔�
   </tbody>
 </table>
 
+## What tasks should be in a build process?
 
-##  ビルドプロセスに必要なタスク
+In the following sections, we're going to look at the most common tasks you should have in your build process and recommend tasks for Grunt and Gulp.
 
-次のセクションでは、ビルドプロセスに必要な最も一般的なタスクについて説明し、Grunt と Gulp での対応するタスクを説明します。
+This requires a lot of trial and error to get each piece set-up the way you want and can be daunting if you are new to build processes.
 
+For a good example of a build process, check out the [getting started guide for Web Starter Kit](/web/fundamentals/getting-started/web-starter-kit/), which goes through how to use Web Starter Kit and explains what each of the commands in the Gulp file do. This can be used as a quick way to get set-up and then you can make changes if needed.
 
-思いどおりの設定を実現するには多くの試行錯誤が必要であり、ビルドプロセスがはじめての場合は厄介な作業になることがあります。
-
-
-ビルドプロセスの良い例については、[Web Starter Kit でサイトをスタート](/web/fundamentals/getting-started/web-starter-kit/)をご覧ください。Web Starter Kit の使用方法と Gulp ファイル内の各コマンドの実行内容が説明されています。この方法を使用して、セットアップを手っ取り早く完了し、後から必要に応じて変更を加えることができます。
-
-
-独自のビルドプロセスを作成する予定があり、Gulp または Grunt をはじめて使用する場合は、クイック スタート ガイドを参考にすると、最初のビルドプロセスのインストールや実行の方法がわかります。
-
-
+If you are looking to create your own build process and you're new to Gulp or Grunt, the quick start guides will be the best place to get into on installing and running your first build process:
 
 * [Grunt Getting Started](http://gruntjs.com/getting-started)
 * [Gulp Getting Started](https://github.com/gulpjs/gulp/blob/master/docs/getting-started.md#getting-started)
 
+### Use concatenation & minification for a faster site
 
-###  連結と圧縮の使用によるサイトの高速化
+For those unfamiliar with the terms concatenation and minification, concatenation means simply merging multiple files together, i.e. copying and pasting several files into one. The reason we do this is that it's more efficient for a browser to fetch one file, rather than lots of small files.
 
-連結および圧縮という用語に詳しくない方のために説明すると、連結とは、単純に複数のファイルを統合する、つまり、複数のファイルをコピーして 1 つのファイルに貼り付けることです。
-これを行うのは、ブラウザでは多くの小さいファイルよりも 1 つのファイルを取得する方が効率的だからです。
+Minification is the process of taking a file and making the overall number of characters less, without changing how the code works. A good example of this is removing comments, or taking a long variable name and making it smaller. This makes the file size smaller, leading to faster downloads.
 
-
-圧縮は、ファイルを取得し、コードの動作を変えることなく全体の文字数を少なくするプロセスです。
-良い例として、コメントの削除、長い変数名の短縮などがあります。
-これにより、ファイルサイズが小さくなり、ダウンロードも速くなります。
-
-
-圧縮には次を使用します。
+For minification, use the following:
 
 <table>
   <thead>
     <tr>
-      <th data-th="Type of File">ファイルの種類</th>
+      <th data-th="Type of File">Type of File</th>
       <th data-th="Gulp">Gulp</th>
       <th data-th="Grunt">Grunt</th>
     </tr>
@@ -129,41 +99,35 @@ GUI を備えていて、取り組みやすいツールがありますが、柔�
   </tbody>
 </table>
 
-連結には次を使用します。
+For concatenation, use the following:
 
 <table>
   <thead>
     <tr>
-      <th data-th="Type of File">ファイルの種類</th>
+      <th data-th="Type of File">Type of File</th>
       <th data-th="Gulp">Gulp</th>
       <th data-th="Grunt">Grunt</th>
     </tr>
   </thead>
   <tbody>
     <tr>
-      <td data-th="Type of File">CSS（Sass）</td>
-      <td data-th="Gulp"><a href="https://github.com/dlmanning/gulp-sass">gulp-sass</a> または <a href="https://github.com/jonkemp/gulp-useref">gulp-useref</a></td>
-      <td data-th="Grunt"><a href="https://github.com/gruntjs/grunt-contrib-sass">grunt-contrib-sass</a> または <a href="https://github.com/yeoman/grunt-usemin">grunt-usemin</a></td>
+      <td data-th="Type of File">CSS (Sass)</td>
+      <td data-th="Gulp"><a href="https://github.com/dlmanning/gulp-sass">gulp-sass</a> or <a href="https://github.com/jonkemp/gulp-useref">gulp-useref</a></td>
+      <td data-th="Grunt"><a href="https://github.com/gruntjs/grunt-contrib-sass">grunt-contrib-sass</a> or <a href="https://github.com/yeoman/grunt-usemin">grunt-usemin</a></td>
     </tr>
     <tr>
       <td data-th="Type of File">JS</td>
       <td data-th="Gulp"><a href="https://github.com/jonkemp/gulp-useref">gulp-useref</a></td>
-      <td data-th="Grunt"><a href="https://github.com/yeoman/grunt-usemin">grunt-usemin</a> または <a href="https://github.com/fatso83/grunt-codekit">grunt-codekit</a></td>
+      <td data-th="Grunt"><a href="https://github.com/yeoman/grunt-usemin">grunt-usemin</a> or <a href="https://github.com/fatso83/grunt-codekit">grunt-codekit</a></td>
     </tr>
   </tbody>
 </table>
 
-**注**: 「インポート」機能を利用すると Sass を使用できます（例は [Web Starter
-Kit](https://github.com/google/web-starter-kit/blob/master/app/styles/main.scss) を参照）。
+### Optimize your images
 
-###  画像の最適化
+Image optimization is an important step to help speed up your site; you'd be surprised how much smaller you can make an image without losing quality. Meta data is removed from the image as it's not needed by the browser to display the image, for example, information about the camera used to take the photo.
 
-画像の最適化は、サイトの高速化に役立つ重要なステップです。画像は、画質を落とすことなく驚くほど縮小できます。
-メタデータは、ブラウザで画像の表示に必要ないため削除されます。たとえば、写真の撮影に使用されたカメラに関する情報などです。
-
-
-
-画像を最適化するには、次のモジュールを使用できます。
+For optimizing images, you can use these modules.
 
 <table class="responsive">
   <thead>
@@ -179,16 +143,14 @@ Kit](https://github.com/google/web-starter-kit/blob/master/app/styles/main.scss)
   </tbody>
 </table>
 
-###  ベンダー プレフィックスを省略しない
+### Don't trip up with vendor prefixes
 
-使用する CSS にすべてのベンダー プレフィックスを含めるのは、面倒になることがよくあります。
-必要なプレフィックスを自動的に追加する自動プレフィクサーを使用してください。
-
+It can often become a bit tedious to include all the vendor prefixes for the CSS you use. Use an auto-prefixer to automatically add the prefixes you need to include:
 
 <table class="responsive">
   <thead>
     <tr>
-      <th colspan="2">Gulp と Grunt</th>
+      <th colspan="2">Gulp vs Grunt</th>
     </tr>
   </thead>
   <tbody>
@@ -199,32 +161,27 @@ Kit](https://github.com/google/web-starter-kit/blob/master/app/styles/main.scss)
   </tbody>
 </table>
 
-**注**: 
-[プレフィックスを自動的に追加する Sublime パッケージ](/web/tools/setup/setup-editor#autoprefixer)を追加することもできます。
+**Note**  
+If you prefer, you can add a [Sublime package to do the auto-prefixing](/web/tools/setup/setup-editor#autoprefixer) for you.
 
+### Never leave your text editor with live reloading
 
-###  テキスト エディタを LiveReload のままにしない
+Live reloading updates your site in your browser each time your make a change. After using it once, you won't be able to live without it.
 
-LiveReload は、変更が行われるたびにブラウザのサイトをアップデートします。一度使用すると、それなしの生活は考えられなくなります。
-
-
-Web Starter Kit では、LiveReload をサポートするために browser-sync を使用しています。
+Web Starter Kit uses browser-sync for Live Reload support.
 
 <table class="responsive">
   <thead>
     <tr>
-      <th colspan="2">Gulp と Grunt</th>
+      <th colspan="2">Gulp vs Grunt</th>
     </tr>
   </thead>
   <tbody>
     <tr>
       <td data-th="Gulp"><a href="http://www.browsersync.io/docs/gulp/">browser-sync</a></td>
-      <td data-th="Grunt"><a href="https://github.com/gruntjs/grunt-contrib-connect">grunt-contrib-connect</a> および <a href="https://github.com/gruntjs/grunt-contrib-watch">grunt-contrib-watch</a></td>
+      <td data-th="Grunt"><a href="https://github.com/gruntjs/grunt-contrib-connect">grunt-contrib-connect</a> & <a href="https://github.com/gruntjs/grunt-contrib-watch">grunt-contrib-watch</a></td>
     </tr>
   </tbody>
 </table>
 
-注: LiveReload の考えは好きでもビルドプロセスが不要な場合は、[Addy Osmani の HTML5Rocks に関する記事](http://www.html5rocks.com/en/tutorials/tooling/synchronized-cross-device-testing/)をご覧ください。さまざまな代替手段が記載されています。
-
-
-{# wf_devsite_translation #}
+Note: If you like the idea of Live Reloading, but don't want to have a build process, [Addy Osmani's write up on HTML5Rocks](http://www.html5rocks.com/en/tutorials/tooling/synchronized-cross-device-testing/) covers a range of alternatives (some free and some commercial).
