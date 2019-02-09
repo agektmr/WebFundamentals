@@ -1,89 +1,46 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Pengantar Pohon Aksesibilitas
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Introduction to the Accessibility Tree
 
+{# wf_blink_components: Blink>Accessibility #} {# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2016-10-04 #}
 
-{# wf_updated_on: 2016-10-04 #}
-{# wf_published_on: 2016-10-04 #}
+# The Accessibility Tree {: .page-title }
 
-# Pohon Aksesibilitas {: .page-title }
+{% include "web/_shared/contributors/megginkearney.html" %} {% include "web/_shared/contributors/dgash.html" %} {% include "web/_shared/contributors/aliceboxhall.html" %}
 
-{% include "web/_shared/contributors/megginkearney.html" %}
-{% include "web/_shared/contributors/dgash.html" %}
-{% include "web/_shared/contributors/aliceboxhall.html" %}
+Imagine that you're building a user interface *for screen reader users only*. Here, you don't need to create any visual UI at all, but just provide enough information for the screen reader to use.
 
+What you'd be creating is a kind of API describing the page structure, similar to the DOM API, but you can get away with less information and fewer nodes, because a lot of that information is only useful for visual presentation. It might look something like this.
 
+![screen reader DOM API mockup](imgs/treestructure.jpg)
 
-Bayangkan Anda sedang membangun antarmuka pengguna *khusus untuk pengguna pembaca layar*.
-Di sini, Anda tidak perlu membuat UI visual sama sekali, melainkan cuma menyediakan
-informasi yang cukup untuk digunakan pembaca layar.
+This is basically what the browser actually presents to the screen reader. The browser takes the DOM tree and modifies it into a form that is useful to assistive technology. We refer to this modified tree as the *Accessibility Tree*.
 
-Yang akan Anda buat adalah semacam API yang menjelaskan struktur laman, mirip
-dengan DOM API, namun Anda bisa menghindar dengan sedikit informasi dan simpul lebih sedikit,
-karena banyak dari informasi itu yang hanya berguna bagi presentasi visual. Penampilannya
-mungkin seperti ini.
+You might visualize the accessibility tree as looking a bit like an old web page from the '90s: a few images, lots of links, perhaps a field and a button.
 
-![maket DOM API pembaca layar](imgs/treestructure.jpg)
+![a 1990s style web page](imgs/google1998.png)
 
-Pada dasarnya inilah yang sesungguhnya akan disajikan ke pembaca layar. Browser
-mengambil pohon DOM dan memodifikasinya menjadi suatu bentuk yang berguna untuk
-teknologi pendukung. Kami menyebut pohon yang telah dimodifikasi ini dengan *Pohon
-Aksesibilitas*.
+Visually scanning down a page like this case gives you an experience similar to what a screen reader user would get. The interface is there, but it is simple and direct, much like an accessibility tree interface.
 
-Anda mungkin membayangkan pohon aksesibilitas ini seperti mirip dengan laman web tua
-dari tahun 90-an: sedikit gambar, banyak tautan, mungkin dengan satu bidang dan tombol.
+The accessibility tree is what most assistive technologies interact with. The flow goes something like this.
 
-![laman web gaya 1990-an](imgs/google1998.png)
+1. An application (the browser or other app) exposes a semantic version of its UI to assistive technology via an API.
+2. The assistive technology may use the information it reads via the API to create an alternative user interface presentation for the user. For example, a screen reader creates an interface in which the user hears a spoken representation of the app.
+3. The assistive technology may also allow the user to interact with the app in a different way. For example, most screen readers provide hooks to allow a user to easily simulate a mouse click or finger tap.
+4. The assistive technology relays the user intent (such as "click") back to the app via the accessibility API. The app then has the responsibility to interpret the action appropriately in the context of the original UI.
 
-Dengan memindai laman secara visual seperti ini akan memberi Anda pengalaman yang mirip dengan
-apa yang akan didapat oleh pengguna pembaca layar. Antarmuka memang ada, namun sederhana
-dan langsung, mirip sekali dengan antarmuka pohon aksesibilitas.
+For web browsers, there's an extra step in each direction, because the browser is in fact a platform for web apps that run inside it. So the browser needs to translate the web app into an accessibility tree, and must make sure that the appropriate events get fired in JavaScript based on the user actions that come in from the assistive technology.
 
-Kebanyakan teknologi pendukung berinteraksi dengan pohon aksesibilitas. Alurnya
-berjalan seperti ini.
+But that is all the browser's responsibility. Our job as web developers is just to be aware that this is going on, and to develop web pages that take advantage of this process to create an accessible experience for our users.
 
- 1. Sebuah aplikasi (browser atau aplikasi lainnya) mengekspos versi semantik UI-nya
-    kepada teknologi pendukung melalui API.
- 1. Teknologi pendukung dapat menggunakan informasi yang dibacanya melalui API untuk
-    membuat presentasi antarmuka pengguna alternatif bagi pengguna. Misalnya,
-    pembaca layar akan membuat sebuah antarmuka yang digunakan pengguna untuk mendengarkan representasi aplikasi
-    yang dibacakan.
- 1. Teknologi pendukung bisa juga memungkinkan pengguna berinteraksi dengan aplikasi dalam
-    cara berbeda. Misalnya, kebanyakan pembaca layar menyediakan kait yang memungkinkan
-    pengguna dengan mudah menyimulasikan klik mouse atau ketukan jari.
- 1. Teknologi pendukung yang menyampaikan maksud pengguna (misalnya "klik") kembali ke
-    aplikasi melalui API aksesibilitas. Selanjutnya aplikasi bertanggung jawab untuk
-    menafsirkan aksi sebagaimana mestinya dalam konteks UI asal.
+We do this by ensuring that we express the semantics of our pages correctly: making sure that the important elements in the page have the correct accessible roles, states, and properties, and that we specify accessible names and descriptions. The browser can then let the assistive technology access that information to create a customized experience.
 
-Untuk browser web, ada langkah ekstra di setiap arah, karena browser
-sebenarnya adalah platform untuk menjalankan aplikasi web. Jadi browser perlu
-menerjemahkan aplikasi web menjadi pohon aksesibilitas, dan harus memastikan bahwa
-kejadian yang sesuai akan dipicu di JavaScript berdasarkan tindakan pengguna yang berasal
-dari teknologi pendukung.
+## Semantics in native HTML
 
-Namun itu semua adalah tanggung jawab browser. Pekerjaan kita sebagai web developer sekadar
-mengetahui bahwa ini terjadi, dan mengembangkan laman web yang memanfaatkan
-proses ini untuk membuat suatu pengalaman yang bisa diakses oleh pengguna kita.
+A browser can transform the DOM tree into an accessibility tree because much of the DOM has *implicit* semantic meaning. That is, the DOM uses native HTML elements that are recognized by browsers and work predictably on a variety of platforms. Accessibility for native HTML elements such as links or buttons is thus handled automatically. We can take advantage of that built-in accessibility by writing HTML that expresses the semantics of our page elements.
 
-Kita melakukannya dengan memastikan bahwa kita mengekspresikan semantik laman dengan benar:
-dengan memastikan elemen penting di laman memiliki peran, keadaan, dan properti
-yang bisa diakses dengan benar, dan bahwa kita menetapkan nama dan keterangan
-yang bisa diakses. Selanjutnya browser bisa memungkinkan teknologi pendukung mengakses
-informasi itu untuk membuat pengalaman yang disesuaikan.
-
-## Semantik di HTML asli
-
-Browser bisa mengubah pohon DOM menjadi sebuah pohon aksesibilitas karena
-kebanyakan DOM memiliki makna semantik *implisit*. Yakni, DOM menggunakan elemen HTML asli
-yang dikenali oleh browser dan berfungsi dengan cara yang bisa diprediksi pada berbagai
-platform. Aksesibilitas untuk elemen HTML asli seperti tautan atau tombol
-dengan demikian ditangani secara otomatis. Kita bisa memanfaatkan aksesibilitas bawaan itu
-dengan menulis HTML yang mengekspresikan semantik elemen laman kita.
-
-Akan tetapi, kadang-kadang kita menggunakan elemen yang tampak seperti elemen asli padahal bukan.
-Misalnya, "tombol" bukanlah tombol sama sekali.
+However, sometimes we use elements that look like native elements but aren't. For example, this "button" isn't a button at all.
 
 {% framebox height="60px" %}
+
 <style>
     .fancy-btn {
         display: inline-block;
@@ -95,99 +52,75 @@ Misalnya, "tombol" bukanlah tombol sama sekali.
         cursor: pointer;
     }
 </style>
+
 <div class="fancy-btn">Give me tacos</div>
+
 {% endframebox %}
 
-Ini dapat dibuat di HTML dengan banyak cara; salah satu caranya ditampilkan di bawah ini.
-
+It might be constructed in HTML in any number of ways; one way is shown below.
 
     <div class="button-ish">Give me tacos</div>
     
 
-Bila kita tidak menggunakan elemen tombol sesungguhnya, pembaca layar tidak memiliki cara untuk mengetahui
-telah sampai di mana. Selain itu, kita nanti harus melakukan pekerjaan ekstra [berupa penambahan
-tabindex](/web/fundamentals/accessibility/focus/using-tabindex) untuk membuatnya
-bisa digunakan oleh pengguna keyboard-saja karena, berhubung sekarang telah dibuat kodenya, maka hanya bisa digunakan
-dengan mouse.
+When we don't use an actual button element, the screen reader has no way to know what it has landed on. Also, we would have to do the extra work [of adding tabindex](/web/fundamentals/accessibility/focus/using-tabindex) to make it usable to keyboard-only users because, as it is coded now, it can only be used with a mouse.
 
-Kita bisa memperbaikinya secara mudah dengan menggunakan elemen `button` biasa sebagai ganti `div`.
-Penggunaan elemen asli juga berguna untuk menjagakan interaksi keyboard
-buat kita. Ingatlah bahwa Anda tidak harus kehilangan efek visual
-yang menyenangkan hanya lantaran menggunakan elemen asli; Anda bisa menata gaya elemen asli
-untuk membuatnya terlihat seperti yang Anda inginkan dan tetap mempertahankan semantik implisit
-dan perilakunya.
+We can easily fix this by using a regular `button` element instead of a `div`. Using a native element also has the benefit of taking care of keyboard interactions for us. And remember that you don't have to lose your spiffy visual effects just because you use a native element; you can style native elements to make them look the way you want and still retain the implicit semantics and behavior.
 
-Sebelumnya kita telah memperhatikan bahwa pembaca layar akan membacakan peran,
-nama, keadaan, dan nilai elemen. Dengan menggunakan semantik yang tepat elemen, peran, keadaan, dan nilai
-telah tercakup, namun kita juga harus memastikan bahwa kita membuat nama
-elemen yang dapat ditemukan.
+Earlier we noted that screen readers will announce an element's role, name, state, and value. By using the right semantic element, role, state, and value are covered, but we must also ensure that we make an element's name discoverable.
 
-Secara umum, ada dua tipe nama:
+Broadly, there are two types of names:
 
- - *Label yang terlihat*, yang digunakan oleh semua pengguna untuk mengaitkan makna dengan
-   elemen, dan
- - *Alternatif berupa teks*, yang hanya digunakan bila tidak memerlukan
-   label visual.
+- *Visible labels*, which are used by all users to associate meaning with an element, and
+- *Text alternatives*, which are only used when there is no need for a visual label.
 
-Untuk elemen level-teks, kita tidak perlu melakukan apa-apa, karena menurut definisi, elemen
-akan berisi beberapa teks. Akan tetapi, untuk elemen masukan atau elemen kontrol, serta materi
-visual seperti gambar, kita perlu memastikan bahwa kita menetapkan sebuah nama. Sebenarnya,
-menyediakan alternatif berupa teks bagi materi non-teks adalah [item paling
-pertama pada daftar periksa WebAIM](http://webaim.org/standards/wcag/checklist#g1.1).
+For text-level elements, we don't need to do anything, because by definition it will have some text content. However, for input or control elements, and visual content like images, we need to make sure that we specify a name. In fact, providing text alternatives for any non-text content is [the very first item on the WebAIM checklist](http://webaim.org/standards/wcag/checklist#g1.1).
 
-Salah satu cara melakukannya adalah mengikuti saran bahwa "Masukan formulir memiliki
-label teks terkait." Ada dua cara untuk mengaitkan label dengan elemen formulir,
-misalnya kotak centang. Salah satu dari metode ini menyebabkan teks label juga
-menjadi target klik untuk kotak centang, sehingga juga berguna bagi pengguna mouse atau
-layar sentuh. Untuk mengaitkan label dengan elemen, bisa dengan
+One way to do that is to follow their recommendation that "Form inputs have associated text labels." There are two ways to associate a label with a form element, such as a checkbox. Either of the methods causes the label text to also become a click target for the checkbox, which is also helpful for mouse or touchscreen users. To associate a label with an element, either
 
- - Menempatkan elemen masukan di dalam elemen label
+- Place the input element inside a label element
 
 <div class="clearfix"></div>
 
     <label>
       <input type="checkbox">Receive promotional offers?</input>
     </label>
-
+    
 
 {% framebox height="60px" %}
+
 <div style="margin: 10px;">
     <label style="font-size: 16px; color: #212121;">
         <input type="checkbox">Receive promotional offers?</input>
     </label>
 </div>
+
 {% endframebox %}
 
+or
 
-atau
-
- - Mengunakan atribut `for` label dan merujuk `id` elemen
+- Use the label's `for` attribute and refer to the element's `id`
 
 <div class="clearfix"></div>
 
     <input id="promo" type="checkbox"></input>
     <label for="promo">Receive promotional offers?</label>
-
+    
 
 {% framebox height="60px" %}
+
 <div style="margin: 10px;">
     <input id="promo" type="checkbox"></input>
     <label for="promo">Receive promotional offers?</label>
 </div>
+
 {% endframebox %}
-    
 
-Bila kotak centang telah diberi label dengan benar, pembaca layar bisa melaporkan bahwa
-elemen memiliki peran kotak centang, dalam keadaan dicentang, dan dinamai "Receive
-promotional offers?".
+When the checkbox has been labeled correctly, the screen reader can report that the element has a role of checkbox, is in a checked state, and is named "Receive promotional offers?".
 
-![keluaran teks di layar dari VoiceOver yang menampilkan label yang diucapkan untuk kotak centang](imgs/promo-offers.png)
+![on-screen text output from VoiceOver showing the spoken label for a checkbox](imgs/promo-offers.png)
 
-Berhasil: Sebenarnya Anda bisa menggunakan pembaca layar untuk menemukan label yang
-tidak dikaitkan dengan benar dengan berpindah-pindah tab di laman dan memverifikasi peran, keadaan, dan
-nama yang dibacakan.
+Success: You can actually use the screen reader to find improperly-associated labels by tabbing through the page and verifying the spoken roles, states, and names.
 
+## Feedback {: #feedback }
 
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
