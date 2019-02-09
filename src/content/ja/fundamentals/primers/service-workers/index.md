@@ -1,112 +1,63 @@
-project_path: /web/fundamentals/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description:リッチなオフライン体験、定期的なバックグラウンド同期、プッシュ通知など、これまでネイティブ アプリを必要としていた機能が Web にもやってきます。 Service Worker はそれらの機能を提供する基盤技術です。
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Rich offline experiences, periodic background syncs, push notifications&mdash;functionality that would normally require a native application&mdash;are coming to the web. Service workers provide the technical foundation that all these features rely on.
 
-{# wf_published_on: 2014-12-01 #}
-{# wf_updated_on: 2019-02-06 #}
-{# wf_blink_components: Blink>ServiceWorker #}
+{# wf_published_on: 2014-12-01 #} {# wf_updated_on: 2019-01-09 #} {# wf_blink_components: Blink>ServiceWorker #}
 
-# Service Worker の紹介 {: .page-title }
+# Service Workers: an Introduction {: .page-title }
 
 {% include "web/_shared/contributors/mattgaunt.html" %}
 
-リッチなオフライン体験、定期的なバックグラウンド同期、プッシュ通知など、これまでネイティブアプリを必要としていた機能が Web にもやってきます。
- Service Worker はそれらの機能を提供する基盤技術です。
+Rich offline experiences, periodic background syncs, push notifications&mdash;functionality that would normally require a native application&mdash;are coming to the web. Service workers provide the technical foundation that all these features rely on.
 
+## What is a service worker
 
-## Service Worker とは
+A service worker is a script that your browser runs in the background, separate from a web page, opening the door to features that don't need a web page or user interaction. Today, they already include features like [push notifications](/web/updates/2015/03/push-notifications-on-the-open-web) and [background sync](/web/updates/2015/12/background-sync). In the future, service workers might support other things like periodic sync or geofencing. The core feature discussed in this tutorial is the ability to intercept and handle network requests, including programmatically managing a cache of responses.
 
-Service Worker はブラウザが Web ページとは別にバックグラウンドで実行するスクリプトで、Web ページやユーザーのインタラクションを必要としない機能を Web にもたらします。
- 既に現在、[プッシュ通知](/web/updates/2015/03/push-notifications-on-the-open-web)や[バックグラウンド同期](/web/updates/2015/12/background-sync)が提供されています。
- さらに将来は定期的な同期、ジオフェンシングなども導入されるでしょう。
-このチュートリアルで説明する機能は、ネットワーク リクエストへの介入や処理機能と、レスポンスのキャッシュをプログラムから操作できる機能です。
+The reason this is such an exciting API is that it allows you to support offline experiences, giving developers complete control over the experience.
 
+Before service worker, there was one other API that gave users an offline experience on the web called [AppCache](//www.html5rocks.com/en/tutorials/appcache/beginner/){: .external }. There are a number of issues with the AppCache API that service workers were designed to avoid.
 
+Things to note about a service worker:
 
-この API にとてもわくわくするのは、それがオフライン体験をサポートし、そして開発者がその体験を完全に制御できるからです。
+* It's a [JavaScript Worker](//www.html5rocks.com/en/tutorials/workers/basics/){: .external }, so it can't access the DOM directly. Instead, a service worker can communicate with the pages it controls by responding to messages sent via the [postMessage](https://html.spec.whatwg.org/multipage/workers.html#dom-worker-postmessage) interface, and those pages can manipulate the DOM if needed.
+* Service worker is a programmable network proxy, allowing you to control how network requests from your page are handled.
+* It's terminated when not in use, and restarted when it's next needed, so you cannot rely on global state within a service worker's `onfetch` and `onmessage` handlers. If there is information that you need to persist and reuse across restarts, service workers do have access to the [IndexedDB API](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API).
+* Service workers make extensive use of promises, so if you're new to promises, then you should stop reading this and check out [Promises, an introduction](/web/fundamentals/getting-started/primers/promises).
 
+## The service worker life cycle
 
+A service worker has a lifecycle that is completely separate from your web page.
 
-Service Worker 以前にも、オフライン体験を Web にもたらすものとして [AppCache](//www.html5rocks.com/en/tutorials/appcache/beginner/){: .external }というものがありました。
-AppCache API にはいくつもの問題があり、Service Worker はこれらの弱点を避けるように設計されています。
+To install a service worker for your site, you need to register it, which you do in your page's JavaScript. Registering a service worker will cause the browser to start the service worker install step in the background.
 
+Typically during the install step, you'll want to cache some static assets. If all the files are cached successfully, then the service worker becomes installed. If any of the files fail to download and cache, then the install step will fail and the service worker won't activate (i.e. won't be installed). If that happens, don't worry, it'll try again next time. But that means if it does install, you know you've got those static assets in the cache.
 
-Service Worker について、知っておきたいことは次のとおりです。
+When installed, the activation step will follow and this is a great opportunity for handling any management of old caches, which we'll cover during the service worker update section.
 
-* Service Worker は [JavaScript Worker](//www.html5rocks.com/en/tutorials/workers/basics/){: .external } のひとつです。そのため DOM に直接アクセスできません。
- その代わり、Service Worker は、制御するページとの通信を [postMessage](https://html.spec.whatwg.org/multipage/workers.html#dom-worker-postmessage) インターフェースで送られるメッセージに応答することで行い、それらのページで DOM を操作できます。
-* Service Worker はプログラム可能なネットワーク プロキシです。ページからのネットワーク リクエストを制御できます。
-* Service Worker は使用されていない間は終了しており、必要なときになったら起動します。そのため `onfetch` や `onmessage` ハンドラ内でグローバルに設定したステートを頼りに実行させることはできません。
- 持続的で再利用可能な情報を Service Worker の複数のライフサイクル間で共有したい場合は、[IndexedDB API](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API) にアクセスする必要があります。
-* Service Worker は JavaScript の Promises を多用します。Promises についてよく知らない方はこの記事を読むのをいったん止めて、[Promises: 概要](/web/fundamentals/getting-started/primers/promises)の記事をお読みください。
+After the activation step, the service worker will control all pages that fall under its scope, though the page that registered the service worker for the first time won't be controlled until it's loaded again. Once a service worker is in control, it will be in one of two states: either the service worker will be terminated to save memory, or it will handle fetch and message events that occur when a network request or message is made from your page.
 
+Below is an overly simplified version of the service worker lifecycle on its first installation.
 
+![service worker lifecycle](images/sw-lifecycle.png)
 
-## Service Worker のライフサイクル
+## Prerequisites
 
-Service Worker はウェブページとはまったく異なるライフサイクルで動作します。
+### Browser support
 
-サイトの Service Worker をインストールするには、ページの JavaScript から登録する必要があります。
- Service Worker を登録すると、ブラウザは Service Worker のインストール処理をバックグラウンドで実行します。
+Browser options are growing. Service workers are supported by Chrome, Firefox and Opera. Microsoft Edge is now [showing public support](https://developer.microsoft.com/en-us/microsoft-edge/platform/status/serviceworker/). Even Safari has dropped [hints of future development](https://trac.webkit.org/wiki/FiveYearPlanFall2015). You can follow the progress of all the browsers at Jake Archibald's [is Serviceworker ready](https://jakearchibald.github.io/isserviceworkerready/){: .external } site.
 
+### You need HTTPS
 
-一般的に言って、インストール中に、いくつかの静的なアセットをキャッシュすることでしょう。 すべてのファイルがキャッシュされたら、Service Worker のインストールは完了です。
- もしファイルがひとつでもダウンロードもしくはキャッシュに失敗した場合、インストールステップは失敗し Service Worker はアクティベートされません
- （つまりインストールされません）。 失敗しても心配しないでください。またやり直します。
- 逆にもし Service Worker がインストールされたなら、静的なアセットが確実にキャッシュされているということなのです。
+During development you'll be able to use service worker through `localhost`, but to deploy it on a site you'll need to have HTTPS setup on your server.
 
+Using service worker you can hijack connections, fabricate, and filter responses. Powerful stuff. While you would use these powers for good, a man-in-the-middle might not. To avoid this, you can only register service workers on pages served over HTTPS, so we know the service worker the browser receives hasn't been tampered with during its journey through the network.
 
-インストールが完了したら、アクティベーション処理が続きます。この段階は古いキャッシュの処理などに最適です。これについては Service Worker の更新のセクションで詳しく説明します。
+[GitHub Pages](https://pages.github.com/){: .external } are served over HTTPS, so they're a great place to host demos.
 
+If you want to add HTTPS to your server then you'll need to get a TLS certificate and set it up for your server. This varies depending on your setup, so check your server's documentation and be sure to check out [Mozilla's SSL config generator](https://mozilla.github.io/server-side-tls/ssl-config-generator/) for best practices.
 
+## Register A service worker
 
-アクティベーションステップが終了したら、Service Worker はそのスコープ内のすべてのページを制御します。しかし、Service Worker を登録したページについては登録時点では制御されず、次に読み込まれた際に制御されるようになります。
- Service Worker が制御を行っている間、その状態は 2 つしかありません。メモリ節約のため Service Worker は終了しているか、ページで起こったネットワーク リクエストまたはメッセージに対して fetch イベントもしくは message イベントの処理を行おうとしているかのどちらかです。
-
-
-
-
-次の図は最初のインストール後の Service Worker のライフサイクルをおおまかに図示したものです。
-
-
-![Service Worker のライフサイクル](images/sw-lifecycle.png)
-
-
-## 前提条件
-
-### サポートしているブラウザを使う
-
-Service Worker をサポートするブラウザは増えています。 現在 Service worker は Chrome と Firefox と Opera でサポートされています。
- Microsoft Edge も[支持を表明](https://developer.microsoft.com/en-us/microsoft-edge/platform/status/serviceworker/)しています。
-Safari も[将来の展開を示唆](https://trac.webkit.org/wiki/FiveYearPlanFall2015)しています。
-ブラウザによるサポート状況は、Jake Archibald による [is Serviceworker ready](https://jakearchibald.github.io/isserviceworkerready/){: .external }
-サイトで確認できます。
-
-### HTTPS が必要
-
-開発中は、`localhost` から Service Worker を使用できますが、サイトにデプロイするには、サーバーで HTTPS が設定されている必要があります。
-
-
-Service Worker を使うと接続のハイジャック、改ざん、フィルタリングができてしまいます。
- とても強力です。 良いことに使えばそれでよいのですが、攻撃を行う中間者はそうではないでしょう。
- 悪用を避けるために、Service Worker は HTTPS を介して提供されるページでしか登録できません。こうすることで、ブラウザで受信する Service Worker がネットワークを経由して送信される途中で改ざんされていないことを保証できます。
-
-
-
-[GitHub Pages](https://pages.github.com/){: .external } 
-は HTTPS で提供されるので、デモをホストするには絶好の環境です。
-
-サーバーに HTTPS を設定する場合は、TLS 証明書を取得してサーバーにセットアップしなければなりません。
- セットアップ方法は環境によるので、サーバーのドキュメントを読み、そして [Mozilla の SSL コンフィグ ジェネレータ](https://mozilla.github.io/server-side-tls/ssl-config-generator/)を使ってベスト プラクティスを見つけてください。
-
-
-
-
-## Service Worker の登録
-
-Service Worker をインストールするには、まずページから Service Worker を**登録**しプロセスを開始しなければなりません。
- 登録によって、ブラウザに Service Worker の JavaScript ファイルの場所が知らされます。
-
+To install a service worker you need to kick start the process by **registering** it in your page. This tells the browser where your service worker JavaScript file lives.
 
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', function() {
@@ -119,55 +70,38 @@ Service Worker をインストールするには、まずページから Service
         });
       });
     }
+    
 
-このコードはまず、Service Worker API が利用可能かチェックし、利用可能であれば、[ページを読み込む](/web/fundamentals/instant-and-offline/service-worker/registration)ときに `/sw.js` にある Service Worker を登録します。
+This code checks to see if the service worker API is available, and if it is, the service worker at `/sw.js` is registered [once the page is loaded](/web/fundamentals/instant-and-offline/service-worker/registration).
 
+You can call `register()` every time a page loads without concern; the browser will figure out if the service worker is already registered or not and handle it accordingly.
 
+One subtlety with the `register()` method is the location of the service worker file. You'll notice in this case that the service worker file is at the root of the domain. This means that the service worker's scope will be the entire origin. In other words, this service worker will receive `fetch` events for everything on this domain. If we register the service worker file at `/example/sw.js`, then the service worker would only see `fetch` events for pages whose URL starts with `/example/` (i.e. `/example/page1/`, `/example/page2/`).
 
-ページが読み込まれるたびに `register()` メソッドが呼ばれますが、心配はいりません。ブラウザは Service Worker が既に登録されているかどうかを調べ、結果に応じて登録処理をするかしないか判断してくれます。
+Now you can check that a service worker is enabled by going to `chrome://inspect/#service-workers` and looking for your site.
 
+![Inspect service workers](images/sw-chrome-inspect.png)
 
+When service worker was first being implemented, you could also view your service worker details through `chrome://serviceworker-internals`. This may still be useful, if for nothing more than learning about the life cycle of service workers, but don't be surprised if it gets replaced completely by `chrome://inspect/#service-workers` at a later date.
 
-`register()` メソッドについて気にかけておきたいところが、Service Worker ファイルの場所です。
- この例の場合、Service Worker のファイルはドメインのルートにあります。
- これはこの Service Worker のスコープが origin 全体ということです。
- つまり、この Service Worker はこのドメインのすべての `fetch` イベントを受け取ります。
- もし `/example/sw.js` にある Service Worker ファイルを登録した場合、その Service Worker は `fetch` イベントのうちページの URL が `/example/` から始まるもの（例：`/example/page1/`、`/example/page2/`）のみを受け取ります。
+You may find it useful to test your service worker in an Incognito window so that you can close and reopen knowing that the previous service worker won't affect the new window. Any registrations and caches created from within an Incognito window will be cleared out once that window is closed.
 
-Service Worker が有効になっているかどうかは、`chrome://inspect/#service-workers` にある自分のサイトからわかります。
+## Install a service worker
 
+After a controlled page kicks off the registration process, let's shift to the point of view of the service worker script, which handles the `install` event.
 
-![Service Worker の調査](images/sw-chrome-inspect.png)
-
-Service Worker が Chrome で実装された当初は、`chrome://serviceworker-internals` からその詳細を確認できました。
- これも Service Worker のライフサイクルを知りたいというだけの場合には有用かもしれません。ただもし今後 `chrome://inspect/#service-workers` に置き換わってもびっくりしないでください。
-
-
-
-
-Service Worker のテストはシークレット ウインドウで行うと便利です。というのも、ウインドウを閉じてまた新しいウインドウにすれば、古い Service Worker に影響されることがないからです。
- シークレット ウインドウへの登録やキャッシュは、そのウインドウが閉じられたらすべて消去されます。
-
-
-
-## Service Worker のインストール
-
-制御されたページが登録プロセスを発生させると、主役は Service Worker のスクリプトに移ります。そしてスクリプトは `install` イベントを処理します。
-
-
-最も簡単なケースとして、install イベントにコールバックを定義し、キャッシュさせたいファイルを指定します。
-
+For the most basic example, you need to define a callback for the install event and decide which files you want to cache.
 
     self.addEventListener('install', function(event) {
       // Perform install steps
     });
+    
 
+Inside of our `install` callback, we need to take the following steps:
 
-この `install` コールバック内で、次のステップを実行する必要があります。
-
-1. キャッシュを開きます。
-2. ファイルをキャッシュします。
-3. 必要なアセットがすべてキャッシュされたか確認します。
+1. Open a cache.
+2. Cache our files.
+3. Confirm whether all the required assets are cached or not.
 
 <div style="clear:both;"></div>
 
@@ -177,7 +111,7 @@ Service Worker のテストはシークレット ウインドウで行うと便�
       '/styles/main.css',
       '/script/main.js'
     ];
-
+    
     self.addEventListener('install', function(event) {
       // Perform install steps
       event.waitUntil(
@@ -188,32 +122,19 @@ Service Worker のテストはシークレット ウインドウで行うと便�
           })
       );
     });
+    
 
+Here you can see we call `caches.open()` with our desired cache name, after which we call `cache.addAll()` and pass in our array of files. This is a chain of promises (`caches.open()` and `cache.addAll()`). The `event.waitUntil()` method takes a promise and uses it to know how long installation takes, and whether it succeeded or not.
 
-ここでは、好きなキャッシュ名をつけて `caches.open()` をコールし、その後キャッシュさせたいファイルの配列を `cache.addAll()` に渡しています。
- 一連の処理は Promise をチェーンさせています（`caches.open()` と `cache.addAll()`）。
- `event.waitUntil()` メソッドは Promise をとり、インストールにかかる時間と、インストールが成功したかどうかを知るために使われます。
+If all the files are successfully cached, then the service worker will be installed. If **any** of the files fail to download, then the install step will fail. This allows you to rely on having all the assets that you defined, but does mean you need to be careful with the list of files you decide to cache in the install step. Defining a long list of files will increase the chance that one file may fail to cache, leading to your service worker not getting installed.
 
+This is just one example, you can perform other tasks in the `install` event or avoid setting an `install` event listener altogether.
 
+## Cache and return requests
 
-渡したファイルがすべて無事にキャッシュされた場合、Service Worker のインストールが完了します。
- 渡したファイルのうち**どれかひとつでも**ダウンロードに失敗した場合、インストールは失敗します。
- こうすることにより定義したすべてのアセットが存在していると保証できますが、インストール時にキャッシュさせるファイルは慎重に決めなければいけません。
- ファイルの数が多くなれば、いずれかのファイルのキャッシュが失敗して Service Worker がインストールされない確率も高くなります。
+Now that you've installed a service worker, you probably want to return one of your cached responses, right?
 
-
-
-これはあくまで一例です。`install` イベントでは他の処理もできますし、`install` にイベン トリスナーを設定しなくてもいいのです。
-
-
-## リクエストをキャッシュして返す
-
-Service Worker がインストールされた今、あなたがしたいのはキャッシュさせたレスポンスを返すことですね？
-
-
-Service Worker がインストールされた状態で、他のページヘ移動したりページを更新したりすると、Service Worker は `fetch` イベントを受け取ります。
-
-
+After a service worker is installed and the user navigates to a different page or refreshes, the service worker will begin to receive `fetch` events, an example of which is below.
 
     self.addEventListener('fetch', function(event) {
       event.respondWith(
@@ -228,19 +149,13 @@ Service Worker がインストールされた状態で、他のページヘ移�
         )
       );
     });
+    
 
+Here we've defined our `fetch` event and within `event.respondWith()`, we pass in a promise from `caches.match()`. This method looks at the request and finds any cached results from any of the caches your service worker created.
 
-この例では `fetch` イベントを定義し、`event.respondWith()` 内で `caches.match()` から Promise を渡しています。
- このメソッドはリクエストを確認して、Service Worker が作成したあらゆるキャッシュの中から、キャッシュされた結果すべてを検出します。
+If we have a matching response, we return the cached value, otherwise we return the result of a call to `fetch`, which will make a network request and return the data if anything can be retrieved from the network. This is a simple example and uses any cached assets we cached during the install step.
 
-
-一致するレスポンスがある場合は、キャッシュされた値を返します。そうでない場合は、`fetch` への呼び出しの結果を返します。この呼び出しはネットワーク リクエストを行い、ネットワークからデータを取得できた場合に、そのデータを返します。
- インストール時にキャッシュしたアセットは、基本的にこのようにして使います。
-
-
-もし新しいリクエストを逐次キャッシュさせたい場合は、つぎのように、fetch リクエストのレスポンスを処理しキャッシュに追加すればよいのです。
-
-
+If we want to cache new requests cumulatively, we can do so by handling the response of the fetch request and then adding it to the cache, like below.
 
     self.addEventListener('fetch', function(event) {
       event.respondWith(
@@ -250,87 +165,62 @@ Service Worker がインストールされた状態で、他のページヘ移�
             if (response) {
               return response;
             }
-
-            // IMPORTANT:Clone the request. A request is a stream and
-            // can only be consumed once. Since we are consuming this
-            // once by cache and once by the browser for fetch, we need
-            // to clone the response.
-            var fetchRequest = event.request.clone();
-
-            return fetch(fetchRequest).then(
+    
+            return fetch(event.request).then(
               function(response) {
                 // Check if we received a valid response
                 if(!response || response.status !== 200 || response.type !== 'basic') {
                   return response;
                 }
-
-                // IMPORTANT:Clone the response. A response is a stream
+    
+                // IMPORTANT: Clone the response. A response is a stream
                 // and because we want the browser to consume the response
                 // as well as the cache consuming the response, we need
                 // to clone it so we have two streams.
                 var responseToCache = response.clone();
-
+    
                 caches.open(CACHE_NAME)
                   .then(function(cache) {
                     cache.put(event.request, responseToCache);
                   });
-
+    
                 return response;
               }
             );
           })
         );
     });
+    
 
+What we are doing is this:
 
-ここでは以下のことを実行しています。
+1. Add a callback to `.then()` on the `fetch` request.
+2. Once we get a response, we perform the following checks: 
+    1. Ensure the response is valid.
+    2. Check the status is `200` on the response.
+    3. Make sure the response type is **basic**, which indicates that it's a request from our origin. This means that requests to third party assets aren't cached as well.
+3. If we pass the checks, we [clone](https://fetch.spec.whatwg.org/#dom-response-clone) the response. The reason for this is that because the response is a [Stream](https://streams.spec.whatwg.org/){: .external }, the body can only be consumed once. Since we want to return the response for the browser to use, as well as pass it to the cache to use, we need to clone it so we can send one to the browser and one to the cache.
 
-1. `fetch` リクエストに対する `.then()` にコールバックを追加します。
-2. レスポンスを取得したら、以下のチェックを行います。
-    1. レスポンスが正しいか確認します。
-    2. レスポンスのステータスコードが 200`200` かチェックします。
-    3. レスポンスの型が **basic** であることを確認します。これは、リクエストの送信元と送信先のドメインが同じであることを示します。
- これはまた、サードパーティのアセットへのリクエストがキャッシュされないことも意味します。
-3. チェックが通ったら、レスポンスを [clone](https://fetch.spec.whatwg.org/#dom-response-clone) します。
- これはレスポンスが [Stream](https://streams.spec.whatwg.org/){: .external } なので、
-その中身を一度しか使えないからです。
- この例ではレスポンスをブラウザに返すだけではなく、キャッシュにも渡さなければいけません。そのため、レスポンスを clone して、ひとつをブラウザに、もうひとつをキャッシュに渡します。
+## Update a service worker {: #update-a-service-worker }
 
+There will be a point in time where your service worker will need updating. When that time comes, you'll need to follow these steps:
 
+1. Update your service worker JavaScript file. When the user navigates to your site, the browser tries to redownload the script file that defined the service worker in the background. If there is even a byte's difference in the service worker file compared to what it currently has, it considers it *new*.
+2. Your new service worker will be started and the `install` event will be fired.
+3. At this point the old service worker is still controlling the current pages so the new service worker will enter a `waiting` state.
+4. When the currently open pages of your site are closed, the old service worker will be killed and the new service worker will take control.
+5. Once your new service worker takes control, its `activate` event will be fired.
 
-## Service Worker の更新 {: #update-a-service-worker }
+One common task that will occur in the `activate` callback is cache management. The reason you'll want to do this in the `activate` callback is because if you were to wipe out any old caches in the install step, any old service worker, which keeps control of all the current pages, will suddenly stop being able to serve files from that cache.
 
-開発が進むと、やがて Service Worker を更新しなければいけないときが来ます。
- 更新は以下の手順で行います。
+Let's say we have one cache called `'my-site-cache-v1'`, and we find that we want to split this out into one cache for pages and one cache for blog posts. This means in the install step we'd create two caches, `'pages-cache-v1'` and `'blog-posts-cache-v1'` and in the activate step we'd want to delete our older `'my-site-cache-v1'`.
 
-1. Service Worker の JavaScript ファイルを更新します。 ユーザーがサイトに移動してきたとき、ブラウザは Service Worker を定義するスクリプト ファイルをバックグラウンドで再度ダウンロードしようとします。
- 現在ブラウザが保持しているファイルとダウンロードしようとするファイルにバイトの差異がある場合、それは「_新しい_」と認識されます。
-2. 新しい Service Worker がスタートし、`install` イベントが起こります。
-3. この時点では、まだ古い Service Worker が現在のページを制御しているため、新しい Service Worker は `waiting` 状態になります。
-4. 開かれているページが閉じると、古い Service Worker は終了し、新しい Service Worker がページを制御するようになります。
-5. 新しい Service Worker がページを制御するようになると、`activate` イベントが起こります。
-
-
-`activate` コールバックで一般に行われるタスクが、キャッシュの管理です。
-`activate` コールバックでキャッシュを管理する必要がある理由の 1 つは、インストール ステップで古いキャッシュをすべて消去すると、現在のページすべてを制御している古い Service Worker が突然、そのキャッシュからファイルを提供することができなくなるためです。
-
-
-
-
-たとえば、`'my-site-cache-v1'` というキャッシュが 1 つあり、これをページ用の 1 つのキャッシュと、ブログ投稿用の 1 つのキャッシュに分割する必要があるとしましょう。
-この場合、インストール ステップで 2 つのキャッシュ（`'pages-cache-v1'` と
-`'blog-posts-cache-v1'`）を作成し、アクティベーション ステップで古い
-`'my-site-cache-v1'` を削除する必要があります。
-
-次のコードは、Service Worker のすべてのキャッシュをループ処理して、キャッシュのホワイトリストに定義されていないキャッシュをすべて削除することで、この処理を行います。
-
-
-
+The following code would do this by looping through all of the caches in the service worker and deleting any caches that aren't defined in the cache whitelist.
 
     self.addEventListener('activate', function(event) {
-
+    
       var cacheWhitelist = ['pages-cache-v1', 'blog-posts-cache-v1'];
-
+    
       event.waitUntil(
         caches.keys().then(function(cacheNames) {
           return Promise.all(
@@ -343,117 +233,86 @@ Service Worker がインストールされた状態で、他のページヘ移�
         })
       );
     });
+    
 
-## つまずきやすいポイント
+## Rough edges and gotchas
 
-Service Worker はまだ新しい技術です。 ここでは、つまずきやすいポイントをまとめています。
- 早くこのセクションがなくなればいいですが、いま Service Worker で何かをする場合は以下の点を気に留めておいてください。
+This stuff is really new. Here's a collection of issues that get in the way. Hopefully this section can be deleted soon, but for now these are worth being mindful of.
 
+### If installation fails, we're not so good at telling you about it
 
+If a worker registers, but then doesn't appear in `chrome://inspect/#service-workers` or `chrome://serviceworker-internals`, it's likely failed to install due to an error being thrown, or a rejected promise being passed to `event.waitUntil()`.
 
-### インストールが失敗したときのフィードバックが少ない
+To work around this, go to `chrome://serviceworker-internals` and check "Open DevTools window and pause JavaScript execution on service worker startup for debugging", and put a debugger statement at the start of your install event. This, along with [Pause on uncaught exceptions](/web/tools/chrome-devtools/javascript/breakpoints), should reveal the issue.
 
-Worker が登録されても `chrome://inspect/#service-workers`
-や `chrome://serviceworker-internals` に現れない場合、エラーがスローされたか`event.waitUntil()`
-に渡された Promise が reject されたためインストールが失敗した可能性が高いです。
+### The defaults of fetch()
 
+#### No credentials by default
 
-回避策は、`chrome://serviceworker-internals` にアクセスし、[Open DevTools window and pause JavaScript execution on service worker startup for debugging] にチェックを入れて、install イベントの開始時に debugger 文を記述してください。
-これを、[Pause on uncaught exceptions](/web/tools/chrome-devtools/javascript/breakpoints) とともに使用すると、問題が明らかになります。
-
-
-
-
-### fetch() の既定動作
-
-#### 既定では認証情報が含まれない
-
-`fetch` を使用する場合、既定では、リクエストに Cookie などの認証情報は含まれません。
- 認証情報が必要な場合は、代わりに次のような呼び出しを行います。
+When you use `fetch`, by default, requests won't contain credentials such as cookies. If you want credentials, instead call:
 
     fetch(url, {
       credentials: 'include'
     })
+    
 
+This behaviour is on purpose, and is arguably better than XHR's more complex default of sending credentials if the URL is same-origin, but omitting them otherwise. Fetch's behaviour is more like other CORS requests, such as `<img
+crossorigin>`, which never sends cookies unless you opt-in with `<img
+crossorigin="use-credentials">`.
 
-この動作は意図的なもので、XHR の複雑な既定動作（URL が同一ドメインの場合は認証情報を送信し、そうでない場合は認証情報を省略する）より明らかに優れています。
- fetch の動作はむしろ、`<img
-crossorigin>` などの他の CORS リクエストに似ています。これは、`<img
-crossorigin="use-credentials">` で指定しない限り、Cookie を送信しません。
+#### Non-CORS fail by default
 
-#### 非 CORS が既定で失敗する
-
-既定では、サードパーティ URL からのリソースの取得は、この URL が CORS をサポートしていない場合、失敗します。
- リクエストに `no-CORS` オプションを追加することでこれを解決できますが、こうするとレスポンスが「不透明」になります。つまり、レスポンスが成功したのかどうかを判断できなくなります。
-
-
+By default, fetching a resource from a third party URL will fail if it doesn't support CORS. You can add a `no-CORS` option to the Request to overcome this, although this will cause an 'opaque' response, which means you won't be able to tell if the response was successful or not.
 
     cache.addAll(urlsToPrefetch.map(function(urlToPrefetch) {
       return new Request(urlToPrefetch, { mode: 'no-cors' });
     })).then(function() {
       console.log('All resources have been fetched and cached.');
     });
+    
 
+### Handling responsive images
 
-### レスポンシブ イメージの処理
+The `srcset` attribute or the `<picture>` element will select the most appropriate image asset at run time and make a network request.
 
-`srcset` 属性または `<picture>` 要素は、実行時に最も適切なイメージ アセットを選択し、ネットワーク リクエストを行います。
+For service worker, if you wanted to cache an image during the install step, you have a few options:
 
+1. Install all the images that the `<picture>` element and the `srcset` attribute will request.
+2. Install a single low-res version of the image.
+3. Install a single high-res version of the image.
 
-Service Worker インストール ステップでのイメージのキャッシュには、以下のいくつかのオプションがあります。
+Realistically you should be picking option 2 or 3 since downloading all of the images would be a waste of storage space.
 
+Let's assume you go for the low res version at install time and you want to try and retrieve higher res images from the network when the page is loaded, but if the high res images fail, fallback to the low res version. This is fine and dandy to do but there is one problem.
 
-1. `<picture>` 要素や `srcset`
-属性でリクエストされる画像すべてをインストールする。
-2. 低解像度版の画像を 1 つだけインストールする。
-3. 高解像度版の画像を 1 つだけインストールする
+If we have the following two images:
 
-すべてのイメージをダウンロードすることはストレージ スペースの無駄使いなので、オプション 2 または 3 を選ぶのが現実的です。
-
-
-インストール時に低解像度バージョンを選び、ページが読み込まれたらネットワークから高解像度のイメージの取得を試み、高解像度イメージの取得に失敗したら、低解像度バージョンにフォールバックするとしましょう。
- これはいい考えですが、1 つ問題があります。
-
-
-次の 2 つのイメージがあるとします。
-
-| 画面密度 | 幅 | 高さ |
-|-------------- | ----- | ------|
+| Screen Density | Width | Height |
+| -------------- | ----- | ------ |
 | 1x             | 400   | 400    |
 | 2x             | 800   | 800    |
 
-`srcset` イメージでは、次のようなマークアップが使用されます。
-
+In a `srcset` image, we'd have some markup like this:
 
     <img src="image-src.png" srcset="image-src.png 1x, image-2x.png 2x" />
+    
 
-
-画面密度が 2x の場合、ブラウザは `image-2x.png` をダウンロードします。オフラインの場合は、このリクエストを `.catch()` し、`image-src.png`
-がキャッシュされていれば代わりにこれを返します。ただし、ブラウザは 2x 画面で表示するためのピクセル数が多いイメージを想定しているので、イメージは 400 x 400 CSS ピクセルではなく 200 x 200 CSS ピクセルで表示されます。
- これを回避する唯一の方法は、イメージに固定の高さと幅を設定することです。
-
-
+If we are on a 2x display, then the browser will opt to download `image-2x.png`, if we are offline you could `.catch()` this request and return `image-src.png` instead if it's cached, however the browser will expect an image that takes into account the extra pixels on a 2x screen, so the image will appear as 200x200 CSS pixels instead of 400x400 CSS pixels. The only way around this is to set a fixed height and width on the image.
 
     <img src="image-src.png" srcset="image-src.png 1x, image-2x.png 2x"
      style="width:400px; height: 400px;" />
+    
 
+For `<picture>` elements being used for art direction, this becomes considerably more difficult and will depend heavily on how your images are created and used, but you may be able to use a similar approach to srcset.
 
-アート ディレクションで使用される `<picture>` 要素の場合、これはかなり難しくなり、イメージの作成方法と使用方法に大きく依存しますが、srcset の場合と同じようなアプローチを使用することもできます。
+## Learn more
 
+There is a list of documentation on service worker being maintained at [https://jakearchibald.github.io/isserviceworkerready/resources](https://jakearchibald.github.io/isserviceworkerready/resources.html) that you may find useful.
 
+## Get help
 
-## 詳細を見る
+If you get stuck then please post your questions on StackOverflow and use the '[service-worker](http://stackoverflow.com/questions/tagged/service-worker)' tag so that we can keep a track of issues and try and help as much as possible.
 
-Service Worker に関する便利なドキュメントが
-[https://jakearchibald.github.io/isserviceworkerready/resources](https://jakearchibald.github.io/isserviceworkerready/resources.html)
-にまとめられています。
-
-## 質問する
-
-行き詰まったら、StackOverflow に質問を投稿してください。投稿する際は、'[service-worker](http://stackoverflow.com/questions/tagged/service-worker)' タグを付けてください。Google はこのタグの付いた質問を追跡し、できるだけ回答するようにしています。
-
-
-
-## フィードバック {: #feedback }
+## Feedback {: #feedback }
 
 {% include "web/_shared/helpful.html" %}
