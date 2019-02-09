@@ -1,101 +1,77 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Mempelajari status item di laman dari konsol DevTools.
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Explore the state of any item on your page from the DevTools console.
 
-{# wf_updated_on: 2015-05-11 #}
-{# wf_published_on: 2015-04-13 #}
+{# wf_updated_on: 2018-07-27 #} {# wf_published_on: 2015-04-13 #} {# wf_blink_components: Platform>DevTools #}
 
-# Mengevaluasi Ekspresi {: .page-title }
+# Evaluate Expressions {: .page-title }
 
-{% include "web/_shared/contributors/megginkearney.html" %}
-{% include "web/_shared/contributors/josephmedley.html" %}
-Mempelajari status item di laman dari konsol DevTools dengan menggunakan kemampuan evaluasinya.
+{% include "web/_shared/contributors/megginkearney.html" %} {% include "web/_shared/contributors/josephmedley.html" %} Explore the state of any item on your page from the DevTools console using one of its evaluation capabilities.
 
-Pada konsol DevTools, Anda dapat mengetahui status item
-di laman dengan cara khusus.
-Anda dapat mengevaluasi ekspresi apa saja dengan memadukan
-pengetahuan tentang JavaScript dan sejumlah fitur yang didukungnya.
-
+The DevTools console allows you to learn the state of items in your page in an ad-hoc manner. Evaluate any expression you can type using a combination of your knowledge of JavaScript and several features that support it.
 
 ### TL;DR {: .hide-from-toc }
-- Mengevaluasi suatu ekspresi cukup dengan mengetikkannya.
-- Memilih elemen menggunakan pintasan.
-- Memeriksa elemen DOM dan objek heap JavaScript menggunakan <code>inspect()</code>.
-- Mengakses elemen dan objek yang baru saja dipilih dengan menggunakan $0 - 4.
 
+- Evaluate an expression just by typing it.
+- Select elements using one of the shortcuts.
+- Inspect DOM elements and JavaScript heap objects using `inspect()`.
+- Access recently selected elements and objects using $0 - 4.
 
-## Menelusuri ekspresi
+## Navigate expressions
 
-Konsol mengevaluasi setiap ekspresi JavaScript yang diberikan
-saat menekan <kbd class="kbd">Enter</kbd>.
-Saat Anda mengetikkan suatu ekspresi,
-saran nama properti akan muncul;
-konsol juga menyediakan pelengkapan otomatis dan pelengkapan tab.
+The console evaluates any JavaScript expression you provide when pressing <kbd class="kbd">Enter</kbd>. As you type an expression, property name suggestions appear; the console also provides auto-completion and tab-completion.
 
-Jika ada beberapa saran,
-gunakan <kbd class="kbd">↑</kbd> dan <kbd class="kbd">↓</kbd> untuk menelusurinya. Tekan <kbd class="kbd">→</kbd> untuk memilih saran yang sedang disorot.
-Jika hanya ada satu saran,
-tekan <kbd class="kbd">Tab</kbd> untuk memilihnya.
+If there are multiple matches,
+<kbd class="kbd">↑</kbd> and <kbd class="kbd">↓</kbd> cycles through them. Pressing <kbd class="kbd">→</kbd> selects the current suggestion. If there's a single suggestion,
+<kbd class="kbd">Tab</kbd> selects it.
 
-![Ekspresi sederhana di konsol.](images/evaluate-expressions.png)
+![Simple expressions in the console.](images/evaluate-expressions.png)
 
-## Memilih elemen
+## Select elements
 
-Gunakan pintasan berikut untuk memilih elemen:
+Use the following shortcuts to select elements:
 
 <table class="responsive">
   <thead>
     <tr>
-      <th colspan="2">Pintasan &amp; Keterangan</th>
+      <th colspan="2">Shortcut &amp; Description</th>
     </tr>
   </thead>
   <tbody>
     <tr>
       <td data-th="Shortcut">$()</td>
-      <td data-th="Description">Mengembalikan elemen pertama yang cocok dengan pemilih CSS yang ditetapkan. Pintasan untuk <code>document.querySelector()</code>.</td>
+      <td data-th="Description">Returns the first element that matches the specified CSS selector. Shortcut for <code>document.querySelector()</code>.</td>
     </tr>
     <tr>
       <td data-th="Shortcut">$$()</td>
-      <td data-th="Description">Mengembalikan larik semua elemen yang cocok dengan pemilih CSS yang ditetapkan. Alias untuk <code>document.querySelectorAll()</code>.</td>
+      <td data-th="Description">Returns an array of all the elements that match the specified CSS selector. Alias for <code>document.querySelectorAll()</code>.</td>
     </tr>
     <tr>
       <td data-th="Shortcut">$x()</td>
-      <td data-th="Description">Mengembalikan larik elemen yang cocok dengan XPath yang ditetapkan.</td>
+      <td data-th="Description">Returns an array of elements that match the specified XPath.</td>
     </tr>
   </tbody>
 </table>
 
-Contoh pemilihan target:
+Examples of target selection:
 
     $('code') // Returns the first code element in the document.
     $$('figure') // Returns an array of all figure elements in the document.
     $x('html/body/p') // Returns an array of all paragraphs in the document body.
+    
 
-## Memeriksa elemen DOM dan objek heap JavaScript
+## Inspect DOM elements and JavaScript heap objects
 
-Fungsi `inspect()` menggunakan elemen DOM atau referensi JavaScript
-sebagai parameter.
-Jika Anda memberikan elemen DOM,
-DevTools akan pindah ke panel Elements dan menampilkan elemen itu.
-Jika Anda memberikan JavaScript,
-DevTools akan pindah ke panel Profile.
+The `inspect()` function takes a DOM element or JavaScript reference as a parameter. If you provide a DOM element, the DevTools goes to the Elements panel and displays that element. If you provide a JavaScript reference, then it goes to the Profile panel.
 
-Bila kode ini dieksekusi di konsol pada laman ini,
-DevTools akan mengambil nilai ini dan menampilkannya pada panel Elements.
-DevTools memanfaatkan properti `$_`
-untuk mendapatkan keluaran ekspresi yang terakhir dievaluasi.
+When this code executes in your console on this page, it grabs this figure and displays it on the Elements panel. This takes advantage of the `$_` property to get the output of the last evaluated expression.
 
     $('[data-target="inspecting-dom-elements-example"]')
     inspect($_)
+    
 
-## Mengakses elemen dan objek yang baru saja dipilih
+## Access recently selected elements and objects
 
-Konsol menyimpan lima elemen dan objek yang terakhir digunakan
-dalam variabel agar mudah diakses.
-Gunakan $0 - 4,
-untuk mengakses elemen-elemen ini dari dalam konsol.
-Ingat, komputer mulai menghitung dari 0;
-ini berarti item terakhir adalah $0 dan item paling lama adalah $4.
+The console stores the last five used elements and objects in variables for easy access. Use $0 - 4, to access these elements from within the console. Remember computers begin counting from 0; this means the latest item is $0 and the oldest item is $4.
 
+## Feedback {: #feedback }
 
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
