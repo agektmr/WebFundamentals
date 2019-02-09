@@ -1,52 +1,48 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: コードの効果を高めるために、CSS と JS のプリプロセッサを設定する方法について説明します。
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Learn how to set up CSS & JS preprocessors to help you code more efficiently.
 
-{# wf_updated_on:2015-08-03 #}
-{# wf_published_on:2015-08-03 #}
+{# wf_updated_on: 2017-07-24 #} {# wf_published_on: 2015-08-03 #}
 
-#  CSS と JS のプリプロセッサの設定 {: .page-title }
+# Set Up CSS and JS Preprocessors {: .page-title }
 
-{% include "web/_shared/contributors/pbakaus.html" %}
-{% include "web/_shared/contributors/megginkearney.html" %}
+{% include "web/_shared/contributors/pbakaus.html" %} {% include "web/_shared/contributors/megginkearney.html" %}
 
-Sass などの CSS プリプロセッサや、JS プリプロセッサ、トランスパイラを正しく使用すると、開発時間が大幅に短縮されます。ここではこのようなツールの設定方法について説明します。
-
+CSS preprocessors such as Sass, as well as JS preprocessors and transpilers can greatly accelerate your development when used correctly. Learn how to set them up.
 
 ### TL;DR {: .hide-from-toc }
-- プリプロセッサにより、CSS と JavaScript の機能の中で、CSS 変数など、ブラウザがネイティブにサポートしない機能を利用できるようになります。
-- プリプロセッサを使用している場合、ソースマップを使って元のソースファイルをレンダリング後の出力にマップします。
-- お使いのウェブサーバーでソースマップを利用できることを確認してください。
-- サポートされるプリプロセッサを使用して、ソースマップを自動的に生成します。
 
+- Preprocessors let you use features in CSS and JavaScript that your browser doesn't support natively, for example, CSS variables.
+- If you're using preprocessors, map your original source files to the rendered output using Source Maps.
+- Make sure your web server can serve Source Maps.
+- Use a supported preprocessor to automatically generate Source Maps.
 
-## プリプロセッサとは
+## What's a preprocessor?
 
-プリプロセッサは、任意のソースファイルを受け取り、ブラウザが理解できるコードに変換します。 
+A preprocessor takes an arbitrary source file and converts it into something that the browser understands.
 
-出力が CSS の場合は、本来ならば存在しない機能（CSS 変数、ネスティングなど）を追加できます。このカテゴリで注目すべき例には、[Sass](http://sass-lang.com/)、[Less](http://lesscss.org/){: .external }、[Stylus](https://learnboost.github.io/stylus/) があります。
+With CSS as output, they are used to add features that otherwise wouldn't exist (yet): CSS Variables, Nesting and much more. Notable examples in this category are [Sass](http://sass-lang.com/), [Less](http://lesscss.org/){: .external } and [Stylus](https://learnboost.github.io/stylus/).
 
-出力が JavaScript の場合は、まったく異なる言語から変換（コンパイル）したり、スーパーセットや新しい言語標準を現在の標準に変換（トランスパイル）することができます。このカテゴリで注目すべき例には、[CoffeeScript](http://coffeescript.org/){: .external } と ES6（[Babel](https://babeljs.io/) を使用）があります。
+With JavaScript as output, they either convert (compile) from a completely different language, or convert (transpile) a superset or new language standard down to today's standard. Notable examples in this category are [CoffeeScript](http://coffeescript.org/){: .external } and ES6 (via [Babel](https://babeljs.io/)).
 
-## プリプロセッサで処理されたコンテンツのデバッグと編集
+## Debugging and editing preprocessed content
 
-ブラウザで DevTools を使用して [CSS を編集](/web/tools/chrome-devtools/inspect-styles/edit-styles)するか、JavaScript をデバッグすると、1 つの問題が明らかになります。つまり、表示内容がソースを反映していないため、実際には問題を解決できません。
+As soon as you are in the browser and use DevTools to [edit your CSS](/web/tools/chrome-devtools/inspect-styles/edit-styles) or debug your JavaScript, one issue becomes very apparent: what you are looking at does not reflect your source, and doesn't really help you fix your problem.
 
-このような状況に陥らないように、最新のプリプロセッサでは<b>ソースマップ</b>という機能がサポートされます。
+In order to work around, most modern preprocessors support a feature called **Source Maps**.
 
-### ソースマップとは
+### What are Source Maps?
 
-ソースマップとは、最小化されたファイルとそのソースとの関係を作成する、JSON ベースのマッピング形式です。運用向けにビルドするときに、複数の JavaScript ファイルを最小化して組み合わせると同時に、元のファイルの情報を保持するソースマップを生成します。
+A source map is a JSON-based mapping format that creates a relationship between a minified file and its sources. When you build for production, along with minifying and combining your JavaScript files, you generate a source map that holds information about your original files.
 
-### ソースマップの仕組み
+### How Source Maps work
 
-CSS プリプロセッサでは、コンパイル済みの CSS 以外に、生成する CSS ファイルごとにソースマップ ファイル（.map）を生成します。ソースマップ ファイルは JSON ファイルで、生成した各 CSS 宣言と、ソースファイルの対応する行との間のマッピングを定義します。
+For each CSS file it produces, a CSS preprocessor generates a source map file (.map) in addition to the compiled CSS. The source map file is a JSON file that defines a mapping between each generated CSS declaration and the corresponding line of the source file.
 
-各 CSS ファイルには、ソースマップ ファイルの URL を指定するアノテーションを含みます。このアノテーションは、特別なコメントとしてファイルの最終行に埋め込まれます。
+Each CSS file contains an annotation that specifies the URL of its source map file, embedded in a special comment on the last line of the file:
 
     /*# sourceMappingURL=<url> */
+    
 
-たとえば、**styles.scss** という Sass ソースファイルがあるとします。
+For instance, given an Sass source file named **styles.scss**:
 
     %$textSize: 26px;
     $fontColor: red;
@@ -56,8 +52,9 @@ CSS プリプロセッサでは、コンパイル済みの CSS 以外に、生�
         color: $fontColor;
         background: $bgColor;
     }
+    
 
-Sass によって、sourceMappingURL アノテーションを含む CSS ファイル（**styles.css**）が生成されます。
+Sass generates a CSS file, **styles.css**, with the sourceMappingURL annotation:
 
     h2 {
       font-size: 26px;
@@ -65,8 +62,9 @@ Sass によって、sourceMappingURL アノテーションを含む CSS ファ�
       background-color: whitesmoke;
     }
     /*# sourceMappingURL=styles.css.map */
+    
 
-以下は、ソースマップ ファイルの例です。
+Below is an example source map file:
 
     {
       "version": "3",
@@ -74,58 +72,60 @@ Sass によって、sourceMappingURL アノテーションを含む CSS ファ�
       "sources": ["sass/styles.scss"],
       "file": "styles.css"
     }
+    
 
-## ウェブサーバーでソースマップを利用できることを確認
+## Verify web server can serve Source Maps
 
-Google App Engine のような一部のウェブサーバーでは、利用する各ファイルタイプを明示的に設定する必要があります。このようなウェブサーバーでは、ソースマップを `application/json` という MIME タイプで利用できるようにします。ただし、Chrome は実際[どのコンテンツ タイプでも受け入れます](https://stackoverflow.com/questions/19911929/what-mime-type-should-i-use-for-source-map-files)（`application/octet-stream` など）。
+Some web servers, like Google App Engine for example, require explicit configuration for each file type served. In this case, your Source Maps should be served with a MIME type of `application/json`, but Chrome will actually [accept any content-type](https://stackoverflow.com/questions/19911929/what-mime-type-should-i-use-for-source-map-files), for example `application/octet-stream`.
 
-### 補足: カスタム ヘッダーを使ったソースマッピング 
+### Bonus: Source mapping via custom header
 
-ファイルに余分なコメントを残したくない場合、最小化した JavaScript ファイルの HTTP ヘッダー フィールドを使って、ソースマップを検索する場所を DevTools に指示します。この場合、ウェブサーバーの設定やカスタマイズが必要になるため、ここでは扱いません。
+If you don't want an extra comment in your file, use an HTTP header field on the minified JavaScript file to tell DevTools where to find the source map. This requires configuration or customization of your web server and is beyond the scope of this document.
 
     X-SourceMap: /path/to/file.js.map
+    
 
-コメントの場合と同様、JavaScript ファイルに関連付けるソースマップを検索する場所を DevTools などのツールに指示します。このヘッダーは、単一行コメントをサポートしない言語でソースマップを参照する場合の問題も回避できます。
+Like the comment, this tells DevTools and other tools where to look for the source map associated with a JavaScript file. This header also gets around the issue of referencing Source Maps in languages that don't support single-line comments.
 
-## サポート対象のプリプロセッサ
+## Supported preprocessors
 
-CoffeeScript、TypeScript、JSX など、JavaScript 言語にコンパイルされる最近の言語には、ほぼすべてソースマップを生成するオプションがあります。さらに、サーバー側でもソースマップを使用できるようになっています。たとえば、Node 内で使用できます。Sass や Less などを使った CSS 内でも使用できます。ノードスタイルが必要な機能を利用可能にする browserify や、uglify-js のような最小化ツールからでも使用できます。uglify-js では、マルチレベルのソースマップを生成する優れた機能も追加されています。
+Just about any compiled to JavaScript language has an option to generate Source Maps today – including Coffeescript, TypeScript, JSX and many more. You can additionally use Source Maps on the server side within Node, in our CSS with via Sass, Less and more, using browserify which gives you node-style require abilities, and through minification tools like uglify-js which also adds the neat ability to generate multi-level Source Maps.
 
 ### JavaScript
 
 <table>
   <thead>
     <tr>
-      <th width="20%" data-th="Compiler">コンパイラー</th>
-      <th width="40%" data-th="Command">コマンド</th>
-      <th data-th="Instructions">手順</th>
+      <th width="20%" data-th="Compiler">Compiler</th>
+      <th width="40%" data-th="Command">Command</th>
+      <th data-th="Instructions">Instructions</th>
     </tr>
   </thead>
   <tbody>
     <tr>
       <td data-th="Compiler"><a href="http://coffeescript.org/#source-maps">CoffeeScript</a></td>
       <td data-th="Command"><code>$ coffee -c square.coffee -m</code></td>
-      <td data-th="Instructions">-m（--map）フラグを指定するだけで、コンパイラーによってソースマップが出力されます。また、出力ファイルに sourceMapURL コメント プラグマを追加することもできます。</td>
+      <td data-th="Instructions">The -m (--map) flag is all it takes for the compiler to output a source map, it will also handle adding the sourceMapURL comment pragma for you to the outputted file.</td>
     </tr>
     <tr>
       <td data-th="Compiler"><a href="http://www.typescriptlang.org/">TypeScript</a></td>
       <td data-th="Command"><code>$ tsc -sourcemap square.ts</code></td>
-      <td data-th="Instructions">-sourcemap フラグを指定すると、マップが生成され、コメント プラグマが追加されます。</td>
+      <td data-th="Instructions">The -sourcemap flag will generate the map and add the comment pragma.</td>
     </tr>
     <tr>
       <td data-th="Compiler"><a href="https://github.com/google/traceur-compiler/wiki/SourceMaps">Traceur</a></td>
       <td data-th="Command"><code>$ traceur --source-maps=[file|inline]</code></td>
-      <td data-th="Instructions"> <code>--source-maps=file</code> により、 <code>.js</code> で終わるすべての出力ファイルに対して、 <code>.map</code> で終わるソースマップ ファイルが生成されます。また、 <code>source-maps='inline'</code> により、 <code>.js</code> で終わるすべての出力ファイルの末尾に、 <code>data:</code> URL でエンコードされたソースマップを含むコメントが追加されます。</td>
+      <td data-th="Instructions">With <code>--source-maps=file</code>, every output file ending in <code>.js</code> will have a sourcemap file ending in <code>.map</code>; with <code>source-maps='inline'</code>, every output file ending in <code>.js</code> will end with a comment containing the sourcemap encoded in a <code>data:</code> URL.</td>
     </tr>
     <tr>
       <td data-th="Compiler"><a href="https://babeljs.io/docs/usage/cli/#compile-with-source-maps">Babel</a></td>
       <td data-th="Command"><code>$ babel script.js --out-file script-compiled.js --source-maps</code></td>
-      <td data-th="Instructions">--source-maps または -s を使って、ソースマップを生成します。インライン ソースマップを生成する場合は、 <code>--source-maps inline</code> を使用します。</td>
+      <td data-th="Instructions">Use --source-maps or -s to generate Source Maps. Use <code>--source-maps inline</code> for inline Source Maps.</td>
     </tr>
     <tr>
       <td data-th="Compiler"><a href="https://github.com/mishoo/UglifyJS2">UglifyJS</a></td>
       <td data-th="Command"><code>$ uglifyjs file.js -o file.min.js --source-map file.min.js.map</code></td>
-      <td data-th="Instructions">「file.js」のにソースマップを生成する場合に必要なごく基本的なコマンドです。これにより、出力ファイルにコメント プラグマも追加されます。</td>
+      <td data-th="Instructions">That is the very basic command needed to generate a source map for 'file.js'. This will also add the comment pragma to output file.</td>
     </tr>
   </tbody>
 </table>
@@ -135,51 +135,48 @@ CoffeeScript、TypeScript、JSX など、JavaScript 言語にコンパイルさ�
 <table>
   <thead>
     <tr>
-      <th width="20%" data-th="Compiler">コンパイラー</th>
-      <th width="40%" data-th="Command">コマンド</th>
-      <th data-th="Instructions">手順</th>
+      <th width="20%" data-th="Compiler">Compiler</th>
+      <th width="40%" data-th="Command">Command</th>
+      <th data-th="Instructions">Instructions</th>
     </tr>
   </thead>
   <tbody>
     <tr>
       <td data-th="Compiler"><a href="http://sass-lang.com">Sass</a></td>
       <td data-th="Command"><code>$ scss --sourcemap styles.scss styles.css</code></td>
-      <td data-th="Instructions">Sass のソースマップは Sass 3.3 以降でサポートされています。</td>
+      <td data-th="Instructions">Source Maps in Sass are supported since Sass 3.3.</td>
     </tr>
     <tr>
       <td data-th="Compiler"><a href="http://lesscss.org/">Less</a></td>
       <td data-th="Command"><code>$ lessc styles.less > styles.css --source-map styles.css.map</code></td>
-      <td data-th="Instructions">1.5.0 から導入されています。詳細と使用パターンについては、<a href="https://github.com/less/less.js/issues/1050#issuecomment-25566463">不具合 #1050</a> をご覧ください。</td>
+      <td data-th="Instructions">Implemented in 1.5.0. See <a href="https://github.com/less/less.js/issues/1050#issuecomment-25566463">issue #1050</a> for details and usage patterns.</td>
     </tr>
     <tr>
       <td data-th="Compiler"><a href="https://learnboost.github.io/stylus/">Stylus</a></td>
       <td data-th="Command"><code>$ stylus --sourcemaps styles.style styles.css</code></td>
-      <td data-th="Instructions">ソースマップが base64 エンコードされた文字列として出力ファイルに直接埋め込まれます。</td>
+      <td data-th="Instructions">This will embed the sourcemap as a base64 encoded string directly in the out file.</td>
     </tr>
     <tr>
       <td data-th="Compiler"><a href="http://compass-style.org/">Compass</a></td>
       <td data-th="Command"><code>$ sass --compass --sourcemap --watch scss:css</code></td>
-      <td data-th="Instructions">他にも、config.rb ファイルに `sourcemap: true` を追加する方法があります。</td>
+      <td data-th="Instructions">Alternatively you can add `sourcemap: true` to your config.rb file.</td>
     </tr>
     <tr>
       <td data-th="Compiler"><a href="https://github.com/postcss/autoprefixer">Autoprefixer</a></td>
       <td data-th="Command"><code></code></td>
-      <td data-th="Instructions">リンク先で、使用方法と入力ソースマップを取り入れる方法をご覧ください。</td>
+      <td data-th="Instructions">Follow the link to see how to use it and absorb an input sourcemap.</td>
     </tr>
   </tbody>
 </table>
 
-## ソースマップと DevTools
+## Source Maps and DevTools
 
-これでソースマップを正しく用意できました。DevTools で CSS と JS ベースのソースマップが両方とも組み込みでサポートされていることを確認できました。
+Now that you've got Source Maps properly set up, you might be happy to learn that DevTools has built-in support for both CSS and JS based Source Maps.
 
-### プリプロセッサで処理された CSS の編集
+### Editing preprocessed CSS
 
-[Sass、Less、Stylus の編集方法に関するページ](/web/tools/chrome-devtools/inspect-styles/edit-styles)で、ソースマップにリンクしているスタイルを DevTools 内で直接編集して更新する方法についてご覧ください。
+Head over to [Edit Sass, Less or Stylus](/web/tools/chrome-devtools/inspect-styles/edit-styles) to learn more about how to edit and refresh styles linked to a source map directly within DevTools.
 
-### プリプロセッサで処理された JavaScript の編集とデバッグ
+### Editing and debugging preprocessed JavaScript
 
-「[プリプロセッサで処理されたコードとソースコードのマッピング](/web/tools/chrome-devtools/debug/readability/source-maps)」で、[Sources] パネルで最小化、コンパイル、トランスパイルされた JavaScript をデバッグする方法についてご覧ください。
-
-
-{# wf_devsite_translation #}
+Learn more about how to debug minified, compiled or transpiled JavaScript in the Sources Panel in [Map Preprocessed Code to Source Code](/web/tools/chrome-devtools/debug/readability/source-maps).
