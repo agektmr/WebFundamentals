@@ -1,113 +1,73 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: コンテンツ セキュリティ ポリシーにより、最新のブラウザでのクロスサイト スクリプティング攻撃のリスクと影響を大幅に軽減できます。
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Content Security Policy can significantly reduce the risk and impact of cross-site scripting attacks in modern browsers.
 
-{# wf_published_on:2012-06-15 #}
-{# wf_updated_on:2016-02-19 #}
+{# wf_published_on: 2012-06-15 #} {# wf_updated_on: 2019-01-21 #} {# wf_blink_components: Blink>SecurityFeature #}
 
-# コンテンツ セキュリティ ポリシー {: .page-title }
+# Content Security Policy {: .page-title }
 
-{% include "web/_shared/contributors/mikewest.html" %}
-{% include "web/_shared/contributors/josephmedley.html" %}
+{% include "web/_shared/contributors/mikewest.html" %} {% include "web/_shared/contributors/josephmedley.html" %}
 
-ウェブのセキュリティ モデルは、[同一生成元ポリシー](//en.wikipedia.org/wiki/Same-origin_policy){: .external}という考えに基づいています。
-`https://mybank.com` からのコードは `https://mybank.com` のデータにのみアクセスでき、`https://evil.example.com` にはアクセスできないようにする必要があります。各生成元はウェブの残りの部分から隔離されるので、デベロッパーがコードをビルドして実行できる安全なサンドボックスが提供されます。
-理論上これは非常に優れたモデルです。しかし実際には、攻撃者は巧妙な方法を見つけてシステムを妨害します。
+The web's security model is rooted in the [*same-origin policy*](//en.wikipedia.org/wiki/Same-origin_policy). Code from `https://mybank.com` should only have access to `https://mybank.com`'s data, and `https://evil.example.com` should certainly never be allowed access. Each origin is kept isolated from the rest of the web, giving developers a safe sandbox in which to build and play. In theory, this is perfectly brilliant. In practice, attackers have found clever ways to subvert the system.
 
+[Cross-site scripting (XSS)](//en.wikipedia.org/wiki/Cross-site_scripting) attacks, for example, bypass the same origin policy by tricking a site into delivering malicious code along with the intended content. This is a huge problem, as browsers trust all of the code that shows up on a page as being legitimately part of that page's security origin. The [XSS Cheat Sheet](https://www.owasp.org/index.php/XSS_Filter_Evasion_Cheat_Sheet) is an old but representative cross-section of the methods an attacker might use to violate this trust by injecting malicious code. If an attacker successfully injects *any* code at all, it's pretty much game over: user session data is compromised and information that should be kept secret is exfiltrated to The Bad Guys. We'd obviously like to prevent that if possible.
 
-たとえば、[クロスサイト スクリプティング（XSS）](//en.wikipedia.org/wiki/Cross-site_scripting){: .external}攻撃は、意図するコンテンツとともに悪質なコードを提供するようにサイトを仕向けることによって、同一生成元ポリシーを回避します。
-これは大きな問題です。ブラウザは、ページに表示されるすべてのコードを、そのページのセキュリティ オリジンに正当に含まれているものとして信頼するからです。
-古いですが代表的な手法の例として、[XSS チートシート](https://www.owasp.org/index.php/XSS_Filter_Evasion_Cheat_Sheet){: .external}があります。これは、攻撃者が悪質なコードを注入することでこの信頼を侵害するために使用する手法です。
-攻撃者がなんらかのコードの注入に成功すると、それでほぼゲームオーバーです。ユーザー セッション データが侵害され、知らないうちに機密情報が悪意を持つ人に渡されてしまいます。
-明らかにこれは可能な限り回避する必要があることです。
-
-
-この概要では、最新のブラウザで XSS 攻撃のリスクと影響を大幅に低減するための防御策である、
-コンテンツ セキュリティ ポリシー（CSP）を取り上げます。
+This overview highlights a defense that can significantly reduce the risk and impact of XSS attacks in modern browsers: Content Security Policy (CSP).
 
 ### TL;DR {: .hide-from-toc }
-* ホワイトリストを使用して、許可または不許可の対象をクライアントに指示します。
-* 使用できるディレクティブについて説明します。
-* ディレクティブに指定できるキーワードについて説明します。
-* インラインコードと `eval()` は有害と見なされます。
-* ポリシーを適用する前に、ポリシー違反をサーバーに報告します。
 
+* Use whitelists to tell the client what's allowed and what isn't.
+* Learn what directives are available.
+* Learn the keywords they take.
+* Inline code and `eval()` are considered harmful.
+* Report policy violations to your server before enforcing them.
 
-##  取得元のホワイトリスト 
+## Source whitelists
 
+The issue exploited by XSS attacks is the browser's inability to distinguish between script that's part of your application and script that's been maliciously injected by a third-party. For example, the Google +1 button at the bottom of this page loads and executes code from `https://apis.google.com/js/plusone.js` in the context of this page's origin. We trust that code, but we can't expect the browser to figure out on its own that code from `apis.google.com` is awesome, while code from `apis.evil.example.com` probably isn't. The browser happily downloads and executes any code a page requests, regardless of source.
 
-XSS 攻撃によって引き起こされる問題は、ブラウザが、アプリケーションに含まれるスクリプトと、悪意のある第三者が注入したスクリプトを区別できなくなることです。
-たとえば、このページの下部にある Google +1 ボタンは、オリジンが `https://apis.google.com/js/plusone.js` という条件で、このぺージから取得したコードを読み込み、実行します。
-私たちはこのコードを信頼していますが、ブラウザに対して、`apis.google.com` から取得したコードはすばらしいが `apis.evil.example.com` から取得したコードは問題がある、と見分けることは期待できません。
-このブラウザは参照元にかかわらず、ただ素直にページが要求するコードをダウンロードして実行します。
+Instead of blindly trusting *everything* that a server delivers, CSP defines the `Content-Security-Policy` HTTP header, which allows you to create a whitelist of sources of trusted content, and instructs the browser to only execute or render resources from those sources. Even if an attacker can find a hole through which to inject script, the script won't match the whitelist, and therefore won't be executed.
 
-
-サーバーが配信するすべてを盲目的に信頼するのではなく、CSP が定義している `Content-Security-Policy` HTTP ヘッダーを使用すれば、信頼できるコンテンツ参照元のホワイトリストを作成して、その参照元のリソースだけを実行およびレンダリングするようブラウザに指示できます。
-攻撃者がスクリプトを注入するセキュリティ ホールを見つけたとしても、ホワイトリストに一致しなければそのスクリプトは実行されません。
-
-
-
-私たちは、`apis.google.com` は有効なコードを配信すると信頼しています。また、自身のドメインも同様に信頼できるので、この 2 つのリソースのうちどちらかを取得した場合にのみスクリプトを実行できるポリシーを定義してみましょう。
-
-
+Since we trust `apis.google.com` to deliver valid code, and we trust ourselves to do the same, let's define a policy that only allows script to execute when it comes from one of those two sources:
 
     Content-Security-Policy: script-src 'self' https://apis.google.com
+    
 
-簡単ですね。お気づきのとおり、`script-src` は、特定のページでスクリプト関連の権限を制御するディレクティブです。
-スクリプトの有効な参照元として `'self'` ともう 1 つ、`https://apis.google.com` を指定しました。
-ブラウザは HTTPS を介して、オリジンが現在のページおよび `apis.google.com` の JavaScript を従順にダウンロードし、実行します。
-
+Simple, right? As you probably guessed, `script-src` is a directive that controls a set of script-related privileges for a specific page. We've specified `'self'` as one valid source of script, and `https://apis.google.com` as another. The browser dutifully downloads and executes JavaScript from `apis.google.com` over HTTPS, as well as from the current page's origin.
 
 <div class="attempt-right">
   <figure>
-    <img src="images/csp-error.png" alt="コンソール エラー:コンテンツ セキュリティ ポリシー ディレクティブ: script-src 'self' https://apis.google.com に違反しているため、スクリプト 'http://evil.example.com/evil.js' の読み込みが拒否されました。">
+    <img src="images/csp-error.png" alt="Console error: Refused to load the script 'http://evil.example.com/evil.js' because it violates the following Content Security Policy directive: script-src 'self' https://apis.google.com">
   </figure>
 </div>
 
-このポリシーを定義すれば、ブラウザはそれ以外の参照元からのスクリプトは読み込まず、単純にエラーをスローします。
-巧妙な攻撃者がどうにかしてサイトにコードを注入しようとしても、期待どおりに成功せず、逆にエラーメッセージに遭遇します。
+With this policy defined, the browser simply throws an error instead of loading script from any other source. When a clever attacker manages to inject code into your site, they'll run headlong into an error message rather than the success they were expecting.
 
+### Policy applies to a wide variety of resources
 
+While script resources are the most obvious security risks, CSP provides a rich set of policy directives that enable fairly granular control over the resources that a page is allowed to load. You've already seen `script-src`, so the concept should be clear.
 
-###  幅広いリソースに適用するポリシー
+Let's quickly walk through the rest of the resource directives. The list below represents the state of the directives as of level 2. A [level 3 spec](https://www.w3.org/TR/CSP3/) has been published, but is [largely unimplemented](https://www.chromestatus.com/features#csp3) in the major browsers.
 
-スクリプト リソースは、最も明確なセキュリティ リスクですが、CSP では、ページで読み込みが許可されるリソースをさらに細かく制御できるポリシー ディレクティブの豊富なセットを提供しています。
-`script-src` についてはすでに説明したので、そのコンセプトはもうおわかりでしょう。
-続いて、その他のリソース ディレクティブについて簡単に説明します。
+* **`base-uri`** restricts the URLs that can appear in a page's `<base>` element.
+* **`child-src`** lists the URLs for workers and embedded frame contents. For example: `child-src https://youtube.com` would enable embedding videos from YouTube but not from other origins.
+* **`connect-src`** limits the origins that you can connect to (via XHR, WebSockets, and EventSource).
+* **`font-src`** specifies the origins that can serve web fonts. Google's web fonts could be enabled via `font-src https://themes.googleusercontent.com`.
+* **`form-action`** lists valid endpoints for submission from `<form>` tags.
+* **`frame-ancestors`** specifies the sources that can embed the current page. This directive applies to `<frame>`, `<iframe>`, `<embed>`, and `<applet>` tags. This directive can't be used in `<meta>` tags and applies only to non-HTML resources.
+* **`frame-src`** was deprecated in level 2, but is restored in level 3. If not present it still falls back to `child-src` as before.
+* **`img-src`** defines the origins from which images can be loaded.
+* **`media-src`** restricts the origins allowed to deliver video and audio.
+* **`object-src`** allows control over Flash and other plugins.
+* **`plugin-types`** limits the kinds of plugins a page may invoke.
+* **`report-uri`** specifies a URL where a browser will send reports when a content security policy is violated. This directive can't be used in `<meta>` tags.
+* **`style-src`** is `script-src`'s counterpart for stylesheets.
+* **`upgrade-insecure-requests`** instructs user agents to rewrite URL schemes, changing HTTP to HTTPS. This directive is for websites with large numbers of old URL's that need to be rewritten.
+* **`worker-src`** is a CSP Level 3 directive that restricts the URLs that may be loaded as a worker, shared worker, or service worker. As of July 2017, this directive has [limited implementations](https://www.chromestatus.com/features/5922594955984896).
 
-* **`base-uri`** は、ページの `<base>` 要素に表示できる URL を制限します。
-* **`child-src`** は、ワーカーと組み込みのフレーム コンテンツの URL を列挙します。たとえば、`child-src https://youtube.com` は、YouTube の動画を埋め込むことができますが、他のオリジンの動画は埋め込むことができません。廃止された **`frame-src`** ディレクティブの代わりに、このディレクティブを使用してください。
-* **`connect-src`** は、（XHR、WebSockets、EventSource を経由して）接続できるオリジンを制限します。
-* **`font-src`** は、ウェブフォントを配信できるオリジンを指定します。Google のウェブフォントは `font-src https://themes.googleusercontent.com` で有効化できます。
-* **`form-action`** は、`<form>` タグからの送信の有効なエンドポイントを列挙します。
-* **`frame-ancestors`** は、現在のページに組み込める参照元を指定します。このディレクティブは、`<frame>`、`<iframe>`、`<embed>`、`<applet>` タグに適用されます。`<meta>` タグには使用できず、非 HTML リソースのみに適用されます。
-* **`frame-src`** は廃止されました。代わりに **`child-src`** を使用してください。
-* **`img-src`** は、画像を読み込み可能なオリジンを定義します。
-* **`media-src`** は、動画と音声を配信できるオリジンを制限します。
-* **`object-src`** は、Flash などのプラグインを制御できます。
-* **`plugin-types`** は、ページで起動できるプラグインの種類を制限します。
-* **`report-uri`** は、コンテンツ セキュリティ ポリシーが違反されたときにレポートを送信する URL を指定します。
-このディレクティブは、`<meta>` タグで使用できません。
-* **`style-src`** は、スタイルシートの `script-src` に相当します。
-* **`upgrade-insecure-requests`** は、ユーザー エージェントに指示して URL スキーマを書き直し、HTTP を HTTPS に変更します。
-このディレクティブは、書き直しが必要な古い URL が多数存在するウェブサイトに使用します。
+By default, directives are wide open. If you don't set a specific policy for a directive, let's say `font-src`, then that directive behaves by default as though you'd specified `*` as the valid source (for example, you could load fonts from anywhere, without restriction).
 
+You can override this default behavior by specifying a **`default-src`** directive. This directive defines the defaults for most directives that you leave unspecified. Generally, this applies to any directive that ends with `-src`. If `default-src` is set to `https://example.com`, and you fail to specify a `font-src` directive, then you can load fonts from `https://example.com`, and nowhere else. We specified only `script-src` in our earlier examples, which means that images, fonts, and so on can be loaded from any origin.
 
-デフォルトでは、ディレクティブに制限はありません。ディレクティブに特定のポリシーを設定しない場合、たとえば `font-src` は、有効な参照元として `*` を指定しても、そのディレクティブがデフォルトで動作します（たとえば、制限なしでどこからでもフォントを読み込むことができます）。
-
-
-
-
-このデフォルトの動作は、**`default-src`** ディレクティブを指定することで上書きできます。
-このディレクティブは、未指定のディレクティブの大半に対してデフォルトを定義します。
-一般に、これは末尾が `-src` のディレクティブに適用されます。
-`default-src` に `https://example.com` を設定し、`font-src` ディレクティブを指定しなかった場合、`https://example.com` からフォントを読み込むことはできますが、それ以外からは読み込めません。
-前の例では `script-src` のみを指定しました。この場合、画像、フォントなどはどのオリジンからでも読み込むことができます。
-
-
-
-次のディレクティブは、フォールバックとして `default-src` を使用しません。すでにご説明したように、設定しない場合はすべて許可したのと同じです。
-
+The following directives don't use `default-src` as a fallback. Remember that failing to set them is the same as allowing anything.
 
 * `base-uri`
 * `form-action`
@@ -116,88 +76,52 @@ XSS 攻撃によって引き起こされる問題は、ブラウザが、アプ�
 * `report-uri`
 * `sandbox`
 
-これらのディレクティブは、アプリケーションに合わせて目的の数だけ使用でき、HTTP ヘッダーにそれぞれ記述します。各ディレクティブはセミコロンで区切ります。
-1 つのディレクティブで、必須のリソースタイプをすべて記述していることを確認してください。
-`script-src https://host1.com; script-src https://host2.com` のように記述すると、2 番目のディレクティブは無視されます。
-両方のオリジンの指定を有効にする正しい記述は次のとおりです。
-
+You can use as many or as few of these directives as makes sense for your specific application, simply listing each in the HTTP header, separating directives with semicolons. Make sure that you list *all* required resources of a specific type in a *single* directive. If you wrote something like `script-src https://host1.com; script-src https://host2.com` the second directive would simply be ignored. Something like the following would correctly specify both origins as valid:
 
     script-src https://host1.com https://host2.com
+    
 
-たとえば、コンテンツ配信ネットワーク（`https://cdn.example.net` など）からすべてのリソースを読み込むアプリケーションの場合、フレーム付きコンテンツまたはプラグインが不要だとわかっていれば、ポリシーは次のようになります。
-
-
-
+If, for example, you have an application that loads all of its resources from a content delivery network (say, `https://cdn.example.net`), and know that you don't need any framed content or plugins, then your policy might look something like the following:
 
     Content-Security-Policy: default-src https://cdn.example.net; child-src 'none'; object-src 'none'
+    
 
-###  実装の詳細
+### Implementation details
 
-ウェブの各種チュートリアルで、`X-WebKit-CSP` および `X-Content-Security-Policy` ヘッダーを目にすることがあるでしょう。
-将来的には、これらの接頭辞付きヘッダーは無視する必要があります。
-最新のブラウザ（IE を除く）は、接頭辞のない `Content-Security-Policy` ヘッダーをサポートしています。
-こちらのヘッダーを使用してください。
+You will see `X-WebKit-CSP` and `X-Content-Security-Policy` headers in various tutorials on the web. Going forward, you should ignore these prefixed headers. Modern browsers (with the exception of IE) support the unprefixed `Content-Security-Policy` header. That's the header you should use.
 
-使用するヘッダーによらず、ポリシーはページごとに定義されます。保護する必要があるレスポンスには毎回、この HTTP ヘッダーを付けて送信する必要があります。
-これにより、各ニーズに応じて特定のページのポリシーを微調整できるため、柔軟性が向上します。
-サイトに +1 ボタンが存在するページもあれば、ないページもあります。その場合、必要なときにだけボタンのコードの読み込みを許可できます。
+Regardless of the header you use, policy is defined on a page-by-page basis: you'll need to send the HTTP header along with every response that you'd like to ensure is protected. This provides a lot of flexibility, as you can fine-tune the policy for specific pages based on their specific needs. Perhaps one set of pages in your site has a +1 button, while others don't: you could allow the button code to be loaded only when necessary.
 
+The source list in each directive is flexible. You can specify sources by scheme (`data:`, `https:`), or ranging in specificity from hostname-only (`example.com`, which matches any origin on that host: any scheme, any port) to a fully qualified URI (`https://example.com:443`, which matches only HTTPS, only `example.com`, and only port 443). Wildcards are accepted, but only as a scheme, a port, or in the leftmost position of the hostname: `*://*.example.com:*` would match all subdomains of `example.com` (but *not* `example.com` itself), using any scheme, on any port.
 
+The source list also accepts four keywords:
 
-各ディレクティブの参照元リストは柔軟に指定できます。(`data:`, `https:`) のスキームで参照元を指定したり、選択的にホスト名のみを指定したり（`example.com`: スキームやポートを問わず、このホストのオリジンすべてに一致）、完全修飾 URI（`https://example.com:443`: HTTPS のみ、`example.com` のみ、ポート 443 のみと一致）など、幅広く指定できます。
-ワイルドカードも使用できますが、スキーム、ポート、またはホスト名の一番左端のみに限定されます。`*://*.example.com:*` は、`example.com` のすべてのサブドメインに一致し、スキームとポートはどれでも使用できます（ただし、`example.com` 自体を除く）。
+* **`'none'`**, as you might expect, matches nothing.
+* **`'self'`** matches the current origin, but not its subdomains.
+* **`'unsafe-inline'`** allows inline JavaScript and CSS. (We'll touch on this in more detail in a bit.)
+* **`'unsafe-eval'`** allows text-to-JavaScript mechanisms like `eval`. (We'll get to this too.)
 
+These keywords require single-quotes. For example, `script-src 'self'` (with quotes) authorizes the execution of JavaScript from the current host; `script-src self` (no quotes) allows JavaScript from a server named "`self`" (and *not* from the current host), which probably isn't what you meant.
 
+### Sandboxing
 
+There's one more directive worth talking about: `sandbox`. It's a bit different from the others we've looked at, as it places restrictions on actions that the page can take rather than on resources that the page can load. If the `sandbox` directive is present, the page is treated as though it was loaded inside of an `<iframe>` with a `sandbox` attribute. This can have a wide range of effects on the page: forcing the page into a unique origin, and preventing form submission, among others. It's a bit beyond the scope of this article, but you can find full details on valid sandboxing attributes in the ["Sandboxing" section of the HTML5 spec](https://html.spec.whatwg.org/dev/origin.html#sandboxing)..
 
-参照元リストには、次の 4 つのキーワードも使用できます。
+### The meta tag
 
-* **`'none'`**: おそらく皆さん予想されているとおり、何も一致しません。
-* **`'self'`**: 現在のオリジンと一致します。ただしサブドメインは除外されます。
-* **`'unsafe-inline'`**: インライン JavaScript および CSS を許可します（このキーワードについては、後でもう少し詳しく説明する予定です）。
-* **`'unsafe-eval'`**: `eval` などの text-to-JavaScript の仕組みを許可します（このキーワードについても後述します）
-。
-
-これらのキーワードには一重引用符が必要です。たとえば、`script-src 'self'`（引用符付き）は、現在のホストからの JavaScript の実行を許可します。`script-src self`（引用符なし）は、（現在のホストからではなく）"`self`" という名前のサーバーからの JavaScript を許可します。これはおそらく意図と異なるでしょう。
-
-
-
-
-###  サンドボックス
-
-もう 1 つ説明すべきディレクティブがあります。`sandbox` です。これまで説明してきたディレクティブとは若干異なり、ページが読み込めるリソースにではなく、ページで実行できるアクションに制限を加えます。
-`sandbox` ディレクティブが存在すると、ページは `sandbox` 属性を指定した `<iframe>` 内に読み込まれるように処理されます。
-このディレクティブは、ページを一意のオリジンに限定したり、フォームの送信を禁止したり、ページに幅広い効果をもたらします。
-この記事の範囲からややはずれますが、有効なサンドボックス属性の完全な詳細については、[HTML5 仕様の「Sandboxing」セクション](https://developers.whatwg.org/origin-0.html#sandboxing){: .external}をご覧ください{: .external}。
-
-
-
-###  meta タグ
-
-CSP で優先される配信のしくみは HTTP ヘッダーです。しかしこれは、ページのマークアップに直接ポリシーを設定する場合に便利です。
-その場合、`<meta>` タグと `http-equiv` 属性を使用します。
-
-
+CSPs preferred delivery mechanism is an HTTP header. It can be useful, however, to set a policy on a page directly in the markup. Do that using a `<meta>` tag with an `http-equiv` attribute:
 
     <meta http-equiv="Content-Security-Policy" content="default-src https://cdn.example.net; child-src 'none'; object-src 'none'">
+    
 
+This can't be used for frame-ancestors, report-uri, or sandbox.
 
-これは、frame-ancestors、report-uri、sandbox には使用できません。
+## Inline code is considered harmful
 
-##  インラインコードは有害と見なす
+It should be clear that CSP is based on whitelisting origins, as that's an unambiguous way of instructing the browser to treat specific sets of resources as acceptable and to reject the rest. Origin-based whitelisting doesn't, however, solve the biggest threat posed by XSS attacks: inline script injection. If an attacker can inject a script tag that directly contains some malicious payload (`<script>sendMyDataToEvilDotCom();</script>`), the browser has no mechanism by which to distinguish it from a legitimate inline script tag. CSP solves this problem by banning inline script entirely: it's the only way to be sure.
 
-CSP は明確に、ホワイトリストに登録されたオリジンに基づいています。こうすれば、特定のリソースだけを受け入れてそれ以外を拒否するという、あいまいさを排除した処理をブラウザに指示できるからです。
-しかしオリジンベースのホワイトリストは、XSS 攻撃による最大の脅威である、スクリプト注入に対処できません。攻撃者が悪意のあるペイロードを直接含む script タグを注入すると（<code>&lt;script&gt;sendMyDataToEvilDotCom();&lt;/script&gt;</code>）、ブラウザには正当なインライン スクリプト タグを区別するしくみがありません。
-CSP でこの問題を解決するには、インライン スクリプトを完全に禁止します。これが唯一確実な方法です。
-
-
-
-この禁止には、`script` タグに直接組み込まれたスクリプトに限らず、インライン イベント ハンドラと `javascript:` URL も含まれます。
-`script` タグのコンテンツを外部ファイルに移動し、`javascript:` URL および `<a ...
-onclick="[JAVASCRIPT]">` を適切な `addEventListener()` 呼び出しに置き換える必要があります。
-たとえば、次のコードを書き換えるとします。
-
-
+This ban includes not only scripts embedded directly in `script` tags, but also inline event handlers and `javascript:` URLs. You'll need to move the content of `script` tags into an external file, and replace `javascript:` URLs and `<a ...
+onclick="[JAVASCRIPT]">` with appropriate `addEventListener()` calls. For example, you might rewrite the following from:
 
     <script>
       function doAmazingThings() {
@@ -205,146 +129,102 @@ onclick="[JAVASCRIPT]">` を適切な `addEventListener()` 呼び出しに置き
       }
     </script>
     <button onclick='doAmazingThings();'>Am I amazing?</button>
+    
 
-
-次のように変更します。
+to something more like:
 
     <!-- amazing.html -->
     <script src='amazing.js'></script>
     <button id='amazing'>Am I amazing?</button>
+    
 
 <div style="clear:both;"></div>
-
 
     // amazing.js
     function doAmazingThings() {
       alert('YOU AM AMAZING!');
     }
-    document.addEventListener('DOMContentReady', function () {
+    document.addEventListener('DOMContentLoaded', function () {
       document.getElementById('amazing')
         .addEventListener('click', doAmazingThings);
     });
+    
 
+The rewritten code has a number of advantages above and beyond working well with CSP; it's already best practice, regardless of your use of CSP. Inline JavaScript mixes structure and behavior in exactly the way you shouldn't. External resources are easier for browsers to cache, more understandable for developers, and conducive to compilation and minification. You'll write better code if you do the work to move code into external resources.
 
-書き換えられたコードには、CSP とうまく連動する以上のメリットがあります。CSP を使用するかにかかわらず、これはベスト プラクティスです。
-インライン JavaScript は、望ましくない形で構造と動作を組み合わせています。外部リソースはブラウザでキャッシュしやすく、デベロッパーにとってわかりやすく、編集と圧縮のメリットがあります。
-外部リソースにコードを移動すれば、より適切なコードを書くことができます。
+Inline style is treated in the same way: both the `style` attribute and `style` tags should be consolidated into external stylesheets to protect against a variety of [surprisingly clever](https://scarybeastsecurity.blogspot.com/2009/12/generic-cross-browser-cross-domain.html) data exfiltration methods that CSS enables.
 
+If you must have inline script and style, you can enable it by adding `'unsafe-inline'` as an allowed source in a `script-src` or `style-
+src` directive. You can also use a nonce or a hash (see below), but you really shouldn't. Banning inline script is the biggest security win CSP provides, and banning inline style likewise hardens your application. It's a little bit of effort up front to ensure that things work correctly after moving all the code out-of-line, but that's a tradeoff that's well worth making.
 
-インライン スタイルも同様に処理します。`style` 属性と `style` タグは、外部スタイルシートに統合し、CSS で可能な各種の[驚くほど巧妙な](http://scarybeastsecurity.blogspot.com/2009/12/generic-cross-browser-cross-domain.html){: .external}データ抽出方法に対して保護する必要があります。
+### If you absolutely must use it ...
 
+CSP Level 2 offers backward compatibility for inline scripts by allowing you to whitelist specific inline scripts using either a cryptographic nonce (number used once) or a hash. Although this may be cumbersome, it is useful in a pinch.
 
-
-
-どうしてもインライン スクリプトやインライン スタイルが必要な場合は、`script-src` または `style-
-src` ディレクティブで許可される参照元として `'unsafe-inline'` を追加することで有効化できます。
-ナンスやハッシュ（以下を参照）を使用することもできますが、使用すべきではありません。インライン スクリプトの禁止は、CSP で可能な最大のセキュリティ保護ですが、インライン スタイルの禁止も同様に、アプリケーションをさらに強化できます。
-すべてのコードを外部に移動した後は、正しく動作するかの事前確認が多少は必要になりますが、その手間をかけるだけの価値はあります。
-
-
-
-###  やむを得ずインライン スクリプトを使用しなければならない場合
-
-CSP Level 2 では、暗号化されたナンス（1 回だけ使用する数値）またはハッシュのいずれかを使用し、インライン スクリプトをホワイトリストに登録できるようにして、インライン スクリプトの後方互換を提供しています。
-これは扱いにくいかもしれませんが、いざというときに役立ちます。
-
-
-ナンスを使用するには、script タグに nonce 属性を指定します。この値は、信頼できる参照元リストに含まれる値と一致する必要があります。
-次に例を示します。
-
+To use a nonce, give your script tag a nonce attribute. Its value must match one in the list of trusted sources. For example:
 
     <script nonce=EDNnf03nceIOfn39fn3e9h3sdfa>
       //Some inline code I cant remove yet, but need to asap.
     </script>
+    
 
-
-続いて、`nonce-` キーワードに付加したナンスを、`script-src` ディレクティブに追加します。
+Now, add the nonce to your `script-src` directive appended to the `nonce-` keyword.
 
     Content-Security-Policy: script-src 'nonce-EDNnf03nceIOfn39fn3e9h3sdfa'
+    
 
-すでに説明したように、ナンスはページ リクエストのたびに再度生成する必要があり、推測できない値にする必要がある点に注意してください。
+Remember that nonces must be regenerated for every page request and they must be unguessable.
 
-
-ハッシュもほぼ同じように機能します。script タグにコードを追加する代わりに、スクリプト自体の SHA ハッシュを作成して `script-src` ディレクティブに追加します。たとえば、ページで次のように設定されているとします。
-
-
-
+Hashes work in much the same way. Instead of adding code to the script tag, create a SHA hash of the script itself and add it to the `script-src` directive. For example, let's say your page contained this:
 
     <script>alert('Hello, world.');</script>
+    
 
-
-ポリシーは次のようになります。
+Your policy would contain this:
 
     Content-Security-Policy: script-src 'sha256-qznLcsROx4GACP2dm0UCKCzCG-HiZ1guq6ZZDob_Tng='
+    
 
-いくつか注意点があります。`sha*-` 接頭辞は、ハッシュを生成するアルゴリズムを示します。
-上記の例では、sha256- が使用されています。CSP は sha384- および sha512- もサポートしています。
-ハッシュを生成する際は、`<script>` タグを含めないでください。
-また、先頭や末尾のスペースなど、大文字やスペースも影響します。
+There are a few things to note here. The `sha*-` prefix specifies the algorithm that generates the hash. In the example above, sha256- is used. CSP also supports sha384- and sha512-. When generating the hash do not include the `<script>` tags. Also capitalization and whitespace matter, including leading or trailing whitespace.
 
+A Google search on generating SHA hashes will lead you to solutions in any number of languages. Using Chrome 40 or later, you can open DevTools and then reload your page. The Console tab will contain error messages with the correct sha256 hash for each of your inline scripts.
 
-SHA ハッシュの生成については、Google 検索を使えばあらゆる言語でソリューションにたどり着くでしょう。
-Chrome 40 以降を使用して、DevTools を開き、ページを再読み込みします。
-[Console] タブには、インライン スクリプトごとに、エラー メッセージと正しい sha256 ハッシュが含まれています。
+## Eval too
 
+Even when an attacker can't inject script directly, they might be able to trick your application into converting otherwise inert text into executable JavaScript and executing it on their behalf. `eval()`, `new
+Function()`, `setTimeout([string], ...)`, and
+<code>setInterval([string], ...)</code> are all vectors through which injected text might end up executing something unexpectedly malicious. CSP's default response to this risk is to completely block all of these vectors.
 
-##  eval にも注意
+This has more than a few impacts on the way you build applications:
 
-攻撃者がスクリプトを直接注入できなくても、アプリケーションをあざむいて、攻撃者の代わりに不活性テキストを実行可能な JavaScript に変換して実行させるおそれがあります。 <code>eval()</code>、<code>new
-Function()</code>、 <code>setTimeout([string], ...)</code>、<code>setInterval([string], ...)</code> はすべて媒介となって、注入されたテキストを使って予想外の悪意のある処理を実行される可能性があります。
-CSP のこのリスクに対する基本的な回答は、このような媒介となる関数をすべて完全にブロックすることです。
-
-
-
-これは、アプリケーションの構築方法に少なからず影響を及ぼします。
-
-*   `eval` に頼らず、組み込みの `JSON.parse` を介して JSON を解析する必要があります。
-ネイティブの JSON 演算は、[IE8 以降のすべてのブラウザ](http://caniuse.com/#feat=json){: .external}で利用でき、高い安全性が確保されています。
-*   現在実行している `setTimeout` または `setInterval` 呼び出しを、文字列ではなくインライン関数を使用するように書き直してください。
-次に例を示します。
+* You must parse JSON via the built-in `JSON.parse`, rather than relying on `eval`. Native JSON operations are available in [every browser since IE8](https://caniuse.com/#feat=json), and they're completely safe.
+* Rewrite any `setTimeout` or `setInterval` calls you're currently making with inline functions rather than strings. For example:
 
 <div style="clear:both;"></div>
 
     setTimeout("document.querySelector('a').style.display = 'none';", 10);
+    
 
-
-次のように改善します。
-
+would be better written as:
 
     setTimeout(function () {
       document.querySelector('a').style.display = 'none';
     }, 10);
+    
 
+* Avoid inline templating at runtime: Many templating libraries use `new
+Function()` liberally to speed up template generation at runtime. It's a nifty application of dynamic programming, but comes at the risk of evaluating malicious text. Some frameworks support CSP out of the box, falling back to a robust parser in the absence of `eval`. [AngularJS's ng-csp directive](https://docs.angularjs.org/api/ng/directive/ngCsp) is a good example of this.
 
-*   実行時のインライン テンプレート生成は避けてください。多くのテンプレート ライブラリは `new
-    Function()` を大量に使用し、実行時のテンプレート生成を高速化しています。これは動的プログラミングのすばらしい応用例ですが、悪意のあるテキストを評価するリスクにさらされます。
+However, a better choice would be a templating language that offers precompilation ([Handlebars does](http://handlebarsjs.com/precompilation.html), for instance). Precompiling your templates can make the user experience even faster than the fastest runtime implementation, and it's safer too. If eval and its text-to-JavaScript brethren are essential to your application, you can enable them by adding `'unsafe-eval'` as an allowed source in a `script-src` directive, but we strongly discourage this. Banning the ability to execute strings makes it much more difficult for an attacker to execute unauthorized code on your site.
 
-一部のフレームワークでは、はじめから CSP をサポートしており、`eval` が存在しない場合は堅牢なパーサーにフォールバックします。[AngularJS の ng-csp ディレクティブ](https://docs.angularjs.org/api/ng/directive/ngCsp){: .external}がその好例です。
+## Reporting
 
-
-
-さらにもっといい選択は（たとえば [Handlebars](http://handlebarsjs.com/precompilation.html){: .external} のように）、プリコンパイルを実行できるテンプレート言語です。
-テンプレートのプリコンパイルによって、最速のランタイム実装よりもユーザー エクスペリエンスがさらに高速化され、安全性も高まります。
-eval および同様の text-to-JavaScript 関数がアプリケーションに欠かせない場合は、許可される参照元として `'unsafe-eval'` を `script-src` ディレクティブに追加することで有効化できますが、この方法を使用しないことを強く推奨します。
-
-
-文字列の実行を禁止すれば、攻撃者にとって、不正なコードをサイトで実行することが非常に難しくなります。
-
-
-
-##  レポート 
-
-
-信頼できないリソースをクライアント側でブロックする CSP の機能は、ユーザーに多大なメリットをもたらします。さらに、なんらかの通知をサーバーに返送し、悪意のある注入を許すバグを最初の段階で特定して防ぐために非常に役立ちます。
-これを実現するために、 <code>report-uri</code> ディレクティブで指定した場所に JSON 形式の違反レポートを  <code>POST</code> するようにブラウザに指示できます。
-
-
-
+CSP's ability to block untrusted resources client-side is a huge win for your users, but it would be quite helpful to have some sort of notification sent back to the server so that you can identify and squash any bugs that allow malicious injection in the first place. To this end, you can instruct the browser to `POST` JSON-formatted violation reports to a location specified in a `report-uri` directive.
 
     Content-Security-Policy: default-src 'self'; ...; report-uri /my_amazing_csp_report_parser;
+    
 
-レポートは次のような形式になります。
-
+Those reports will look something like the following:
 
     {
       "csp-report": {
@@ -355,116 +235,67 @@ eval および同様の text-to-JavaScript 関数がアプリケーションに�
         "original-policy": "script-src 'self' https://apis.google.com; report-uri http://example.org/my_amazing_csp_report_parser"
       }
     }
+    
 
+This contains a good chunk of information that will help you track down the specific cause of the violation, including the page on which the violation occurred (`document-uri`), that page's referrer (note that unlike the HTTP header field, the key is *not* misspelled), the resource that violated the page's policy (`blocked-uri`), the specific directive it violated (`violated-directive`), and the page's complete policy (`original-policy`).
 
+### Report-Only
 
-これには、特定の違反の原因を追跡するために役立つ情報の大部分、たとえば、違反が発生したページ（`document-uri`）、ページのリファラー（HTTP ヘッダー フィールドと異なるため、キーの綴りは誤りではありません）、ページのポリシーに違反したリソース（`blocked-uri`）、違反した特定のディレクティブ（`violated-directive`）、ページの完全なポリシー（`original-policy`）が含まれています。
-
-
-
-
-
-
-###  Report-Only
-
-CSP の使用を開始したばかりであれば、アプリケーションの現状を評価してから、ユーザー向けの厳格なポリシーを展開するのが合理的です。完全なデプロイに向けた一歩として、ポリシーを監視して違反は報告し、制限は適用しないようにブラウザに要求できます。
-`Content-Security-Policy` ヘッダーを送信する代わりに、`Content-Security-Policy-Report-Only` ヘッダーを送信します。
-
-
+If you're just starting out with CSP, it makes sense to evaluate the current state of your application before rolling out a draconian policy to your users. As a stepping stone to a complete deployment, you can ask the browser to monitor a policy, reporting violations but not enforcing the restrictions. Instead of sending a `Content-Security-Policy` header, send a `Content-Security-Policy-Report-Only` header.
 
     Content-Security-Policy-Report-Only: default-src 'self'; ...; report-uri /my_amazing_csp_report_parser;
+    
 
-report-only モードで指定されたポリシーは、制限対象リソースをブロックせず、違反レポートを指定した場所に送信します。
-両方のヘッダーを送信して、1 つのポリシーを適用し、もう 1 つのポリシーを監視することもできます。
-これは、アプリケーションの CSP を変更した場合の影響を評価する方法として非常におすすめです。新しいポリシーのレポートを有効にして、違反レポートを監視し、見つかったバグを修正します。その効果に満足できたら、新しいポリシーの適用を開始します。
+The policy specified in report-only mode won't block restricted resources, but it will send violation reports to the location you specify. You can even send *both* headers, enforcing one policy while monitoring another. This is a great way to evaluate the effect of changes to your application's CSP: turn on reporting for a new policy, monitor the violation reports and fix any bugs that turn up; when you're satisfied with its effect, start enforcing the new policy.
 
+## Real World Usage
 
+CSP 1 is quite usable in Chrome, Safari, and Firefox, but has very limited support in IE 10. You can [ view specifics at caniuse.com](https://caniuse.com/#feat=contentsecuritypolicy). CSP Level 2 has been available in Chrome since version 40. Massive sites like Twitter and Facebook have deployed the header ([Twitter's case study](https://blog.twitter.com/engineering/en_us/a/2011/improving-browser-security-with-csp.html) is worth a read), and the standard is very much ready for you to start deploying on your own sites.
 
+The first step towards crafting a policy for your application is to evaluate the resources you're actually loading. Once you think you have a handle on how things are put together in your app, set up a policy based on those requirements. Let's walk through a few common use cases and determine how we'd best be able to support them within the protective confines of CSP.
 
+### Use case #1: social media widgets
 
+* Google's [+1 button](/+/web/+1button/) includes a script from `https://apis.google.com`, and embeds an `<iframe>` from `https://plusone.google.com`. You need a policy that includes both these origins in order to embed the button. A minimal policy would be `script-src
+https://apis.google.com; child-src https://plusone.google.com`. You also need to ensure that the snippet of JavaScript that Google provides is pulled out into an external JavaScript file. If you had a Level 1-based policy using `frame-src` Level 2 required you to change it to `child-src`. This is no longer necessary in CSP Level 3.
 
-##  実際の使い方 
+* Facebook's [Like button](//developers.facebook.com/docs/plugins/like-button){: .external } has a number of implementation options. We recommend sticking with the `<iframe>` version as it's safely sandboxed from the rest of your site. It requires a `child-src https://facebook.com` directive to function properly. Note that, by default, the `<iframe>` code that Facebook provides loads a relative URL, `//facebook.com`. Change that to explicitly specify HTTPS: `https://facebook.com`. There's no reason to use HTTP if you don't have to.
 
-CSP 1 は、Chrome、Safari、Firefox でその大部分を使用できますが、IE 10 でのサポートはかなり制限されています。
-<a href="http://caniuse.com/#feat=contentsecuritypolicy">
-詳細については、canisue.com をご覧ください</a>。CSP Level 2 は、バージョン 40 以降の Chrome で使用できます。
-Twitter や Facebook のような大規模なサイトは、このヘッダーをデプロイしています（<a href="https://blog.twitter.com/2011/improving-browser-security-with-csp">Twitter のケーススタディ</a>は一読の価値があります）。この標準を使用して、すぐにでも自分のサイトでデプロイを開始できます。
+* Twitter's [Tweet button](https://publish.twitter.com/#) relies on access to a script and a frame, both hosted at `https://platform.twitter.com`. (Twitter likewise provides a relative URL by default; edit the code to specify HTTPS when copy/pasting it locally.) You'll be all set with `script-src https://platform.twitter.com; child-src
+https://platform.twitter.com`, as long as you move the JavaScript snippet that Twitter provides out into an external JavaScript file.
 
+* Other platforms have similar requirements, and can be addressed similarly. We suggest just setting a `default-src` of `'none'`, and watching your console to determine which resources you'll need to enable to make the widgets work.
 
-
-
-アプリケーションのポリシーを作成するための最初のステップは、実際に読み込んでいるリソースを評価することです。
-リソースを自分のアプリにどうまとめればよいかを把握できたら、その要件に基づきポリシーを設定します。
-一般的なユースケースをあげながら、CSP の保護の範囲内で対応できる最善策を見ていきましょう。
-
-
-###  ユースケース 1: ソーシャル メディア ウィジェット
-
-* Google の [+1 ボタン](/+/web/+1button/){: .external} には `https://apis.google.com` から読み込むスクリプトが含まれており、`https://plusone.google.com` から読み込む `<iframe>` を埋め込んでいます。ボタンを埋め込むには、この両方のオリジンを含むポリシーが必要です。最小限のポリシーは次のとおりです。`script-src
-https://apis.google.com; child-src https://plusone.google.com`.また、Google が提供する JavaScript のスニペットを外部 JavaScript ファイルに取り出す必要があります。
-`child-src` を使用する既存のポリシーが存在する場合、`child-src` に変更できます。
-* Facebook の[いいねボタン](//developers.facebook.com/docs/plugins/like-button){: .external }
-
-には、多数の実装オプションがあります。サイトの他の部分から安全に切り離せるため、`<iframe>` バージョンだけを使用することをお勧めします。
-その場合、`child-src https://facebook.com` ディレクティブを適切に機能させる必要があります。
-デフォルトでは、Facebook が提供する `<iframe>` コードは相対 URL である `//facebook.com` を読み込みます。
-これを `https://facebook.com` に変更し、明示的に HTTPS を指定してください。
-あえて HTTP を使用する理由はありません。
-
-* Twitter の[ツイート ボタン](https://publish.twitter.com/#) は、スクリプトとフレームへのアクセスに依存しており、どちらも `https://platform.twitter.com` でホスティングされています（Twitter も同様に、デフォルトで相対 URL を指定しています。ローカルにコピー＆ペーストして、コードを編集し、HTTPS を指定してください）。Twitter が提供する JavaScript スニペットを外部 JavaScript ファイルに移動すれば、`script-src https://platform.twitter.com; child-src
-https://platform.twitter.com` ですべて設定できます。
-
-
-
-
-* その他のプラットフォームにも類似の要件があり、同じように対処できます。
-`default-src` を `'none'` に設定し、コンソールを監視して、ウィジェットを機能させるために有効にする必要があるリソースを特定することをお勧めします。
-
-
-複数のウィジェットを含めるのは簡単で、ポリシーのディレクティブを統合するだけです。先ほど説明したとおり、同じタイプのリソースはすべて 1 つのディレクティブにまとめる必要があります。
-3 つのソーシャル メディア ウィジェットがすべて必要な場合は、ポリシーは次のようになります。
-
+Including multiple widgets is straightforward: simply combine the policy directives, remembering to merge all resources of a single type into a single directive. If you wanted all three social media widgets, the policy would look like this:
 
     script-src https://apis.google.com https://platform.twitter.com; child-src https://plusone.google.com https://facebook.com https://platform.twitter.com
+    
 
-###  ユースケース 2: ロックダウン
+### Use case #2: lockdown
 
-あなたは銀行のサイトを運営しており、自分で記述したリソースだけを読み込めるようにする必要があるとします。
-このシナリオでは、すべてを完全にブロックするデフォルトのポリシーから開始して（`default-src
-'none'`）、そこから作り上げていきます。
+Assume for a moment that you run a banking site and want to make sure that only those resources you've written yourself can be loaded. In this scenario, start with a default policy that blocks absolutely everything (`default-src
+'none'`), and build up from there.
 
-
-この銀行ではすべての画像、スタイル、スクリプトを `https://cdn.mybank.net` にある CDN から読み込むとします。また、XHR 経由で `https://api.mybank.com/` に接続し、各種のデータを取得します。
-フレームが使用されていますが、サイトのローカル ページのみです（サードパーティのオリジンはありません）。
-サイトに Flash、フォントなどはありません。
-このようなケースで送信する、制限が最も厳しい CSP ヘッダーは次のとおりです。
+Let's say the bank loads all images, style, and script from a CDN at `https://cdn.mybank.net`, and connects via XHR to `https://api.mybank.com/` to pull various bits of data down. Frames are used, but only for pages local to the site (no third-party origins). There's no Flash on the site, no fonts, no extras. The most restrictive CSP header that we could send is this:
 
     Content-Security-Policy: default-src 'none'; script-src https://cdn.mybank.net; style-src https://cdn.mybank.net; img-src https://cdn.mybank.net; connect-src https://api.mybank.com; child-src 'self'
+    
 
-###  ユースケース 3: SSL のみ
+### Use case #3: SSL only
 
-結婚指輪のディスカッション フォーラムの管理者が、すべてのリソースを安全なチャンネルからのみ読み込めるようにしたいと考えていますが、あまり多くのコードを記述したくありません。インライン スクリプトとインライン スタイルが多数使われているサードパーティ フォーラム ソフトウェアの大量のコードを書き直すことは、管理者の能力を超えています。
-効果的なポリシーは次のとおりです。
-
+A wedding-ring discussion forum admin wants to ensure that all resources are only loaded via secure channels, but doesn't really write much code; rewriting large chunks of the third-party forum software that's filled to the brim with inline script and style is beyond his abilities. The following policy would be effective:
 
     Content-Security-Policy: default-src https:; script-src https: 'unsafe-inline'; style-src https: 'unsafe-inline'
+    
 
-`default-src` で `https:` が指定されていますが、スクリプトとスタイルのディレクティブは、その参照元を自動的に継承することはありません。
-各ディレクティブは、特定のタイプのリソースでデフォルト値を完全に上書きします。
+Even though `https:` is specified in `default-src`, the script and style directives don't automatically inherit that source. Each directive completely overwrites the default for that specific type of resource.
 
+## The future
 
-##  今後について
+Content Security Policy Level 2 is a [ Candidate Recommendation](https://www.w3.org/TR/CSP2/). The W3C's Web Application Security Working Group has already begun work on the specification's next iteration, [Content Security Policy Level 3](https://www.w3.org/TR/CSP3/){: .external }.
 
+If you're interested in the discussion around these upcoming features, [skim the public-webappsec@ mailing list archives](http://lists.w3.org/Archives/Public/public-webappsec/), or join in yourself.
 
-Content Security Policy Level 2 は<a href="http://www.w3.org/TR/CSP2/">
-勧告候補</a>です。W3C の Web Application Security Working Group はすでに、次の規格である [Content Security Policy Level 3](https://www.w3.org/TR/CSP3/){: .external } のイテレーションに着手しています。
+## Feedback {: #feedback }
 
- 
-
-
-今後の機能に関する議論に興味をお持ちの方は、[public-webappsec@ メーリング リストのアーカイブ](http://lists.w3.org/Archives/Public/public-webappsec/)を一読するか、このメーリング リストにご参加ください。
-
-
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
