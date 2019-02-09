@@ -1,47 +1,34 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Dokumentasi referensi untuk "Manifes short_name tidak akan terpotong ketika ditampilkan pada homescreen" audit Lighthouse.
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Reference documentation for the "Manifest's short_name won't be truncated when displayed on homescreen" Lighthouse audit.
 
-{# wf_updated_on: 2016-09-21 #}
-{# wf_published_on: 2016-09-21 #}
+{# wf_updated_on: 2018-07-23 #} {# wf_published_on: 2016-09-21 #} {# wf_blink_components: N/A #}
 
-# Manifes Nama Singkat Tidak Akan Terpotong Ketika Ditampilkan Pada Homescreen {: .page-title }
+# Manifest's short_name Won't Be Truncated When Displayed on Homescreen {: .page-title }
 
-## Mengapa audit itu penting {: #why }
+## Overview {: #overview }
 
-Ketika pengguna menambahkan aplikasi web Anda ke layar beranda, properti `short_name` ditampilkan
-sebagai label di sebelah ikon aplikasi. Bila `short_name` lebih panjang
-dari 12 karakter, itu akan terpotong di layar beranda.
+When a user adds your web app to the homescreen, the `short_name` property is displayed as the label next to your app's icon. If the `short_name` is longer than 12 characters, it'll be truncated on the homescreen.
 
-Perhatikan bahwa, jika tidak terdapat `short_name`, Chrome bisa kembali ke properti
-`name` jika itu cukup singkat.
+Note that, if the `short_name` is not present, Chrome can fall back to the `name` property if it's short enough.
 
-## Cara untuk lulus audit {: #how }
+## Recommendations {: #recommendations }
 
-Membuat properti `short_name` di Manifes Aplikasi Web Anda kurang dari 12 karakter.
+Make the `short_name` property in your Web App Manifest less than 12 characters.
 
     {
       ...
       "short_name": "Air Horner",
       ...
     }
+    
 
-Atau, jika Anda tidak menetapkan properti `short_name` di manifes, buat properti
-`name` kurang dari 12 karakter.
+Or, if you don't specify a `short_name` property in your manifest, make the `name` property less than 12 characters.
 
-Lihat [Manifest Exists](manifest-exists#how)
-untuk daftar panduan yang mengajarkan Anda cara
-mengimplementasikan dan menguji dukungan "Add to Homescreen" dalam aplikasi Anda dengan benar.
+Check out [Manifest Exists](manifest-exists#recommendations) for a list of guides that teach you how to properly implement and test "Add to Homescreen" support in your app.
 
-{% include "web/tools/lighthouse/audits/implementation-heading.html" %}
+## More information {: #more-info }
 
-Lighthouse mengambil manifes dan memverifikasi bahwa properti `short_name` kurang
-dari 12 karakter. Perhatikan bahwa karena properti `name` bisa digunakan sebagai
-fallback untuk `short_name`, Lighthouse juga menguji properti ini sebagai fallback.
-Jadi, jika Anda tidak menyertakan `short_name` di manifes, namun `name` Anda
-kurang dari 12 karakter, maka audit akan diteruskan. Manifes yang diambil
-Lighthouse berbeda dari yang digunakan Chrome pada laman, yang mungkin
-bisa menyebabkan hasil yang tidak akurat.
+Lighthouse fetches the manifest and verifies that the `short_name` property is less than 12 characters. Note that since the `name` property can be used as a fallback for `short_name`, Lighthouse also tests this property as a fallback. So, if you don't include a `short_name` in your manifest, but your `name` is less than 12 characters, then the audit passes. The manifest that Lighthouse fetches is separate from the one that Chrome is using on the page, which can possibly cause inaccurate results.
 
+## Feedback {: #feedback }
 
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
