@@ -1,52 +1,32 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Lighthouse の監査項目「キャッシュにマニフェストの start_url を保持する」のリファレンス ドキュメント。
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Reference documentation for the "Cache contains start_url from manifest" Lighthouse audit.
 
-{# wf_updated_on: 2016-09-15 #}
-{# wf_published_on: 2016-09-15 #}
+{# wf_updated_on: 2018-07-23 #} {# wf_published_on: 2016-09-15 #} {# wf_blink_components: N/A #}
 
-#  キャッシュにマニフェストの start_url を保持する {: .page-title }
+# Cache Contains start_url From Manifest {: .page-title }
 
-##  監査が重要である理由 {: #why }
+## Overview {: #overview }
 
-オフライン状態でも、モバイル端末のホーム画面から Progressive Web App が正常に起動する必要があります。
+Ensures that a progressive web app properly launches from a mobile device homescreen while offline.
 
+## Recommendations {: #recommendations }
 
-##  監査に合格する方法 {: #how }
+1. Define a `start_url` property in your `manifest.json` file.
+2. Ensure that your service worker properly caches a resource that matches the value of `start_url`.
 
-1. `manifest.json` ファイルで `start_url` プロパティを定義します。
-2. Service Worker が `start_url` の値に一致するリソースを適切にキャッシュすることを確認します。
+To learn the basics of adding apps to homescreens, see [Add Your Web App to a User's Home Screen](https://codelabs.developers.google.com/codelabs/add-to-home-screen). This is a step-by-step, hands-on codelab in which you add "add to homescreen" functionality into an existing app. Use what you learn in this codelab to integrate "add to homescreen" functionality in your own app.
 
+For more help on how to cache files with service workers for offline use, see the "How to pass the audit" section of the following Lighthouse doc: [URL responds with a 200 when offline](http-200-when-offline#recommendations)
 
-ホーム画面にアプリを追加するための基本的な手順については、[ユーザーのホーム画面にウェブアプリを追加する](https://codelabs.developers.google.com/codelabs/add-to-home-screen)
-をご覧ください。
-この実践形式のコードラボでは、"Add to Homescreen" 機能を既存のアプリに追加する方法を順を追って説明しています。
-このコードラボの内容を参考にして、自身のアプリで "Add to Homescreen" 機能を有効にしてください。
+## More information {: #more-info }
 
+When a progressive web app is launched from the homescreen of a mobile device, the app opens on a specific URL. That URL is defined in the app's `manifest.json` file as the `start_url` property.
 
-Service Workerでファイルをキャッシュしてオフラインでの使用を可能にする方法については、Lighthouse のドキュメント[「オフライン時に URL でステータスコード 200 を返す」](http-200-when-offline#how) の「監査に合格する方法」の内容をご覧ください。(http-200-when-offline#how)
+This audit parses the value of `start_url` from `manifest.json` and then ensures that a matching resource is cached in the service worker's cache.
 
+**If your service worker redirects** `start_url` **requests, this audit may produce inaccurate results**.
 
+One shortcoming of this audit is that it inspects the cache contents directly, rather than asking the service worker to resolve the `start_url` request. This can produce a false negative result if your cache is missing a resource that matches the exact value of `start_url`, even though in real scenarios the request resolves successfully because the service worker redirects to another resource in the cache. Conversely, the audit can produce a false positive result if your cache contains a resource that matches `start_url`, but your service worker redirects the request to a non-existent resource.
 
-{% include "web/tools/lighthouse/audits/implementation-heading.html" %}
+## Feedback {: #feedback }
 
-モバイル端末のホーム画面から Progressive Web App を起動すると、アプリは特定の URL を開きます。
-この URL はアプリの
-`manifest.json` ファイルに `start_url` プロパティとして定義されています。
-
-この監査では `manifest.json` の `start_url` の値を解析して、Service Worker のキャッシュに該当のリソースがキャッシュされているかを確認します。
-
-
-なお、**Service Worker が** `start_url` ** リクエストをリダイレクトしていると、この監査では正確な結果が出ない場合があります**。
-
-
-この監査の欠点として、Service Worker に `start_url`
-リクエストを解決させずに、キャッシュの中身を直接チェックしているという点が挙げられます。
-そのため、`start_url` の値と厳密に一致するリソースがキャッシュに存在しなくても、実際に Service Worker がキャッシュに存在する別のリソースにリダイレクトしてリクエストを正常に解決している場合は、検出漏れが発生する可能性があります。
-逆に、`start_url` に一致するリソースがキャッシュに含まれていても、Service Worker が存在しないリソースにリクエストをリダイレクトしていると、誤検知が発生する可能性があります
-
-
-
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
