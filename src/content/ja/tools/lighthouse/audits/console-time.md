@@ -1,46 +1,29 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Lighthouse の監査項目「サイトの独自スクリプトで console.time() を使用しない」のリファレンス ドキュメント。
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Reference documentation for the "Avoids console.time() In Its Own Scripts" Lighthouse audit.
 
-{# wf_updated_on: 2016-12-01 #}
-{# wf_published_on: 2016-12-01 #}
+{# wf_updated_on: 2018-07-23 #} {# wf_published_on: 2016-12-01 #} {# wf_blink_components: N/A #}
 
-#  サイトの独自スクリプトで console.time() を使用しない {: .page-title }
+# Avoids console.time() In Its Own Scripts {: .page-title }
 
-##  監査が重要である理由 {: #why }
+## Overview {: #overview }
 
-`console.time()` を使用してページのパフォーマンスを計測している場合は、代わりに User Timing API
-を使用することを検討してください。以下のようなメリットがあります。
+If you're using `console.time()` to measure your page's performance, consider using the User Timing API instead. Benefits include:
 
-* 高精度のタイムスタンプ。
-* タイミング データをエクスポート可能。
-* Chrome DevTools の Timeline への統合。Timeline の記録中に User Timing の
-`performance.measure()` 関数が呼び出されると、計測結果が DevTools
-によって自動で Timeline に追加されます。以下のスクリーンショットの `my custom measurement` ラベルが、これに相当します。
+* High-resolution timestamps.
+* Exportable timing data.
+* Integration with the Chrome DevTools Timeline. When the User Timing function `performance.measure()` is called during a Timeline recording, DevTools automatically adds the measurement to the Timeline's results, as shown in the `my custom measurement` label in the screenshot below.
 
+![User Timing measurement in Chrome DevTools Timeline](/web/tools/lighthouse/images/user-timing-measurement-in-devtools.png)
 
-![Chrome DevTools の Timeline に表示される User Timing の計測結果][timeline]
+## Recommendations {: #recommendations }
 
-[timeline]: /web/tools/lighthouse/images/user-timing-measurement-in-devtools.png
+In your report, Lighthouse lists every instance of `console.time()` that it finds under **URLs**. Replace each of these calls with `performance.mark()`. If you want to measure the time that has elapsed between two marks, use `performance.measure()`.
 
-##  監査に合格する方法 {: #how }
+See [User Timing API: Understanding Your Web App](https://www.html5rocks.com/en/tutorials/webperformance/usertiming/) to learn how to use the API.
 
-Lighthouse のレポートでは、検出された `console.time()` のインスタンスが **URLs** の下に一覧表示されます。
-これらの呼び出しを、それぞれ `performance.mark()` で置き換えます。
-2 つのマーク間の経過時間を計測するには、`performance.measure()`
-を使用します。
+## More information {: #more-info }
 
-この API を使用方法については、[User Timing API: あなたの Web アプリをもっと理解するために][html5rocks]をご覧ください。
+Lighthouse reports every instance of `console.time()` that it finds from scripts that are on the same host as the page. Scripts from other hosts are excluded, because Lighthouse assumes that you don't have control over these scripts. So, there may be other scripts using `console.time()` on your page, but these won't show up in your Lighthouse report.
 
+## Feedback {: #feedback }
 
-[html5rocks]: https://www.html5rocks.com/en/tutorials/webperformance/usertiming/
-
-{% include "web/tools/lighthouse/audits/implementation-heading.html" %}
-
-Lighthouse では、指定したページと同じホスト上にあるスクリプトで検出された `console.time()` のインスタンスがすべて報告されます。
-その他のホスト上のスクリプトは制御不可能とみなされるため、報告対象から除外されます。
-したがって、ページで `console.time()` を使用するスクリプトが他にあったとしても、Lighthouse のレポートには含まれない場合があります。
-
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
