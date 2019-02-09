@@ -1,66 +1,61 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: 入力ハンドラは、アプリ内のパフォーマンスの問題の潜在的な原因となります。これらはフレームの完了を妨げ、追加の不要なレイアウト作業の原因になります。
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Input handlers are a potential cause of performance problems in your apps, as they can block frames from completing, and can cause additional and unnecessary layout work.
 
-{# wf_updated_on: 2015-10-06 #}
-{# wf_published_on: 2015-03-20 #}
+{# wf_updated_on: 2018-08-17 #} {# wf_published_on: 2015-03-20 #} {# wf_blink_components: Blink>JavaScript #}
 
-# 入力ハンドラのデバウンス {: .page-title }
+# Debounce Your Input Handlers {: .page-title }
 
 {% include "web/_shared/contributors/paullewis.html" %}
 
-入力ハンドラは、アプリ内のパフォーマンスの問題の潜在的な原因となります。これらはフレームの完了を妨げ、追加で不要なレイアウト処理を発生させます。
-
-
+Input handlers are a potential cause of performance problems in your apps, as they can block frames from completing, and can cause additional and unnecessary layout work.
 
 ### TL;DR {: .hide-from-toc }
 
-* 長時間実行される入力ハンドラを避けて、スクロールがブロックされないようにします。
-* 入力ハンドラでのスタイル変更を避けます。
-* ハンドラをデバウンスします。イベント値を格納し、次の requestAnimationFrame コールバックでスタイル変更を処理します。
+* Avoid long-running input handlers; they can block scrolling.
+* Do not make style changes in input handlers.
+* Debounce your handlers; store event values and deal with style changes in the next requestAnimationFrame callback.
 
-## 長時間実行される入力ハンドラの回避
+## Avoid long-running input handlers
 
-最速のケースでは、ユーザーがページと対話するときに、ページのコンポジタ スレッドが、ユーザーのタッチ入力を感知し、単純にコンテンツを移動させることができます。これには、メインスレッドによる処理（JavaScript、レイアウト、スタイル、ペイントの実行）は必要ありません。
+In the fastest possible case, when a user interacts with the page, the page’s compositor thread can take the user’s touch input and simply move the content around. This requires no work by the main thread, where JavaScript, layout, styles, or paint are done.
 
-<img src="images/debounce-your-input-handlers/compositor-scroll.jpg" alt="軽量スクロール、コンポジタのみ。">
+<img src="images/debounce-your-input-handlers/compositor-scroll.jpg" alt="Lightweight scrolling; compositor only." />
 
-ただし、`touchstart`、`touchmove`、`touchend` などの入力ハンドラをアタッチする場合は、これらのハンドラの実行の完了をコンポジタ スレッドが待機しなければなりません。これは、`preventDefault()` が呼び出され、タッチ スクロールの実行が停止される場合があるためです。`preventDefault()` が呼び出されない場合でも、コンポジタは待機する必要があり、これによりユーザーのスクロールがブロックされ、ぎこちない動きやフレームの欠損につながります。
+If, however, you attach an input handler, like `touchstart`, `touchmove`, or `touchend`, the compositor thread must wait for this handler to finish executing because you may choose to call `preventDefault()` and stop the touch scroll from taking place. Even if you don’t call `preventDefault()` the compositor must wait, and as such the user’s scroll is blocked, which can result in stuttering and missed frames.
 
-<img src="images/debounce-your-input-handlers/ontouchmove.jpg" alt="スクロールが重い。コンポジタは JavaScript でブロックされています。">
+<img src="images/debounce-your-input-handlers/ontouchmove.jpg" alt="Heavy scrolling; compositor is blocked on JavaScript." />
 
-つまり、実行するすべての入力ハンドラがすぐに実行され、コンポジタがジョブを実行できるようにする必要があります。
+In short, you should make sure that any input handlers you run should execute quickly and allow the compositor to do its job.
 
-## 入力ハンドラでスタイルの変更を避ける
+## Avoid style changes in input handlers
 
-入力ハンドラは、スクロールやタッチのように、すべての `requestAnimationFrame` コールバックの直前に実行するようにスケジュールされています。
+Input handlers, like those for scroll and touch, are scheduled to run just before any `requestAnimationFrame` callbacks.
 
-どれか 1 つのハンドラ内で視覚的変化を加えた場合、`requestAnimationFrame` の開始時に、スタイルの変更が保留されます。続けて、requestAnimationFrame コールバックの開始時に視覚的なプロパティを読み取ると、[大規模で複雑なレイアウトとレイアウト転回の回避](avoid-large-complex-layouts-and-layout-thrashing) で説明しているとおり、強制同期レイアウトがトリガーされます。
+If you make a visual change inside one of those handlers, then at the start of the `requestAnimationFrame`, there will be style changes pending. If you *then* read visual properties at the start of the requestAnimationFrame callback, as the advice in “[Avoid large, complex layouts and layout thrashing](avoid-large-complex-layouts-and-layout-thrashing)” suggests, you will trigger a forced synchronous layout!
 
-<img src="images/debounce-your-input-handlers/frame-with-input.jpg" alt="スクロールが重い。コンポジタは JavaScript でブロックされています。">
+<img src="images/debounce-your-input-handlers/frame-with-input.jpg" alt="Heavy scrolling; compositor is blocked on JavaScript." />
 
-## スクロール ハンドラのデバウンス
+## Debounce your scroll handlers
 
-上記の両方の問題の解決方法は同じです。常に次の `requestAnimationFrame` コールバックに視覚的変化をデバウンスする必要があります。
-
+The solution to both of the problems above is the same: you should always debounce visual changes to the next `requestAnimationFrame` callback:
 
     function onScroll (evt) {
-
+    
       // Store the scroll value for laterz.
       lastScrollY = window.scrollY;
-
+    
       // Prevent multiple rAF callbacks.
       if (scheduledAnimationFrame)
         return;
-
+    
       scheduledAnimationFrame = true;
       requestAnimationFrame(readAndUpdatePage);
     }
-
+    
     window.addEventListener('scroll', onScroll);
+    
 
+Doing this also has the added benefit of keeping your input handlers light, which is awesome because now you’re not blocking things like scrolling or touch on computationally expensive code!
 
-このようにすると、入力ハンドラを軽量に保つこともできるため、計算コストが高いコードでスクロールやタッチなどの操作がブロックされなくなるという、追加の利点があります。
+## Feedback {: #feedback }
 
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
