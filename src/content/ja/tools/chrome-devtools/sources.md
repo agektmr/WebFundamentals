@@ -1,161 +1,124 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description:Chrome DevTools の [Sources] パネルで、ファイルの表示および編集、スニペットの作成、JavaScript のデバッグ、ワークスペースの設定を行います。
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: View and edit files, create Snippets, debug JavaScript, and set up Workspaces in the Sources panel of Chrome DevTools.
 
-{# wf_blink_components: Platform>DevTools #}
-{# wf_updated_on: 2019-02-06 #}
-{# wf_published_on: 2018-01-09 #}
+{# wf_blink_components: Platform>DevTools #} {# wf_updated_on: 2019-01-30 #} {# wf_published_on: 2018-01-09 #}
 
 {% include "web/tools/chrome-devtools/_shared/styles.html" %}
 
-# [Sources] パネルの概要 {: .page-title }
+# Sources Panel Overview {: .page-title }
 
 {% include "web/_shared/contributors/kaycebasques.html" %}
 
-Chrome DevTools **[Sources]** パネルを使用して、以下を行います。
+Use the Chrome DevTools **Sources** panel to:
 
-* [ファイルの表示](#files)。
-* [CSS および JavaScript の編集](#edit)。
-* 任意のページで実行できる [JavaScript の**スニペット**の作成および保存](#snippets)。
-  **スニペット**はブックマークレットに似ています。
-* [JavaScript のデバッグ](#debug)。
-* [ワークスペースの設定](#workspace)。DevTools で行った変更がファイル システムのコードに保存されるようにします。
+* [View files](#files).
+* [Edit CSS and JavaScript](#edit).
+* [Create and save **Snippets** of JavaScript](#snippets), which you can run on any page. **Snippets** are similar to bookmarklets.
+* [Debug JavaScript](#debug).
+* [Set up a Workspace](#workspace), so that changes you make in DevTools get saved to the code on your file system.
 
+## View files {: #files }
 
-## ファイルの表示 {: #files }
-
-**[Network]** ペインを使用して、ページが読み込んだすべてのリソースを表示します。
+Use the **Page** pane to view all of the resources that the page has loaded.
 
 <figure>
-  <img src="images/sources-network-pane.png"
-       alt="[Network] ペイン"/>
+  <img src="images/sources-page-pane.png"
+       alt="The Page pane"/>
   <figcaption>
-    <b>図 1</b>。 <b>[Network]</b> ペイン
-</figcaption>
+    <b>Figure 1</b>. The <b>Page</b> pane
+  </figcaption>
 </figure>
 
-**[Network]** ペインは、次のように構成されています。
+How the **Page** pane is organized:
 
-* 最上位レベル（例: <b>図 1</b> の `top`）は [HTML フレーム][frame] を表しています。
-  アクセスする各ページに `top` があることに気づかれるでしょう。 `top` はメイン ドキュメントのフレームを表しています。
-* 2 番目のレベル（例: <b>図 1</b> の `developers.google.com`）は、[オリジン][origin] を表しています。
-* 3 番目、4 番目、それ以降のレベルは、そのオリジンから読み込まれたディレクトリとリソースを表しています。
- たとえば、<b>図 1</b> でリソース `devsite-googler-button` へのフルパスは、`developers.google.com/_static/f6e16de9fa/css/devsite-googler-button` になります。
+* The top-level, such as `top` in **Figure 1**, represents an [HTML frame](https://www.w3.org/TR/html401/present/frames.html). You'll find `top` on every page that you visit. `top` represents the main document frame.
+* The second-level, such as `developers.google.com` in **Figure 1**, represents an [origin](https://html.spec.whatwg.org/multipage/origin.html#origin).
+* The third-level, fourth-level, and so on, represent directories and resources that were loaded from that origin. For example, in **Figure 1** the full path to the resource `devsite-googler-button` is `developers.google.com/_static/19aa27122b/css/devsite-googler-button`
 
-
-
-[frame]: https://www.w3.org/TR/html401/present/frames.html
-[origin]: https://www.w3.org/TR/2011/WD-html5-20110525/origin-0.html
-
-**[Network]** ペインのファイルをクリックすると、そのコンテンツが **[Editor]** ペインに表示されます。 どのタイプのファイルも表示することができます。
- 画像の場合は画像のプレビューが表示されます。
+Click a file in the **Page** pane to view its contents in the **Editor** pane. You can view any type of file. For images, you see a preview of the image.
 
 <figure>
   <img src="images/sources-editor-pane.png"
-       alt="[Editor] ペインにファイルを表示する"/>
+       alt="Viewing a file in the Editor pane"/>
   <figcaption>
-    <b>図 2</b>。 <b>[Editor]</b> ペインに <code>jquery-bundle.js</code> のコンテンツが表示されている
-    
+    <b>Figure 2</b>. Viewing the contents of <code>jquery-bundle.js</code> in the <b>Editor</b>
+    pane
   </figcaption>
 </figure>
 
-## CSS および JavaScript の編集 {: #edit }
+## Edit CSS and JavaScript {: #edit }
 
-**[Editor]** ペインで CSS および JavaScript を編集します。  DevTools がそのページを更新し、新しいコードが実行されるようにします。
- たとえば、あるエレメントの `background-color` を編集すると、その変更が有効になったことがすぐにわかります。
-
+Use the **Editor** pane to edit CSS and JavaScript. DevTools updates the page to run your new code. For example, if you edit the `background-color` of an element, you'll see that change take effect immediately.
 
 <figure>
   <img src="images/edit-css.gif"
-       alt="[Editor] ペインでの CSS の編集"/>
+       alt="Editing CSS in the Editor pane"/>
   <figcaption>
-    <b>図 3</b>。 <b>[Editor]</b> ペインで、ある要素の背景色を青から赤に変更するよう CSS を編集する
-</figcaption>
-
-</figure>
-
-CSS の変更はすぐに有効になり、保存する必要はありません。 JavaScript の変更を有効にするには、<kbd>Command</kbd>+<kbd>S</kbd> （Mac）か、<kbd>Control</kbd>+<kbd>S</kbd> （Windows、Linux）を押します。
-DevTools はスクリプトを再実行しないため、有効になる JavaScript の変更は、関数の内部で行った変更だけです。
- たとえば、<b>図 4</b> では、`console.log('A')` は実行されませんが、`console.log('B')` は実行されています。
- 変更を行った後 DevTools でスクリプト全体を再実行すると、テキスト `A` が **[Console]** にログ記録されます。
-
-
-<figure>
-  <img src="images/edit-js.gif"
-       alt="[Editor] ペインでの JavaScript の編集"/>
-  <figcaption>
-    <b>図 5</b>。 <b>[Editor]</b> ペインでの JavaScript の編集
+    <b>Figure 3</b>. Editing CSS in the <b>Editor</b> pane to change the background color of an
+    element from blue to red
   </figcaption>
 </figure>
 
-ページを再読み込みすると、DevTools は CSS および JavaScript の変更を消去します。 ファイル システムに変更を保存する方法の詳細については、[ワークスペースの設定](#workspace) をご覧ください。
+CSS changes take effect immediately, no save needed. For JavaScript changes to take effect, press
+<kbd>Command</kbd>+<kbd>S</kbd> (Mac) or <kbd>Control</kbd>+<kbd>S</kbd> (Windows, Linux). DevTools doesn't re-run a script, so the only JavaScript changes that take effect are those that you make inside of functions. For example, in **Figure 4** note how `console.log('A')` doesn't run, whereas `console.log('B')` does. If DevTools re-ran the entire script after making the change, then the text `A` would have been logged to the **Console**.
 
+<figure>
+  <img src="images/edit-js.gif"
+       alt="Editing JavaScript in the Editor pane"/>
+  <figcaption>
+    <b>Figure 4</b>. Editing JavaScript in the <b>Editor</b> pane
+  </figcaption>
+</figure>
 
+DevTools erases your CSS and JavaScript changes when you reload the page. See [Set up a Workspace](#workspace) to learn how to save the changes to your file system.
 
-## スニペットの作成、保存、実行 {: #snippets }
+## Create, save, and run Snippets {: #snippets }
 
-スニペットは、任意のページで実行可能なスクリプトです。 **[Console]** から jQuery コマンドを実行するため、ページに jQuery ライブラリを挿入しようとして、**[Console]** に次のコードを繰り返し入力しているところを想像してみてください。
-
-
+Snippets are scripts which you can run on any page. Imagine that you repeatedly type out the following code in the **Console**, in order to insert the jQuery library into a page, so that you can run jQuery commands from the **Console**:
 
     let script = document.createElement('script');
     script.src = 'https://code.jquery.com/jquery-3.2.1.min.js';
     script.crossOrigin = 'anonymous';
     script.integrity = 'sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=';
     document.head.appendChild(script);
+    
 
-そうする代わりに、このコードを **[Snippet]** に保存し、いつでも必要な時に 2 つのボタンをクリックして、そのスニペットを実行することができます。
- **スニペット**は、DevTools によりファイル システムに保存されます。
+Instead, you can save this code in a **Snippet** and run it with a couple of button clicks, any time you need it. DevTools saves the **Snippet** to your file system.
 
 <figure>
   <img src="images/snippet.png"
-       alt="jQuery ライブラリをページに挿入するスニペット。"/>
+       alt="A Snippet that inserts the jQuery library into a page."/>
   <figcaption>
-    <b>図 6</b>。 jQuery ライブラリをページに挿入する<b>スニペット</b>
+    <b>Figure 5</b>. A <b>Snippet</b> that inserts the jQuery library into a page
   </figcaption>
 </figure>
 
-**スニペット**を実行するには:
+To run a **Snippet**:
 
-* **[Snippets]** ペインでファイルを開き、**[Run]** ![Run ボタン][run] をクリックします{:.cdt-inl}。
-* [**Command Menu**][CM] を開き、`>` 文字を削除し、`!` を入力し、**スニペット**の名前を入力します。続けて <kbd>Enter</kbd> キーを押します。
+* Open the file via the **Snippets** pane, and click **Run** ![The Run button](images/run-snippet.png){:.cdt-inl}.
+* Open the [**Command Menu**](/web/tools/chrome-devtools/ui#command-menu), delete the `>` character, type `!`, type the name of your **Snippet**, then press <kbd>Enter</kbd>.
 
+See [Run Snippets Of Code From Any Page](/web/tools/chrome-devtools/snippets) to learn more.
 
-[CM]: /web/tools/chrome-devtools/ui#command-menu
-[run]: images/run-snippet.png
+## Debug JavaScript {: #debug }
 
-詳しくは、[任意のページからコードのスニペットを実行する][snip] をご覧ください。
+Rather than using `console.log()` to infer where your JavaScript is going wrong, consider using the Chrome DevTools debugging tools, instead. The general idea is to set a breakpoint, which is an intentional stopping place in your code, and then step through your code's execution, one line at a time. As you step through the code, you can view and change the values of all currently-defined properties and variables, run JavaScript in the **Console**, and more.
 
-[snip]: /web/tools/chrome-devtools/snippets
-
-## JavaScript のデバッグ {: #debug }
-
-`console.log()` を使用して JavaScriptis の問題の原因を推測するのではなく、Chrome DevTools デバッグ ツールの使用を検討してください。
- 一般的なアイデアは、ブレークポイントを設定することです。これはコードの意図的な停止場所になり、次に一度に 1 行ずつコードを実行します。
- コードをステップごとに実行しながら、現在定義されているすべてのプロパティと変数の値を表示して変更したり、**[Console]** で JavaScript を実行したりできます。
-
-
-DevTools のデバッグの基礎について詳しくは、[JavaScript をデバッグする](/web/tools/chrome-devtools/javascript/) をご覧ください。
-
+See [Get Started With Debugging JavaScript](/web/tools/chrome-devtools/javascript/) to learn the basics of debugging in DevTools.
 
 <figure>
   <img src="images/debugging.png"
-       alt="JavaScript のデバッグ"/>
+       alt="Debugging JavaScript"/>
   <figcaption>
-    <b>図 7</b>。 JavaScript のデバッグ
+    <b>Figure 6</b>. Debugging JavaScript
   </figcaption>
 </figure>
 
-## ワークスペースの設定 {: #workspace }
+## Set up a Workspace {: #workspace }
 
-デフォルトでは、**[Sources]** パネルでファイルを編集している時にページを再読み込みすると、それまでに行った変更は失われます。
- **ワークスペース**を使用すると、DevTools で行った変更を自分のファイル システムに保存できるようになります。
- 基本的に、この方法では DevTools をコードエディタとして使用することになります。
+By default, when you edit a file in the **Sources** panel, those changes are lost when you reload the page. **Workspaces** enable you to save the changes that you make in DevTools to your file system. Essentially, this lets you use DevTools as your code editor.
 
-始めるには、[DevTools ワークスペースによる永続化の設定][WS] をご覧ください。
+See [Edit Files With Workspaces](/web/tools/chrome-devtools/workspaces/) to get started.
 
-[WS]: /web/tools/chrome-devtools/workspaces/
-
-## フィードバック {: #feedback }
+## Feedback {: #feedback }
 
 {% include "web/_shared/helpful.html" %}
