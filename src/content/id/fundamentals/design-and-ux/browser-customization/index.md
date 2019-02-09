@@ -1,28 +1,20 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Browser modern memudahkan kita dalam menyesuaikan komponen tertentu, seperti ikon, warna bilah alamat, dan bahkan menambahkan sesuatu seperti petak khusus. Ubahan ini bisa meningkatkan keterlibatan dan membuat pengguna kembali ke situs Anda.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Modern browsers make it easy to customize certain components, like icons, the address bar color, and even add things like custom tiles. These simple tweaks can increase engagement and bring users back to your site.
 
+{# wf_blink_components: N/A #} {# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2015-09-21 #}
 
-{# wf_updated_on: 2017-07-12 #}
-{# wf_published_on: 2015-09-21 #}
-
-# Ikon & Warna Browser {: .page-title }
+# Icons & Browser Colors {: .page-title }
 
 {% include "web/_shared/contributors/pbakaus.html" %}
 
-Browser modern memudahkan kita dalam menyesuaikan komponen tertentu, seperti ikon, warna bilah alamat, dan bahkan menambahkan sesuatu seperti petak khusus. Ubahan ini bisa meningkatkan keterlibatan dan membuat pengguna kembali ke situs Anda.
+Modern browsers make it easy to customize certain components, like icons, the address bar color, and even add things like custom tiles. These simple tweaks can increase engagement and bring users back to your site.
 
+## Provide great icons & tiles
 
-## Memberikan ikon & petak yang bagus 
+When a user visits your webpage, the browser tries to fetch an icon from the HTML. The icon may show up in many places, including the browser tab, recent app switch, the new (or recently visited) tab page, and more.
 
-Ketika pengguna mengunjungi laman web Anda, browser akan mencoba untuk mengambil ikon dari HTML. Ikon mungkin muncul di banyak tempat, termasuk tab browser, tombol recent app, laman tab yang baru (atau baru saja dikunjungi), dan lainnya.
+Providing a high quality image will make your site more recognizable, making it easier for users to find your site.
 
-Memberikan kualitas gambar yang tinggi akan membuat situs Anda lebih mudah dikenali, sehingga
-memudahkan pengguna untuk menemukan situs Anda. 
-
-Untuk mendukung penuh semua browser, Anda harus menambahkan beberapa tag ke elemen `<head>`
-setiap laman.
-
+To fully support all browsers, you'll need to add a few tags to the `<head>` element of each page.
 
     <!-- icon in the highest resolution we need it for -->
     <link rel="icon" sizes="192x192" href="icon.png">
@@ -36,21 +28,15 @@ setiap laman.
 
 ### Chrome & Opera
 
-Chrome dan Opera menggunakan `icon.png`, yang diskalakan ke ukuran yang diperlukan oleh 
-perangkat. Untuk mencegah penskalaan otomatis, Anda juga bisa memberikan ukuran 
-tambahan dengan menetapkan atribut `sizes`.
+Chrome and Opera uses `icon.png`, which is scaled to the necessary size by the device. To prevent automatic scaling, you can also provide additional sizes by specifying the `sizes` attribute.
 
-
-Note: Ukuran ikon harus berbasis 48 px, misalnya 48 px, 96 px, 144 px dan 192 px
+Note: Icons sizes should be based on 48px, for example 48px, 96px, 144px and 192px
 
 ### Safari
 
-Safari juga menggunakan tag `<link>` dengan atribut `rel`: `apple-touch-icon`.
+Safari also uses the `<link>` tag with the `rel` attribute: `apple-touch-icon`.
 
-Anda bisa menetapkan [ukuran eksplisit](https://developer.apple.com/library/ios/documentation/UserExperience/Conceptual/MobileHIG/IconMatrix.html#//apple_ref/doc/uid/TP40006556-CH27) 
-dengan menyediakan tag tautan yang terpisah untuk setiap ikon, mencegah OS dari 
-keharusan mengubah ukuran ikon:
-
+You can specify [explicit sizes](https://developer.apple.com/library/ios/documentation/UserExperience/Conceptual/MobileHIG/IconMatrix.html#//apple_ref/doc/uid/TP40006556-CH27) by providing a separate link tag for each icon, preventing the OS from having to resize the icon:
 
     <link rel="apple-touch-icon" href="touch-icon-iphone.png">
     <link rel="apple-touch-icon" sizes="76x76" href="touch-icon-ipad.png">
@@ -60,94 +46,71 @@ keharusan mengubah ukuran ikon:
 
 ### Internet Explorer & Windows Phone
 
-Layar beranda baru Windows 8 mendukung empat layout berbeda untuk situs yang 
-dipasangi pin, dan membutuhkan empat ikon. Anda bisa menghilangkan tag 
-meta yang relevan jika Anda tidak ingin mendukung ukuran tertentu.
-
+Windows 8's new home screen experience supports four different layouts for pinned sites, and requires four icons. You can leave out the relevant meta tags if you don't want to support a specific size.
 
     <meta name="msapplication-square70x70logo" content="icon_smalltile.png">
     <meta name="msapplication-square150x150logo" content="icon_mediumtile.png">
     <meta name="msapplication-wide310x150logo" content="icon_widetile.png">
     
 
-### Petak di Internet Explorer
+### Tiles in Internet Explorer
 
-"Situs Tersemat" dan "Petak Dinamis" Microsoft berputar jauh melampaui 
-implementasi lain dan berada di luar cakupan panduan ini. Anda bisa mempelajari selengkapnya
-di MSDN
-[cara membuat petak dinamis](//msdn.microsoft.com/en-us/library/ie/dn455115(v=vs.85).aspx).
+Microsoft’s "Pinned Sites" and rotating "Live Tiles" go far beyond other implementations and is beyond the scope of this guide. You can learn more at MSDN's [how to create live tiles](//msdn.microsoft.com/en-us/library/ie/dn455115(v=vs.85).aspx).
 
+## Color browser elements
 
-## Mewarnai elemen browser
+Using different `meta` elements, you can customize the browser and even elements of the platform. Keep in mind that some may only work on certain platforms or browsers, but they can greatly enhance the experience.
 
-Menggunakan elemen `meta` yang berbeda, Anda bisa menyesuaikan browser dan 
-bahkan elemen platform. Harap diingat bahwa beberapa hanya bisa berfungsi pada
-platform atau browser tertentu, namun mereka bisa sangat meningkatkan pengalaman pengguna. 
+Chrome, Firefox OS, Safari, Internet Explorer and Opera Coast allow you to define colors for elements of the browser, and even the platform using meta tags.
 
-Chrome, Firefox OS, Safari, Internet Explorer dan Opera Coast mengizinkan Anda untuk menentukan 
-warna elemen browser, dan menyeimbangkan platform menggunakan tag meta.
+### Meta Theme Color for Chrome and Opera
 
-### Warna Tema Meta untuk Chrome dan Opera
-
-Untuk menentukan warna tema Chrome di Android, gunakan warna tema meta.
+To specify the theme color for Chrome on Android, use the meta theme color.
 
     <!-- Chrome, Firefox OS and Opera -->
     <meta name="theme-color" content="#4285f4">
     
 
-<img src="imgs/theme-color.png" alt="Warna tema untuk penataan gaya bilah alamat pada Chrome">
+<img src="imgs/theme-color.png" alt="Theme colors styling the address bar in Chrome" />
 
-### Gaya khusus Safari
+### Safari specific styling
 
-Safari memungkinkan Anda untuk menata bilah status dan menetapkan gambar startup.
+Safari allows you to style the status bar and specify a startup image.
 
-#### Menetapkan gambar startup
+#### Specify a startup image
 
-Secara default, Safari menampilkan layar kosong selama proses muat dan setelah beberapa pemuatan
-tangkapan layar dari status aplikasi sebelumnya. Anda bisa mencegah hal ini dengan
-mengatur Safari untuk menampilkan gambar startup eksplisit, dengan menambahkan tag tautan, dengan
-`rel=apple-touch-startup-image`. Misalnya:
-
+By default, Safari shows a blank screen during load time and after multiple loads a screenshot of the previous state of the app. You can prevent this by telling Safari to show an explicit startup image, by adding a link tag, with `rel=apple-touch-startup-image`. For example:
 
     <link rel="apple-touch-startup-image" href="icon.png">
     
 
-Gambar harus sesuai ukuran yang telah ditentukan dari layar perangkat target atau
-tidak akan digunakan. Lihat
-[Panduan Materi Web Safari ](//developer.apple.com/library/ios/documentation/AppleApplications/Reference/SafariWebContent/ConfiguringWebApplications/ConfiguringWebApplications.html)
-untuk lebih jelasnya.
+The image has to be in the specific size of the target device's screen or it won't be used. Refer to [Safari Web Content Guidelines](//developer.apple.com/library/ios/documentation/AppleApplications/Reference/SafariWebContent/ConfiguringWebApplications/ConfiguringWebApplications.html) for further details.
 
-Meskipun dokumentasi Apple jarang membahas topik ini, komunitas developer-nya
-telah menemukan cara untuk menargetkan semua perangkat dengan menggunakan kueri media lanjutan untuk
-memilih perangkat yang tepat dan kemudian menetapkan gambar yang benar. Berikut
-solusi yang bekerja, berkat [gist tfausak](//gist.github.com/tfausak/2222823)
+While Apple's documentation is sparse on this topic, the developer community has figured out a way to target all devices by using advanced media queries to select the appropriate device and then specify the correct image. Here's a working solution, courtesy of [tfausak's gist](//gist.github.com/tfausak/2222823)
 
-#### Mengubah tampilan bilah status
+#### Change the status bar appearance
 
-Anda bisa mengubah tampilan bilah status default baik ke `black` atau
-`black-translucent`. Dengan `black-translucent`, bilah status melayang di atas
-materi layar penuh, bukan menekannya. Ini memberikan layout
-yang lebih tinggi, tapi menghalangi bagian atas.  Berikut adalah kode yang diperlukan:
-
+You can change the appearance of the default status bar to either `black` or `black-translucent`. With `black-translucent`, the status bar floats on top of the full screen content, rather than pushing it down. This gives the layout more height, but obstructs the top. Here’s the code required:
 
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
     
+
 <div class="attempt-left">
   <figure>
     <img src="imgs/status-bar-translucent.png" srcset="imgs/status-bar-translucent.png 1x, imgs/status-bar-translucent-2x.png 2x" alt="black-translucent">
-    <figcaption>Tangkapan layar menggunakan <code>black-translucent</code></figcaption>
+    <figcaption>Screenshot using <code>black-translucent</code></figcaption>
   </figure>
 </div>
+
 <div class="attempt-right">
   <figure>
     <img src="imgs/status-bar-black.png" srcset="imgs/status-bar-black.png 1x, imgs/status-bar-black-2x.png 2x" alt="black-black">
-    <figcaption>Tangkapan layar menggunakan <code>black</code></figcaption>
+    <figcaption>Screenshot using <code>black</code></figcaption>
   </figure>
 </div>
 
 <div style="clear:both;"></div>
 
+## Feedback {: #feedback }
 
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
