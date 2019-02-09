@@ -1,254 +1,150 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml
 
-{# wf_updated_on: 2017-07-12 #}
-{# wf_published_on: 2016-09-28 #}
+{# wf_updated_on: 2018-08-17 #} {# wf_published_on: 2016-09-28 #} {# wf_blink_components: Blink>Network,Blink>Loader #}
 
-# Pola PRPL {: .page-title }
+# The PRPL Pattern {: .page-title }
 
 {% include "web/_shared/contributors/addyosmani.html" %}
 
-Dogfood: PRPL adalah pola baru yang kami rasa memiliki potensi hebat. Pada tahap ini, 
-kami menyambut percobaan dengan pola tersebut selagi kami mengulangi ide pada 
-pola dan mengumpulkan data lebih banyak di tempat yang menawarkan manfaat terbesar.
-
-Web seluler terlalu lambat. Selama beberapa tahun, web telah berkembang dari
-platform yang berfokus pada dokumen menjadi platform aplikasi kelas atas. Berkat
-kemajuan dalam platform itu sendiri (seperti
-[Service Worker](/web/fundamentals/getting-started/primers/service-workers)) dan pada alat
-dan teknik yang kami gunakan untuk membangun aplikasi, pengguna dapat melakukan hampir apa pun di web
-mereka dapat melakukannya di aplikasi asli.
-
-Di waktu yang bersamaan, sebagian besar komputasi kami telah dipindahkan dari mesin desktop yang kuat
-dengan koneksi yang cepat dan andal untuk perangkat seluler
-berkualitas rendah dengan koneksi yang cenderung lambat, tidak andal, atau keduanya. Ini
-terutama kerap terjadi di belahan dunia dengan miliaran datangnya pengguna
-online.
-
-Sayangnya, pola yang dirancang untuk membangun dan menerapkan aplikasi web
-yang kaya fitur dan kuat di era desktop umumnya menghasilkan aplikasi yang jauh
-lebih lama untuk dimuat di perangkat seluler – sangat lama sehingga banyak pengguna yang menyerah.
+Dogfood: PRPL is a new pattern we feel has great potential. At this stage, we welcome experimentation with it while we iterate on the ideas in the pattern and collect more data on where it offers the greatest benefits.
 
-Ini memberikan peluang untuk menciptakan pola baru yang memanfaatkan
-fitur platform web untuk secara terperinci memberikan pengalaman web seluler yang lebih cepat.
-PRPL adalah pola tersebut.
+The mobile web is too slow. Over the years the web has evolved from a document-centric platform to a first-class application platform. Thanks to advancements in the platform itself (such as [Service Workers](/web/fundamentals/getting-started/primers/service-workers)) and in the tools and techniques we use to build apps, users can do virtually anything on the web they can do in a native app.
 
-## Pola PRPL
+At the same time, the bulk of our computing has moved from powerful desktop machines with fast, reliable network connections to relatively underpowered mobile devices with connections that are often slow, flaky or both. This is especially true in parts of the world where the next billion users are coming online.
 
-PRPL adalah pola untuk menyusun dan menyajikan Progressive Web App (PWA), dengan
-menekankan pada kinerja penyampaian dan peluncuran aplikasi. PRPL singkatan dari:
+Unfortunately, the patterns we devised for building and deploying powerful, feature-rich web apps in the desktop era generally yield apps that take far too long to load on mobile devices – so long that many users simply give up.
 
-*  **Push** sumber daya terpenting untuk rute URL awal.
-*  **Render** rute awal.
-*  **Melakukan precache** rute yang tersisa.
-*  **Lazy-load** dan membuat rute yang tersisa sesuai permintaan.
+This presents an opportunity to craft new patterns that take advantage of modern web platform features to granularly deliver mobile web experiences more quickly. PRPL is one such pattern.
 
-Di samping menargetkan tujuan dan standar yang mendasar dari PWA, PRPL berusaha
-untuk mengoptimalkan:
+## The PRPL pattern
 
-* Waktu interaktif minimum
-    * Terutama pada penggunaan pertama (terlepas dari titik masuk)
-    * Terutama pada perangkat seluler di dunia nyata
-* Efisiensi caching maksimal, terutama sepanjang waktu saat pembaruan dirilis
-* Kemudahan development dan penerapan
+PRPL is a pattern for structuring and serving Progressive Web Apps (PWAs), with an emphasis on the performance of app delivery and launch. It stands for:
 
-PRPL terinspirasi oleh serangkaian fitur platform web modern, tetapi kemungkinan
-dapat menerapkan pola tersebut tanpa menekan setiap huruf pada akronim tersebut atau menggunakan setiap
-fitur.
+* **Push** critical resources for the initial URL route.
+* **Render** initial route.
+* **Pre-cache** remaining routes.
+* **Lazy-load** and create remaining routes on demand.
 
-Bahkan, PRPL adalah tentang pola pikir dan visi jangka panjang untuk meningkatkan
-kinerja web seluler dibandingkan tentang teknologi atau
-teknik tertentu. Ide di balik PRPL sudah lama ada, tetapi pendekatan dibingkai dan
-dinamai oleh tim Polymer dan diluncurkan di [Google I/O
-2016](https://www.youtube.com/watch?v=J4i0xJnQUzU).
+Beyond targeting the fundamental goals and standards of PWAs, PRPL strives to optimize for:
 
-Demo e-niaga [Shop](https://shop.polymer-project.org) Polymer adalah
-contoh kelas atas dari aplikasi yang menggunakan PRPL untuk secara terperinci menyajikan sumber daya.
-Ini mencapai interaktivitas untuk setiap rute dengan sangat cepat pada perangkat seluler
-dunia nyata:
+* Minimum time-to-interactive 
+    * Especially on first use (regardless of entry point)
+    * Especially on real-world mobile devices
+* Maximum caching efficiency, especially over time as updates are released
+* Simplicity of development and deployment
 
-![Demo Polymer Shop interaktif dalam 1,75 detik](images/app-build-prpl-shop.png)
+PRPL is inspired by a suite of modern web platform features, but it’s possible to apply the pattern without hitting every letter in the acronym or using every feature.
 
-Untuk sebagian besar proyek dunia nyata, jujur saja ini terlalu cepat untuk mewujudkan visi PRPL
-dalam bentuknya yang paling murni dan lengkap – tetapi tentu saja tidak terlalu cepat untuk menerapkan
-pola pikir, atau untuk mulai mengejar visi dari berbagai sudut pandang. Ada banyak
-langkah praktis yang dapat dilakukan oleh developer, developer alat (bantu), dan vendor browser
-dalam mengejar PRPL saat ini.
+In fact, PRPL is more about a mindset and a long-term vision for improving the performance of the mobile web than it is about specific technologies or techniques. The ideas behind PRPL are not new, but the approach was framed and named by the Polymer team and unveiled at [Google I/O 2016](https://www.youtube.com/watch?v=J4i0xJnQUzU).
 
-## Struktur aplikasi
+Polymer's [Shop](https://shop.polymer-project.org) e-commerce demo is a first-class example of an application using PRPL to granularly serve resources. It achieves interactivity for each route incredibly quickly on real-world mobile devices:
 
-PRPL dapat berfungsi dengan baik jika Anda memiliki aplikasi satu halaman (SPA) dengan struktur
-sebagai berikut:
+![The Polymer Shop demo is interactive in 1.75s](images/app-build-prpl-shop.jpg)
 
--   _entrypoint_ utama dari aplikasi yang disajikan dari setiap rute yang
-    valid. File ini harus berukuran sangat kecil karena akan disajikan dari
-    URL yang berbeda dan oleh karena itu dapat di-cache beberapa kali. Semua URL sumber daya
-    pada entrypoint harus mutlak, karena mungkin disajikan dari
-    URL yang bukan tingkat atas.
+For most real-world projects, it’s frankly too early to realize the PRPL vision in its purest, most complete form – but it’s definitely not too early to adopt the mindset, or to start chasing the vision from various angles. There are many practical steps that app developers, tool developers and browser vendors can take in pursuit of PRPL today.
 
--   _shell_ atau shell aplikasi, yang termasuk logika aplikasi tingkat atas, router,
-    dan sebagainya.
+## App structure
 
--   _fragmen_ dari aplikasi yang lambat dimuat. Fragmen dapat mewakili kode untuk
-    pandangan tertentu, atau kode lain yang dapat dimuat secara lambat (misalnya,
-    bagian dari aplikasi utama yang tidak diperlukan untuk paint pertama, seperti menu yang tidak
-    ditampilkan hingga pengguna berinteraksi dengan aplikasi). Shell bertanggung jawab untuk
-    mengimpor secara dinamis fragmen yang diperlukan.
+PRPL can work well if you have a single-page app (SPA) with the following structure:
 
-Server dan service worker bekerja sama melakukan precache sumber daya untuk
-rute yang tidak aktif.
+* The main *entrypoint* of the application which is served from every valid route. This file should be very small, since it will be served from different URLs and therefore be cached multiple times. All resource URLs in the entrypoint need to be absolute, since it may be served from non-top-level URLs.
 
-Saat pengguna beralih rute, aplikasi lambat memuat sumber daya yang diperlukan yang
-belum di-cache, dan menciptakan tampilan yang diperlukan. Kunjungan berulang ke rute
-harus segera interaktif. Service Worker sangat membantu di sini.
+* The *shell* or app-shell, which includes the top-level app logic, router, and so on.
 
-Diagram di bawah menunjukkan komponen aplikasi sederhana yang mungkin terstruktur
-menggunakan [Komponen Web](http://webcomponents.org/):
+* Lazily loaded *fragments* of the app. A fragment can represent the code for a particular view, or other code that can be loaded lazily (for example, parts of the main app not required for first paint, like menus that aren't displayed until a user interacts with the app). The shell is responsible for dynamically importing the fragments as needed.
 
-![diagram aplikasi yang memiliki dua tampilan, yang memiliki dependensi individual dan bersama
-](images/app-build-components.png)
+The server and service worker together work to precache the resources for the inactive routes.
 
-Note: meskipun HTML Imports adalah strategi bundling yang dipilih Polymer, Anda dapat
-menggunakan pemisahan-kode dan pemotongan berbasis rute untuk mendapatkan persiapan serupa yang didapatkan dengan
-bundler modul JavaScript modern
+When the user switches routes, the app lazy-loads any required resources that haven't been cached yet, and creates the required views. Repeat visits to routes should be immediately interactive. Service Worker helps a lot here.
 
-Dalam diagram ini, garis tebal mewakili _dependensi statis_: sumber daya
-eksternal diidentifikasi dalam file menggunakan `<link>` dan `<script>` tag. Garis
-putus-putus mewakili _dependensi sesuai permintaan_ atau _dinamis_: file dimuat
-bila diperlukan oleh shell.
+The diagram below shows the components of a simple app that might be structured using [Web Components](http://webcomponents.org/):
 
-Proses pembangunan versi membangun grafik dari seluruh dependensi ini, dan server
-menggunakan informasi ini untuk melayani file secara efisien. Proses ini juga membangun seperangkat
-bundel yang divulkanisasi, untuk browser yang tidak mendukung HTTP/2.
+![diagram of an app that has two views, which have both individual and shared
+dependencies](images/app-build-components.png)
 
-### Entrypoint aplikasi
+Note: although HTML Imports are Polymer's preferred bundling strategy, you can use code-splitting and route-based chunking to achieve a similar setup with modern JavaScript module bundlers.
 
-Entrypoint harus mengimpor dan membuat instance shell, serta secara bersyarat
-memuat setiap polyfill apa pun.
+In this diagram, the solid lines represent *static dependencies*: external resources identified in the files using `<link>` and `<script>` tags. Dotted lines represent *dynamic* or *demand-loaded dependencies*: files loaded as needed by the shell.
 
-Pertimbangan utama untuk entrypoint:
+The build process builds a graph of all of these dependencies, and the server uses this information to serve the files efficiently. It also builds a set of vulcanized bundles, for browsers that don't support HTTP/2.
 
--   Memiliki dependensi statis minimal, dengan kata lain, tidak banyak melebihi shell aplikasi itu sendiri.
--   Memuat polyfill yang diperlukan secara bersyarat.
--   Menggunakan jalur absolut untuk semua dependensi.
+### App entrypoint
 
-### Shell aplikasi
+The entrypoint must import and instantiate the shell, as well as conditionally load any required polyfills.
 
-Shell bertanggung jawab atas perutean dan biasanya mencakup UI navigasi utama
-untuk aplikasi.
+The main considerations for the entrypoint are:
 
-Aplikasi harus lambat memuat fragmen begitu diperlukan. Misalnya, saat pengguna
-mengubah menjadi rute baru, aplikasi ini akan mengimpor fragmen yang terkait dengan
-rute tersebut. Proses ini dapat mengajukan permintaan baru ke server, atau cukup memuat
-sumber daya dari cache.
+* Has minimal static dependencies, in other words, not much beyond the app-shell itself.
+* Conditionally loads required polyfills.
+* Uses absolute paths for all dependencies.
 
-Shell (termasuk dependensi statisnya) harus berisi semua yang diperlukan
-untuk paint pertama.
+### App shell
 
-## Membangun keluaran
+The shell is responsible for routing and usually includes the main navigation UI for the app.
 
-Meskipun bukan persyaratan yang sulit untuk menggunakan PRPL, proses pembangunan Anda dapat
-menghasilkan dua pembangunan versi:
+The app should lazy-load fragments as they're required. For example, when the user changes to a new route, it imports the fragment(s) associated with that route. This may initiate a new request to the server, or simply load the resource from the cache.
 
--   Versi yang tidak dibundel didesain untuk kombinasi server/browser yang mendukung
-    HTTP/2 untuk mengirim sumber daya yang diperlukan browser untuk paint pertama yang cepat 
-    sambil mengoptimalkan caching. Pengiriman sumber daya ini dapat dipicu
-    secara efisien menggunakan [`<link rel="preload">`][Resource hints] atau [HTTP/2 Push].
+The shell (including its static dependencies) should contain everything needed for first paint.
 
--   Versi yang bundel didesain untuk meminimalkan jumlah perjalanan pulang pergi yang diperlukan untuk
-    menjalankan aplikasi pada kombinasi server/browser yang tidak mendukung
-    server push.
+## Build output
 
-Logika server Anda harus mengirim versi yang tepat untuk tiap browser.
+Although it isn't a hard requirement for using PRPL, your build process could produce two builds:
 
-### Versi yang dibundel
+* An unbundled build designed for server/browser combinations that support HTTP/2 to deliver the resources the browser needs for a fast first paint while optimizing caching. The delivery of these resources can be triggered efficiently using [`<link rel="preload">`](/web/updates/2016/03/link-rel-preload) or [HTTP/2 Push](/web/fundamentals/performance/http2/#server-push).
 
-Untuk browser yang tidak menangani HTTP/2, proses pembangunan versi dapat menghasilkan serangkaian
-bundel yang berbeda: satu bundel untuk shell, dan satu bundel untuk tiap
-fragmen. Diagram di bawah ini menunjukkan bagaimana aplikasi yang sederhana dibundel, lagi-lagi menggunakan
-Komponen Web:
+* A bundled build designed to minimize the number of round-trips required to get the application running on server/browser combinations that don't support server push.
 
-![diagram aplikasi yang sama dengan sebelumnya, dengan adanya tiga dependensi
-yang dibundel](images/app-build-bundles.png)
+Your server logic should deliver the appropriate build for each browser.
 
-Setiap dependensi yang dibagikan dengan dua atau lebih fragmen dibundel dengan shell dan
-dependensi statisnya.
+### Bundled build
 
-Tiap fragmen dan dependensi statis _yang tidak dibagikan_ dibundel menjadi satu
-bundel. Server harus mengembalikan versi fragmen yang tepat
-(dibundel atau tidak dibundel), tergantung pada browser. Ini berarti kode shell
-bisa memuat `detail-view.html` dengan lambat _tanpa mengetahui apakah dibundle
-atau tidak dibundel_. Bertumpu pada server dan browser untuk memuat dependensi dengan
-cara yang paling efisien.
+For browsers that don't handle HTTP/2, the build process could produce a set of different bundles: one bundle for the shell, and one bundle for each fragment. The diagram below shows how a simple app would be bundled, again using Web Components:
 
+![diagram of the same app as before, where there are three bundled
+dependencies](images/app-build-bundles.png)
 
-## Latar belakang: Server push HTTP/2 dan HTTP/2
+Any dependency shared by two or more fragments is bundled with the shell and its static dependencies.
 
-[HTTP/2] memungkinkan unduhan _multiplexed_ pada satu
-koneksi tunggal, sehingga beberapa file kecil bisa diunduh dengan lebih efisien.
+Each fragment and its *unshared* static dependencies are bundled into a single bundle. The server should return the appropriate version of the fragment (bundled or unbundled), depending on the browser. This means that the shell code can lazy-load `detail-view.html` *without having to know whether it is bundled or unbundled*. It relies on the server and browser to load the dependencies in the most efficient way.
 
-[Server push HTTP/2][HTTP/2 Push] memungkinkan server
-untuk mengirimkan sumber daya secara preemptif ke browser.
+## Background: HTTP/2 and HTTP/2 server push
 
-Untuk contoh bagaimana server push HTTP/2 mempercepat unduhan, pertimbangkan cara
-browser mengambil file HTML dengan stylesheet bertaut.
+[HTTP/2](/web/fundamentals/performance/http2/) allows *multiplexed* downloads over a single connection, so that multiple small files can be downloaded more efficiently.
 
-Di HTTP/1:
+[HTTP/2 server push](/web/fundamentals/performance/http2/#server-push) allows the server to preemptively send resources to the browser.
 
-*   Browser meminta file HTML.
-*   Server mengembalikan file HTML dan browser mulai mem-parsingnya.
-*   Browser menjumpai tag `<link rel="stylesheet">` dan mulai permintaan
-    baru untuk stylesheet.
-*   Browser menerima stylesheet.
+For an example of how HTTP/2 server push speeds up downloads, consider how the browser retrieves an HTML file with a linked stylesheet.
 
-Dengan push HTTP/2:
+In HTTP/1:
 
-*   Browser meminta file HTML.
-*   Server mengembalikan file HTML, dan mendorong stylesheet pada
-    waktu yang sama.
-*   Browser mulai mem-parsing HTML. Pada saat browser menjumpai `<link
-    rel="stylesheet">, stylesheet sudah berada di cache﻿.
+* The browser requests the HTML file.
+* The server returns the HTML file and the browser starts parsing it.
+* The browser encounters the `<link rel="stylesheet">` tag, and starts a new request for the stylesheet.
+* The browser receives the stylesheet.
 
-Dalam kasus paling sederhana, server push HTTP/2 menghilangkan respons-permintaan
-HTTP tunggal.
+With HTTP/2 push:
 
-Dengan HTTP/1, developer membundel sumber daya untuk mengurangi jumlah permintaan
-HTTP yang diperlukan untuk merender laman. Namun, bundling dapat mengurangi efisiensi
-cache browser. Jika sumber daya untuk setiap laman digabungkan ke dalam satu
-bundel tunggal, setiap laman mendapatkan bundelnya sendiri, dan browser tidak dapat mengidentifikasi sumber daya
-bersama.
+* The browser requests the HTML file.
+* The server returns the HTML file, and pushes the stylesheet at the same time.
+* The browser starts parsing the HTML. By the time it encounters the `<link
+rel="stylesheet">`, the stylesheet is already in the cache.
 
-Kombinasi server push HTTP/2 dan HTTP/2 memberikan _manfaat_ bundling
-(latensi yang dikurangi) tanpa bundling sebenarnya. Memisahkan sumber daya
-berarti sumber daya tersebut dapat di-cache secara efisien dan dibagikan antar laman.
+In the simplest case, HTTP/2 server push eliminates a single HTTP request-response.
 
-Push HTTP/2 harus digunakan dengan saksama, karena data dipaksa ke browser,
-bahkan jika file sudah berada di cache lokal browser atau bandwidth sudah di
-saturasi. Jika dilakukan dengan keliru, kinerja akan terpengaruh,
-[`<link rel="preload">`][Resource hints] bisa menjadi alternatif yang baik untuk memperbolehkan
-browser mengambil keputusan cerdas tentang penentuan prioritas permintaan ini.  
+With HTTP/1, developers bundle resources to reduce the number of HTTP requests required to render a page. However, bundling can reduce the efficiency of the browser's cache. if resources for each page are combined into a single bundle, each page gets its own bundle, and the browser can't identify shared resources.
 
-## Kesimpulan
+The combination of HTTP/2 and HTTP/2 server push provides the *benefits* of bundling (reduced latency) without actual bundling. Keeping resources separate means they can be cached efficiently and be shared between pages.
 
-Memuat kode untuk rute lebih terperinci dan memungkinkan browser untuk menjadwalkan
-pekerjaan memiliki potensi lebih baik untuk benar-benar membantu menjangkau interaktivitas di
-aplikasi kita segera. Kita memerlukan **arsitektur lebih baik yang mengaktifkan
-interaktivitas dengan cepat** dan pola PRPL merupakan contoh menarik dalam cara
-mencapai tujuan ini di perangkat seluler sungguhan.
+HTTP/2 Push needs to be utilized with care, as it forces data to the browser, even if the file is already in the browser’s local cache or bandwidth is already saturated. If done wrong, performance can suffer. [`<link rel="preload">`](/web/updates/2016/03/link-rel-preload) might be a good alternative to allow the browser to make smart decisions about the prioritization of these requests.
 
-Semua tentang headroom dan mencukupi diri Anda sendiri setelah Anda selesai memuat abstraksi
-Anda. Jika pengetukan pada tautan tertunda beberapa detik dari skrip yang mencegah kejadian
-masukan dari pengiriman, itu merupakan indikasi kuat ada pekerjaan yang harus
-diselesaikan dalam hal kinerja. Ini adalah masalah umum dengan aplikasi yang dibangun menggunakan
- pustaka JavaScript yang lebih besar dewasa ini, dengan UI yang dirender tampak
-berfungsi namun ternyata tidak.
+## Conclusion
 
-PRPL dapat membantu mengirim kode fungsi minimal yang dibutuhkan untuk membuat rute pengguna
-Anda mendapat pada interaktif, dengan mengatasi tantangan ini.
+Loading the code for routes more granularly and allowing browsers to schedule work better has the potential to greatly aid reaching interactivity in our applications sooner. We need **better architectures that enable interactivity quickly** and the PRPL pattern is an interesting example of how to accomplish this goal on real mobile devices.
 
-[HTTP/2]: /web/fundamentals/performance/http2/
-[Resource hints]: /web/updates/2016/03/link-rel-preload
-[HTTP/2 Push]: /web/fundamentals/performance/http2/#server-push
+It’s all about headroom and giving yourself enough once you’re done loading your abstractions. If tapping on a link is delayed by seconds of script that prevents input events from dispatching, that’s a strong indication there is work to be done on performance. This is a common problem with applications built using larger JavaScript libraries today, where UI is rendered that looks like it should work but does not.
 
+PRPL can help deliver the minimal functional code needed to make the route your users land on interactive, addressing this challenge.
 
-{# wf_devsite_translation #}
+## Feedback {: #feedback }
+
+{% include "web/_shared/helpful.html" %}
