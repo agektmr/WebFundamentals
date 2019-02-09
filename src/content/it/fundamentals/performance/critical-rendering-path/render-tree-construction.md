@@ -1,153 +1,84 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Le strutture CSSOM e DOM vengono unite in una struttura di rendering, che viene poi utilizzata per calcolare il layout di ciascun elemento visibile e che serve da input al processo di disegno che esegue il rendering dei pixel sullo schermo. Ottimizzare ciascuno di questi passaggi è cruciale per ottenere una performance di rendering ottimale.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: TODO
 
-{# wf_updated_on: 2017-11-10 #}
-{# wf_published_on: 2014-03-31 #}
+{# wf_updated_on: 2018-08-17 #} {# wf_published_on: 2014-03-31 #} {# wf_blink_components: Blink>Layout,Blink>Paint #}
 
-# Costruzione della struttura di rendering, layout e disegno {: .page-title }
+# Render-tree Construction, Layout, and Paint {: .page-title }
 
 {% include "web/_shared/contributors/ilyagrigorik.html" %}
 
-Le strutture CSSOM e DOM vengono unite in una struttura di rendering, che viene
-poi utilizzata per calcolare il layout di ciascun elemento visibile e che serve
-da input al processo di disegno che esegue il rendering dei pixel sullo schermo.
-Ottimizzare ciascuno di questi passaggi è cruciale per ottenere una performance
-di rendering ottimale.
+The CSSOM and DOM trees are combined into a render tree, which is then used to compute the layout of each visible element and serves as an input to the paint process that renders the pixels to screen. Optimizing each of these steps is critical to achieving optimal rendering performance.
 
-Nella sezione precedente sulla costruzione del modello oggetto, abbiamo
-costruito le strutture DOM e CSSOM sulla base dell'input HTML e CSS. Tuttavia,
-entrambi sono oggetti indipendenti che possono registrare aspetti diversi del
-documento: uno descrive il contenuto e l'altro quali regole di stile devono
-essere applicate al documento. Come uniamo questi due oggetti e portiamo il
-browser a eseguire il rendering dei pixel sullo schermo?
+In the previous section on constructing the object model, we built the DOM and the CSSOM trees based on the HTML and CSS input. However, both of these are independent objects that capture different aspects of the document: one describes the content, and the other describes the style rules that need to be applied to the document. How do we merge the two and get the browser to render pixels on the screen?
 
 ### TL;DR {: .hide-from-toc }
-- Le strutture DOM e CSSOM vengono unite per formare la struttura di rendering.
-- La struttura di rendering contiene solo i nodi richiesti per eseguire il
-  rendering della pagina.
-- Il layout calcola la posizione e dimensione esatta di ogni oggetto.
-- Il disegno è l'ultimo passaggio che include la struttura di rendering finale
-  e ne esegue il rendering dei pixel sullo schermo.
 
+* The DOM and CSSOM trees are combined to form the render tree.
+* Render tree contains only the nodes required to render the page.
+* Layout computes the exact position and size of each object.
+* The last step is paint, which takes in the final render tree and renders the pixels to the screen.
 
-Il primo passaggio prevede che il browser unisca DOM e CSSOM in una "struttura
-di rendering" che registra l'intero contenuto DOM visibile sulla pagina, oltre
-a tutte le informazioni di stile CSSOM per ciascun nodo.
+First, the browser combines the DOM and CSSOM into a "render tree," which captures all the visible DOM content on the page and all the CSSOM style information for each node.
 
-![DOM e CSSOM vengono uniti per creare la struttura di
-rendering](images/render-tree-construction.png)
+<img src="images/render-tree-construction.png" alt="DOM and CSSOM are combined to create the render tree" />
 
-Per costruire la struttura di rendering, il browser esegue approssimativamente
-le seguenti operazioni:
+To construct the render tree, the browser roughly does the following:
 
-1. Partendo dalla radice della struttura DOM, attraversa ogni nodo visibile.
-  * Alcuni nodi non sono ancora affatto visibili (ad es. tag dello script, meta
-    tag e così via) e vengono omessi dato che non sono riflessi nell'output
-    sottoposto a rendering.
-  * Alcuni nodi sono nascosti tramite CSS e sono anche omessi dalla struttura di
-    rendering, ad esempio il nodo span di cui sopra manca dalla struttura di
-    rendering per via della nostra regola esplicita che applica la
-    proprietà `display: none`.
-1. Per ciascun nodo visibile, trova le regole CSSOM corrispondenti e le applica.
-1. Produce nodi visibili con contenuto e i relativi computed style.
+1. Starting at the root of the DOM tree, traverse each visible node.
+    
+    * Some nodes are not visible (for example, script tags, meta tags, and so on), and are omitted since they are not reflected in the rendered output.
+    * Some nodes are hidden via CSS and are also omitted from the render tree; for example, the span node\---in the example above\---is missing from the render tree because we have an explicit rule that sets the "display: none" property on it.
 
-Note: Come breve commento, nota che `visibility: hidden` è diverso da 
-`display: none`. Il primo rende l'elemento invisibile, ma l'elemento occupa
-comunque spazio nel layout (ad es. ne viene eseguito il rendering come scatola
-vuota), mentre l'ultimo `display: none` rimuove completamente l'elemento dalla
-struttura di rendering così che questo sia invisibile e non parte del layout.
+2. For each visible node, find the appropriate matching CSSOM rules and apply them.
 
-L'output finale è un rendering che contiene sia il contenuto che le informazioni
-di stile di tutto il contenuto visibile sullo schermo. **Una
-volta completata la struttura di rendering, possiamo procedere alla fase
-di `layout`.**
+3. Emit visible nodes with content and their computed styles.
 
-Fino ad adesso abbiamo calcolato i nodi che devono essere visibili e i relativi
-computed style ma non abbiamo calcolato la loro posizione precisa e dimensione
-all'interno [viewport](/web/fundamentals/design-and-ux/responsive/#set-the-viewport)
-del dispositivo: questa è la fase `layout`,  anche denominata `reflow.`
+Note: As a brief aside, note that `visibility: hidden` is different from `display: none`. The former makes the element invisible, but the element still occupies space in the layout (that is, it's rendered as an empty box), whereas the latter (`display: none`) removes the element entirely from the render tree such that the element is invisible and is not part of the layout.
 
-Per individuare la posizione e le dimensioni esatte di ciascun oggetto, il browser
-inizia dalla radice della struttura di rendering e la attraversa.
-la geometria di ogni oggetto sulla pagina. Analizziamo un semplice esempio
-pratico:
+The final output is a render that contains both the content and style information of all the visible content on the screen. **With the render tree in place, we can proceed to the "layout" stage.**
+
+Up to this point we've calculated which nodes should be visible and their computed styles, but we have not calculated their exact position and size within the [viewport](/web/fundamentals/design-and-ux/responsive/#set-the-viewport) of the device\---that's the "layout" stage, also known as "reflow."
+
+To figure out the exact size and position of each object on the page, the browser begins at the root of the render tree and traverses it. Let's consider a simple, hands-on example:
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/performance/critical-rendering-path/_code/nested.html" region_tag="full" adjust_indentation="auto" %}
 </pre>
 
-[Prova](https://googlesamples.github.io/web-fundamentals/fundamentals/performance/critical-rendering-path/nested.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/performance/critical-rendering-path/nested.html){: target="_blank" .external }
 
-Il corpo della pagina di cui sopra contiene due div nidificati: il primo `div`
-(padre) imposta le dimensioni del display del nodo al 50% della larghezza del
-riquadro di visualizzazione del secondo `div` &mdash;contenuto dal padre&mdash;
-ne imposta la larghezza al 50% del padre, dunque al 25% della larghezza del
-riquadro di visualizzazione.
+The body of the above page contains two nested div's: the first (parent) div sets the display size of the node to 50% of the viewport width, and the second div\---contained by the parent\---sets its width to be 50% of its parent; that is, 25% of the viewport width.
 
-![Calcolo informazioni layout](images/layout-viewport.png)
+<img src="images/layout-viewport.png" alt="Calculating layout information" />
 
-L'output del processo del layout è un "box model" che cattura in modo preciso la
-posizione e dimensione esatte di ciascun elemento all'interno del riquadro di
-visualizzazione: tutte le misure relative sono convertiti in posizioni assolute
-dei pixel sullo schermo e così via.
+The output of the layout process is a "box model," which precisely captures the exact position and size of each element within the viewport: all of the relative measurements are converted to absolute pixels on the screen.
 
-Infine, ora che sappiamo quali nodi sono visibili, i relativi computed style e
-geometria, possiamo finalmente passare queste informazioni alla nostra fase
-finale che convertirà ogni nodo nella struttura di rendering in pixel effettivi
-sullo schermo: questo passaggio viene spesso definito come "painting" o
-"rasterizing".
+Finally, now that we know which nodes are visible, and their computed styles and geometry, we can pass this information to the final stage, which converts each node in the render tree to actual pixels on the screen. This step is often referred to as "painting" or "rasterizing."
 
-Hai seguito tutto? Ciascuno di questi passaggi richiede una quantità di lavoro
-non semplice per il browser e quindi può spesso richiedere un bel
-po' di tempo. Per fortuna, Chrome DevTools può aiutarci a chiarire tutte e tre
-le fasi che abbiamo descritto sopra. Esaminiamo la fase di layout per il nostro
-esempio originale "hello world (ciao mondo)":
+This can take some time because the browser has to do quite a bit of work. However, Chrome DevTools can provide some insight into all three of the stages described above. Let's examine the layout stage for our original "hello world" example:
 
-![Misurazione del layout in DevTools](images/layout-timeline.png)
+<img src="images/layout-timeline.png" alt="Measuring layout in DevTools" />
 
-* La costruzione, il posizionamento e il calcolo delle dimensioni della
-  struttura di rendering sono registrati con l'evento "Layout" della barra
-  temporale.
-* Al completamento del layout, il browser produce un evento "Paint Setup" e
-  "Paint" che converte la struttura di rendering in pixel effettivi sullo
-  schermo.
+* The "Layout" event captures the render tree construction, position, and size calculation in the Timeline.
+* When layout is complete, the browser issues "Paint Setup" and "Paint" events, which convert the render tree to pixels on the screen.
 
-Il tempo necessario ad eseguire la costruzione della struttura di rendering, il
-layout e il disegno varierà in base alle dimensioni del documento, agli stili
-applicati e, ovviamente, al dispositivo su cui è in esecuzione: più grande sarà
-il documento, maggiore sarà la quantità di lavoro che dovrà eseguire il browser,
-più complicati saranno gli stili, maggiore sarà il tempo utilizzato anche per il
-disegno (ad esempio una tinta unita è "economica" da disegnare e
-un'ombreggiatura è molto più "costosa" in termini di calcolo e rendering).
+The time required to perform render tree construction, layout and paint varies based on the size of the document, the applied styles, and the device it is running on: the larger the document, the more work the browser has; the more complicated the styles, the more time taken for painting also (for example, a solid color is "cheap" to paint, while a drop shadow is "expensive" to compute and render).
 
-Al termine di queste operazioni, la nostra pagina è finalmente visibile nel
-riquadro di visualizzazione.
+The page is finally visible in the viewport:
 
-![Rendering pagina Ciao mondo](images/device-dom-small.png)
+<img src="images/device-dom-small.png" alt="Rendered Hello World page" />
 
-Facciamo un breve riepilogo di tutti i passaggi eseguiti dal browser:
+Here's a quick recap of the browser's steps:
 
-1. Elaborare il markup HTML e costruire la struttura DOM.
-1. Elaborare il markup CSS e costruire la struttura CSSOM.
-1. Unire DOM e CSSOM in una struttura di rendering.
-1. Eseguire il layout sulla struttura di rendering per calcolare la geometria di
-   ciascun nodo.
-1. Disegnare i singoli nodi sullo schermo.
+1. Process HTML markup and build the DOM tree.
+2. Process CSS markup and build the CSSOM tree.
+3. Combine the DOM and CSSOM into a render tree.
+4. Run layout on the render tree to compute geometry of each node.
+5. Paint the individual nodes to the screen.
 
-La nostra pagina demo potrà sembrare molto semplice, ma richiede un po' di
-lavoro. Vuoi indovinare cosa accadrebbe modificando DOM o CSSOM? Dovremmo
-ripetere la medesima procedura più volte per capire quali pixel devono subire un
-nuovo rendering sullo schermo.
+Our demo page may look simple, but it requires quite a bit of work. If either the DOM or CSSOM were modified, you would have to repeat the process in order to figure out which pixels would need to be re-rendered on the screen.
 
-**_L'ottimizzazione del percorso di rendering critico_ è il processo di
-riduzione della quantità totale di tempo trascorso nei passaggi da 1 a 5 della
-sequenza di qui sopra.** Questo ci permette di eseguire il rendering del
-contenuto sullo schermo il prima possibile e riduce anche la quantità di tempo
-tra aggiornamenti dello schermo in seguito al rendering iniziale, ovvero
-ottenere una frequenza di aggiornamento superiore per il contenuto interattivo.
+***Optimizing the critical rendering path* is the process of minimizing the total amount of time spent performing steps 1 through 5 in the above sequence.** Doing so renders content to the screen as quickly as possible and also reduces the amount of time between screen updates after the initial render; that is, achieve higher refresh rates for interactive content.
 
-<a href="render-blocking-css" class="gc-analytics-event"
-    data-category="CRP" data-label="Successivo / CSS del blocco di rendering">
-  <button>Successivo: CSS del blocco di rendering</button>
-</a>
+## Feedback {: #feedback }
+
+{% include "web/_shared/helpful.html" %}
