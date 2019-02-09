@@ -1,40 +1,32 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Dokumentasi referensi untuk "Manifes Berisi start_url" audit Lighthouse.
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Reference documentation for the "Manifest Contains start_url" Lighthouse audit.
 
-{# wf_updated_on: 2016-09-21 #}
-{# wf_published_on: 2016-09-21 #}
+{# wf_updated_on: 2018-07-23 #} {# wf_published_on: 2016-09-21 #} {# wf_blink_components: N/A #}
 
-# Manifes Berisi Start URL  {: .page-title }
+# Manifest Contains Start URL {: .page-title }
 
-## Mengapa audit itu penting {: #why }
+## Overview {: #overview }
 
-Setelah aplikasi web Anda ditambahkan ke layar beranda pengguna, properti `start_url`
-di Manifes Aplikasi Web menentukan laman yang terlebih dulu dimuat aplikasi Anda
-ketika pengguna meluncurkan aplikasi dari layar beranda.
+After your web app has been added to a user's homescreen, the `start_url` property in the Web App Manifest determines what page of your app loads first when the user launches your app from the homescreen.
 
-Bila tidak terdapat properti `start_url`, maka browser mengatur default ke laman
-apa pun yang aktif saat pengguna memutuskan untuk menambahkan aplikasi ke layar beranda.
+If the `start_url` property is absent, then the browser defaults to whatever page was active when the user decided to add the app to the homescreen.
 
-## Cara untuk lulus audit {: #how }
+## Recommendations {: #recommendations }
 
-Tambahkan properti `start_url` di Manifes Aplikasi Web Anda.
+Add a `start_url` property in your Web App Manifest.
 
     {
       ...
       "start_url": ".",
       ...
     }
+    
 
-Lihat [Manifest Exists](manifest-exists#how)
-untuk daftar panduan yang mengajarkan Anda cara
-mengimplementasikan dan menguji dukungan "Add to Homescreen" dalam aplikasi Anda dengan benar.
+Check out [Manifest Exists](manifest-exists#recommendations) for a list of guides that teach you how to properly implement and test "Add to Homescreen" support in your app.
 
-{% include "web/tools/lighthouse/audits/implementation-heading.html" %}
+## More information {: #more-info }
 
-Lighthouse mengambil manifes dan memverifikasi bahwa itu memiliki properti `start_url`.
-Manifes yang diambil Lighthouse berbeda dari yang digunakan Chrome
-pada laman, yang mungkin bisa menyebabkan hasil yang tidak akurat.
+Lighthouse fetches the manifest and verifies that it has a `start_url` property. The manifest that Lighthouse fetches is separate from the one that Chrome is using on the page, which can possibly cause inaccurate results.
 
+## Feedback {: #feedback }
 
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
