@@ -1,31 +1,19 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Pentingnya urutan DOM default
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: The importance of the default DOM order
 
+{# wf_blink_components: Blink>Accessibility #} {# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2016-10-04 #}
 
-{# wf_updated_on: 2016-10-04 #}
-{# wf_published_on: 2016-10-04 #}
+# DOM Order Matters {: .page-title }
 
-# Pentingnya Urutan DOM {: .page-title }
+{% include "web/_shared/contributors/megginkearney.html" %} {% include "web/_shared/contributors/dgash.html" %} {% include "web/_shared/contributors/robdodson.html" %}
 
-{% include "web/_shared/contributors/megginkearney.html" %}
-{% include "web/_shared/contributors/dgash.html" %}
-{% include "web/_shared/contributors/robdodson.html" %}
+Working with native elements is a great way to learn about focus behavior because they are automatically inserted into the tab order based on their position in the DOM.
 
-
-
-Menggunakan elemen asli merupakan cara bagus untuk mempelajari tentang perilaku fokus
-karena elemen asli secara otomatis disisipkan ke dalam urutan tab berdasarkan
-posisinya di DOM.
-
-Misalnya, Anda mungkin memiliki tiga elemen tombol yang berurutan dalam
-DOM. Menekan `Tab` akan memfokus setiap tombol secara berurutan. Cobalah mengeklik blok kode
-di bawah ini untuk memindah titik mulai navigasi fokus, kemudian tekan `Tab` untuk memindah fokus
-melewati tombol-tombol.
+For example, you might have three button elements, one after the other in the DOM. Pressing `Tab` focuses each button in order. Try clicking the code block below to move the focus navigation start point, then press `Tab` to move focus through the buttons.
 
     <button>I Should</button>
     <button>Be Focused</button>
     <button>Last!</button>
+    
 
 {% framebox height="80px" %}
 <button>I Should</button>
@@ -33,18 +21,12 @@ melewati tombol-tombol.
 <button>Last!</button>
 {% endframebox %}
 
-Akan tetapi, penting untuk diingat bahwa, dengan menggunakan CSS, dimungkinkan menempatkan sesuatu
-dalam satu urutan di DOM namun muncul dalam urutan berbeda di layar. Misalnya,
-jika Anda menggunakan properti CSS seperti `float` untuk memindah satu tombol ke kanan,
-tombol-tombol itu akan muncul dalam urutan berbeda di layar. Namun, karena urutannya dalam
-DOM tetap sama, maka begitu pula urutan tabnya. Bila pengguna berpindah tab
-di laman, tombol akan mendapat fokus dalam urutan yang tidak intuitif. Cobalah mengeklik blok kode
-di bawah ini untuk memindah titik mulai navigasi fokus, kemudian tekan `Tab` untuk
-memindah fokus melewati tombol-tombol.
+However, it's important to note that, using CSS, it's possible to have things exist in one order in the DOM but appear in a different order on screen. For example, if you use a CSS property like `float` to move one button to the right, the buttons appear in a different order on screen. But, because their order in the DOM remains the same, so does their tab order. When the user tabs through the page, the buttons gain focus in a non-intuitive order. Try clicking on the code block below to move the focus navigation start point, then press `Tab` to move focus through the buttons.
 
     <button style="float: right">I Should</button>
     <button>Be Focused</button>
     <button>Last!</button>
+    
 
 {% framebox height="80px" %}
 <button style="float: right;">I Should</button>
@@ -52,46 +34,27 @@ memindah fokus melewati tombol-tombol.
 <button>Last!</button>
 {% endframebox %}
 
-Berhati-hatilah saat mengubah posisi visual elemen di layar dengan menggunakan CSS.
-Hal ini bisa menyebabkan urutan tab melompat-lompat, seolah acak, sehingga membingungkan
-pengguna yang mengandalkan keyboard. Karena alasan ini, daftar periksa Web AIM menyatakan
-[di bagian 1.3.2](http://webaim.org/standards/wcag/checklist#sc1.3.2){: .external }
-bahwa urutan navigasi dan pembacaan, seperti yang ditentukan oleh urutan kode, harus
-logis dan intuitif.
+Be careful when changing the visual position of elements on screen using CSS. This can cause the tab order to jump around, seemingly at random, confusing users who rely on the keyboard. For this reason, the Web AIM checklist states [in section 1.3.2](http://webaim.org/standards/wcag/checklist#sc1.3.2){: .external } that the reading and navigation order, as determined by code order, should be logical and intuitive.
 
-Sebagai aturan, cobalah berpindah-pindah tab melewati berbagai laman sesering mungkin sekadar untuk memastikan Anda
-bukan secara tidak sengaja mengacaukan urutan tab. Ini adalah kebiasaan yang baik untuk diterapkan, dan
-hal ini tidak memerlukan banyak usaha.
+As a rule, try tabbing through your pages every so often just to make sure you haven't accidentally messed up the tab order. It's a good habit to adopt, and one that doesn't require much effort.
 
-## Materi tak terlihat
-Bagaimana jika Anda memiliki materi yang saat ini tidak ditampilkan, namun tetap perlu ada
-di DOM, misalnya navigasi samping yang responsif? Bila Anda memiliki elemen seperti ini yang
-menerima fokus bila sedang tidak tampak di layar, elemen ini bisa terlihat seakan fokusnya
-menghilang dan muncul kembali saat pengguna berpindah tab di laman &mdash; ini jelas
-sebuah efek yang tidak diinginkan. Idealnya, kita harus mencegah agar panel tidak mendapat fokus
-bila sedang di luar layar, dan hanya bisa difokus bila pengguna bisa
-berinteraksi dengannya.
+## Offscreen content
 
-![panel slide-in di luar layar bisa mencuri fokus](imgs/slide-in-panel.png)
+What if you have content that isn't currently displayed, yet still needs to be in the DOM, such as a responsive side-nav? When you have elements like this that receive focus when they're off screen, it can seem as if the focus is disappearing and reappearing as the user tabs through the page &mdash; clearly an undesirable effect. Ideally, we should prevent the panel from gaining focus when it's off screen, and only allow it to be focused when the user can interact with it.
 
-Kadang-kadang Anda perlu melakukan semacam pekerjaan detektif untuk mengetahui
-ke mana larinya fokus. Anda bisa menggunakan `document.activeElement` dari konsol untuk mengetahui
-elemen mana yang saat ini difokus.
+![an offscreen slide-in panel can steal focus](imgs/slide-in-panel.png)
 
-Setelah mengetahui elemen di luar layar mana yang sedang difokus, Anda bisa menyetelnya ke
-`display: none` atau `visibility: hidden`, kemudian menyetelnya kembali ke `display:
-block` atau `visibility: visible` sebelum menampilkannya kepada pengguna.
+Sometimes you need to do a bit of detective work to figure out where focus has gone. You can use `document.activeElement` from the console to figure out which element is currently focused.
 
-![panel slide-in disetel ke display none](imgs/slide-in-panel2.png)
+Once you know which off screen element is being focused, you can set it to `display: none` or `visibility: hidden`, and then set it back to `display:
+block` or `visibility: visible` before showing it to the user.
 
-![panel slide-in disetel ke display block](imgs/slide-in-panel3.png)
+![a slide-in panel set to display none](imgs/slide-in-panel2.png)
 
-Secara umum, kami mendorong developer untuk berpindah-pindah tab dalam situs mereka sebelum
-mempublikasikan untuk mengetahui apakah urutan tab tidak menghilang atau melompat dari urutan
-logis. Jika ternyata menghilang atau melompat, pastikan Anda telah menyembunyikan
-materi di luar layar dengan benar melalui `display: none` atau `visibility: hidden`, atau apakah
-Anda telah menyusun ulang posisi fisik elemen dalam DOM sehingga berada
-dalam urutan logis.
+![a slide-in panel set to display block](imgs/slide-in-panel3.png)
 
+In general, we encourage developers to tab through their sites before each publish to see that the tab order doesn't disappear or jump out of a logical sequence. If it does, you should make sure you are appropriately hiding offscreen content with `display: none` or `visibility: hidden`, or that you rearrange elements' physical positions in the DOM so they are in a logical order.
 
-{# wf_devsite_translation #}
+## Feedback {: #feedback }
+
+{% include "web/_shared/helpful.html" %}
