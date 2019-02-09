@@ -1,255 +1,191 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: レスポンス タイムとオフライン サポートの向上のためにデータをローカルに保存する方法について説明します。
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Learn how to store data locally for improved response time and offline support.
 
-{# wf_updated_on:2016-09-29 #}
-{# wf_published_on:2016-09-29 #}
+{# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2016-09-29 #} {# wf_blink_components: Blink>Storage #}
 
-# Progressive Web App のオフライン ストレージ {: .page-title }
+# Offline Storage for Progressive Web Apps {: .page-title }
 
-{% include "web/_shared/contributors/addyosmani.html" %}
-{% include "web/_shared/contributors/mco.html" %}
+{% include "web/_shared/contributors/addyosmani.html" %} {% include "web/_shared/contributors/mco.html" %}
 
 <figure class="attempt-right">
-  <img src="images/pwa-in-devtools.jpg" alt="DevTools での PWA">
+  <img src="images/pwa-in-devtools.jpg" alt="PWA in DevTools">
   <figcaption>
-    <a href="https://pokedex.org" class="external">Pokedex</a> 
-    Progressive Web App では、アプリの状態とポケモン データセットには IndexedDB を使用し、
-    URL 指定可能なリソースには Cache API を使用しています。
+    The <a href="https://pokedex.org" class="external">Pokedex</a>
+    Progressive Web App uses IndexedDB for application state and the Pokemon
+    data set while the Cache API is used for URL addressable resources.
   </figcaption>
 </figure>
 
-外出中はインターネット接続が不安定であったり存在しなかったりする場合があります。このような理由から、オフライン サポートと信頼性の高いパフォーマンスが [Progressive Web App](/web/progressive-web-apps/) における一般的な特徴となっています。完全なワイヤレス環境であっても、キャッシュやその他のストレージ テクニックを適切に利用すれば、ユーザー エクスペリエンスを大幅に向上させることができます。この投稿は、PWA のオフライン データ ストレージに関するアイデアをまとめたものです。有意義なエクスペリエンスをオフラインで提供するために必要な JSON ペイロード、画像、一般的な静的データについて考えてみましょう。
-
-
-
+Internet connections can be flakey or non-existent on the go, which is why offline support and reliable performance are common features in [progressive web apps](/web/progressive-web-apps/). Even in perfect wireless environments, judicious use of caching and other storage techniques can substantially improve the user experience. In this post, we’ll summarize some ideas around offline data storage for PWAs — think JSON payloads, images and general static data required to provide a *meaningful* experience offline.
 
 <div class="clearfix"></div>
 
-##  推奨事項
+## Recommendation
 
-データをオフラインで保存するための一般的な推奨事項を示します。
+Let’s get right to the point with a general recommendation for storing data offline:
 
+* For the network resources necessary to load your app while offline, use the [**Cache API**](cache-api) (part of [service workers](/web/fundamentals/primers/service-worker/)).
+* For all other data, use [**IndexedDB**](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API) (with a [promises wrapper](https://www.npmjs.com/package/idb)).
 
-* URL 指定可能なリソースには、[**Cache API**](https://davidwalsh.name/cache)（[Service Worker](/web/fundamentals/primers/service-worker/) の一部）を使用します。
-* その他のすべてのデータには、（[Promise](/web/fundamentals/getting-started/primers/promises) ラッパーで）[**IndexedDB**](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API) を使用します。
+Here’s the rationale:
 
+Both APIs are asynchronous (IndexedDB is event based and the Cache API is Promise based). They also work with [web workers, window and service workers](https://nolanlawson.github.io/html5workertest/). IndexedDB is available [everywhere](http://caniuse.com/#feat=indexeddb). Service Workers (and the Cache API) are [now available](https://jakearchibald.github.io/isserviceworkerready/) in Chrome, Firefox, Opera and are in development for Edge. Promise wrappers for IndexedDB hide some of the powerful but also complex machinery (e.g. transactions, schema versioning) that comes with the IndexedDB library. IndexedDB will support [observers](https://github.com/WICG/indexed-db-observers), which allow easy synchronization between tabs.
 
-その理由を次に示します。
+Safari 10 has [fixed many long-standing IndexedDB bugs](https://gist.github.com/nolanlawson/08eb857c6b17a30c1b26) in their latest Tech Previews. NOTE: Some folks have run into stability issues with Safari 10’s IndexedDB and PouchDB and have found it to be a little slow. Until more research has been done here, your mileage may vary. Please do test and file browser bugs so the folks @webkit and related OSS library authors can take a look. LocalForage, PouchDB, YDN and Lovefield use WebSQL in Safari by default (due to lack of an efficient way to feature-test for broken IndexedDB). This means these libraries will work in Safari 10 without extra effort (just not using IndexedDB directly).
 
-両方の API は非同期です（IndexedDB はイベントベース、Cache API は Promise ベースです）。両方とも [Web Worker、ウィンドウ、および Service Worker](https://nolanlawson.github.io/html5workertest/) でも動作します。IndexedDB は[どこでも](http://caniuse.com/#feat=indexeddb)利用できます。Service Worker（および Cache API）は、Chrome、Firefox、Opera で[利用可能](https://jakearchibald.github.io/isserviceworkerready/)になりましたが、Edge については開発中です。IndexedDB の Promise ラッパーにより、IndexedDB ライブラリに付属の強力で複雑な機構（トランザクション、スキーマ バージョニングなど）の一部は隠されます。IndexedDB は[オブザーバー](https://github.com/WICG/indexed-db-observers)をサポートしているため、タブ間で簡単に同期を取ることができます。
+For PWAs, you can cache static resources, composing your application shell (JS/CSS/HTML files) using the Cache API and fill in the offline page data from IndexedDB. Debugging support for IndexedDB is now available in [Chrome](/web/tools/chrome-devtools/iterate/manage-data/local-storage) (Application tab), Opera, [Firefox](https://developer.mozilla.org/en-US/docs/Tools/Storage_Inspector) (Storage Inspector) and Safari (see the Storage tab).
 
+## What about other storage mechanisms?
 
+Web Storage (e.g LocalStorage and SessionStorage) is synchronous, has no Web Worker support and is size and type (strings only) limited. Cookies [have their uses](https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies) but are synchronous, lack web worker support and are also size-limited. WebSQL does not have broad browser support and its use is not recommended. The File System API is not supported on any browser besides Chrome. The [File API](https://developer.mozilla.org/en-US/docs/Web/API/File) is being improved in the [File and Directory Entries API](https://wicg.github.io/entries-api/) and [File API](https://w3c.github.io/FileAPI/) specs but neither is sufficiently mature or standardized to encourage widespread adoption yet.
 
-Safari 10 は、最新の Tech Preview で[長年にわたる多くの IndexedDB バグ](https://gist.github.com/nolanlawson/08eb857c6b17a30c1b26)を修正しました。注: 一部のユーザーの方は、Safari 10 の IndexedDB と PouchDB の安定性の問題に遭遇し、動作が少し遅いと感じたことがあるでしょう。さらに調査が行われるまでは、状況は異なっている可能性があります。ブラウザのバグをテストして報告し、@webkit や関連する OSS ライブラリの作成者が確認できるようにしてください。LocalForage、PouchDB、YDN、および Lovefield は、Safari ではデフォルトで WebSQL を使用しています（壊れた IndexedDB の機能テストを効率的に実行する方法がないため）。つまり、これらのライブラリは、余分な労力なしで Safari 10 で動作します（IndexedDB を直接使用しないだけでなく）。
-
-
-PWA では、Cache API を使用したアプリシェル（JS / CSS / HTML シェル）を作成して静的リソースをキャッシュし、IndexedDB からオフライン ページデータを入力できます。IndexedDB のデバッグ サポートは、現在は [Chrome](/web/tools/chrome-devtools/iterate/manage-data/local-storage)（[Application] タブ）、Opera、[Firefox](https://developer.mozilla.org/en-US/docs/Tools/Storage_Inspector)（Storage Inspector）、および Safari（[Storage] タブ）で利用できます。
-
-
-
-
-
-##  その他のストレージ メカニズムについて
-
-ウエブ ストレージ（LocalStorage、SessionStorage など）は同期的であり、Web Worker のサポートはありません。また、サイズとタイプ（文字列のみ）が制限されています。Cookie には[固有の用途](https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies)がありますが、同期的であり、Web Worker のサポートはありません。また、サイズが制限されています。WebSQL は広範なブラウザ サポートがないため、その使用は推奨されていません。File System API は Chrome 以外のブラウザではサポートされていません。[File API](https://developer.mozilla.org/en-US/docs/Web/API/File) は [File and Directory Entries API](https://wicg.github.io/entries-api/) と [File API](https://w3c.github.io/FileAPI/) 仕様で改良されているものの、どちらも十分に成熟または標準化されていないため、まだ幅広く採用されていません。
-
-
-
-
-
-
-##  保存可能な量
+## How much can I store?
 
 <table>
   <thead>
-    <th>ブラウザ</th>
-    <th>制限</th>
+    <th>Browser</th>
+    <th>Limit</th>
   </thead>
   <tbody>
     <tr>
       <td>Chrome</td>
-      <td>空き領域の 6% 未満</td>
+      <td>&lt;6% of free space</td>
     </tr>
     <tr>
       <td>Firefox</td>
-      <td>空き領域の 10% 未満</td>
+      <td>&lt;10% of free space</td>
     </tr>
     <tr>
       <td>Safari</td>
-      <td>50 MB 未満</td>
+      <td>&lt;50MB</td>
     </tr>
     <tr>
       <td>IE10</td>
-      <td>250 MB 未満</td>
+      <td>&lt;250MB</td>
+    </tr>
+    <tr>
+      <td>Edge</td>
+      <td>
+        <a href="https://developer.microsoft.com/en-us/microsoft-edge/platform/documentation/dev-guide/storage/IndexedDB/">
+          Dependent on volume size
+        </a>
+      </td>
     </tr>
   <tbody>
 </table>
 
-Chrome と Opera では、ストレージは（API ごとではなく）オリジンごとです。両方のストレージ メカニズムでは、ブラウザの[割り当て](http://www.html5rocks.com/en/tutorials/offline/quota-research/)に到達するまでデータを保存します。アプリで [Quota Management
-API](https://developer.mozilla.org/en-US/docs/Web/API/StorageQuota) を使用して現在使用している割り当てを確認できます。Chrome では、アプリは空きディスク領域の最大 6% を使用できます。Firefox では、アプリは空きディスク領域の最大 10% を使用できますが、50 MB のデータが保存されると、ユーザーはストレージを増やすよう要求されます。モバイル Safari のアプリは最大 50 MB を使用できますが、PC 用 Safari ではストレージは無制限です（5 MB を超えるとストレージを増やすよう要求されます）。IE10 以降では、250 MB で限度に達しますが、10 MB でユーザーに通知します。PouchDB は、IDB ストレージの動作を[追跡](https://pouchdb.com/faq.html#data_limits)します。
+In Chrome and Opera, your storage is per origin (rather than per API). Both storage mechanisms will store data until the browser [quota](http://www.html5rocks.com/en/tutorials/offline/quota-research/) is reached. Apps can check how much quota they’re using with the [Quota Management API](https://developer.mozilla.org/en-US/docs/Web/API/StorageQuota). In Chrome, apps can use up to 6% of free disk space. In Firefox, apps can use up to 10% of free disk space, but will prompt the user for further storage requests after 50MB data stored. In mobile Safari, apps can use up to 50MB max, whereas desktop Safari allows unlimited storage (and prompts after 5MB). IE10+ maxes out at 250MB and prompts the user at 10MB. PouchDB [tracks](https://pouchdb.com/faq.html#data_limits) IDB storage behavior.
 
+## How can I tell how much storage space my app is using?
 
-##  アプリで使用しているストレージ領域を知る方法
+In Chrome, the [Quota Management API](https://www.w3.org/TR/quota-api/) lets you query for the size of storage space currently used and how much is available to the application. A newer [Storage Quota Estimate API](https://www.chromestatus.com/features/5630353511284736) tries to make it even easier to discover how much quota an origin is using with support for Promises.
 
-Chrome では、[Quota Management API](https://www.w3.org/TR/quota-api/) を使用して、現在使用されているストレージ領域のサイズとアプリで利用できるサイズを問い合わせることができます。新しい [Storage Quota Estimate
-API](https://www.chromestatus.com/features/5630353511284736) を使用すると、Promise のサポートにより、オリジンで使用している割り当てを簡単に調べることができます。
-
-
-
-##  キャッシュ エビクションの動作
+## How does cache eviction work?
 
 <table>
   <thead>
-    <th>ブラウザ</th>
-    <th>エビクション ポリシー</th>
+    <th>Browser</th>
+    <th>Eviction Policy</th>
   </thead>
   <tbody>
     <tr>
       <td>Chrome</td>
-      <td>Chrome が領域不足になったら LRU</td>
+      <td>LRU once Chrome runs out of space</td>
     </tr>
     <tr>
       <td>Firefox</td>
-      <td>ディスク全体がいっぱいになったら LRU</td>
+      <td>LRU if the whole disk gets full</td>
     </tr>
     <tr>
       <td>Safari</td>
-      <td>エビクションなし</td>
+      <td>No eviction</td>
     </tr>
     <tr>
       <td>Edge</td>
-      <td>エビクションなし</td>
+      <td>No eviction</td>
     </tr>
   <tbody>
 </table>
 
-オリジンには、好きなように利用できる領域が与えられます。この空き領域は、あらゆる形式のオリジン ストレージ（IndexedDB、Cache API、localStorage など）で共有されます。与えられる領域のサイズは決まっておらず、端末とストレージの条件によって異なります。
+An origin is given an amount of space to do with as it pleases. This free space is shared across all forms of origin storage (IndexedDB, Cache API, localStorage etc). The amount given isn’t specified and will vary depending on device and storage conditions.
 
+When web storage is low, a UA will clear storage to make space available. This can harm offline responsiveness so the recently updated [Storage](https://storage.spec.whatwg.org/) spec defines "persistent", and “best effort” strategies, with “best effort” being the default. “Best effort” means the storage can be cleared without interrupting the user, but is less durable for long-term and/or critical data. IndexedDB and the Cache API both fall into the “best effort” category today.
 
-ウェブ ストレージが少なくなると、UA はストレージを消去して領域を使用できるようにします。これにより、オフラインの応答性が低下する可能性があるため、最近アップデートされた[ストレージ](https://storage.spec.whatwg.org/)仕様では、「永続性」および「ベスト エフォート」戦略（デフォルトは「ベスト エフォート」）が定義されています。「ベスト エフォート」ではユーザーを妨げることなくストレージを消去できますが、長期間のデータや重要なデータに対しては永続性が低くなります。現在、IndexedDB と Cache API は両方とも「ベスト エフォート」カテゴリに分類されます。
+"Persistent" storage is not automatically cleared when storage is low. The user needs to manually clear this storage (via browser settings). Chrome has been experimenting with support for [Persistent Storage](/web/updates/2016/06/persistent-storage) under an origin trial, and the latest news suggests it will be shipping in [Chrome 55](https://groups.google.com/a/chromium.org/d/msg/blink-dev/5Sihi1iAXYc/wnvNDFIPAQAJ).
 
+## Current and future offline storage work
 
-「永続性」ストレージは、ストレージが少なくなっても自動的に消去されることはありません。ユーザーが（ブラウザ設定により）手動でこのストレージを消去する必要があります。Chrome は、オリジン トライアルで[永続性ストレージ](/web/updates/2016/06/persistent-storage)のサポートをテストしており、最新のニュースで [Chrome 55](https://groups.google.com/a/chromium.org/d/msg/blink-dev/5Sihi1iAXYc/wnvNDFIPAQAJ) から対応することを示唆しています。
+If offline storage interests you, the efforts below are worth keeping an eye on.
 
+* [Durable Storage](https://storage.spec.whatwg.org/): protect storage from the user agent’s clearing policies.
 
+* [Indexed Database API 2.0](https://w3c.github.io/IndexedDB/): advanced key-value data management.
 
+* [Promisified IndexedDB](https://github.com/inexorabletash/indexeddb-promises): native support for a Promise-friendly version of IndexedDB.
 
+* [IndexedDB Observers](https://github.com/WICG/indexed-db-observers): native IndexedDB observation without needing wrapper around the database.
 
+* [Async Cookies API](https://github.com/bsittler/async-cookies-api): async JavaScript cookies API for documents and workers.
 
-##  オフライン ストレージへの現在の取り組みとこれからの取り組み
+* [Quota Management API](https://www.w3.org/TR/quota-api/): check how much quota an app/origin is using.
 
-オフライン ストレージに興味がある場合は、次の取り組みを常にチェックすることをお勧めします。
+* [writable-files](https://github.com/WICG/writable-files): allow sites to interact with local files more seamlessly.
 
+* [Directory downloads](https://github.com/drufball/directory-download): allow sites to download directories without .zip files.
 
-* [永続性ストレージ](https://storage.spec.whatwg.org/): ストレージをユーザー エージェントの消去ポリシーから保護します。
+* [File and Directory Entries API](https://wicg.github.io/entries-api/): support for file and directory upload by drag-and-drop.
 
+* Support for an [Async Cookies API](https://github.com/WICG/async-cookies-api) is being sketched out right now with a polyfill in the works.
 
-* [Indexed Database API 2.0](https://w3c.github.io/IndexedDB/): 高度なキー値データ管理。
+* Debugging IndexedDB is not currently supported in Edge (however, it is possible to debug the underlying JetDB) — vote [here](https://wpdev.uservoice.com/forums/257854-microsoft-edge-developer/suggestions/6517763-indexeddb-explorer-in-dev-tools) for built in support.
 
+* Although [ideas](https://github.com/slightlyoff/async-local-storage) for async LocalStorage have been kicked around in the past, current focus is on getting [IndexedDB 2.0](https://w3c.github.io/IndexedDB/) in a good state.
 
-* [Promise 化された IndexedDB](https://github.com/inexorabletash/indexeddb-promises): Promise 対応版の IndexedDB のネイティブ サポート。
+* The [writable-files](https://github.com/WICG/writable-files) proposal may eventually give us a better standards-track solution for seamless local file interaction.
 
+* For apps requiring more persistent storage, see the on-going work on [Durable Storage](https://storage.spec.whatwg.org/).
 
+Offline storage isn’t quite magical and an understanding of the underlying APIs will go far in helping you make the most out of what we now have available. Whether you prefer to directly use these APIs or work with an abstraction library, take some time to get familiar with your options.
 
-* [IndexedDB オブザーバー](https://github.com/WICG/indexed-db-observers): データベースのラッパーを必要としないネイティブの IndexedDB 監視。
+Hopefully this guidance will help you craft an offline experience that makes your PWA shine! ✨
 
+### Background reading
 
-* [非同期 Cookie API](https://github.com/bsittler/async-cookies-api): ドキュメントや Worker 用の非同期の JavaScript Cookie API。
+* [State of Offline Storage APIs](https://docs.google.com/presentation/d/11CJnf77N45qPFAhASwnfRNeEMJfR-E_x05v1Z6Rh5HA/edit) by Joshua Bell
 
+* [Browser Database Comparison](http://nolanlawson.github.io/database-comparison/) by Nolan Lawson
 
-* [Quota Management API](https://www.w3.org/TR/quota-api/): アプリやオリジンが使用している割り当てを確認します。
-
-
-* [書き込み可能ファイル](https://github.com/WICG/writable-files): サイトがローカル ファイルをよりシームレスに操作できるようにします。
-
-
-* [ディレクトリ ダウンロード](https://github.com/drufball/directory-download): サイトが .zip ファイルなしでディレクトリをダウンロードできるようにします。
-
-
-* [File and Directory Entries API](https://wicg.github.io/entries-api/): ドラッグ アンド ドロップによるファイルとディレクトリのアップロードのサポート。
-
-
-* [非同期 Cookie API](https://github.com/WICG/async-cookies-api) のサポートは、現在 Polyfill を使用して概要を作成中です。
-
-
-
-* IndexedDB のデバッグは、現在 Edge でサポートされていません（ただし、その基本となる JetDB はデバッグできます）。組み込みサポート実現のための賛成票を[ここで](https://wpdev.uservoice.com/forums/257854-microsoft-edge-developer/suggestions/6517763-indexeddb-explorer-in-dev-tools)投票してください。
-
-
-
-
-* 非同期 LocalStorage の[アイデア](https://github.com/slightlyoff/async-local-storage)は過去に検討されましたが、現在は [IndexedDB 2.0](https://w3c.github.io/IndexedDB/) を良好な状態で取得することに重点が置かれています。
-
-
-
-* [書き込み可能ファイル](https://github.com/WICG/writable-files)の提案により、最終的には、シームレスなローカル ファイル操作のためのより優れた標準化過程ソリューションが提供される可能性があります。
-
-
-
-* より永続性の高いストレージがアプリに必要な場合は、[永続性ストレージ](https://storage.spec.whatwg.org/)に関する継続的な取り組みをご覧ください。
-
-
-オフライン ストレージは、それほど不思議なものではありません。基礎となる API を理解すると、現在手元にあるものを最大限に活用することができます。これらの API を直接使用する場合も、抽象化ライブラリを使用する場合も、少し時間をかけてオプションを理解していってください。
-
-
-
-
-このガイダンスが、PWA に輝きを与えるようなオフライン エクスペリエンスを実現するのに役立つことを願っています。
-
-
-###  背景資料
-
-* [State of Offline Storage APIs](https://docs.google.com/presentation/d/11CJnf77N45qPFAhASwnfRNeEMJfR-E_x05v1Z6Rh5HA/edit): Joshua Bell
-
-
-
-* [Browser Database Comparison](http://nolanlawson.github.io/database-comparison/): Nolan Lawson
-
-
-* [IndexedDB, WebSQL, LocalStorage  -  What Blocks the DOM?](https://nolanlawson.com/2015/09/29/indexeddb-websql-localstorage-what-blocks-the-dom/)
-
+* [IndexedDB, WebSQL, LocalStorage — What Blocks the DOM?](https://nolanlawson.com/2015/09/29/indexeddb-websql-localstorage-what-blocks-the-dom/)
 
 * [How to Think about Databases (Pokedex research)](https://nolanlawson.com/2016/02/08/how-to-think-about-databases/)
 
-
 * [Which APIs are Supported in Web Workers and Service Workers?](https://nolanlawson.github.io/html5workertest/)
 
+### Helpful resources
 
-### 役立つリソース
+* [Workbox](/web/tools/workbox/) (set of service worker libraries that make building progressive web apps easy)
 
-* [sw-toolbox](https://github.com/GoogleChrome/sw-toolbox)（動的 / ランタイム リクエストのオフライン キャッシュ）
+* Webpack users can directly use the above or [offline-plugin](https://github.com/NekR/offline-plugin)
 
+### IndexedDB libraries worth checking out
 
-* [sw-precache](https://github.com/GoogleChrome/sw-precache)（静的アセット / アプリシェルのオフライン プリキャッシュ）
+* [localForage](https://github.com/localForage/localForage) (~8KB, promises, good legacy browser support)
 
+* [IDB-keyval](https://www.npmjs.com/package/idb-keyval) (500 byte alternative to localForage, for modern browsers)
 
-* webpack ユーザーは、上記または [offline-plugin](https://github.com/NekR/offline-plugin) を直接使用できます。
+* [IDB-promised](https://www.npmjs.com/package/idb) (~2k, same IndexedDB API, but with promises)
 
+* [Dexie](http://dexie.org/) (~16KB, promises, complex queries, secondary indices)
 
-###  確認する価値のある IndexedDB ライブラリ
+* [PouchDB](https://pouchdb.com/) (~45KB (supports [custom builds](https://pouchdb.com/2016/06/06/introducing-pouchdb-custom-builds.html)), synchronization)
 
-* [localForage](https://github.com/localForage/localForage)（約 8 KB、Promise、適切な以前のブラウザのサポート）
+* [Lovefield](https://github.com/google/lovefield) (relational)
 
+* [LokiJS](http://lokijs.org/#/) (in-memory)
 
-* [Dexie](http://dexie.org/)（約 16 KB、Promise、複雑なクエリ、セカンダリ インデックス)
+* [ydn-db](https://github.com/yathit/ydn-db) (dexie-like, works with WebSQL)
 
+**Thanks to Nolan Lawson, Joshua Bell (whose work on Open Web Storage and [BlinkOn talk](https://docs.google.com/presentation/d/11CJnf77N45qPFAhASwnfRNeEMJfR-E_x05v1Z6Rh5HA/edit) heavily inspired this article), Jake Archibald, Dru Knox and others for their previous work in the web storage space.**
 
-* [PouchDB](https://pouchdb.com/)（約 45 KB、[カスタムビルド](https://pouchdb.com/2016/06/06/introducing-pouchdb-custom-builds.html)をサポート、同期）
+## Feedback {: #feedback }
 
-
-
-* [Lovefield](https://github.com/google/lovefield)（リレーショナル）
-
-* [LokiJS](http://lokijs.org/#/)（メモリ内）
-
-* [ydn-db](https://github.com/yathit/ydn-db)（dexie に類似、WebSQL で動作）
-
-**Nolan Lawson, Joshua Bell（Open Web Storage と [BlinkOn talk](https://docs.google.com/presentation/d/11CJnf77N45qPFAhASwnfRNeEMJfR-E_x05v1Z6Rh5HA/edit) への取り組みがこの記事を書くきっかけとなりました）、Jake Archibald、Dru Knox、およびその他の方々に、ウェブストレージ領域へのこれまでの取り組みに対し感謝の意を述べたいと思います。
-**
-
-
-
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
