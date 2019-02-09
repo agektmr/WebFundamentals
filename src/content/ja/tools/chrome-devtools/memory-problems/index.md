@@ -1,108 +1,70 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Chrome と DevTools を使用して、メモリリーク、メモリの肥大化、頻繁なガベージ コレクションなど、ページのパフォーマンスに影響するメモリの問題を見つける方法について説明します。
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Learn how to use Chrome and DevTools to find memory issues that affect page performance, including memory leaks, memory bloat, and frequent garbage collections.
 
-{# wf_updated_on:2015-08-03 #}
-{# wf_published_on:2015-04-13 #}
+{# wf_updated_on: 2018-07-27 #} {# wf_published_on: 2015-04-13 #} {# wf_blink_components: Blink>MemoryAllocator,Platform>DevTools #}
 
-# メモリの問題の解決 {: .page-title }
+# Fix Memory Problems {: .page-title }
 
 {% include "web/_shared/contributors/kaycebasques.html" %}
 
-Chrome と DevTools を使用して、メモリリーク、メモリの肥大化、頻繁なガベージ コレクションなど、ページのパフォーマンスに影響するメモリの問題を見つける方法について説明します。
-
-
-
+Learn how to use Chrome and DevTools to find memory issues that affect page performance, including memory leaks, memory bloat, and frequent garbage collections.
 
 ### TL;DR {: .hide-from-toc }
-- Chrome タスク マネージャを使用して、ページで現在使用されているメモリ量を調べます。
-- Timeline 記録を使用して、メモリの使用量を時系列に表示します。
-- ヒープ スナップショットを使用して、デタッチされた DOM ツリー（メモリリークの一般的な原因）を特定します。
-- Allocation Timeline 記録を使用して、新しいメモリが JS ヒープに割り当てられるタイミングを調べます。
 
+* Find out how much memory your page is currently using with the Chrome Task Manager.
+* Visualize memory usage over time with Timeline recordings.
+* Identify detached DOM trees (a common cause of memory leaks) with Heap Snapshots.
+* Find out when new memory is being allocated in your JS heap with Allocation Timeline recordings.
 
-## 概要
+## Overview
 
-[RAIL][RAIL] パフォーマンス モデルの観点から、ユーザーを第一に考えます。
+In the spirit of the [RAIL](/web/tools/chrome-devtools/profile/evaluate-performance/rail) performance model, the focus of your performance efforts should be your users.
 
+Memory issues are important because they are often perceivable by users. Users can perceive memory issues in the following ways:
 
-メモリの問題はユーザーが気付くことが多いため、重要な問題です。
-ユーザーは次のようなことからメモリの問題に気付く可能性があります。
+* **A page's performance gets progressively worse over time.** This is possibly a symptom of a memory leak. A memory leak is when a bug in the page causes the page to progressively use more and more memory over time. 
+* **A page's performance is consistently bad.** This is possibly a symptom of memory bloat. Memory bloat is when a page uses more memory than is necessary for optimal page speed.
+* **A page's performance is delayed or appears to pause frequently.** This is possibly a symptom of frequent garbage collections. Garbage collection is when the browser reclaims memory. The browser decides when this happens. During collections, all script execution is paused. So if the browser is garbage collecting a lot, script execution is going to get paused a lot.
 
+### Memory bloat: how much is "too much"?
 
-* **時間が経つにつれ、ページのパフォーマンスが徐々に低下する。**これはメモリリークの兆候と考えられます。
-メモリリークとは、ページ内のバグが原因で、時間が経つにつれページで使用されるメモリ量が徐々に増えていく現象です。
-* **ページのパフォーマンスが一貫して低い。**これはメモリ肥大化の兆候と考えられます。
-メモリ肥大化とは、ページで使用されるメモリ量が最適なページ速度を保つために必要なメモリ量を超えている状態です。
-* **頻繁に、ページのパフォーマンスが低下するか、一時停止しているように見える。**これはガベージ コレクションが頻繁に行われている兆候と考えられます。
-ガベージ コレクションは、ブラウザによってメモリが再利用されるタイミングで行われます。
-このタイミングはブラウザに左右されます。ガベージ コレクションの実行中は、すべてのスクリプトの実行が一時停止します。そのため、ブラウザによってガベージ コレクションが行われる頻度が増すと、スクリプトの実行が何度も一時停止することになります。
+A memory leak is easy to define. If a site is progressively using more and more memory, then you've got a leak. But memory bloat is a bit harder to pin down. What qualifies as "using too much memory"?
 
+There are no hard numbers here, because different devices and browsers have different capabilities. The same page that runs smoothly on a high-end smartphone might crash on a low-end smartphone.
 
-### メモリ肥大化: 「使用量が多すぎる」と判断する基準
+The key here is to use the RAIL model and focus on your users. Find out what devices are popular with your users, and then test out your page on those devices. If the experience is consistently bad, the page may be exceeding the memory capabilities of those devices.
 
-メモリリークを判断するのは簡単です。サイトのメモリ使用量が徐々に増えていれば、リークが発生しています。
-ですが、メモリ肥大化の判断はやや困難です。
-「メモリ使用量が多すぎる」と判断する基準は何でしょう。
+## Monitor memory use in realtime with the Chrome Task Manager
 
-これを判断する具体的な数値はありません。理由は端末やブラウザの性能がそれぞれ異なるためです。
-ハイエンド スマートフォンでスムーズに実行されるページが、ローエンド スマートフォンではクラッシュすることがあります。
+Use the Chrome Task Manager as a starting point to your memory issue investigation. The Task Manager is a realtime monitor that tells you how much memory a page is currently using.
 
+1. Press <kbd>Shift</kbd>+<kbd>Esc</kbd> or go to the Chrome main menu and select **More tools** > **Task manager** to open the Task Manager.
+    
+    ![opening the task
+manager](imgs/task-manager.png)
 
+2. Right-click on the table header of the Task Manager and enable **JavaScript memory**.
+    
+    ![enable javascript
+memory](imgs/js-memory.png)
 
-重要なのは、RAIL モデルに従ってユーザーを第一に考えることです。ターゲットにするユーザーが通常使用する端末を調べ、その端末でページをテストします。操作性が一貫して低い場合、ページがその端末で利用可能なメモリ容量を超えている可能性があります。
+These two columns tell you different things about how your page is using memory:
 
-
-[RAIL]: /web/tools/chrome-devtools/profile/evaluate-performance/rail
-
-## Chrome タスク マネージャによるメモリ使用量のリアルタイム監視
-
-メモリの問題を調べるにあたり、まずは Chrome タスク マネージャを使用します。
-タスク マネージャは、ページが現在使用しているメモリ量を表示するリアルタイム モニターです。
-
-
-1. <kbd>Shift</kbd>+<kbd>Esc</kbd> キーを押すか、Chrome のメインメニューに移動して [**More tools**] > [**Task manager**] を選択してタスク マネージャを開きます。
-
-
-
-   ![タスク マネージャを開く](imgs/task-manager.png)
-
-
-1. タスク マネージャの表の見出しを右クリックし、[**JavaScript memory**] を有効にします。
-
-
-   ![JavaScript memory を有効にする](imgs/js-memory.png)
-
-
-以下の 2 つの列は、ページが使用するメモリについて、それぞれ次の内容を示しています。
-
-* [**Memory**] 列はネイティブメモリを表します。DOM のノードはネイティブメモリに格納されます。
-この値が増えている場合は、DOM のノードが作成されています。
-* [**JavaScript Memory**] 列は JS ヒープを表します。この列には 2 つの値が表示されます。
-判断に使用するのは、ライブ数値（かっこ内）です。
-ライブ数値は、ページ上のアクセス可能なオブジェクトが使用中のメモリ量を表しています。
-この数値が増えている場合は、新しいオブジェクトが作成されているか、既存のオブジェクトが拡大しています。
-
-
+* The **Memory** column represents native memory. DOM nodes are stored in native memory. If this value is increasing, DOM nodes are getting created.
+* The **JavaScript Memory** column represents the JS heap. This column contains two values. The value you're interested in is the live number (the number in parentheses). The live number represents how much memory the reachable objects on your page are using. If this number is increasing, either new objects are being created, or the existing objects are growing.
 
 <!-- live number reference: https://groups.google.com/d/msg/google-chrome-developer-tools/aTMVGoNM0VY/bLmf3l2CpJ8J -->
 
-## Timeline 記録によるメモリリークの表示
+## Visualize memory leaks with Timeline recordings
 
-まずは [Timeline] パネルを使用して調査を始めることもできます。
-[Timeline] パネルには、ページのメモリ使用量が時系列で表示されます。
+You can also use the Timeline panel as another starting point in your investigation. The Timeline panel helps you visualize a page's memory use over time.
 
+1. Open the **Timeline** panel on DevTools.
+2. Enable the **Memory** checkbox.
+3. [Make a recording](/web/tools/chrome-devtools/profile/evaluate-performance/timeline-tool#make-a-recording).
 
-1. DevTools で [**Timeline**] パネルを開きます。
-1. [**Memory**] チェックボックスをオンにします。
-1. [記録を開始します][recording]。
+Tip: It's a good practice to start and end your recording with a forced garbage collection. Click the **collect garbage** button (![force garbage collection button](imgs/collect-garbage.png){:.inline}) while recording to force garbage collection.
 
-ヒント: 記録の開始時と停止時に強制的にガベージ コレクションを行うことをお勧めします。
-記録中に **ガベージ コレクションの実行** ボタン (![ガベージ コレクションの強制実行ボタン][cg]{:.inline}) をクリックして、強制的にガベージ コレクションを行います。
-
-
-
-以下のコードを使用して、Timeline のメモリ記録について説明します。
+To demonstrate Timeline memory recordings, consider the code below:
 
     var x = [];
     
@@ -114,40 +76,21 @@ Chrome と DevTools を使用して、メモリリーク、メモリの肥大化
     }
     
     document.getElementById('grow').addEventListener('click', grow);
+    
 
-コード内で参照しているボタンがクリックされるたびに、1 万個の `div` ノードがドキュメント本文に追加され、100 万個の `x` 文字から成る文字列が `x` 配列にプッシュされます。このコードを実行すると、以下のスクリーンショットのような Timeline 記録が生成されます。
+Every time that the button referenced in the code is pressed, ten thousand `div` nodes are appended to the document body, and a string of one million `x` characters is pushed onto the `x` array. Running this code produces a Timeline recording like the following screenshot:
 
+![simple growth example](imgs/simple-growth.png)
 
-![単純な増加の例][sg]
+First, an explanation of the user interface. The **HEAP** graph in the **Overview** pane (below **NET**) represents the JS heap. Below the **Overview** pane is the **Counter** pane. Here you can see memory usage broken down by JS heap (same as **HEAP** graph in the **Overview** pane), documents, DOM nodes, listeners, and GPU memory. Disabling a checkbox hides it from the graph.
 
-まず、ユーザー インターフェースを説明します。**概要** ペイン（[**NET**] の下）の **HEAP** グラフは、JS ヒープを表します。**概要**ペインの下には**カウンター**ペインがあります。ここでは、JS ヒープ（**概要** ペインの **HEAP** グラフと同じ）、ドキュメント、DOM ノード、リスナー、GPU メモリ別にメモリ使用量が表示されます。チェックボックスをオフにすると、そのメモリ量がグラフに表示されなくなります。
+Now, an analysis of the code compared with the screenshot. If you look at the node counter (the green graph) you can see that it matches up cleanly with the code. The node count increases in discrete steps. You can presume that each increase in the node count is a call to `grow()`. The JS heap graph (the blue graph) is not as straightforward. In keeping with best practices, the first dip is actually a forced garbage collection (achieved by pressing the **collect garbage** button). As the recording progresses you can see that the JS heap size spikes. This is natural and expected: the JavaScript code is creating the DOM nodes on every button click and doing a lot of work when it creates the string of one million characters. The key thing here is the fact that the JS heap ends higher than it began (the "beginning" here being the point after the forced garbage collection). In the real world, if you saw this pattern of increasing JS heap size or node size, it would potentially mean a memory leak.
 
+## Discover detached DOM tree memory leaks with Heap Snapshots
 
+A DOM node can only be garbage collected when there are no references to it from either the page's DOM tree or JavaScript code. A node is said to be "detached" when it's removed from the DOM tree but some JavaScript still references it. Detached DOM nodes are a common cause of memory leaks. This section teaches you how to use DevTools' heap profilers to identify detached nodes.
 
-
-このスクリーンショットと比較してコードを分析します。ノードカウンター（緑色のグラフ）を見ると、コードと明らかに一致しているのがわかります。ノード数が段階的に増加しています。
-ノード数は `grow()` を呼び出すたびに増加すると考えられます。
-JS ヒープのグラフ（青のグラフ）は単純ではありません。ベスト プラクティスを踏まえると、最初の落ち込みは実際にガベージ コレクションが強制的に行われたことを示します（ガベージ コレクションは、**ガベージ コレクションの実行**ボタンをクリックして行います）。記録が進んでいくと、JS ヒープサイズが急上昇しているのが分かります。これは不自然ではなく、想定できます。JavaScript コードでは、ボタンがクリックされるたびに DOM ノードが作成され、100 万文字から成る文字列を作成するときに多くの処理を行います。重要なのは、開始時よりも終了時の方が JS ヒープが高くなっている点です（「開始時」とはガベージ コレクションを強制的に行った直後を指します）。実際に JS ヒープサイズまたはノードサイズが増加していくパターンを見つけた場合は、メモリリークの可能性を考えます。
-
-
-[recording]: /web/tools/chrome-devtools/profile/evaluate-performance/timeline-tool#make-a-recording
-
-[cg]: imgs/collect-garbage.png
-
-[sg]: imgs/simple-growth.png
-
-[hngd]: https://jsfiddle.net/kaycebasques/tmtbw8ef/
-
-## ヒープ スナップショットによるデタッチされた DOM ツリーのメモリリークの検出
-
-DOM ノードのガベージ コレクションは、ページの DOM ツリーまたは JavaScript コードからそのノードが参照されなくなった時点で行われます。
-ノードが DOM ツリーから削除されても、一部の JavaScript が引き続きそのノードが参照されていることを「デタッチされる」と言います。
-
-デタッチされた DOM ノードは、メモリリークの一般的な原因になります。このセクションでは、DevTools
-のヒープ プロファイラを使用して、デタッチされたノードを特定する方法について説明します。
-
-
-以下は、デタッチされた DOM ノードのシンプルな例です。 
+Here's a simple example of detached DOM nodes.
 
     var detachedNodes;
     
@@ -157,145 +100,90 @@ DOM ノードのガベージ コレクションは、ページの DOM ツリー�
         var li = document.createElement('li');
         ul.appendChild(li);
       }
-      detachedTree = ul;
+      detachedNodes = ul;
     }
     
     document.getElementById('create').addEventListener('click', create);
+    
 
-コードで参照されているボタンをクリックすると、10 個の子 `li` を持つ `ul` ノードが作成されます。
-これらのノードはコードからは参照されていますが、DOM ツリーには存在しないため、デタッチされた状態になります。
+Clicking the button referenced in the code creates a `ul` node with ten `li` children. These nodes are referenced by the code but do not exist in the DOM tree, so they're detached.
 
+Heap snapshots are one way to identify detached nodes. As the name implies, heap snapshots show you how memory is distributed among your page's JS objects and DOM nodes at the point of time of the snapshot.
 
-ヒープ スナップショットはデタッチされたノードを特定する 1 つの手段です。名前が示すように、ヒープ スナップショットは、スナップショットの取得時点でページの JS オブジェクトと DOM ノードにメモリがどのように分散されているかを示します。
+To create a snapshot, open DevTools and go to the **Profiles** panel, select the **Take Heap Snapshot** radio button, and then press the **Take Snapshot** button.
 
+![take heap snapshot](imgs/take-heap-snapshot.png)
 
+The snapshot may take some time to process and load. Once it's finished, select it from the lefthand panel (named **HEAP SNAPSHOTS**).
 
-スナップショットを取得するには、DevTools を開き、[**Profiles**] パネルに移動して [**Take Heap Snapshot**] ラジオボタンをオンにした後、[**Take Snapshot**] ボタンをクリックします。
+Type `Detached` in the **Class filter** textbox to search for detached DOM trees.
 
- 
+![filtering for detached nodes](imgs/detached-filter.png)
 
-![ヒープ スナップショットを取得する][ths]
+Expand the carats to investigate a detached tree.
 
-スナップショットの処理と読み込みには時間がかかることがあります。完了したら、左側のパネルでスナップショット（[**HEAP SNAPSHOTS**]）を選択します。
- 
+![investigating detached tree](imgs/expanded-detached.png)
 
-**クラス フィルタ** テキストボックスに「`Detached`」と入力して、デタッチされた DOM ツリーを検索します。
+Nodes highlighted yellow have direct references to them from the JavaScript code. Nodes highlighted red do not have direct references. They are only alive because they are part of the yellow node's tree. In general, you want to focus on the yellow nodes. Fix your code so that the yellow node isn't alive for longer than it needs to be, and you also get rid of the red nodes that are part of the yellow node's tree.
 
+Click on a yellow node to investigate it further. In the **Objects** pane you can see more information about the code that's referencing it. For example, in the screenshot below you can see that the `detachedTree` variable is referencing the node. To fix this particular memory leak, you would study the code that uses `detachedTree` and ensure that it removes its reference to the node when it's no longer needed.
 
-![デタッチされたノードのフィルタリング][df]
+![investigating a yellow node](imgs/yellow-node.png)
 
-カラットを展開してデタッチされたツリーを調べます。
+## Identify JS heap memory leaks with Allocation Timelines
 
-![デタッチされたツリーの調査][ed]
+The Allocation Timeline is another tool that can help you track down memory leaks in your JS heap.
 
-黄色でハイライト表示されているノードには、JavaScript コードからの直接参照が含まれています。
-赤でハイライト表示されたノードには直接参照は含まれていません。それらは黄色のノードのツリーに含まれているという理由で表示されているだけです。
-通常は、黄色のノードに注目します。
-黄色のノードが必要以上に表示されないようにコードを修正します。また、黄色のノードツリーに含まれている赤のノードも取り除きます。
-
-
-
-さらに詳しく調べるには、黄色のノードをクリックします。[**Object**] ペインでは、そのノードを参照しているコードの詳細を確認できます。
-たとえば、以下のスクリーンショットでは、`detachedTree` 変数がノードを参照しているのがわかります。
-この特定のメモリリークを解決するには、`detachedTree` を使用するコードを調べ、不要になった時点でノードへの参照を削除します。
-
-
-
-![黄色のノードの調査][yn]
-
-[ths]: imgs/take-heap-snapshot.png
-
-[df]: imgs/detached-filter.png
-
-[ed]: imgs/expanded-detached.png
-
-[yn]: imgs/yellow-node.png
-
-## Allocation Timeline による JS ヒープのメモリリークの特定
-
-Allocation Timeline も、JS ヒープのメモリリークを追跡できるツールです。
- 
-
-以下のコードを使用して、Allocation Timeline について説明します。
+To demonstrate the Allocation Timeline consider the following code:
 
     var x = [];
-
+    
     function grow() {
       x.push(new Array(1000000).join('x'));
     }
-
+    
     document.getElementById('grow').addEventListener('click', grow);
+    
 
-コードで参照されているボタンがクリックされるたびに、100 万文字から成る文字列が `x` 配列に追加されます。
+Every time that the button referenced in the code is pushed, a string of one million characters is added to the `x` array.
 
+To record an Allocation Timeline, open DevTools, go to the **Profiles** panel, select the **Record Allocation Timeline** radio button, press the **Start** button, perform the action that you suspect is causing the memory leak, and then press the **stop recording** button (![stop recording button](imgs/stop-recording.png){:.inline}) when you're done.
 
-Allocation Timeline を記録するには、DevTools を開き、[**Profiles**] パネルに移動して、[**Record Allocation Timeline**] ラジオボタンをオンにし、[**Start**] ボタンをクリックします。メモリリークの原因となる疑いのある操作を実行し、完了したら **記録の停止** ボタン (![記録の停止ボタン][sr]{:.inline}) をクリックします。
+As you're recording, notice if any blue bars show up on the Allocation Timeline, like in the screenshot below.
 
+![new allocations](imgs/new-allocations.png)
 
+Those blue bars represent new memory allocations. Those new memory allocations are your candidates for memory leaks. You can zoom on a bar to filter the **Constructor** pane to only show objects that were allocated during the specified timeframe.
 
+![zoomed allocation timeline](imgs/zoomed-allocation-timeline.png)
 
- 
+Expand the object and click on its value to view more details about it in the **Object** pane. For example, in the screenshot below, by viewing the details of the object that was newly allocated, you'd be able to see that it was allocated to the `x` variable in the `Window` scope.
 
-記録中、以下のスクリーンショットのように、Allocation Timeline に青い縦線が表示される場合は注意が必要です。
- 
+![object details](imgs/object-details.png)
 
-![新しい割り当て][na]
+## Investigate memory allocation by function {: #allocation-profile }
 
-このような青い縦線は新しくメモリが割り当てられたことを表します。このような新しいメモリの割り当ては、メモリリークの候補になります。
-縦線を選択すると、指定した期間に割り当てられたオブジェクトのみが表示されるように、[**Constructor**] ペインをフィルタリングすることができます。
-
- 
-
-![選択した割り当て期間][zat]
-
-オブジェクトを展開して値をクリックすると、詳細が [**Object**] ペインに表示されます。
-たとえば、以下のスクリーンショットのように、新しく割り当てられたオブジェクトの詳細を表示すると、そのオブジェクトが `Window` スコープの `x` 変数に割り当てられていることを確認できます。
-
-
-
-![オブジェクトの詳細][od]
-
-[sr]: imgs/stop-recording.png
-
-[na]: imgs/new-allocations.png
-
-[zat]: imgs/zoomed-allocation-timeline.png
-
-[od]: imgs/object-details.png
-
-## 関数ごとのメモリ割り当て状況の調査{: #allocation-profile }
-
-[**Record Allocation Profiler**] という種類のプロファイルを使って、JavaScript 関数ごとのメモリ割り当てを表示します。
-
+Use the **Record Allocation Profiler** type to view memory allocation by JavaScript function.
 
 ![Record Allocation Profiler](imgs/record-allocation-profile.png)
 
-1. [**Record Allocation Profiler**] ラジオボタンをオンにします。ページにワーカーがある場合、[**Start**] ボタンの隣にあるドロップダウン メニューを使ってプロファイルの対象として選択できます。
-1. [**Start**] ボタンを押します。
-1. ページで調査したいアクションを実行します。
-1. アクションがすべて完了したら [**Stop**] ボタンを押します。
+1. Select the **Record Allocation Profiler** radio button. If there is a worker on the page, you can select that as the profiling target using the dropdown menu next to the **Start** button.
+2. Press the **Start** button.
+3. Perform the actions on the page which you want to investigate.
+4. Press the **Stop** button when you have finished all of your actions.
 
+DevTools shows you a breakdown of memory allocation by function. The default view is **Heavy (Bottom Up)**, which displays the functions that allocated the most memory at the top.
 
+![Allocation profile](imgs/allocation-profile.png)
 
-DevTools に関数ごとのメモリ割り当ての内訳が表示されます。既定のビューは [**Heavy (Bottom Up)**] です。このビューには、最もメモリを割り当ての多い関数が一番上に表示されます。
+## Spot frequent garbage collections
 
+If your page appears to pause frequently, then you may have garbage collection issues.
 
+You can use either the Chrome Task Manager or Timeline memory recordings to spot frequent garbage collections. In the Task Manager, frequently rising and falling **Memory** or **JavaScript Memory** values represent frequent garbage collections. In Timeline recordings, frequently rising and falling JS heap or node count graphs indicate frequent garbage collections.
 
-![割り当てプロファイル](imgs/allocation-profile.png)
+Once you've identified the problem, you can use an Allocation Timeline recording to find out where memory is being allocated and which functions are causing the allocations.
 
-## 頻繁なガベージ コレクションの特定
+## Feedback {: #feedback }
 
-ページが頻繁に一時停止しているように見える場合は、ガベージ コレクションに問題が発生している可能性があります。
- 
-
-Chrome タスク マネージャまたは Timeline メモリ記録を使用して、頻繁に行われるガベージ コレクション特定します。
-タスク マネージャで、[**メモリ**] または [**JavaScript メモリ**] の値が頻繁に増減している場合は、ガベージ コレクションが頻繁に行われていることを表します。
-Timeline 記録で、JS ヒープまたはノード数のグラフが頻繁に増減する場合は、ガベージ コレクションが頻繁に行われていると考えられます。
-
-
-問題を特定したら、Allocation Timeline 記録を使用して、メモリを割り当てている箇所と、割り当ての原因となった関数を調べます。
-
- 
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
