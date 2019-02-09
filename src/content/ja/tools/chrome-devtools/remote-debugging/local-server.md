@@ -1,113 +1,75 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: 開発マシンのウェブサーバーでサイトをホストし、Android 端末からそのコンテンツにアクセスします。
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Host a site on a development machine web server, and then access the content from an Android device.
 
-{# wf_updated_on:2016-04-07 #}
-{# wf_published_on:2015-04-13 #}
+{# wf_updated_on: 2018-07-27 #} {# wf_published_on: 2015-04-13 #} {# wf_blink_components: Platform>DevTools #}
 
-# ローカル サーバーへのアクセス {: .page-title }
+# Access Local Servers {: .page-title }
 
-{% include "web/_shared/contributors/kaycebasques.html" %}
-{% include "web/_shared/contributors/megginkearney.html" %}
+{% include "web/_shared/contributors/kaycebasques.html" %} {% include "web/_shared/contributors/megginkearney.html" %}
 
-開発マシンのウェブサーバーでサイトをホストし、Android 端末からそのコンテンツにアクセスします。
+Host a site on a development machine web server, then access the content from an Android device.
 
-
-USB ケーブルと Chrome DevTools があれば、開発マシンからサイトを実行し、Android 端末でそのサイトを表示することができます。
- 
-
+With a USB cable and Chrome DevTools, you can run a site from a development machine and then view the site on an Android device.
 
 ### TL;DR {: .hide-from-toc }
-- ポート転送により、開発マシンのウェブサーバーのコンテンツを Android 端末で表示することができます。
-- ウェブサーバーでカスタム ドメインを使用している場合、カスタム ドメイン マッピングによってそのドメインのコンテンツにアクセスするように Android 端末を設定できます。
 
+- Port forwarding enables you to view content from your development machine's web server on your Android device.
+- If your web server is using a custom domain, you can set up your Android device to access the content at that domain with custom domain mapping.
 
-##  ポート転送の設定{:#port-forwarding}
+## Set up port forwarding {:#port-forwarding}
 
-ポート転送を使用すると、開発マシンのウェブサーバーでホストされているコンテンツに Android 端末からアクセスできます。
-ポート転送を行うには、開発マシンの TCP ポートにマッピングする Android 端末のリスニング TCP ポートを作成します。
-ポート間のトラフィックは、Android 端末と開発マシンとの USB 接続を介して送信されるため、接続がネットワーク設定に左右されることはありません。
+Port forwarding enables your Android device to access content that's being hosted on your development machine's web server. Port forwarding works by creating a listening TCP port on your Android device that maps to a TCP port on your development machine. Traffic between the ports travel through the USB connection between your Android device and development machine, so the connection doesn't depend on your network configuration.
 
-ポート転送を有効にするには、次の手順に従います。
+To enable port forwarding:
 
-1. 開発マシンと Android 端末間の[リモート デバッグ](.)を設定します。
-完了すると、[**Inspect Devices**] ダイアログの左側のメニューに、Android 端末とともに [**Connected**] ステータス インジケーターが表示されます。
-1. DevTools の [**Inspect Devices**] ダイアログで、[**Port forwarding**] をオンにします。
-1. [**Add rule**] をクリックします。
+1. Set up [remote debugging](.) between your development machine and your Android device. When you're finished, you should see your Android device in the left-hand menu of the **Inspect Devices** dialog and a **Connected** status indicator. 
+2. In the **Inspect Devices** dialog in DevTools, enable **Port forwarding**.
+3. Click **Add rule**. ![adding a port forwarding rule](imgs/add-rule.png)
+4. In the **Device port** textfield on the left, enter the `localhost` port number from which you want to be able to access the site on your Android device. For example, if you wanted to access the site from `localhost:5000` you would enter `5000`.
+5. In the **Local address** textfield on the right, enter the IP address or hostname on which your site is running on your development machine's web server, followed by the port number. For example, if your site is running on `localhost:7331` you would enter `localhost:7331`. 
+6. Click **Add**.
 
-   ![ポート転送ルールの追加](imgs/add-rule.png)
-1. 左側の [**Device port**] テキスト項目に、Android 端末でサイトにアクセスするために使用する `localhost` ポート番号を入力します。たとえば、`localhost:5000` からサイトにアクセスする場合、「`5000`」と入力します。
-1. 右側の [**Local address**] テキスト項目に、サイトを実行している開発マシンのウェブサーバーの IP アドレスまたはホスト名に続けて、ポート番号を入力します。たとえば、`localhost:7331` でサイトを実行している場合、「`localhost:7331`」と入力します。
-1. [**Add**] をクリックします。
+Port forwarding is now set up. You can see a status indicator of the port forward on the device's tab within the **Inspect Devices** dialog.
 
-これでポート転送が設定されました。[**Inspect Devices**] ダイアログ内の端末のタブにポート転送のステータス インジケーターが表示されます。
+![port forwarding status](imgs/port-forwarding-status.png)
 
+To view the content, open up Chrome on your Android device and go to the `localhost` port that you specified in the **Device port** field. For example, if you entered `5000` in the field, then you would go to `localhost:5000`.
 
-![ポート転送のステータス](imgs/port-forwarding-status.png)
+## Map to custom local domains {:#custom-domains}
 
-コンテンツを表示するには、Android 端末で Chrome を開き、[**Device port**] 項目で指定した `localhost` ポートに移動します。
-たとえば、この項目に「`5000`」と入力した場合、`localhost:5000` に移動します。
+Custom domain mapping enables you to view content on an Android device from a web server on your development machine that is using a custom domain.
 
- 
+For example, suppose that your site uses a third-party JavaScript library that only works on the whitelisted domain `chrome.devtools`. So, you create an entry in your `hosts` file on your development machine to map this domain to `localhost` (i.e. `127.0.0.1 chrome.devtools`). After setting up custom domain mapping and port forwarding, you'll be able to view the site on your Android device at the URL `chrome.devtools`.
 
-##  カスタム ローカル ドメインへのマッピング{:#custom-domains}
+### Set up port forwarding to proxy server
 
-カスタム ドメイン マッピングにより、カスタム ドメインを使用している開発マシンのウェブサーバーのコンテンツを Android 端末で表示できます。
+To map a custom domain you must run a proxy server on your development machine. Examples of proxy servers are [Charles](http://www.charlesproxy.com/), [Squid](http://www.squid-cache.org/), and [Fiddler](http://www.telerik.com/fiddler).
 
+To set up port forwarding to a proxy:
 
-たとえば、ホワイトリストに登録されているドメイン `chrome.devtools` のみで機能するサードパーティの JavaScript ライブラリをサイトで使用しているとします。
-この場合、そのドメインを `localhost` にマッピングするために、開発マシンで `hosts` ファイルにエントリ（`127.0.0.1 chrome.devtools`）を作成します。
-カスタム ドメイン マッピングとポート転送を設定したら、URL `chrome.devtools` のサイトを Android 端末で表示できるようになります。
+1. Run the proxy server and note the port that it's using. **Note**: The proxy server and your web server must run on different ports. 
+2. Set up [port forwarding](#port-forwarding) to your Android device. For the **local address** field, enter `localhost:` followed by the port that your proxy server is running on. For example, if it's running on port `8000`, then you would enter `localhost:8000`. In the **device port** field enter the number that you want your Android device to listen on, such as `3333`.
 
- 
+### Configure proxy settings on your device
 
-###  プロキシ サーバーへのポート転送の設定
+Next, you need to configure your Android device to communicate with the proxy server.
 
-カスタム ドメインをマッピングするには、開発マシンでプロキシ サーバーを実行する必要があります。
-プロキシ サーバーの例としては、[Charles][charles]、[Squid][squid]、[Fiddler][fiddler] があります。
+1. On your Android device go to **Settings** > **Wi-Fi**.
+2. Long-press the name of the network that you are currently connected to. **Note**: Proxy settings apply per network.
+3. Tap **Modify network**.
+4. Tap **Advanced options**. The proxy settings display. 
+5. Tap the **Proxy** menu and select **Manual**.
+6. For the **Proxy hostname** field, enter `localhost`.
+7. For the **Proxy port** field, enter the port number that you entered for **device port** in the previous section. 
+8. Tap **Save**.
 
+With these settings, your device forwards all of its requests to the proxy on your development machine. The proxy makes requests on behalf of your device, so requests to your customized local domain are properly resolved.
 
-プロキシへのポート転送を設定するには、次の手順に従います。
+Now you can access custom domains on your Android device Android just as you would on the development machine.
 
-1. プロキシ サーバーを実行し、使用されているポートを書き留めます。**注**: プロキシ サーバーとウェブサーバーは、異なるポートで実行する必要があります。
-1. Android 端末への[ポート転送](#port-forwarding)を設定します。[**Local address**] 項目に、`localhost:` に続けて、プロキシ サーバーが実行されているポートを入力します。
-たとえば、ポート `8000` で実行されている場合、「`localhost:8000`」と入力します。
-[**Device port**] 項目に、Android 端末がリッスンする番号（`3333` など）を入力します。
+If your web server is running off of a non-standard port, remember to specify the port when requesting the content from your Android device. For example, if your web server is using the custom domain `chrome.devtools` on port `7331`, when you view the site from your Android device you should be using the URL `chrome.devtools:7331`.
 
+**Tip**: To resume normal browsing, remember to revert the proxy settings on your Android device after you disconnect from the development machine.
 
-[charles]: http://www.charlesproxy.com/
-[squid]: http://www.squid-cache.org/
-[fiddler]: http://www.telerik.com/fiddler
+## Feedback {: #feedback }
 
-###  端末でのプロキシの設定
-
-次に、プロキシ サーバーと通信するように Android 端末を設定する必要があります。
- 
-
-1. Android 端末で、[**Settings**] > [**Wi-Fi**] に移動します。
-1. 現在接続されているネットワークの名前を長押しします。
-   **注**: プロキシ設定はネットワークごとに適用されます。
-3. [**Modify network**] をタップします。
-4. [**Advanced options**] をタップします。プロキシ設定が表示されます。
-5. [**Proxy**] メニューをタップし、[**Manual**] を選択します。
-6. [**Proxy hostname**] 項目に「`localhost`」と入力します。
-7. [**Proxy port**] 項目に、前のセクションで [**Device port**] に入力したポート番号を入力します。
-8. [**Save**] をタップします。
-
-このように設定すると、端末のすべてのリクエストが開発マシンのプロキシに転送されます。
-プロキシが端末に代わってリクエストを行うため、カスタマイズしたローカル ドメインへのリクエストが正しく解決されます。
-
-
-これで、開発マシン上での場合と同様に、Android 端末でカスタム ドメインにアクセスできるようになりました。
- 
-
-ウェブサーバーが標準以外のポートで実行されている場合は、Android 端末からコンテンツをリクエストする際に必ずポートを指定してください。
-たとえば、ウェブサーバーがポート `7331` でカスタム ドメイン `chrome.devtools` を使用している場合、Android 端末からサイトを表示する際には、URL `chrome.devtools:7331` を使用する必要があります。
-
- 
-
-**ヒント**: 通常のブラウジングを再開する場合は必ず、開発マシンから切断した後、Android 端末でプロキシ設定を元に戻してください。
-
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
