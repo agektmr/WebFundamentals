@@ -1,11 +1,8 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: スマートフォンからパソコンに至るまで、ますます多くの端末でタッチスクリーンが利用可能になっています。アプリはタップ操作に直感的かつ美しく反応する必要があります。
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Touchscreens are available on more and more devices, from phones up to desktop screens. Your app should respond to their touch in intuitive and beautiful ways.
 
-{# wf_updated_on: 2017-07-12 #}
-{# wf_published_on: 2014-01-01 #}
+{# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2014-01-01 #} {# wf_blink_components: Blink>Input #}
 
-# サイト上でのタップ操作をサポートする {: .page-title }
+# Add Touch to Your Site {: .page-title }
 
 {% include "web/_shared/contributors/mattgaunt.html" %}
 
@@ -15,457 +12,357 @@ description: スマートフォンからパソコンに至るまで、ますま�
   </iframe>
 </div>
 
-スマートフォンからパソコンの画面に至るまで、ますます多くの端末でタッチスクリーンが利用可能になっています。
-ユーザーが UI を操作した際は、アプリ側でタップ操作に対して直感的に応答する必要があります。
-
+Touchscreens are available on more and more devices, ranging from phones to desktop screens. When your users choose to interact with your UI, your app should respond to their touch in intuitive ways.
 
 <div class="clearfix"></div>
 
-##  要素の状態を処理する
+## Respond to element states
 
-ウェブページ上の要素をタップまたはクリックしたときに、サイト側でその操作が本当に検知されているか疑問に感じた経験はないでしょうか？
+Have you ever touched or clicked an element on a web page and questioned whether the site actually detected it?
 
+Simply altering the color of an element as users touch or interact with parts of your UI gives a basic reassurance that your site is working. Not only does this alleviate frustration, it can also give a snappy and responsive feel.
 
-UI の一部をタップまたは操作したときに要素の色が変わるだけでも、ユーザーはサイトが機能しているとわかり安心するものです。
-こうした反応によってユーザーのストレスが緩和されるだけでなく、軽快で反応が良いサイトであると感じてもらえます。
-
-
-DOM 要素は、デフォルト、フォーカス、ホバー、アクティブのいずれかの状態を継承できます。
-それぞれの状態に合わせて UI を変更するには、以下に示すように擬似クラス `:hover`、`:focus`、`:active` にスタイルを適用する必要があります。
-
+DOM elements can inherit any of the following states: default, focus, hover and active. To change our UI for each of these states, we need to apply styles to the following pseudo classes `:hover`, `:focus` and `:active` as shown below:
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/design-and-ux/input/touch/_code/states-example.html" region_tag="btnstates" adjust_indentation="auto" %}
 </pre>
 
-[サンプルを見る](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/input/touch/states-example.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/input/touch/states-example.html){: target="_blank" .external }
 
-![状態によって色が異なるボタンの画像](images/button-states.png)
+![Image illustrating different colors for button
+states](images/button-states.png)
 
-ほとんどのモバイル ブラウザでは、要素がタップされた後の状態として「hover」と「focus」の両方、またはこのどちらかを要素に適用します。
+On most mobile browsers *hover* and/or *focus* states will apply to an element after it's been tapped.
 
+Consider carefully what styles you set and how they will look to the user after they finish their touch.
 
-適用するスタイルとユーザーがタップした後の外観については、慎重に検討してください。
+Note: Anchor tags and buttons may have different behavior in different browsers, so assume in some cases **hover** will remain and in others **focus** will remain.
 
+### Suppressing default browser styles
 
-注: アンカータグとボタンは、ブラウザによって動作が異なることがあります。そのため、**hover** 状態のままになる場合もあれば、**focus** 状態のままになる場合もあることを認識しておいてください。
+Once you add styles for the different states, you'll notice that most browsers implement their own styles in response to a user’s touch. This is largely because when mobile devices first launched, a number of sites didn’t have styling for the `:active` state. As a result, many browsers added additional highlight color or style to give the user feedback.
 
-
-
-###  デフォルトのブラウザ スタイルを無効にする
-
-さまざまな状態に対応したスタイルを追加すると、ほとんどのブラウザではユーザーのタップに応答して独自のスタイルが実装されることに気付くでしょう。
-これは主に、モバイル端末が初めてリリースされた当時、`:active` 状態用のスタイルが用意されていないサイトが多かったことが原因です。結果的に、多くのブラウザでユーザー操作に応答するためにハイライト色やスタイルが追加されました。
-
-
-大半のブラウザでは `outline` という CSS プロパティを使用して、フォーカスされた要素の輪郭線を表示しています。
-この動作は、以下のようにすると無効にできます。
+Most browsers use the `outline` CSS property to display a ring around an element when an element is focused. You can suppress it with:
 
     .btn:focus {
       outline: 0;
-
+    
       // Add replacement focus styling here (i.e. border)
     }
+    
 
-Safari と Chrome ではタップした要素がハイライト表示されますが、この動作は次のように CSS プロパティ
-`-webkit-tap-highlight-color` で無効にできます。
+Safari and Chrome add a tap highlight color which can be prevented with the `-webkit-tap-highlight-color` CSS property:
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/design-and-ux/input/touch/_code/states-example.html" region_tag="webkit-specific" adjust_indentation="auto" %}
 </pre>
 
-[サンプルを見る](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/input/touch/states-example.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/input/touch/states-example.html){: target="_blank" .external }
 
-Windows Phone 版の Internet Explorer でも同様の動作になりますが、これはメタタグを使用して無効にできます。
-
+Internet Explorer on Windows Phone has a similar behavior, but is suppressed via a meta tag:
 
     <meta name="msapplication-tap-highlight" content="no">
+    
 
-Firefox では、次の 2 つの副作用に対処する必要があります。
+Firefox has two side effects to handle.
 
-擬似クラス `-moz-focus-inner` によってタップ可能な要素に輪郭線が表示されますが、これは `border: 0` を指定すると削除できます。
+The `-moz-focus-inner` pseudo class, which adds an outline on touchable elements, you can remove by setting `border: 0`.
 
-
-Firefox で `<button>` 要素を使用するとグラデーションが適用されますが、これは `background-image: none` を指定すると無効にできます。
-
+If you are using a `<button>` element on Firefox, you get a gradient applied, which you can remove by setting `background-image: none`.
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/design-and-ux/input/touch/_code/states-example.html" region_tag="ff-specific" adjust_indentation="auto" %}
 </pre>
 
-[サンプルを見る](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/input/touch/states-example.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/input/touch/states-example.html){: target="_blank" .external }
 
-Warning: 上述のようにデフォルト スタイルを無効にするのは、`:hover`、`:active`、`:focus` の擬似クラスがある場合だけにしてください。
+Caution: Only suppress the default styles mentioned above if you have pseudo classes for `:hover`, `:active` and `:focus`!
 
+### Disabling user-select
 
-###  ユーザー選択を無効にする
+When you're creating your UI there may be scenarios where you want users to interact with your elements but you want to suppress the default behavior of selecting text on long press or dragging a mouse over your UI.
 
-UI を作成するときは、要素に対するユーザー操作は有効にしつつ、長押しによるテキスト選択や UI 上でのマウスによるドラッグ操作など、一部のデフォルト動作を無効にしたい場合があります。
-
-
-
-これは、CSS プロパティ `user-select` を使用すると実現できます。ただし、コンテンツに対してこのような処理をすると、要素内のテキストを選択したいと思っているユーザーは、**非常に**ストレスを感じることがあるため注意が必要です。このような変更は、十分に検討したうえで慎重に行ってください。
-
-
-
+You can do this with the `user-select` CSS property, but beware that doing this on content can be **extremely** infuriating for users if they *want* to select the text in the element. So make sure you use it with caution and sparingly.
 
     user-select: none;
+    
 
-##  カスタム ジェスチャーの実装
+## Implement custom gestures
 
-サイトでカスタムの操作およびジェスチャーを使用することを考えている場合は、以下の 2 つのトピックに留意してください。
+If you have an idea for custom interactions and gestures for your site, there are two topics to keep in mind:
 
+1. How to support all browsers.
+2. How to keep your frame rate high.
 
-1. すべてのブラウザに対応する方法。
-1. 高いフレームレートを維持する方法。
+In this article, we'll look at exactly these topics covering the API's we need to support to hit all browsers and then cover how we use these events efficiently.
 
-この記事では、すべてのブラウザをサポートするために必要な API と、そのイベントを効率的に使用する方法について説明します。
+Depending on what you would like your gesture to do, you likely want the user to interact with one element at a time *or* you'll want them to be able to interact with multiple elements at the same time.
 
+Caution: Don't forget that some users will want keyboard input and users running assistive technology on a touchscreen device may not be able to perform gestures because they're intercepted / consumed by the assistive technology.
 
+We are going to look at two examples in this article, both demonstrating support for all browsers and how to keep the frame rate high.
 
-ジェスチャーで実行したい内容によっては、ユーザーが一度に操作する要素を 1 つに制限するのか、または複数の要素を同時に操作可能にするのかが異なってきます。
+![Example GIF of touch on document](images/touch-document-level.gif){: .attempt-right }
 
+The first example will allow the user to interact with one element. In this case you might want all touch events to be given to that one element, as long as the gesture initially started on the element itself. For example, moving a finger off the swipe-able element can still control the element.
 
-
-Warning: キーボードでの入力を好むユーザーや、タッチスクリーン機器でユーザー補助機能を利用しているためにジェスチャーを使用できないユーザーもいる点に留意してください（ジャスチャーは、補助機能によってインターセプトまたは消費される場合があります）。
-
-
-
-
-この記事では、すべてのブラウザをサポートし、高いフレームレートを維持する方法を示す 2 つの例を見ていきます。
-
-
-![ドキュメント上の GIF 画像をタップする例](images/touch-document-level.gif){: .attempt-right }
-
-最初の例では、ユーザーは 1 つの要素を操作できます。このケースでは、この要素上でジェスチャーが開始される場合に限り、この要素にすべてのタッチイベントを通知します。たとえば、このスワイプ可能な要素は指を放したあとでも制御が可能です。
-
-
-結果的に柔軟性と利便性は大いに高まりますが、ユーザーが UI を操作する方法は限られます。
-
+This is useful as it provides a great deal of flexibility for the user, but enforces a restriction on how the user can interact with your UI.
 
 <div class="clearfix"></div>
 
-![要素上の GIF 画像をタップする例](images/touch-element-level.gif){: .attempt-right }
+![Example GIF of touch on element](images/touch-element-level.gif){: .attempt-right }
 
-一方、マルチタップによってユーザーに複数の要素を一度に操作して欲しい場合は、特定の要素に対するタップを制限する必要があります。
+If, however, you expect users to interact with multiple elements at the same time (using multi-touch), you should restrict the touch to the specific element.
 
-
-
-ユーザーにとってはさらに柔軟性が高くなりますが、UI を処理するロジックは複雑化し、ユーザーエラーに対処するのが難しくなります。
-
+This is more flexible for users, but complicates the logic for manipulating the UI and is less resilient to user error.
 
 <div class="clearfix"></div>
 
-###  イベントリスナを追加する
+### Add event listeners
 
-Chrome（バージョン 55 以降）、Internet Explorer、Edge では、カスタム ジェスチャーの実装に
-`PointerEvents` を使用することをおすすめします。
+In Chrome (version 55 and later), Internet Explorer & Edge, `PointerEvents` are the recommended approach for implementing custom gestures.
 
-その他のブラウザでは、`TouchEvents` と `MouseEvents` をご利用ください。
+In other browsers `TouchEvents` and `MouseEvents` are the correct approach.
 
-`PointerEvents`
-の優れた機能を使うと、マウス、タップ、ペンなどのざまざまな入力タイプを 1 つのコールバック セットに統合できます。
-リッスンするイベントは `pointerdown`、`pointermove`、`pointerup`、`pointercancel`
-です。
+The great feature of `PointerEvents` is that it merges multiple types of input, including mouse, touch and pen events, into one set of callbacks. The events to listen for are `pointerdown`, `pointermove`, `pointerup` and `pointercancel`.
 
-その他のブラウザにおけるタッチイベントは `touchstart`、`touchmove`、`touchend`、`touchcancel`
-です。マウス入力に対して同じジェスチャーを実装するには、`mousedown`、`mousemove`、`mouseup`
-を実装する必要があります。
+The equivalents in other browsers are `touchstart`, `touchmove`, `touchend` and `touchcancel` for touch events and if you wanted to implement the same gesture for mouse input you'd need to implement `mousedown`, `mousemove`, and `mouseup`.
 
+If you have questions about which events to use, check out this table of [Touch, mouse and pointer events](#touch-mouse-and-pointer-events)).
 
-使用するイベントが不明な場合は、こちらの[タップ、マウス、ポインターのイベント](#touch-mouse-and-pointer-events)の表を確認してください。
+Using these events requires calling the `addEventListener()` method on a DOM element, along with the name of an event, a callback function and a boolean. The boolean determines whether you should catch the event before or after other elements have had the opportunity to catch and interpret the events. (`true` means you want the event before other elements.)
 
-
-これらのイベントを使用するには、イベント名、コールバック関数、ブール値を指定して DOM 要素で `addEventListener()` メソッドを呼び出す必要があります。ブール値は、その要素でイベントを捕捉するタイミングが、他の要素でイベントを捕捉して解釈可能になるタイミングよりも前か後かを示します（他の要素よりも先にイベントを捕捉したい場合は `true` を指定）。
-
-
-
-
-
-操作の開始をリッスンする例を以下に示します。
+Here's an example of listening for the start of an interaction.
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/design-and-ux/input/touch/_code/touch-demo-1.html" region_tag="addlisteners" adjust_indentation="auto" %}
 </pre>
 
-[サンプルを見る](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/input/touch/touch-demo-1.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/input/touch/touch-demo-1.html){: target="_blank" .external }
 
-注: API の設計上、PointerEvents は 1 回の
-`pointerdown` イベントで、マウスとタップの両方のイベントを処理できます。
+Note: Because of the design of the API, PointerEvents only need a single `pointerdown` event to handle both mouse and touch events.
 
-####  単一の要素の操作を処理する
+#### Handle single-element interaction
 
-上の短いコード スニペットでは、マウスイベントに対しては開始イベントリスナのみを追加しています。
-これは、イベントリスナが登録された要素の上にカーソルを合わせているときのみ、マウスイベントがトリガーされるためです。
+In the short snippet of code above we only added the starting event listener for mouse events. The reason for this is that mouse events will only trigger when the cursor is hovering *over* the element the event listener is added to.
 
+`TouchEvents` will track a gesture after it's started regardless of where the touch occurs and `PointerEvents` will track events regardless of where the touch occurs after we call `setPointerCapture` on a DOM element.
 
-TouchEvents はタップが発生した場所にかかわらず、開始されたジェスチャーを追跡します。PointerEvents はタップが発生した場所にかかわらず、開始されたジェスチャーを追跡して、DOM
-要素の
-`setPointerCapture` を呼び出します。
+For mouse move and end events we add the event listeners *in* the gesture start method and add the listeners to the document, meaning it can track the cursor until the gesture is complete.
 
-マウスの移動と終了のイベントに対しては、ジェスチャーの開始「メソッド」内にイベントリスナを追加して、ドキュメントにリスナを追加します。つまり、ジェスチャーが完了するまでカーソルを追跡します。
+The steps taken to implement this are:
 
+1. Add all TouchEvent and PointerEvent listeners. For MouseEvents add **only** the start event.
+2. Inside the start gesture callback, bind the mouse move and end events to the document. This way all mouse events are received regardless of whether the event occurs on the original element or not. For PointerEvents we need to call `setPointerCapture()` on our original element to receive all further events. Then handle the start of the gesture.
+3. Handle the move events.
+4. On the end event, remove the mouse move and end listeners from the document and end the gesture.
 
-
-これを実装するためのステップは次のとおりです。
-
-1. すべての TouchEvent リスナと PointerEvent リスナを追加します。MouseEvents には開始イベント**のみ**を追加します。
-1. ジェスチャー開始のコールバック内で、マウスの移動と終了のイベントをドキュメントにバインドします。これにより、元の要素上でイベントが発生したかどうかにかかわらず、すべてのマウスイベントを受信できます。PointerEvents では、今後のイベントをすべて受信するために、元の要素で `setPointerCapture()` を呼び出す必要があります。次に、ジェスチャーの開始を処理します。
-1. 移動イベントを処理します。
-1. 終了イベントでは、マウスの移動と終了のリスナをドキュメントから削除して、ジェスチャーを終了します。
-
-
-以下は、移動と終了のイベントをドキュメントに追加する `handleGestureStart()` メソッドのスニペットです。
-
+Below is a snippet of our `handleGestureStart()` method which adds the move and end events to the document:
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/design-and-ux/input/touch/_code/touch-demo-1.html" region_tag="handle-start-gesture" adjust_indentation="auto" %}
 </pre>
 
-[サンプルを見る](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/input/touch/touch-demo-1.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/input/touch/touch-demo-1.html){: target="_blank" .external }
 
-以下のように終了コールバックに `handleGestureEnd()` を追加して、ジェスチャーが完了した際に移動と終了のイベントリスナをドキュメントから削除し、PointerCapture を解放します。
-
-
+The end callback we add is `handleGestureEnd()`, which removes the move and end event listeners from the document and releases the pointer capture when the gesture has finished like so:
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/design-and-ux/input/touch/_code/touch-demo-1.html" region_tag="handle-end-gesture" adjust_indentation="auto" %}
 </pre>
 
-[サンプルを見る](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/input/touch/touch-demo-1.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/input/touch/touch-demo-1.html){: target="_blank" .external }
 
 <div class="attempt-left">
-  <p>このパターンに従ってドキュメントに移動イベントを追加すると、ユーザーが要素の操作を開始したあとにジェスチャーの位置が要素外に移った場合でも、ページ上の位置にかかわらずマウス移動を検知できます。これは、ドキュメントからイベントを受信しているためです。
-</p>
+  <p>By following this pattern of adding the move event to the document, if the
+  user starts interacting with an element and moves their gesture outside of
+  the element, we'll continue to get mouse movements regardless of where they
+  are on the page, because the events are being received from the document.</p>
 
-
-
-  <p>この図は、ジャスチャーが開始した際に移動と終了のイベントをドキュメントに追加した場合の、タップイベントの処理を示しています。
-</p>
+  <p>This diagram shows what the touch events are doing as we add the
+  move and end events to the document once a gesture begins.</p>
 </div>
 
-![
-`touchstart` のドキュメントにタップイベントをバインドした例](images/scroll-bottleneck.gif)
+![Illustrating binding touch events to document in
+<code>touchstart</code>](images/scroll-bottleneck.gif)
 
 <div class="clearfix"></div>
 
-###  効率的にタップに応答する
+### Responding to touch efficiently
 
-開始と終了のイベント処理を追加したので、これで実際にタップイベントに応答することができます。
+Now that we have the start and end events taken care of we can actually respond to the touch events.
 
+For any of the start and move events, you can easily extract `x` and `y` from an event.
 
-あらゆる開始および移動イベントについて、イベントから `x` 座標と `y` 座標を簡単に取得できます。
-
-
-以下の例では、`targetTouches` の有無をチェックして `TouchEvent` からのイベントかどうかを確認しています。
-タップイベントであれば、最初にタップした位置の
-`clientX` と `clientY` を取得します。イベントが `PointerEvent` または `MouseEvent` であれば、イベント自体から直接 `clientX` と
-`clientY` を取得します。
-
+The following example checks whether the event is from a `TouchEvent` by checking if `targetTouches` exists. If it does, then it extracts the `clientX` and `clientY` from the first touch. If the event is a `PointerEvent` or `MouseEvent` it extracts `clientX` and `clientY` directly from the event itself.
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/design-and-ux/input/touch/_code/touch-demo-2.html" region_tag="extract-xy" adjust_indentation="auto" %}
 </pre>
 
-[サンプルを見る](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/input/touch/touch-demo-2.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/input/touch/touch-demo-2.html){: target="_blank" .external }
 
-`TouchEvent` には、タップデータを含む 3 つのリストがあります。
+A `TouchEvent` has three lists containing touch data:
 
-* `touches`: 現在画面上にあるすべてのタップのリスト（DOM 要素上にあるかどうかは問わない）。
-* `targetTouches`: 現在、イベントがバインドされている DOM 要素上にあるタップのリスト。
-* `changedTouches`: イベントの発生原因となった変化が生じたタップのリスト。
+* `touches`: list of all current touches on the screen, regardless of DOM element they are on.
+* `targetTouches`: list of touches currently on the DOM element the event is bound to.
+* `changedTouches`: list of touches which changed resulting in the event being fired.
 
+In most cases, `targetTouches` gives you everything you need and want. (For more info on these lists see [Touch lists](#touch-lists)).
 
-ほとんどのケースでは、`targetTouches` を使用すれば事は足ります。（これらのリストの詳細については、[タップリスト](#touch-lists)をご覧ください。）
+#### Use requestAnimationFrame
 
+Since the event callbacks are fired on the main thread, we want to run as little code as possible in the callbacks for our events, keeping our frame rate high and preventing jank.
 
-####  requestAnimationFrame を使用する
+Using `requestAnimationFrame()` we have an opportunity to update the UI just before the browser is intending to draw a frame and will help us move some work out of our event callbacks.
 
-イベントのコールバックはメインスレッドで呼び出されるため、高いフレームレートを維持して遅延を防ぐには、イベントのコールバック内で実行するコードをできるだけ少なくする必要があります。
+If you are unfamiliar with `requestAnimationFrame()`, you can [learn more here](/web/fundamentals/performance/rendering/optimize-javascript-execution#use-requestanimationframe-for-visual-changes).
 
+A typical implementation is to save the `x` and `y` coordinates from the start and move events and request an animation frame inside the move event callback.
 
-
-`requestAnimationFrame()` を使用すると、ブラウザでフレームを描画する直前に UI を更新できるため、一部の処理をイベントのコールバックの外に移すことでがきます。
-
-
-
-`requestAnimationFrame()` になじみがない方は、[こちらで詳細をご確認ください](/web/fundamentals/performance/rendering/optimize-javascript-execution#use-requestanimationframe-for-visual-changes)。
-
-
-一般的な実装では、開始および移動イベントで取得した
-`x` 座標と `y` 座標を保存して、移動イベントのコールバック内でアニメーション フレームをリクエストします。
-
-
-デモでは、最初にタップした位置を `handleGestureStart()` で保存しています（`initialTouchPos` を探す）。
+In our demo, we store the initial touch position in `handleGestureStart()` (look for `initialTouchPos`):
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/design-and-ux/input/touch/_code/touch-demo-1.html" region_tag="handle-start-gesture" adjust_indentation="auto" %}
 </pre>
 
-`handleGestureMove()` メソッドでは、イベントの位置を保存してから、必要に応じて
-`onAnimFrame()` 関数をコールバックとして渡し、アニメーション フレームをリクエストします。
-
+The `handleGestureMove()` method stores the position of it's event before requesting an animation frame if we need to, passing in our `onAnimFrame()` function as the callback:
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/design-and-ux/input/touch/_code/touch-demo-1.html" region_tag="handle-move" adjust_indentation="auto" %}
 </pre>
 
-`onAnimFrame` 値は、UI の位置を動かすために呼び出される関数です。
-この関数を `requestAnimationFrame()`
-に渡すことで、ページを更新する（ページ上に変更内容を描画する）直前にこの関数を呼び出すようにブラウザに通知します。
+The `onAnimFrame` value is a function that when called, changes our UI to move it around. By passing this function into `requestAnimationFrame()`, we tell the browser to call it just before it's about to update the page (i.e. paint any changes to the page).
 
+In the `handleGestureMove()` callback we initially check if `rafPending` is false, which indicates if `onAnimFrame()` has been called by `requestAnimationFrame()` since the last move event. This means we only have one `requestAnimationFrame()` waiting to run at any one time.
 
-`handleGestureMove()` コールバックでは、まず `rafPending` の値が false であるかを確認します。false の場合は、最後に移動イベントが発生してから `requestAnimationFrame()`
-によって `onAnimFrame()` が呼び出されたことを示します。
-つまり、実行待ちの `requestAnimationFrame()` は常に 1 つしか存在しないということになります。
-
-
-`onAnimFrame()` コールバックが実行されたら、移動したい要素に対して遷移の設定を行ったあと、`rafPending` を `false` に更新して、次のタップイベントで新しいアニメーション フレームをリクエストできるようにします。
-
-
+When our `onAnimFrame()` callback is executed, we set the transform on any elements we want to move before updating `rafPending` to `false`, allowing the the next touch event to request a new animation frame.
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/design-and-ux/input/touch/_code/touch-demo-1.html" region_tag="on-anim-frame" adjust_indentation="auto" %}
 </pre>
 
-###  タップ アクションによるジェスチャーの制御
+### Control gestures using touch actions
 
-CSS プロパティ `touch-action` によって、要素のデフォルトのタップ動作を制御できます。
-たとえば `touch-action: none` を使用すると、ユーザーがタップをしてもブラウザ側では何も処理を行いません。これにより、すべてのタップイベントをインターセプトできるようになります。
-
-
+The CSS property `touch-action` allows you to control the default touch behavior of an element. In our examples, we use `touch-action: none` to prevent the browser from doing anything with a users' touch, allowing us to intercept all of the touch events.
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/design-and-ux/input/touch/_code/touch-demo-1.html" region_tag="touch-action-example" adjust_indentation="auto" %}
 </pre>
 
-`touch-action: none` はデフォルトのブラウザ動作を完全に抑制するため、使用する際は注意が必要です。
-多くの場合は、以下のいずれかのオプションを使うとよいでしょう。
+Using `touch-action: none` is somewhat a nuclear option as it prevents all the default browser behaviors. In many cases one of the options below is a better solution.
 
+`touch-action` allows you to disable gestures implemented by a browser. For example, IE10+ supports a double-tap to zoom gesture. By setting a touch-action of `manipulation` you prevent the default double-tap behavior.
 
-`touch-action` を使用すると、ブラウザに実装されたジャスチャーを無効にできます。たとえば、Internet Explorer バージョン 10 以降では、ダブルタップによるズーム操作がサポートされています。
-このデフォルトのダブルタップ動作を無効にするには、`manipulation` のタップ操作を設定します。
+This allows you to implement a double-tap gesture yourself.
 
-
-
-これにより、自身でダブルタップ操作を実装することができます。
-
-以下は、一般的に使用されているタップ操作の値のリストです。
+Below is a list of commonly used touch-action values:
 
 <table class="responsive">
   <thead>
     <tr>
-      <th colspan="2">タッチ操作パラメータ</th>
+      <th colspan="2">Touch Action Parameters</th>
     </tr>
   </thead>
   <tbody>
     <tr>
       <td data-th="Property"><code>touch-action: none</code></td>
-      <td data-th="Description">ブラウザではタップ操作を一切処理しません。
-</td>
+      <td data-th="Description">No touch interactions will be handled by
+      the browser.</td>
     </tr>
     <tr>
       <td data-th="Property"><code>touch-action: pinch-zoom</code></td>
-      <td data-th="Description">`touch-action: none` と同様にすべてのブラウザ操作を無効にします。ただし、`pinch-zoom` は例外で、引き続きブラウザによって処理されます。</td>
+      <td data-th="Description">Disables all browser interactions like
+      `touch-action: none` apart from `pinch-zoom`, which is still handled by
+      the browser.</td>
     </tr>
     <tr>
       <td data-th="Property"><code>touch-action: pan-y pinch-zoom</code></td>
-      <td data-th="Description">縦方向のスクロールやピンチズーム操作を無効にせずに、JavaScript で横方向のスクロールを処理します（例: 画像のカルーセル表示）。
-</td>
+      <td data-th="Description">Handle horizontal scrolls in JavaScript without
+      disabling vertical scrolling or pinch-zooming (eg. image carousels).</td>
     </tr>
     <tr>
       <td data-th="Property"><code>touch-action: manipulation</code></td>
-      <td data-th="Description">ダブルタップ操作を無効にして、ブラウザでのクリック遅延を防止します。
-
-
-スクロールやピンチズームの処理はブラウザに委ねます。
-</td>
+      <td data-th="Description">Disables double-tap gesture which avoids any
+      click delay by the browser. Leaves scrolling and pinch-zoom up to the
+      browser.</td>
     </tr>
   </tbody>
 </table>
 
-##  旧バージョンの Internet Explorer をサポートする
+## Supporting older versions of IE
 
-IE10 をサポートしたい場合は、ベンダー プレフィックスが付いたバージョンの
-`PointerEvents` を処理する必要があります。
+If you want to support IE10, you'll need to handle vendor prefixed versions of `PointerEvents`.
 
+To check for support of `PointerEvents` you'd typically look for `window.PointerEvent`, but in IE10, you'd look for `window.navigator.msPointerEnabled`.
 
-通常、`PointerEvents` のサポート状況を確認するには `window.PointerEvent` を探しますが、IE10 の場合は
-`window.navigator.msPointerEnabled` を探します。
+The event names with vendor prefixes are: 'MSPointerDown', 'MSPointerUp' and 'MSPointerMove'.
 
-
-ベンダー プレフィックス付きのイベント名は、'MSPointerDown', 'MSPointerUp' and
-'MSPointerMove'.
-
-サポート状況を確認してイベント名を切り替える方法については、以下の例をご覧ください。
-
+The example below shows you how to check for support and switch the event names.
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/design-and-ux/input/touch/_code/touch-demo-1.html" region_tag="pointereventsupport" adjust_indentation="auto" %}
 </pre>
 
-詳細については、[Microsoft の最新情報](https://msdn.microsoft.com/en-us/library/dn304886(v=vs.85).aspx)をご覧ください。
+For more information, checkout this [updates article from Microsoft](https://msdn.microsoft.com/en-us/library/dn304886(v=vs.85).aspx).
 
+## Reference
 
-##  リファレンス
-
-###  タップ状態の擬似クラス
+### Pseudo classes for touch states
 
 <table>
   <thead>
     <tr>
-      <th>クラス</th>
-      <th>例</th>
-      <th>説明</th>
+      <th>Class</th>
+      <th>Example</th>
+      <th>Description</th>
     </tr>
   </thead>
   <tbody>
     <tr>
       <td data-th="Class">:hover</td>
-      <td data-th="Example"><img alt="押された状態のボタン" src="images/btn-hover-state.png"></td>
+      <td data-th="Example"><img alt="Button in Pressed State" src="images/btn-hover-state.png"></td>
       <td data-th="Description">
-        要素の上にカーソルが置かれたときの状態です。
-        UI をホバー状態に変えることで、ユーザーに要素を操作するように促すことができます。
-        
+        Entered when a cursor is placed over an element.
+        Changes in the UI on hover are helpful to encourage users to interact
+        with elements.
       </td>
     </tr>
     <tr>
       <td data-th="Class">:focus</td>
       <td data-th="Example">
-        <img alt="フォーカス状態のボタン" src="images/btn-focus-state.png">
+        <img alt="Button with Focus State" src="images/btn-focus-state.png">
       </td>
       <td data-th="Description">
-        ページ上の要素までユーザーがタブで移動したときの状態です。フォーカス状態を使用すると、ユーザーは現在操作している要素を把握でき、キーボードで簡単に UI 操作が行えるようになります。
-        
-        
+        Entered when the user tabs through elements on a page. The focus state
+        allows the user to know what element they are currently interacting
+        with; also allows users to navigate your UI easily using a keyboard.
       </td>
     </tr>
     <tr>
       <td data-th="Class">:active</td>
       <td data-th="Example">
-        <img alt="押された状態のボタン" src="images/btn-pressed-state.png">
+        <img alt="Button in Pressed State" src="images/btn-pressed-state.png">
       </td>
       <td data-th="Description">
-        クリックやタップ操作などによって要素が選択されたときの状態です。
-        
+        Entered when an element is being selected, for
+        example, when a user is clicking or touching an element.
       </td>
     </tr>
   </tbody>
 </table>
 
+The definitive touch events reference can be found here: [w3 Touch Events](http://www.w3.org/TR/touch-events/).
 
-タップイベントの正式なリファレンスは、[w3 Touch Events](http://www.w3.org/TR/touch-events/) で参照することができます。
+### Touch, mouse, and pointer events
 
-
-###  タッチ、マウス、ポインタのイベント
-
-これらのイベントは、新しいジェスチャーをアプリケーションに追加するために必要な要素です。
-
+These events are the building blocks for adding new gestures into your application:
 
 <table class="responsive">
   <thead>
     <tr>
-      <th colspan="2">タッチ、マウス、ポインタのイベント</th>
+      <th colspan="2">Touch, Mouse, Pointer Events</th>
     </tr>
   </thead>
   <tbody>
@@ -476,8 +373,8 @@ IE10 をサポートしたい場合は、ベンダー プレフィックスが�
         <code>pointerdown</code>
       </td>
       <td data-th="Description">
-        初めて要素に指が触れたとき、またはユーザーがマウスでクリックをしたときに発生します。
-        
+        This is called when a finger first touches an element or when the
+        user clicks down on the mouse.
       </td>
     </tr>
     <tr>
@@ -487,8 +384,8 @@ IE10 をサポートしたい場合は、ベンダー プレフィックスが�
         <code>pointermove</code>
       </td>
       <td data-th="Description">
-        ユーザーがスクリーンを指でなぞったとき、またはマウスをドラッグしたときに発生します。
-        
+        This is called when the user moves their finger across the screen or
+        drags with the mouse.
       </td>
     </tr>
     <tr>
@@ -498,8 +395,8 @@ IE10 をサポートしたい場合は、ベンダー プレフィックスが�
         <code>pointerup</code>
       </td>
       <td data-th="Description">
-        ユーザーがスクリーンから指を放したとき、またはマウスを放したときに発生します。
-
+        This is called when the user lifts their finger off of the screen
+        or releases the mouse.
       </td>
     </tr>
     <tr>
@@ -508,68 +405,68 @@ IE10 をサポートしたい場合は、ベンダー プレフィックスが�
         <code>pointercancel</code>
       </td>
       <td data-th="Description">
-        タップ操作がブラウザによってキャンセルされたときに発生します。たとえばユーザーがウェブアプリをタップしたあとに、タブを移動した場合などです。
+        This is called when the browser cancels the touch gestures. For example,
+        a user touch a web app and then change tabs.
       </td>
     </tr>
   </tbody>
 </table>
 
+### Touch lists
 
-###  タップリスト
-
-各タップイベントには、次の 3 つのリスト属性が含まれます。
+Each touch event includes three list attributes:
 
 <table class="responsive">
   <thead>
     <tr>
-      <th colspan="2">タップイベント属性</th>
+      <th colspan="2">Touch Event Attributes</th>
     </tr>
   </thead>
   <tbody>
     <tr>
       <td data-th="Attribute"><code>touches</code></td>
       <td data-th="Description">
-        現在画面上にあるすべてのタップのリスト（タップされている要素は問わない）。
-        
+        List of all current touches on the screen, regardless of elements
+        being touched.
       </td>
     </tr>
     <tr>
       <td data-th="Attribute"><code>targetTouches</code></td>
       <td data-th="Description">
-        現在のイベントの対象である要素上で開始されたタップのリスト。
-たとえば  <code>&lt;button&gt;</code> にバインドすると、現在のそのボタン上でのタップのみが取得されます。
-ドキュメントにバインドすると、現在のドキュメント上のすべてのタップが取得されます。
+        List of touches that started on the element that is the target of
+        the current event. For example, if you bind to a <code>&lt;button&gt;</code>,
+        you'll only get touches currently on that button. If you bind to the
+        document, you'll get all touches currently on the document.
       </td>
     </tr>
     <tr>
-
       <td data-th="Attribute"><code>changedTouches</code></td>
       <td data-th="Description">
-        イベントの発生原因となった変化が生じたタップのリスト:
+        List of touches which changed resulting in the event being fired:
         <ul>
           <li>
-            <code>
-            <a href="http://www.w3.org/TR/touch-events/#dfn-touchstart">touchstart</a></code>
-イベント用
-- 現在のイベントでアクティブになったばかりのタップポイントのリスト。
-
+            For the <code>
+            <a href="http://www.w3.org/TR/touch-events/#dfn-touchstart">
+            touchstart</a></code>
+            event-- list of the touch points that just became active with the
+            current event.
           </li>
           <li>
-            <code>
-            <a href="http://www.w3.org/TR/touch-events/#dfn-touchmove">touchmove</a></code>
-イベント用
-- 最後のイベント以降に移動したタップポイントのリスト。
-
+            For the <code>
+            <a href="http://www.w3.org/TR/touch-events/#dfn-touchmove">
+            touchmove</a></code>
+            event-- list of the touch points that have moved since the last
+            event.
           </li>
           <li>
-            <code>
-            <a href="http://www.w3.org/TR/touch-events/#dfn-touchend">touchend</a></code>
-と<code>
-<a href="http://www.w3.org/TR/touch-events/#dfn-touchcancel">touchcancel</a></code>
-イベント用
-- 画面から指が離れたばかりのタップポイントのリスト。
-            
-
+            For the <code>
+            <a href="http://www.w3.org/TR/touch-events/#dfn-touchend">
+            touchend</a></code>
+            and <code>
+            <a href="http://www.w3.org/TR/touch-events/#dfn-touchcancel">
+            touchcancel</a></code>
+            events-- list of the touch points that have just been removed
+            from the surface.
           </li>
         </ul>
       </td>
@@ -577,28 +474,22 @@ IE10 をサポートしたい場合は、ベンダー プレフィックスが�
   </tbody>
 </table>
 
-###  iOS で active 状態をサポートする
+### Enabling active state support on iOS
 
-iOS 版の Safari では、残念ながらデフォルトで「active」状態を適用できません。適用可能にするには、「document
-body」または要素ごとに `touchstart` イベントリスナを追加する必要があります。
+Unfortunately, Safari on iOS does not apply the *active* state by default, to get it working you need to add a `touchstart` event listener to the *document body* or to each element.
 
+You should do this behind a user agent test so it's only run on iOS devices.
 
-これは iOS 端末に特化した処理なので、ユーザー エージェントのテスト後に行ってください。
-
-タッチ開始のリスナを body に追加すると、DOM のすべての要素に適用されるという利点がありますが、ページのスクロール時のパフォーマンスが低下するおそれもあります。
-
-
+Adding a touch start to the body has the advantage of applying to all elements in the DOM, however this may have performance issues when scrolling the page.
 
     window.onload = function() {
       if(/iP(hone|ad)/.test(window.navigator.userAgent)) {
         document.body.addEventListener('touchstart', function() {}, false);
       }
     };
+    
 
-
-パフォーマンスに関する懸念を軽減するには、代わりに、ページ上にある操作可能なすべての要素にタッチ開始のリスナを追加します。
-
-
+The alternative is to add the touch start listeners to all the interactable elements in the page, alleviating some of the performance concerns.
 
     window.onload = function() {
       if(/iP(hone|ad)/.test(window.navigator.userAgent)) {
@@ -609,6 +500,8 @@ body」または要素ごとに `touchstart` イベントリスナを追加す�
         }
       }
     };
+    
 
+## Feedback {: #feedback }
 
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
