@@ -1,34 +1,31 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Pelajari cara menganimasikan tampilan modal di aplikasi Anda.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Learn how to animate modal views in your apps.
 
-{# wf_updated_on: 2016-08-24 #}
-{# wf_published_on: 2014-08-08 #}
+{# wf_blink_components: Blink>Animation #} {# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2014-08-08 #}
 
-# Menganimasikan Tampilan Modal {: .page-title }
+# Animating Modal Views {: .page-title }
 
 {% include "web/_shared/contributors/paullewis.html" %}
 
 <div class="attempt-right">
   <figure>
-    <img src="images/dont-press.gif" alt="Menganimasikan tampilan modal." />
+    <img src="images/dont-press.gif" alt="Animating a modal view." />
     <figcaption>
-      <a href="https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/animations/modal-view-animation.html" target="_blank" class="external">Cobalah</a>
+      <a href="https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/animations/modal-view-animation.html" target="_blank" class="external">Try it</a>
     </figcaption>
   </figure>
 </div>
 
-Tampilan modal hanya untuk pesan penting, dan Anda memiliki alasan yang sangat baik kenapa memblokir antarmuka pengguna. Gunakan dengan hati-hati, karena tampilan modal mengganggu dan bisa dengan mudah merusak pengalaman pengguna jika terlalu sering digunakan. Namun, dalam beberapa keadaan, tampilan modal adalah pilihan tampilan yang tepat, dan menambahkan beberapa animasi akan membuatnya semakin hidup.
+Modal views are for important messages, and for which you have very good reasons to block the user interface. Use them carefully, because they're disruptive and can easily ruin the user’s experience if overused. But, in some circumstances, they’re the right views to use, and adding some animation will bring them to life.
 
 ### TL;DR {: .hide-from-toc }
-* Gunakan tampilan modal secukupnya; pengguna akan merasa frustrasi jika Anda mengganggu pengalaman mereka degan hal-hal yang tidak penting.
-* Menambahkan skala ke animasi memberikan efek "drop on" yang bagus.
-* Singkirkan tampilan modal dengan cepat bila pengguna menutupnya. Namun, munculkan tampilan modal sedikit lebih lambat ke layar sehingga tidak mengejutkan pengguna.
+
+* Use modal views sparingly; users get frustrated if you interrupt their experience unnecessarily.
+* Adding scale to the animation gives a nice "drop on" effect.
+* Get rid of the modal view quickly when the user dismisses it. However, bring the modal view onto the screen a little more slowly so that it doesn't surprise the user.
 
 <div class="clearfix"></div>
 
-Overlay modal harus selaras dengan tampilan yang terlihat, jadi setel `position`-nya ke `fixed`:
-
+The modal overlay should be aligned to the viewport, so set its `position` to `fixed`:
 
     .modal {
       position: fixed;
@@ -44,10 +41,9 @@ Overlay modal harus selaras dengan tampilan yang terlihat, jadi setel `position`
     }
     
 
-Contoh ini memiliki `opacity` awal 0 sehingga tersembunyi dari tampilan, dan `pointer-events` harus disetel ke `none` sehingga aktivitas klik dan sentuhan akan melewatinya. Tanpanya, semua interaksi akan diblokir, yang membuat seluruh laman menjadi tidak responsif. Yang terakhir, karena itu menganimasikan `opacity` dan `transform`, harus ditandai sebagai berubah dengan `will-change` (lihat juga [Menggunakan properti will-change](animations-and-performance#using-the-will-change-property)).
+It has an initial `opacity` of 0, so it's hidden from view, but then it also needs `pointer-events` set to `none` so that clicks and touches pass through. Without that, it blocks all interactions, rendering the whole page unresponsive. Finally, because it animates its `opacity` and `transform`, those need to be marked as changing with `will-change` (see also [Using the will-change property](animations-and-performance#using-the-will-change-property)).
 
-Ketika terlihat, tampilan harus menerima interaksi dan memiliki `opacity` bernilai 1:
-
+When the view is visible, it needs to accept interactions and have an `opacity` of 1:
 
     .modal.visible {
       pointer-events: auto;
@@ -55,15 +51,12 @@ Ketika terlihat, tampilan harus menerima interaksi dan memiliki `opacity` bernil
     }
     
 
-Sekarang, setiap kali tampilan modal diperlukan, Anda bisa menggunakan JavaScript untuk mengaktifkan kelas "visible":
-
+Now whenever the modal view is required, you can use JavaScript to toggle the "visible" class:
 
     modal.classList.add('visible');
     
 
-Pada titik ini, tampilan modal muncul tanpa animasi apa pun, jadi sekarang Anda bisa menambahkannya dalam
-(lihat juga [Easing Khusus](custom-easing)):
-
+At this point, the modal view appears without any animation, so you can now add that in (see also [Custom Easing](custom-easing)):
 
     .modal {
       -webkit-transform: scale(1.15);
@@ -80,10 +73,9 @@ Pada titik ini, tampilan modal muncul tanpa animasi apa pun, jadi sekarang Anda 
     }
     
 
-Menambahkan `scale` dalam transformasi membuat tampilan tampak turun sedikit ke dalam layar, yang merupakan efek bagus. Transisi default diterapkan untuk properti transform dan opacity dengan kurva khusus dan durasi 0,1 detik.
+Adding `scale` to the transform makes the view appear to drop onto the screen slightly, which is a nice effect. The default transition applies to both transform and opacity properties with a custom curve and a duration of 0.1 seconds.
 
-Durasi ini cukup singkat, tetapi merupakan durasi yang ideal saat pengguna menutup tampilan dan ingin kembali ke aplikasi Anda. Kekurangannya adalah bahwa ketika tampilan modal muncul mungkin terlalu agresif. Untuk memperbaiki ini, ganti nilai-nilai transisi untuk kelas `visible`:
-
+The duration is pretty short, though, but it's ideal for when the user dismisses the view and wants to get back to your app. The downside is that it’s probably too aggressive for when the modal view appears. To fix this, override the transition values for the `visible` class:
 
     .modal.visible {
     
@@ -101,10 +93,8 @@ Durasi ini cukup singkat, tetapi merupakan durasi yang ideal saat pengguna menut
     }
     
 
-Sekarang tampilan modal membutuhkan waktu 0,3 detik untuk ditampilkan ke layar, sedikit kurang agresif, tetapi bisa ditutup dengan cepat, yang akan lebih disukai pengguna.
+Now the modal view takes 0.3 seconds to come onto the screen, which is a bit less aggressive, but it is dismissed quickly, which the user will appreciate.
 
+## Feedback {: #feedback }
 
-
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
