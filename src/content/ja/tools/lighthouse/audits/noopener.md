@@ -1,47 +1,42 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Lighthouse の監査項目「サイトで rel="noopener" を使用して外部アンカーを開く」のリファレンス ドキュメント。
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Reference documentation for the "Opens External Anchors Using rel="noopener"" Lighthouse audit.
 
-{# wf_updated_on:2016-11-30 #}
-{# wf_published_on:2016-11-30 #}
+{# wf_updated_on: 2018-11-30 #} {# wf_published_on: 2016-11-30 #} {# wf_blink_components: N/A #}
 
-#  サイトで rel="noopener" を使用して外部アンカーを開く {: .page-title }
+# Links to cross-origin destinations are unsafe {: .page-title }
 
-##  監査が重要である理由 {: #why }
+## Overview {: #overview }
 
-`target="_blank"` を使用して任意のページから別のページにリンクしている場合、リンク元のページとリンク先のページは同じプロセスで動作します。
-そのため、リンク先のページで負荷の高い
-JavaScript が実行されていると、リンク元のページのパフォーマンスが低下するおそれがあります。
+### Performance
 
-また、`target="_blank"` にはセキュリティ上の脆弱性もあります。リンク先のページでは
-`window.opener` を使用して親ウィンドウのオブジェクトにアクセスしたり、`window.opener.location = newURL`
-によって親ページの URL を変更したりできます。
+When you open another page using `target="_blank"`, the other page may run on the same process as your page, unless [Site Isolation](/web/updates/2018/07/site-isolation) is enabled. If the other page is running a lot of JavaScript, your page's performance may also suffer. See [The Performance Benefits of `rel=noopener`](https://jakearchibald.com/2016/performance-benefits-of-rel-noopener/){: .external rel="noopener" }.
 
-詳細については、[The Performance Benefits of rel=noopener][jake] をご覧ください。
+### Security
 
-[jake]: https://jakearchibald.com/2016/performance-benefits-of-rel-noopener/
+The other page can access your `window` object with the `window.opener` property. This exposes an [attack surface](https://en.wikipedia.org/wiki/Attack_surface){: .external rel="noopener" } because the other page can potentially redirect your page to a malicious URL. See [About rel=noopener](https://mathiasbynens.github.io/rel-noopener/){: .external rel="noopener" }.
 
-##  監査に合格する方法 {: #how }
+## Recommendations {: #recommendations }
 
-レポートを確認して、Lighthouse で特定された各リンクに `rel="noopener"` を追加します。
-一般的に、外部リンクを新しいウィンドウまたはタブで開く場合は、必ず `rel="noopener"` を追加してください。
+Add `rel="noopener"` or `rel="noreferrer"` to each of the links that Lighthouse has identified in your report. In general, when you use `target="_blank"`, always add `rel="noopener"` or `rel="noreferrer"`.
 
+    <a href="https://examplepetstore.com" target="_blank" rel="noopener">
+      Example Pet Store
+    </a>
+    
 
-    <a href="https://examplepetstore.com" target="_blank" rel="noopener">...</a>
+* `rel="noopener"` prevents the new page from being able to access the `window.opener` property and ensures it runs in a separate process.
+* `rel="noreferrer"` attribute has the same effect, but also prevents the `Referer` header from being sent to the new page. See [Link type "noreferrer"](https://html.spec.whatwg.org/multipage/links.html#link-type-noreferrer){: .external rel="noopener" }.
 
-{% include "web/tools/lighthouse/audits/implementation-heading.html" %}
+## More information {: #more-info }
 
-Lighthouse では以下のアルゴリズムに基づいて、`rel="noopener"`
-を付けるべきリンクを報告します。
+Lighthouse uses the following algorithm to flag links as `rel="noopener"` candidates:
 
-1. `target="_blank"` 属性を含み、`rel="noopener"` 属性を含まない `<a>` ノードをすべて洗い出します。
-1. 同一ホストのリンクを除外します。
+1. Gather all `<a>` nodes that contain the attribute `target="_blank"` and do not contain the attribute `rel="noopener"` or `rel="noreferrer"`.
+2. Filter out any same-host links.
 
-Lighthouse では同一ホストが除外されるため、大規模なサイトを開発している場合は、注意が必要なエッジケースがあります。
-また、この監査項目で説明しているパフォーマンスへの影響は、ページで `rel="noopener"`
-を使用せずに、自身のサイトにある別のセクションへのリンクを開く場合にも当てはまります。
-ただし、それらのリンクは Lighthouse のレポートには含まれません。
+Because Lighthouse filters out same-host links, there's an edge case that you might want to be aware of if you're working on a large site. If your page opens a link to another section of your site without using `rel="noopener"`, the performance implications of this audit still apply. However, you won't see these links in your Lighthouse results.
 
+[Audit source](https://github.com/GoogleChrome/lighthouse/blob/master/lighthouse-core/audits/dobetterweb/external-anchors-use-rel-noopener.js){: .external rel="noopener" }
 
+## Feedback {: #feedback }
 
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
