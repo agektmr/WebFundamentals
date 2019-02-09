@@ -1,34 +1,31 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: '첫 번째 의미 있는 페인트' Lighthouse 감사의 참조 문서입니다.
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Reference documentation for the "First Meaningful Paint" Lighthouse audit.
 
-{# wf_updated_on: 2016-10-05 #}
-{# wf_published_on: 2016-10-05 #}
+{# wf_updated_on: 2018-11-30 #} {# wf_published_on: 2016-10-05 #} {# wf_blink_components: N/A #}
 
-# 첫 번째 의미 있는 페인트 {: .page-title }
+# First Meaningful Paint {: .page-title }
 
-## 감사가 중요한 이유 {: #why }
+## Overview {: #overview }
 
-페이지 로드는 사용자가 페이지의 성능을 이해하는 중요한 요소입니다.
- 자세한 내용은 [RAIL 메서드로 성능 측정](/web/fundamentals/performance/rail)을 참조하세요.
+Page load is a key aspect of how a user perceives the performance of your page. See [Measure Performance with the RAIL Method](/web/fundamentals/performance/rail) for more information.
 
-이 감사는 사용자가 페이지의 기본 콘텐츠가 보인다고 느끼는 시간을
-알아냅니다.
+This audit identifies the time at which the user feels that the primary content of the page is visible.
 
-## 감사를 통과하는 방법 {: #how }
+## Recommendations {: #recommendations }
 
-첫 번째 의미 있는 페인트 점수가 낮을수록 페이지가 기본 콘텐츠를 표시하는 시간이
-빠른 것입니다.
+The lower your First Meaningful Paint score, the faster that the page appears to display its primary content.
 
-[주요 렌더링 경로 최적화](/web/fundamentals/performance/critical-rendering-path/)는
-첫 번째 의미 있는 페인트 속도를 높이는 데 특히 유용합니다.
+[Optimizing the Critical Rendering Path](/web/fundamentals/performance/critical-rendering-path/) is particularly helpful towards achieving a faster First Meaningful Paint.
 
-{% include "web/tools/lighthouse/audits/implementation-heading.html" %}
+### Tracking FMP in the real world {: #RUM }
 
-기본적으로, 첫 번째 의미 있는 페인트는
-가장 큰 상단부 레이아웃 변경이 발생하고 웹 글꼴이 로드된 다음에 발생하는 페인트입니다. 자세한 내용은
-[첫 번째 의미 있는 페인트:
- 레이아웃 기반 접근법](https://docs.google.com/document/d/1BR94tJdZLsin5poeet0XoTW60M0SjvOJQttKT-JK8HI/view)을 참조하세요.
+To measure when FMP actually occurs on your users' devices, see [Tracking FMP using hero elements](/web/fundamentals/performance/user-centric-performance-metrics#tracking_fmp_using_hero_elements).
 
+See [Assessing Loading Performance in Real Life with Navigation and Resource Timing](/web/fundamentals/performance/navigation-and-resource-timing/) for more on collecting real-user metrics with the User Timing API. The [User Timing Marks and Measures](/web/tools/lighthouse/audits/user-timing) Lighthouse audit enables you to see User Timing data in your report.
 
-{# wf_devsite_translation #}
+## More information {: #more-info }
+
+First Meaningful Paint is essentially the paint after which the biggest above-the-fold layout change has happened, and web fonts have loaded. See the documentation to learn more: [First Meaningful Paint: A Layout-Based Approach](https://docs.google.com/document/d/1BR94tJdZLsin5poeet0XoTW60M0SjvOJQttKT-JK8HI/view).
+
+## Feedback {: #feedback }
+
+{% include "web/_shared/helpful.html" %}
