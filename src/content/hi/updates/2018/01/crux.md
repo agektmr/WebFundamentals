@@ -1,32 +1,21 @@
-project_path: /web/_project.yaml
-book_path: /web/updates/_book.yaml
-description: Announcing the release of a new country dimension in the Chrome User Experience Report.
-{% include "web/_shared/machine-translation-start.html" %}
+project_path: /web/_project.yaml book_path: /web/updates/_book.yaml description: Announcing the release of a new country dimension in the Chrome User Experience Report.
 
-{# wf_updated_on: 2018-03-05 #}
-{# wf_published_on: 2018-01-24 #}
-{# wf_tags: ux #}
-{# wf_blink_components: Blink #}
-{# wf_featured_image: /web/updates/images/generic/timeline.png #}
-{# wf_featured_snippet: Announcing the release of a new country dimension in the Chrome User Experience Report. #}
+{# wf_updated_on: 2018-03-05 #} {# wf_published_on: 2018-01-24 #} {# wf_tags: ux #} {# wf_blink_components: Blink #} {# wf_featured_image: /web/updates/images/generic/timeline.png #} {# wf_featured_snippet: Announcing the release of a new country dimension in the Chrome User Experience Report. #}
 
-# क्रोम उपयोगकर्ता अनुभव रिपोर्ट: नया देश आयाम {: .page-title }
+# Chrome User Experience Report: New country dimension {: .page-title }
 
 {% include "web/_shared/contributors/rviscomi.html" %}
 
 <div class="clearfix"></div>
 
-[Chrome User Experience Report](/web/tools/chrome-user-experience-report/) (CrUX) असली उपयोगकर्ता प्रदर्शन डेटा का एक सार्वजनिक डेटासेट है। चूंकि हम रिपोर्ट [announced](https://blog.chromium.org/2017/10/introducing-chrome-user-experience-report.html) करते हैं, इसलिए सबसे अधिक अनुरोध किए गए परिवर्धनों में से एक स्थान पर उपयोगकर्ता अनुभव में अंतर को बेहतर ढंग से समझने की क्षमता रहा है। इस प्रतिक्रिया के आधार पर, हम मौजूदा क्रूक्स डेटासेट का विस्तार कर रहे हैं - जो सभी भौगोलिक क्षेत्रों में वैश्विक दृष्टिकोण प्रदान करता है - इसमें अलग-अलग देश-विशिष्ट डेटासेट का संग्रह भी शामिल है!
+The [Chrome User Experience Report](/web/tools/chrome-user-experience-report/) (CrUX) is a public dataset of real user performance data. Since we [announced](https://blog.chromium.org/2017/10/introducing-chrome-user-experience-report.html) the report, one of the most requested additions has been the ability to better understand differences in user experience across locations. Based on this feedback, we are expanding the existing CrUX dataset––which provides a global view across all geographic regions––to also include a collection of separate country-specific datasets!
 
-<img src="/web/updates/images/2018/01/crux-countries.png"
-    alt="Map of countries included in the CrUX dataset"/>
+![Map of countries included in the CrUX dataset](/web/updates/images/2018/01/crux-countries.png)
 
-उदाहरण के लिए, ऊपर स्क्रीनशॉट में हम एक क्वेरी देखते हैं जो कुछ देशों में 4 जी और 3 जी प्रभावी कनेक्शन प्रकारों के लिए कुल घनत्व की तुलना करता है। दिलचस्प बात यह है कि जापान में 4 जी की गति कितनी प्रचलित है, जबकि भारत में 3 जी गति अभी भी बहुत आम है। इन तरह की अंतर्दृष्टि नए देश आयाम के लिए संभव हो गई है।
+For example, in the screenshot above we see a query that compares the aggregate densities for 4G and 3G effective connection types across a few countries. What’s interesting is to see how prevalent 4G speeds are in Japan, while 3G speeds are still very common in India. Insights like these are made possible thanks to the new country dimension.
 
-प्रारंभ करने के लिए, BigQuery पर [CrUX project](https://bigquery.cloud.google.com/dataset/chrome-ux-report:all) पर जाएं और आपको [country code](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2) द्वारा `country_ae` (संयुक्त अरब अमीरात) से `country_za` (दक्षिण अफ्रीका) में आयोजित डेटासेट की एक सूची दिखाई देगी। परिचित `all` डेटासेट अभी भी वैश्विक समग्र प्रदर्शन डेटा को कैप्चर करने के लिए है। प्रत्येक डेटासेट में सबसे हालिया रिपोर्ट, `201712` शुरू होने वाली मासिक `201712` । कैसे शुरू किया जाए, इस बारे में एक विस्तृत walkthrough के लिए, कृपया हमारे अद्यतन [CrUX documentation](/web/tools/chrome-user-experience-report/) देखें।
+To get started, head over to the [CrUX project](https://bigquery.cloud.google.com/dataset/chrome-ux-report:all) on BigQuery and you’ll see a list of datasets organized by [country code](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2) from `country_ae` (United Arab Emirates) to `country_za` (South Africa). The familiar `all` dataset is still there to capture the global aggregate performance data. Within each dataset there are monthly tables starting with the most recent report, `201712`. For a detailed walkthrough on how to get started, please refer to our updated [CrUX documentation](/web/tools/chrome-user-experience-report/).
 
-हम इस नए डेटा को आपके साथ साझा करने के लिए उत्साहित हैं और आशा करते हैं कि आप वेब पर उपयोगकर्ता अनुभव को बेहतर बनाने के तरीकों से इसका उपयोग करें। सहायता प्राप्त करने के लिए, प्रश्न पूछें, फीडबैक दें, या अपने विश्लेषण से निष्कर्ष साझा करें, [CrUX forum](https://groups.google.com/a/chromium.org/forum/#!forum/chrome-ux-report) पर चर्चा में शामिल [CrUX forum](https://groups.google.com/a/chromium.org/forum/#!forum/chrome-ux-report) । और यदि BigQuery पर नि: शुल्क स्तर आपके पूछताछ उत्साह को शामिल करने के लिए पर्याप्त नहीं है, तो हम अभी भी आपको [extra 10 TB free](https://docs.google.com/forms/d/e/1FAIpQLSeMYnz93JQuO7rPewVrKpLfxO7JREOysti0CQyRo31bc7cXHA/viewform) देने के लिए प्रचार चला रहे हैं, इसलिए आपूर्ति के दौरान अपने क्रेडिट प्राप्त करें!
+We’re excited to share this new data with you and hope to see you use it in ways to improve the user experience on the web. To get help, ask questions, offer feedback, or share findings from your own analysis, join the discussion on the [CrUX forum](https://groups.google.com/a/chromium.org/forum/#!forum/chrome-ux-report). And if the free tier on BigQuery isn’t enough to contain your querying enthusiasm, we’re still running a promotion to give you an [extra 10 TB free](https://docs.google.com/forms/d/e/1FAIpQLSeMYnz93JQuO7rPewVrKpLfxO7JREOysti0CQyRo31bc7cXHA/viewform), so go get your credits while supplies last!
 
 {% include "web/_shared/rss-widget-updates.html" %}
-
-{% include "web/_shared/translation-end.html" %}
