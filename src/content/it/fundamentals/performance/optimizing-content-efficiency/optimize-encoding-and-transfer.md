@@ -1,225 +1,119 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Dopo aver eliminato le risorse non necessarie, la cosa migliore che possiamo fare per migliorare il tempo di caricamento della pagina è minimizzare la dimensione totale delle risorse da scaricare ottimizzando e comprimendo le risorse rimaste.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Next to eliminating unnecessary resource downloads, the best thing we can do to improve page-load speed is to minimize the overall download size by optimizing and compressing the remaining resources.
 
-{# wf_updated_on: 2017-11-10 #}
-{# wf_published_on: 2014-03-31 #}
+{# wf_updated_on: 2018-08-17 #} {# wf_published_on: 2014-03-31 #} {# wf_blink_components: Blink>Network #}
 
-# Ottimizzazione della codifica e delle dimensioni di trasferimento delle risorse di testo {: .page-title }
+# Optimizing Encoding and Transfer Size of Text-Based Assets {: .page-title }
 
 {% include "web/_shared/contributors/ilyagrigorik.html" %}
 
-Dopo l'eliminazione dei download non necessari di risorse, la cosa migliore che
-possiamo fare per migliorare il tempo di carimanento della pagina è minimizzare
-la dimensione da scaricare mediante ottimizzazione e compressione delle
-rimanenti risorse.
+Next to eliminating unnecessary resource downloads, the best thing you can do to improve page-load speed is to minimize the overall download size by optimizing and compressing the remaining resources.
 
+## Data compression 101
 
-## Introduzione alla compressione dei dati
+After you’ve eliminated any unnecessary resources, the next step is to compress the remaining resources that the browser has to download. Depending on the resource type&mdash;text, images, fonts, and so on&mdash;there are many different techniques to choose from: generic tools that can be enabled on the server, pre-processing optimizations for specific content types, and resource-specific optimizations that require input from the developer.
 
-Una volta eliminate tutte le risorse non necessarie, è necessario minimizzare le
-dimensioni totali delle risorse restanti che il browser deve scaricare, ovvero
-comprimerle. A seconda del tipo di risorsa&mdash;testo, immagine, font e così
-via&mdash;abbiamo diverse tecniche a nostra disposizione: strumenti generici che
-possono essere abilitati sul server, procedure di ottimizzazione
-pre-elaborazione per tipi di contenuto specifici o per specifiche risorse, che
-richiedono l'intervento del developer.
-
-Per garantire le prestazioni migliori, è necessaria una combinazione delle
-diverse tecniche.
+Delivering the best performance requires a combination of all of these techniques.
 
 ### TL;DR {: .hide-from-toc }
-* La compressione è una procedura di codifica delle informazioni che utilizza un
-numero inferiore di bit
-* L'eliminazione dei dati non necessari consente sempre di raggiungere i
-risultati migliori
-* Esistono numerose tecniche e algoritmi di compressione diversi
-* Per ottenere la compressione ottimale, dovrai avvalerti di più tecniche
 
+* Compression is the process of encoding information using fewer bits.
+* Eliminating unnecessary data always yields the best results.
+* There are many different compression techniques and algorithms.
+* You will need a variety of techniques to achieve the best compression.
 
-La procedura di riduzione delle dimensioni dei dati, nota come *compressione dei
-dati*.
-Molte persone hanno contribuito ad algoritmi, tecniche e procedure di
-ottimizzazione per migliorare le percentuali, la velocità di compressione ed i
-requisiti di memoria dei diversi compressori. Inutile dire che una discussione
-approfondita su tale argomento esula dal nostro ambito. Tuttavia è comunque
-importante comprendere ad alto livello come funziona la compressione e le
-tecniche che abbiamo a disposizione per ridurre le dimensioni di diverse risorse
-presenti nelle nostre pagine.
+The process of reducing the size of data is *data compression*. Many people have contributed algorithms, techniques, and optimizations to improve compression ratios, speed, and memory requirements of various compressors. A full discussion of data compression is beyond the scope of this topic. However, it's important to understand, at a high level, how compression works and the techniques you can use to reduce the size of various assets that your pages require.
 
-Per illustrare i principi chiave di tali tecniche, consideriamo il processo di
-ottimizzazione di un semplice messaggio di testo inventato come esempio:
+To illustrate the core principles of these techniques, consider the process of optimizing a simple text message format that was invented just for this example:
 
-    # Il seguente è un messaggio segreto, composto da un gruppo di intestazioni
-    # in formato chiave-valore seguito da un ritorno a capo e dal messaggio
-    # cifrato.
+    # Below is a secret message, which consists of a set of headers in
+    # key-value format followed by a newline and the encrypted message.
     format: secret-cipher
-    date: 25/08/16
+    date: 08/25/16
     AAAZZBBBBEEEMMM EEETTTAAA
+    
 
-1. I messaggi possono contenere annotazioni di vario tipo, indicate dal prefisso
-   "#". Le annotazioni non influenzano né il significato, né alcun altro aspetto
-   del messaggio.
-1. I messaggi possono contenere delle *intestazioni* composte da coppie di
-   chiave-valore (separate da ":") che compaiono all'inizio del messaggio.
-1. I messaggi contengono payload testuale.
+1. Messages may contain arbitrary annotations, which are indicated by the "#" prefix. Annotations do not affect the meaning or any other behavior of the message.
+2. Messages may contain *headers*, which are key-value pairs (separated by ":") that appear at the beginning at the message.
+3. Messages carry text payloads.
 
-Come potremmo ridurre le dimensioni del messaggio precedente, attualmente di 200
-caratteri?
+What can you do to reduce the size of the above message, which is currently 200 characters?
 
-1. Il commento è interessante, ma sappiamo che non influenza di fatto il
-   significato del messaggio. Per cui lo elimineremo nella trasmissione dello
-   stesso.
-1. Vi sono probabilmente alcune tecniche intelligenti che possiamo utilizzare
-   per codificare le intestazioni in modo efficace. Ad esempio, se sappiamo che
-   tutti i messaggi contengono un "format" e un "date", possiamo convertirli in
-   ID interi brevi e inviare solo quelli. Detto ciò, non siamo sicuri che sia
-   questo il caso, per cui lo lasceremo in sospeso per adesso.
-1. Il payload è formato da solo testo, e, anche se non sappiamo quale sia il suo
-   reale contenuto (apparentemente, utilizza un "messaggio segreto"), solo
-   osservando il testo sembra che vi sia una notevole ridondanza. Forse, invece
-   di mandare lettere ripetute, possiamo semplicemente contare il numero di esse
-   e codificarle in maniera più efficace?
-Per esempio "AAA" diventa "3A" che rappresenta una sequenza di tre A.
+1. The comment is interesting, but it doesn’t actually affect the meaning of the message. Eliminate it when transmitting the message.
+2. There are good techniques to encode headers in an efficient manner. For example, if you know that all messages have "format" and "date," you could convert those to short integer IDs and just send those. However, that might not be true, so just leave it alone for now.
+3. The payload is text only, and while we don’t know what the contents of it really are (apparently, it’s using a "secret-message"), just looking at the text shows that there's a lot of redundancy in it. Perhaps instead of sending repeated letters, you can just count the number of repeated letters and encode them more efficiently. For example, "AAA" becomes "3A", which represents a sequence of three A’s.
 
-
-Mettendo assieme le diverse tecniche, arriviamo al risultato seguente:
+Combining these techniques produces the following result:
 
     format: secret-cipher
-    date: 25/08/16
+    date: 08/25/16
     3A2Z4B3E3M 3E3T3A
+    
 
-Il nuovo messaggio è lungo 56 caratteri, il che significa che siamo riusciti a
-comprimere il messaggio originale di un sorprendente 72%.
+The new message is 56 characters long, which means that you've compressed the original message by an impressive 72%.
 
-Naturalmente, ti chiederai, tutto ciò è fantastico, ma come può aiutarci ad
-ottimizzare le nostre pagine web? Sicuramente non inventeremo degli algoritmi di
-compressione, ma come  vedrai, utilizzeremo esattamente le stesse tecniche e
-processi mentali quando ottimizzeremo le diverse risorse sulle nostre pagine:
-pre-elaborazione, ottimizzazione specifica per il contesto e algoritmi specifici
-per contenuti diversi.
+This is all great, but how does this help us optimize our web pages? We’re not going to try to invent our compression algorithms, but, as you will see, we can use the exact same techniques and thought processes when optimizing various resources on our pages: preprocessing, context-specific optimizations, and different algorithms for different content.
 
-
-## Minificazione: pre-elaborazione e ottimizzazione specifica per il contesto
+## Minification: preprocessing & context-specific optimizations
 
 ### TL;DR {: .hide-from-toc }
--  Un'ottimizzazione specifica in base ai contenuti può ridurre
-   considerevolmente le dimensioni delle risorse offerte.
--  Un'ottimizzazione specifica in base ai contenuti si applica meglio nel ciclo
-   di build/release.
 
+* Content-specific optimizations can significantly reduce the size of delivered resources.
+* Content-specific optimizations are best applied as part of your build/release cycle.
 
-Il modo migliore per comprimere dati ridondanti o non necessari consiste
-nell'eliminarli in un'unica soluzione. Naturalmente, non possiamo semplicemente
-eliminare dei dati a caso, ma in alcuni contesti in cui disponiamo di una
-conoscenza specifica del contenuto dei dati e delle relative proprietà, è spesso
-possibile ridurre significativamente le dimensioni del payload senza inficiarne
-il significato.
+The best way to compress redundant or unnecessary data is to eliminate it altogether. We can’t just delete arbitrary data, but in some contexts where we have content-specific knowledge of the data format and its properties, it's often possible to significantly reduce the size of the payload without affecting its actual meaning.
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/performance/optimizing-content-efficiency/_code/minify.html" region_tag="full" adjust_indentation="auto" %}
 </pre>
 
-[Prova](https://googlesamples.github.io/web-fundamentals/fundamentals/performance/optimizing-content-efficiency/minify.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/performance/optimizing-content-efficiency/minify.html){: target="_blank" .external }
 
-Considera la semplice pagina HTML precedente e i suoi tre diversi tipi di
-contenuto: markup HTML, stili CSS e JavaScript. Ciascun tipo di contenuto
-dispone di norme diverse per quanto riguarda ciò che rappresenta un contenuto
-valido, differenti regole per indicare commenti, ecc. Come possiamo ridurre le
-dimensioni di questa pagina?
+Consider the simple HTML page above and the three different content types that it contains: HTML markup, CSS styles, and JavaScript. Each of these content types has different rules for what constitutes valid content, different rules for indicating comments, and so on. How can we reduce the size of this page?
 
-*  I commenti all'interno del codice sono i migliori amici di un developer, ma
-   il browser non deve vederli! La semplice eliminazione dei commenti CSS
-   (`/* ... */`), HTML (`<!-- ... -->`) e JavaScript (`// ...`) può ridurre
-   significativamente le dimensioni totali della pagina.
-*  Un compressore CSS "intelligente" potrebbe notare che stiamo utilizzando un
-   metodo inefficace di definizione di regole per ".awesome-container" ed
-   accorpare i due periodi in uno senza influenzare altri stili, risparmiando
-   altri byte.
-*  Gli spazi vuoti (semplici spazi e tab) sono utilizzati per comodità dai
-   developer in HTML, CSS e JavaScript. Un ulteriore compressore potrebbe
-   eliminare tutti i tab e gli spazi.
+* Code comments are a developer’s best friend, but the browser doesn't need to see them! Simply stripping the CSS (`/* … */`), HTML (`<!-- … -->`), and JavaScript (`// …`) comments can significantly reduce the total size of the page.
+* A "smart" CSS compressor could notice that we’re using an inefficient way of defining rules for ".awesome-container" and collapse the two declarations into one without affecting any other styles, saving more bytes.
+* Whitespace (spaces and tabs) is a developer convenience in HTML, CSS, and JavaScript. An additional compressor could strip out all the tabs and spaces.
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/performance/optimizing-content-efficiency/_code/minified.html" region_tag="full" adjust_indentation="auto" %}
 </pre>
 
-[Prova](https://googlesamples.github.io/web-fundamentals/fundamentals/performance/optimizing-content-efficiency/minified.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/performance/optimizing-content-efficiency/minified.html){: target="_blank" .external }
 
-Una volta applicate tali passi, la nostra pagina passerà da 406 a 150 caratteri,
-riducendosi del 63%! Molto probabilmente non sarà molto leggibile, ma d'altronde
-non deve neanche esserlo: possiamo mantenere la pagina originale come
-"development version" e poi applicare le procedure precedenti quando saremo
-pronti a inserire la pagina sul nostro sito web.
+After applying the above steps, the page goes from 406 to 150 characters, a 63% compression savings. Granted, it’s not very readable, but it also doesn’t have to be: you can keep the original page as your "development version" and then apply the steps above whenever you're ready to release the page on your website.
 
-Facendo un passo indietro, l'esempio precedente illustra un punto importante:
-anche un compressore generico&mdash;diciamo ideato per comprimere un qualsiasi
-testo&mdash; potrebbe svolgere un buon lavoro per comprimere la pagina
-precedente, ma non saprebbe certo come eliminare i commenti, raggruppare le
-regole CSS o effettuare dozzine di altre procedure di ottimizzazione specifiche.
-Ecco perché pre-elaborazione/minificazione/ottimizzazione basata sul contesto
-possono rivelarsi strumenti molto potenti.
+Taking a step back, the above example illustrates an important point: a general-purpose compressor&mdash;say, one designed to compress arbitrary text&mdash;could probably do a pretty good job of compressing the page above, but it would never know to strip the comments, collapse the CSS rules, or dozens of other content-specific optimizations. This is why preprocessing/minification/context-aware optimization can be such a powerful tool.
 
-Note: Nel caso specifico, la development version non compressa della libreria
-JQuery ha adesso una dimensione di ~300 KB. La stessa libreria minificata
-(commenti rimossi, ecc...) è più piccola ci quasi un fattore 3x: ~100 KB.
+Note: Case in point, the uncompressed development version of the jQuery library is now approaching ~300KB. The same library, but minified (removed comments, etc.) is about 3x smaller: ~100KB.
 
-Allo stesso modo, le tecniche precedenti possono essere estese a risorse non
-basate sul solo testo. Immagini, video e altri tipi di contenuti contengono
-tutti i propri metadati e diversi payload. Ad esempio, ogni volta che scatti una
-foto con la tua fotocamera, la foto contiene di norma numerose informazioni
-extra: le impostazioni della fotocamera, il luogo, ecc... A seconda della tua
-applicazione, tali dati possono essere fondamentali (ad es. il sito di
-condivisione della foto) o perfettamente inutili; dovrai quindi valutare se
-valga la pena rimuoverli. In pratica, tali metadati possono aggiungere decine di
-kilobyte per ogni immagine.
+Similarly, the techniques described above can be extended beyond just text-based assets. Images, video, and other content types all contain their own forms of metadata and various payloads. For example, whenever you take a picture with a camera, the photo also typically embeds a lot of extra information: camera settings, location, and so on. Depending on your application, this data might be critical (for example, a photo-sharing site) or completely useless, and you should consider whether it is worth removing. In practice, this metadata can add up to tens of kilobytes for every image.
 
-In breve, come primo passo nell'ottimizzazione dell'efficienza delle nostre
-risorse, crea un inventario dei diversi tipi di contenuti e valuta quali tipi di
-ottimizzazioni specifiche puoi applicare per ridurne le dimensioni; potrai così
-ottenere risultati significativi! Poi, una volta definito ciò, automatizza tali
-ottimizzazioni aggiungendole alle procedure build e release; per garantire che
-vengano sempre effettuate.
+In short, as a first step in optimizing the efficiency of your assets, build an inventory of the different content types and consider what kinds of content-specific optimizations you can apply to reduce their size. Then, after you’ve figured out what they are, automate these optimizations by adding them to your build and release processes to ensure that the optimizations are applied.
 
-## Compressione del testo con GZIP
+## Text compression with GZIP
 
 ### TL;DR {: .hide-from-toc }
 
--  GZIP funziona meglio su risorse di testo: CSS, JavaScript, HTML.
--  Tutti i browser moderni supportano la compressione con GZIP e la richiedono
-   automaticamente
--  Il tuo server deve essere configurato con la compressione GZIP abilitata
--  Molti CDN richiedono particolare attenzione per assicurarsi che GZIP sia
-   abilitata
+* GZIP performs best on text-based assets: CSS, JavaScript, HTML.
+* All modern browsers support GZIP compression and will automatically request it.
+* Your server must be configured to enable GZIP compression.
+* Some CDNs require special care to ensure that GZIP is enabled.
 
+[GZIP](https://en.wikipedia.org/wiki/Gzip) is a generic compressor that can be applied to any stream of bytes. Under the hood, it remembers some of the previously seen content and attempts to find and replace duplicate data fragments in an efficient way. (If you're curious, here's a [great low-level explanation of GZIP](https://www.youtube.com/watch?v=whGwm0Lky2s&feature=youtu.be&t=14m11s).) However, in practice, GZIP performs best on text-based content, often achieving compression rates of as high as 70-90% for larger files, whereas running GZIP on assets that are already compressed via alternative algorithms (for example, most image formats) yields little to no improvement.
 
-[GZIP](http://en.wikipedia.org/wiki/Gzip){: .external } è un compressore
-generico applicabile a qualsiasi stream di byte. Sotto il cofano, ricorda alcuni
-contenuti visti in precedenza e cerca di individuare e sostituire i frammenti di
-dati duplicati in maniera efficace. 
-(Se sei curioso, ecco una [spiegazione a basso livello di
-GZIP](https://www.youtube.com/watch?v=whGwm0Lky2s&feature=youtu.be&t=14m11s).)
-Tuttavia, in pratica, GZIP funziona meglio su risorse di testo, raggiungendo
-spesso un tasso di compressione del 70-90% per i file più grossi, mentre su
-risorse già compresse tramite algoritmi alternativi (ad es. la maggior parte dei
-formati immagine) consente di avere qualche piccolo se non nessun miglioramento.
-
-Tutti gli attuali browser supportano ed negoziano automaticamente la
-compressione GZIP per ogni richiesta HTTP. Devi solo assicurarti che il server
-sia configurato correttamente per fornire la risorsa compressa quando il client
-la richiede.
-
+All modern browsers support and automatically negotiate GZIP compression for all HTTP requests. You must ensure that the server is properly configured to serve the compressed resource when the client requests it.
 
 <table>
+  
 <thead>
   <tr>
-    <th>Libreria</th>
-    <th>Dimensioni</th>
-    <th>Dimensioni compresse</th>
-    <th>Percentuale di compressione</th>
+    <th>Library</th>
+    <th>Size</th>
+    <th>Compressed size</th>
+    <th>Compression ratio</th>
   </tr>
 </thead>
-<tbody>
+
 <tr>
   <td data-th="library">jquery-1.11.0.js</td>
   <td data-th="size">276 KB</td>
@@ -268,51 +162,30 @@ la richiede.
   <td data-th="compressed">18 KB</td>
   <td data-th="savings">88%</td>
 </tr>
-</tbody>
 </table>
 
-La tabella precedente illustra il risparmio consentito dalla compressione con
-GZIP per alcune delle librerie JavaScript e dei framework CSS più noti. Il
-risparmio va dal 60 all'88%; nota come la combinazione tra file minificati
-(identificati con “.min” nel nome) più GZIP offra una riduzione ancora maggiore.
+The above table shows the savings that GZIP compression produces for a few of the most popular JavaScript libraries and CSS frameworks. The savings range from 60 to 88%, and the combination of minified files (identified by “.min” in their filenames), plus GZIP, offers even more savings.
 
-1. **Applica prima le ottimizzazioni specifiche per i contenuti: minificatori
-   CSS, JS e HTML.**
-2. **Applica GZIP per comprimere il risultato minificato.**
+1. **Apply content-specific optimizations first: CSS, JS, and HTML minifiers.**
+2. **Apply GZIP to compress the minified output.**
 
-L'attivazione di GZIP rappresenta una delle ottimizzazioni più semplici ed
-efficaci da applicare; sfortunatamente, molte persone si dimenticano ancora di
-farlo. La maggior parte dei server web comprime i contenuti per nostro conto, e
-resta solo da verificare che il server sia configurato correttamente per
-comprimere tutti i contenuti che possano beneficiare della compressione con GZIP.
+Enabling GZIP is one of the simplest and highest-payoff optimizations to implement, and yet, many people don't implement it. Most web servers compress content on your behalf, and you just need to verify that the server is correctly configured to compress all the content types that benefit from GZIP compression.
 
-Il progetto HTML5 Boilerplate contiene alcuni [file di configurazione di
-esempio](https://github.com/h5bp/server-configs) per tutti i principali server,
-con commenti dettagliati per ogni flag e impostazione di configurazione.
-Per determinare la configurazione migliore per il tuo server segui i seguenti
-passi:
-*  Cerca il tuo server preferito nell'elenco.
-*  Vai alla sezione GZIP.
-*  Assicurati che il tuo server sia configurato secondo le impostazioni
-   raccomandate.
+The HTML5 Boilerplate project contains [sample configuration files](https://github.com/h5bp/server-configs) for all the most popular servers with detailed comments for each configuration flag and setting. To determine the best configuration for your server, do the following:
 
-![Demo DevTools confronto dimensioni reali vs.
-trasferite](images/transfer-vs-actual-size.png)
+* Find your favorite server in the list.
+* Look for the GZIP section.
+* Confirm that your server is configured with the recommended settings.
 
-Un modo semplice e rapido di vedere GZIP in azione consiste nell'aprire Chrome
-DevTools e controllare la colonna “Size / Content“ nella scheda Rete: “Size“
-indica le dimensioni di trasferimento della risorsa, mentre “Content“ indica le
-dimensioni espanse della risorsa. Per la risorsa HTML dell'esempio precedente,
-GZIP ha risparmiato 98.8 KB durante il trasferimento!
+<img src="images/transfer-vs-actual-size.png"
+  alt="DevTools demo of actual vs transfer size" />
 
-Note: In alcuni casi GZIP può aumentare le dimensioni di una risorsa. Di norma,
-ciò accade quando la risorsa è molto piccola e l'overhead del dizionario GZIP è
-maggiore del risparmio consentito dalla compressione, o se la risorsa è già
-compressa al massimo. Alcuni server consentono di specificare una dimensione
-minima per evitare tale problema.
+A quick and simple way to see GZIP in action is to open Chrome DevTools and inspect the “Size / Content” column in the Network panel: “Size” indicates the transfer size of the asset, and “Content” the uncompressed size of the asset. For the HTML asset in the preceding example, GZIP saved 98.8 KB during the transfer.
 
-Infine, nonostante la maggior parte dei server comprime automaticamente le
-risorse al posto tuo prima di presentarle all'utente, alcuni CDN richiedono
-particolare attenzione e un'azione manuale per garantire che gli oggetti GZIP
-siano serviti. Verifica che le risorse presenti sul tuo sito siano
-effettivamente [compresse](http://www.whatsmyip.org/http-compression-test/)
+Note: Sometimes, GZIP increases the size of the asset. Typically, this happens when the asset is very small and the overhead of the GZIP dictionary is higher than the compression savings, or when the resource is already well compressed. To avoid this problem, some servers allow you to specify a minimum filesize threshold.
+
+Finally, while most servers automatically compress the assets for you when serving them to the user, some CDNs require extra care and manual effort to ensure that the GZIP asset is served. Audit your site and ensure that your assets are, in fact, [being compressed](http://www.whatsmyip.org/http-compression-test/).
+
+## Feedback {: #feedback }
+
+{% include "web/_shared/helpful.html" %}
