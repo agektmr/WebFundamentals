@@ -1,311 +1,221 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: UX デザインの基本の手順ガイド
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: A step-by-step guide to the basics of UX design.
 
-{# wf_updated_on:2016-10-01 #}
-{# wf_published_on:2016-10-01 #}
+{# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2016-10-01 #} {# wf_blink_components: N/A #}
 
-#  UX の基本 {: .page-title }
+# Basics of UX {: .page-title }
 
 {% include "web/_shared/contributors/mustafa.html" %}
 
-この記事で紹介するワークフローは、チーム、製品、新興企業、会社が顧客のユーザー エクスペリエンスを高めるための堅牢で重要なプロセスを作成するのに役立ちます。プロセスのさまざまな部分は個別に使用できますが、一連の手順として使用することをお勧めします。
+This article introduces a workflow that can help teams, products, startups and companies create a robust and meaningful process for developing a better user experience for their customers. You could use different parts of the process separately but they ideally work best as a series of steps.
 
+This guide borrows heavily from the Design Sprint methodology that multiple teams across Google use to troubleshoot and solve challenges such as the [Self Driving Car](https://www.google.com/selfdrivingcar/ "Self Driving Car"){:target="_blank" .external} and [Project Loon](https://www.solveforx.com/loon/ "Project Loon"){:target="_blank" .external}.
 
-このガイドは、Google の複数のチームが、[セルフ ドライビングカー](https://www.google.com/selfdrivingcar/ "Self Driving Car"){:target="_blank" .external}や [Project Loon](https://www.solveforx.com/loon/ "Project Loon"){:target="_blank" .external} などの問題をトラブルシューティングおよび解決するために使用するデザイン スプリント手法に基づいています。
+### Double Diamond
 
-
-
-
-###  ダブル ダイアモンド
-
-このワークフローは、[英国デザイン カウンシル](https://www.designcouncil.org.uk/ "British Design Council"){:target="_blank" .external}によって広められたダブル ダイアモンドと呼ばれる UX サークルに基づいています。チームは発散して調査によりアイデアを理解してから、収束して課題を定義し、発散して個々にこれを模索し、アイデアを共有し、最適な解決策を決定し、テストと検証を行います。
-
-
-
-
+This flow work is based on what we in UX circles call the double diamond, made popular by the [British Design Council](https://www.designcouncil.org.uk/ "British Design Council"){:target="_blank" .external}, where your team diverges to understand an idea through research and then converges to define the challenge, diverges to sketch it individually, share the ideas, decide on what the best way forward is, test and validate.
 
 <figure>
-  <img src="images/double-diamond.png" alt="プロジェクトのフェーズには、理解、定義、発散、決定、プロトタイプ、検証が含まれます">
-  <figcaption>英国デザイン カウンシルで最初に開発された「ダブル ダイアモンド」デザイン プロセスモデルの手順には、プロジェクトのフェーズである<em>理解</em>、<em>定義</em>、<em>発散</em>、<em>決定</em>、<em>プロトタイプ</em>、<em>検証</em>が含まれます。</figcaption>
+  <img src="images/double-diamond.png" alt="Phases of a project include; Understand, Define, Diverge, Decide, Prototype and Validate">
+  <figcaption>The 'double diamond' design process model pioneered by the British Design Council, the steps involve these phases of a project; <em>Understand</em>, <em>Define</em>, <em>Diverge</em>, <em>Decide</em>, <em>Prototype</em> and <em>Validate</em>.</figcaption>
 </figure>
 
-##  ステージの設定
+## Setting the stage
 
-最初に、現在根底にある課題から開始し、自分が実際に解決しようとしている課題は何かということを考え、提案などを書き出します。課題ステートメントは、目標を含む、プロジェクトに対して設定する概要文書です。
+First thing is to start with the underlying challenge at hand and write it out like a proposal, asking yourself, “what is the problem I’m actually trying to solve?”. The challenge statement is the brief you are setting for the project that includes your goal.
 
+This challenge could be for an existing product feature that needs to be refined or a completely new product altogether. Whatever your task may be, simply adjust the language to fit the goal you are trying to achieve. A statement should be tied to your team goals, focused on your audience, inspiring and concise.
 
-この課題は、改善が必要な既存の製品に関するものでも、まったく新しい製品に関するものであってもかまいません。
-タスクがどのようなものであっても、達成しようとしている目標に合わせて言語を調整するだけです。
-ステートメントは、チーム目標に関連付けられたものであり、対象読者に重点を置き、鼓舞するようなものであると同時に簡潔である必要があります。
+These are some real life examples of products that I have worked on in the past;
 
+- Design a system to manage the treatment and follow-up care of patients with clubfoot.
 
-過去に私が取り組んだ実際の製品の例を次に示します。
+- Create an app that simplifies complex financial systems and pare them down to the essentials.
 
+- Design a consistent mobile app across different platforms without sacrificing the brand.
 
-* 内反足の患者の治療とフォローアップ治療を管理するシステムをデザインする。
+### Updating your challenge statement
 
+Once you have written several variations of the goal, present it to your team to get a consensus. You may want to include a deadline as this will help the team focus on the problem. So with the added adjustments, the list above could be:
 
-* 複雑な金融システムを簡素化するアプリを作成し、基本機能に絞り込む。
+- Design a system to manage the treatment and follow-up care of children under the age of 2 with clubfoot for launch in Q1 this year.
+- Create a simple financial app that allows you to buy and sell shares at the tap of a button without prior knowledge of the financial world, with initial launch on July 2017.
+- Produce a design guide that is flexible across multiple platforms and positions the company's brand effectively on each platform by the end of this year.
 
+When the challenge statement is finished, display it in a prominent place so that you can see it while you work. You will need to refer back to it constantly, perhaps even updating or modifying it throughout your project.
 
-* ブランドを損なうことなくさまざまなプラットフォームで一貫したモバイルアプリをデザインする。
+## Validating the problem
 
+The next step is to research the challenge and learn about the problem. What you need to discover is whether your team's understanding of the problem is valid. Quite often we look at problems from our own point of view, which is dangerous as most of us in tech are actually power users and are in fact a minority of users. We are a vocal minority and can be fooled into thinking something is actually a problem when it isn’t.
 
-###  課題ステートメントの更新
+There are various methods of collecting data to validate the challenge. Each one depends on your team and if you have access to users. The objective is to have a better understanding of the problem at hand.
 
-目標をいくつか書き出したら、それをチームに提示して合意を得ます。
-期限を設定すると、チームは問題に集中できます。
-上記のリストに調整を加えたものを次に示します。
-
-
-* 内反足の 2 歳未満の子供の治療とフォローアップ治療を管理するシステムをデザインする。提供開始は今年の第 1 四半期。
-
-* 金融界に関する予備知識がなくても、ボタンをタップして株式を売買できる単純な金融アプリを作成する。提供開始は 2017 年 7 月。
-
-
-* 複数のプラットフォームに柔軟に対応し、各プラットフォームに会社のブランドを効果的に配置するデザインガイドを作成する。期限は年内。
-
-
-課題ステートメントを完成させたら、それを目立つ場所に掲示して、作業中に確認できるようにします。
-絶えず読み返す必要があり、プロジェクトを通して更新または変更することもあります。
-
-
-##  問題の検証
-
-次のステップでは、問題を調査して把握します。確認する必要があるのは、チームが問題を正確に理解しているかどうかということです。多くの場合、問題を自分の視点でとらえていますが、これは危険です。私たち技術者は実際にはパワーユーザーであり、ユーザーの少数派にすぎないからです。私たちは積極的に意見を言う少数派であり、問題になっていない場合でも実際には問題であると思い違いをすることがあります。
-
-
-データを収集して問題を検証する方法はさまざまです。方法はそれぞれ、チームや、ユーザーへのアクセス権があるかどうかによって異なります。
-目的は、現在発生している問題をより的確に理解することです。
-
-
-###  利害関係者との社内インタビュー
+### Internal interviews with stakeholders
 
 <figure>
-  <img src="images/stakeholder-interviews.jpg" class="attempt-right" alt="利害関係者とのインタビューは、会社またはチーム全体を分析するのに有益です。">
-  <figcaption>利害関係者とのインタビューは、会社またはチーム全体を分析するのに有益です。</figcaption>
+  <img src="images/stakeholder-interviews.jpg" class="attempt-right" alt="Interviews with stakeholders can be informative for discovering insights across a company or team.">
+  <figcaption>Interviews with stakeholders can be informative for discovering insights across a company or team.</figcaption>
 </figure>
 
-インタビュー プロセスでは、マーケティングから会計に至るまで、各チームメンバーや利害関係者にインタビューします。これにより、実際の課題に関する考えや可能な解決策に関する考えを把握できます。ここで言う解決策とは、技術的な解決策ではなく、会社や製品の最良のシナリオと最終目標のことです。たとえば、「年末までに 80% の医療施設に内反足ソフトウェアを配置する」という前述の問題は、目指すべき大きな目標です。
+The interviewing process involves interviewing each team member and stakeholder at your company, from marketing to accounts. This will help you find what they think the real challenges are and what they think potential solutions could be. When I say solution I am not speaking about technical solutions here, but rather what would be the best case scenario and end goal for the company or product. For example using the challenges above “having our clubfoot software in 80% of medical facilities by the end of the year” would be a great goal to aim for.
 
+There is one caveat. This method of validation is the least favoured as it prevents team discussion and collaboration, potentially creating a siloed atmosphere in an organization. Nevertheless it can yield some good information about the clients and the design challenge that you could otherwise miss.
 
-
-
-
-
-注意点が 1 つあります。この検証方法では、チームのディスカッションやコラボレーションが妨げられ、組織に閉鎖的な雰囲気が生まれるため、あまり好ましくありません。それでも、クライアントや、他の方法では見落とす可能性があるデザイン上の課題に関する有益な情報が得られる場合があります。
-
-
-###  ライトニング トーク
+### Lightning talks
 
 <figure>
-  <img src="images/lightning-talks.jpg" alt="ライトニング トークは、わずか数分間の短いプレゼンテーションです。">
-  <figcaption>ライトニング トークは、わずか数分間の短いプレゼンテーションです。</figcaption>
+  <img src="images/lightning-talks.jpg" alt="A lightning talk is a very short presentation lasting only a few minutes.">
+  <figcaption>A lightning talk is a very short presentation lasting only a few minutes.</figcaption>
 </figure>
 
-これは社内インタビューに似ていますが、すべての利害関係者を 1 つの部屋に集めます。
-次に、5、6 人の利害関係者（マーケティング、営業、デザイン、会計、研究など）を選び、最大 10 分間、自分の視点で課題を中心に話をしてもらいます。プレゼンテーションで話す必要があるトピックは、次のとおりです。
+This is similar to the internal interviews, but this time you get every stakeholder into a single room. Then you Elect five or six of those stakeholders (marketing, sales, design, accounts, research etc.) to give a talk, each focusing on the challenge from their perspective for a maximum of 10 minutes. The topics they must cover in their presentation should be:
 
+- Goals of the business
+- Challenges of the project from their point of view (these could be technical, research gathering, design creation etc..)
+- User research that you have currently
 
+Leave 5 minutes at the end for questions, with an elected person taking notes throughout. Once you are done you might want to update the challenge to reflect new learnings. The goal is to collect a list of bullet points that can drive a feature or flow that helps your achieve your products goal.
 
-
-* ビジネスの目標
-* 自分の視点でのプロジェクトの課題（技術的、調査収集、デザインの課題など）
-* 現在行っているユーザー調査
-
-最後に、メモを取る人を選んで 5 分間の質問時間を設けます。
-終わったら、問題を更新して新しく習得した知識を反映します。
-目標は、製品目標の達成に役立つ機能またはフローを促す箇条書きのリストを収集することです。
-
-
-###  ユーザー インタビュー
-<figure>
-  <img src="images/user-interviews.jpg" class="attempt-right" alt="ユーザー インタビューは、特定のタスクにおけるユーザーの問題点を把握するのに適した方法です。">
-  <figcaption>ユーザー インタビューは、特定のタスクにおけるユーザーの問題点を把握するのに適した方法です。</figcaption>
-</figure>
-
-ユーザーのプロセス、問題点、フローについて把握する最適な方法です。
-少なくとも 5 件のユーザー インタビュー、アクセス権がある場合はさらに多くのユーザー インタビューを手配してください。次のような質問をしてください。
-
-- 既存のタスクをどのように完了するか。たとえば、前述の金融アプリの課題を解決する場合は、「株式を瞬時に購入するにはどうしますか。」と質問します。
-- このフローについて好きな点は何ですか。
-- このフローについて嫌いな点は何ですか。
-- ユーザーが現在使用している類似製品は何ですか。
-    *  好きな点は何ですか。
-    *  嫌いな点は何ですか。
-- 魔法のつえを持っていて、このプロセスについて 1 つ変更できるとしたら、何を変更しますか。
-
-
-インタビューの目的は、ユーザーに現在の課題を話してもらうことです。それは自分が議論することではないため、できるだけ静かにしている必要があります。これは、ユーザーが話すのをやめたときにさらに重要になります。必ずユーザーの考えがまとまるまで少し待ってください。話すのを数秒間やめた後、かなり話し続けることに驚くことでしょう。
-
-
-その間メモを取り、可能な場合は会話を録音すると、聞き逃した可能性のある内容を聞きなおすことができます。目標は、課題を、自分で集めたユーザー分析と比較することです。これらは一致しているでしょうか。課題ステートメントの更新に役立つことを習得できたでしょうか。
-
-
-###  民族学的実地調査
+### User interviews
 
 <figure>
-  <img src="images/field-interviews.jpg" class="attempt-right" alt="自然な環境にいるユーザーに会うことは、ユーザーが自分自身の課題をどのように解決するかを把握するのに最適な方法です。">
-  <figcaption>自然な環境にいるユーザーに会うことは、ユーザーが自分自身の課題をどのように解決するかを把握するのに最適な方法です。</figcaption>
+  <img src="images/user-interviews.jpg" class="attempt-right" alt="User interviews are a great way to learn about a persons pain points in any given task.">
+  <figcaption>User interviews are a great way to learn about a person's pain points in any given task.</figcaption>
 </figure>
 
-ここでは、現場のユーザーがどのように買い物をしているか、通勤手段は何か、SMS メッセージをどのように送信しているかなど、何かをしている現場のユーザーを観察します。これは、あなたが聞きたいと思う「ユーザーが何を考えているか」を教えてくれる場合があるためです。ただし、ユーザーが自分でアクションやタスクを実行しているのを観察すると、分析に役立つ場合があります。基本的には、干渉せずに観察し、ユーザーにとって何が簡単で何が難しいか、聞き逃す可能性があることなどをメモします。目標は、ユーザーの環境に身を置いて、ユーザーの問題点をより深く理解することです。
+This is perhaps the best way of learning about the user's journey, pain points, and flow. Arrange at least five user interviews, more if you have access to them. The sorts of questions you ask them should include:
 
+- How do they complete an existing task? For example, say you want to solve the challenge for the financial app above, you could ask them “how do you buy shares and stocks at the moment?”
+- What do they like about this flow?
+- What do they dislike about this flow?
+- What similar products does the user currently use? 
+    - What do they like?
+    - What do they dislike?
+- If they had a magic wand and could change one thing about this process what would it be?
 
-通常、この方法では、作業に長い時間がかかり、リサーチャーがプロジェクトのこの部分をリードする必要があります。ただし、自然な環境で調査対象のユーザーに会う機会が得られれば、最も分析に役立つでしょう。
+The idea of interviewing is to get the user to speak about the challenges they have. It is not a discussion point for you, which is why you must remain as quiet as possible. This is even true when a user stops speaking, always wait a moment as they could be gathering their thoughts. You would be surprised at how much someone will continue to speak after they have stopped for a few seconds.
 
+Take notes throughout and if possible record the conversation to help you capture anything you might have missed. The goal is to compare the challenge to the user insights that you gather. Do they align? Did you learn anything that helps you update your challenge statement?
 
-
-###  まとめ
-
-プロジェクトの習得段階が完了したら、最後にもう一度だけ課題を確認する必要があります。
-正しい道にいますか。調整が必要なものはありませんか。
-習得した知識をすべて書き留め、カテゴリに分類してください。
-これらは、解決する問題に応じて、機能またはフローの基本となります。
-課題の更新や修正に使用することもできます。
-
-
-十分なフィードバックと分析が得られたら、次に、その知識をプロジェクト マップの作成に応用します。
-
-
-##  プロジェクト マップ
-
-解決しようとしている問題は、通常はプロジェクトのフローに関係のあるさまざまなタイプのユーザー（またはプレーヤー）で構成されています。習得した知識に基づいて、考えられるプレーヤーをリストします。
-ユーザータイプまたは利害関係者、たとえば、「内反足を治療する医師」、「内反足の患者」、「患者の世話をする介護者」などがあげられます。各プレーヤーを用紙の左側に記入します。アクセス権がある場合は、ホワイトボードに記入します。右側には、各プレーヤーの目標を記入します。
-
-最後に、プレーヤーごとに、目標の達成に必要なステップの数を記入します。たとえば、「内反足を治療する医師」の目標は「内反足の患者を治療すること」であるため、ステップは、「患者をシステムに登録する」、「まず医療計画を作成する」、「医療保険のレビューサイクルを作成する」、「医療処置を行う」です。
-
-
-
+### Ethnographic field research
 
 <figure>
-  <img src="images/project-map.jpg" alt="プロジェクト マップは、各ユーザーまたはプレーヤーの主なステップをフローに書き出したものです。">
-  <figcaption>プロジェクト マップは、各ユーザーまたはプレーヤーの主なステップをフローに書き出したものです。</figcaption>
+  <img src="images/field-interviews.jpg" class="attempt-right" alt="Seeing users in their natural environment is a great way to understand how they solve their own challenges.">
+  <figcaption>Seeing users in their natural environment is a great way to understand how they solve their own challenges.</figcaption>
 </figure>
 
-そのため、プロジェクト マップには、プロセスの主なステップが含まれます。詳細が多すぎないプロジェクトの概要と考えてください。
-チームメンバーは、マップが課題ステートメントに一致しているかどうかを判断できます。
-後で各ステップを分析するときに、詳細がわかります。
-ただし、現時点では、プロジェクト マップは、ユーザーが最終目標を達成するために実施するステップの概要を示します。
+This is where you observe the user in the field, in context while doing something like how they do their shopping, how they travel to work, how they send SMS messages etc.. The reason is in some cases people will tell you what they think you want to hear. But if you watch users perform actions and tasks on their own it can be insightful. Basically you are observing without interfering, noting things which they find easy or difficult and things they may have missed. The goal is to immerse yourself in the user's environment to better empathize with their pain points.
 
+This technique usually involves some work done over a longer period of time and requires a researcher to lead this part of the project. But it is perhaps the most insightful as you get to see a group of people that you are studying in their natural environments.
 
-##  ワイヤーフレームとストーリーボードの作成
+### Gathering it altogether
 
-###  Crazy 8s
+Once you have completed the learnings phase of your project you need to take one last look at your challenge. Are you on the right path? Is there anything you need to adjust? Write down all of the things you have learnt and group them into categories. These could become the basis of a feature or a flow, depending on the problem you are solving. They could also be used to update and revise the challenge.
 
-これについては、8 つのパネルができるように紙を折る Crazy 8s と呼ばれる方法をお勧めします。次に、各パネルに、これまでに習得したすべての知識をもとにアイデアを描画します。10 分間でアイデアを出して 8 つのパネルすべてに描画します。20 分以上にすると、ぐずぐずしたり、コーヒーを入れに行ったり、メールを確認したり、チームと一般的な話をしたり、仕事を避けたりする可能性があります。迅速かつより効果的に仕事をせざるを得なくなるため、このステップで切迫感を生み出すことができます。
+Once you have enough feedback and insight it is time to apply that knowledge to creating a project map.
 
+## Project Map
 
+The problem you are trying to solve is usually made up of different types of people (or players), each with a stake in the project's flow. Based on your learnings you need to list out the possible players. It could be a user type or stakeholder, for example, “a doctor who treats clubfoot”, “a patient who has clubfoot”, “a care giver who looks after patient”, etc.. Write down each player on a the left hand side of a sheet of paper or if you have access to one, on a whiteboard. On the right hand side write each player's goals.
 
-チームで作業している場合は、全員に自分の仕事をしてもらうよう促します。このプロセスにより、脳が始動し、問題について考えるようになります。通常、スケッチがインターフェース デザインのワイヤーフレームになります。
+Finally for each player, write down the number of steps required for them to reach their goal. For example for "a doctor who treats clubfoot” the goal would be “cure a patient with clubfoot”, so the steps could be “register the patient in the system”, “start them on medical a plan”, “create a review cycle of their medical health” and “perform medical procedure”.
 
+<figure>
+  <img src="images/project-map.jpg" alt="Project maps plot out the main steps for each user or player in a flow">
+  <figcaption>Project maps plot out the main steps for each user or player in a flow.</figcaption>
+</figure>
 
+The result is a project map with the main steps in the process. Think of it as an overview of the project without too many details. It also lets team members judge whether the map matches the challenge statement. Later, when you break down each step, there will be more details. But for now a project map gives you a high level breakdown of the steps a user will take to complete their end goal.
 
-その後、自分とチームの他のメンバー全員がアイデアをグループに提示します。全員が 8 つの各アイデアの詳細と特定のパスをたどることを選択した理由を説明する必要があります。各チームメンバーに、習得した知識を利用して自分のアイデアを正当化するよう促します。全員がアイデアを提示したら、次はアイデアに投票します。各個人には 2 つのスティッキー ドットがあり、どのアイデアにも投票できます。本当に気に入っている場合は 1 つのアイデアに 2 回投票することもできます。
+## Wireframing and storyboarding
 
+### Crazy 8s
 
+For this, I recommend a method called crazy 8s that involves folding a piece of paper twice over so that you have eight panels. Then in each panel you draw out an idea based on all that you have learnt so far. Give yourself ten minutes to come up with ideas to fill all eight panels. If you give yourself more than 20 minutes you may start to procrastinate, go make yourself a coffee, check email, have a general chat with your team and essentially avoid doing the work. You want to create a sense of urgency in this step as it forces you to work quickly and more effectively.
+
+If you are working with a team get everyone to do their own as well. This process will kick start your brain and get you thinking about the challenge. Generally the sketch will be an interface design wireframe.
+
+Afterwards, you and everyone on your team presents their ideas to the group. Everyone must explain each of their eight ideas in detail and why they chose to go down a specific path. Remind each team member to use the learnings for justification of their ideas. Once everyone has presented it's time to vote on the ideas. Each person gets two sticky dots and can vote on any idea. They can give both votes to a single idea if they really like it.
 
 <!-- <figure>
-  <img src="images/voting-ideas.jpg"   alt="付箋紙にメモしたり、コンセプトまたはスケッチに投票できます。">
-  <figcaption>付箋紙にメモしたり、コンセプトまたはスケッチに投票できます。</figcaption>
+  <img src="images/voting-ideas.jpg"   alt="You can take notes on post-its and vote on concepts or the sketches themselves">
+  <figcaption>You can take notes on post-its and vote on concepts or the sketches themselves.</figcaption>
 </figure> -->
 
-
 <figure  class="attempt-left">
-  <img src="images/crazy-8s.jpg" alt="Crazy 8s は、すべてのアイデアをページに書き出す最適な方法です。">
-  <figcaption>Crazy 8s は、すべてのアイデアをページに書き出す最適な方法です。</figcaption>
+  <img src="images/crazy-8s.jpg" alt="Crazy 8s are a great way to get all of your ideas onto one page">
+  <figcaption>Crazy 8s are a great way to get all of your ideas onto one page.</figcaption>
 </figure>
 
 <figure class="attempt-right">
-  <img src="images/detailed-wireframe.jpg"   alt="次に、習得した知識に基づいて、詳細なデザインを行う必要があります。">
-  <figcaption>次に、習得した知識に基づいて、詳細なデザインを行う必要があります。</figcaption>
+  <img src="images/detailed-wireframe.jpg"   alt="Now you need to do a detailed design based on what you have learned.">
+  <figcaption>Now you need to do a detailed design based on what you have learned.</figcaption>
 </figure>
 
 <div class="clearfix"></div>
 
-###  デザインの改良
+### Refine your design
 
-投票後、最多得票のアイデアを採用し、最終的なアイデアを作成します。同僚から聞いた他のアイデアを借りることもできます。10 分間でこのタスクを完了します。完了したら、再びアイデアをチームに提示し、前回のように投票します。
+After the voting take the idea with the most votes and sketch out a final idea. You can borrow from the other ideas that you heard from your colleagues as well. Give yourself another ten minutes to complete this task. Once you are done, again present the ideas to your team and vote like before.
 
-
-###  アイデアのストーリーボードの作成
-
+### Storyboard the idea
 
 <figure>
-  <img src="images/storyboard.jpg" class="attempt-right" alt="ストーリーボードは、スケッチとアイデアを 1 つのフローにまとめたものです。">
-  <figcaption>ストーリーボードは、スケッチとアイデアを 1 つのフローにまとめたものです。</figcaption>
+  <img src="images/storyboard.jpg" class="attempt-right" alt="The storyboard involves combining your sketches and ideas into a comprehensive flow.">
+  <figcaption>The storyboard involves combining your sketches and ideas into a comprehensive flow.</figcaption>
 </figure>
 
-デザインを手元に置き、ユーザーのエンゲージメントのストーリーボードを作成します。このときまでに、ユーザーが実施する別のステップについて考えておく必要があります。同僚のデザインもフローに組み込むのはよくあることです。ユーザーが発散する可能性があるいくつかのポイントを明確な段階的プロセスに含める必要があります。プロジェクト マップに戻り、デザインを目標に照らして検証してください。
-
+With your design in hand, it's time to storyboard it's engagement with the user. By this point you should have already thought about the different steps a user takes. It's quite common to incorporate one of your colleagues' designs into the flow as well. You want to have a clear step-by-step process with some points where the user might diverge. Refer back to the project map to validate your design against the goal.
 
 <div class="clearfix"></div>
 
-##  プロトタイプの作成
+## Creating a prototype
 
-プロトタイプの作成は、完全なコードを作成することではなく、誰かが使用したときにリアリティのあるものを作成することです。プロトタイプの作成に使用されるツールは、人によって異なります。Keynote や PowerPoint では、デザインの詳細ではなくフローについて考える必要があります。Balsamiq、Marvel、Framer など、より動作を制御できるツールの習得に時間を費やすこともできます。使用するツールにかかわらず、フローに重点を置くことができ、本物のように見えるものにします。プロトタイプは、できるだけリアリティのあるものにする必要があるため、現実のユーザーがする必要があります。ただし、作成に数週間かけるべきではありません。
-
-
+Creating a prototype is not about molding the perfect piece of code but to make something that is believable when used by someone. Tools used to create a prototype vary from person to person. Some like Keynote or Powerpoint as it forces you to think of the flow and not design details. You might want to invest time into learning tools like Balsamiq, Marvel or Framer which can give you more behavioral controls. Whatever tool you use make sure it is one that makes you focus on the flow and looks real. You need to test the prototype on real people so it needs to be as believable as possible but at the same time it shouldn’t take weeks of work to create.
 
 <figure>
-  <img src="images/prototyping.jpg"  alt="プロトタイプは、リアリティのあるものにする必要があります。">
-  <figcaption>プロトタイプは、リアリティのあるものにする必要があります。</figcaption>
+  <img src="images/prototyping.jpg"  alt="Prototypes need to be real enough to be believable">
+  <figcaption>Prototypes need to be real enough to be believable.</figcaption>
 </figure>
 
-プロトタイプの作成では、時間とリアリティのバランスをとる必要があるため、極端にどちらか一方に傾かないように注意してください。
-いずれの場合も、最終的に時間を無駄にすることがあります。
+Creating a prototype is a balance between time and realness, so be careful not to sway to much into either extreme. Either way, you could end up wasting time.
 
-##  デザインのユーザビリティ テスト
+## Usability-test your designs
 
-テストラボがあると最高です。ない場合でも、ユーザーにとって気が散らない快適な環境の作成を意識している限り、テストラボの作成は難しくありません。通常、テストにはユーザーと 2 人のチームメンバーが参加し、1 人はメモを取り、他の人は質問をします。ハングアウトなどのアプリを使用してアクションを録画することをお勧めします。これは、チームの残りのメンバーに別の部屋から見てもらう場合にも便利です。アプリメーカーである我々はデザインを自然の状態で見ているため、これを行うことにかなり恐怖を感じます。これは斬新で目の覚めるような経験となり得ます。
-
-
+It's great if you have a testing lab. If you don't, creating one isn't difficult as long as you're mindful of creating a comfortable environment for your users that isn't distracting. Testing usually involves the user and two people from your team, one taking notes and the other asking questions. A good set up is to use an app like Hangouts and record their actions, this is also handy if you want the rest of the team to observe from a different room. This can be quite scary for us as app makers to do as we are seeing our designs out in the wild. It can be both a refreshing and sobering experience.
 
 <figure>
-  <img src="images/usability-testing.jpg"  alt="ストーリーボードは、すべてのスケッチとアイデアを 1 つのフローにまとめたものです。">
-  <figcaption>ストーリーボードは、すべてのスケッチとアイデアを 1 つのフローにまとめたものです。</figcaption>
+  <img src="images/usability-testing.jpg"  alt="The storyboard involves putting all of your sketches and ideas together into a comprehensive flow.">
+  <figcaption>The storyboard involves putting all of your sketches and ideas together into a comprehensive flow.</figcaption>
 </figure>
 
-###  質問の内容
+### Questions to ask
 
-デザインをテストするときに、ユーザーにアプリのタスクを実行して、実行している内容とその理由を声に出して話したり、言葉で表現したりしてもらいます。これは奇妙なことですが、ユーザーが何を考えているか聞くことができます。ユーザーに割り込んだり、ユーザーが行き詰ったときに何をするべきかを教えないでください。完了後（または未完了時）に特定のフローを選択した理由を聞くだけです。
+When testing your design, ask the user to perform tasks in your app and get them to speak aloud and verbalize what they're doing and why. This is an odd thing to do but it helps you hear what they're thinking. Try not to interrupt or tell them what they should do when they get stuck. Simply ask them why they took a particular flow after they have completed (or NOT completed).
 
+What you need to find out is:
 
-知る必要がある内容は次のとおりです。
+- What do they like about the prototype?
+- What do they dislike about the prototype?
+- What are the pain points? 
+    - Why did a flow work
+    - Why did a flow not work
+- What would they like to improve?
+- Does the overall design/flow meet their needs?
 
-- プロトタイプについて好きな点は何か。
-- プロトタイプについて嫌いな点は何か。
-- 問題点は何か。
-  - フローが機能した理由
-  - フローが機能しなかった理由
-- ユーザーは何を改良したいか。
-- デザインまたはフロー全体はユーザーのニーズを満たしているか。
+## Revisit designs and another round of testing
 
-##  デザインと再テストの再検討
+You have a working prototype with feedback. Now it’s time to revise your designs, and analyze what worked and what didn’t. Don't be afraid to create a completely new wireframe storyboard and make a new prototype. Starting over can create a better flow than trying to move things on your earlier prototype. Try not to be too precious of it because it is just a prototype.
 
-作業中のプロトタイプにフィードバックがあります。ここで、デザインを見直し、何が動作して何が動作しなかったかを分析します。
-まったく新しいワイヤーフレーム ストーリーボードを作成することを恐れず、新しいプロトタイプを作成してください。
-最初からやり直すほうが、以前のプロトタイプで物事を先に進めるよりも優れたフローを作成できます。
-プロトタイプにすぎないので、懲りすぎないようにしてください。
+Once you are happy with your designs you can test it again and refine it some more. In cases where the prototype didn’t hit the mark at all, well you might think the project has failed. In actual fact it hasn’t. You've likely spent less development time than if you had actually built the design and you know more bout what user's actually like. With design sprints we have a philosophy where you either win or you learn, so don’t beat yourself up too much if the idea didn't work as planned.
 
+## Make it!
 
-デザインが完成したら、再テストしてさらに改良します。プロトタイプがまったく的中しない場合は、プロジェクトが失敗しているのではないかと心配になることがあります。実際には失敗していません。実際にデザインを構築した場合よりも開発時間が短かった可能性があり、ユーザーの実際の好みをもっとよく知っています。デザイン スプリントでは、成功または習得の指針を掲げています。アイデアが計画どおりにうまくいかなくても、自分をあまり責めないでください。
+You have tested your ideas. The user likes them. The stakeholders are invested because they've been involved since the beginning. Now it's time to make the thing. By now you should have a clear idea of what needs to be made and what the priorities of the experience are. At each milestone of the project you may want to introduce usability testing to help validate your work and keeping you on track.
 
+I can’t stress how important it is to find out as much as possible before you commit to a lot of work, time and energy on something that might not be the right solution.
 
+This article should now give you a basic grounding in UX and its importance. UX isn’t something that should be looked upon as a role for a designer or researcher. It is actually the responsibility of everyone involved in a project so I would recommend involvement at every opportunity.
 
-##  実行
+## Feedback {: #feedback }
 
-アイデアのテストが完了しました。ユーザーはそのアイデアを気に入っています。利害関係者は、最初から参加しているため注目しています。次は実行です。既に、実行する必要があることとエクスペリエンスの優先度を明確に把握しているはずです。プロジェクトの各マイルストーンで、作業の検証や管理に役立つユーザビリティ テストの導入が必要になることがあります。
-
-
-
-正しい解決策ではない可能性があるものに多くの作業、時間、労力を注ぐ前にできるだけ多くの情報を得ることの重要性は強調できません。
-
-
-
-この記事では、UX の基本的な知識と UX の重要性を示します。UX はデザイナーまたはリサーチャーの役割とみなすべきものではありません。実際には、プロジェクトに関係するすべての人の責任であり、すべての機会に参加することをお勧めします。
-
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
