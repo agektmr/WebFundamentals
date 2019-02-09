@@ -1,56 +1,49 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Chrome DevTools では、アプリケーション全体での複数の変数を簡単に確認できます。
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Chrome DevTools allows you to easily see multiple variables throughout your application.
 
-{# wf_published_on:2016-02-11 #}
-{# wf_updated_on:2016-02-11 #}
+{# wf_published_on: 2016-02-11 #} {# wf_updated_on: 2018-07-27 #} {# wf_blink_components: Platform>DevTools #}
 
-# [Sources] での変数の監視 {: .page-title }
+# Watch variables in Sources {: .page-title }
 
 {% include "web/_shared/contributors/jonathangarbee.html" %}
 
-Chrome DevTools では、アプリケーション全体での複数の変数を簡単に確認できます。[Sources] 内で変数を監視することにより、コンソールにアクセスすることなくコードの改善に集中できます。
+<aside class="warning">
+  <b>Warning:</b> This page is deprecated. See following section for up-to-date
+  information: <a href="reference#watch">Watch the values of custom JavaScript
+  expressions</a>
+</aside>
 
+Chrome DevTools allows you to easily see multiple variables throughout your application. Watching variables within Sources keeps you out of the console and focused on improving your code.
 
-[Sources] パネルでは、アプリケーション内の変数を監視できます。この機能は、デバッガー サイドバーの [Watch] セクションにあります。この機能を利用することにより、オブジェクトをコンソールに繰り返し出力する必要がなくなります。
+The Sources panel provides the ability to watch variables within your application. This is located in the watch section of the debugger sidebar. By taking advantage of this functionality you will not need repeatedly log objects to the console.
 
+![Watch section of debugger](imgs/sources-watch-variables-location.png)
 
+## Adding variables
 
-![デバッガーの [Watch] セクション](imgs/sources-watch-variables-location.png)
+To add a variable to the watch list use the add icon to the right of the section heading. This will open an inline input where you provide the variable name to watch. Once it is filled in press your <kbd>Enter</kbd> key to add it to the list.
 
-##  変数の追加
+![Add to watch list button](imgs/add-variable-to-watch.png)
 
-変数をウォッチリストに追加するには、セクション見出しの右側にある追加アイコンを使用します。インライン入力が開き、監視する変数名を入力します。入力したら、<kbd>Enter</kbd> キーを押してリストに追加します。
+The watcher will show you the current value of the variable as it is added. If the variable is not set or can't be found it will show <samp>&lt;Not Available&gt;</samp> for the value.
 
+![Undefined variable in the watch list](imgs/undefined-variable-in-watch.png)
 
+## Updating variables
 
-![ウォッチリストへの追加ボタン](imgs/add-variable-to-watch.png)
+Variable values may change as an application continues to operate. The watch list is not a live view of the variables unless you are stepping through execution. When you are stepping through execution using <breakpoints>, the watched values will update automatically. To manually recheck the variables in the list press the refresh button to the right of the section heading.
 
-監視機能により、追加された時点の変数の値が表示されます。変数が設定されていないか、見つからない場合は、その値に対して <samp>&lt;Not Available&gt;</samp> が表示されます。
+![Refresh watch variables button](imgs/refresh-variables-being-watched.png)
 
+As the refresh is requested the current application state is rechecked. Every watched item will be updated with the current values.
 
-![ウォッチリスト内の未定義変数](imgs/undefined-variable-in-watch.png)
+![Updated variable being watched](imgs/updated-variable-being-watched.png)
 
-##  変数のアップデート
+## Removing variables
 
-アプリケーションが動作を続けるうちに、変数値が変わる可能性があります。ステップ実行を行わない限り、ウォッチリストは変数のライブビューではありません。[ブレークポイント](add-breakpoints)を使用してステップ実行すると、監視対象の値は自動的にアップデートされます。リスト内の変数を手動で再確認するには、セクション見出しの右側にある更新ボタンをクリックします。
+To keep what you are looking at minimal for faster work you may need to remove variables from the watch list. This can be done by hovering the variable and then clicking the removal icon that appears to the right.
 
+![Hover variable to remove from watch list](imgs/hover-to-delete-watched-variable.png)
 
+## Feedback {: #feedback }
 
-
-![監視対象変数の更新ボタン](imgs/refresh-variables-being-watched.png)
-
-更新をリクエストすると、現在のアプリケーション状態が再確認されます。どの監視対象アイテムも現在の値でアップデートされます。
-
-
-![アップデートされた変数を監視中](imgs/updated-variable-being-watched.png)
-
-##  変数の削除
-
-作業スピードを上げるために監視対象を最小限に抑えるには、ウォッチリストから変数を削除することが必要になる場合があります。このためには、変数にカーソルを合わせて、右側に表示される削除アイコンをクリックします。
-
-
-![ウォッチリストから削除する変数にカーソルを合わせる](imgs/hover-to-delete-watched-variable.png)
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
