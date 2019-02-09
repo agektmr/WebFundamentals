@@ -1,32 +1,23 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Ottimizzazione del percorso di rendering critico attraverso l'assegnazione di priorità alla visualizzazione del contenuto correlato all'attuale azione dell'utente.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Optimizing the critical rendering path refers to prioritizing the display of content that relates to the current user action.
 
-{# wf_updated_on: 2017-11-10 #}
-{# wf_published_on: 2014-03-31 #}
+{# wf_updated_on: 2018-08-17 #} {# wf_published_on: 2014-03-31 #} {# wf_blink_components: N/A #}
 
-# Percorso di rendering critico {: .page-title }
+# Critical Rendering Path {: .page-title }
 
 {% include "web/_shared/contributors/ilyagrigorik.html" %}
 
+*Optimizing the critical rendering path* refers to prioritizing the display of content that relates to the current user action.
 
-_L'ottimizzazione del percorso di rendering critico_ attraverso l'assegnazione di priorità alla visualizzazione del contenuto correlato all'attuale azione dell'utente.
+Delivering a fast web experience requires a lot of work by the browser. Most of this work is hidden from us as web developers: we write the markup, and a nice looking page comes out on the screen. But how exactly does the browser go from consuming our HTML, CSS, and JavaScript to rendered pixels on the screen?
 
-La fornitura di un'esperienza di rete veloce richiede capacità elevate da parte del browser. La maggior parte di questo lavoro è nascosto a noi sviluppatori web: scriviamo il markup e la nostra pagina viene visualizzata sullo schermo. In che modo il browser passa dall'utilizzo di HTML, CSS e JavaScript al rendering dei pixel sullo schermo?
+Optimizing for performance is all about understanding what happens in these intermediate steps between receiving the HTML, CSS, and JavaScript bytes and the required processing to turn them into rendered pixels - that's the **critical rendering path**.
 
-L'ottimizzazione delle prestazioni ruota intorno alla comprensione di ciò che accade in questi passaggi intermedi tra la ricezione di byte HTML, CSS e JavaScript e l'elaborazione necessaria alla trasformazione degli stessi in pixel sottoposti a rendering, il famoso **percorso di rendering critico**.
+<img src="images/progressive-rendering.png"  alt="progressive page rendering" />
 
-<img src="images/progressive-rendering.png" class="center" alt="rendering progressivo della pagina">
-
-Ottimizzando il percorso di rendering critico, possiamo migliorare in modo significativo il momento in cui eseguiamo il primo rendering delle nostre pagine. Inoltre, la comprensione del nostro percorso di rendering critico fungerà anche da base per la costruzione di applicazioni interattive ben performanti. Da questo emerge che il processo per l'elaborazione degli aggiornamenti interattivi è lo stesso, solo eseguito in un loop continuo e idealmente a 60 frame al secondo. Ad ogni modo, non corriamo troppo. Innanzitutto, facciamo una panoramica rapida e completa di come il browser esegue la visualizzazione di una pagina semplice.
-
-<a href="constructing-the-object-model" class="gc-analytics-event"
-    data-category="CRP" data-label="Successivo / Costruzione del modello ad oggetti">
-  <button>Successivo: Costruzione del modello ad oggetti</button>
-</a>
+By optimizing the critical rendering path we can significantly improve the time to first render of our pages. Further, understanding the critical rendering path also serves as a foundation for building well-performing interactive applications. The interactive updates process is the same, just done in a continuous loop and ideally at 60 frames per second! But first, an overview of how the browser displays a simple page.
 
 {% include "web/_shared/udacity/ud884.html" %}
 
+## Feedback {: #feedback }
 
-
-
+{% include "web/_shared/helpful.html" %}
