@@ -1,159 +1,122 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: レスポンシブ ウェブデザイン パターンは急速に進化していますが、パソコンでもモバイル端末でもうまく動作する確立されたパターンは限られています。
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Responsive web design patterns are quickly evolving, but there are a handful of established patterns that work well across the desktop and mobile devices
 
-{# wf_updated_on:2014-10-20 #}
-{# wf_published_on:2014-04-29 #}
+{# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2014-04-29 #} {# wf_blink_components: Blink>CSS #}
 
-# レスポンシブ ウェブデザイン パターン {: .page-title }
+# Responsive Web Design Patterns {: .page-title }
 
 {% include "web/_shared/contributors/petelepage.html" %}
 
-レスポンシブ ウェブ デザイン パターンは急速に進化していますが、デスクトップでもモバイル端末間でもうまく動作する確立されたパターンは限られています。
+Responsive web design patterns are quickly evolving, but there are a handful of established patterns that work well across the desktop and mobile devices.
 
-レスポンシブ ウェブページで使用されるレイアウトはたいてい、mostly fluid、column drop、layout shifter、tiny tweaks、off canvas という 5 つのパターンのいずれかに分類できます。ページ内でこれらのパターンを組み合わせて使用する場合もあります。たとえば、column drop と off canvas の組み合わせです。
-これらのパターンは本来 [Luke
-Wroblewski](http://www.lukew.com/ff/entry.asp?1514) によって認識され、
-レスポンシブ ページの起点を提供します。
+Most layouts used by responsive web pages can be categorized into one of five patterns: mostly fluid, column drop, layout shifter, tiny tweaks, and off canvas. In some cases, a page may use a combination of patterns, for example column drop and off canvas. These patterns, originally identified by [Luke Wroblewski](http://www.lukew.com/ff/entry.asp?1514), provide a solid starting point for any responsive page.
 
-###  パターン
+### The patterns
 
-以下の各サンプルでは、シンプルさとわかりやすさを重視し、[`flexbox`](https://developer.mozilla.org/en-US/docs/Web/Guide/CSS/Flexible_boxes) を使用して、実際のマークアップで作成しています。基本的に 3 つのコンテンツの
-`div` はプライマリ コンテナの `div` に含まれています。各サンプルは、まず最小のビューから描画され、必要に応じてブレークポイントが追加されます。
-最新のブラウザ向けに [flexbox レウアウトは適切にサポートされていますが](http://caniuse.com/#search=flexbox)最適なサポートのためにはベンダーのプレフィックスがまだ必要です。
+For simplicity and ease of understanding, each the samples below were created with real markup using [`flexbox`](https://developer.mozilla.org/en-US/docs/Web/Guide/CSS/Flexible_boxes), typically with three content `div`'s contained within a primary container `div`. Each sample was written starting with the smallest view first, and breakpoints were added when necessary. The [flexbox layout mode is well supported](http://caniuse.com/#search=flexbox) for modern browsers, though may still require vendor prefixing for optimal support.
 
-##  Mostly Fluid
+## Mostly Fluid
 
-ほとんどの fluid パターンは、主に fluid グリッドで構成されています。一般的に、大画面または中画面ではサイズを保ち、より広い画面上では余白の調整のみを行います。
+The mostly fluid pattern consists primarily of a fluid grid. On large or medium screens, it usually remains the same size, simply adjusting the margins on wider screens.
 
+On smaller screens, the fluid grid causes the main content to reflow, while columns are stacked vertically. One major advantage of this pattern is that it usually only requires one breakpoint between small screens and large screens.
 
+<img src="imgs/mostly-fluid.svg" />
+<a href="https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/responsive/mostly-fluid.html" class="button button-primary">Try it</a>
 
-小さな画面の場合、fluid グリッドではメインコンテンツのリフローが発生し、列が垂直方向にスタックされます。
-このパターンの主な利点の 1 つは、
-通常、小画面と大画面の間に 1 つの
-ブレークポイントだけが必要であることです。
+In the smallest view, each content `div` is stacked vertically. When the screen width hits 600px, the primary content `div` remains at `width: 100%`, while the secondary `div`'s are shown as two columns below the primary `div`. Beyond 800px, the container `div` becomes fixed width and is centered on the screen.
 
-<img src="imgs/mostly-fluid.svg">
-<a href="https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/responsive/mostly-fluid.html" class="button button-primary">お試しください</a>
+Sites using this pattern include:
 
-最小ビューでは、各コンテンツの `div` は垂直にスタックされます。画面幅が 600px になると、プライマリ コンテンツの
-`div` は `width: 100%` を維持し、セカンダリ コンテンツの `div` はプライマリ コンテンツの `div` の下に 2 列で表示されます。
-800px を超える場合、コンテナの `div` は固定幅となり、画面の中央に配置されます。
-
-
-このパターンを使用するサイトをいくつかご紹介します。
-
- * [A List Apart](http://mediaqueri.es/ala/){: .external }
- * [Media Queries](http://mediaqueri.es/){: .external }
- * [SimpleBits](http://simplebits.com/){: .external }
+- [A List Apart](http://mediaqueri.es/ala/){: .external }
+- [Media Queries](http://mediaqueri.es/){: .external }
+- [SimpleBits](http://simplebits.com/){: .external }
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/design-and-ux/responsive/_code/mostly-fluid.html" region_tag="mfluid" adjust_indentation="auto" %}
 </pre>
 
-##  Column drop 
+## Column drop
 
-Column drop は幅いっぱいに表示するマルチカラム レイアウトです。コンテンツに対してウィンドウ幅が狭くなると、単純に列を垂直にスタックします。
+For full-width multi-column layouts, column drop simply stacks the columns vertically as the window width becomes too narrow for the content.
 
+Eventually this results in all of the columns being stacked vertically. Choosing breakpoints for this layout pattern is dependent on the content and changes for each design.
 
-最終的には、すべての列が垂直にスタックされます。このレイアウト パターンでは、コンテンツやデザインの変化に合わせてブレークポイントを指定します。
+<img src="imgs/column-drop.svg" />
+<a href="https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/responsive/column-drop.html" class="button button-primary">Try it</a>
 
+Like the mostly fluid sample, content is stacked vertically in the smallest view, but as the screen expands beyond 600px, the primary and secondary content `div`'s take the full width of the screen. The order of the `div`'s is set using the order CSS property. At 800px all three content `div`'s are shown, using the full screen width.
 
+Sites using this pattern include:
 
-<img src="imgs/column-drop.svg">
-<a href="https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/responsive/column-drop.html" class="button button-primary">お試しください</a>
-
-主に fluid サンプルでは、コンテンツは最小ビューで垂直にスタックされますが、画面が 600px 以上になった場合、プライマリおよびセカンダリ コンテンツの `div` は、画面の幅いっぱいに表示されます。`div` の順番は CSS の order プロパティで設定されます。
-800px で、すべてのコンテンツの `div` が表示され、全画面幅が使用されます。
-
-
-このパターンを使用するサイトをいくつかご紹介します。
-
- * [Modernizr](https://modernizr.com/){: .external }
- * [Wee Nudge](http://weenudge.com/){: .external }
+- [Modernizr](https://modernizr.com/){: .external }
+- [Wee Nudge](http://weenudge.com/){: .external }
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/design-and-ux/responsive/_code/column-drop.html" region_tag="cdrop" adjust_indentation="auto" %}
 </pre>
 
-##  Layout shifter
+## Layout shifter
 
-Layout shifter パターンは最もレスポンシブなパターンで、さまざまな画面幅に合わせて複数のブレークポイントを設定します。
+The layout shifter pattern is the most responsive pattern, with multiple breakpoints across several screen widths.
 
+Key to this layout is the way content moves about, instead of reflowing and dropping below other columns. Due to the significant differences between each major breakpoint, it is more complex to maintain and likely involves changes within elements, not just overall content layout.
 
-このレイアウトの鍵は、リフローや他の列の下へのドロップではなく、コンテンツの移動です。
-各主要ブレイクポイント間の大きな差によって、維持が複雑になり、
-全体的なコンテンツのレイアウトだけでなく、要素内の変化が
-含まれる可能性があります。
+<img src="imgs/layout-shifter.svg" />
+<a href="https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/responsive/layout-shifter.html" class="button button-primary">Try it</a>
 
-<img src="imgs/layout-shifter.svg">
-<a href="https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/responsive/layout-shifter.html" class="button button-primary">お試しください</a>
+This simplified example shows the layout shifter pattern, on smaller screens content is stacked vertically, but changes significantly as the screen becomes larger, with a left `div` and two stacked `div`'s on the right.
 
-この簡単な例では、layout shifter パターンを使用しています。小さな画面ではコンテンツは垂直にスタックされますが、画面が大きくなるにつれて大幅に変化し、左に 1 つの `div`、右に 2 つのスタックされた `div` が表示されるようになります。
+Sites using this pattern include:
 
-
-
-このパターンを使用するサイトをいくつかご紹介します。
-
- * [Food Sense](http://foodsense.is/){: .external }
- * [Seminal Responsive Design Example](http://alistapart.com/d/responsive-web-design/ex/ex-site-FINAL.html)
- * [Andersson-Wise Architects](http://www.anderssonwise.com/){: .external }
+- [Food Sense](http://foodsense.is/){: .external }
+- [Seminal Responsive Design Example](http://alistapart.com/d/responsive-web-design/ex/ex-site-FINAL.html)
+- [Andersson-Wise Architects](http://www.anderssonwise.com/){: .external }
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/design-and-ux/responsive/_code/layout-shifter.html" region_tag="lshifter" adjust_indentation="auto" %}
 </pre>
 
-##  Tiny tweaks
+## Tiny tweaks
 
-Tiny tweaks では、フォントサイズの調整、画像のリサイズ、コンテンツの移動など、レイアウトの微調整を行います。
+Tiny tweaks simply makes small changes to the layout, such as adjusting font size, resizing images, or moving content around in very minor ways.
 
+It works well on single column layouts such as one page linear websites and text-heavy articles.
 
-このパターンは、1 ページから成るリニアなウェブサイトや、テキストの多い記事サイトなど、一列で構成されるレイアウトに適しています。
+<img src="imgs/tiny-tweaks.svg" />
+<a href="https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/responsive/tiny-tweaks.html" class="button button-primary">Try it</a>
 
-<img src="imgs/tiny-tweaks.svg">
-<a href="https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/responsive/tiny-tweaks.html" class="button button-primary">お試しください</a>
+As its name implies, not much changes with this sample as the screen size changes. As the screen width gets larger, so do the font size and padding.
 
-名前からわかるように、このサンプルでは画面サイズの調整などの軽微な変更を行います。画面の幅が大きくなると、フォントサイズやパディングを調整します。
+Sites using this pattern include:
 
-
-このパターンを使用するサイトをいくつかご紹介します。
-
- * [Ginger Whale](http://gingerwhale.com/){: .external }
- * [Future Friendly](http://futurefriendlyweb.com/){: .external }
+- [Ginger Whale](http://gingerwhale.com/){: .external }
+- [Future Friendly](http://futurefriendlyweb.com/){: .external }
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/design-and-ux/responsive/_code/tiny-tweaks.html" region_tag="ttweaks" adjust_indentation="auto" %}
 </pre>
 
+## Off canvas
 
-##  Off canvas
+Rather than stacking content vertically, the off canvas pattern places less frequently used content&mdash;perhaps navigation or app menus&mdash;off screen, only showing it when the screen size is large enough, and on smaller screens, content is only a click away.
 
-Off canvas パターンでは、コンテンツを縦にスタックせずに、ナビゲーションやアプリメニューのような使用頻度の低いコンテンツをオフスクリーンに配置します。これらのコンテンツは画面サイズが十分に大きい場合にのみ表示され、小さい画面ではクリックしたときのみ表示されます。
+<img src="imgs/off-canvas.svg" />
+<a href="https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/responsive/off-canvas.html" class="button button-primary">Try it</a>
 
+Rather than stacking content vertically, this sample uses a `transform: translate(-250px, 0)` declaration to hide two of the content `div`s off screen. JavaScript is used to show the divs by adding an open class to the element to make visible. As the screen gets wider, the off-screen positioning is removed from the elements and they're shown within the visible viewport.
 
+Note in this sample, Safari for iOS 6 and Android Browser do not support the `flex-flow: row nowrap` feature of `flexbox`, so we’ve had to fall back to absolute positioning.
 
+Sites using this pattern include:
 
-<img src="imgs/off-canvas.svg">
-<a href="https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/responsive/off-canvas.html" class="button button-primary">お試しください</a>
-
-このサンプルでは縦にコンテンツをスタックせずに、`transform: translate(-250px, 0)` 宣言を使用して、2 つのコンテンツの `div` のオフスクリーンを非表示にしています。JavaScript を使用して open クラスを追加することで div を表示し、要素を可視化します。
-画面の幅が大きくなるにつれて、オフスクリーンの位置は要素の外に移動し、要素が可視ビューポート内に表示されます。
-
-
-
-このサンプルを使用する際は、Safari for iOS 6 および Android ブラウザでは `flexbox` の
-`flex-flow: row nowrap` 機能がサポートされていないため、代わりに絶対位置を使用する必要がある点に注意してください。
-
-
-このパターンを使用するサイトをいくつかご紹介します。
-
- * [HTML5Rocks の記事](http://www.html5rocks.com/en/tutorials/developertools/async-call-stack/)
- * [Google Nexus](https://www.google.com/nexus/){: .external }
- * [Facebook のモバイルサイト](https://m.facebook.com/){: .external }
+- [HTML5Rocks Articles](http://www.html5rocks.com/en/tutorials/developertools/async-call-stack/)
+- [Google Nexus](https://www.google.com/nexus/){: .external }
+- [Facebook's Mobile Site](https://m.facebook.com/){: .external }
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/design-and-ux/responsive/_code/off-canvas.html" region_tag="ocanvas" adjust_indentation="auto" %}
 </pre>
 
+## Feedback {: #feedback }
 
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
