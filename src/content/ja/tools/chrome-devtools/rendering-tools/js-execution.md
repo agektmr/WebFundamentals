@@ -1,140 +1,102 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description:Chrome DevTools の CPU Profiler を使って負荷の高い関数を見極めます。
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Identify expensive functions using the Chrome DevTools CPU Profiler.
 
-{# wf_updated_on:2016-03-30 #}
-{# wf_published_on:2015-04-13 #}
+{# wf_updated_on: 2018-07-27 #} {# wf_published_on: 2015-04-13 #} {# wf_blink_components: Platform>DevTools #}
 
-# JavaScript 実行の高速化 {: .page-title }
+# Speed Up JavaScript Execution {: .page-title }
 
-{% include "web/_shared/contributors/kaycebasques.html" %}
-{% include "web/_shared/contributors/megginkearney.html" %}
+{% include "web/_shared/contributors/kaycebasques.html" %} {% include "web/_shared/contributors/megginkearney.html" %}
 
-Chrome DevTools の CPU Profiler を使って負荷の高い関数を見極めます。
+Identify expensive functions using the Chrome DevTools CPU Profiler.
 
-
-![CPU プロファイル](imgs/cpu-profile.png)
-
+![CPU profile](imgs/cpu-profile.png)
 
 ### TL;DR {: .hide-from-toc }
-- CPU Profiler により、呼び出された関数とその関数の実行時間を正確に記録します。
-- プロファイルをフレームチャートとして表示します。
 
+* Record exactly which functions were called and how long each took with the CPU Profiler.
+* Visualize your profiles as a flame chart.
 
-##  CPU プロファイルの記録{:#record-profile}
+## Record a CPU profile {:#record-profile}
 
-JavaScript に問題があることがわかっている場合は、JavaScript の CPU プロファイルを収集します。CPU プロファイルによって、ページの関数の中で実行時間がかかっている箇所が示されます。
+If you’re noticing jank in your JavaScript, collect a JavaScript CPU profile. CPU profiles show where execution time is spent in your page’s functions.
 
+1. Go to the **Profiles** panel of DevTools.
+2. Select the **Collect JavaScript CPU Profile** radio button.
+3. Press **Start**. 
+4. Depending on what you are trying to analyze, you can either reload the page, interact with the page, or just let the page run.
+5. Press the **Stop** button when you are finished. 
 
-1. DevTools の [**Profiles**] パネルに移動します。
-2. [**Collect JavaScript CPU Profile**] ラジオボタンを選択します。
-3. **記録**ボタンをクリックします。
-4. 分析が必要と考える点に応じて、ページの再読み込み、ページの操作、または単純にページの実行を行います。
-5. 完了したら、**記録の停止**ボタンをクリックします。
- 
+You can also use the [Command Line API](/web/tools/chrome-devtools/debug/command-line/command-line-reference#profilename-and-profileendname) to record and group profiles from the command line.
 
-[Command Line API][profile] を使って、コマンドラインからプロファイルを記録してグループ化することもできます。
+## View CPU profile {:#view-profile}
 
+When you finish recording, DevTools automatically populates the Profile panel with the data from your recording.
 
-[profile]: /web/tools/chrome-devtools/debug/command-line/command-line-reference#profilename-and-profileendname
+The default view is **Heavy (Bottom Up)**. This view enables you to see which functions had the most impact on performance and examine the calling paths to those functions.
 
-##  CPU プロファイルの表示{:#view-profile}
+### Change sort order {:#sort}
 
-記録を終了すると、DevTools によってその記録のデータが自動的に [Profiles] パネルに設定されます。
- 
+To change the sorting order, click on the dropdown menu next to the **focus selected function** icon (![focus selected function icon](imgs/focus.png){:.inline}) and then choose one of the following options:
 
-既定のビューは [**Heavy (Bottom Up)**] です。このビューでは、パフォーマンスに最も影響した関数を確認し、それらの関数への呼び出し履歴を検証します。
+**Chart**. Displays a chronological flame chart of the recording.
 
- 
+![flame chart](imgs/flamechart.png)
 
-###  並べ替え順の変更{:#sort}
+**Heavy (Bottom Up)**. Lists functions by impact on performance and enables you to examine the calling paths to the functions. This is the default view.
 
-並べ替え順を変更するには、**選択した関数へのフォーカス設定**アイコン（![選択した関数へのフォーカス設定アイコン](imgs/focus.png){:.inline}）の隣にあるドロップダウン メニューをクリックし、以下のオプションのいずれかを選択します。
+![heavy chart](imgs/heavy.png)
 
+**Tree (Top Down)**. Shows an overall picture of the calling structure, starting at the top of the call stack.
 
+![tree chart](imgs/tree.png)
 
+### Exclude functions {:#exclude}
 
-[**Chart**]。記録の時系列フレーム チャートを表示します。
+To exclude a function from your CPU profile, click on it to select it and then press the **exclude selected function** icon (![exclude function icon](imgs/exclude.png){:.inline}). The caller of the excluded function is charged with the excluded function's total time.
 
-![フレーム チャート](imgs/flamechart.png)
+Click the **restore all functions** icon (![restore all functions icon](imgs/restore.png){:.inline}) to restore all excluded functions back into the recording.
 
-[**Heavy (Bottom Up)**]。パフォーマンスへの影響が大きい順に関数を一覧し、関数の呼び出し履歴の調査を可能にします。
-これが既定のビューです。 
+## View CPU profile as Flame Chart {:#flame-chart}
 
-![影響が大きい順に一覧したチャート](imgs/heavy.png)
+The Flame Chart view provides a visual representation of the CPU profile over time.
 
-[**Tree (Top Down)**]。コールスタックの先頭から始めて、呼び出し構造の全体イメージを示します。
- 
+After [recording a CPU profile](#record-profile), view the recording as a flame chart by [changing the sort order](#sort) to **Chart**.
 
-![ツリーチャート](imgs/tree.png)
+![Flamechart view](imgs/flamechart.png)
 
-###  関数の除外{:#exclude}
+The flame chart is split into two parts:
 
-CPU プロファイルから関数を除外するには、除外する関数をクリックして選択し、**選択した関数の除外**アイコン（![関数の除外アイコン](imgs/exclude.png){:.inline}）をクリックします。
-除外した関数の合計時間は、その関数の呼び出し元に加算されます。
+1. **Overview**. A birds-eye view of the entire recording. The height of the bars correspond to the depth of the call stack. So, the higher the bar, the deeper the call stack.
 
+2. **Call Stacks**. This is an in-depth view of the functions that were called during the recording. The horizontal axis is time and vertical axis is the call stack. The stacks are organized top-down. So, the function on top called the one below it, and so on.
+    
+    Functions are colored randomly. There is no correlation to the colors used in the other panels. However, functions are always colored the same across invocations so that you can see patterns of executions.
 
-**すべての関数を復元する**アイコン（![すべての関数を復元するアイコン](imgs/restore.png){:.inline}）をクリックして、除外したすべての関数を記録に復元します。
+![annotated flame chart](imgs/annotated-cpu-flame.png)
 
+A tall call stack is not necessarily significant, it just means that a lot of functions were called. But a wide bar means that a call took a long time to complete. These are candidates for optimization.
 
+### Zoom in on specific parts of recording {:#zoom}
 
-##  CPU プロファイルをフレーム チャートとして表示{:#flame-chart}
+Click, hold, and drag your mouse left and right across the overview to zoom in on particular parts of the call stack. After you zoom, the call stack automatically displays the portion of the recording that you've selected.
 
-フレーム チャートのビューでは、CPU プロファイルが時系列で表示されます。
+![flame chart zoomed](imgs/benchmark-zoom.png)
 
+### View function details {:#flame-chart-function-details}
 
-[CPU プロファイルを記録](#record-profile)した後、[並べ替え順の変更](#sort)を行って [**Chart**] に設定し、記録をフレーム チャートで表示します。
+Click on a function to view its definition in the **Sources** panel.
 
+Hover over a function to display its name and timing data. The following information is provided:
 
-![フレーム チャート ビュー](imgs/flamechart.png)
+* **Name**. The name of the function.
+* **Self time**. How long it took to complete the current invocation of the function, including only the statements in the function itself, not including any functions that it called.
+* **Total time**. The time it took to complete the current invocation of this function and any functions that it called.
+* **URL**. The location of the function definition in the form of `file.js:100` where `file.js` is the name of the file where the function is defined and `100` is the line number of the definition.
+* **Aggregated self time**. Aggregate time for all invocations of the function across the recording, not including functions called by this function.
+* **Aggregated total time**. Aggregate total time for all invocations of the function, including functions called by this function.
+* **Not optimized**. If the profiler has detected a potential optimization for the function it lists it here.
 
-フレーム チャートは次の 2 つの部分に分かれています。
+![viewing functions details in flame chart](imgs/details.png)
 
-1. **概要**。記録全体の鳥瞰ビュー。
-   バーの高さは、コールスタックの深さに対応します。
-つまり、バーが高いほど、コールスタックは深くなります。 
-2. **コールスタック**。記録中に呼び出された関数を詳しく示すビュー。
-横軸が時間で、縦軸がコールスタックです。
-スタックは、トップダウンで編成されます。つまり、一番上の関数がすぐ下の関数を呼び出しています。以降も同様です。
- 
+## Feedback {: #feedback }
 
-   関数はランダムに色分けされます。他のパネルで使われている色とは無関係です。
-ただし、呼び出し履歴全体では、各関数が常に同じ色で示されているため、実行のパターンがわかります。
- 
-
-![注釈付きのフレーム チャート](imgs/annotated-cpu-flame.png)
-
-高さのあるコールスタックが必ずしも重要なわけではありません。単に、多くの関数を呼び出していることを表しています。
-しかし、バーの幅は、呼び出しの完了に時間がかかったことを表します。
-こうした関数が最適化の候補です。 
-
-###  記録の特定部分の拡大{:#zoom}
-
-概要ペインでマウスをクリックした状態で左右にドラッグして、コールスタックの特定部分を拡大します。
-拡大後には、記録の選択した部分のコールスタックが自動的に表示されます。
-
-
-![拡大したフレーム チャート](imgs/benchmark-zoom.png)
-
-###  関数詳細の表示{:#flame-chart-function-details}
-
-関数をクリックすると、[**Sources**] パネルに定義が表示されます。
-
-関数の上にカーソルを合わせると、関数名とタイミングのデータが表示されます。表示されるのは以下の情報です。
- 
-
-*  [**Name**]。関数の名前。
-*  [**Self time**]。
-関数の現在の呼び出しを完了するまでにかかった時間。関数自体のステートメントのみを含み、その関数が呼び出した関数は含みません。
-*  [**Total time**]。現在の呼び出しを完了するまでにかかった時間。この関数と、この関数が呼び出したすべての関数を含みます。
-*  [**URL**]。
-`file.js:100` 形式での関数定義の場所。`file.js` は関数が定義されているファイル名、`100` は定義の行番号です。
-*  [**Aggregated self time**]。記録全体で該当関数のすべての呼び出しを集計した時間。この関数が呼び出した関数は含みません。
-*  [**Aggregated total time**]。該当関数のすべての呼び出しを集計した総時間。この関数が呼び出した関数も含みます。
-*  [**Not optimized**]。プロファイラが最適化の候補となる関数を検出した場合、ここに一覧されます。
-
-
-![フレーム チャートでの関数詳細の表示](imgs/details.png)
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
