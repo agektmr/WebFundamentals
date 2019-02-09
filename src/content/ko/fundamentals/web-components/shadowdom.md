@@ -1,117 +1,59 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: 웹 개발자는 Shadow DOM을 사용하여 웹 구성 요소에 대한 구획화된 DOM 및 CSS를 만들 수 있습니다.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Shadow DOM allows web developers to create compartmentalized DOM and CSS for web components
 
-{# wf_updated_on: 2016-10-13 #}
-{# wf_published_on: 2016-08-01 #}
+{# wf_updated_on: 2018-11-05 #} {# wf_published_on: 2016-08-01 #} {# wf_blink_components: Blink>DOM #}
 
-# Shadow DOM v1: 자체 포함 웹 구성 요소 {: .page-title }
+# Shadow DOM v1: Self-Contained Web Components {: .page-title }
 
 {% include "web/_shared/contributors/ericbidelman.html" %}
 
 ### TL;DR {: #tldr .hide-from-toc}
 
-Shadow DOM은 웹 앱 빌드의 취약성을 제거합니다. 이 취약성은
-HTML, CSS 및 JS의 전반적인 특성 때문입니다. 지난 수년 동안 이
-문제를 피하기 위해 [수](http://getbem.com/introduction/)
-[많은](https://github.com/css-modules/css-modules)
-[도구](https://www.smashingmagazine.com/2011/12/an-introduction-to-object-oriented-css-oocss/)를
-발명했습니다. 예를 들어, 새 HTML ID/클래스를 사용하는 경우
-해당 페이지에서 사용하는 기존 이름과 충동할지 여부를 알려주지 않습니다.
-[미세한 버그](http://www.2ality.com/2012/08/ids-are-global.html)가 발생하고
-CSS 특정성은 큰 문제(`!important` 모든 것!)가 되고 스타일
-선택기는 제어할 수 없게 되고
-[성능이 저하](/web/updates/2016/06/css-containment)될 수 있는 등 다양한
-문제가 있습니다.
+Shadow DOM removes the brittleness of building web apps. The brittleness comes from the global nature of HTML, CSS, and JS. Over the years we've invented an exorbitant [number](http://getbem.com/introduction/) [of](https://github.com/css-modules/css-modules) [tools](https://www.smashingmagazine.com/2011/12/an-introduction-to-object-oriented-css-oocss/) to circumvent the issues. For example, when you use a new HTML id/class, there's no telling if it will conflict with an existing name used by the page. [Subtle bugs](http://www.2ality.com/2012/08/ids-are-global.html) creep up, CSS specificity becomes a huge issue (`!important` all the things!), style selectors grow out of control, and [performance can suffer](/web/updates/2016/06/css-containment). The list goes on.
 
-**Shadow DOM은 CSS 및 DOM을 수정합니다**. 웹
-플랫폼에 **범위가 지정된 스타일**을 소개합니다. 도구 또는 명명 규칙 없이
-vanilla 자바스크립트에서 **CSS를 마크업과 번들로 묶고** 구현 세부정보를 숨기고 **자체 포함
-구성 요소를 작성**할 수 있습니다.
+**Shadow DOM fixes CSS and DOM**. It introduces **scoped styles** to the web platform. Without tools or naming conventions, you can **bundle CSS with markup**, hide implementation details, and **author self-contained components** in vanilla JavaScript.
 
-## 소개 {: #intro}
+## Introduction {: #intro}
 
-참고: **이미 Shadow DOM에 대해 잘 알고 있습니까?** 이 글은 새
-<a href="http://w3c.github.io/webcomponents/spec/shadow/" target="_blank">
-Shadow DOM v1 사양</a>에 대해 설명합니다. Shadow DOM을 사용해왔다면
-<a href="https://www.chromestatus.com/features/4507242028072960">Chrome 35에 제공된 v0 버전</a>
-및 webcomponents.js 폴리필에 익숙할 것입니다.
-개념은 동일하지만, v1 사양에는 API와 관련하여 중요한 차이가 있습니다. 또한
-Safari Tech Preview 및 Chrome Canary에 이미 구현되어 있는 등
-모든 주요 브라우저가 구현에 동의한 버전입니다. 자세한 내용을
-보려면 문서를 계속해서 읽어 새로운 기능을 확인하거나 <a href="#historysupport">
-기록 및 브라우저 지원</a>에 대한 섹션을 확인하세요.
+Note: **Already familiar with Shadow DOM?** This article describes the new <a href="http://w3c.github.io/webcomponents/spec/shadow/" target="_blank"> Shadow DOM v1 spec</a>. If you've been using Shadow DOM, chances are you're familiar with the [ v0 version that shipped in Chrome 35](https://www.chromestatus.com/features/4507242028072960), and the webcomponents.js polyfills. The concepts are the same, but the v1 spec has important API differences. It's also the version that all major browsers have agreed to implement, with implementations already in Safari, Chrome and Firefox. Keep reading to see what's new or check out the section on [ History and browser support](#historysupport) for more info.
 
-Shadow DOM은
-[HTML 템플릿](https://www.html5rocks.com/en/tutorials/webcomponents/template/),
-[Shadow DOM][sd_spec_whatwg],
-[사용자설정 요소](/web/fundamentals/getting-started/primers/customelements) 및
-[HTML 가져오기](https://www.html5rocks.com/en/tutorials/webcomponents/imports/) 등 4개의 웹 구성 요소 표준 중 하나입니다.
+Shadow DOM is one of the four Web Component standards: [HTML Templates](https://www.html5rocks.com/en/tutorials/webcomponents/template/), [Shadow DOM](https://dom.spec.whatwg.org/#shadow-trees), [Custom elements](/web/fundamentals/web-components/customelements) and [HTML Imports](https://www.html5rocks.com/en/tutorials/webcomponents/imports/).
 
-Shadow DOM을 사용하는 웹 구성 요소를 작성할 필요가 없습니다. 그러나 작성한다면
-그 장점(CSS 범위 지정, DOM 캡슐화, 컴퍼지션)을 이용하여 복원성이 있고
-구성 가능성이 높고 재사용 가능성이 매우 높은 
-[사용자설정 요소](/web/fundamentals/getting-started/primers/customelements)를
-빌드할 수 있습니다. 사용자설정
-요소는 새 HTML(JS API 사용)을 만드는 방법이고 Shadow DOM은 HTML 및
-CSS를 제공하는 방법입니다. 두 API를 결합하여 자체 포함
-HTML, CSS 및 자바스크립트를 통해 구성 요소를 만듭니다.
+You don't have to author web components that use shadow DOM. But when you do, you take advantage of its benefits (CSS scoping, DOM encapsulation, composition) and build reusable [custom elements](/web/fundamentals/web-components/customelements), which are resilient, highly configurable, and extremely reusable. If custom elements are the way to create a new HTML (with a JS API), shadow DOM is the way you provide its HTML and CSS. The two APIs combine to make a component with self-contained HTML, CSS, and JavaScript.
 
-Shadow DOM은 구성 요소 기반 앱을 빌드하는 도구로 고안되었습니다. 따라서
-웹 개발의 공통 문제에 대한 솔루션을 제공합니다.
+Shadow DOM is designed as a tool for building component-based apps. Therefore, it brings solutions for common problems in web development:
 
-- **격리된 DOM**: 구성 요소의 DOM은 자체 포함됩니다(예: 
-  `document.querySelector()`는 구성 요소의 Shadow DOM에 노드를 반환하지 않음).
-- **범위가 지정된 CSS**: Shadow DOM 내부에 정의한 CSS는 범위가 Shadow DOM으로 지정되어 있습니다. 스타일 규칙은 
-  누출되지 않으며 페이지 스타일은 스며들지 않습니다.
-- **컴퍼지션**: 구성 요소에 대한 선언적 마크업 기반 API를 디자인합니다.
-- **CSS 단순화**: 범위가 지정된 DOM이란 간단한 CSS 선택기와 훨씬 일반적인 
-  ID/클래스 이름을 사용할 수 있으며 이름 충돌에 대해 걱정할 필요가 없음을 의미합니다.
-- **생산성**: 큰(전역) 단일 페이지보다 DOM 청크에서 
-  앱을 고려합니다.
+- **Isolated DOM**: A component's DOM is self-contained (e.g. `document.querySelector()` won't return nodes in the component's shadow DOM).
+- **Scoped CSS**: CSS defined inside shadow DOM is scoped to it. Style rules don't leak out and page styles don't bleed in.
+- **Composition**: Design a declarative, markup-based API for your component.
+- **Simplifies CSS** - Scoped DOM means you can use simple CSS selectors, more generic id/class names, and not worry about naming conflicts.
+- **Productivity** - Think of apps in chunks of DOM rather than one large (global) page.
 
-참고: Shadow DOM API 및 그것의 웹 구성 요소 외부 장점을 사용할 수 있지만
-여기서는 사용자설정 요소를 토대로 하는 예에 중점을 두겠습니다.
-모든 예는 사용자설정 요소 v1 API를 사용합니다.
+Note: Although you can use the shadow DOM API and its benefits outside of web components, I'm only going to focus on examples that build on custom elements. I'll be using the custom elements v1 API in all examples.
 
+#### `fancy-tabs` demo {: #demo}
 
-#### `fancy-tabs` 데모 {: #demo}
-
-이 글에서 데모 구성 요소(`<fancy-tabs>`)와
- 참조 코드 스니펫에 대해 언급할 것입니다. 브라우저가 API를 지원하는 경우
-아래 라이브 데모를 보세요. 또는 
+Throughout this article, I'll be referring to a demo component (`<fancy-tabs>`) and referencing code snippets from it. If your browser supports the APIs, you should see a live demo of it just below. Otherwise, check out the
 <a href="https://gist.github.com/ebidel/2d2bb0cdec3f2a16cf519dbaa791ce1b" target="_blank">
-Github에서 전체 소스</a>를 확인하세요.
+full source on Github</a>.</p>
 
 <figure class="demoarea">
-  <iframe style="height:360px;width:100%;border:none" src="https://rawgit.com/ebidel/2d2bb0cdec3f2a16cf519dbaa791ce1b/raw/fancy-tabs-demo.html"></iframe>
+  <iframe
+    style="height:360px;width:100%;border:none"
+    src="https://rawgit.com/ebidel/2d2bb0cdec3f2a16cf519dbaa791ce1b/raw/fancy-tabs-demo.html">
+  </iframe>
   <figcaption>
     <a href="https://gist.github.com/ebidel/2d2bb0cdec3f2a16cf519dbaa791ce1b" target="_blank">
-      Github에서 소스 보기
+      View source on Github
     </a>
-  </figcaption>
-</figure>
+ </figcaption> </figure> 
 
-## Shadow DOM이란 무엇입니까? {: #what}
+## What is shadow DOM? {: #what}
 
-#### DOM의 배경 지식 {: #sdbackground}
+#### Background on DOM {: #sdbackground}
 
-HTML은 함께 작업하기 쉬우므로 웹의 기능을 강화합니다. 몇몇 태그를 선언하여
-프레젠테이션과 구조를 갖춘 페이지를 몇 초 만에 작성할 수 있습니다. 그러나
-HTML 그 자체는 그다지 유용하지 않습니다. 사람은 텍스트 기반
-언어를 쉽게 이해하지만, 기계는 더 많은 것을 필요로 합니다. DOM(Document Object
-Model)을 입력하세요.
+HTML powers the web because it's easy to work with. By declaring a few tags, you can author a page in seconds that has both presentation and structure. However, by itself HTML isn't all that useful. It's easy for humans to understand a text- based language, but machines need something more. Enter the Document Object Model, or DOM.
 
-브라우저는 웹페이지를 로드할 때 일련의 흥미로운 작업을 수행합니다. 작성자의
-HTML을 라이브 문서로 변형하는 작업도 그 중에 하나입니다.
-기본적으로 페이지의 구조를 이해하기 위해 브라우저가 HTML(정적 텍스트 문자열)을
-데이터 모델(객체/노드)로 파싱합니다. 브라우저는 해당 노드(DOM)의
-트리를 만들어 HTML 계층을 보존합니다. DOM은
-페이지를 라이브로 표시한다는 장점이 있습니다. 우리가 작성하는 정적
-HTML과는 달리 브라우저가 생성한 노드는 속성과 메서드를 포함하며 프로그램으로
-조작할 수 있다는 특별한 장점이 있습니다. 따라서 자바스크립트를 사용하여 DOM
-요소를 직접 만들 수 있습니다.
-
+When the browser loads a web page it does a bunch of interesting stuff. One of the things it does is transform the author's HTML into a live document. Basically, to understand the page's structure, the browser parses HTML (static strings of text) into a data model (objects/nodes). The browser preserves the HTML's hierarchy by creating a tree of these nodes: the DOM. The cool thing about DOM is that it's a live representation of your page. Unlike the static HTML we author, the browser-produced nodes contain properties, methods, and best of all...can be manipulated by programs! That's why we're able to create DOM elements directly using JavaScript:
 
     const header = document.createElement('header');
     const h1 = document.createElement('h1');
@@ -120,8 +62,7 @@ HTML과는 달리 브라우저가 생성한 노드는 속성과 메서드를 포
     document.body.appendChild(header);
     
 
-위 코드는 다음과 같은 HTML 마크업을 생성합니다.
-
+produces the following HTML markup:
 
     <body>
       <header>
@@ -130,26 +71,15 @@ HTML과는 달리 브라우저가 생성한 노드는 속성과 메서드를 포
     </body>
     
 
-모두 잘 작동하고 좋습니다. 그런데
-[_Shadow DOM_ 이란 무엇입니까](https://glazkov.com/2011/01/14/what-the-heck-is-shadow-dom/)?
+All that is well and good. Then [what the heck is *shadow DOM*](https://glazkov.com/2011/01/14/what-the-heck-is-shadow-dom/)?
 
-#### 섀도우에 추가한...DOM{: #sddom}
+#### DOM...in the shadows {: #sddom}
 
-Shadow DOM은 1) 생성/사용 방법 및
-2) 페이지의 나머지와 관련한 작동 방식 등 두 가지 측면에서 일반 DOM과 차이점이 있습니다. 일반적으로 DOM
-노드를 만들어 다른 요소의 자식으로 추가합니다. Shadow DOM의 경우 요소에
-연결하지만 실제 자식과는 독립된 범위가 지정된 DOM 트리를
-만듭니다. 이와 같은 범위가 지정된 하위 트리를 **섀도우 트리(shadow tree)** 라고 합니다. 연결된
-요소는 **섀도우 호스트(shadow host)**입니다. `<style>`을 비롯한 섀도우에 추가한 모든 것은
-호스팅 요소에 로컬이 됩니다. 이것이 Shadow DOM이
-CSS 스타일 범위 지정을 수행하는 방법입니다.
+Shadow DOM is just normal DOM with two differences: 1) how it's created/used and 2) how it behaves in relation to the rest of the page. Normally, you create DOM nodes and append them as children of another element. With shadow DOM, you create a scoped DOM tree that's attached to the element, but separate from its actual children. This scoped subtree is called a **shadow tree**. The element it's attached to is its **shadow host**. Anything you add in the shadows becomes local to the hosting element, including `<style>`. This is how shadow DOM achieves CSS style scoping.
 
-## Shadow DOM 만들기 {: #create}
+## Creating shadow DOM {: #create}
 
-**섀도우 루트(shadow root)**는 '호스트' 요소에 연결된 문서 조각입니다.
-섀도우 루트를 연결하는 작업은 요소가 Shadow DOM을 획득하는 방법입니다. 요소에
-대한 Shadow DOM을 만들려면 `element.attachShadow()`를 호출합니다.
-
+A **shadow root** is a document fragment that gets attached to a “host” element. The act of attaching a shadow root is how the element gains its shadow DOM. To create shadow DOM for an element, call `element.attachShadow()`:
 
     const header = document.createElement('header');
     const shadowRoot = header.attachShadow({mode: 'open'});
@@ -159,40 +89,31 @@ CSS 스타일 범위 지정을 수행하는 방법입니다.
     // shadowRoot.host === header
     
 
-위와 같이 `.innerHTML`을 사용하여 섀도우 루트를 채워도 되지만 다른 DOM
-API를 사용할 수도 있습니다. 이처럼 웹에서는 선택할 수 있습니다.
+I'm using `.innerHTML` to fill the shadow root, but you could also use other DOM APIs. This is the web. We have choice.
 
-사양은 섀도우 트리를 호스팅할 수 없는
-[요소 목록을 정의](http://w3c.github.io/webcomponents/spec/shadow/#h-methods)합니다. 다음과 같은 몇몇 이유로 요소가 목록에
-있을 수 있습니다.
+The spec [defines a list of elements](https://dom.spec.whatwg.org/#dom-element-attachshadow) that can't host a shadow tree. There are several reasons an element might be on the list:
 
-- 브라우저가 이미 요소(`<textarea>`, `<input>`)에 대한 자신의 내부 Shadow DOM을 
-  호스팅합니다.
-- 요소가 Shadow DOM(`<img>`)을 호스트하는 것은 이치에 맞지 않습니다.
+- The browser already hosts its own internal shadow DOM for the element (`<textarea>`, `<input>`).
+- It doesn't make sense for the element to host a shadow DOM (`<img>`).
 
-예를 들어, 다음 코드는 작동하지 않습니다.
-
+For example, this doesn't work:
 
     document.createElement('input').attachShadow({mode: 'open'});
     // Error. `<input>` cannot host shadow dom.
     
 
-### 사용자설정 요소에 대한 Shadow DOM 만들기 {: #elements}
+### Creating shadow DOM for a custom element {: #elements}
 
-Shadow DOM은
-[사용자설정 요소](/web/fundamentals/getting-started/primers/customelements)를 만들 때 특히 유용합니다.
-Shadow DOM을 사용하여 요소의 HTML, CSS 및 JS를 구획화하여 '웹 구성 요소'를
-생성합니다.
+Shadow DOM is particularly useful when creating [custom elements](/web/fundamentals/web-components/customelements). Use shadow DOM to compartmentalize an element's HTML, CSS, and JS, thus producing a "web component".
 
-**예**: 사용자설정 요소는 **Shadow DOM을 그 자체에 연결하고**
-DOM/CSS를 캡슐화합니다.
+**Example** - a custom element **attaches shadow DOM to itself**, encapsulating its DOM/CSS:
 
     // Use custom elements API v1 to register a new HTML tag and define its JS behavior
     // using an ES6 class. Every instance of <fancy-tab> will have this same prototype.
     customElements.define('fancy-tabs', class extends HTMLElement {
       constructor() {
         super(); // always call super() first in the constructor.
-
+    
         // Attach a shadow root to <fancy-tabs>.
         const shadowRoot = this.attachShadow({mode: 'open'});
         shadowRoot.innerHTML = `
@@ -203,63 +124,36 @@ DOM/CSS를 캡슐화합니다.
       }
       ...
     });
+    
 
-여기에 흥미로운 것이 몇 가지 있습니다. 첫째, `<fancy-tabs>`
-인스턴스를 만들 때 사용자설정 요소가 **자신의 Shadow DOM**을
-만듭니다. `constructor()`에서 그렇게 합니다. 둘째, 섀도우 루트를 만들고 있기 때문에
-`<style>` 내부 CSS 규칙의 범위가 `<fancy-tabs>`로 지정됩니다.
+There are a couple of interesting things going on here. The first is that the custom element **creates its own shadow DOM** when an instance of `<fancy-tabs>` is created. That's done in the `constructor()`. Secondly, because we're creating a shadow root, the CSS rules inside the `<style>` will be scoped to `<fancy-tabs>`.
 
-참고: 이 예를 실행하려고 시도하면 어떤 것도 렌더링되지 않음을 알게 될
-것입니다. 겉보기에는 사용자의 마크업이 사라집니다! 이는 **요소의
-Shadow DOM이 자식 노드에서 렌더링되기** 때문입니다. 자식을 표시하려면
-Shadow DOM에
-[`<slot>` 요소](#slots)를 배치하여 브라우저에게 렌더링 위치를 알려줘야 합니다. 이에 대한 자세한 내용은
-[나중에](#composition_slot) 설명하겠습니다.
+Note: When you try to run this example, you'll probably notice that nothing renders. The user's markup seemingly disappears! That's because the **element's shadow DOM is rendered in place of its children**. If you want to display the children, you need to tell the browser where to render them by placing a [`<slot>` element](#slots) in your shadow DOM. More on that [later](#composition_slot).
 
+## Composition and slots {: #composition_slot}
 
-## 컴퍼지션 및 슬롯 {: #composition_slot}
+Composition is one of the least understood features of shadow DOM, but it's arguably the most important.
 
-컴퍼지션은 잘 알려지지 않은 Shadow DOM 기능이지만
-가장 중요합니다.
+In our world of web development, composition is how we construct apps, declaratively out of HTML. Different building blocks (`<div>`s, `<header>`s, `<form>`s, `<input>`s) come together to form apps. Some of these tags even work with each other. Composition is why native elements like `<select>`, `<details>`, `<form>`, and `<video>` are so flexible. Each of those tags accepts certain HTML as children and does something special with them. For example, `<select>` knows how to render `<option>` and `<optgroup>` into dropdown and multi-select widgets. The `<details>` element renders `<summary>` as a expandable arrow. Even `<video>` knows how to deal with certain children: `<source>` elements don't get rendered, but they do affect the video's behavior. What magic!
 
-웹 개발의 세계에서 컴퍼지션은 선언적으로 HTML에서 앱을
-구성하는 방법입니다. 서로 다른 빌딩 블록(`<div>`, `<header>`,
-`<form>`, `<input>`)이 함께 모여 앱을 만듭니다. 이러한 태그 중 일부는
-서로 상호작용합니다. 컴퍼지션은 `<select>`,
-`<details>`, `<form>` 및 `<video>`와 같은 기본 요소가 융통성이 크기 때문에 가능합니다. 해당 각 태그는
-특정 HTML을 자식으로 수용하여 특별한 작업을 수행합니다. 예를 들어,
-`<select>`는 `<option>` 및 `<optgroup>`을 드롭다운 및 다중 선택 위젯으로
-렌더링하는 방법을 알고 있습니다. `<details>` 요소는 `<summary>`를
-확장 가능한 화살로 렌더링합니다. `<video>`도 특정 자식을 처리하는 방법을 알고 있습니다.
-`<source>` 요소는 렌더링되지 않지만 비디오의 동작에 영향을 미칩니다.
-멋진 마술과 같습니다!
+### Terminology: light DOM vs. shadow DOM {: #lightdom}
 
-### 용어: Light DOM과 Shadow DOM {: #lightdom}
-
-Shadow DOM 컴퍼지션은 일련의 새로운 웹 개발 기본 항목을
-소개합니다. 세부적으로 들어가기 전에 동일한 용어를 사용하도록
-일부 용어를 표준화합시다.
+Shadow DOM composition introduces a bunch of new fundamentals in web development. Before getting into the weeds, let's standardize on some terminology so we're speaking the same lingo.
 
 **Light DOM**
 
-구성 요소 사용자가 작성하는 마크업입니다. Light DOM은 구성 요소의
-Shadow DOM 외부에서 사용됩니다. Light DOM은 해당 요소의 실제 자식입니다.
+The markup a user of your component writes. This DOM lives outside the component's shadow DOM. It is the element's actual children.
 
-
-    <button is="better-button">
+    <better-button>
       <!-- the image and span are better-button's light DOM -->
       <img src="gear.svg" slot="icon">
       <span>Settings</span>
-    </button>
+    </better-button>
     
 
 **Shadow DOM**
 
-구성 요소 작성자가 쓰는 DOM입니다. Shadow DOM은 구성 요소에 로컬이며 내부 구조,
-범위가 지정된 CSS를 정의하며 구현 세부정보를
-캡슐화합니다. 또한 Shadow DOM은 구성 요소 소비자가 작성한 마크업을
-렌더링하는 방법을 정의합니다.
-
+The DOM a component author writes. Shadow DOM is local to the component and defines its internal structure, scoped CSS, and encapsulates your implementation details. It can also define how to render markup that's authored by the consumer of your component.
 
     #shadow-root
       <style>...</style>
@@ -269,52 +163,38 @@ Shadow DOM 외부에서 사용됩니다. Light DOM은 해당 요소의 실제 �
       </span>
     
 
-**평면화된 DOM 트리**
+**Flattened DOM tree**
 
-브라우저가 사용자의 Light DOM을 Shadow
-DOM으로 배포한 결과이며 최종 제품을 렌더링합니다. 평면화된 트리는 DevTools에서 궁극적으로 보고
-페이지에 렌더링되는 항목입니다.
+The result of the browser distributing the user's light DOM into your shadow DOM, rendering the final product. The flattened tree is what you ultimately see in the DevTools and what's rendered on the page.
 
-
-    <button is="better-button">
+    <better-button>
       #shadow-root
         <style>...</style>
         <slot name="icon">
           <img src="gear.svg" slot="icon">
         </slot>
-        <slot>
-          <span>Settings</span>
-        </slot>
-    </button>
+        <span id="wrapper">
+          <slot>
+            <span>Settings</span>
+          </slot>
+        </span>
+    </better-button>
     
 
-### &lt;slot&gt; 요소 {: #slots}
+### The &lt;slot&gt; element {: #slots}
 
-Shadow DOM은 `<slot>` 요소를 사용하여 여러 DOM 트리를 함께 구성합니다.
-**슬롯은 사용자가 자신의 마크업을 사용하여 채울 _수 있는_ 구성 요소 내부의
-자리표시자입니다**. 슬롯을 한 개 이상 정의하여 외부 마크업을 초대하여 구성 요소의
-Shadow DOM에 렌더링합니다. 기본적으로 _'사용자의 마크업을
-여기에 렌더링한다'_ 고 말하는 것과 같습니다.
+Shadow DOM composes different DOM trees together using the `<slot>` element. **Slots are placeholders inside your component that users *can* fill with their own markup**. By defining one or more slots, you invite outside markup to render in your component's shadow DOM. Essentially, you're saying *"Render the user's markup over here"*.
 
-참고: 슬롯은 웹 구성 요소에 대한 '선언적 API'를 만드는 방법입니다. 슬롯은
-사용자의 DOM을 혼합하여 전체 구성 요소를 렌더링하는 데 도움을 주므로 **여러
-DOM 트리를 함께 구성합니다**.
+Note: Slots are a way of creating a "declarative API" for a web component. They mix-in the user's DOM to help render the overall component, thus, **composing different DOM trees together**.
 
+Elements are allowed to "cross" the shadow DOM boundary when a `<slot>` invites them in. These elements are called **distributed nodes**. Conceptually, distributed nodes can seem a bit bizarre. Slots don't physically move DOM; they render it at another location inside the shadow DOM.
 
-`<slot>`이 요소를 초대할 때 요소를 사용하여
-Shadow DOM 경계를 '교차'할 수 있습니다. 이와 같은 요소를 **분산 노드**라고 합니다. 개념상 분산 노드는
-다소 기이하게 보일 수 있습니다. 슬롯은 DOM을 물리적으로 이동하지 않고
-Shadow DOM 내부의 다른 위치에서 렌더링합니다.
-
-구성 요소는 Shadow DOM에서 슬롯을 0개 이상 정의할 수 있습니다. 슬롯은 비어 있거나
-대체 콘텐츠를 제공할 수 있습니다. 사용자가 [Light DOM](#lightdom)
-콘텐츠를 제공하지 않는 경우 슬롯은 대체 콘텐츠를 렌더링합니다.
-
+A component can define zero or more slots in its shadow DOM. Slots can be empty or provide fallback content. If the user doesn't provide [light DOM](#lightdom) content, the slot renders its fallback content.
 
     <!-- Default slot. If there's more than one default slot, the first is used. -->
     <slot></slot>
     
-    <slot>Fancy button</slot> <!-- default slot with fallback content -->
+    <slot>fallback content</slot> <!-- default slot with fallback content -->
     
     <slot> <!-- default slot entire DOM tree as fallback -->
       <h2>Title</h2>
@@ -322,23 +202,20 @@ Shadow DOM 내부의 다른 위치에서 렌더링합니다.
     </slot>
     
 
-또한 **명명된 슬롯**을 만들 수도 있습니다. 명명된 슬롯은 Shadow DOM에서
-사용자가 이름으로 참조하는 특정 구멍입니다.
+You can also create **named slots**. Named slots are specific holes in your shadow DOM that users reference by name.
 
-**예**: `<fancy-tabs>`의 Shadow DOM에서 명명된 슬롯
-
+**Example** - the slots in `<fancy-tabs>`'s shadow DOM:
 
     #shadow-root
       <div id="tabs">
-        <slot id="tabsSlot" name="title"></slot>
+        <slot id="tabsSlot" name="title"></slot> <!-- named slot -->
       </div>
       <div id="panels">
         <slot id="panelsSlot"></slot>
       </div>
     
 
-구성 요소 사용자는 다음과 같이 `<fancy-tabs>`를 선언합니다.
-
+Component users declare `<fancy-tabs>` like so:
 
     <fancy-tabs>
       <button slot="title">Title</button>
@@ -360,8 +237,7 @@ Shadow DOM 내부의 다른 위치에서 렌더링합니다.
     </fancy-tabs>
     
 
-그리고 평면화된 트리의 모습은 다음과 같습니다.
-
+And if you're wondering, the flattened tree looks something like this:
 
     <fancy-tabs>
       #shadow-root
@@ -382,31 +258,22 @@ Shadow DOM 내부의 다른 위치에서 렌더링합니다.
     </fancy-tabs>
     
 
-구성 요소가 여러 구성을 처리할 수 있지만 평면화된 DOM 트리는
-동일한 상태를 유지합니다. 또한 `<button>`에서
-`<h2>`로 전환할 수도 있습니다. 이 구성 요소는 `<select>`와 마찬가지로
-여러 유형의 자식을 처리하기 위해 작성되었습니다.
+Notice our component is able to handle different configurations, but the flattened DOM tree remains the same. We can also switch from `<button>` to `<h2>`. This component was authored to handle different types of children...just like `<select>` does!
 
-## 스타일 지정  {: #styling}
+## Styling {: #styling}
 
-웹 구성 요소의 스타일을 지정하는 다양한 옵션이 있습니다. Shadow DOM을 사용하는 구성 요소는 기본 페이지가 스타일을 지정할 수 있으며
-그 자신의 스타일을 정의하거나,
-사용자가 기본값을 재정의하는 후크를 ([CSS 사용자설정 속성][css_props] 형식으로) 제공할 수 있습니다.
+There are many options for styling web components. A component that uses shadow DOM can be styled by the main page, define its own styles, or provide hooks (in the form of [CSS custom properties](https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_variables)) for users to override defaults.
 
-### 구성 요소 정의 스타일 {: #host}
+### Component-defined styles {: #host}
 
-Shadow DOM의 가장 유용한 기능은 **범위가 지정된 CSS**라는 것은 명백합니다.
+Hands down the most useful feature of shadow DOM is **scoped CSS**:
 
-- 외부 페이지의 CSS 선택기는 구성 요소 내부에 적용되지 않습니다.
-- 내부에 정의된 스타일은 스며 나오지 않습니다. 그 범위는 호스트 요소로 지정됩니다.
+- CSS selectors from the outer page don't apply inside your component.
+- Styles defined inside don't bleed out. They're scoped to the host element.
 
-**Shadow DOM 내부에 사용된 CSS 선택기는 구성 요소에 로컬로 적용됩니다.**  실제로
-이는 페이지의 다른 곳에서 충돌을 걱정하지 않고 공통 ID/클래스 이름을
-다시 사용할 수 있음을 의미합니다. 훨씬 간단한 CSS 선택기는
-Shadow DOM 내부에서 최상의 방법이며 성능도 탁월합니다.
+**CSS selectors used inside shadow DOM apply locally to your component**. In practice, this means we can use common id/class names again, without worrying about conflicts elsewhere on the page. Simpler CSS selectors are a best practice inside Shadow DOM. They're also good for performance.
 
-**예**: 섀도우 루트에 정의된 스타일은 로컬입니다.
-
+**Example** - styles defined in a shadow root are local
 
     #shadow-root
       <style>
@@ -428,12 +295,9 @@ Shadow DOM 내부에서 최상의 방법이며 성능도 탁월합니다.
       </div>
     
 
-스타일시트의 범위도 섀도우 트리로 지정됩니다.
-
+Stylesheets are also scoped to the shadow tree:
 
     #shadow-root
-      <!-- Available in Chrome 54+ -->
-      <!-- WebKit bug: https://bugs.webkit.org/show_bug.cgi?id=160683 -->
       <link rel="stylesheet" href="styles.css">
       <div id="tabs">
         ...
@@ -443,8 +307,7 @@ Shadow DOM 내부에서 최상의 방법이며 성능도 탁월합니다.
       </div>
     
 
-`multiple` 속성을 추가할 때 `<select>` 요소가 다중 선택 위젯을 (드롭다운
-대신) 렌더링하는 방법이 궁금하십니까?
+Ever wonder how the `<select>` element renders a multi-select widget (instead of a dropdown) when you add the `multiple` attribute:
 
 <select multiple>
   <option>Do</option>
@@ -454,12 +317,9 @@ Shadow DOM 내부에서 최상의 방법이며 성능도 탁월합니다.
   <option>So</option>
 </select>
 
-`<select>`는 선언된 속성에 기반하여 _그 자체_ 의 스타일을
-달리 지정할 수 있습니다. 웹 구성 요소도 `:host`
-선택기를 사용하여 그 자체의 스타일을 지정할 수 있습니다.
+`<select>` is able to style *itself* differently based on the attributes you declare on it. Web components can style themselves too, by using the `:host` selector.
 
-**예**: 구성 요소 자체 스타일 지정
-
+**Example** - a component styling itself
 
     <style>
     :host {
@@ -469,17 +329,9 @@ Shadow DOM 내부에서 최상의 방법이며 성능도 탁월합니다.
     </style>
     
 
-`:host`는 부모 페이지의 규칙이 요소에 정의된 `:host` 규칙보다
-훨씬 높은 특정성을 지닌다는 문제가 있습니다. 즉, 외부 스타일이 적용됩니다. 이로써
-사용자는 외부에서 상단 레벨 스타일 지정을 재정의할 수 있습니다. 또한 `:host`는
-섀도우 루트 컨텍스트에서만 작동하므로
-Shadow DOM 외부에서 사용할 수 없습니다.
+One gotcha with `:host` is that rules in the parent page have higher specificity than `:host` rules defined in the element. That is, outside styles win. This allows users to override your top-level styling from the outside. Also, `:host` only works in the context of a shadow root, so you can't use it outside of shadow DOM.
 
-`:host(<selector>)`의 기능적 형태가 `<selector>`와 일치하는 경우
-해당 형태를 사용하여 대상 호스트를 지정할 수 있습니다. 이 방법은 구성 요소가 사용자 상호작용
-또는 상태에 응답하거나 호스트 기반 내부 노드의 스타일을 지정하는 동작을 캡슐화하는 데
-유용합니다.
-
+The functional form of `:host(<selector>)` allows you to target the host if it matches a `<selector>`. This is a great way for your component to encapsulate behaviors that react to user interaction or state or style internal nodes based on the host.
 
     <style>
     :host {
@@ -504,13 +356,9 @@ Shadow DOM 외부에서 사용할 수 없습니다.
     </style>
     
 
-### 컨텍스트 기반 스타일 지정 {: #contextstyling}
+### Styling based on context {: #contextstyling}
 
-`:host-context(<selector>)`는 그 자신 및 상위 항목이
-`<selector>`와 일치하는 경우 해당 구성 요소와 일치합니다. 이에 대한 일반적인 용도는 구성 요소의 주변에 기반한
-테마 설정입니다. 예를 들어, 대부분의 사람들은 클래스를
-`<html>` 또는 `<body>`에 적용하여 테마를 설정합니다.
-
+`:host-context(<selector>)` matches the component if it or any of its ancestors matches `<selector>`. A common use for this is theming based on a component's surroundings. For example, many people do theming by applying a class to `<html>` or `<body>`:
 
     <body class="darktheme">
       <fancy-tabs>
@@ -519,9 +367,7 @@ Shadow DOM 외부에서 사용할 수 없습니다.
     </body>
     
 
-`:host-context(.darktheme)`은 `.darktheme`의 하위 항목일 때 `<fancy-tabs>`의
-스타일을 지정합니다.
-
+`:host-context(.darktheme)` would style `<fancy-tabs>` when it's a descendant of `.darktheme`:
 
     :host-context(.darktheme) {
       color: white;
@@ -529,16 +375,13 @@ Shadow DOM 외부에서 사용할 수 없습니다.
     }
     
 
-`:host-context()`는 테마 설정에 유용할 수 있지만
-[CSS 사용자설정 속성을 사용하여 후크를 만드는 방법](#stylehooks)이 훨씬 더 나을 수 있습니다.
+`:host-context()` can be useful for theming, but an even better approach is to [create style hooks using CSS custom properties](#stylehooks).
 
-### 분산 노드 스타일 지정 {: #stylinglightdom}
+### Styling distributed nodes {: #stylinglightdom}
 
-`::slotted(<compound-selector>)`는
-`<slot>`으로 분산된 노드와 일치합니다.
+`::slotted(<compound-selector>)` matches nodes that are distributed into a `<slot>`.
 
-이름 배지 구성 요소를 만들었다고 가정합시다.
-
+Let's say we've created a name badge component:
 
     <name-badge>
       <h2>Eric Bidelman</h2>
@@ -548,8 +391,7 @@ Shadow DOM 외부에서 사용할 수 없습니다.
     </name-badge>
     
 
-해당 구성 요소의 Shadow DOM은 사용자의 `<h2>` 및 `.title` 스타일을 지정할 수 있습니다.
-
+The component's shadow DOM can style the user's `<h2>` and `.title`:
 
     <style>
     ::slotted(h2) {
@@ -570,14 +412,9 @@ Shadow DOM 외부에서 사용할 수 없습니다.
     <slot></slot>
     
 
-위에서 언급했듯이 `<slot>`은 사용자의 Light DOM을 이동하지 않습니다. 노드가
-`<slot>`에 분산되면 `<slot>`은 DOM을 렌더링하지만
-노드는 물리적으로 그대로 있습니다. **분산 전에 적용된 스타일은
-분산 후에도 계속 적용됩니다**. 그러나 Light DOM은 분산될 때
-추가 스타일(Shadow DOM이 정의한 스타일)을 사용할 _수_ 있습니다.
+If you remember from before, `<slot>`s do not move the user's light DOM. When nodes are distributed into a `<slot>`, the `<slot>` renders their DOM but the nodes physically stay put. **Styles that applied before distribution continue to apply after distribution**. However, when the light DOM is distributed, it *can* take on additional styles (ones defined by the shadow DOM).
 
-`<fancy-tabs>`의 또 다른 상세한 예:
-
+Another, more in-depth example from `<fancy-tabs>`:
 
     const shadowRoot = this.attachShadow({mode: 'open'});
     shadowRoot.innerHTML = `
@@ -618,17 +455,11 @@ Shadow DOM 외부에서 사용할 수 없습니다.
     `;
     
 
-이 예에는 탭 제목에 대해 명명된 슬롯과 탭 콘텐츠에 대해
-명명된 슬롯 등 두 개의 슬롯이 있습니다. 사용자가 탭을 선택하면 선택 항목이 굵게 표시되고
-해당 패널이 표시됩니다. 이는
-`selected` 속성을 가진 분산 노드를 선택하면 수행됩니다. 사용자설정 요소의 JS(여기에서는 다루지 않음)는
-해당 속성을 올바른 시간에 추가합니다.
+In this example, there are two slots: a named slot for the tab titles, and a slot for the tab panel content. When the user selects a tab, we bold their selection and reveal its panel. That's done by selecting distributed nodes that have the `selected` attribute. The custom element's JS (not shown here) adds that attribute at the correct time.
 
-### 외부에서 구성 요소 스타일 지정 {: #stylefromoutside}
+### Styling a component from the outside {: #stylefromoutside}
 
-외부에서 구성 요소의 스타일을 지정하는 몇몇 방법이 있습니다. 가장 쉬운 방법은
-태그 이름을 선택기로 사용하는 것입니다.
-
+There are a couple of ways to style a component from the outside. The easiest way is to use the tag name as a selector:
 
     fancy-tabs {
       width: 500px;
@@ -639,22 +470,15 @@ Shadow DOM 외부에서 사용할 수 없습니다.
     }
     
 
-**외부 스타일은 Shadow DOM에 정의한 스타일보다 우선합니다**. 예를 들어,
-사용자가 선택기 `fancy-tabs { width: 500px; }`를 작성하는 경우
-해당 규칙이 구성 요소의 규칙 `:host { width: 650px;}`보다 우선합니다.
+**Outside styles always win over styles defined in shadow DOM**. For example, if the user writes the selector `fancy-tabs { width: 500px; }`, it will trump the component's rule: `:host { width: 650px;}`.
 
-지금까지 구성 요소 자체 스타일 지정에 대해서만 알아봤습니다. 그러나 구성 요소 내부의
-스타일을 지정하려면 어떻게 해야 할까요? 이를 위해서는 CSS 사용자설정 속성이
-필요합니다.
+Styling the component itself will only get you so far. But what happens if you want to style the internals of a component? For that, we need CSS custom properties.
 
-#### SS 사용자설정 속성을 사용하여 후크 만들기 {: #stylehooks}
+#### Creating style hooks using CSS custom properties {: #stylehooks}
 
-사용자는 구성 요소 작성자가 [CSS 사용자설정 속성][css_props]을 사용하여
-후크 스타일을 지정하는 경우 내부 스타일을 조정할 수 있습니다. 개념상 이 아이디어는
-`<slot>`과 유사합니다. 사용자가 다시 정의하는 '스타일 자리표시자'를 만듭니다.
+Users can tweak internal styles if the component's author provides styling hooks using [CSS custom properties](https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_variables). Conceptually, the idea is similar to `<slot>`. You create "style placeholders" for users to override.
 
-**예**: `<fancy-tabs>`를 사용하여 사용자가 배경색을 다시 정의할 수 있습니다.
-
+**Example** - `<fancy-tabs>` allows users to override the background color:
 
     <!-- main page -->
     <style>
@@ -666,8 +490,7 @@ Shadow DOM 외부에서 사용할 수 없습니다.
     <fancy-tabs background>...</fancy-tabs>
     
 
-Shadow DOM 내부:
-
+Inside its shadow DOM:
 
     :host([background]) {
       background: var(--fancy-tabs-bg, #9E9E9E);
@@ -676,26 +499,17 @@ Shadow DOM 내부:
     }
     
 
-이 예에서는 구성 요소는 사용자가 제공한 대로 `black`을
-배경 값으로 사용합니다. 그렇지 않으면 `#9E9E9E`를 기본값으로 설정합니다.
+In this case, the component will use `black` as the background value since the user provided it. Otherwise, it would default to `#9E9E9E`.
 
-참고: 구성 요소 작성자는 개발자에게 그들이 사용할 수 있는
-CSS 사용자설정 속성을 알려줘야 합니다. 해당 속성을 구성 요소의
-공용 인터페이스의 일부라고 생각하면 됩니다. 스타일 지정 후크를 문서화하세요!
+Note: As the component author, you're responsible for letting developers know about CSS custom properties they can use. Consider it part of your component's public interface. Make sure to document styling hooks!
 
+## Advanced topics {: #advanced}
 
-## 고급 정보 {: #advanced}
+### Creating closed shadow roots (should avoid) {: #closed}
 
-### 폐쇄형 섀도우 루트 만들기(금지) {: #closed}
+There's another flavor of shadow DOM called "closed" mode. When you create a closed shadow tree, outside JavaScript won't be able to access the internal DOM of your component. This is similar to how native elements like `<video>` work. JavaScript cannot access the shadow DOM of `<video>` because the browser implements it using a closed-mode shadow root.
 
-'폐쇄형' 모드라고 하는 Shadow DOM의 또 다른 특성이 있습니다. 폐쇄형 섀도우 트리를 만들면
-외부 자바스크립트는 구성 요소의 내부 DOM에 액세스할 수
-없습니다. 이는 `<video>`와 같은 기본 요소가 작동하는 방식과 유사합니다.
-브라우저가 폐쇄형 모드 섀도우 루트를 사용하여 구현되기 때문에 자바스크립트는 `<video>`의
-Shadow DOM에 액세스할 수 없습니다.
-
-**예: ** 폐쇄형 섀도우 트리 만들기
-
+**Example** - creating a closed shadow tree:
 
     const div = document.createElement('div');
     const shadowRoot = div.attachShadow({mode: 'closed'}); // close shadow tree
@@ -703,29 +517,19 @@ Shadow DOM에 액세스할 수 없습니다.
     // shadowRoot.host === div
     
 
-폐쇄형 모드는 다음과 같이 다른 API에도 영향을 미칩니다.
+Other APIs are also affected by closed-mode:
 
-- `Element.assignedSlot` / `TextNode.assignedSlot`은 `null`을 반환합니다.
-- Shadow DOM 내부의 요소와 연결된 이벤트에 대한 `Event.composedPath()`는
-  []를 반환합니다.
+- `Element.assignedSlot` / `TextNode.assignedSlot` returns `null`
+- `Event.composedPath()` for events associated with elements inside the shadow DOM, returns []
 
-참고: 폐쇄형 섀도우 루트는 그다지 유용하지 않습니다. 일부 개발자는 폐쇄형 모드를
-인공 보안 기능으로 간주합니다. 그러나 그것은 보안 기능이
-**아닙니다**. 폐쇄형 모드는 단지 외부 JS가 요소의 내부 DOM에
-침입하지 못하도록 방지합니다.
+Note: Closed shadow roots are not very useful. Some developers will see closed mode as an artificial security feature. But let's be clear, it's **not** a security feature. Closed mode simply prevents outside JS from drilling into an element's internal DOM.
 
+Here's my summary of why you should never create web components with `{mode: 'closed'}`:
 
-`{mode: 'closed'}`를
-사용하여 웹 구성 요소를 만들어서는 안 되는 이유는 다음과 같습니다.
+1. Artificial sense of security. There's nothing stopping an attacker from hijacking `Element.prototype.attachShadow`.
 
-1. 인공 보안: 공격자가 `Element.prototype.attachShadow`를
-   납치하는 것을 막지 못합니다.
-
-2. 폐쇄형 모드는 **사용자설정 요소 코드가 그 자신의 Shadow DOM에
-   액세스하지 못하도록 차단합니다.** 완전히 실패작입니다. 그 대신, `querySelector()`와 같은 것을
-   사용하길 원하는 경우 나중을 위한 참고로 보관해 두는 것이 좋습니다. 이는 폐쇄형 모드의 
-   원래 목적을 완전히 무효화합니다.
-
+2. Closed mode **prevents your custom element code from accessing its own shadow DOM**. That's complete fail. Instead, you'll have to stash a reference for later if you want to use things like `querySelector()`. This completely defeats the original purpose of closed mode!
+    
         customElements.define('x-element', class extends HTMLElement {
           constructor() {
             super(); // always call super() first in the constructor.
@@ -739,102 +543,81 @@ Shadow DOM에 액세스할 수 없습니다.
           }
           ...
         });
+        
 
-3. **폐쇄형 모드는 최종 사용자를 위한 구성 요소의 융통성을 저하시킵니다**. 웹 구성
-   요소를 
-   만들 때 구성 옵션이나 사용자가 원하는 용례 등의 기능을 추가하는 것을 잊을 때가 있습니다. 내부 노드에 대한 
-   알맞은 스타일 지정 후크를 포함하는 것을 잊는 경우가 일반적인 예입니다.
-   폐쇄형 모드에서는 사용자가 기본값을 다시 정의하고 스타일을
-   조정할 방법이 없습니다. 구성 요소의 내부에 액세스할 수 있는 것은 큰 도움이 됩니다.
-   궁극적으로 사용자는 구성 요소가 원하는 기능을 제공하지 않는 경우
-   구성 요소를 분기하거나 다른 구성 요소를 찾거나 자신의 구성 요소를 만듭니다. :(
+3. **Closed mode makes your component less flexible for end users**. As you build web components, there will come a time when you forget to add a feature. A configuration option. A use case the user wants. A common example is forgetting to include adequate styling hooks for internal nodes. With closed mode, there's no way for users to override defaults and tweak styles. Being able to access the component's internals is super helpful. Ultimately, users will fork your component, find another, or create their own if it doesn't do what they want :(
 
-### JS에서 슬롯 사용하기{: #workwithslots}
+### Working with slots in JS {: #workwithslots}
 
-Shadow DOM API는 슬롯 및 분산 노드를 사용하기 위한 유틸리티를
-제공합니다. 이들은 사용자설정 요소를 작성할 때 여러모로 편리합니다.
+The shadow DOM API provides utilities for working with slots and distributed nodes. These come in handy when authoring a custom element.
 
-#### slotchange 이벤트 {: #slotchange}
+#### slotchange event {: #slotchange}
 
-`slotchange` 이벤트는 슬롯의 분산 노드가 변경될 때 발생합니다. 사용자가
-Light DOM에서 자식을 추가/제거하는 경우를 그 예로 들 수 있습니다.
-
+The `slotchange` event fires when a slot's distributed nodes changes. For example, if the user adds/removes children from the light DOM.
 
     const slot = this.shadowRoot.querySelector('#slot');
     slot.addEventListener('slotchange', e => {
       console.log('light dom children changed!');
     });
     
-참고: `slotchange`는 구성 요소 인스턴스가 처음으로 초기화된 경우에는
-발생하지 않습니다.
 
-Light DOM에 대한 다른 유형의 변경 사항을 모니터링하려면 요소의 생성자에
-[`MutationObserver`](https://developer.mozilla.org/en-US/docs/Web/API/MutationObserver)를
-설정하면 됩니다.
+Note: `slotchange` does not fire when an instance of the component is first initialized.
 
-#### 슬롯에서 어떤 요소가 렌더링 중입니까? {: #slotnodes}
+To monitor other types of changes to light DOM, you can setup a [`MutationObserver`](https://developer.mozilla.org/en-US/docs/Web/API/MutationObserver) in your element's constructor.
 
-어떤 요소가 슬롯에 연결되어 있는지 알면 유용할 수 있습니다. `slot.assignedNodes()`를
-호출하여 슬롯이 렌더링 중인 요소를 찾습니다. `{flatten: true}`
-옵션도 슬롯의 대체 콘텐츠를 반환합니다(분산 중인
-노드가 없는 경우).
+#### What elements are being rendering in a slot? {: #slotnodes}
 
-일례로 Shadow DOM의 모양이 아래와 같다고 가정합시다.
+Sometimes it's useful to know what elements are associated with a slot. Call `slot.assignedNodes()` to find which elements the slot is rendering. The `{flatten: true}` option will also return a slot's fallback content (if no nodes are being distributed).
+
+As an example, let's say your shadow DOM looks like this:
 
     <slot><b>fallback content</b></slot>
+    
 
 <table>
-  <thead><th>사용법</th><th>호출</th><th>결과</th></tr></thead>
+  <thead><th>Usage</th><th>Call</th><th>Result</th></thead>
   <tr>
-    <td>&lt;button is="better-button"&gt;My button&lt;/button&gt;</td>
+    <td>&lt;my-component&gt;component text&lt;/my-component&gt;</td>
     <td><code>slot.assignedNodes();</code></td>
-    <td><code>[text]</code></td>
+    <td><code>[component text]</code></td>
   </tr>
   <tr>
-    <td>&lt;button is="better-button">&lt;/button&gt;</td>
+    <td>&lt;my-component>&lt;/my-component&gt;</td>
     <td><code>slot.assignedNodes();</code></td>
     <td><code>[]</code></td>
   </tr>
   <tr>
-    <td>&lt;button is="better-button"&gt;&lt;/button&gt;</td>
+    <td>&lt;my-component&gt;&lt;/my-component&gt;</td>
     <td><code>slot.assignedNodes({flatten: true});</code></td>
     <td><code>[&lt;b&gt;fallback content&lt;/b&gt;]</code></td>
   </tr>
 </table>
 
-#### 요소가 어떤 슬롯에 할당되었습니까? {: #assignedslot}
+#### What slot is an element assigned to? {: #assignedslot}
 
-반대 질문에 대답하는 것도 가능합니다. `element.assignedSlot`은 요소가
-할당된 구성 요소 슬롯을 알려줍니다.
+Answering the reverse question is also possible. `element.assignedSlot` tells you which of the component slots your element is assigned to.
 
-### Shadow DOM 이벤트 모델 {: #events}
+### The Shadow DOM event model {: #events}
 
-이벤트가 Shadow DOM에서 발생하면 그 대상을 조정하여
-Shadow DOM이 제공하는 캡슐화를 유지합니다. 즉, 이벤트가 Shadow DOM 내에서
-내부 요소보다 구성 요소에서 온 것처럼 보이도록 이벤트의 대상을
-다시 지정합니다. 일부 이벤트는 심지어 Shadow DOM에서 전파되지도 않습니다.
+When an event bubbles up from shadow DOM it's target is adjusted to maintain the encapsulation that shadow DOM provides. That is, events are re-targeted to look like they've come from the component rather than internal elements within your shadow DOM. Some events do not even propagate out of shadow DOM.
 
-섀도우 경계를 **교차하는** 이벤트는 다음과 같습니다.
+The events that **do** cross the shadow boundary are:
 
-- 포커스 이벤트: `blur`, `focus`, `focusin`, `focusout`
-- 마우스 이벤트: `click`, `dblclick`, `mousedown`, `mouseenter`, `mousemove` 등
-- 휠 이벤트: `wheel`
-- 입력 이벤트: `beforeinput`, `input`
-- 키보드 이벤트: `keydown`, `keyup`
-- 컴퍼지션 이벤트: `compositionstart`, `compositionupdate`, `compositionend`
-- 끌기 이벤트: `dragstart`, `drag`, `dragend`, `drop` 등
+- Focus Events: `blur`, `focus`, `focusin`, `focusout`
+- Mouse Events: `click`, `dblclick`, `mousedown`, `mouseenter`, `mousemove`, etc.
+- Wheel Events: `wheel`
+- Input Events: `beforeinput`, `input`
+- Keyboard Events: `keydown`, `keyup`
+- Composition Events: `compositionstart`, `compositionupdate`, `compositionend`
+- DragEvent: `dragstart`, `drag`, `dragend`, `drop`, etc.
 
-**팁**
+**Tips**
 
-섀도우 트리가 열린 상태에서 `event.composedPath()`를 반환하면 이벤트가
-이동한 노드 배열이 반환됩니다.
+If the shadow tree is open, calling `event.composedPath()` will return an array of nodes that the event traveled through.
 
-#### 사용자설정 이벤트 사용 {: #customevents}
+#### Using custom events {: #customevents}
 
-섀도우 트리의 내부 노드에서 발생하는 사용자설정 DOM 이벤트는
-`composed: true` 플래그를 사용하여 생성되지 않는 한
-섀도우 경계를 넘지 않습니다.
-
+Custom DOM events which are fired on internal nodes in a shadow tree do not bubble out of the shadow boundary unless the event is created using the `composed: true` flag:
 
     // Inside <fancy-tab> custom element class definition:
     selectTab() {
@@ -843,9 +626,7 @@ Shadow DOM이 제공하는 캡슐화를 유지합니다. 즉, 이벤트가 Shado
     }
     
 
-`composed: false`(기본값)인 경우 소비자는 섀도우 루트 외부에서
-이벤트를 수신할 수 없습니다.
-
+If `composed: false` (default), consumers won't be able to listen for the event outside of your shadow root.
 
     <fancy-tabs></fancy-tabs>
     <script>
@@ -856,29 +637,21 @@ Shadow DOM이 제공하는 캡슐화를 유지합니다. 즉, 이벤트가 Shado
     </script>
     
 
-### 포커스 처리 {: #focus}
+### Handling focus {: #focus}
 
-[Shadow DOM의 이벤트 모델](#events)에서 불러올 때
-Shadow DOM 내부에서 발생하는 이벤트는 호스팅 요소에서 발생하는 것처럼 보이도록 조정됩니다.
-예를 들어, 섀도우 루트 내에 있는 `<input>`을 클릭한다고 해봅시다.
-
+If you recall from [shadow DOM's event model](#events), events that are fired inside shadow DOM are adjusted to look like they come from the hosting element. For example, let's say you click an `<input>` inside a shadow root:
 
     <x-focus>
       #shadow-root
         <input type="text" placeholder="Input inside shadow dom">
     
 
-`focus` 이벤트는 `<input>`이 아니라 `<x-focus>`에서 발생한 것처럼 보일 것입니다. 
-마찬가지로 `document.activeElement`는 `<x-focus>`가 될 것입니다. `mode:'open'`으로 섀도우 루트를
-생성한 경우([폐쇄형 모드](#closed) 참조), 포커스를 받은 내부 노드에
-액세스할 수도 있습니다.
+The `focus` event will look like it came from `<x-focus>`, not the `<input>`. Similarly, `document.activeElement` will be `<x-focus>`. If the shadow root was created with `mode:'open'` (see [closed mode](#closed)), you'll also be able access the internal node that gained focus:
 
     document.activeElement.shadowRoot.activeElement // only works with open mode.
+    
 
-여러 가지 레벨의 Shadow DOM이 사용되는 경우(한 사용자설정 요소가 다른 사용자설정 요소 내에 있다고 가정)
-, 다음과 같이 섀도우 루트를 재귀적으로 분석하여
-`activeElement`를 찾아야 합니다.
-
+If there are multiple levels of shadow DOM at play (say a custom element within another custom element), you need to recursively drill into the shadow roots to find the `activeElement`:
 
     function deepActiveElement() {
       let a = document.activeElement;
@@ -889,16 +662,12 @@ Shadow DOM 내부에서 발생하는 이벤트는 호스팅 요소에서 발생�
     }
     
 
-포커스를 위한 또 다른 옵션은 `delegatesFocus: true` 옵션으로, 섀도우 트리 내에 있는 요소의 포커스 동작을
-확장해 줍니다.
+Another option for focus is the `delegatesFocus: true` option, which expands the focus behavior of element's within a shadow tree:
 
-- Shadow DOM 내부의 노드를 클릭했는데 그 노드가 포커스 불가능한 영역인 경우
-  포커스 가능한 첫 번째 영역이 포커스됩니다.
-- Shadow DOM 내부의 노드가 포커스를 받으면 `:focus`가 포커스를 받는 요소 외에 호스트에도
-  적용됩니다.
+- If you click a node inside shadow DOM and the node is not a focusable area, the first focusable area becomes focused.
+- When a node inside shadow DOM gains focus, `:focus` applies to the host in addition to the focused element.
 
-**예시** - `delegatesFocus: true`가 포커스 동작을 변경하는 방식
-
+**Example** - how `delegatesFocus: true` changes focus behavior
 
     <style>
       :focus {
@@ -938,51 +707,44 @@ Shadow DOM 내부에서 발생하는 이벤트는 호스팅 요소에서 발생�
     </script>
     
 
-**결과**
+**Result**
 
-<img src="imgs/delegateFocusTrue.png" title="delegatesFocus: true behavior">
+<img src="imgs/delegateFocusTrue.png" title="delegatesFocus: true behavior" />
 
-위 내용은 `<x-focus>`가 포커스를 받거나(사용자가 클릭하거나 탭하거나
-`focus()`할 때 등), 'Clickable Shadow DOM text'를 클릭하거나, 내부
-`<input>`이 포커스를 받을 때(`autofocus` 포함)의 결과입니다.
+Above is the result when `<x-focus>` is focused (user click, tabbed into, `focus()`, etc.), "Clickable Shadow DOM text" is clicked, or the internal `<input>` is focused (including `autofocus`).
 
-`delegatesFocus: false`를 설정하면 다음과 같은 결과를 대신에 얻게 됩니다.
+If you were to set `delegatesFocus: false`, here's what you would see instead:
 
 <figure>
   <img src="imgs/delegateFocusFalse.png">
   <figcaption>
-    <code>delegatesFocus: false</code> 및 내부  <code>&lt;input></code>이 포커스를 받습니다.
+    <code>delegatesFocus: false</code> and the internal <code>&lt;input></code> is focused.
   </figcaption>
 </figure>
 
 <figure>
   <img src="imgs/delegateFocusFalseFocus.png">
   <figcaption>
-    <code>delegatesFocus: false</code> 및 <code>&lt;x-focus></code>가
-    포커스를 받습니다(예:  <code>tabindex="0"</code>이 있을 경우).
+    <code>delegatesFocus: false</code> and <code>&lt;x-focus></code>
+    gains focus (e.g. it has <code>tabindex="0"</code>).
   </figcaption>
 </figure>
 
 <figure>
   <img src="imgs/delegateFocusNothing.png">
   <figcaption>
-    <code>delegatesFocus: false</code> 및 'Clickable Shadow DOM text'가
-    클릭됩니다(또는 요소의 Shadow DOM 내의 다른 빈 영역이 클릭됨).
+    <code>delegatesFocus: false</code> and "Clickable Shadow DOM text" is
+    clicked (or other empty area within the element's shadow DOM is clicked).
   </figcaption>
 </figure>
 
-## 팁 및 도움말 {: #tricks}
+## Tips & Tricks {: #tricks}
 
-지난 수년 동안 웹 구성 요소를 작성하는 방법을 조금 배웠습니다. 제가
-소개하는 팁이 구성 요소를 작성하고 Shadow DOM을 디버그하는 데
-유용할 것입니다.
+Over the years I've learned a thing or two about authoring web components. I think you'll find some of these tips useful for authoring components and debugging shadow DOM.
 
-### CSS 포함 사용 {: #containment}
+### Use CSS containment {: #containment}
 
-일반적으로 웹 구성 요소의 레이아웃/스타일/그리기는 완전히 자체 포함됩니다. 완벽하게
-우선 적용하려면 `:host`에 [CSS 포함](/web/updates/2016/06/css-containment)을
-사용합니다.
-
+Typically, a web component's layout/style/paint is fairly self-contained. Use [CSS containment](/web/updates/2016/06/css-containment) in `:host` for a perf win:
 
     <style>
     :host {
@@ -992,13 +754,9 @@ Shadow DOM 내부에서 발생하는 이벤트는 호스팅 요소에서 발생�
     </style>
     
 
-### 상속 가능한 스타일 재설정 {: #reset}
+### Resetting inheritable styles {: #reset}
 
-상속 가능한 스타일(`background`, `color`, `font`, `line-height` 등)은 Shadow DOM에서
-계속 상속됩니다. 즉, 상속 가능한 스타일은 기본적으로 Shadow DOM
-경계를 관통합니다. 새 슬레이트를 사용하여 시작하려면 섀도우 경계를 교차할 때 `all: initial;`을
-사용하여 상속 가능한 스타일을 초기 값으로 재설정합니다.
-
+Inheritable styles (`background`, `color`, `font`, `line-height`, etc.) continue to inherit in shadow DOM. That is, they pierce the shadow DOM boundary by default. If you want to start with a fresh slate, use `all: initial;` to reset inheritable styles to their initial value when they cross the shadow boundary.
 
     <style>
       div {
@@ -1031,8 +789,10 @@ Shadow DOM 내부에서 발생하는 이벤트는 호스팅 요소에서 발생�
       <slot></slot>
     `;
     </script>
+    
 
 {% framebox height="195px" %}
+
 <div class="demoarea">
   <style>
     #initialdemo {
@@ -1075,14 +835,15 @@ if (supportsShadowDOM()) {
     self.frameElement.style.display = 'none';
   }
 }
-</script>
+ </script>
+
+ 
+
 {% endframebox %}
 
-### 페이지에서 사용한 모든 사용자설정 요소 찾기 {: #findall}
+### Finding all the custom elements used by a page {: #findall}
 
-페이지에서 사용한 사용자설정 요소를 찾는 것은 유용할 수 있습니다. 그렇게 하려면 페이지에
-사용된 모든 요소의 Shadow DOM을 재귀적으로 트래버스해야 합니다.
-
+Sometimes it's useful to find custom elements used on the page. To do so, you need to recursively traverse the shadow DOM of all elements used on the page.
 
     const allCustomElements = [];
     
@@ -1107,76 +868,38 @@ if (supportsShadowDOM()) {
     findAllCustomElements(document.querySelectorAll('*'));
     
 
-{% comment %}
-Some browsers also support using shadow DOM v0's `/deep/` combinator in `querySelectorAll()`:
+### Creating elements from a &lt;template&gt; {: #fromtemplate}
 
+Instead of populating a shadow root using `.innerHTML`, we can use a declarative `<template>`. Templates are an ideal placeholder for declaring the structure of a web component.
 
-    const allCustomElements = Array.from(document.querySelectorAll('html /deep/ *')).filter(el => {
-      const isAttr = el.getAttribute('is');
-      return el.localName.includes('-') || isAttr && isAttr.includes('-');
-    });
-    
+See the example in ["Custom elements: building reusable web components"](/web/fundamentals/web-components/customelements).
 
-For now, `/deep/` [continues to work in `querySelectorAll()` calls](https://bugs.chromium.org/p/chromium/issues/detail?id=633007).
-{% endcomment %}
+## History & browser support {: #historysupport}
 
-### &lt;template>에서 요소 만들기 {: #fromtemplate}
+If you've been following web components for the last couple of years, you'll know that Chrome 35+/Opera have been shipping an older version of shadow DOM for some time. Blink will continue to support both versions in parallel for some time. The v0 spec provided a different method to create a shadow root (`element.createShadowRoot` instead of v1's `element.attachShadow`). Calling the older method continues to create a shadow root with v0 semantics, so existing v0 code won't break.
 
-`.innerHTML`을 사용하여 섀도우 루트를 채우는 대신에 선언적
-`<template>`을 사용할 수 있습니다. 템플릿은 웹 구성 요소의 구조를 선언하는
-이상적인 자리표시자입니다.
+If you happen to be interested in the old v0 spec, check out the html5rocks articles: [1](https://www.html5rocks.com/en/tutorials/webcomponents/shadowdom/), [2](https://www.html5rocks.com/en/tutorials/webcomponents/shadowdom-201/), [3](https://www.html5rocks.com/en/tutorials/webcomponents/shadowdom-301/). There's also a great comparison of the [differences between shadow DOM v0 and v1](http://hayato.io/2016/shadowdomv1/).
 
-이에 대한 예는 
-['사용자설정 요소: 재사용 가능 웹 구성 요소 빌드하기'](/web/fundamentals/getting-started/primers/customelements)를 참조하세요.
+### Browser support {: #support}
 
-## 기록 및 브라우저 지원 {: #historysupport}
+Shadow DOM v1 is shipped in Chrome 53 ([status](https://www.chromestatus.com/features/4667415417847808)), Opera 40, Safari 10, and Firefox 63. Edge [has started development](https://developer.microsoft.com/en-us/microsoft-edge/platform/status/shadowdom/).
 
-지난 몇 년 간 웹 구성 요소에 관심을 가졌다면
-Chrome 35+/Opera가 한동안 Shadow DOM의 구식 버전을 제공해오고 있다는 것을 알고 있을
-것입니다. Blink는 한동안 두 버전을 모두 계속
-지원할 것입니다. V0 사양은 섀도우 루트를 만드는 다른
-버전(v1의 `element.attachShadow` 대신`element.createShadowRoot`)을 제공했습니다. 구식 메서드 호출은
-v0 의미 체계를 사용하여 섀도우 루트를 계속 만들므로 기존 v0 코드는
-중단되지 않습니다.
-
-구식 v0 사양에 관심이 있는 경우
-html5rocks 관련
-글([1](https://www.html5rocks.com/en/tutorials/webcomponents/shadowdom/),
-[2](https://www.html5rocks.com/en/tutorials/webcomponents/shadowdom-201/),
-[3](https://www.html5rocks.com/en/tutorials/webcomponents/shadowdom-301/))을 참조하세요.
-또한
-[Shadow DOM v0과 v1 사이의 차이점][differences]도 참조하세요.
-
-### 브라우저 지원 {: #support}
-
-Chrome 53([상태](https://www.chromestatus.com/features/4667415417847808)), 
-Opera 40 및 Safari 10은 Shadow DOM v1을 제공합니다. Edge는
-[우선적으로](https://developer.microsoft.com/en-us/microsoft-edge/platform/status/shadowdom/) 고려 중입니다.
-Mozilla는 구현 관련 [해결되지 않은 버그](https://bugzilla.mozilla.org/show_bug.cgi?id=811542)
-문제가 있습니다.
-
-Shadow DOM의 기능을 검색하려면 `attachShadow`의 존재를 확인합니다.
-
+To feature detect shadow DOM, check for the existence of `attachShadow`:
 
     const supportsShadowDOMV1 = !!HTMLElement.prototype.attachShadow;
     
 
-    
-#### 폴리필(Polyfill) {: #polyfill}
+#### Polyfill {: #polyfill}
 
-브라우저 지원이 광범위하게 제공될 때까지 
-[shadydom](https://github.com/webcomponents/shadydom) 및 
-[shadycss](https://github.com/webcomponents/shadycss) 폴리필이 v1 
-기능을 제공합니다. Shady DOM은 Shadow DOM의 DOM 범위 지정을 가장하고 shadycss는
-기본 API가 제공하는 스타일 범위 지정과 CSS 사용자설정 속성을 폴리필합니다.
+Until browser support is widely available, the [shadydom](https://github.com/webcomponents/shadydom) and [shadycss](https://github.com/webcomponents/shadycss) polyfills give you v1 feature. Shady DOM mimics the DOM scoping of Shadow DOM and shadycss polyfills CSS custom properties and the style scoping the native API provides.
 
-다음과 같이 폴리필을 설치하세요.
+Install the polyfills:
 
     bower install --save webcomponents/shadydom
     bower install --save webcomponents/shadycss
+    
 
-폴리필 사용 방법은 다음과 같습니다.
-
+Use the polyfills:
 
     function loadScript(src) {
      return new Promise(function(resolve, reject) {
@@ -1188,7 +911,7 @@ Shadow DOM의 기능을 검색하려면 `attachShadow`의 존재를 확인합니
        document.head.appendChild(script);
      });
     }
-
+    
     // Lazy load the polyfill if necessary.
     if (!supportsShadowDOMV1) {
       loadScript('/bower_components/shadydom/shadydom.min.js')
@@ -1199,62 +922,43 @@ Shadow DOM의 기능을 검색하려면 `attachShadow`의 존재를 확인합니
     } else {
       // Native shadow dom v1 support. Go to go!
     }
+    
 
+See the [https://github.com/webcomponents/shadycss#usage](https://github.com/webcomponents/shadycss) for instructions on how to shim/scope your styles.
 
-스타일의 심/범위 지정 방법은 [https://github.com/webcomponents/shadycss#usage](https://github.com/webcomponents/shadycss)를
-참조하세요.
+## Conclusion
 
+For the first time ever, we have an API primitive that does proper CSS scoping, DOM scoping, and has true composition. Combined with other web component APIs like custom elements, shadow DOM provides a way to author truly encapsulated components without hacks or using older baggage like `<iframe>`s.
 
-## 결론
+Don't get me wrong. Shadow DOM is certainly a complex beast! But it's a beast worth learning. Spend some time with it. Learn it and ask questions!
 
-적당한 CSS 범위 지정, DOM 범위 지정을 수행하고 진정한 컴퍼지션을 가진
-API 원본을 이번에 처음으로 보유하게 되었습니다. Shadow DOM은 사용자설정 요소와 같은
-다른 웹 구성 요소 API와 결합하여 해킹하지 않고 또는 `<iframe>`과 같은 구식 배지를 사용하지 않고
-적절하게 캡슐화된 구성 요소를 작성하는 방법을 제공합니다.
+#### Further reading
 
-오해하지 마세요. Shadow DOM은 확실히 복잡한 짐승입니다! 그러나 배울 가치가
-있는 짐승입니다. 시간을 투자하여 이에 대해 알아보고 궁금한 점은 문의하세요.
+- [Differences between Shadow DOM v1 and v0](http://hayato.io/2016/shadowdomv1/)
+- ["Introducing Slot-Based Shadow DOM API"](https://webkit.org/blog/4096/introducing-shadow-dom-api/) from the WebKit Blog.
+- [Web Components and the future of Modular CSS](https://philipwalton.github.io/talks/2015-10-26/) by [Philip Walton](https://twitter.com/@philwalton)
+- ["Custom elements: building reusable web components"](/web/fundamentals/web-components/customelements) from Google's WebFundamentals.
+- [Shadow DOM v1 spec](https://dom.spec.whatwg.org/#shadow-trees)
+- [Custom elements v1 spec](https://html.spec.whatwg.org/multipage/scripting.html#custom-elements)
 
-#### 추가 자료
+## FAQ
 
-- [Shadow DOM v1과 v0 사이의 차이점][differences]
-- ['Introducing Slot-Based Shadow DOM API'](https://webkit.org/blog/4096/introducing-shadow-dom-api/)
-  (WebKit Blog의 게시글)
-- [Web Components and the future of Modular CSS](https://philipwalton.github.io/talks/2015-10-26/)
-(저자: [Philip Walton](https://twitter.com/@philwalton))
-- ['사용자설정 요소: 재사용 가능 웹 구성 요소 빌드하기'](/web/fundamentals/getting-started/primers/customelements)
- (출처: Google의 웹 기본 개념)
-- [Shadow DOM v1 사양][sd_spec_whatwg]
-- [사용자설정 요소 v1 사양][ce_spec]
+**Can I use Shadow DOM v1 today?**
 
-## FAQ(질문과 대답)
+With a polyfill, yes. See [Browser support](#support).
 
-**현재 Shadow DOM v1을 사용할 수 있나요?**
+**What security features does shadow DOM provide?**
 
-폴리필을 사용하는 경우 가능합니다. [브라우저 지원](#support)을 참조하세요.
+Shadow DOM is not a security feature. It's a lightweight tool for scoping CSS and hiding away DOM trees in component. If you want a true security boundary, use an `<iframe>`.
 
-**Shadow DOM은 어떤 보안 기능을 제공하나요?**
+**Does a web component have to use shadow DOM?**
 
-Shadow DOM은 보안 기능이 아닙니다. 구성 요소에서 CSS
-범위 지정 및 DOM 트리를 숨기는 가벼운 도구입니다. 진짜 보안 경계를 원하는 경우
-`<iframe>`을 사용하세요.
+Nope! You don't have to create web components that use shadow DOM. However, authoring [custom elements that use Shadow DOM](#elements) means you can take advantage of features like CSS scoping, DOM encapsulation, and composition.
 
-**웹 구성 요소는 Shadow DOM을 사용해야 하나요?**
+**What's the difference between open and closed shadow roots?**
 
-아니요. Shadow DOM을 사용하는 웹 구성 요소를 작성할 필요가 없습니다. 그러나
-[Shadow DOM을 사용하는 사용자설정 요소](#elements)를 작성하면 CSS 범위 지정,
-DOM 캡슐화 및 컴퍼지션과 같은 기능을 활용할 수 있습니다.
+See [Closed shadow roots](#closed).
 
-**개방형 섀도우 루트와 폐쇄형 섀도우 루트의 차이점은 무엇인가요?**
+## Feedback {: #feedback }
 
-[폐쇄형 섀도우 루트](#closed)를 참조하세요.
-
-[ce_spec]: https://html.spec.whatwg.org/multipage/scripting.html#custom-elements
-[ce_article]: (/web/fundamentals/getting-started/primers/customelements)
-[sd_spec]: http://w3c.github.io/webcomponents/spec/shadow/
-[sd_spec_whatwg]: https://dom.spec.whatwg.org/#shadow-trees
-[differences]: http://hayato.io/2016/shadowdomv1/
-[css_props]: https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_variables
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
