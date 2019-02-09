@@ -1,286 +1,202 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: 최초 HTML이 안전한 HTTPS 연결을 통해 로드될 때 혼합이 발생하지만 다른 리소스는 안전하지 않은 HTTP 연결을 통해 로드됩니다.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Mixed occurs when initial HTML is loaded over a secure HTTPS connection, but other resources are loaded over an insecure HTTP connection.
 
-{# wf_updated_on: 2018-02-12 #}
-{# wf_published_on: 2015-09-25 #}
+{# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2015-09-25 #} {# wf_blink_components: Blink>SecurityFeature #}
 
-# 혼합 콘텐츠란? {: .page-title }
+# What Is Mixed Content? {: .page-title }
 
 {% include "web/_shared/contributors/johyphenel.html" %}
 
-최초 HTML이 안전한 HTTPS 연결을 통해 로드될 때 **혼합 콘텐츠**가 발생하지만
-다른 리소스(예: 이미지, 동영상, 스타일시트, 스크립트)는 안전하지
-않은 HTTP 연결을 통해 로드됩니다. 이는
-HTTP 콘텐츠와 HTTPS 콘텐츠가 함께 로드되어 동일한 페이지를 표시하므로 혼합 콘텐츠라고
-하는데, 최초의 요청은 HTTPS 연결을 통해 보안 처리되었습니다. 최신 브라우저는
-이 유형의 콘텐츠에 대한 경고를 표시하여 해당 페이지에 보안되지 않은 리소스가 포함되어
-있음을 사용자에게 알려 줍니다.
+**Mixed content** occurs when initial HTML is loaded over a secure HTTPS connection, but other resources (such as images, videos, stylesheets, scripts) are loaded over an insecure HTTP connection. This is called mixed content because both HTTP and HTTPS content are being loaded to display the same page, and the initial request was secure over HTTPS. Modern browsers display warnings about this type of content to indicate to the user that this page contains insecure resources.
 
 ### TL;DR {: .hide-from-toc }
 
-* HTTPS는 사이트와 사용자를 공격으로부터 보호하는 중요한 역할을 합니다.
-* 혼합 콘텐츠는 HTTPS 사이트의 보안 및 사용자 환경을 저하시킵니다.
+* HTTPS is important to protect both your site and your users from attack.
+* Mixed content degrades the security and user experience of your HTTPS site.
 
-## 리소스 요청 및 웹 브라우저
+## Resource requests and web browsers
 
-브라우저가 웹사이트 페이지를 _방문_할 때 HTML을 요청합니다. 그러면 웹 서버가 HTML 콘텐츠를 반환하고, 브라우저는 해당 콘텐츠를 파싱하여 사용자에게 표시합니다. 일반적으로 단일 HTML 파일로 전체 페이지를 표시하는 데 충분하지 않으므로 HTML 파일은 브라우저가 요청해야 하는 다른 리소스에 대한 참조를 포함합니다. 이와 같은 하위 리소스의 예로는 이미지, 비디오, 추가 HTML, CSS 또는 자바스크립트 등이 있으며 각 항목은 개별 요청으로 가져옵니다.
+When a browser *visits* a website page, it is requesting for an HTML resource. The web server then returns the HTML content, which the browser parses and displays to users. Often a single HTML file isn't enough to display a complete page, so the HTML file includes references to other resources that the browser needs to request. These subresources can be things like images, videos, extra HTML, CSS, or JavaScript, which are each fetched using separate requests.
 
-## HTTPS의 이점
+## HTTPS benefits
 
-브라우저가 HTTPS(HTTP Secure)를 통해 리소스를 요청할 때
-암호화된 연결을 사용하여 웹 서버와 통신합니다.
+When a browser requests resources over HTTPS&mdash;which stands for HTTP Secure&mdash;it uses an encrypted connection to communicate with the web server.
 
-HTTPS를 사용하면 다음과 같은 세 가지 주요 이점이 있습니다.
+Using HTTPS has three main benefits:
 
-* 인증
-* 데이터 무결성
-* 보안
+* Authentication
+* Data integrity
+* Secrecy
 
-### 인증
+### Authentication
 
-_통신 중인 웹사이트가 요청한 웹사이트가 맞습니까?_
+*Is the website I'm talking to who they claim to be?*
 
-HTTPS는 올바른 웹사이트를 열었고 악성 사이트로 리디렉션되지
-않았음을 브라우저에게 확인하게 합니다. 은행 웹사이트를 탐색할 때
-브라우저가 웹사이트를 _인증_하므로 공격자가 은행을 가장하여
-로그인 인증 정보를 훔치지 못하도록 예방합니다.
+HTTPS lets the browser check that it has opened the correct website and hasn't been redirected to a malicious site. When navigating to your bank's website, your browser *authenticates* the website, thus preventing an attacker from impersonating your bank and stealing your login credentials.
 
-### 데이터 무결성
+### Data integrity
 
-_누군가 내가 보내거나 받고 있는 콘텐츠를 변조했습니까?_
+*Has anyone tampered with the content that I'm sending or receiving?*
 
-HTTPS는 공격자가 브라우저 수신 데이터를 변경했는지
-여부를 브라우저에게 검색하게 합니다. 은행 웹사이트를 사용하여 송금할 때 요청을 전송하는 동안
-공격자가 수취인 계좌번호를 변경하는 것을
-방지합니다.
+HTTPS lets the browser detect if an attacker has changed any data the browser receives. When transferring money using your bank's website, this prevents an attacker from changing the destination account number while your request is in transit.
 
-### 보안
+### Secrecy
 
-_내가 전송 또는 수신 중인 콘텐츠를 누군가가 볼 수 있습니까?_
+*Can anyone see the content I am sending or receiving?*
 
-HTTPS는 공격자가 브라우저의 요청을 도청하거나 방문한 웹사이트를 추적하거나
-전송 또는 수신한 정보를 훔치지 못하게 합니다.
+HTTPS prevents an attacker from eavesdropping on the browser's requests, tracking the websites visited, or stealing information sent or received.
 
-### HTTPS, TLS 및 SSL
+### HTTPS, TLS, and SSL
 
-HTTPS는 HTTP Secure(Hyper(t)ext Transfer Protocol Secure)의 약자입니다. 여기서
-**secure(보안)** 부분은 브라우저가 전송 및 수신한
-요청에 추가한 암호화와 관련 있습니다. 현재 대부분의 브라우저는 TLS 프로토콜을 사용하여
-암호화를 제공하는데, **TLS**는 SSL이라고도 합니다.
+HTTPS stands for HTTP Secure, Hyper(t)ext Transfer Protocol Secure. The **secure** portion here comes from the encryption added to the requests sent and received by the browser. Currently, most browsers use the TLS protocol to provide encryption; **TLS** is sometimes referred to as SSL.
 
-HTTPS, TLS 및 SSL에 대한 자세한 정보는 이 글에서는 다루지 않습니다.
-자세한 정보는 다음을 참조하세요.
+Details of HTTPS, TLS, and SSL are beyond the scope of this article, but if you want to learn more, the following resources are a good place to start:
 
-* [Wikipedia HTTPS](https://en.wikipedia.org/wiki/HTTPS)
-* [Wikipedia TLS](https://en.wikipedia.org/wiki/Transport_Layer_Security)
-* [Khan Academy Cryptography course](https://www.khanacademy.org/computing/computer-science/cryptography)
-* [High Performance Browser Networking](https://hpbn.co/) 의 [TLS 장](https://hpbn.co/transport-layer-security-tls/) (저자: Ilya Grigorik)
+* [Wikipedia HTTPS](https://en.wikipedia.org/wiki/HTTPS){: .external}
+* [Wikipedia TLS](https://en.wikipedia.org/wiki/Transport_Layer_Security){: .external}
+* [Khan Academy Cryptography course](https://www.khanacademy.org/computing/computer-science/cryptography){: .external}
+* [TLS chapter](https://hpbn.co/transport-layer-security-tls/){: .external} in [High Performance Browser Networking](https://hpbn.co/){: .external} by Ilya Grigorik
 
-## 혼합 콘텐츠로 인한 HTTPS 약화
+## Mixed content weakens HTTPS
 
-보안되지 않은 HTTP 프로토콜을 사용하여 하위 리소스를 요청하는
-경우 해당 요청은 공격자가 네트워크 연결을 도청하고 양자 간 통신을 보거나 수정하는 수단인
-**중간자(man-in-the-middle) 공격**에 취약하므로
-전체 페이지의 보안이 약화됩니다. 공격자는 해당 리소스를 사용하여
-손상된 자원뿐만 아니라 페이지를 완전히 제어할
-수 있습니다.
+Requesting subresources using the insecure HTTP protocol weakens the security of the entire page, as these requests are vulnerable to **man-in-the-middle attacks**, where an attacker eavesdrops on a network connection and views or modifies the communication between two parties. Using these resources, an attacker can often take complete control over the page, not just the compromised resource.
 
-대부분의 브라우저가 혼합 콘텐츠 경고를 사용자에게 보고하지만 그때는
-너무 늦습니다. 보안되지 않은 요청이 이미 수행되었고
-해당 페이지의 보안이 손상되었기 때문입니다. 불행하게도 이 시나리오는 웹에서
-흔히 발생하는데, 대부분의 사이트의 기능을 제한하지 않고는
-모든 혼합 요청을 차단할 수 없기 때문입니다.
+Although many browsers report mixed content warnings to the user, by the time this happens, it is too late: the insecure requests have already been performed and the security of the page is compromised. This scenario is, unfortunately, quite common on the web, which is why browsers can't just block all mixed requests without restricting the functionality of many sites.
 
 <figure>
   <img src="imgs/image-gallery-warning.png" alt="Mixed Content: The page was loaded over HTTPS, but requested an insecure image. This content should also be served over HTTPS.">
   <figcaption>
-    애플리케이션에서 혼합 콘텐츠 문제는 개발자가 수정해야 합니다.
+    It's up to you, the developer, to fix mixed content issues in your application.
   </figcaption>
 </figure>
 
-### 간단한 예시
+### A simple example
 
-HTTPS 페이지에서 보안되지 않은 스크립트를 로드합니다.
+Loading an insecure script from an HTTPS page.
 
-**HTTPS**를 통해 보는 이 샘플 페이지([**https**://googlesamples.github.io/web-fundamentals/.../simple-example.html](https://googlesamples.github.io/web-fundamentals/fundamentals/security/prevent-mixed-content/simple-example.html){: .external})에는 혼합 콘텐츠를 로드하려고 시도하는 **HTTP** 스크립트 태그가 포함되어 있습니다.
+Viewing this sample page over **HTTPS**&mdash;[**https**://googlesamples.github.io/web-fundamentals/.../simple-example.html](https://googlesamples.github.io/web-fundamentals/fundamentals/security/prevent-mixed-content/simple-example.html){: .external}&mdash;includes an **HTTP** script tag which attempts to load mixed content.
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/security/prevent-mixed-content/_code/simple-example.html" adjust_indentation="auto" %}
 </pre>
 
-[체험해 보기](https://googlesamples.github.io/web-fundamentals/fundamentals/security/prevent-mixed-content/simple-example.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/security/prevent-mixed-content/simple-example.html){: target="_blank" .external }
 
-이 예시에서 **HTTP** URL을 사용하는 스크립트 `simple-example.js`가 로드됩니다. 이는 가장 간단한 혼합 콘텐츠 사례입니다. 브라우저가 `simple-example.js` 파일을 요청하면 공격자가 반환된 콘텐츠에 코드를 삽입하고
-전체 페이지를 제어할 수 있습니다.
+In this example, the script `simple-example.js` is loaded with an **HTTP** URL. This is the simplest case of mixed content. When the browser requests the `simple-example.js` file, an attacker can inject code into the returned content and take control of the entire page.
 
-다행히 대부분의 최신 브라우저는 이와 같은 유형의 위험한 콘텐츠를
-기본적으로 차단합니다. [혼합 콘텐츠가 있는 브라우저 동작](#browser-behavior-with-mixed-content){: .external}을 참조하세요.
+Thankfully, most modern browsers block this type of dangerous content by default. See [browser behavior with mixed content](#browser-behavior-with-mixed-content){: .external}.
 
 <figure>
   <img src="imgs/simple-mixed-content-error.png" alt="Mixed Content: The page was loaded over HTTPS, but requested an insecure script. This request has been blocked; the content must be served over HTTPS.">
-  <figcaption>Chrome이 비보안 스크립트를 차단합니다.</figcaption>
+  <figcaption>Chrome blocks the insecure script.</figcaption>
 </figure>
 
-### XMLHttpRequest 예시
+### An XMLHttpRequest example
 
-XMLHttpRequest를 통해 비보안 데이터를 로드합니다.
+Loading insecure data with XMLHttpRequest.
 
-**HTTPS**를 통해 보는 이 샘플 페이지[**https**://googlesamples.github.io/web-fundamentals/.../xmlhttprequest-example.html](https://googlesamples.github.io/web-fundamentals/fundamentals/security/prevent-mixed-content/xmlhttprequest-example.html){: .external}에는 혼합 콘텐츠 `JSON` 데이터를 가져오는 **HTTP**를 통한 `XMLHttpRequest`가 포함되어 있습니다.
+Viewing this sample page over **HTTPS**&mdash;[**https**://googlesamples.github.io/web-fundamentals/.../xmlhttprequest-example.html](https://googlesamples.github.io/web-fundamentals/fundamentals/security/prevent-mixed-content/xmlhttprequest-example.html){: .external}&mdash;includes an `XMLHttpRequest` over **HTTP** to fetch mixed content `JSON` data.
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/security/prevent-mixed-content/_code/xmlhttprequest-example.html" adjust_indentation="auto" %}
 </pre>
 
-[체험해 보기](https://googlesamples.github.io/web-fundamentals/fundamentals/security/prevent-mixed-content/xmlhttprequest-example.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/security/prevent-mixed-content/xmlhttprequest-example.html){: target="_blank" .external }
 
-여기서 **HTTP** URL은 자바스크립트에서 동적으로 구성되고 비보안 리소스를
-`XMLHttpRequest`가 로드하는 데 사용됩니다. 위의 간단한 예시처럼, 브라우저가
-`xmlhttprequest-data.js` 파일을 요청하면 공격자가 반환된
-콘텐츠에 코드를 삽입하고 전체 페이지를
-제어할 수 있습니다.
+Here the **HTTP** URL is constructed dynamically in JavaScript, and is eventually used by `XMLHttpRequest` to load an insecure resource. Like the simple example above, when the browser requests the `xmlhttprequest-data.js` file, an attacker can inject code into the returned content and take control of the entire page.
 
-대부분의 최신 브라우저는 이러한 위험한 요청을 차단합니다.
+Most modern browsers block these dangerous requests as well.
 
 <figure>
   <img src="imgs/xmlhttprequest-mixed-content-error.png" alt="Mixed Content: The page was loaded over HTTPS, but requested an insecure XMLHttpRequest endpoint. This request has been blocked; the content must be served over HTTPS.">
-  <figcaption>Chrome이 비보안 XMLHttpRequest를 차단합니다.</figcaption>
+  <figcaption>Chrome blocks the insecure XMLHttpRequest.</figcaption>
 </figure>
 
-### 이미지 갤러리 예시
+### An image gallery example
 
-JQuery 라이트박스를 사용하여 보안되지 않은 이미지를 로드합니다.
+Loading insecure images with jQuery lightbox.
 
-**HTTPS**를 통해 이 샘플 페이지([**https**://googlesamples.github.io/web-fundamentals/.../image-gallery-example.html](https://googlesamples.github.io/web-fundamentals/fundamentals/security/prevent-mixed-content/image-gallery-example.html){: .external})를 볼 때, 처음에는 어떤 혼합 콘텐츠 문제도 없지만 미리보기 이미지를 클릭하면 전체 크기 혼합 콘텐츠 이미지가 **HTTP**를 통해 로드됩니다.
+When viewing this sample page over **HTTPS**&mdash;[**https**://googlesamples.github.io/web-fundamentals/.../image-gallery-example.html](https://googlesamples.github.io/web-fundamentals/fundamentals/security/prevent-mixed-content/image-gallery-example.html){: .external}&mdash;initially it does not have any mixed content problems; however, when the thumbnail image is clicked, a full size mixed content image is loaded over **HTTP**.
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/security/prevent-mixed-content/_code/image-gallery-example.html" adjust_indentation="auto" %}
 </pre>
 
-[체험해 보기](https://googlesamples.github.io/web-fundamentals/fundamentals/security/prevent-mixed-content/image-gallery-example.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/security/prevent-mixed-content/image-gallery-example.html){: target="_blank" .external }
 
-이미지 갤러리는 `<img>` 태그 `src` 속성을 사용하여
-페이지에 미리 보기 이미지를 표시하며 앵커(`<a>`) 태그 `href` 속성을 사용하여
-갤러리 오버레이에 대한 전체 크기 이미지를 로드합니다. 일반적으로
-`<a>` 태그는 혼합 콘텐츠를 유발하지 않지만 이 경우에 jQuery 코드가
-새 페이지를 탐색하는 기본 링크 동작을 다시 정의하고
-해당 페이지에 **HTTP** 이미지를 대신 로드합니다.
+Image galleries often rely on the `<img>` tag `src` attribute to display thumbnail images on the page, the anchor (`<a>`) tag `href` attribute is then used to load the full sized image for the gallery overlay. Normally `<a>` tags do not cause mixed content, but in this case, the jQuery code overrides the default link behavior&mdash;to navigate to a new page&mdash;and instead loads the **HTTP** image on this page.
 
 <figure>
   <img src="imgs/image-gallery-warning.png" alt="Mixed Content: The page was loaded over HTTPS, but requested an insecure image. This content should also be served over HTTPS.">
 </figure>
 
-비보안 이미지는 사이트의 보안을 약화시키지만 다른 유형의 혼합 콘텐츠만큼
-위험하지는 않습니다. 최신 브라우저도 여전히 혼합 콘텐츠 이미지를
-로드하지만 사용자에게 경고를 표시합니다.
+Insecure images degrade the security of your site, but they are not as dangerous as other types of mixed content. Modern browsers still load mixed content images, but display warnings to the user as well.
 
-## 혼합 콘텐츠 유형 및 관련 보안 위협
+## Mixed content types & security threats associated
 
-혼합 콘텐츠는 능동적 혼합 콘텐츠와 수동적 혼합 콘텐츠 등 두 가지 유형이 있습니다.
+The two types of mixed content are: active and passive.
 
-**수동적 혼합 콘텐츠**란 페이지의 나머지와
-상호작용하지 않는 콘텐츠를 말하므로 해당 콘텐츠를
-가로채거나 변경하는 경우 가로채기 공격이 제한됩니다. 수동적 혼합 콘텐츠는
-페이지의 나머지와 상호작용할 수 없는 이미지, 비디오, 오디오 콘텐츠 등의
-리소스를 포함합니다.
+**Passive mixed content** refers to content that doesn't interact with the rest of the page, and thus a man-in-the-middle attack is restricted to what they can do if they intercept or change that content. Passive mixed content includes images, video, and audio content, along with other resources that cannot interact with the rest of the page.
 
-**능동적 혼합 콘텐츠**는 페이지 전체와 상호작용하며 공격자가
-해당 페이지에서 거의 모든 것을 할 수 있습니다. 능동적 혼합 콘텐츠는
-브라우저가 다운로드하고 실행할 수 있는 스크립트, 스타일시트, iframe, 플래시 리소스 및
-기타 코드를 포함합니다.
+**Active mixed content** interacts with the page as a whole and allows an attacker to do almost anything with the page. Active mixed content includes scripts, stylesheets, iframes, flash resources, and other code that the browser can download and execute.
 
-### 수동적 혼합 콘텐츠
+### Passive mixed content
 
-수동적 혼합 콘텐츠는 여전히 사이트와 사용자의 보안을 위협합니다.
-예를 들어, 공격자는 사이트에서 이미지에 대한 HTTP 요청을 가로채고 해당 이미지를
-교체하거나 대체할 수 있습니다. 공격자는 _저장_ 및 _삭제_
-버튼 이미지를 교체하여 사용자가 콘텐츠를 의도치 않게 삭제하거나
-제품 그림을 음란 콘텐츠 또는 포르노 콘텐츠로 대체하여 사이트를 더럽히거나
-제품 사진을 다른 사이트 또는 제품의 광고로 대체할 수 있습니다.
+Passive mixed content still poses a security threat to your site and your users. For example, an attacker can intercept HTTP requests for images on your site and swap or replace these images; the attacker can swap the *save* and *delete* button images, causing your users to delete content without intending to; replace your product diagrams with lewd or pornographic content, defacing your site; or replace your product pictures with ads for a different site or product.
 
-공격자가 사이트의 콘텐츠를 변경하지 않은 경우에도
-혼합 콘텐츠 요청을 사용하여 사용자를 추적하여
-중대한 개인 정보 보호 문제를 유발할 수 있습니다. 공격자는 브라우저가 로드하는 이미지 또는 기타 리소스에 따라 사용자가 방문하는 페이지와
-관심을 갖고 보는 제품을 구별할 수 있습니다.
+Even if the attacker doesn't alter the content of your site, you still have a large privacy issue where an attacker can track users using mixed content requests. The attacker can tell which pages a user visits and which products they view based on images or other resources that the browser loads.
 
-다음은 수동적 혼합 콘텐츠의 예시입니다.
+The following is an example of passive mixed content:
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/security/prevent-mixed-content/_code/passive-mixed-content.html" adjust_indentation="auto" %}
 </pre>
 
-[체험해 보기](https://googlesamples.github.io/web-fundamentals/fundamentals/security/prevent-mixed-content/passive-mixed-content.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/security/prevent-mixed-content/passive-mixed-content.html){: target="_blank" .external }
 
-대부분의 브라우저는 여전히 이 유형의 혼합 콘텐츠를 사용자에게 제공하지만
-사이트 및 사용자의 보안 및 개인 정보가 위험에 처하므로
-경고도 표시합니다.
+Most browsers still render this type of mixed content to the user, however a warning is also displayed as this poses a security and privacy risk to your site and users.
 
 <figure>
   <img src="imgs/passive-mixed-content-warnings.png" alt="Mixed Content: The page was loaded over HTTPS, but requested an insecure video. This content should also be served over HTTPS.">
-  <figcaption>Chrome JavaScript 콘솔에서 발생한 혼합 콘텐츠 경고.</figcaption>
+  <figcaption>Mixed content warnings from the Chrome JavaScript console.</figcaption>
 </figure>
 
-### 능동적 혼합 콘텐츠
+### Active mixed content
 
-능동적 혼합 콘텐츠는 수동적 혼합 콘텐츠보다 보안을 더 위협합니다. 공격자는
-활성 콘텐츠를 가로채서 다시 작성하여 페이지 또는 심지어
-전체 웹사이트를 완전히 제어할 수 있습니다. 이로써 공격자는 완전히 다른 콘텐츠를 표시하거나
-사용자 암호 또는 기타 로그인 인증 정보를 훔치거나
-사용자 세션 쿠키를 훔치거나 사용자를 다른 사이트로
-완전히 리디렉션하는 등 페이지에 대한 모든 것을 변경할 수 있습니다.
+Active mixed content poses a greater threat than passive. An attacker can intercept and rewrite active content, thereby taking full control of your page or even your entire website. This allows the attacker to change anything about the page, including displaying entirely different content, stealing user passwords or other login credentials, stealing user session cookies, or redirecting the user to a different site entirely.
 
-이 위협의 심각성 때문에 대부분의 브라우저는 기본적으로 이런 유형의 콘텐츠를
-차단하여 사용자를 보호하지만 브라우저 공급업체 및
-버전에 따라 기능이 다릅니다.
+Due to the severity of this threat, many browsers block this type of content by default to protect users, but functionality varies between browser vendors and versions.
 
-다음은 능동적 혼합 콘텐츠의 예시입니다.
+The following contains examples of active mixed content:
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/security/prevent-mixed-content/_code/active-mixed-content.html" adjust_indentation="auto" %}
 </pre>
 
-[체험해 보기](https://googlesamples.github.io/web-fundamentals/fundamentals/security/prevent-mixed-content/active-mixed-content.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/security/prevent-mixed-content/active-mixed-content.html){: target="_blank" .external }
 
 <figure>
   <img src="imgs/active-mixed-content-errors.png" alt="Mixed Content: The page was loaded over HTTPS, but requested an insecure resource. This request has been blocked; the content must be served over HTTPS.">
-  <figcaption>Chrome JavaScript 콘솔에서 발생한 혼합 콘텐츠 오류.</figcaption>
+  <figcaption>Mixed content errors from the Chrome JavaScript console.</figcaption>
 </figure>
 
-## 혼합 콘텐츠가 있는 브라우저 동작
+## Browser behavior with mixed content
 
-위에서 설명한 위협 때문에 브라우저가 모든
-혼합 콘텐츠를 차단하는 것이 바람직합니다. 그러나 그렇게 하면 수백만 사용자가 매일 사용하는
-수많은 웹사이트가 중단됩니다. 현재는 가장 위험한 유형의 혼합 콘텐츠는
-차단하고 비교적 덜 위험한 유형은
-요청되게 하는 식으로 타협할 수 있습니다.
+Due to the threats described above, it would be ideal for browsers to block all mixed content. However, this would break a large number of websites that millions of users rely on every day. The current compromise is to block the most dangerous types of mixed content and allow the less dangerous types to still be requested.
 
-최신 브라우저는 [**선택적으로 차단할 수 있는 콘텐츠**](https://w3c.github.io/webappsec/specs/mixedcontent/#category-optionally-blockable){: .external} 및 [**차단할 수 있는 콘텐츠**](https://w3c.github.io/webappsec/specs/mixedcontent/#category-blockable){: .external} 범주를 정의하는 [혼합 콘텐츠 사양](https://w3c.github.io/webappsec/specs/mixedcontent/){: .external }을 따릅니다.
+Modern browsers follow [mixed content specification](https://w3c.github.io/webappsec/specs/mixedcontent/){: .external }, which defines [**optionally blockable content**](https://w3c.github.io/webappsec/specs/mixedcontent/#category-optionally-blockable){: .external} and [**blockable content**](https://w3c.github.io/webappsec/specs/mixedcontent/#category-blockable){: .external} categories.
 
-해당 사양에서 리소스는 '웹의
-상당한 부분을 중단시키는 위험이 혼합 콘텐츠 사용을 허용하는
-위험보다 클 때' 선택적으로 차단할 수 있는 콘텐츠 자격을 충족합니다. 이는 위에서 설명한 [수동적 혼합
-콘텐츠](#passive-mixed-content) 범주의 하위 집합입니다. 이 글을 작성하는 시점에서 사전에 가져온 링크뿐만 아니라 이미지,
-비디오 및 오디오 리소스는 선택적으로 차단할 수 있는 콘텐츠에
-포함되는 유일한 리소스 유형입니다. 이 범주는
-시간이 지남에 따라 더 줄어들 것입니다.
+From the spec, a resource qualifies as optionally blockable content "when the risk of allowing its usage as mixed content is outweighed by the risk of breaking significant portions of the web"; this is a subset of the [passive mixed content](#passive-mixed-content) category described above. At the time of this writing, images, video, and audio resources, as well as prefetched links, are the only resource types included in optionally blockable content. This category is likely to get smaller as time goes on.
 
-**선택적으로 차단할 수** 없는 모든 콘텐츠는 **차단할 수 있는** 콘텐츠로 간주되며
-브라우저가 차단합니다.
+All content that is not **optionally blockable** is considered **blockable**, and is blocked by the browser.
 
-### 브라우저 버전
+### Browser versions
 
-웹사이트의 일부 방문객은 최신 브라우저를 사용하지 않는다는 점을
-기억해야 합니다. 여러 브라우저 공급업체의 각 버전은 혼합 콘텐츠에
-대해 달리 동작합니다. 최악의 일부 브라우저 및 버전은
-혼합 콘텐츠를 전혀 차단하지 않으므로 사용자에게 매우 불안합니다.
+It is important to remember that not every visitor to your website use the most up-to-date browsers. Different versions from different browser vendors each behave differently with mixed content. At worst, some browsers and versions don't block any mixed content at all, which is very unsafe for the user.
 
-각 브라우저의 정확한 동작은 끊임없이 변화하고 있으므로 여기서는
-구체적으로 다루지 않겠습니다. 특정 브라우저가 동작하는 방법에 대해서는
-공급업체가 제공한 정보를 직접 찾아 참조하세요.
+The exact behavior of each browser is constantly changing, so we won't include specifics here. If you're interested in how a specific browser behaves, look for information published by the vendors directly.
 
-참고: 웹사이트를 방문하는 사용자는 개발자가 그들을 보호할 것이라고 믿습니다. 구식 브라우저 사용자를 비롯한 <b>모든</b> 방문객을 보호하려면 혼합 콘텐츠 문제를 수정해야 합니다.
+Note: Your users are counting on you to protect them when they visit your website. It is important to fix your mixed content issues to protect **all** your visitors, including those on older browsers.
 
+## Feedback {: #feedback }
 
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
