@@ -1,66 +1,47 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Memodifikasi urutan DOM dengan tabindex
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Modifying the DOM order with tabindex
 
+{# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2016-10-04 #} {# wf_blink_components: N/A #}
 
-{# wf_updated_on: 2016-10-04 #}
-{# wf_published_on: 2016-10-04 #}
+# Using tabindex {: .page-title }
 
-# Menggunakan tabindex {: .page-title }
+{% include "web/_shared/contributors/megginkearney.html" %} {% include "web/_shared/contributors/dgash.html" %} {% include "web/_shared/contributors/robdodson.html" %}
 
-{% include "web/_shared/contributors/megginkearney.html" %}
-{% include "web/_shared/contributors/dgash.html" %}
-{% include "web/_shared/contributors/robdodson.html" %}
+The default tab order provided by the DOM position of native elements is convenient, but there are times when you'll want to modify the tab order, and physically moving elements in the HTML isn't always an optimal, or even a feasible, solution. For these cases you can use the `tabindex` HTML attribute to explicitly set an element's tab position.
 
+`tabindex` can be applied to any element &mdash; although it is not necessarily useful on every element &mdash; and takes a range of integer values. Using `tabindex`, you can specify an explicit order for focusable page elements, insert an otherwise unfocusable element into the tab order, and remove elements from the tab order. For example:
 
-
-Urutan tab default yang disediakan oleh posisi DOM elemen asli sudah
-praktis, namun ada kalanya Anda ingin memodifikasi urutan tab, dan
-secara fisik memindahkan elemen di HTML tidak selalu merupakan solusi
-yang optimal, apalagi layak. Untuk kasus-kasus ini, Anda bisa menggunakan atribut HTML `tabindex` untuk
-menyetel posisi tab elemen secara eksplisit.
-
-`tabindex` bisa diterapkan ke elemen apa saja &mdash; walaupun tidak harus
-berguna pada setiap elemen &mdash; dan menggunakan serangkaian nilai integer. Dengan menggunakan
-`tabindex`, Anda bisa menetapkan urutan eksplisit untuk elemen laman yang bisa difokus,
-menyisipkan elemen yang tidak bisa difokus ke dalam urutan tab, dan membuang elemen
-dari urutan tab. Misalnya:
-
-`tabindex="0"`: Menyisipkan sebuah elemen ke dalam urutan tab alami. Elemen bisa
-difokus dengan menekan tombol `Tab`, dan elemen bisa difokus dengan memanggil
-metode `focus()` -nya
+`tabindex="0"`: Inserts an element into the natural tab order. The element can be focused by pressing the `Tab` key, and the element can be focused by calling its `focus()` method
 
     <custom-button tabindex="0">Press Tab to Focus Me!</custom-button>
+    
 
 {% framebox height="60px" %}
+
 <style>
   custom-button {
     margin: 10px;
   }
 </style>
-<custom-button tabindex="0">Press Tab to Focus Me!</custom-button>
-{% endframebox %}
 
-`tabindex="-1"`: Membuang elemen dari urutan tab alami, namun elemen
-tetap bisa difokus dengan memanggil metode `focus()` -nya
+<custom-button tabindex="0">Press Tab to Focus Me!</custom-button> {% endframebox %}
+
+`tabindex="-1"`: Removes an element from the natural tab order, but the element can still be focused by calling its `focus()` method
 
     <button id="foo" tabindex="-1">I'm not keyboard focusable</button>
     <button onclick="foo.focus();">Focus my sibling</button>
+    
 
 {% framebox height="80px" %}
 <button id="foo" tabindex="-1">I'm not keyboard focusable</button>
 <button onclick="foo.focus();">Focus my sibling</button>
 {% endframebox %}
 
-`tabindex="5"`: Semua tabindex yang lebih besar dari 0 akan melompatkan elemen ke depan
-urutan tab alami. Jika ada beberapa elemen dengan tabindex lebih besar
-dari 0, urutan tab akan mulai dari nilai terendah yang lebih besar dari nol dan
-terus ke atas. Menggunakan tabindex yang lebih besar dari 0 dianggap sebuah
-**anti-pola**.
+`tabindex="5"`: Any tabindex greater than 0 jumps the element to the front of the natural tab order. If there are multiple elements with a tabindex greater than 0, the tab order starts from the lowest value that is greater than zero and works its way up. Using a tabindex greater than 0 is considered an **anti-pattern**.
 
     <button>I should be first</button>
     <button>And I should be second</button>
     <button tabindex="5">But I jumped to the front!</button>
+    
 
 {% framebox height="80px" %}
 <button>I should be first</button>
@@ -68,42 +49,21 @@ terus ke atas. Menggunakan tabindex yang lebih besar dari 0 dianggap sebuah
 <button tabindex="5">But I jumped to the front!</button>
 {% endframebox %}
 
-Hal ini khususnya berlaku untuk elemen non-masukan seperti header, gambar, atau judul
-artikel. Penambahan `tabindex` ke elemen semacam itu adalah kontra-produktif. Jika
-memungkinkan, sebaiknya susun kode sumber Anda agar urutan DOM menyediakan
-urutan tab yang logis. Jika Anda menggunakan `tabindex`, batasi pada tombol kontrol
-interaktif khusus seperti tombol, tab, tarik-turun, dan bidang teks; yakni, elemen yang
-mungkin dikira pengguna untuk menyediakan masukan.
+This is particularly true of non-input elements like headers, images, or article titles. Adding `tabindex` to those kinds of elements is counter-productive. If possible, it's best to arrange your source code so the DOM sequence provides a logical tab order. If you do use `tabindex`, restrict it to custom interactive controls like buttons, tabs, dropdowns, and text fields; that is, elements the user might expect to provide input to.
 
-Jangan khawatir pengguna pembaca layar akan melewatkan materi penting karena
-tidak memiliki `tabindex`. Sekalipun materi sangat penting, seperti gambar,
-jika itu bukanlah hal yang akan berinteraksi dengan pengguna, maka tidak ada alasan
-membuatnya bisa difokus. Pengguna pembaca layar tetap bisa memahami materi gambar
-asalkan Anda menyediakan dukungan atribut `alt` yang sesuai, yang nanti akan kita bahas sebentar lagi.
+Don't worry about screen reader users missing important content because it doesn't have a `tabindex`. Even if the content is very important, like an image, if it's not something the user can interact with, there's no reason to make it focusable. Screen reader users can still understand the content of the image so long as you provide proper `alt` attribute support, which we'll cover shortly.
 
-## Mengelola fokus pada level laman
+## Managing focus at the page level
 
-Inilah skenario di mana `tabindex` tidak hanya berguna, melainkan diperlukan. Anda mungkin
-membangun laman tunggal yang sempurna dengan beragam bagian materi, yang tidak semuanya
-terlihat sekaligus. Di laman semacam ini, mengeklik tautan
-navigasi mungkin mengubah materi yang terlihat tanpa melakukan penyegaran laman.
+Here's a scenario where `tabindex` is not only useful, but necessary. You might be building a robust single page with different content sections, not all of which are simultaneously visible. In this kind of page, clicking a navigation link might change the visible content without doing a page refresh.
 
-Bila ini terjadi, Anda mungkin akan mengidentifikasi area materi yang dipilih, memberinya
-sebuah `tabindex` berupa -1 sehingga tidak muncul dalam urutan tab alami, dan
-memanggil metode `focus`-nya. Teknik ini, yang disebut *mengelola fokus*, akan membuat
-konteks yang dipersepsi pengguna tetap sinkron dengan materi visual situs.
+When this happens, you would probably identify the selected content area, give it a `tabindex` of -1 so that it doesn't appear in the natural tab order, and call its `focus` method. This technique, called *managing focus*, keeps the user's perceived context in sync with the site's visual content.
 
-## Mengelola fokus di komponen
+## Managing focus in components
 
-Mengelola fokus saat Anda mengubah sesuatu di laman adalah hal penting, namun
-kadang-kadang Anda perlu mengelola fokus pada level kontrol &mdash; misalnya, jika
-sedang membangun komponen khusus.
+Managing focus when you change something on the page is important, but sometimes you need to manage focus at the control level &mdash; for example, if you're building a custom component.
 
-Pertimbangkan elemen `select` asli. Elemen ini bisa menerima fokus dasar, bila
-ada, Anda bisa menggunakan tombol panah untuk mengekspos fungsionalitas tambahan (opsi yang
-bisa dipilih). Jika sedang membangun elemen `select` khusus, Anda tentu
-ingin mengekspos perilaku semacam ini sehingga pengguna yang terutama mengandalkan
-keyboard tetap bisa berinteraksi dengan kontrol Anda.
+Consider the native `select` element. It can receive basic focus but, once there, you can use the arrow keys to expose additional functionality (the selectable options). If you were building a custom `select` element, you would want to expose these same kinds of behaviors so that users who rely primarily on the keyboard could still interact with your control.
 
     <!-- Focus the element using Tab and use the up/down arrow keys to navigate -->
     <select>
@@ -111,6 +71,7 @@ keyboard tetap bisa berinteraksi dengan kontrol Anda.
       <option>Window seat</option>
       <option>No preference</option>
     </select>
+    
 
 <select>
   <option>Aisle seat</option>
@@ -118,17 +79,9 @@ keyboard tetap bisa berinteraksi dengan kontrol Anda.
   <option>No preference</option>
 </select>
 
-Boleh jadi sulit mengetahui perilaku keyboard mana yang akan diimplementasikan, namun ada
-dokumen berguna yang bisa Anda rujuk. Panduan
-[Accessible Rich Internet Applications (ARIA) Authoring Practices](https://www.w3.org/TR/wai-aria-practices/){: .external }
-mencantumkan daftar tipe komponen dan macam tindakan keyboard yang didukungnya.
-Kita akan membahas ARIA secara lebih detail nanti, namun untuk saat ini mari kita gunakan panduan tersebut untuk membantu
-menambahkan dukungan keyboard ke sebuah komponen baru.
+Knowing which keyboard behaviors to implement can be difficult, but there is a helpful document you can refer to. The [Accessible Rich Internet Applications (ARIA) Authoring Practices](https://www.w3.org/TR/wai-aria-practices/){: .external } guide lists types of components and what kinds of keyboard actions they support. We will cover ARIA in more detail later, but for now let's use the guide to help us add keyboard support to a new component.
 
-Mungkin Anda sedang mengerjakan beberapa [Elemen
-Khusus](/web/fundamentals/getting-started/primers/customelements) baru yang
-menirukan serangkaian tombol radio, namun dengan penampilan dan perilaku tiruan
-yang unik.
+Perhaps you're working on some new [Custom Elements](/web/fundamentals/web-components/customelements) that resemble a set of radio buttons, but with your unique take on appearance and behavior.
 
     <radio-group>
       <radio-button>Water</radio-button>
@@ -137,21 +90,15 @@ yang unik.
       <radio-button>Cola</radio-button>
       <radio-button>Ginger Ale</radio-button>
     </radio-group>
+    
 
-Untuk menentukan dukungan keyboard macam apa yang dibutuhkan, Anda perlu memeriksa
-[panduan ARIA Authoring Practices](https://www.w3.org/TR/wai-aria-practices/){: .external }.
-Bagian 2 berisi daftar pola desain, dan dalam daftar itu adalah
-[tabel karakteristik untuk grup tombol radio](https://www.w3.org/TR/wai-aria-practices/#radiobutton){: .external },
-komponen yang ada yang paling cocok dengan elemen baru Anda.
+To determine what kind of keyboard support they need, you would check the [ARIA Authoring Practices guide](https://www.w3.org/TR/wai-aria-practices/){: .external }. Section 2 contains a list of design patterns, and in that list is a [characteristics table for radio groups](https://www.w3.org/TR/wai-aria-practices/#radiobutton){: .external }, the existing component that most closely matches your new element.
 
-Seperti yang bisa Anda lihat dalam tabel, salah satu perilaku keyboard umum yang
-harus didukung adalah tombol panah naik/turun/kiri/kanan. Untuk menambahkan perilaku ini ke komponen
-baru, kita akan menggunakan teknik yang disebut *roving tabindex*.
+As you can see in the table, one of the common keyboard behaviors that should be supported is the up/down/left/right arrow keys. To add this behavior to the new component, we'll use a technique called *roving tabindex*.
 
-![kutipan spesifikasi W3C untuk tombol radio](imgs/radio-button.png)
+![W3C spec excerpt for radio buttons](imgs/radio-button.png)
 
-Roving tabindex bekerja dengan menyetel `tabindex` ke -1 untuk semua anak selain
-yang saat ini aktif.
+Roving tabindex works by setting `tabindex` to -1 for all children except the currently-active one.
 
     <radio-group>
       <radio-button tabindex="0">Water</radio-button>
@@ -160,11 +107,9 @@ yang saat ini aktif.
       <radio-button tabindex="-1">Cola</radio-button>
       <radio-button tabindex="-1">Ginger Ale</radio-button>
     </radio-group>
+    
 
-Selanjutnya komponen menggunakan event listener keyboard untuk menentukan
-tombol mana yang ditekan pengguna; bila terjadi, maka ini akan menyetel
-`tabindex` anak yang difokus sebelumnya ke -1, menyetel `tabindex` anak yang
-akan difokus ke 0, dan memanggil metode padanya.
+The component then uses a keyboard event listener to determine which key the user presses; when this happens, it sets the previously focused child's `tabindex` to -1, sets the to-be-focused child's `tabindex` to 0, and calls the focus method on it.
 
     <radio-group>
       // Assuming the user pressed the down arrow, we'll focus the next available child
@@ -174,15 +119,14 @@ akan difokus ke 0, dan memanggil metode padanya.
       <radio-button tabindex="-1">Cola</radio-button>
       <radio-button tabindex="-1">Ginger Ale</radio-button>
     </radio-group>
+    
 
-Bila pengguna mencapai anak yang terakhir (atau pertama, bergantung pada
-arahnya menggerakkan fokus), Anda akan membuat loop dan memfokus lagi
-anak yang pertama (atau terakhir).
+When the user reaches the last (or first, depending on the direction they're moving the focus) child, you will loop around and focus the first (or last) child again.
 
-Anda bisa mencoba contoh yang telah selesai di bawah ini. Periksa elemen di
-DevTools untuk mengamati pergerakan tabindex dari satu tombol radio ke tombol berikutnya.
+You can give the completed example a try down below. Inspect the element in the DevTools to observe the tabindex moving from one radio to the next.
 
 {% framebox height="130px" %}
+
 <style>
   .demo {
     margin-left: 80px;
@@ -232,7 +176,8 @@ DevTools untuk mengamati pergerakan tabindex dari satu tombol radio ke tombol be
   </radio-group>
 </div>
 
-<script src="https://www.gstatic.com/devrel-devsite/v9dcc115658e2b070ea1ae9baed63d566/developers/js/custom-elements.min.js"></script>
+<script src="https://www.gstatic.com/devrel-devsite/v9dcc115658e2b070ea1ae9baed63d566/developers/js/custom-elements.min.js">
+</script>
 
 <script>
   class RadioButton extends HTMLElement {
@@ -343,72 +288,40 @@ DevTools untuk mengamati pergerakan tabindex dari satu tombol radio ke tombol be
 
   window.customElements.define('radio-group', RadioGroup);
 </script>
+
 {% endframebox %}
 
-Anda bisa menampilkan
-[sumber lengkap elemen ini](https://gist.github.com/robdodson/85deb2f821f9beb2ed1ce049f6a6ed47){: .external }
-melalui GitHub.
+You can view [the complete source for this element](https://gist.github.com/robdodson/85deb2f821f9beb2ed1ce049f6a6ed47){: .external } over on GitHub.
 
-## Modal dan jebakan keyboard
+## Modals and keyboard traps
 
-Kadang-kadang saat mengelola fokus, Anda bisa masuk ke suatu situasi
-dan tidak bisa keluar lagi. Perhatikan sebuah widget pelengkapan otomatis yang mencoba mengelola fokus serta merekam
-perilaku tab, namun mencegah pengguna meninggalkannya bila belum selesai.
-Ini disebut *jebakan keyboard*, dan hal ini bisa sangat mengesalkan pengguna.
-Bagian 2.1.2 pada daftar periksa Web AIM menangani masalah ini, yang menyatakan bahwa
-[fokus keyboard tidak boleh dikunci atau terjebak pada satu elemen laman tertentu](http://webaim.org/standards/wcag/checklist#sc2.1.2){: .external }.
-Pengguna harus bisa mengarah ke dan dari semua elemen laman hanya dengan menggunakan
-keyboard.
+Sometimes when you're managing focus you can get into a situation you can't get out of. Consider an autocomplete widget that tries to manage focus and captures the tab behavior, but prevents the user from leaving it until it's complete. This is called a *keyboard trap*, and it can be very frustrating for the user. Section 2.1.2 of the Web AIM checklist addresses this issue, stating that [keyboard focus should never be locked or trapped at one particular page element](http://webaim.org/standards/wcag/checklist#sc2.1.2){: .external }. The user should be able to navigate to and from all page elements using only the keyboard.
 
-Anehnya, ada kalanya perilaku ini malah sebenarnya yang diinginkan, seperti
-jendela modal. Biasanya, bila modal ditampilkan, Anda ingin pengguna mengakses
-materi di baliknya. Anda mungkin menambahkan overlay untuk menutupi laman secara visual, namun
-itu tidak menghentikan pergerakan fokus keyboard keluar dari modal secara tidak sengaja.
+Oddly, there are times when this behavior is actually desirable, like in a modal window. Normally, when the modal is displayed, you don't want the user to access the content behind it. You might add an overlay to cover the page visually, but that doesn't stop keyboard focus from accidentally traveling outside the modal.
 
-![jendela modal yang meminta pengguna menyimpan pekerjaan mereka](imgs/modal-example.png)
+![a modal window asking the user to save their work](imgs/modal-example.png)
 
-Dalam instance seperti ini Anda bisa mengimplementasikan jebakan keyboard sementara untuk memastikan
-bahwa Anda menjebak fokus hanya saat modal ditampilkan kemudian memulihkan fokus
-item yang sebelumnya difokus bila modal ditutup.
+In instances like this you can implement a temporary keyboard trap to ensure that you trap focus only while the modal is displayed and then restore focus to the previously-focused item when the modal is closed.
 
->Ada beberapa proposal mengenai cara untuk mempermudah hal ini bagi developer, termasuk
-elemen `<dialog>`, namun belum mendapatkan dukungan browser yang luas.
->
->Lihat [artikel MDN](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dialog){: .external }
-ini untuk informasi selengkapnya mengenai `<dialog>`, dan
-[contoh modal](https://github.com/gdkraus/accessible-modal-dialog){: .external } untuk
-informasi selengkapnya mengenai jendela modal.
+> There are some proposals on how to make this easier for developers, including the `<dialog>` element, but they don't yet have widespread browser support.
+> 
+> See this [MDN article](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dialog){: .external } for more information on `<dialog>`, and this [modal example](https://github.com/gdkraus/accessible-modal-dialog){: .external } for more information on modal windows.
 
-Perhatikan dialog modal yang dinyatakan oleh `div` yang berisi beberapa elemen, dan
-`div` yang menyatakan overlay latar belakang. Mari kita bahas langkah-langkah
-dasar yang dibutuhkan untuk mengimplementasikan jebakan keyboard sementara di situasi ini.
+Consider a modal dialog represented by a `div` that contains a few elements, and another `div` that represents a background overlay. Let's walk through the basic steps needed to implement a temporary keyboard trap in this situation.
 
- 1. Dengan menggunakan `document.querySelector`, pilih div modal dan overlay serta simpan
-    referensinya.
- 1. Saat modal dibuka, simpan referensi ke elemen yang telah difokus ketika
-    modal dibuka sehingga Anda bisa mengembalikan fokus ke elemen itu.
- 1. Gunakan *keydown listener* untuk menangkap tombol-tombol yang ditekan saat modal
-    dibuka. Anda juga mendengarkan klik di overlay latar belakang, dan menutup
-    modal jika pengguna mengekliknya.
- 1. Berikutnya, ambil kumpulan elemen yang bisa difokus dalam modal. Elemen
-    yang bisa difokus pertama dan terakhir akan berfungsi sebagai "sentinel" untuk memberi tahu Anda kapan
-    membuat loop fokus ke depan atau ke belakang agar tetap berada dalam modal.
- 1. Tampilkan jendela modal dan fokus elemen yang bisa difokus pertama.
- 1. Saat pengguna menekan `Tab` atau `Shift+Tab`, pindahkan fokus ke depan atau ke belakang,
-    dengan melakukan loop pada elemen terakhir atau pertama.
- 1. Jika pengguna menekan `Esc`, tutuplah modal. Hal ini sangat membantu karena
-    memungkinkan pengguna menutup modal tanpa menelusuri tombol
-    tutup tertentu, dan hal ini menguntungkan bahkan untuk pengguna yang menggunakan mouse.
- 1. Bila tombol modal ditutup, sembunyikan ini dan overlay latar belakang, serta pulihkan
-    fokus ke elemen yang telah difokus sebelumnya yang telah disimpan.
+1. Using `document.querySelector`, select the modal and overlay divs and store their references.
+2. As the modal opens, store a reference to the element that was focused when the modal was opened so you can return focus to that element.
+3. Use a *keydown listener* to grab keys as they are pressed while the modal is open. You could also listen for a click on the background overlay, and close the modal if the user clicks it.
+4. Next, get the collection of focusable elements within the modal. The first and last focusable elements will act as "sentinels" to let you know when to loop focus forward or backward to stay inside the modal.
+5. Display the modal window and focus the first focusable element.
+6. As the user presses `Tab` or `Shift+Tab`, move focus forward or backward, looping at the last or first elements as appropriate.
+7. If the user presses `Esc`, close the modal. This is very helpful because it allows the user to close the modal without searching for a specific close button, and it benefits even users who are using a mouse.
+8. When the modal is closed, hide it and the background overlay, and restore focus to the previously-focused element saved earlier.
 
-Prosedur ini memberi Anda jendela modal yang berguna dan tidak mengesalkan, yang bisa digunakan
-siapa saja secara efektif.
+This procedure gives you a usable, non-frustrating modal window that everyone can use effectively.
 
-Untuk detail selengkapnya, Anda bisa memeriksa [kode contoh](https://github.com/udacity/ud891/blob/gh-pages/lesson2-focus/07-modals-and-keyboard-traps/solution){: .external } ini,
-dan menampilkan contoh langsung dari
-[laman yang telah selesai](http://udacity.github.io/ud891/lesson2-focus/07-modals-and-keyboard-traps/solution/index.html){: .external }.
+For more details, you can examine this [sample code](https://github.com/udacity/ud891/blob/gh-pages/lesson2-focus/07-modals-and-keyboard-traps/solution){: .external }, and view a live example from a [completed page](http://udacity.github.io/ud891/lesson2-focus/07-modals-and-keyboard-traps/solution/index.html){: .external }.
 
+## Feedback {: #feedback }
 
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
