@@ -1,232 +1,196 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Anda bisa memengaruhi cara penampilan situs saat dibagikan lewat media sosial dengan menambahkan beberapa baris kode ke setiap laman. Ini bisa membantu menarik banyak orang ke situs Anda dengan menyediakan pratinjau dengan informasi yang lebih lengkap daripada yang disediakan situs lain.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: You can influence the way your site appears when shared via social media by adding a few lines of code to each page. This can help bring more people to your site by providing previews with richer information than would otherwise be available.
 
-{# wf_updated_on: 2014-11-08 #}
-{# wf_published_on: 2014-10-07 #}
+{# wf_blink_components: N/A #} {# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2014-10-07 #}
 
-# Penemuan Sosial {: .page-title }
+# Social Discovery {: .page-title }
 
 {% include "web/_shared/contributors/agektmr.html" %}
 
-Anda bisa memengaruhi cara penampilan situs saat dibagikan lewat media sosial dengan
-menambahkan beberapa baris kode ke setiap laman. Ini bisa membantu menarik banyak orang ke
-situs Anda dengan menyediakan pratinjau dengan informasi yang lebih lengkap
-daripada yang disediakan situs lain.
-
+You can influence the way your site appears when shared via social media by adding a few lines of code to each page. This can help bring more people to your site by providing previews with richer information than would otherwise be available.
 
 ### TL;DR {: .hide-from-toc }
-- Gunakan mikrodata schema.org untuk menyediakan judul laman, keterangan, dan gambar untuk Google+.
-- Gunakan Open Graph Protocol (OGP) untuk menyediakan judul laman, keterangan, dan gambar untuk Facebook.
-- Gunakan Twitter Cards untuk menyediakan judul laman, keterangan, dan gambar serta ID Twitter untuk Twitter.
 
-Anda bisa memengaruhi cara penampilan situs saat dibagikan lewat media sosial dengan
-menambahkan beberapa baris kode ke setiap laman. Ini bisa membantu meningkatkan interaksi dengan menyediakan
-pratinjau dengan informasi yang lebih lengkap daripada yang disediakan situs lain.
-Tanpa ini, situs sosial hanya akan menyediakan informasi dasar, tanpa gambar atau
-informasi berguna lainnya. 
+* Use schema.org microdata to provide page title, description, and an image for Google+.
+* Use Open Graph Protocol (OGP) to provide page title, description, and an image for Facebook.
+* Use Twitter Cards to provide page title, description, an image, and a Twitter id for Twitter.
 
-Manakah yang menurut Anda lebih cenderung diklik? Orang-orang tertarik pada gambar
-dan merasa lebih yakin mereka akan suka apa mereka temukan bila mereka memiliki
-pratinjaunya lebih dahulu.
+You can influence the way your site appears when shared via social media by adding a few lines of code to each page. This can help increase engagement by providing previews with richer information than would otherwise be available. Without it, social sites will provide only basic information, without images or other helpful information.
+
+Which one do you think is more likely to be clicked? People are drawn to images and feel more confident they'll like what they find when they have an early preview.
 
 <div class="attempt-left">
   <figure>
     <img src="imgs/gplus-snippet-2.png" srcset="imgs/gplus-snippet-2.png 1x,
       imgs/gplus-snippet-2-2x.png 2x" />
     <figcaption class="success">
-      Dengan markup yang tepat: judul yang benar, keterangan
-      singkat, dan gambar akan disertakan. Penambahan semua item ini bisa membantu
-      meningkatkan interaksi.
+      With the appropriate markup: the correct title, a short
+      description, and an image are included. Adding these items can help
+      increase engagement.
      </figcaption>
   </figure>
 </div>
+
 <div class="attempt-right">
   <figure>
     <img src="imgs/gplus-snippet-1.png" srcset="imgs/gplus-snippet-1.png 1x,
       imgs/gplus-snippet-1-2x.png 2x" />
     <figcaption class="warning">
-      Tanpa markup yang tepat, hanya judul laman yang akan
-      disertakan.
+      Without the proper mark up, only the page title is
+      included.
      </figcaption>
   </figure>
 </div>
 
 <div style="clear:both;"></div>
 
-Bila seseorang di jaringan sosial ingin membagikan situs web Anda dengan teman-temannya,
-ia barangkali akan menambahkan beberapa catatan yang menjelaskan betapa menariknya situs web Anda, dan membagikannya.
-Namun menjelaskan situs web cenderung merepotkan dan bisa melewatkan pendapat dari
-sudut pandang pemilik laman. Sebagian layanan membatasi jumlah karakter yang bisa
-dimasukkan pengguna dalam catatan.
+When someone on a social network wants to share your website with their friends, they would probably add some notes explaining how awesome it is, and share it. But describing a website tends be cumbersome and can miss the point from the page owner's point of view. Some services restrict the number of characters users can put in the note.
 
-Dengan menambahkan metadata yang sesuai ke laman, Anda bisa menyederhanakan proses
-berbagi untuk pengguna dengan menyediakan judul, keterangan, dan
-gambar yang menarik. Ini berarti mereka tidak perlu menghabiskan waktu (atau karakter)
-yang berharga untuk menjelaskan tautan tersebut.
+By adding the appropriate metadata to your pages, you can simplify the sharing process for users by providing the title, a description, and an attractive image. This means they don't have to spend valuable time (or characters) describing the link.
 
-## Gunakan schema.org + mikrodata untuk menyediakan cuplikan yang lengkap di Google+
+## Use schema.org + microdata to provide rich snippets on Google+
 
-Perayap menggunakan banyak metode untuk mem-parse laman dan memahami materinya. Dengan menggunakan kosakata
-[mikrodata](http://www.w3.org/TR/microdata/){: .external }, dan
-[schema.org](https://schema.org/){: .external }, Anda membantu situs sosial dan
-mesin telusur untuk memahami materi laman dengan lebih baik.
+Crawlers use many methods to parse a page and understand its content. By using [microdata](http://www.w3.org/TR/microdata/){: .external }, and [schema.org](https://schema.org/){: .external } vocabulary, you help social sites and search engines better understand the contents of the page.
 
-Inilah contohnya:
+Here's an example:
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/discovery/social-discovery/_code/social-sites.html" region_tag="microdata" adjust_indentation="auto" %}
 </pre>
 
-Walaupun sebagian besar metadata disematkan di bagian tajuk laman web, mikrodata
-tinggal di tempat konteks berada.
+While most metadata are embedded in the head section of a web page, microdata lives where the context exists.
 
-### Tambahkan `itemscope` untuk mendefinisikan cakupan mikrodata
-Dengan menambahkan `itemscope`, Anda bisa menetapkan tag sebagai blok materi tentang
-item khusus.
+### Add `itemscope` to define microdata scope
 
-### Tambahkan `itemtype` untuk mendefinisikan tipe situs web
-Anda bisa menetapkan tipe item dengan menggunakan atribut `itemtype` bersama
-`itemscope`. Nilai `itemtype` bisa ditentukan sesuai dengan tipe
-materi laman web Anda. Anda akan bisa menemukan yang relevan
-di [laman ini](https://schema.org/docs/full.html).
+By adding `itemscope`, you can specify the tag as a block of contents about a particular item.
 
-### Tambahkan `itemprop` untuk menjelaskan setiap item menggunakan kosakata schema.org
-`itemprop` mendefinisikan properti `itemtype` yang ada dalam cakupan. Untuk menyediakan
-metadata ke situs sosial, nilai-nilai `itemprop` yang umum adalah `name`, `description`,
-dan `image`.
+### Add `itemtype` to define type of your website
 
-### Ketahui selengkapnya
-Mikrodata ini menyediakan informasi semantik kepada perayap, biasanya untuk
-[Google+](https://plus.google.com/){: .external } dan Google Penelusuran. Untuk mengetahui selengkapnya tentang
-cuplikan kode dan rendering di Google+, bacalah dokumen berikut:
+You can specify the type of item by using the `itemtype` attribute along with the `itemscope`. The value of an `itemtype` can be determined according to the type of content on your web page. You should be able to find one that is relevant in [this page](https://schema.org/docs/full.html).
 
-* [Rendering Artikel - Platform Google+](/+/web/snippet/article-rendering)
-* [Cuplikan - Platform Google+](/+/web/snippet/)
+### Add `itemprop` to describe each item using schema.org vocabulary
 
-### Validasikan cuplikan yang lengkap
-Untuk memvalidasi cuplikan yang lengkap di Google+, Anda bisa menggunakan alat seperti:
+`itemprop` defines properties for `itemtype` in the scope. For providing metadata to social sites, typical `itemprop` values are `name`, `description`, and `image`.
 
-* [Alat (Bantu) Pengujian Data Terstruktur](https://www.google.com/webmasters/tools/richsnippets) - Alat Webmaster  
+### Learn more
+
+These microdata provide semantic information to crawlers, typically for [Google+](https://plus.google.com/){: .external } and Google Search. To learn more about snippets and rendering on Google+, read the following documents:
+
+* [Article Rendering - Google+ Platform](/+/web/snippet/article-rendering)
+* [Snippet - Google+ Platform](/+/web/snippet/)
+
+### Validate rich snippets
+
+In order to validate rich snippets on Google+, you can use tools such as:
+
+* [Structured Data Testing Tool](https://www.google.com/webmasters/tools/richsnippets) - Webmaster Tools
 
 <img src="imgs/webmaster-tools.png" srcset="imgs/webmaster-tools.png 1x, imgs/webmaster-tools-2x.png 2x" />
 
-## Gunakan Open Graph Protocol (OGP) untuk menyediakan cuplikan yang lengkap di Facebook
+## Use Open Graph Protocol (OGP) to provide rich snippets on Facebook
 
-[Open Graph Protocol (OGP)](http://ogp.me/){: .external } membekali Facebook dengan
-metadata yang diperlukan agar laman web bisa memiliki fungsionalitas yang sama seperti
-objek Facebook lainnya.
+The [Open Graph Protocol (OGP)](http://ogp.me/){: .external } provides Facebook with the metadata necessary to allow web pages to have the same functionality as other Facebook objects.
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/discovery/social-discovery/_code/social-sites.html" region_tag="ogp" adjust_indentation="auto" %}
 </pre>
 
-Bila disertakan di bagian tajuk laman Anda, metadata ini akan menyediakan
-informasi cuplikan yang lengkap bila laman dibagikan.
+When included in the head section of your page, this metadata provides rich snippet information when the page is shared.
 
-### Gunakan tag `meta` dengan namespace `og:` untuk menjelaskan metadata
-Tag `meta` terdiri dari atribut `property` dan atribut `content`.
-Properti dan materi dapat mengambil nilai-nilai berikut:
+### Use `og:` namespaced `meta` tags to describe metadata
+
+A `meta` tag consists of a `property` attribute and a `content` attribute. Properties and contents may take the following values:
 
 <table>
   <thead>
     <tr>
-      <th data-th="Property">Properti</th>
-      <th data-th="Content">Materi</th>
+      <th data-th="Property">Property</th>
+      <th data-th="Content">Content</th>
     </tr>
   </thead>
   <tbody>
     <tr>
       <td data-th="Property"><code>og:title</code></td>
-      <td data-th="Content">Judul laman web.</td>
+      <td data-th="Content">The title of the web page.</td>
     </tr>
     <tr>
       <td data-th="Property"><code>og:description</code></td>
-      <td data-th="Content">Keterangan laman web.</td>
+      <td data-th="Content">The description of the web page.</td>
     </tr>
     <tr>
       <td data-th="Property"><code>og:url</code></td>
-      <td data-th="Content">URL kanonis laman web.</td>
+      <td data-th="Content">The canonical url of the web page.</td>
     </tr>
     <tr>
       <td data-th="Property"><code>og:image</code></td>
-      <td data-th="Content">URL ke gambar yang dilampirkan ke entri blog yang dibagikan.</td>
+      <td data-th="Content">URL to an image attached to the shared post.</td>
     </tr>
     <tr>
       <td data-th="Property"><code>og:type</code></td>
-      <td data-th="Content">String yang menunjukkan tipe laman web. Anda bisa menemukan yang cocok untuk laman web Anda <a href="https://developers.facebook.com/docs/reference/opengraph/">di sini</a>.</td>
+      <td data-th="Content">A string that indicates the type of the web page. You can find one that is suitable for your web page <a href="https://developers.facebook.com/docs/reference/opengraph/">here</a>.</td>
     </tr>
   </tbody>
 </table>
 
-Tag meta ini menyediakan informasi semantik kepada perayap dari situs sosial,
-biasanya dari [Google+](https://plus.google.com/){: .external } dan
-[Facebook](https://www.facebook.com/){: .external }.
+These meta tags provide semantic information to crawlers from social sites, typically from [Google+](https://plus.google.com/){: .external } and [Facebook](https://www.facebook.com/){: .external }.
 
-### Ketahui selengkapnya
-Untuk mengetahui selengkapnya tentang apa saja yang bisa Anda lampirkan ke entri blog di Facebook, kunjungi
-situs resmi Open Graph Protocol.
+### Learn more
+
+To learn more about things you can attach to the post on Facebook, visit the official Open Graph Protocol site.
 
 * [ogp.me](http://ogp.me/){: .external }
 
-### Validasikan cuplikan yang lengkap
-Untuk memvalidasi markup Anda di Facebook, Anda bisa menggunakan alat seperti:
+### Validate rich snippets
+
+In order to validate your markup on Facebook, you can use tools such as:
 
 * [Debugger](https://developers.facebook.com/tools/debug/){: .external }
 
-## Gunakan Twitter Cards untuk menyediakan cuplikan yang lengkap di Twitter
-[Twitter Cards](https://dev.twitter.com/docs/cards) adalah ekstensi ke
-Open [Graph Protocol yang berlaku untuk Twitter](https://twitter.com/){: .external }. Semua itu memungkinkan
-Anda menambahkan lampiran media seperti gambar dan video ke Tweet dengan tautan ke
-laman web Anda. Dengan menambahkan metadata yang sesuai, Tweet dengan tautan ke
-laman Anda akan ditambahi kartu yang menyertakan detail lengkap yang telah Anda tambahkan.
+## Use Twitter Cards to provide rich snippets on Twitter
 
-### Gunakan tag meta dengan namespace `twitter:` untuk menjelaskan metadata
-Agar Twitter Card bisa berfungsi, [domain Anda harus
-telah disetujui](https://cards-dev.twitter.com/validator) dan harus
-berisi tag meta yang memiliki `twitter:card` sebagai atribut `name`, sebagai ganti atribut
-`property`.
-  
-Inilah contoh ringkasnya:
+[Twitter Cards](https://dev.twitter.com/cards/overview) are an extension to the Open [Graph Protocol applicable for Twitter](https://twitter.com/){: .external }. They allow you to add media attachments like images and video to Tweets with a link to your web page. By adding the appropriate metadata, Tweets with links to your page will have a card added that includes the rich detail you've added.
+
+### Use `twitter:` namespaced meta tags to describe metadata
+
+In order to get a Twitter Card working, [your domain must be approved](https://cards-dev.twitter.com/validator) and must contain a meta tag that has `twitter:card` as the `name` attribute instead of `property` attribute.
+
+Here's a quick example:
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/discovery/social-discovery/_code/social-sites.html" region_tag="twitter" adjust_indentation="auto" %}
 </pre>
 
-Dengan menetapkan ID Twitter ke nilai twitter:site, Twitter akan menyematkan
-informasi ini dalam entri blog yang dibagikan sehingga orang-orang bisa mudah berinteraksi dengan
-pemilik laman.
+By assigning the Twitter id to the value of twitter:site, Twitter embeds this information in the shared post so that people can easily engage with the page owner.
 
 <img src="imgs/twitter-card.png" srcset="imgs/twitter-card.png 1x, imgs/twitter-card-2x.png 2x" />
 
-### Ketahui selengkapnya
-Untuk mengetahui selengkapnya tentang Twitter Cards, kunjungi:
+### Learn more
 
-* [Situs developer Twitter](https://dev.twitter.com/docs/cards)
+To learn more about Twitter Cards, visit:
 
-### Validasikan cuplikan yang lengkap
-Untuk memvalidasi markup Anda, Twitter menyediakan:
+* [Twitter's developer site](https://dev.twitter.com/cards)
+
+### Validate rich snippets
+
+In order to validate your markup, Twitter provides:
 
 * [Card Validator](https://cards-dev.twitter.com/validator)
 
-## Praktik Terbaik
-Dengan ketiga opsi, hal terbaik yang bisa Anda lakukan adalah menyertakan semuanya dalam
-laman web Anda. Inilah contohnya:
+## The Best Practice
+
+Given all three options, the best thing you can do is to include them all in your web page. Here's an example:
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/discovery/social-discovery/_code/social-sites2.html" region_tag="best_practice" adjust_indentation="auto" %}
 </pre>
 
-Perhatikan, mikrodata dan OGP berbagi beberapa markup:
+Notice that microdata and OGP share some markup:
 
-* `itemscope` berada di tag `head`
-* `title` dan `description` digunakan bersama mikrodata dan OGP
-* `itemprop="image"` menggunakan tag `link` dengan atribut `href` sebagai ganti
-menggunakan ulang tag `meta` dengan `property="og:image"`
-  
-Terakhir, pastikan memvalidasi bahwa laman web Anda tampil sesuai harapan pada setiap
-situs sosial sebelum mempublikasikannya.
+* `itemscope` is located at `head` tag
+* `title` and `description` are shared between microdata and OGP
+* `itemprop="image"` is using `link` tag with `href` attribute instead of reusing `meta` tag with `property="og:image"`
 
+Lastly, make sure to validate that your web page appears as expected on each social site before publishing.
 
+## Feedback {: #feedback }
 
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
