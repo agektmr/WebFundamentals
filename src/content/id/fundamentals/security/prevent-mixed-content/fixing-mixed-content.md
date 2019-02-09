@@ -1,313 +1,232 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Menemukan dan memperbaiki materi campuran adalah tugas penting, namun bisa makan waktu. Panduan ini mendiskusikan beberapa alat yang tersedia untuk membantu prosesnya.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Finding and fixing mixed content is an important task, but it can be time-consuming. This guide discusses some tools that are available to help with the process.
 
-{# wf_published_on: 2015-09-28 #}
-{# wf_updated_on: 2017-07-12 #}
+{# wf_published_on: 2015-09-28 #} {# wf_updated_on: 2018-09-20 #} {# wf_blink_components: Blink>SecurityFeature #}
 
-# Mencegah Materi Campuran {: .page-title }
+# Preventing Mixed Content {: .page-title }
 
 {% include "web/_shared/contributors/johyphenel.html" %}
 
-Berhasil: Mendukung HTTPS untuk situs web Anda adalah langkah penting untuk melindungi situs dan pengguna Anda dari serangan, namun materi campuran bisa membuat perlindungan itu menjadi sia-sia. Untuk melindungi situs dan pengguna, Anda perlu menemukan dan memperbaiki masalah materi campuran.
+Success: Supporting HTTPS for your website is an important step to protecting your site and your users from attack, but mixed content can render that protection useless. To protect your site and your users, it is very important to find and fix mixed content issues.
 
-Menemukan dan memperbaiki materi campuran adalah tugas penting, namun bisa makan waktu. Panduan ini mendiskusikan beberapa alat dan teknik yang tersedia untuk membantu prosesnya. Untuk informasi selengkapnya mengenai materi campuran itu sendiri, lihat [Apa yang Dimaksud Dengan Materi Campuran](./what-is-mixed-content).
+Finding and fixing mixed content is an important task, but it can be time-consuming. This guide discusses some tools and techniques that are available to help with the process. For more information on mixed content itself, see [What is Mixed Content](./what-is-mixed-content).
 
 ### TL;DR {: .hide-from-toc }
 
-* Selalu gunakan URL https:// saat memuat sumber daya di laman Anda.
-* Gunakan header `Content-Security-Policy-Report-Only` untuk memantau kesalahan materi campuran di situs Anda.
-* Gunakan direktif CSP `upgrade-insecure-requests` untuk melindungi pengunjung Anda dari materi tidak aman.
+* Always use https:// URLs when loading resources on your page.
+* Use the `Content-Security-Policy-Report-Only` header to monitor mixed content errors on your site.
+* Use the `upgrade-insecure-requests` CSP directive to protect your visitors from insecure content.
 
-## Menemukan dan memperbaiki materi campuran 
+## Find and fix mixed content
 
-Menemukan materi campuran secara manual bisa makan waktu, bergantung pada jumlah masalah yang Anda alami. Proses yang dijelaskan dalam dokumen ini menggunakan browser Chrome; akan tetapi sebagian besar browser modern menyediakan alat serupa untuk membantu proses ini.
+Manually finding mixed content can be time consuming, depending on the number of issues you have. The process described in this document uses the Chrome browser; however most modern browsers provide similar tools to help with this process.
 
-### Menemukan materi campuran dengan mengunjungi situs Anda
+### Finding mixed content by visiting your site
 
-Saat mengunjungi laman HTTPS di Google Chrome, browser akan memperingatkan Anda mengenai materi campuran 
-sebagai kesalahan dan peringatan dalam Konsol JavaScript.
+When visiting an HTTPS page in Google Chrome, the browser alerts you to mixed content as errors and warnings in the JavaScript console.
 
-Untuk menampilkan peringatan ini, buka laman contoh materi campuran pasif atau materi campuran aktif dan buka Konsol JavaScript Chrome. Anda bisa membuka konsol tersebut dari menu View: _View_ -&gt; _Developer_ -&gt; _JavaScript Console_ atau dengan mengeklik kanan pada laman, memilih _Inspect Element_, kemudian memilih _Console_.
+To view these alerts, go to our passive mixed content or active mixed content sample page and open the Chrome JavaScript console. You can open the console either from the View menu: *View* -&gt; *Developer* -&gt; *JavaScript Console*, or by right-clicking the page, selecting *Inspect Element*, and then selecting *Console*.
 
-[Contoh materi campuran pasif](https://googlesamples.github.io/web-fundamentals/fundamentals/security/prevent-mixed-content/passive-mixed-content.html){: .external} pada laman [Apa yang Dimaksud Dengan Materi Campuran](what-is-mixed-content#passive-mixed-content){: .external} menyebabkan peringatan materi campuran ditampilkan, seperti di bawah ini:
-
-<figure>
-  <img src="imgs/passive-mixed-content-warnings.png" alt="Materi Campuran: Laman telah dimuat melalui HTTPS, namun meminta video yang tidak aman. Materi ini seharusnya juga disajikan melalui HTTPS.">
-</figure>
-
-[Cobalah](https://googlesamples.github.io/web-fundamentals/fundamentals/security/prevent-mixed-content/passive-mixed-content.html){: target="_blank" .external }
-
-Walaupun contoh materi campuran aktif menyebabkan kesalahan materi campuran 
-ditampilkan:
+The [passive mixed content example](https://googlesamples.github.io/web-fundamentals/fundamentals/security/prevent-mixed-content/passive-mixed-content.html){: .external} on the [What Is Mixed Content](what-is-mixed-content#passive-mixed-content){: .external} page causes mixed content warnings to be displayed, like the ones below:
 
 <figure>
-  <img src="imgs/active-mixed-content-errors.png" alt="Materi Campuran: Laman telah dimuat melalui HTTPS, namun meminta sumber daya yang tidak aman. Permintaan ini telah diblokir; materi harus disajikan melalui HTTPS.">
+  <img src="imgs/passive-mixed-content-warnings.png" alt="Mixed Content: The page was loaded over HTTPS, but requested an insecure video. This content should also be served over HTTPS.">
 </figure>
 
-[Cobalah](https://googlesamples.github.io/web-fundamentals/fundamentals/security/prevent-mixed-content/active-mixed-content.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/security/prevent-mixed-content/passive-mixed-content.html){: target="_blank" .external }
 
-
-Anda perlu memperbaiki URL http:// yang dicantumkan dalam kesalahan dan peringatan ini, di sumber situs Anda. Ada baiknya membuat daftar URL ini, bersama laman tempat Anda menemukannya, untuk digunakan bila Anda memperbaikinya. 
-
-Note: Kesalahan dan peringatan materi campuran hanya ditunjukkan untuk laman yang saat ini Anda tampilkan, dan Konsol JavaScript dikosongkan setiap kali Anda mengarah ke laman baru. Berarti Anda harus menampilkan setiap laman di situs Anda secara individual untuk menemukan kesalahan ini. Beberapa kesalahan mungkin hanya ditunjukkan setelah Anda berinteraksi dengan suatu bagian laman, lihat contoh materi campuran galeri gambar dari panduan kami sebelumnya.
-
-### Menemukan materi campuran dalam kode sumber Anda
-
-Anda bisa menelusuri materi campuran secara langsung dalam kode sumber. Telusuri 
-`http://` dalam kode sumber Anda dan cari tag yang berisi atribut HTTP URL.
-Khususnya, cari tag yang tercantum di bagian [tipe materi campuran & ancaman keamanan yang berkaitan](what-is-mixed-content#mixed-content-types--security-threats-associated){: .external} pada panduan sebelumnya.
-Perhatikan, dengan memiliki `http://` dalam atribut href tag jangkar (`<a>`)
-sering kali bukanlah masalah materi campuran, dengan beberapa pengecualian penting yang akan didiskusikan belakangan. 
-
-Jika Anda memiliki daftar URL HTTP dari kesalahan dan peringatan materi campuran Chrome, 
-Anda juga bisa menelusuri URL lengkap ini di kode sumber untuk menemukan lokasi mereka 
-di situs Anda. 
-
-### Memperbaiki materi campuran
-
-Setelah Anda menemukan lokasi materi campuran tersebut di kode sumber situs Anda, 
-ikuti langkah-langkah ini untuk memperbaikinya.
-
-Dengan menggunakan kesalahan materi campuran berikut di Chrome sebagai contoh:
+While the active mixed content example causes mixed content errors to be displayed:
 
 <figure>
-  <img src="imgs/image-gallery-warning.png" alt="Materi Campuran: Laman telah dimuat melalui HTTPS, namun meminta gambar yang tidak aman. Materi ini seharusnya juga disajikan melalui HTTPS.">
+  <img src="imgs/active-mixed-content-errors.png" alt="Mixed Content: The page was loaded over HTTPS, but requested an insecure resource. This request has been blocked; the content must be served over HTTPS.">
 </figure>
 
-Yang Anda temukan di kode sumber di sini:
- 
-    <img src="http://googlesamples.github.io/web-fundamentals/.../puppy.jpg"> 
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/security/prevent-mixed-content/active-mixed-content.html){: target="_blank" .external }
 
-#### Langkah 1
+You need to fix the http:// URLs listed in these errors and warnings, in your site's source. It's helpful to make a list of these URLs, along with the page you found them on, for use when you fix them.
 
-Periksa apakah URL tersedia melalui HTTPS dengan membuka tab baru di 
-browser Anda, memasukkan URL di bilah alamat, dan mengubah `http://` menjadi `https://`
+Note: Mixed content errors and warnings are only shown for the page your are currently viewing, and the JavaScript console is cleared every time you navigate to a new page. This means you will have to view every page of your site individually to find these errors. Some errors may only show up after you interact with part of the page, see the image gallery mixed content example from our previous guide.
 
-Jika sumber daya yang ditampilkan sama melalui **HTTP** dan **HTTPS**, berarti semuanya OKE.
-Lanjutkan ke [Langkah 2](#step-2).
+### Finding mixed content in your source code
+
+You can search for mixed content directly in your source code. Search for `http://` in your source and look for tags that include HTTP URL attributes. Specifically, look for tags listed in the [mixed content types & security threats associated](what-is-mixed-content#mixed-content-types--security-threats-associated){: .external} section of our previous guide. Note that having `http://` in the href attribute of anchor tags (`<a>`) is often not a mixed content issue, with some notable exceptions discussed later.
+
+If you have a list of HTTP URLs from Chrome mixed content errors and warnings, you can also search for these complete URLs in your source to find where they are included in your site.
+
+### Fixing mixed content
+
+Once you've found where the mixed content is included in your site's source, follow these steps to fix it.
+
+Using the following mixed content error in Chrome as an example:
+
+<figure>
+  <img src="imgs/image-gallery-warning.png" alt="Mixed Content: The page was loaded over HTTPS, but requested an insecure image. This content should also be served over HTTPS.">
+</figure>
+
+Which you found in source here:
+
+    <img src="http://googlesamples.github.io/web-fundamentals/.../puppy.jpg">
+    
+
+#### Step 1
+
+Check that the URL is available over HTTPS by opening a new tab in your browser, entering the URL in the address bar, and changing `http://` to `https://`
+
+If the resource displayed is the same over **HTTP** and **HTTPS**, everything is OK. Proceed to [Step 2](#step-2).
 
 <div class="attempt-left">
   <figure>
     <img src="imgs/puppy-http.png">
     <figcaption class="success">
-      Pemuatan gambar HTTP tanpa kesalahan.
+      HTTP image loads without error.
      </figcaption>
   </figure>
 </div>
+
 <div class="attempt-right">
   <figure>
     <img src="imgs/puppy-https.png">
     <figcaption class="success">
-      Pemuatan gambar HTTPS tanpa kesalahan, dan gambarnya sama seperti HTTP. Pindah ke <a href="#step-2">langkah 2</a>!
+      HTTPS image loads without error, and image is the same as HTTP. Go to <a href="#step-2">step 2</a>!
      </figcaption>
   </figure>
 </div>
 
 <div style="clear:both;"></div>
 
-Jika Anda melihat peringatan sertifikat, atau jika materi tidak bisa ditampilkan melalui
-**HTTPS**, berarti sumber daya tersebut tidak tersedia secara aman.
+If you see a certificate warning, or if the content can't be displayed over **HTTPS**, it means the resource is not available securely.
 
 <div class="attempt-left">
   <figure>
     <img src="imgs/https-not-available.png">
     <figcaption class="warning">
-      Sumber daya tidak tersedia melalui HTTPS
+      Resource not available over HTTPS
      </figcaption>
   </figure>
 </div>
+
 <div class="attempt-right">
   <figure>
     <img src="imgs/https-cert-warning.png">
     <figcaption class="warning">
-      Peringatan sertifikat saat mencoba menampilkan sumber daya melalui HTTPS.
+      Certificate warning when attempting to view resource over HTTPS.
      </figcaption>
   </figure>
 </div>
 
 <div style="clear:both;"></div>
 
-Dalam hal ini, Anda harus mempertimbangkan salah satu opsi berikut:
+In this case, you should consider one of the following options:
 
-* Sertakan sumber daya dari host berbeda, jika tersedia.
-* Unduh dan host materi tersebut di situs Anda secara langsung, jika secara hukum Anda diizinkan melakukannya.
-* Kecualikan sumber daya dari situs Anda sekaligus.
+* Include the resource from a different host, if one is available.
+* Download and host the content on your site directly, if you are legally allowed to do so.
+* Exclude the resource from your site altogether.
 
-#### Langkah 2
+#### Step 2
 
-Ubah URL dari `http://` menjadi `https://`, simpan file sumber, dan jika perlu gunakan kembali file yang telah diperbarui.
+Change the URL from `http://` to `https://`, save the source file, and redeploy the updated file if necessary.
 
-#### Langkah 3
+#### Step 3
 
-Tampilkan laman tempat Anda menemukan kesalahan semula dan verifikasi apakah kesalahan tersebut tidak muncul lagi.
+View the page where you found the error originally and verify that the error no longer appears.
 
-### Waspadailah penggunaan tag non-standar
+### Beware of non-standard tag usage
 
-Waspadailah penggunaan tag non-standar di situs Anda. Misalnya, URL tag jangkar (`<a>`)
-tidak menyebabkan materi campuran dengan sendirinya, karena mereka menyebabkan browser 
-mengarahkan ke laman baru. Ini berarti hal itu biasanya tidak perlu diperbaiki. Akan tetapi 
-beberapa skrip galeri gambar menggantikan fungsionalitas tag `<a>` dan 
-memuat sumber daya HTTP yang ditetapkan oleh atribut `href` ke dalam tampilan lightbox 
-di laman, sehingga menyebabkan masalah materi campuran. 
+Beware of non-standard tag usage on your site. For instance, anchor (`<a>`) tag URLs don't cause mixed content by themselves, as they cause the browser to navigate to a new page. This means they usually don't need to be fixed. However some image gallery scripts override the functionality of the `<a>` tag and load the HTTP resource specified by the `href` attribute into a lightbox display on the page, causing a mixed content problem.
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/security/prevent-mixed-content/_code/image-gallery-example.html" region_tag="snippet1" adjust_indentation="auto" %}
 </pre>
 
-[Cobalah](https://googlesamples.github.io/web-fundamentals/fundamentals/security/prevent-mixed-content/image-gallery-example.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/security/prevent-mixed-content/image-gallery-example.html){: target="_blank" .external }
 
-Dalam kode di atas, kelihatannya aman membiarkan href tag `<a>` sebagai `http://`, 
-akan tetapi jika Anda menampilkan contoh dan mengeklik gambar, Anda akan melihat bahwa ia memuat 
-sumber daya materi campuran dan menampilkannya di laman. 
+In the code above, it may seem safe to leave the `<a>` tags href as `http://`; however if you view the sample and click the image, you'll see that it loads a mixed content resource and displays it on the page.
 
-## Menangani materi campuran dengan mempertimbangkan skala
+## Handle mixed content at scale
 
-Langkah-langkah manual di atas berfungsi dengan baik untuk situs web yang lebih kecil; namun untuk situs web besar, 
-atau situs yang memiliki beberapa tim development terpisah, boleh jadi sulit untuk memantau 
-semua materi yang sedang dimuat. Untuk membantu tugas ini, Anda bisa menggunakan 
-kebijakan keamanan materi untuk memerintahkan browser memberi tahu Anda mengenai materi campuran 
-dan memastikan laman Anda tidak akan pernah memuat sumber daya tidak aman secara tidak diharapkan.
+The manual steps above work well for smaller websites; but for large websites or sites with many separate development teams, it can be tough to keep track of all the content being loaded. To help with this task, you can use content security policy to instruct the browser to notify you about mixed content and ensure that your pages never unexpectedly load insecure resources.
 
-### Kebijakan keamanan materi
+### Content security policy
 
-[**Kebijakan keamanan materi**](/web/fundamentals/security/csp/) (CSP) adalah fitur
-browser serba guna yang bisa Anda gunakan untuk mengelola materi campuran 
-dengan skala. Mekanisme pelaporan CSP bisa digunakan untuk melacak materi campuran di
-situs Anda; dan kebijakan pemberlakuan, untuk melindungi pengguna dengan
-peningkatan versi atau pemblokiran materi campuran. 
+[**Content security policy**](/web/fundamentals/security/csp/) (CSP) is a multi-purpose browser feature that you can use to manage mixed content at scale. The CSP reporting mechanism can be used to track the mixed content on your site; and the enforcement policy, to protect users by upgrading or blocking mixed content.
 
-Anda bisa mengaktifkan fitur ini untuk sebuah laman dengan menyertakan header 
-`Content-Security-Policy` atau `Content-Security-Policy-Report-Only` dalam 
-respons yang dikirim dari server Anda. Selain itu, Anda bisa menyetel `Content-Security-Policy` (namun 
-**bukan** `Content-Security-Policy-Report-Only`) dengan menggunakan tag `<meta>` di 
-bagian `<head>` pada laman Anda. Lihat contoh di bagian 
-berikut.
+You can enable these features for a page by including the `Content-Security-Policy` or `Content-Security-Policy-Report-Only` header in the response sent from your server. Additionally you can set `Content-Security-Policy` (but **not** `Content-Security-Policy-Report-Only`) using a `<meta>` tag in the `<head>` section of your page. See examples in the following sections.
 
-CSP berguna untuk banyak hal di luar penggunaan materi campurannya. Informasi tentang direktif CSP lainnya tersedia di sumber daya berikut:
+CSP is useful for many things outside of its mixed content uses. Information about other CSP directives is available at the following resources:
 
-* [Pengantar Mozilla untuk CSP](https://developer.mozilla.org/en-US/docs/Web/Security/CSP/Introducing_Content_Security_Policy){: .external}
-* [Pengantar HTML5 Rocks untuk CSP](//www.html5rocks.com/en/tutorials/security/content-security-policy/){: .external}
+* [Mozilla's intro to CSP](https://developer.mozilla.org/en-US/docs/Web/Security/CSP/Introducing_Content_Security_Policy){: .external}
+* [HTML5 Rocks' intro to CSP](//www.html5rocks.com/en/tutorials/security/content-security-policy/){: .external}
 * [CSP playground](http://www.cspplayground.com/){: .external }
-* [Spesifikasi CSP](//www.w3.org/TR/CSP/){: .external }
+* [CSP spec](//www.w3.org/TR/CSP/){: .external }
 
-Note: Beberapa browser memberlakukan <b>semua</b> kebijakan keamanan materi yang mereka terima.
-Beberapa nilai header CSP sekaligus yang diterima oleh browser di header respons atau elemen
-<code>&lt;meta&gt;</code> dikombinasikan dan diberlakukan sebagai satu kebijakan;
-sehingga melaporkan kebijakan juga dikombinasikan. Kebijakan dikombinasikan dengan mengambil
-perpotongan kebijakan; yakni, setiap kebijakan setelah yang pertama hanya bisa
-membatasi lebih jauh materi yang diizinkan, bukan memperluasnya.
+Note: Browsers enforce **all** content security policies that they receive. Multiple CSP header values received by the browser in the response header or
+<code>&lt;meta&gt;</code> elements are combined and enforced as a single policy; reporting policies are likewise combined. Policies are combined by taking the intersection of the policies; that is to say, each policy after the first can only further restrict the allowed content, not broaden it.
 
-### Menemukan materi campuran dengan kebijakan keamanan materi 
+### Finding mixed content with content security policy
 
-Anda bisa menggunakan kebijakan keamanan materi untuk mengumpulkan laporan materi campuran pada 
-situs Anda. Untuk mengaktifkan fitur ini, setel direktif `Content-Security-Policy-Report-Only` 
-dengan menambahkannya sebagai header respons untuk situs Anda. 
+You can use content security policy to collect reports of mixed content on your site. To enable this feature, set the `Content-Security-Policy-Report-Only` directive by adding it as a response header for your site.
 
-Header respons:  
+Response header:
 
-    Content-Security-Policy-Report-Only: default-src https: 'unsafe-inline' 'unsafe-eval'; report-uri https://example.com/reportingEndpoint 
+    Content-Security-Policy-Report-Only: default-src https: 'unsafe-inline' 'unsafe-eval'; report-uri https://example.com/reportingEndpoint
+    
 
+Whenever a user visits a page on your site, their browser sends JSON-formatted reports regarding anything that violates the content security policy to `https://example.com/reportingEndpoint`. In this case, anytime a subresource is loaded over HTTP, a report is sent. These reports include the page URL where the policy violation occurred and the subresource URL that violated the policy. If you configure your reporting endpoint to log these reports, you can track the mixed content on your site without visiting each page yourself.
 
-Bila pengguna mengunjungi sebuah laman di situs Anda, browser mereka akan mengirim laporan berformat JSON 
-mengenai hal-hal yang melanggar kebijakan keamanan materi ke 
-`https://example.com/reportingEndpoint`. Dalam hal ini, kapan saja 
-sub-sumber daya dimuat melalui HTTP, laporan akan dikirimkan. Laporan ini menyertakan URL 
-laman tempat terjadinya pelanggaran kebijakan dan URL sub-sumber daya yang 
-melanggar kebijakan. Jika Anda mengonfigurasi endpoint pelaporan untuk mencatat semua 
-laporan ini dalam log, Anda bisa melacak materi campuran di situs Anda tanpa mengunjungi sendiri setiap 
-laman. 
+The two caveats to this are:
 
-Dua keberatan untuk hal ini adalah:
+* Users have to visit your page in a browser that understands the CSP header. This is true for most modern browsers.
+* You only get reports for pages visited by your users. So if you have pages that don't get much traffic, it might be some time before you get reports for your entire site.
 
-* Pengguna harus mengunjungi laman Anda di browser yang memahami header CSP.
-  Hal ini berlaku untuk sebagian besar browser modern.
-* Anda hanya mendapatkan laporan untuk laman yang telah dikunjungi oleh pengguna Anda. Jadi jika Anda memiliki beberapa laman 
-  yang tidak banyak mendapatkan lalu lintas, hal ini mungkin kadang-kadang saja sebelum Anda mendapatkan laporan untuk 
-  seluruh situs Anda.
+For more information on CSP header format, see the [Content Security Policy specification](https://w3c.github.io/webappsec/specs/content-security-policy/#violation-reports){: .external}.
 
-Untuk informasi selengkapnya mengenai format header CSP, lihat [spesifikasi Content Security Policy](https://w3c.github.io/webappsec/specs/content-security-policy/#violation-reports){: .external}. 
+If you don't want to configure a reporting endpoint yourself, <https://report-uri.io/>{: .external} is a reasonable alternative.
 
-Jika Anda tidak ingin mengonfigurasi sendiri endpoint pelaporan, 
-[https://report-uri.io/](https://report-uri.io/){: .external} merupakan 
-alternatif yang pantas.
+### Upgrading insecure requests
 
-### Meningkatkan versi permintaan tidak aman
+One of the newest and best tools to automatically fix mixed content is the [**`upgrade-insecure-requests`**](//www.w3.org/TR/upgrade-insecure-requests/){: .external} CSP directive. This directive instructs the browser to upgrade insecure URLs before making network requests.
 
-Salah satu dari alat terbaru dan terbaik untuk memperbaiki materi campuran secara otomatis adalah direktif CSP
-[**`upgrade-insecure-requests`**](//www.w3.org/TR/upgrade-insecure-requests/){: .external}.
- Direktif ini memerintahkan browser untuk meningkatkan versi URL tidak aman 
-sebelum membuat permintaan jaringan.
+As an example, if a page contains an image tag with an HTTP URL:
 
-Sebagai contoh, jika laman berisi tag gambar dengan HTTP URL:
+    <img src="http://example.com/image.jpg">
+    
 
- 
-    <img src="http://example.com/image.jpg"> 
+The browser instead makes a secure request for
+<code><b>https:</b>//example.com/image.jpg</code>, thus saving the user from mixed content.
 
+You can enable this behavior either by sending a `Content-Security-Policy` header with this directive:
 
-Sebagai gantinya browser membuat permintaan aman untuk 
-<code><b>https:</b>//example.com/image.jpg</code>, sehingga melindungi pengguna dari 
-materi campuran.
+    Content-Security-Policy: upgrade-insecure-requests
+    
 
-Anda bisa mengaktifkan perilaku ini baik dengan mengirim header `Content-Security-Policy` 
-dengan direktif ini.
+Or by embedding that same directive inline in the document's `<head>` section using a `<meta>` element:
 
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+    
 
-    Content-Security-Policy: upgrade-insecure-requests  
+It is worth noting, that if the resource is not available over HTTPS, the upgraded request fails and the resource is not loaded. This maintains the security of your page.
 
+The `upgrade-insecure-requests` directive cascades into `<iframe>` documents, ensuring the entire page is protected.
 
-Atau dengan menyematkan direktif yang sama secara inline dalam bagian `<head>` 
-dokumen dengan menggunakan elemen `<meta>`:
+### Blocking all mixed content
 
-  
-    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">  
+Not all browsers support the upgrade-insecure-requests directive, so an alternative for protecting users is the [**`block-all-mixed-content`**](http://www.w3.org/TR/mixed-content/#strict-checking){: .external} CSP directive. This directive instructs the browser to never load mixed content; all mixed content resource requests are blocked, including both active and passive mixed content. This option also cascades into `<iframe>` documents, ensuring the entire page is mixed content free.
 
+A page can opt itself into this behavior either by sending a `Content-Security-Policy` header with this directive:
 
-Perlu diperhatikan, jika sumber daya tidak tersedia melalui HTTPS, 
-permintaan yang telah ditingkatkan versinya akan gagal dan sumber daya tidak dapat dimuat. Ini akan menjaga 
-keamanan laman Anda. 
+    Content-Security-Policy: block-all-mixed-content
+    
 
-Direktif `upgrade-insecure-requests` menurun ke dokumen `<iframe>`, 
-sehingga memastikan seluruh laman terlindungi.
+Or by embedding that same directive inline in the document's `<head>` section using a `<meta>` element:
 
-### Memblokir semua materi campuran
-
-Tidak semua browser mendukung direktif permintaan-tidak aman-tingkatkan versi, sehingga 
-alternatif untuk melindungi pengguna adalah direktif CSP 
-[**`block-all-mixed-content`**](http://www.w3.org/TR/mixed-content/#strict-checking){: .external}.
- Direktif ini memerintahkan browser agar tidak memuat materi campuran; 
-semua permintaan sumber daya materi campuran akan diblokir, termasuk materi campuran pasif 
-maupun aktif. Opsi ini juga menurun ke dokumen `<iframe>`, 
-sehingga memastikan seluruh laman bebas dari materi campuran.
-
-Sebuah laman bisa menyertakan dirinya sendiri ke dalam perilaku ini, baik dengan mengirim header 
-`Content-Security-Policy` dengan direktif ini:
-
-  
-    Content-Security-Policy: block-all-mixed-content  
-
-
-Atau dengan menyematkan direktif yang sama secara inline dalam bagian `<head>` 
-dokumen dengan menggunakan elemen `<meta>`:
-
-  
     <meta http-equiv="Content-Security-Policy" content="block-all-mixed-content">
+    
 
+The downside of using `block-all-mixed-content` is, perhaps obviously, that all content is blocked. This is a security improvement, but it means that these resources are no longer available on the page. This might break features and content that your users expect to be available.
 
-Kelemahan dari penggunaan `block-all-mixed-content` adalah, mungkin, karena semua 
-materi diblokir. Ini adalah peningkatan keamanan, namun ini berarti sumber daya 
-ini tidak lagi tersedia di laman. Hal ini mungkin merusak fitur dan 
-materi yang diharapkan pengguna untuk tersedia. 
+### Alternatives to CSP
 
-### Alternatif untuk CSP
+If your site is hosted for you by a platform such as Blogger, you may not have access to modify headers & add a CSP. Instead a viable alternative could be to use a website crawler to find issues across your site for you, such as [HTTPSChecker](https://httpschecker.net/how-it-works#httpsChecker){: .external } or [Mixed Content Scan](https://github.com/bramus/mixed-content-scan){: .external }
 
-Jika yang menjadi host situs Anda adalah platform seperti Blogger, Anda mungkin tidak memiliki 
-akses untuk memodifikasi header & menambahkan CSP.
-Sebagai gantinya, alternatif yang memadai barangkali adalah menggunakan perayap situs web untuk menemukan masalah 
-di seluruh bagian situs untuk Anda, misalnya 
-[HTTPSChecker](https://httpschecker.net/how-it-works#httpsChecker){: .external } 
-atau 
-[Mixed Content Scan](https://github.com/bramus/mixed-content-scan){: .external }
+## Feedback {: #feedback }
 
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
