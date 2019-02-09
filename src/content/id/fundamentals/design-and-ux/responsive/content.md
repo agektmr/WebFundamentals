@@ -1,259 +1,247 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Perhatikan materi serta layout dan desain grafis ketika membangun untuk berbagai pengguna dan perangkat.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Consider content as well as layout and graphic design when building for a range of users and devices.
 
-{# wf_updated_on: 2016-05-10 #}
-{# wf_published_on: 2016-05-10 #}
+{# wf_blink_components: N/A #} {# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2016-05-10 #}
 
-# Materi Multi-Perangkat {: .page-title }
+# Multi-Device Content {: .page-title }
 
 {% include "web/_shared/contributors/samdutton.html" %}
 
-## Bagaimana orang membaca di web
+## How people read on the web
 
-[Panduan penulisan pemerintah AS](http://www.usability.gov/how-to-and-tools/methods/writing-for-the-web.html) merangkum apa yang orang inginkan dari menulis di web:
+The [US government writing guide](http://www.usability.gov/how-to-and-tools/methods/writing-for-the-web.html) summarizes what people want from writing on the web:
 
-> Ketika menulis untuk web, menggunakan bahasa sederhana yang memungkinkan pengguna untuk menemukan apa yang mereka butuhkan, memahami apa yang mereka temukan, dan kemudian menggunakannya sesuai dengan kebutuhan.
->
-> Ini juga harus bisa ditindaklanjuti, bisa ditemukan, dan bisa dibagikan.
+> When writing for the web, using plain language allows users to find what they need, understand what they have found, and then use it to meet their needs.
+> 
+> It should also be actionable, findable, and shareable.
 
-Penelitian menunjukkan bahwa [orang tidak membaca laman web, tetapi mereka memindainya](https://www.nngroup.com/articles/concise-scannable-and-objective-how-to-write-for-the-web/). Rata-rata, [orang hanya membaca 20-28% dari materi laman web](https://www.nngroup.com/articles/how-little-do-users-read/). Membaca di layar jauh lebih lambat dibandingkan membaca di kertas. Orang akan bosan dan meninggalkan situs Anda kecuali informasi mudah untuk diakses dan dipahami.
+Research shows that [people don't read web pages, they scan](https://www.nngroup.com/articles/concise-scannable-and-objective-how-to-write-for-the-web/). On average, [people only read 20–28% of web page content](https://www.nngroup.com/articles/how-little-do-users-read/). Reading from screens is much slower than reading from paper. People will give up and leave your site unless information is easy to access and understand.
 
-## Cara menulis untuk perangkat seluler
+## How to write for mobile
 
-Fokus pada subjek inti dan langsung ceritakan. Agar tulisan bekerja optimal di berbagai perangkat dan tampilan yang terlihat, pastikan untuk menempatkan inti tulisan di awal: sebagai pedoman, idealnya [dalam empat paragraf pertama, sekitar 70 kata](http://www.bbc.co.uk/academy/journalism/article/art20130702112133610).
+Focus on the subject at hand and tell the story upfront. For writing to work across a range of devices and viewports, make sure to get your main points across at the start: as a rule, ideally [in the first four paragraphs, in around 70 words](http://www.bbc.co.uk/academy/journalism/article/art20130702112133610).
 
-Tanyakan pada diri sendiri apa yang orang inginkan dari situs Anda. Apakah mereka mencoba untuk menemukan sesuatu? Jika orang mengunjungi situs Anda untuk suatu informasi, pastikan bahwa semua teks berorientasi untuk membantu mereka mencapai tujuan. Menulis dalam [aktif voice](https://learnenglish.britishcouncil.org/en/english-grammar/verbs/active-and-passive-voice), menawarkan tindakan dan solusi.
+Ask yourself what people want from your site. Are they trying to find something out? If people visit your site for information, make sure that all your text is oriented to helping them achieve their goal. Write in the [active voice](https://learnenglish.britishcouncil.org/en/english-grammar/verbs/active-and-passive-voice), offer actions and solutions.
 
-Hanya mempublikasikan apa yang diinginkan pengunjung, tidak lebih.
+Publish only what your visitors want, and nothing more.
 
-[Penelitian pemerintah UK ](https://www.gov.uk/guidance/content-design/writing-for-gov-uk) juga menunjukkan bahwa:
+[UK government research](https://www.gov.uk/guidance/content-design/writing-for-gov-uk) also shows that:
 
-> 80% orang lebih suka kalimat yang ditulis dalam bahasa Inggris yang jelas — dan semakin
->kompleks masalahnya, semakin besar preferensi-nya (mis., 97% memilih "among
-> other things" dibandingkan bahasa Latin "inter alia").
->
-> Semakin tinggi tingkat pendidikan orang dan lebih spesialis pengetahuannya,
-> semakin besar preferensi mereka untuk bahasa Inggris sederhana.
+> 80% of people preferred sentences written in clear English — and the more complex the issue, the greater that preference (e.g., 97% preferred "among other things" over the Latin "inter alia").
+> 
+> The more educated the person and the more specialist their knowledge, the greater their preference for plain English.
 
-Dengan kata lain: gunakan bahasa sederhana, kata-kata pendek dan struktur kalimat sederhana — bahkan untuk pengguna teknis dan terpelajar. Jagalah nada suara agar selalu enak didengarkan, kecuali ada alasan untuk tidak melakukannya. Aturan lawas jurnalisme adalah menulis seolah-olah Anda sedang berbicara dengan seorang anak yang cerdas berusia 11 tahun.
+In other words: use plain language, shorter words and simple sentence structures — even for a literate, technical audience. Unless there's a good reason not to, keep your tone of voice conversational. An old rule of journalism is to write as if you are speaking to an intelligent 11 year old.
 
-## Miliaran pengguna berikutnya
+## The next billion users
 
-Pendekatan pared-down untuk penulisan sangat penting bagi pembaca di perangkat seluler, serta sangat penting ketika membuat materi untuk ponsel murah dengan tampilan yang terlihat yang kecil dan memerlukan lebih banyak tindakan gulir dan mungkin memiliki kualitas layar yang lebih rendah dan kurang responsif.
+The pared-down approach to writing is particularly important for readers on mobile devices, and is crucial when creating content for low-cost phones with small viewports that require more scrolling and may have lower quality displays and less responsive screens.
 
-Sebagian besar miliaran pengguna berikutnya akan online menggunakan perangkat murah. Mereka tidak ingin menghabiskan kuota data dengan menavigasi materi yang bertele-tele, dan mungkin tidak membacanya dalam bahasa utama mereka. Pangkas teks Anda: gunakan kalimat pendek, tanda baca minimal, paragraf lima baris atau kurang, dan judul satu baris. Pertimbangkan teks responsif (misalnya, menggunakan kepala berita pendek untuk tampilan yang terlihat yang lebih kecil) tapi [waspadalah terhadap kerugiannya](https://www.smashingmagazine.com/2012/02/ever-justification-for-responsive-text/).
+Most of the next billion users coming online will have cheap devices. They will not want to spend their data budget on navigating long-winded content, and may not be reading in their first language. Trim your text: use short sentences, minimal punctuation, paragraphs five lines or less, and single line headings. Consider responsive text (for example, using shorter headlines for smaller viewports) but [beware of the downsides](https://www.smashingmagazine.com/2012/02/ever-justification-for-responsive-text/).
 
-Perilaku minimalis untuk teks juga akan membuat materi Anda lebih mudah dilokalkan dan internasionalisasi — dan semakin besar kemungkinan materi Anda akan dikutip di media sosial.
+A minimalist attitude to text will also make your content easier to localize and internationalize — and make it more likely that your content gets quoted in social media.
 
-Intinya:
+The bottom line:
 
-* Buatlah tetap sederhana
-* Kurangi kesemrawutan
-* Langsung ke intinya
+* Keep it simple
+* Reduce clutter
+* Get to the point
 
+## Eliminate unnecessary content
 
-## Menghapus materi yang tidak perlu
+In terms of byte size, web pages are [big and getting bigger](http://httparchive.org/trends.php#bytesTotal&reqTotal).
 
-Dari segi ukuran byte, laman web menjadi [besar dan semakin besar](http://httparchive.org/trends.php#bytesTotal&reqTotal).
+[Responsive design techniques](/web/fundamentals/design-and-ux/responsive/) make it possible to serve different content for smaller viewports, but it's always sensible to start by streamlining text, images and other content.
 
-[Teknik desain responsif](/web/fundamentals/design-and-ux/responsive/) memungkinkan untuk menyajikan materi berbeda dalam tampilan yang terlihat yang lebih kecil, tapi akan lebih bijak jika memulai dengan merampingkan teks, gambar dan materi lainnya.
-
-> Pengguna web sering kali berorientasi tindakan, cenderung aktif memburu jawaban atas pertanyaan mereka saat ini, daripada diam mempelajari buku yang bagus.
->
+> Web users are often action oriented, "leaning forward" in the hunt for answers to their current question, rather than leaning back to absorb a good book.
+> 
 > — [Jakob Nielsen](https://www.nngroup.com/articles/concise-scannable-and-objective-how-to-write-for-the-web/)
 
-Tanyakan pada diri sendiri: apa yang orang ingin dapatkan ketika mereka mengunjungi situs saya?
+Ask yourself: what are people are trying to achieve when they visit my site?
 
-Apakah setiap komponen laman membantu pengguna mencapai tujuan mereka?
+Does every page component help users achieve their goal?
 
-### Menghapus elemen laman yang berlebihan
+### Remove redundant page elements
 
-File HTML terbentuk dari hampir 70k dan lebih dari sembilan permintaan untuk rata-rata laman web, menurut [Arsip HTTP](http://httparchive.org/trends.php#bytesHtml&reqHtml).
+HTML files constitute nearly 70k and more than nine requests for the average web page, according to [HTTP Archive](http://httparchive.org/trends.php#bytesHtml&reqHtml).
 
-Banyak situs populer menggunakan beberapa ribu elemen HTML per laman, dan beberapa ribu baris kode, bahkan di perangkat seluler. Ukuran file HTML yang terlalu besar [mungkin tidak memperlambat pemuatan laman](http://jsbin.com/zofavunapo/1/edit?html,js,output), namun payload HTML yang berat bisa menandakan materi yang gembung: file .html yang lebih besar berarti lebih banyak elemen, materi teks, atau keduanya.
+Many popular sites use several thousand HTML elements per page, and several thousand lines of code, even on mobile. Excessive HTML file size [may not make pages load more slowly](http://jsbin.com/zofavunapo/1/edit?html,js,output), but a heavy HTML payload can be a sign of content bloat: larger .html files mean more elements, more text content, or both.
 
-Mengurangi kompleksitas HTML juga akan mengurangi besar laman, membantu pelokalan serta internasionalisasi dan membuat desain responsif agar lebih mudah untuk direncanakan dan di-debug. Untuk informasi tentang cara menulis HTML yang lebih efisien, lihat [HTML berkinerja tinggi](https://samdutton.wordpress.com/2015/04/02/high-performance-html/).
+Reducing HTML complexity will also reduce page weight, help enable localization and internationalization and make responsive design easier to plan and debug. For information about writing more efficient HTML, see [High performance HTML](https://samdutton.wordpress.com/2015/04/02/high-performance-html/).
 
-> Setiap langkah tambahan yang dilakukan pengguna sebelum mereka mendapatkan nilai dari aplikasi, akan membuat Anda dikenai penalti 20% dari pengguna
->
->— [Gabor Cselle, Twitter](http://blog.gaborcselle.com/2012/10/every-step-costs-you-20-of-users.html)
+> Every step you make a user perform before they get value out of your app will cost you 20% of users
+> 
+> — [Gabor Cselle, Twitter](http://blog.gaborcselle.com/2012/10/every-step-costs-you-20-of-users.html)
 
-Hal yang sama berlaku untuk materi: bantu pengguna mendapatkan apa yang mereka inginkan secepat mungkin.
+The same applies to content: help users get to what they want as quickly as possible.
 
-Jangan sekadar menyembunyikan materi dari pengguna seluler. Arahkan ke [paritas materi](http://bradfrost.com/blog/mobile/content-parity/), karena Anda tidak akan bisa menebak apa fitur seluler yang diinginkan pengguna. Jika Anda memiliki sumber daya, buat versi alternatif dari materi yang sama untuk ukuran tampilan yang terlihat berbeda — bahkan jika hanya bagi elemen laman dengan prioritas tinggi.
+Don't just hide content from mobile users. Aim for [content parity](http://bradfrost.com/blog/mobile/content-parity/), since guessing what features your mobile users won't miss is bound to fail for someone. If you have the resources, create alternative versions of the same content for different viewport sizes — even if only for high priority page elements.
 
-Perhatikan pengelolaan materi dan alur kerja: sistem lawas menghasilkan materi lawas?
+Consider content management and workflow: are legacy systems resulting in legacy content?
 
-### Menyederhanakan teks
+### Simplify text
 
-Karena web semakin populer di perangkat seluler, Anda harus mengubah cara Anda menulis. Buatlah tetap sederhana, kurangi kesemrawutan dan langsung ke intinya.
+As the web goes mobile, you need to change the way you write. Keep it simple, reduce clutter and get to the point.
 
-### Membuang gambar yang tidak penting
+### Remove redundant images
 
 <div class="attempt-right">
   <figure>
-    <img src="imgs/http-archive-images.png" alt="Arsip HTTP menunjukkan peningkatan jumlah ukuran transfer gambar dan permintaan gambar" />
-    <figcaption>Menurut <a href="http://httparchive.org/trends.php#bytesImg&reqImg">data Arsip HTTP</a>, laman web rata-rata membuat 54 permintaan gambar.</figcaption>
+    <img src="imgs/http-archive-images.png" alt="HTTP Archive showing increasing number of image transfer sizes and image requests" />
+    <figcaption>According to <a href="http://httparchive.org/trends.php#bytesImg&reqImg">HTTP Archive data</a>, the average web page makes 54 requests for images.</figcaption>
   </figure>
 </div>
 
-Gambar bisa indah, menyenangkan dan informatif — namun gambar juga menggunakan properti laman, menambah ukuran laman, dan meningkatkan jumlah permintaan file. [Latensi semakin buruk ketika konektivitas memburuk](https://www.igvita.com/2012/07/19/latency-the-new-web-performance-bottleneck/), yang berarti bahwa permintaan file gambar yang berlebihan adalah masalah yang semakin meningkat ketika web digunakan di perangkat seluler.
-
+Images can be beautiful, fun and informative — but they also use page real estate, add to page weight, and increase the number of file requests. [Latency gets worse as connectivity gets worse](https://www.igvita.com/2012/07/19/latency-the-new-web-performance-bottleneck/), meaning that an excess of image file requests is an increasing problem as the web goes mobile.
 
 <div style="clear:both;"></div>
 
 <div class="attempt-right">
   <figure>
-    <img src="imgs/http-archive-content-type-pie-chart.png" alt="Bagan pai Arsip HTTP menunjukkan byte rata-rata per laman menurut jenis materi, sekitar 60% merupakan gambar">
-    <figcaption>Gambar membentuk lebih dari 60% berat laman.</figcaption>
+    <img src="imgs/http-archive-content-type-pie-chart.png" alt="HTTP Archive pie chart showing average bytes per page by content type, around 60% of which is images">
+    <figcaption>Images constitute over 60% of page weight.</figcaption>
   </figure>
 </div>
 
-Gambar juga mengonsumsi daya. Setelah layar, radio adalah fitur terbesar kedua yang paling menguras baterai. Semakin banyak permintaan gambar, semakin sering penggunaan radio, maka baterai akan semakin boros. Bahkan untuk merender gambar saja membutuhkan daya – dan ini sesuai dengan ukuran dan jumlahnya. Lihat laporan Stanford [Apa yang Menghabiskan Baterai Saya?](http://cdn.oreillystatic.com/en/assets/1/event/79/Who%20Killed%20My%20Battery_%20Analyzing%20Mobile%20Browser%20Energy%20Consumption%20Presentation.pdf)
+Images also consume power. After the screen, radio is the second biggest drain on your battery. More image requests, more radio usage, more flat batteries. Even just to render images takes power – and this is proportional to size and number. Check out the Stanford report [Who Killed My Battery?](http://cdn.oreillystatic.com/en/assets/1/event/79/Who%20Killed%20My%20Battery_%20Analyzing%20Mobile%20Browser%20Energy%20Consumption%20Presentation.pdf)
 
-Jika bisa, singkirkan gambarnya!
+If you can, get rid of images!
 
-Berikut adalah beberapa sarannya:
+Here are some suggestions:
 
-* Pertimbangkan desain yang tidak menggunakan gambar sama sekali, atau menggunakan gambar secukupnya. [Teks-saja bisa menjadi indah](https://onepagelove.com/tag/text-only)! Tanyakan pada diri sendiri, "Apa yang ingin dicapai pengunjung ke situs saya? Apakah gambar membantu proses tersebut? "
-* Di masa lalu, merupakan hal yang biasa untuk menyimpan judul dan teks lain dalam bentuk grafis. Pendekatan tersebut tidak merespons dengan baik untuk perubahan ukuran tampilan yang terlihat, serta menambah latensi dan ukuran laman. Menggunakan teks dalam bentuk grafis juga berarti teks tidak bisa ditemukan oleh mesin telusur, dan tidak dapat diakses oleh alat pembaca layar dan teknologi pendukung lainnya. Gunakan teks "sungguhan" apabila memungkinkan - Web Fonts dan CSS dapat memberikan tipografi yang indah.
-* Daripada gambar, gunakanlah CSS untuk gradien, bayangan, sudut lengkung, dan [tekstur latar belakang](http://lea.verou.me/css3patterns/){: .external }, fitur [didukung oleh semua browser modern](http://caniuse.com/#search=shadows). Namun harap diingat, bahwa CSS mungkin lebih baik dari gambar, tapi tetap ada [penalti render dan pemrosesan](http://www.smashingmagazine.com/2013/04/03/build-fast-loading-mobile-website/), yang signifikan terutama di perangkat seluler.
-* Gambar latar jarang sekali bekerja dengan baik di perangkat seluler. Anda bisa [menggunakan kueri media](http://udacity.github.io/responsive-images/examples/2-06/backgroundImageConditional/) untuk menghindari gambar latar pada tampilan yang terlihat yang kecil.
-* Hindari gambar layar pembuka.
-* [Gunakan CSS untuk animasi UI](/web/fundamentals/design-and-ux/animations/).
-* Kenali glyph Anda; gunakan [ikon dan simbol Unicode](https://en.wikipedia.org/wiki/List_of_Unicode_characters) bukan gambar, dengan Web Fonts bila perlu.
-* Pertimbangkan [font ikon](http://weloveiconfonts.com/#zocial); mereka adalah grafis vektor yang bisa diskalakan tanpa batas, dan seluruh kumpulan gambar bisa di unduh dalam satu font. (Namun, ketahui [persoalan ini](https://sarasoueidan.com/blog/icon-fonts-to-svg/).)
-* Elemen `<canvas>` bisa digunakan untuk membuat gambar di JavaScript dari garis, kurva, teks, dan gambar lainnya.
-* [Gambar URI Data atau SVG inline](http://udacity.github.io/responsive-images/examples/2-11/svgDataUri/) tidak akan mengurangi ukuran laman, namun mereka bisa mengurangi latensi dengan mengurangi jumlah permintaan sumber daya. SVG inline memiliki [dukungan yang baik pada browser seluler dan desktop](http://caniuse.com/#feat=svg-html5), dan [alat optimalisasi](http://petercollingridge.appspot.com/svg-optimiser) bisa secara signifikan mengurangi ukuran SVG. Demikian juga, URI Data [didukung dengan baik](http://caniuse.com/datauri). Keduanya bisa disisipkan di CSS.
-* Pertimbangkan menggunakan `<video>` bukannya animasi GIF. [Elemen video ini didukung oleh semua browser di perangkat seluler](http://caniuse.com/video) (kecuali Opera Mini).
+* Consider designs that avoid images altogether, or use images sparingly. [Text-only can be beautiful](https://onepagelove.com/tag/text-only)! Ask yourself, "What are visitors to my site trying to achieve? Do images help that process?"
+* In the old days, it was commonplace to save headings and other text as graphics. That approach does not respond well to viewport size changes, and adds to page weight and latency. Using text as a graphic also means the text can't be found by search engines, and isn't accessible by screenreaders and other assistive technologies. Use "real" text where possible — Web Fonts and CSS can enable beautiful typography.
+* Use CSS rather than images for gradients, shadows, rounded corners, and [background textures](http://lea.verou.me/css3patterns/){: .external }, features [supported by all modern browsers](http://caniuse.com/#search=shadows). Bear in mind, however, that CSS may be better than images, but there can still be a [processing and rendering penalty](http://www.smashingmagazine.com/2013/04/03/build-fast-loading-mobile-website/), especially significant on mobile.
+* Background images rarely work well on mobile. You can [use media queries](http://udacity.github.io/responsive-images/examples/2-06/backgroundImageConditional/) to avoid background images on small viewports.
+* Avoid splash screen images.
+* [Use CSS for UI animations](/web/fundamentals/design-and-ux/animations/).
+* Get to know your glyphs; use [Unicode symbols and icons](https://en.wikipedia.org/wiki/List_of_Unicode_characters) instead of images, with Web Fonts if necessary.
+* Consider [icon fonts](http://weloveiconfonts.com/#zocial); they are vector graphics that can be infinitely scaled, and an entire set of images can be downloaded in one font. (Be aware of [these concerns](https://sarasoueidan.com/blog/icon-fonts-to-svg/), however.)
+* The `<canvas>` element can be used to build images in JavaScript from lines, curves, text, and other images.
+* [Inline SVG or Data URI images](http://udacity.github.io/responsive-images/examples/2-11/svgDataUri/) will not reduce page weight, but they can reduce latency by reducing the number of resource requests. Inline SVG has [great support on mobile and desktop browsers](http://caniuse.com/#feat=svg-html5), and [optimization tools](http://petercollingridge.appspot.com/svg-optimiser) can significantly reduce SVG size. Likewise, Data URIs are [well supported](http://caniuse.com/datauri). Both can be inlined in CSS.
+* Consider using `<video>` instead of animated GIFs. [The video element is supported by all browsers on mobile](http://caniuse.com/video) (apart from Opera Mini).
 
-Untuk informasi selengkapnya, silakan lihat [Optimalisasi Gambar](/web/fundamentals/performance/optimizing-content-efficiency/image-optimization) serta [Menghilangkan dan mengganti gambar](/web/fundamentals/performance/optimizing-content-efficiency/image-optimization#eliminating-and-replacing-images).
+For more information see [Image Optimization](/web/fundamentals/performance/optimizing-content-efficiency/image-optimization) and [Eliminating and replacing images](/web/fundamentals/performance/optimizing-content-efficiency/image-optimization#eliminating-and-replacing-images).
 
+## Design content to work well across different viewport sizes {: #viewport }
 
-## Merancang materi agar bekerja dengan baik pada ukuran tampilan yang terlihat berbeda {: #viewport }
+> "Create a product, don't re-imagine one for small screens. Great mobile products are created, never ported."
+> 
+> — [Mobile Design and Development](https://goo.gl/KBAXj0), Brian Fling
 
-> "Create a product, don't re-imagine one for small screens. Great mobile
-> products are created, never ported."
->
->— <a href="https://goo.gl/KBAXj0">Mobile Design and Development</a>, Brian Fling
+Great designers don't "optimize for mobile" — they think responsively to build sites that work across a range of devices. The structure of text and other page content is critical to cross-device success.
 
+Many of the next billion users coming online use low-cost devices with small viewports. Reading on a low resolution 3.5" or 4" screen can be hard work.
 
-"Perancang hebat tidak hanya "mengoptimalkan untuk perangkat seluler" — mereka berpikir tanggap untuk membangun situs yang bekerja di berbagai perangkat. Struktur teks dan materi laman lainnya sangat penting untuk keberhasilan lintas-perangkat.
+Here is a photograph of the two together:
 
-Banyak dari semiliar pengguna berikutnya yang datang online menggunakan perangkat murah dengan tampilan yang terlihat yang kecil. Membaca dengan resolusi rendah di layar 3,5" atau 4" bukanlah pekerjaan yang mudah.
+![Photo comparing display of blog post on high end and low-cost smartphones](imgs/devices-photo.jpg)
 
-Berikut adalah foto dari keduanya:
+On the larger screen, text is small but readable.
 
-![Foto yang membandingkan tampilan entri blog pada ponsel cerdas yang mahal dan yang murah](imgs/devices-photo.jpg)
+On the smaller screen the browser renders the layout correctly, but the text is unreadable, even when zoomed in. The display is blurry and has a 'color cast' — white doesn't look white — making content less legible.
 
-Pada layar yang lebih besar, teks berukuran kecil tapi terbaca.
+### Design content for mobile
 
-Pada layar yang lebih kecil, browser merender layout dengan benar, namun teks tidak terbaca, bahkan ketika diperbesar. Layar terlihat buram dan memiliki 'color cast' — warna putih tidak terlihat putih — sehingga materi kurang terbaca.
+When building for a range of viewports, consider content as well as layout and graphic design, [design with real text and images, not dummy content](http://uxmyths.com/post/718187422/myth-you-dont-need-the-content-to-design-a-website).
 
-### Mendesain materi untuk perangkat seluler
+> "Content precedes design. Design in the absence of content is not design, it's decoration."
+> 
+> — Jeffrey Zeldman
 
-Ketika membangun untuk berbagai tampilan yang terlihat, pertimbangkan materi serta layout dan desain grafis,
-[rancang dengan teks dan gambar nyata, jangan hanya materi dummy](http://uxmyths.com/post/718187422/myth-you-dont-need-the-content-to-design-a-website).
+* Put your most important content at the top, since [users tend to read web pages in an F-shaped pattern](https://www.nngroup.com/articles/f-shaped-pattern-reading-web-content/).
+* Users visit your site to achieve a goal. Ask yourself what they need to achieve that goal and get rid of everything else. Get tough on visual and textual embellishments, legacy content, excessive links, and other clutter.
+* Be careful with social sharing icons; they can clutter layouts, and the code for them can slow down page loading.
+* Design [responsive layouts](/web/fundamentals/design-and-ux/responsive/) for content, not fixed device sizes.
 
-> "Materi mengawali desain. Desain tanpa materi bukanlah desain, tetapi hanya dekorasi."
->
->— Jeffrey Zeldman
+### Test content
 
-* Tempatkan materi Anda yang paling penting di atas, karena [pengguna cenderung membaca laman web dalam pola berbentuk-F](https://www.nngroup.com/articles/f-shaped-pattern-reading-web-content/).
-* Pengguna mengunjungi situs Anda untuk mencapai sebuah tujuan. Tanyakan pada diri sendiri apa yang mereka butuhkan untuk mencapai tujuan tersebut dan buang segala sesuatu yang lain. Lakukan tindakan tegas pada hiasan visual dan tekstual, materi lawas, tautan terlalu banyak, dan kesemrawutan lainnya.
-* Hati-hati dengan ikon berbagi sosial; mereka bisa mengacaukan layout, dan kodenya dapat memperlambat pemuatan laman.
-* Desain [layout responsif](/web/fundamentals/design-and-ux/responsive/) untuk materi, bukan ukuran perangkat tetap.
+Success: Whatever you do — **test**!
 
-### Menguji materi
+* Check readability on smaller viewports using Chrome DevTools and other [emulation tools](/web/fundamentals/performance/poor-connectivity/).
+* [Test your content under conditions of low bandwidth and high latency](/web/fundamentals/performance/poor-connectivity/); try out content in a variety of connectivity scenarios.
+* Try reading and interacting with your content on a low-cost phone.
+* Ask friends and colleagues to try out your app or site.
+* Build a simple device test lab. The [GitHub repo](https://github.com/GoogleChrome/MiniMobileDeviceLab) for Google's Mini Mobile Device Lab has instructions on how to build your own. [OpenSTF](https://github.com/openstf/stf) is a simple web application for testing websites on multiple Android devices.
 
-Berhasil: Apa pun yang Anda lakukan — **uji**!
+Here is OpenSTF in action:
 
-* Periksa keterbacaan pada tampilan yang terlihat yang lebih kecil menggunakan Chrome DevTools dan [alat emulasi](/web/fundamentals/performance/poor-connectivity/) lainnya.
-* [Uji materi di bawah kondisi bandwidth rendah dan latensi tinggi](/web/fundamentals/performance/poor-connectivity/); cobalah materi dalam berbagai skenario konektivitas.
-* Cobalah baca dan berinteraksi dengan materi Anda pada ponsel murah.
-* Ajak teman dan kolega untuk mencoba aplikasi atau situs Anda.
-* Membangun lab uji perangkat sederhana. [GitHub repo](https://github.com/GoogleChrome/MiniMobileDeviceLab) untuk Mini Mobile Device Lab Google memiliki petunjuk tentang cara membangun lab sendiri. [OpenSTF](https://github.com/openstf/stf) adalah aplikasi web sederhana untuk menguji situs web di beberapa perangkat Android.
+[![OpenSTF interface](imgs/stf.png)](https://github.com/openstf/stf)
 
-Berikut adalah OpenSTF sedang beraksi:
+Mobile devices are increasingly used to consume content and obtain information — not just as devices for communication, games and media.
 
-[![Antarmuka OpenSTF](imgs/stf.png)](https://github.com/openstf/stf)
+This makes it increasingly import to plan content to work well on a range of viewports, and to prioritize content when considering cross-device layout, interface and interaction design.
 
-Perangkat seluler semakin banyak dipakai untuk menggunakan materi dan memperoleh informasi — bukan hanya sebagai perangkat komunikasi, game dan media.
+## Understand data cost
 
-Hal ini membuat perencanaan materi semakin penting agar bisa bekerja dengan baik pada berbagai tampilan yang terlihat, dan untuk memprioritaskan materi ketika mempertimbangkan layout, antarmuka dan desain interaksi lintas-perangkat.
+Web pages are getting bigger.   
+  
+According to [HTTP Archive](http://httparchive.org/trends.php#bytesTotal&reqTotal), the average page weight for the [top one million sites](http://httparchive.org/about.php#listofurls) is now over 2MB.
 
+Users avoid sites or apps perceived to be slow or expensive, so it's crucial to understand the cost of loading page and app components.
 
-## Memahami biaya data
+Reducing page weight can also be profitable. [Chris Zacharias from YouTube](http://blog.chriszacharias.com/page-weight-matters) found that when they reduced the watch-page size from 1.2MB to 250KB:
 
-Laman web semakin besar. <br><br>Menurut <a href="http://httparchive.org/trends.php#bytesTotal&reqTotal">Arsip HTTP</a>, ukuran rata-rata laman untuk <a href="http://httparchive.org/about.php#listofurls">sejuta situs teratas</a> sekarang melampaui 2 MB.
+> Large numbers of people who were previously unable to use YouTube before were suddenly able to.
 
+In other words, reducing page weight **can open up whole new markets**.
 
-Pengguna menghindari situs atau aplikasi yang dianggap lambat atau mahal biaya datanya, jadi penting untuk memahami biaya pemuatan laman dan komponen aplikasi.
+### Calculate page weight {: #weight }
 
-Mengurangi ukuran laman juga menguntungkan. [Chris Zacharias dari YouTube](http://blog.chriszacharias.com/page-weight-matters) menemukan hal tersebut ketika mereka mengurangi ukuran laman-tontonan dari 1,2 MB ke 250 KB:
+There are a number of tools for calculating page weight. The Chrome DevTools Network panel shows the total byte size for all resources, and can be used to ascertain weights for individual asset types. You can also check which items have been retrieved from the browser cache.
 
-> Banyak orang yang sebelumnya tidak menggunakan YouTube, tiba-tiba memakainya.
+![Chrome DevTools Network panel showing resource sizes](imgs/chrome-dev-tools.png)
 
-Dengan kata lain, mengurangi ukuran laman **bisa membuka pasar baru**.
+Firefox and other browsers offer similar tools.
 
-### Menghitung ukuran laman {: #weight }
+[WebPagetest](http://webpagetest.org) provides the ability to test first and subsequent page loads. You can automate testing with [scripts](https://sites.google.com/a/webpagetest.org/docs/using-webpagetest/scripting) (for example, to log in to a site) or by using their [RESTful APIs](https://sites.google.com/a/webpagetest.org/docs/advanced-features/webpagetest-restful-apis). The following example (loading [developers.google.com/web](/web/)) shows that caching was successful and that subsequent page loads required no additional resources.
 
-Ada beberapa alat untuk menghitung ukuran laman. Panel Network pada Chrome DevTools menunjukkan ukuran byte total untuk semua sumber daya, dan bisa digunakan untuk memastikan ukuran untuk tipe aset individual. Anda juga bisa memeriksa item mana yang telah diambil dari cache browser.
+![WebPagetest results showing total byte size for first and repeat page visits](imgs/webpagetest-first-and-repeat.png)
 
-![Panel Network pada Chrome DevTools menunjukkan ukuran sumber daya](imgs/chrome-dev-tools.png)
+WebPagetest also gives a size and request breakdown by MIME type.
 
-Firefox dan browser lainnya menawarkan alat serupa.
+![WebPagetest pie charts showing requests and bytes by MIME type](imgs/webpagetest-requests-and-bytes-pie-charts.png)
 
-[WebPagetest](http://webpagetest.org) menyediakan kemampuan untuk menguji pemuatan laman pertama dan berikutnya. Anda bahkan bisa mengotomatiskan pengujian dengan menggunakan [skrip](https://sites.google.com/a/webpagetest.org/docs/using-webpagetest/scripting) (misalnya, untuk masuk ke situs) atau menggunakan [RESTful API](https://sites.google.com/a/webpagetest.org/docs/advanced-features/webpagetest-restful-apis). Contoh berikut (memuat [developers.google.com/web](/web/)) menunjukkan bahwa proses cache telah berhasil dan pemuatan laman berikutnya tidak membutuhkan sumber daya tambahan.
+### Calculate page cost
 
-![Hasil WebPagetest menampilkan ukuran total byte untuk kunjungan laman pertama dan ulangan](imgs/webpagetest-first-and-repeat.png)
+For many users, data doesn't just cost bytes and performance — it costs money.
 
-WebPagetest juga memberikan ukuran dan meminta rincian berdasarkan tipe MIME.
+The site [What Does My Site Cost?](https://whatdoesmysitecost.com/){: .external } enables you to estimate the actual financial cost of loading your site. The histogram below shows how much it costs (using a prepaid data plan) to load [amazon.com](https://www.amazon.com/).
 
-![Bagan pai WebPagetest menampilkan permintaan dan byte berdasarkan tipe MIME](imgs/webpagetest-requests-and-bytes-pie-charts.png)
+![Estimated data cost in 12 countries) of loading the amazon.com homepage](imgs/what-does-my-site-cost.png)
 
-### Menghitung biaya laman
-
-Bagi banyak pengguna, biaya data tidak hanya berupa byte dan kinerja — namun juga uang.
-
-Situs [What Does My Site Cost?](https://whatdoesmysitecost.com/){: .external } memungkinkan Anda untuk memperkirakan biaya finansial yang sesungguhnya untuk memuat situs Anda. Histogram di bawah ini menunjukkan berapa biaya (menggunakan paket data prabayar) untuk memuat [amazon.com](https://www.amazon.com/).
-
-![Perkiraan biaya data di 12 negara) saat memuat beranda amazon.com](imgs/what-does-my-site-cost.png)
-
-Ingatlah bahwa ini tidak memperhitungkan keterjangkauan harga relatif terhadap pendapatan. Data dari [blog.jana.com](https://blog.jana.com/2015/05/21/the-data-trap-affordable-smartphones-expensive-data/) menunjukkan biaya data.
+Bear in mind that this doesn't take into account affordability relative to income. Data from [blog.jana.com](https://blog.jana.com/2015/05/21/the-data-trap-affordable-smartphones-expensive-data/) shows the cost of data.
 
 <table>
   <tr>
     <td></td>
-    <td><strong>Biaya paket data 500 MB<br>(USD)</strong></td>
-    <td><strong>Upah minimum per jam<br>(USD)</strong></td>
-    <td><strong>Jam kerja untuk membayar<br>paket data 500 MB</strong></td>
+    <td><strong>500MB data plan<br>cost (USD)</strong></td>
+    <td><strong>Hourly minimum<br>wage (USD)</strong></td>
+    <td><strong>Hours of work to pay<br>for 500MB data plan</strong></td>
   </tr>
   <tr>
     <td>India</td>
-    <td>$3,38</td>
-    <td>$0,20</td>
-    <td>17 jam</td>
+    <td>$3.38</td>
+    <td>$0.20</td>
+    <td>17 hours</td>
   </tr>
   <tr>
     <td>Indonesia</td>
-    <td>$2,39</td>
-    <td>$0,43</td>
-    <td>6 jam</td>
+    <td>$2.39</td>
+    <td>$0.43</td>
+    <td>6 hours</td>
   </tr>
   <tr>
-    <td>Brasil</td>
-    <td>$13,77</td>
-    <td>$1,04</td>
-    <td>13 jam</td>
+    <td>Brazil</td>
+    <td>$13.77</td>
+    <td>$1.04</td>
+    <td>13 hours</td>
   </tr>
 </table>
 
+Page weight isn't just a problem for emerging markets. In many countries, people use mobile plans with limited data, and will avoid your site or app if they perceive it to be heavy and expensive. Even "unlimited" cell and wifi data plans generally have a data limit beyond which they are blocked or throttled.
 
-Ukuran laman bukan hanya masalah bagi pasar negara berkembang. Di banyak negara, orang menggunakan paket data seluler dengan data terbatas, dan akan menghindari situs atau aplikasi Anda jika mereka menganggap hal itu berat dan mahal. Bahkan paket data seluler dan wifi "tak terbatas" biasanya memiliki batas data yang apabila terlewati, data akan diblokir atau dibatasi kecepatannya.
+The bottom line: page weight affects performance and costs money. [Optimizing content efficiency](/web/fundamentals/performance/optimizing-content-efficiency/) shows how to reduce that cost.
 
-Intinya: ukuran laman memengaruhi kinerja dan biaya. [Mengoptimalkan efisiensi materi](/web/fundamentals/performance/optimizing-content-efficiency/) menunjukkan cara mengurangi biaya tersebut.
+## Feedback {: #feedback }
 
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
