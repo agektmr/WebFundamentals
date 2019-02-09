@@ -1,16 +1,12 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Dokumentasi referensi untuk audit Lighthouse "Situs Tidak Menggunakan Kejadian Mutasi Dalam Skripnya Sendiri".
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Reference documentation for the "Avoids Mutation Events In Its Own Scripts" Lighthouse audit.
 
-{# wf_updated_on: 2016-10-04 #}
-{# wf_published_on: 2016-10-04 #}
+{# wf_updated_on: 2018-07-23 #} {# wf_published_on: 2016-10-04 #} {# wf_blink_components: N/A #}
 
-# Situs Tidak Menggunakan Kejadian Mutasi Dalam Skripnya Sendiri  {: .page-title }
+# Avoids Mutation Events In Its Own Scripts {: .page-title }
 
-## Mengapa audit itu penting {: #why }
+## Overview {: #overview }
 
-Kejadian mutasi berikut membahayakan kinerja dan tidak digunakan lagi dalam
-spesifikasi kejadian DOM:
+The following mutation events harm performance and are deprecated in the DOM events spec:
 
 * `DOMAttrModified`
 * `DOMAttributeNameChanged`
@@ -22,19 +18,14 @@ spesifikasi kejadian DOM:
 * `DOMNodeRemovedFromDocument`
 * `DOMSubtreeModified`
 
-## Cara untuk lulus audit {: #how }
+## Recommendations {: #recommendations }
 
-Di bawah **URL**, Lighthouse melaporkan setiap mutasi event listener yang ditemukan
-dalam kode Anda. Ganti setiap kejadian mutasi ini dengan `MutationObserver`.
-Lihat [`MutationObserver`][mdn] pada MDN Untuk bantuan selengkapnya.
+Under **URLs**, Lighthouse reports each mutation event listener that it found in your code. Replace each of these mutation events with a `MutationObserver`. See [`MutationObserver`](https://developer.mozilla.org/en-US/docs/Web/API/MutationObserver) on MDN for more help.
 
-[mdn]: https://developer.mozilla.org/en-US/docs/Web/API/MutationObserver
+## More information {: #more-info }
 
-{% include "web/tools/lighthouse/audits/implementation-heading.html" %}
+Lighthouse collects all of the event listeners on the page, and flags any listener that uses one of the types listed above.
 
-Lighthouse mengumpulkan semua event listener di laman, dan menandai
-setiap listener yang menggunakan salah satu tipe yang tercantum dalam [Mengapa audit itu
-penting](#why).
+## Feedback {: #feedback }
 
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
