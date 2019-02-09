@@ -1,110 +1,87 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Polymer Starter Kit.
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Polymer Starter Kit.
 
-{# wf_published_on: 2015-01-01 #}
-{# wf_updated_on: 2016-09-12 #}
+{# wf_published_on: 2015-01-01 #} {# wf_updated_on: 2016-09-12 #}
 
 # Polymer Starter Kit {: .page-title }
 
-[Polymer Starter Kit 다운로드](https://github.com/polymerelements/polymer-starter-kit/releases){: .button .button-primary }
+[Download Polymer Starter Kit](https://github.com/polymerelements/polymer-starter-kit/releases){: .button .button-primary }
 
-## Polymer Starter Kit란 무엇인가요?
+## What is the Polymer Starter Kit?
 
-[Polymer Starter Kit](https://github.com/PolymerElements/polymer-starter-kit){: .external }
-는 창 기반 레이아웃을 사용하여 앱을 빌드하는 시작점입니다. 레이아웃은
-`app-layout` 요소에서 제공됩니다.
+The [Polymer Starter Kit](https://github.com/PolymerElements/polymer-starter-kit){: .external } is a starting point for building apps using a drawer-based layout. The layout is provided by `app-layout` elements.
 
-이 템플릿은 `polymer-cli` 툴체인과 함께
-'PRPL 패턴'을 사용합니다. 이 패턴을 사용하면 사용자가 요청한 최초 경로에서 콘텐츠를 신속히 처음으로 전달하고 콘텐츠와 상호작용할 수 있으며,
-앱에 필요한 나머지 구성 요소를 사전에 포착하고
-사용자가 앱을 내비게이션하는 동안 필요에 따라 점진적으로 로드하여 이후의 내비게이션 속도를 높여줍니다.
+This template, along with the `polymer-cli` toolchain, also demonstrates use of the "PRPL pattern" This pattern allows fast first delivery and interaction with the content at the initial route requested by the user, along with fast subsequent navigation by pre-caching the remaining components required by the app and progressively loading them on-demand as the user navigates through the app.
 
+The PRPL pattern, in a nutshell:
 
-PRPL 패턴 요약:
+* **Push** components required for the initial route
+* **Render** initial route ASAP
+* **Pre-cache** components for remaining routes
+* **Lazy-load** and progressively upgrade next routes on-demand
 
-* 최초 경로에 필요한 **푸시** 구성 요소
-* 최초 경로를 최대한 빨리 **렌더링**
-* 나머지 경로에 대해 구성 요소를 **사전 캐시**
-* 필요에 따라 다음 경로를 **서서히 로드**하고 점진적으로 업그레이드
+### Migrating from Polymer Starter Kit v1?
 
-### Polymer Starter Kit v1에서 마이그레이션이란?
+[Check out our blog post that covers what's changed in PSK2 and how to migrate!](https://www.polymer-project.org/1.0/blog/2016-08-18-polymer-starter-kit-or-polymer-cli.html){: .external }
 
-[PSK2에서 변경된 내용과 마이그레이션 방법을 다루는 블로그 게시물을 참조하세요!](https://www.polymer-project.org/1.0/blog/2016-08-18-polymer-starter-kit-or-polymer-cli.html){: .external }
+## Setup
 
-## 설정
+### Prerequisites
 
-### 사전 요구사항
-
-[polymer-cli](https://github.com/Polymer/polymer-cli){: .external } 설치:
+Install [polymer-cli](https://github.com/Polymer/polymer-cli){: .external }:
 
     npm install -g polymer-cli
+    
 
-### 템플릿에서 프로젝트 초기화
+### Initialize project from template
 
     mkdir my-app
     cd my-app
     polymer init starter-kit
+    
 
-### 개발 서버 시작
+### Start the development server
 
-이 명령은 `http://localhost:8080`에서 앱을 실행하고 앱의 기본 URL
-경로를 제공합니다.
+This command serves the app at `http://localhost:8080` and provides basic URL routing for the app:
 
     polymer serve --open
+    
 
+### Build
 
-### 빌드
+This command performs HTML, CSS, and JS minification on the application dependencies, and generates a service-worker.js file with code to pre-cache the dependencies based on the entrypoint and fragments specified in `polymer.json`. The minified files are output to the `build/unbundled` folder, and are suitable for serving from a HTTP/2+Push compatible server.
 
-이 명령은 애플리케이션 종속성에 대해 HTML, CSS 및 JS를 최소화하고
-코드로 service-worker.js 파일을 생성하여
-`polymer.json`에 지정된 진입점과 프래그먼트를 기반으로 종속성을 사전 캐시합니다.
-최소화된 파일은 `build/unbundled` 폴더로 출력되고,
-HTTP/2+Push 호환 서버에서 실행하기에 적합합니다.
-
-또한, 이 명령은
-프레그먼트 번들링을 사용하여 대체 `build/bundled` 폴더를 생성합니다. 이 폴더는
-H2/push 비호환 서버나 H2/Push를 지원하지 않는 클라이언트에서 실행하기에 적합합니다.
+In addition the command also creates a fallback `build/bundled` folder, generated using fragment bundling, suitable for serving from non H2/push-compatible servers or to clients that do not support H2/Push.
 
     polymer build
+    
 
-### 빌드 미리보기
+### Preview the build
 
-이 명령은 `http://localhost:8080`에서
-번들되지 않은 상태의 최소화된 앱 버전을 푸시 호환 서버에서 실행되는 것처럼 실행합니다.
+This command serves the minified version of the app at `http://localhost:8080` in an unbundled state, as it would be served by a push-compatible server:
 
     polymer serve build/unbundled
+    
 
-이 명령은 `http://localhost:8080`에서
-프래그먼트 번들링을 사용하여 생성된 앱의 최소화된 버전을 실행합니다.
+This command serves the minified version of the app at `http://localhost:8080` generated using fragment bundling:
 
     polymer serve build/bundled
+    
 
-### 테스트 실행
+### Run tests
 
-이 명령은 현재 컴퓨터에 설치된 브라우저에 대해
-[Web Component Tester](https://github.com/Polymer/web-component-tester){: .external }를
-실행합니다.
+This command will run [Web Component Tester](https://github.com/Polymer/web-component-tester){: .external } against the browsers currently installed on your machine.
 
     polymer test
+    
 
-### 새 뷰 추가
+### Adding a new view
 
-경로 등 필요에 따라 로드되는 뷰를 여러 개 추가하거나
-애플리케이션의 중요하지 않은 섹션을 점진적으로 렌더링해서
-앱을 확장할 수 있습니다.  필요에 따라 로드되는 각각의 프래그먼트는
-포함된 `polymer.json` 파일의 `fragments` 목록에 추가되어야 합니다.  그에 따라 이러한 구성 요소와
-종속성이 사전 캐시된 구성 요소에
-추가됩니다(또한 폴백 `bundled` 빌드에 번들이 생성됨).
+You can extend the app by adding more views that will be demand-loaded e.g. based on the route, or to progressively render non-critical sections of the application. Each new demand-loaded fragment should be added to the list of `fragments` in the included `polymer.json` file. This will ensure those components and their dependencies are added to the list of pre-cached components (and will have bundles created in the fallback `bundled` build).
 
-## 다음 단계
+## Next Steps
 
-[시작 가이드](https://www.polymer-project.org/1.0/start/toolbox/set-up){: .external }를 참조하세요.
+Check out the [getting started guide](https://www.polymer-project.org/1.0/start/toolbox/set-up){: .external }
 
-## 자세히 알아보기
+## Learn More
 
-자세한 내용을 알아보거나, 코드를 확인하거나, 문제를 제출하거나, 참여를 원한다면
-Git 저장소[https://github.com/polymerelements/polymer-starter-kit](https://github.com/polymerelements/polymer-starter-kit){: .external }를 참조하세요.
-
-
-{# wf_devsite_translation #}
+To learn more, see the code, submit an issue, or to get involved, check out our Git repo at <https://github.com/polymerelements/polymer-starter-kit>{: .external }
