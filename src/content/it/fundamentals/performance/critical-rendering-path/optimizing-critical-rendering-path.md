@@ -1,36 +1,30 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Per fornire il tempo più rapido possibile al primo rendering, dobbiamo ottimizzare tre variabili: ridurre il numero di risorse critiche, diminuire il numero di byte critici e ridurre la lunghezza del percorso critico.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Learn the key factors in optimizing the critical rendering path.
 
-{# wf_updated_on: 2014-04-27 #}
-{# wf_published_on: 2014-03-31 #}
+{# wf_updated_on: 2018-08-17 #} {# wf_published_on: 2014-03-31 #} {# wf_blink_components: N/A #}
 
-# Ottimizzazione del percorso di rendering critico {: .page-title }
+# Optimizing the Critical Rendering Path {: .page-title }
 
 {% include "web/_shared/contributors/ilyagrigorik.html" %}
 
+To deliver the fastest possible time to first render, we need to minimize three variables:
 
+- The number of critical resources.
+- The critical path length.
+- The number of critical bytes.
 
-Per fornire il tempo più rapido possibile al primo rendering, dobbiamo ottimizzare tre variabili:
+A critical resource is a resource that could block initial rendering of the page. The fewer of these resources, the less work for the browser, the CPU, and other resources.
 
-* **Ridurre il numero di risorse critiche.**
-* **Ridurre il numero di byte critici.**
-* **Ridurre la lunghezza del percorso critico.**
+Similarly, the critical path length is a function of the dependency graph between the critical resources and their bytesize: some resource downloads can only be initiated after a previous resource has been processed, and the larger the resource the more roundtrips it takes to download.
 
-Una risorsa critica è una qualsiasi risorsa che potrebbe bloccare il rendering della pagina. Minore è il numero di queste risorse sulla pagina, minore sarà il lavoro che dovrà eseguire il browser per portare il contenuto sullo schermo e si verificherà anche minore conflitto per la CPU e per le altre risorse.
+Finally, the fewer critical bytes the browser has to download, the faster it can process content and render it visible on the screen. To reduce the number of bytes, we can reduce the number of resources (eliminate them or make them non-critical) and ensure that we minimize the transfer size by compressing and optimizing each resource.
 
-Similmente, minore è il numero di byte critici che il browser deve scaricare, più velocemente potrà arrivare a elaborare il contenuto e renderlo visibile sullo schermo. Per ridurre il numero di byte possiamo diminuire il numero di risorse (eliminarle o renderle non critiche) e anche assicurarci di ridurre le dimensioni di trasferimento attraverso la compressione e l'ottimizzazione di ciascuna risorsa.
+**The general sequence of steps to optimize the critical rendering path is:**
 
-Infine, la lunghezza del percorso critico varia in base a un grafico di dipendenza tra tutte le risorse critiche necessarie alla pagina e le relative dimensioni in byte: alcuni download delle risorse possono essere avviati solo una volta che è stata elaborata una risorsa precedente, e più grande è la risorsa maggiore sarà il numero di roundtrip necessari a scaricarla.
+1. Analyze and characterize your critical path: number of resources, bytes, length.
+2. Minimize number of critical resources: eliminate them, defer their download, mark them as async, and so on.
+3. Optimize the number of critical bytes to reduce the download time (number of roundtrips).
+4. Optimize the order in which the remaining critical resources are loaded: download all critical assets as early as possible to shorten the critical path length.
 
-In altre parole, il numero di risorse, le loro dimensioni in byte e la lunghezza del percorso critico sono correlate tra di loro ma non sono esattamente la stessa cosa. Ad esempio, potresti non essere in grado di ridurre il numero di risorse critiche o di abbreviare la lunghezza del percorso critico, ma la diminuzione del numero di byte critici rappresenta comunque un'importante ottimizzazione &mdash; e viceversa.
+## Feedback {: #feedback }
 
-**La sequenza generale di passaggi per l'ottimizzazione del percorso di rendering critico è:**
-
-1. Analizzare e caratterizzare il tuo percorso critico: numero di risorse, byte e lunghezza.
-2. Ridurre il numero di risorse critiche: eliminarle, rinviarne il download, segnarle come async, e così via.
-3. Ottimizzare l'ordine in cui le risorse critiche rimanenti vengono caricate: vuoi scaricare il prima possibile tutti gli asset critici per ridurre la lunghezza del percorso critico.
-4. Ottimizzare il numero di byte critici per ridurre il tempo di download (numero di roundtrip).
-
-
-
+{% include "web/_shared/helpful.html" %}
