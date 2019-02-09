@@ -1,141 +1,89 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: 이 대화형 가이드를 따라 DevTools를 사용하여 강제 동기식 레이아웃을 진단하는 방법을 배워보세요.
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Follow along with this interactive guide to learn how to use DevTools to diagnose forced synchronous layouts.
 
-{# wf_updated_on: 2016-03-31 #}
-{# wf_published_on: 2015-04-13 #}
+{# wf_updated_on: 2018-07-27 #} {# wf_published_on: 2015-04-13 #} {# wf_blink_components: Platform>DevTools #}
 
-# 강제 동기식 레이아웃 진단 {: .page-title }
+# Diagnose Forced Synchronous Layouts {: .page-title }
 
-{% include "web/_shared/contributors/kaycebasques.html" %}
-{% include "web/_shared/contributors/megginkearney.html" %}
+{% include "web/_shared/contributors/kaycebasques.html" %} {% include "web/_shared/contributors/megginkearney.html" %}
 
-DevTools를 사용하여
-강제 동기식 레이아웃을 진단하는 방법을 배워보세요.
+Warning: This page is deprecated. See [Get Started With Analyzing Runtime Performance](/web/tools/chrome-devtools/evaluate-performance) for an up-to-date tutorial on forced synchronous layouts.
 
-이 가이드에서는 실시간 데모를 사용하여 
-문제를 파악하고 해결하는 방식을 제시하여 [강제 동기식 레이아웃][fsl]을 디버그하는 방법을 알려드립니다.  이 데모에서는 
-[`requestAnimationFrame()`][raf]를 사용하여 이미지를 애니메이션으로 만듭니다. 이는 
-프레임 기반 애니메이션을 다룰 때 권장되는 방식입니다. 다만 이 경우 애니메이션 내에 상당량의 버벅거림이 
-있습니다. 여러분의 목표는 버벅거림의 원인을 파악하여 문제를 해결해서
-데모가 60fps의 아주 매끄러운 속도로 실행되게 하는 것입니다. 
+Learn how to use DevTools to diagnose forced synchronous layouts.
 
-[fsl]: /web/fundamentals/performance/rendering/avoid-large-complex-layouts-and-layout-thrashing#avoid-forced-synchronous-layouts
+In this guide you learn how to debug [forced synchronous layouts](/web/fundamentals/performance/rendering/avoid-large-complex-layouts-and-layout-thrashing#avoid-forced-synchronous-layouts) by identifying and fixing issues in a live demo. The demo animates images using [`requestAnimationFrame()`](/web/fundamentals/performance/rendering/optimize-javascript-execution#use-requestanimationframe-for-visual-changes), which is the recommended approach for frame-based animation. However, there's a considerable amount of jank in the animation. Your goal is to identify the cause of the jank and fix the issue so that the demo runs at a silky-smooth 60 FPS.
 
-[raf]: /web/fundamentals/performance/rendering/optimize-javascript-execution#use-requestanimationframe-for-visual-changes
+## Gather data
 
+First, you need to capture data so that you can understand exactly what happens as your page runs.
 
-## 데이터 수집
+1. Open the [demo](https://googlesamples.github.io/web-fundamentals/tools/chrome-devtools/rendering-tools/forcedsync.html).
+2. Open the **Timeline** panel of DevTools.
+3. Enable the **JS Profile** option. When analyzing the flame chart later, this option will let you see exactly which functions were called. 
+4. Click **Start** on the page to start the animation.
+5. Click the **Record** button on the Timeline panel to start the Timeline recording. 
+6. Wait two seconds.
+7. Click the **Record** button again to stop the recording. 
 
-우선, 데이터를 캡처하여 페이지가 실행될 때 정확히 무슨 일이 일어나는지
-확실히 파악해야 합니다. 
+When you are finished recording you should see something like the following on the Timeline panel.
 
-1. [데모](https://googlesamples.github.io/web-fundamentals/tools/chrome-devtools/rendering-tools/forcedsync.html)를 엽니다.
-1. DevTools의 **Timeline** 패널을 엽니다.
-1. **JS Profile** 옵션을 활성화합니다. 나중에 Flame Chart를 분석할 때, 이 옵션을 보고
-정확히 어떤 함수를 호출했는지 확인할 수 있습니다.
-1. 페이지에서 **Start**를 클릭하여 애니메이션을 시작합니다. 
-1. Timeline 패널에서 **Record** 버튼을 클릭하여 타임라인
-기록을 시작합니다.
-1. 2초간 기다립니다. 
-1. **Record** 버튼을 다시 클릭하여 기록을 중단합니다. 
+![timeline recording of janky demo](imgs/demo-recording.png)
 
-기록을 마쳤으면 Timeline 패널에 다음과 같은 내용이 표시되는 것이
-정상입니다. 
+## Identify problem
 
-![버벅거림 현상의 타임라인 기록 데모](imgs/demo-recording.png)
+Now that you have your data, it's time to start making sense of it.
 
-## 문제 파악
+At a glance, you can see in the **Summary** pane of your Timeline recording that the browser spent most of its time rendering. Generally speaking, if you can [optimize your page's layout operations](/web/tools/chrome-devtools/profile/rendering-tools/analyze-runtime#layout), you may be able to reduce time spent rendering.
 
-이제 데이터를 확보했으니 데이터에 무슨 의미가 있는지 파악할 차례입니다. 
+![Timeline summary](imgs/summary.png)
 
-간략하게 보면, 타임라인 기록의 **Summary** 창에서 
-브라우저가 대부분의 시간을 렌더링에 보낸다는 사실을 확인할 수 있습니다. 일반적으로
-[페이지의 레이아웃 작업을 최적화][layout]할 수 있다면 렌더링에 소모하는 시간을 절약할 수
-있을 것입니다. 
+Now move your attention to the pink bars just below the **Overview** pane. These represent frames. Hover over them to see more information about the frame.
 
-![타임라인 요약](imgs/summary.png)
+![long frame](imgs/long-frame.png)
 
-이제 **Overview** 창 바로 아래에 있는 분홍색 막대로 주의를 돌려봅시다.
-이들은 프레임을 나타냅니다. 이 위로 마우스를 가져가면 해당 프레임에 대한 자세한 정보를
-볼 수 있습니다.
+The frames are taking a long time to complete. For smooth animations you want to target 60 FPS.
 
-![긴 프레임](imgs/long-frame.png)
+Now it's time to diagnose exactly what is wrong. Using your mouse, [zoom in](/web/tools/chrome-devtools/profile/evaluate-performance/timeline-tool#zoom) on a call stack.
 
-프레임을 완료하려면 오랜 시간이 걸립니다. 애니메이션이 매끄럽게 재생되려면 60FPS를 목표로 삼는 것이 
-좋습니다. 
+![zoomed timeline recording](imgs/zoom.png)
 
-이제 정확히 무엇이 잘못되었는지 진단할 때가 왔습니다. 마우스를 사용하여 콜 스택을
-[확대][zoom]합니다. 
+The top of the stack is an `Animation Frame Fired` event. The function that you passed to `requestAnimationFrame()` is called whenever this event is fired. Below `Animation Frame Fired` you see `Function Call`, and below that you see `update`. You can infer that a method called `update()` is the callback for `requestAnimationFrame()`.
 
-![확대된 타임라인 기록](imgs/zoom.png)
+Note: This is where the **JS Profile** option that you enabled earlier is useful. If it was disabled, you would just see `Function Call`, followed by all the small purple events (discussed next), without details on exactly which functions were called.
 
-스택 맨 위에 `Animation Frame Fired` 이벤트가 있습니다. 이 이벤트가 발생할 때마다
-`requestAnimationFrame()`에 전달한 함수가 호출됩니다.
-`Animation Frame Fired` 아래 `Function Call`이 있고, 그 아래
-`update`가 표시됩니다. `update()`라는 메서드가 
-`requestAnimationFrame()`의 콜백이라는 사실을 추론할 수 있습니다. 
+Now, focus your attention on all of the small purple events below the `update` event. The top part of many of these events are red. That's a warning sign. Hover over these events and you see that DevTools is warning you that your page may be a victim of forced reflow. Forced reflow is just another name for forced synchronous layouts.
 
-참고: 이곳은 앞서 활성화한 **JS Profile** 옵션이 유용하게 쓰이는 
-곳입니다. 이 옵션이 비활성화되어 있는 경우, `Function Call`만 표시되며 그 뒤를 이어
-작은 보라색 이벤트(다음에 논의)가 표시되지만 정확히 어떤 함수를
-호출했는지 세부정보는 없습니다.
+![hovering over layout event](imgs/layout-hover.png)
 
-이제 `update`
-이벤트 아래의 작은 보라색 이벤트 전체로 주의를 집중해 봅시다. 이들 이벤트 중 대다수는 상단이 빨간색입니다. 이것은 경고 표시입니다.
-이들 이벤트 위로 마우스를 가져가면 페이지가 강제 리플로우의 희생자일 수 있다는 
-DevTools 경고를 볼 수 있습니다. 강제 리플로우는
-강제 동기식 레이아웃을 다른 이름으로 부르는 말일 뿐입니다. 
+Now it's time to take a look at the function which is causing all of the forced synchronous layouts. Click on one of the layout events to select it. In the Summary pane you should now see details about this event. Click on the link under **Layout Forced** (`update @ forcedsync.html:457`) to jump to the function definition.
 
-![레이아웃 이벤트 위로 마우스 가져가기](imgs/layout-hover.png)
+![jump to function definition](imgs/jump.png)
 
-이제 이 모든
-강제 동기식 레이아웃을 초래하는 함수를 살펴볼 차례입니다. 레이아웃 이벤트를 클릭하여 선택합니다. 
-이제 Summary 창에 이 이벤트에 대한 세부정보가 표시되어 있을 것입니다. 
-**Layout Forced**(`update @ forcedsync.html:457`) 아래의 링크를 클릭하여
-함수 정의로 점프합니다.
+You should now see the function definition in the **Sources** panel.
 
-![함수 정의로 점프](imgs/jump.png)
+![function definition in sources panel](imgs/definition.png)
 
-이제 **Sources** 패널에서 함수 정의를 볼 수 있습니다. 
+The `update()` function is the callback handler for `requestAnimationCallback()`. The handler computes each image's `left` property based off of the image's `offsetTop` value. This forces the browser to perform a new layout immediately to make sure that it provides the correct value. Forcing a layout during every animation frame is the cause of the janky animations on the page.
 
-![Sources 패널에 표시된 함수 정의](imgs/definition.png)
+So now that you've identified the problem, you can try to fix it directly in DevTools.
 
-`update()` 함수는
-`requestAnimationCallback()`의 콜백 핸들러입니다. 이 핸들러는 이미지의 `offsetTop` 값을 기준으로 각 이미지의 
-`left` 속성을 계산합니다. 따라서 브라우저가 즉시 강제로 새로운 레이아웃을 수행하여
-올바른 값을 제공하도록 보장합니다.
-애니메이션 프레임마다 레이아웃을 강제 적용하면 페이지 애니메이션에 버벅거림이 발생하는 원인이 
-됩니다. 
+## Apply fix within DevTools
 
-이제 문제를 파악했으니 DevTools에서 직접 해결을
-시도해볼 수 있습니다.
+This script is embedded in HTML, so you can't edit it via the **Sources** panel (scripts in `*.js` can be edited in the Sources panel, however).
 
-[layout]: /web/tools/chrome-devtools/profile/rendering-tools/analyze-runtime#layout
-[zoom]: /web/tools/chrome-devtools/profile/evaluate-performance/timeline-tool#zoom
+However, to test your changes, you can redefine the function in the Console. Copy and paste the function definition from the HTML file into the DevTools Console. Delete the statement that uses `offsetTop` and uncomment the one below it. Press `Enter` when you're done.
 
-## DevTools 내에서 수정 사항 적용
+![redefining the problematic function](imgs/redefinition.png)
 
-이 스크립트는 HTML에 포함되어 있으므로 **Sources** 패널을 통해 편집할 수 없습니다.
-(하지만 `*.js` 내의 스크립트는 Sources 패널에서 편집할 수 있습니다). 
+Restart the animation. You can verify visually that it's much smoother now.
 
-하지만 변경 사항을 테스트하려면 해당 함수를 콘솔에서 재정의하면 됩니다.
-HTML 파일에서 함수 정의를 복사하여 DevTools 콘솔에
-붙여넣습니다. `offsetTop`을 사용하는 문을 삭제하고 그 아래에 있는 문의 주석 처리를 
-제거합니다. 작업을 마치면 `Enter` 키를 누릅니다. 
+## Verify with another recording
 
-![문제 있는 함수 재정의](imgs/redefinition.png)
+It's always good practice to take another recording and verify that the animation truly is faster and more performant than before.
 
-애니메이션을 다시 시작합니다. 이제 전보다 훨씬 매끄러워진 것을 육안으로 확인할 수 있습니다. 
+![timeline recording after optimization](imgs/after.png)
 
-## 또 다른 기록으로 확인
+Much better.
 
-또 다른 기록을 사용하여 애니메이션이 정말로 전보다
-빠르고 성능이 우수한지 확인하는 것이 좋습니다. 
+## Feedback {: #feedback }
 
-![최적화 이후 타임라인 기록](imgs/after.png)
-
-훨씬 더 낫습니다.
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
