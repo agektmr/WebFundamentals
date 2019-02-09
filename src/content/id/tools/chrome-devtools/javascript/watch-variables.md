@@ -1,56 +1,49 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Chrome DevTools memudahkan Anda melihat banyak variabel sekaligus dalam aplikasi.
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Chrome DevTools allows you to easily see multiple variables throughout your application.
 
-{# wf_published_on: 2016-02-11 #}
-{# wf_updated_on: 2016-02-11 #}
+{# wf_published_on: 2016-02-11 #} {# wf_updated_on: 2018-07-27 #} {# wf_blink_components: Platform>DevTools #}
 
-# Melihat variabel di Sources {: .page-title }
+# Watch variables in Sources {: .page-title }
 
 {% include "web/_shared/contributors/jonathangarbee.html" %}
 
-Chrome DevTools memungkinkan Anda untuk secara mudah melihat beberapa variabel di seluruh aplikasi.
-Dengan melihat variabel dalam Sources maka Anda tidak perlu membuka konsol dan bisa fokus untuk memperbaiki kode.
+<aside class="warning">
+  <b>Warning:</b> This page is deprecated. See following section for up-to-date
+  information: <a href="reference#watch">Watch the values of custom JavaScript
+  expressions</a>
+</aside>
 
-Panel Sources menyediakan kemampuan untuk melihat variabel dalam aplikasi Anda.
-Ini terletak di bagian watch dari bilah sisi debugger.
-Dengan mengambil keuntungan dari fungsionalitas ini, Anda tidak perlu berulang kali mencatat log objek ke konsol.
+Chrome DevTools allows you to easily see multiple variables throughout your application. Watching variables within Sources keeps you out of the console and focused on improving your code.
 
-![Bagian watch dari debugger](imgs/sources-watch-variables-location.png)
+The Sources panel provides the ability to watch variables within your application. This is located in the watch section of the debugger sidebar. By taking advantage of this functionality you will not need repeatedly log objects to the console.
 
-## Menambahkan variabel
+![Watch section of debugger](imgs/sources-watch-variables-location.png)
 
-Untuk menambahkan variabel ke daftar watch gunakan ikon tambahkan di sebelah kanan bagian judul.
-Ini akan membuka masukan inline tempat Anda bisa memberikan nama variabel ke daftar watch.
-Setelah diisi, tekan tombol <kbd>Enter</kbd> untuk menambahkannya ke dalam daftar.
+## Adding variables
 
-![Menambahkan ke tombol daftar watch](imgs/add-variable-to-watch.png)
+To add a variable to the watch list use the add icon to the right of the section heading. This will open an inline input where you provide the variable name to watch. Once it is filled in press your <kbd>Enter</kbd> key to add it to the list.
 
-Watcher akan menunjukkan nilai variabel sekarang selagi ditambahkan.
-Jika variabel tidak disetel atau tidak bisa ditemukan, akan menampilkan <samp>&lt;Not Available&gt;</samp> untuk nilai tersebut.
+![Add to watch list button](imgs/add-variable-to-watch.png)
 
-![variabel yang belum didefinisikan pada daftar watch](imgs/undefined-variable-in-watch.png)
+The watcher will show you the current value of the variable as it is added. If the variable is not set or can't be found it will show <samp>&lt;Not Available&gt;</samp> for the value.
 
-## Memperbarui variabel
+![Undefined variable in the watch list](imgs/undefined-variable-in-watch.png)
 
-Nilai variabel bisa berubah selama aplikasi terus berjalan.
-Daftar watch bukanlah tampilan langsung dari variabel kecuali Anda melangkah melalui eksekusi.
-Ketika Anda melangkah melalui eksekusi menggunakan [breakpoint](add-breakpoints), nilai-nilai yang dilihat akan diperbarui secara otomatis.
-Untuk secara manual mengecek ulang variabel dalam daftar, tekan tombol refresh di sebelah kanan bagian judul.
+## Updating variables
 
-![Tombol refresh melihat variabel](imgs/refresh-variables-being-watched.png)
+Variable values may change as an application continues to operate. The watch list is not a live view of the variables unless you are stepping through execution. When you are stepping through execution using <breakpoints>, the watched values will update automatically. To manually recheck the variables in the list press the refresh button to the right of the section heading.
 
-Saat refresh diminta, keadaan aplikasi saat ini diperiksa ulang.
-Setiap item yang diamati akan diperbarui dengan nilai terbaru.
+![Refresh watch variables button](imgs/refresh-variables-being-watched.png)
 
-![Variabel yang dilihat telah diperbaharui](imgs/updated-variable-being-watched.png)
+As the refresh is requested the current application state is rechecked. Every watched item will be updated with the current values.
 
-## Menghapus variabel
+![Updated variable being watched](imgs/updated-variable-being-watched.png)
 
-Agar apa yang Anda lihat seminimal mungkin sehingga bisa bekerja lebih cepat, Anda mungkin perlu menghapus variabel dari daftar watch.
-Ini bisa dilakukan dengan mengarahkan ke atas variabel kemudian mengeklik ikon removal yang muncul di sebelah kanan.
+## Removing variables
 
-![Variable Hover yang akan dihapus dari daftar watch](imgs/hover-to-delete-watched-variable.png)
+To keep what you are looking at minimal for faster work you may need to remove variables from the watch list. This can be done by hovering the variable and then clicking the removal icon that appears to the right.
 
+![Hover variable to remove from watch list](imgs/hover-to-delete-watched-variable.png)
 
-{# wf_devsite_translation #}
+## Feedback {: #feedback }
+
+{% include "web/_shared/helpful.html" %}
