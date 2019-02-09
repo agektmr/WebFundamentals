@@ -1,24 +1,18 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: 優れたエディタ、デバッグツール、ビルドツールを含むワークスペースをマルチデバイス ウェブ向けに設定します。
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Set up your workspace to include a good editor, debugging, and build tools for the multi-device web.
 
-{# wf_updated_on:2015-04-13 #}
-{# wf_published_on:2015-04-13 #}
+{# wf_updated_on: 2015-04-13 #} {# wf_published_on: 2015-04-13 #}
 
-# スタート ガイド {: .page-title }
+# Getting Started {: .page-title }
 
-優れたエディタ、デバッグツール、ビルドツールを含むワークスペースをマルチデバイス ウェブ向けに設定します。
+Set up your workspace to include a good editor, debugging, and build tools for the multi-device web.
 
-生産性を確保するには時間が大きな鍵になります。開発中は、大半の時間を開発環境で過ごします。堅牢で拡張可能なエディタ、強力なデバッグツールや開発ツールを導入することで、開発を成功に導く準備を整えます。
+Time is a huge factor in staying productive. Your development environment is where you spend most of yours. Set yourself up for success by including a strong, extensible editor and powerful debugging & development tools.
 
-* [エディタの設定](setup-editor)
-* [DevTools ワークスペースによる永続化の設定](setup-workflow)
-* [CSS と JS のプリプロセッサの設定](setup-preprocessors)
-* [コマンドライン ショートカットの設定](setup-shortcuts)
-* [ブラウザ拡張機能の設定](setup-extensions)
-* [ビルドツールの設定](setup-buildtools)
+* [Setup Your Editor](setup-editor)
+* [Setup Persistence with DevTools Workspaces](setup-workflow)
+* [Setup CSS and JS Preprocessors](setup-preprocessors)
+* [Setup Command Line Shortcuts](setup-shortcuts)
+* [Setup Browser Extensions](setup-extensions)
+* [Setup Your Build Tools](setup-buildtools)
 
-設定を終えたら、続けて [Chrome デベロッパー ツール（DevTools）](/web/tools/chrome-devtools)のページを確認します。DevTools は、ページの開発、テスト、デバッグに役立つ、Chrome 組み込みのツールです。
-
-
-{# wf_devsite_translation #}
+When you're done, continue to learn more about the [Chrome Developer Tools (DevTools)](/web/tools/chrome-devtools), Chrome's built-in tool that helps you develop, test, and debug your pages.
