@@ -1,57 +1,51 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: 애니메이션은 잘 실행되어야 하며 그렇지 않으면 사용자에게 거부감을 줄 수 있습니다.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Animations must perform well, otherwise they will negatively impact the user experience.
 
-{# wf_updated_on: 2016-08-23 #}
-{# wf_published_on: 2014-08-08 #}
+{# wf_blink_components: Blink>Animation #} {# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2014-08-08 #}
 
-# 애니메이션 및 성능 {: .page-title }
+# Animations and Performance {: .page-title }
 
-{% include "web/_shared/contributors/paullewis.html" %}
-{% include "web/_shared/contributors/samthorogood.html" %}
+{% include "web/_shared/contributors/paullewis.html" %} {% include "web/_shared/contributors/samthorogood.html" %}
 
-애니메이션을 만들 때마다 60fps를 유지하세요. 애니메이션이 버벅거리거나 정지하면 사용자의 눈에 거슬리고 거부감을 줄 수 있습니다.
+Maintain 60fps whenever you are animating, because any less results in stutters or stalls that will be noticeable to your users and negatively impact their experiences.
 
 ### TL;DR {: .hide-from-toc }
-* 애니메이션이 성능 문제를 일으키지 않도록 주의하세요. 주어진 CSS 속성 애니메이션의 영향을 숙지하세요.
-* 페이지의 기하학적 형태(레이아웃)를 변경하거나 페인트를 유발하는 애니메이션 속성은 특히 비용이 많이 듭니다.
-* 가급적 변형 및 불투명도 변경을 고수하세요.
-*  <code>will-change</code>를 사용하여 애니메이션 적용 대상을 브라우저가 알도록 하세요.
 
+* Take care that your animations don’t cause performance issues; ensure that you know the impact of animating a given CSS property.
+* Animating properties that change the geometry of the page (layout) or cause painting are particularly expensive.
+* Where you can, stick to changing transforms and opacity.
+* Use `will-change` to ensure that the browser knows what you plan to animate.
 
-애니메이션 속성은 무료가 아니며 각 속성의 비용은 다릅니다. 예를 들어, 요소의 `width` 및 `height` 애니메이션은 기하학적 형태를 변경하고, 페이지의 다른 요소를 이동하거나 크기를 변경할 수 있습니다. 이 프로세스를 *레이아웃*(Firefox와 같은 Gecko 기반 브라우저에서는 *리플로우*)이라고 하며, 페이지에 많은 요소가 있는 경우 비용이 많이 들 수 있습니다. 레이아웃이 트리거될 때마다 페이지 또는 페이지의 일부를 그려야 하며, 이는 일반적으로 레이아웃 작업 자체보다 휠씬 많은 비용이 듭니다.
+Animating properties is not free, and some properties are cheaper to animate than others. For example, animating the `width` and `height` of an element changes its geometry and may cause other elements on the page to move or change size. This process is called *layout* (or *reflow* in Gecko-based browsers like Firefox), and can be expensive if your page has a lot of elements. Whenever layout is triggered, the page or part of it will normally need to be painted, which is typically even more expensive than the layout operation itself.
 
-레이아웃 또는 페인트를 트리거하는 애니메이션 속성은 가급적 피해야 합니다. 최신 브라우저의 경우 이는 애니메이션을 `opacity` 또는 `transform`으로 제한하는 것을 의미하며, 브라우저가 이 둘을 효과적으로 최적화할 수 있습니다. 애니메이션이 자바스크립트 또는 CSS에 의해 처리되는지 여부는 상관이 없습니다.
+Where you can, you should avoid animating properties that trigger layout or paint. For most modern browsers, this means limiting animations to `opacity` or `transform`, both of which the browser can highly optimize; it doesn’t matter if the animation is handled by JavaScript or CSS.
 
-개별 CSS 속성에 의해 트리거되는 작업의 전체 목록은 [CSS 트리거](http://csstriggers.com)를 참조하세요. 또한 [HTML5 Rocks에서 고성능 애니메이션](http://www.html5rocks.com/en/tutorials/speed/high-performance-animations/)을 생성하기 위한 전체 가이드를 참조하세요.
+For a full list of the work triggered by individual CSS properties, see [CSS Triggers](http://csstriggers.com). You can find a full guide on creating [High Performance Animations on HTML5 Rocks](http://www.html5rocks.com/en/tutorials/speed/high-performance-animations/).
 
-### will-change 속성 사용
+### Using the will-change property
 
-[`will-change`](https://dev.w3.org/csswg/css-will-change/)를 사용하여 요소의 속성을 변경하려고 한다는 것을 브라우저가 알도록 하세요. 그러면 개발자가 변경을 수행하기 전에 브라우저를 최적화할 수 있습니다. 그러나 `will-change`를 남용하지는 마세요. 그럴 경우 브라우저가 리소스를 낭비하여 더 많은 성능 문제를 야기할 수 있습니다.
+Use the [`will-change`](https://dev.w3.org/csswg/css-will-change/) to ensure the browser knows that you intend to change an element’s property. This allows the browser to put the most appropriate optimizations in place ahead of when you make the change. Don't overuse `will-change`, however, because doing so can cause the browser to waste resources, which in turn causes even more performance issues.
 
-일반적으로 사용자의 상호작용으로 또는 애플리케이션의 상태로 인해 그 다음 200ms 이내에 애니메이션이 트리거될 수 있는 경우, 애니메이션 요소에 `will-change`를 적용하는 것이 좋습니다. 대부분의 경우 앱의 현재 뷰에서 애니메이션을 적용할 모든 요소는 변경할 속성에 대해 `will-change`를 활성화해야 합니다. 이전 가이드에서 사용한 상자 샘플의 경우, transform 및 opacity에 `will-change`를 추가하면 다음과 같게 됩니다.
-
+The general rule of thumb is that if the animation might be triggered in the next 200ms, either by a user’s interaction or because of your application’s state, then having `will-change` on animating elements is a good idea. For most cases, then, any element in your app’s current view that you intend to animate should have `will-change` enabled for whichever properties you plan to change. In the case of the box sample we’ve been using throughout the previous guides, adding `will-change` for transforms and opacity looks like this:
 
     .box {
       will-change: transform, opacity;
     }
     
 
-이제 이를 지원하는 브라우저, [현재는 Chrome, Firefox 및 Opera](http://caniuse.com/#feat=will-change)가 적절한 최적화를 수행하여 해당 속성의 변경 또는 애니메이션 적용을 지원합니다.
+Now the browsers that support it, [currently Chrome, Firefox, and Opera](http://caniuse.com/#feat=will-change), will make the appropriate optimizations under the hood to support changing or animating those properties.
 
-## CSS와 자바스크립트의 성능 비교
+## CSS vs JavaScript performance
 
-CSS 및 자바스크립트 애니메이션의 성능 관련 장단점을 토론하는 페이지와 코멘트 스레드가 웹에 많이 있습니다. 다음과 같은 사항에 유의하세요.
+There are many pages and comments threads around the web that discuss the relative merits of CSS and JavaScript animations from a performance perspective. Here are a few points to keep in mind:
 
-* CSS 기반 애니메이션과 기본 지원되는 웹 애니메이션은 일반적으로 '컴포지터 스레드'라고 불리는 스레드에서 처리됩니다. 이것은 스타일 지정, 레이아웃, 페인트 및 자바스크립트가 실행되는 브라우저의 '메인 스레드'와는 다릅니다. 즉, 브라우저가 메인 스레드에서 비용이 많이 드는 작업을 실행 중인 경우, 이들 애니메이션은 중단되지 않고 계속 실행될 수 있습니다.
+* CSS-based animations, and Web Animations where supported natively, are typically handled on a thread known as the "compositor thread". This is different from the browser's "main thread", where styling, layout, painting, and JavaScript are executed. This means that if the browser is running some expensive tasks on the main thread, these animations can keep going without being interrupted.
 
-* 많은 경우에 변형 및 불투명도의 다른 변경사항도 컴포지터 스레드에 의해 처리됩니다.
+* Other changes to transforms and opacity can, in many cases, also be handled by the compositor thread.
 
-* 애니메이션이 페인트 및/또는 레이아웃을 트리거하는 경우, 작업을 수행하기 위해 '메인 스레드'가 필요합니다. 이는 CSS 및 자바스크립트 기반 애니메이션에 모두 적용되며, 레이아웃 또는 페인트의 오버헤드는 CSS 또는 자바스크립트 실행과 연관된 모든 작업에 악영향을 미치고, 해결 불가능한 문제를 유발할 수 있습니다.
+* If any animation triggers paint, layout, or both, the "main thread" will be required to do work. This is true for both CSS- and JavaScript-based animations, and the overhead of layout or paint will likely dwarf any work associated with CSS or JavaScript execution, rendering the question moot.
 
-주어진 속성 애니메이션에 의해 어떤 작업이 트리거되는지에 대한 자세한 내용은 [CSS 트리거](http://csstriggers.com)를 참조하세요.
+For more information about which work is triggered by animating a given property, see [CSS Triggers](http://csstriggers.com).
 
+## Feedback {: #feedback }
 
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
