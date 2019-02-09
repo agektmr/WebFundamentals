@@ -1,0 +1,224 @@
+---
+redirects:
+  - 
+    from: /web/tools/chrome-devtools/console/command-line-reference
+    to: /web/tools/chrome-devtools/console/utilities
+  - 
+    from: /web/tools/chrome-devtools/console/console-reference
+    to: /web/tools/chrome-devtools/console/api
+  - 
+    from: /web/tools/lighthouse/audits/required-aria-attributes
+    to: https://dequeuniversity.com/rules/axe/2.2/aria-required-attr
+  - 
+    from: /web/tools/lighthouse/audits/valid-aria-values
+    to: https://dequeuniversity.com/rules/axe/2.2/aria-valid-attr-value
+  - 
+    from: /web/tools/lighthouse/audits/valid-aria-attributes
+    to: https://dequeuniversity.com/rules/axe/2.2/aria-valid-attr
+  - 
+    from: /web/tools/lighthouse/audits/aria-allowed-attributes
+    to: https://dequeuniversity.com/rules/axe/2.2/aria-allowed-attr
+  - 
+    from: /web/tools/lighthouse/audits/unoptimized-images
+    to: /web/tools/lighthouse/audits/optimize-images
+  - 
+    from: /web/tools/lighthouse/audits/first-interactive
+    to: /web/tools/lighthouse/audits/first-cpu-idle
+  - 
+    from: /web/tools/lighthouse/audits/consistently-interactive
+    to: /web/tools/lighthouse/audits/time-to-interactive
+  - 
+    from: /web/tools/polymer-starter-kit/...
+    to: https://www.polymer-project.org/2.0/start/toolbox/set-up
+  - 
+    from: /web/tools/lighthouse/audits/theme-color
+    to: /web/tools/lighthouse/audits/address-bar
+  - 
+    from: /web/tools/lighthouse/audits/manifest-contains-theme_color
+    to: /web/tools/lighthouse/audits/address-bar
+  - 
+    from: /web/tools/chrome-devtools/javascript/add-breakpoints
+    to: /web/tools/chrome-devtools/javascript/breakpoints
+  - 
+    from: /web/tools/chrome-devtools/settings
+    to: /web/tools/chrome-devtools/ui
+  - 
+    from: /web/tools/lighthouse/audits/has-viewport-meta-tag%22
+    to: /web/tools/lighthouse/audits/has-viewport-meta-tag
+  - 
+    from: /web/tools/lighthouse/audits/contrast-ratio
+    to: https://dequeuniversity.com/rules/axe/2.2/color-contrast?application=lighthouse
+  - 
+    from: /web/tools/chrome-devtools/javascript/What%20do%20the%20colors%20mean%20in%20Chrome%20Developer%20Tools%20Scope%20panel
+    to: /web/tools/chrome-devtools/javascript
+  - 
+    from: /web/tools/lighthouse/audits/blocking-links
+    to: /web/tools/lighthouse/audits/blocking-resources
+  - 
+    from: /web/tools/lighthouse/audits/app-cache
+    to: /web/tools/lighthouse/audits/appcache
+  - 
+    from: /web/tools/chrome-devtools/memory-problems/memory-diagnosis
+    to: /web/tools/chrome-devtools/memory-problems/
+  - 
+    from: /web/tools/chrome-devtools/javascript/console/console-ui
+    to: /web/tools/chrome-devtools/console/
+  - 
+    from: /web/tools/chrome-devtools/javascript/command-line/command-line-reference
+    to: /web/tools/chrome-devtools/console/command-line-reference
+  - 
+    from: /web/tools/chrome-devtools/javascript/breakpoints/...
+    to: /web/tools/chrome-devtools/javascript/
+  - 
+    from: /web/tools/chrome-devtools/inspect-styles/basics
+    to: /web/tools/chrome-devtools/inspect-styles/
+  - 
+    from: /web/tools/chrome-devtools/inspect-styles/shortcuts
+    to: /web/tools/chrome-devtools/shortcuts
+  - 
+    from: /web/tools/chrome-devtools/remote-debugging/remote-debugging
+    to: /web/tools/chrome-devtools/remote-debugging/
+  - 
+    from: /web/tools/lighthouse/audits/
+    to: /web/tools/lighthouse/
+  - 
+    from: /web/tools/chrome-devtools/evaluate-performance/rail
+    to: /web/fundamentals/performance/rail
+  - 
+    from: /web/tools/chrome-devtools/network-performance/
+    to: /web/tools/chrome-devtools/network-performance/resource-loading
+  - 
+    from: /web/tools/chrome-devtools/evaluate-performance/
+    to: /web/tools/chrome-devtools/evaluate-performance/timeline-tool
+  - 
+    from: /web/tools/chrome-devtools/javascript/
+    to: /web/tools/chrome-devtools/javascript/overview
+  - 
+    from: /web/tools/chrome-devtools/manage-data/
+    to: /web/tools/chrome-devtools/manage-data/local-storage
+  - 
+    from: /web/tools/chrome-devtools/iterate/device-mode/media-queries
+    to: /web/tools/chrome-devtools/device-mode/emulate-mobile-viewports
+  - 
+    from: /web/tools/chrome-devtools/iterate/inspect-styles/basics
+    to: /web/tools/chrome-devtools/inspect-styles
+  - 
+    from: /web/tools/iterate/inspect-styles/media-queries
+    to: /web/tools/chrome-devtools/device-mode/media-queries
+  - 
+    from: /web/tools/iterate/...
+    to: /web/tools/chrome-devtools/...
+  - 
+    from: /web/tools/javascript/native-development/...
+    to: /web/tools/chrome-devtools/remote-debugging/webviews
+  - 
+    from: /web/tools/javascript/...
+    to: /web/tools/chrome-devtools/javascript/...
+  - 
+    from: /web/tools/material-design-lite/...
+    to: http://www.getmdl.io/
+  - 
+    from: /web/tools/profile-performance/...
+    to: /web/tools/chrome-devtools/evaluate-performance/...
+  - 
+    from: /web/tools/setup/device-testing/device-input
+    to: /web/tools/chrome-devtools/device-mode/device-input-and-sensors
+  - 
+    from: /web/tools/setup/device-testing/...
+    to: /web/tools/chrome-devtools/device-mode/
+  - 
+    from: /web/tools/setup/readability/...
+    to: /web/tools/chrome-devtools/javascript/...
+  - 
+    from: /web/tools/setup/remote-debugging/...
+    to: /web/tools/chrome-devtools/remote-debugging/...
+  - 
+    from: /web/tools/setup/workspace/setup-devtools
+    to: /web/tools/chrome-devtools/
+  - 
+    from: /web/tools/setup/workspace/...
+    to: /web/tools/setup/
+  - 
+    from: /web/tools/devtools
+    to: /web/tools/chrome-devtools/
+  - 
+    from: /web/tools/chrome-devtools/iterate/...
+    to: /web/tools/chrome-devtools/...
+  - 
+    from: /web/tools/chrome-devtools/debug/breakpoints/...
+    to: /web/tools/chrome-devtools/javascript/...
+  - 
+    from: /web/tools/chrome-devtools/debug/command-line/...
+    to: /web/tools/chrome-devtools/console/...
+  - 
+    from: /web/tools/chrome-devtools/debug/console/console-ui
+    to: /web/tools/chrome-devtools/console/
+  - 
+    from: /web/tools/chrome-devtools/debug/console/...
+    to: /web/tools/chrome-devtools/console/...
+  - 
+    from: /web/tools/chrome-devtools/debug/readability/...
+    to: /web/tools/chrome-devtools/javascript/...
+  - 
+    from: /web/tools/chrome-devtools/debug/remote-debugging/remote-debugging
+    to: /web/tools/chrome-devtools/remote-debugging/
+  - 
+    from: /web/tools/chrome-devtools/debug/snippets/
+    to: /web/tools/chrome-devtools/snippets
+  - 
+    from: /web/tools/chrome-devtools/javascript/snippets
+    to: /web/tools/chrome-devtools/snippets
+  - 
+    from: /web/tools/chrome-devtools/debug/watch-variables/
+    to: /web/tools/chrome-devtools/javascript/watch-variables
+  - 
+    from: /web/tools/chrome-devtools/progressive-web-apps/
+    to: /web/tools/chrome-devtools/progressive-web-apps
+  - 
+    from: /web/tools/chrome-devtools/security/
+    to: /web/tools/chrome-devtools/security
+  - 
+    from: /web/tools/chrome-devtools/profile/memory-problems/memory-diagnosis
+    to: /web/tools/chrome-devtools/memory-problems/
+  - 
+    from: /web/tools/chrome-devtools/profile/rendering-tools/analyze-runtime
+    to: /web/tools/chrome-devtools/rendering-tools/
+  - 
+    from: /web/tools/chrome-devtools/debug/...
+    to: /web/tools/chrome-devtools/...
+  - 
+    from: /web/tools/chrome-devtools/profile/...
+    to: /web/tools/chrome-devtools/...
+  - 
+    from: /web/tools/chrome-devtools/evaluate-performance/...
+    to: /web/tools/chrome-devtools/...
+  - 
+    from: /web/tools/chrome-devtools/javascript/console/...
+    to: /web/tools/chrome-devtools/console/...
+  - 
+    from: /web/tools/service-worker-libraries/
+    to: /web/tools/workbox/
+  - 
+    from: /web/tools/workbox/next/
+    to: /web/tools/workbox/
+  - 
+    from: /web/tools/workbox/examples/
+    to: /web/tools/workbox/modules/
+  - 
+    from: /web/tools/workbox/overview
+    to: /web/tools/workbox/
+  - 
+    from: /web/tools/workbox/overview/
+    to: /web/tools/workbox/
+  - 
+    from: /web/tools/workbox/get-started/gulp
+    to: /web/tools/workbox/guides/codelabs/gulp
+  - 
+    from: /web/tools/workbox/get-started/webpack
+    to: /web/tools/workbox/guides/codelabs/webpack
+  - 
+    from: /web/tools/workbox/get-started/npm-script
+    to: /web/tools/workbox/guides/codelabs/npm-script
+  - 
+    from: /web/tools/workbox/guides/migrate
+    to: /web/tools/workbox/guides/migrations/migrate-from-sw
