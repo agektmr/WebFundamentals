@@ -1,44 +1,34 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: '등록된 서비스 워커가 있음' Lighthouse 감사의 참조 문서입니다.
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Reference documentation for the "Registers A Service Worker" Lighthouse audit.
 
-{# wf_updated_on: 2016-07-25 #}
-{# wf_published_on: 2016-07-25 #}
+{# wf_updated_on: 2018-07-23 #} {# wf_published_on: 2016-07-25 #} {# wf_blink_components: N/A #}
 
-# 등록된 서비스 워커가 있음 {: .page-title }
+# Registers A Service Worker {: .page-title }
 
-## 감사가 중요한 이유 {: #why }
+## Overview {: #overview }
 
-서버스 워커를 등록하는 것은 다음의 Progressive Web App 기능을
-활성화하는 첫걸음입니다.
+Registering a service worker is the first step towards enabling the following progressive web app features:
 
-* 오프라인
-* 푸시 알림
-* 홈 화면에 추가
+* Offline
+* Push notifications
+* Add to homescreen
 
-## 감사를 통과하는 방법 {: #how }
+See [Service Workers: an Introduction](/web/fundamentals/getting-started/primers/service-workers) to learn more.
 
-서비스 워커를 등록하는 데는 코드 몇 줄만 있으면 되지만
-서비스 워커를 사용하는 이유는 위의 Progressive Web App 기능을
-구현하기 위해서입니다. 이러한 기능을 구현하려면
-더 많은 노력이 필요합니다.
+## Recommendations {: #recommendations }
 
-오프라인용으로 파일을 캐싱하는 방법에 대한 자세한 내용은
-Lighthouse 문서 [오프라인 시 200으로 응답하는 URL
-](http-200-when-offline#how)의 '감사를 통과하는 방법' 섹션을 참조하세요.
+Registering a service worker involves only a few lines of code, but the only reason you'd use a service worker is to implement one of the progressive web app features outlined above. Implementing those features requires more work.
 
-푸시 알림이나 '홈 화면에 추가'를 활성화하려면
-다음의 단계별 가이드를 완료한 다음, 배운 내용을 활용하여
-앱에서 기능을 구현하세요.
+For more help on caching files for offline use, see the "How to pass the audit" section of the following Lighthouse doc: [URL responds with a 200 when offline](http-200-when-offline#recommendations).
 
-* [웹 앱에서 푸시 알림 활성화
-](https://codelabs.developers.google.com/codelabs/push-notifications).
-* [사용자 홈 화면에 웹 앱
-추가](https://codelabs.developers.google.com/codelabs/add-to-home-screen).
+For enabling push notifications or "add to homescreen", complete the following step-by-step tutorials and then use what you learn to implement the features in your own app:
 
-{% include "web/tools/lighthouse/audits/implementation-heading.html" %}
+* [Enable push notifications for your web app](https://codelabs.developers.google.com/codelabs/push-notifications).
+* [Add your web app to a user's home screen](https://codelabs.developers.google.com/codelabs/add-to-home-screen).
 
-Chrome Debugger가 서비스 워커 버전을 반환하는지 검사합니다.
+## More information {: #more-info }
 
+Checks if the Chrome Debugger returns a service worker version.
 
-{# wf_devsite_translation #}
+## Feedback {: #feedback }
+
+{% include "web/_shared/helpful.html" %}
