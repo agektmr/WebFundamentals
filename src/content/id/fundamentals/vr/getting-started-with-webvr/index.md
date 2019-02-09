@@ -1,164 +1,166 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Pelajari cara mengambil adegan WebGL di Three.js dan menambahkan kemampuan WebVR.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Learn how to take a WebGL scene in Three.js and add WebVR capabilities.
 
-{# wf_updated_on: 2017-07-12 #}
-{# wf_published_on: 2016-12-12 #}
+{# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2016-12-12 #} {# wf_blink_components: Blink>WebVR #}
 
-# Memulai dengan WebVR {: .page-title }
+# Getting Started with WebVR {: .page-title }
 
-{% include "web/_shared/contributors/paullewis.html" %}
-{% include "web/_shared/contributors/mscales.html" %}
+{% include "web/_shared/webxr-status.html" %}
 
-Caution: WebVR masih eksperimental dan bisa berubah.
+In this guide we will be exploring the WebVR APIs, and using them to enhance a simple WebGL scene built with [Three.js](https://threejs.org/). For production work, however, you may want to starting with existing solutions, like [WebVR Boilerplate](https://github.com/borismus/webvr-boilerplate). If you’re totally new to Three.js, you can use this [handy starting guide](https://aerotwist.com/tutorials/getting-started-with-three-js/). The community is also extremely supportive, so if you get stuck, definitely give them a shout.
 
-Dalam panduan ini kami akan mengeksplorasi WebVR API, dan menggunakannya untuk meningkatkan adegan WebGL sederhana yang dibangun dengan [Three.js](https://threejs.org/). Namun, untuk tugas produksi, Anda mungkin ingin memulai dengan solusi yang ada, seperti [WebVR Boilerplate](https://github.com/borismus/webvr-boilerplate). Jika Anda benar-benar baru mengenal Three.js, Anda bisa menggunakan [panduan mulai berguna](https://aerotwist.com/tutorials/getting-started-with-three-js/) ini. Komunitas ini juga sangat mendukung, jadi jika Anda menemui jalan buntu, cukup beri tahu mereka.
+Let’s start with [a scene that puts a box inside a wireframe room](https://googlechrome.github.io/samples/web-vr/hello-world/), the code for which is on the [Google Chrome samples repo](https://github.com/GoogleChrome/samples/tree/gh-pages/web-vr/hello-world).
 
-Mari kita mulai dengan [adegan yang meletakkan kotak di dalam ruang wireframe](https://googlechrome.github.io/samples/web-vr/hello-world/), kode yang ada di [repo Google Chrome sample](https://github.com/GoogleChrome/samples/tree/gh-pages/web-vr/hello-world).
+![WebGL Scene running on Chrome desktop](./img/desktop.jpg)
 
-![WebGL Scene yang berjalan di desktop Chrome](./img/desktop.jpg)
+### A small note on support
 
-### Catatan kecil tentang dukungan
+WebVR is available in Chrome 56+ behind a runtime flag. Enabling the flag (head to `chrome://flags` and search for "WebVR") will allow you to build and test your VR work locally. If you want to support WebVR for your visitors, you can opt into an [Origin Trial](https://github.com/GoogleChrome/OriginTrials/blob/gh-pages/developer-guide.md), which will allow you to have WebVR enabled for your origin.
 
-WebVR yang tersedia pada Chrome 56+ di belakang flag waktu proses. Mengaktifkan flag (menuju `chrome://flags` dan mencari "WebVR") akan memungkinkan Anda membangun dan menguji pekerjaan VR secara lokal. Jika Anda ingin mendukung WebVR untuk pengunjung, Anda dapat memilih [Uji Coba Sumber](https://github.com/jpchase/OriginTrials/blob/gh-pages/developer-guide.md), yang memungkinkan Anda untuk memiliki WebVR aktif untuk asal Anda.
+You can also use the [Web VR polyfill](https://github.com/googlevr/webvr-polyfill), but bear in mind that there are significant performance penalties when using polyfills. You should definitely test on your target devices, and avoid shipping anything that does not keep up with the device’s refresh rate. A poor or variable frame rate can result in significant discomfort for the people using your experience!
 
-Anda juga dapat menggunakan [Web VR polyfill](https://github.com/googlevr/webvr-polyfill), namun perlu diingat bahwa ada penalti kinerja yang signifikan jika menggunakan polyfill. Anda harus benar-benar menguji perangkat target Anda, dan hindari mengirimkan apa pun yang tidak bisa mengikuti laju penyegaran perangkat. Laju bingkai yang buruk atau variabel dapat mengakibatkan ketidaknyamanan yang besar bagi orang-orang yang menggunakan pengalaman Anda!
+For more information, take a look at [the WebVR Status](../status/) page.
 
-Untuk informasi selengkapnya, lihat laman [Status WebVR](../status/).
+## Get access to VR Displays
 
-## Mendapatkan akses ke Tampilan VR
-
-Jadi dengan adegan WebGL, apa yang perlu kami kerjakan dengan WebVR? Pertama-tama, kita perlu membuat kueri browser guna menemukan apakah ada tampilan VR yang tersedia, yang kami bisa lakukan dengan navigator.getVRDisplays().
+So with a WebGL scene, what do we need to do get it working with WebVR? Well, firstly we need to query the browser to discover if there are any VR displays available, which we can do with `navigator.getVRDisplays()`.
 
     navigator.getVRDisplays().then(displays => {
       // Filter down to devices that can present.
       displays = displays.filter(display => display.capabilities.canPresent);
-
+    
       // If there are no devices available, quit out.
       if (displays.length === 0) {
         console.warn('No devices available able to present.');
         return;
       }
-
+    
       // Store the first display we find. A more production-ready version should
       // allow the user to choose from their available displays.
       this._vr.display = displays[0];
       this._vr.display.depthNear = DemoVR.CAMERA_SETTINGS.near;
       this._vr.display.depthFar = DemoVR.CAMERA_SETTINGS.far;
     });
+    
 
-Ada beberapa hal yang perlu diperhatikan di kode ini.
+There are a few things to notice in this code.
 
-1. **Tidak setiap perangkat bisa "disajikan" ke Head Mounted Display.** Ada perangkat yang memungkinkan untuk — katakanlah — penggunaan akselerometer, atau pengalaman pseudo-VR, namun tidak memanfaatkan HMD. Untuk perangkat-perangkat tersebut, boolean canPresent akan keliru, dan perlu diperiksa.
+1. **Not every device can "present" to a Head Mounted Display.** There are devices which allow for — say — accelerometer usage, or a pseudo-VR experience, but do not make use of an HMD. For those devices the canPresent boolean will be false, and it’s something to be checked.
 
-2. **Mungkin tidak ada perangkat VR yang tersedia.** Kita harus berupaya untuk membuat pengalaman yang benar-benar cocok untuk setelan non-VR, dan memperlakukan ketersediaan VR sebagai Peningkatan Progresif.
+2. **There may be no VR devices available.** We should aim to create experiences that work just fine for non-VR settings, and treat the availability of VR as Progressive Enhancement.
 
-3. **Mungkin ada beberapa perangkat VR yang tersedia. **Hal serupa, sangat dimungkinkan bahwa seseorang akan memiliki beberapa perangkat VR yang tersedia, dan kita harus mengizinkannya jika memang memungkinkan, untuk memilih yang paling tepat.
+3. **There may be several VR devices available. **Equally it’s perfectly possible that someone will have multiple VR devices available, and we should allow for that if at all possible, letting them choose the most appropriate.
 
-## Memasang WebVR Emulation Chrome DevTools Extension
+## Install a WebVR Emulation Chrome DevTools Extension
 
-Mungkin Anda tidak memiliki perangkat berkemampuan VR untuk diuji. Jika demikian, di sini tersedia bantuan! Jaume Elias telah membuat [Chrome DevTools Extension yang mengemulasi perangkat VR](https://chrome.google.com/webstore/detail/webvr-api-emulation/gbdnpaebafagioggnhkacnaaahpiefil).
+Perhaps you find yourself not having a VR-capable device to test against. If that’s the case, help is at hand! Jaume Elias has created a [Chrome DevTools Extension which emulates a VR device](https://chrome.google.com/webstore/detail/webvr-api-emulation/gbdnpaebafagioggnhkacnaaahpiefil).
 
-![Mengemulasi WebVR dengan Ekstensi Chrome Jaume Elias](./img/webvr-emulation.jpg)
+![Emulating WebVR with Jaume Elias's Chrome Extension](./img/webvr-emulation.jpg)
 
-Sementara, memang akan lebih baik untuk menguji pada perangkat nyata (terutama untuk pengujian kinerja!) yang memiliki ekstensi ini dapat membantu Anda dengan cepat men-debug selama Anda membangun.
+While it’s always preferable to test on real devices (especially for performance testing!) having this extension to hand can help you quickly debug during your builds.
 
-## Meminta presentasi dari perangkat
+## Request presentation from the device
 
-Untuk mulai melakukan presentasi di "mode VR", kami harus memintanya dari perangkat:
+To begin presenting in "VR mode", we have to request it from the device:
 
     this._vr.display.requestPresent([{
       source: this._renderer.domElement
     }]);
+    
 
-`requestPresent` mengambil larik yang [spesifikasi Web VR](https://w3c.github.io/webvr/#vrlayer) sebut "VRLayer", yang utamanya merupakan pembungkus di sekitar elemen Canvas yang diberikan untuk perangkat VR. Di cuplikan kode di atas, kami mengambil elemen Canvas — `WebGLRenderer.domElement` — yang disediakan oleh Three.js dan meneruskannya sebagai properti sumber VRLayer tunggal. Sebagai balasannya, `requestPresent` akan memberi Anda [Promise](/web/fundamentals/getting-started/primers/promises), yang akan diselesaikan jika permintaan berhasil, dan akan menolak jika tidak berhasil.
+`requestPresent` takes an array of what the [Web VR spec](https://w3c.github.io/webvr/#vrlayer) calls "VRLayers", which is essentially a wrapper around a Canvas element given to the VR device. In the code snippet above we’re taking the Canvas element — `WebGLRenderer.domElement` — provided by Three.js, and passing it in as the source property of a single VRLayer. In return, `requestPresent` will give you a [Promise](/web/fundamentals/getting-started/primers/promises), which will resolve if the request is successful, and will reject if not.
 
-## Menggambar adegan VR Anda
+## Draw your VR scene
 
-Terakhir, kita siap untuk mengajikan adegan VR kepada pengguna, yang benar-benar menarik!
+Finally, we’re ready to present the user with a VR scene, which is really exciting!
 
-![Adegan WebVR berjalan dalam Piksel](../img/getting-started-with-webvr.jpg)
+![The WebVR scene running on a Pixel](../img/getting-started-with-webvr.jpg)
 
-Pertama-tama, mari kita bicara tentang apa yang harus dilakukan.
+Firstly let’s talk about what we need to do.
 
-* Pastikan kita menggunakan callback `requestAnimationFrame` perangkat.
-* Minta informasi orientasi, arah, dan mata dari perangkat VR.
-* Bagi materi WebGL menjadi dua bagian, satu untuk setiap mata, dan gambar masing-masing mata.
+* Ensure we use the device’s `requestAnimationFrame()` callback.
+* Request the current pose, orientation, and eye information from the VR device.
+* Split our WebGL context into two halves, one for each eye, and draw each.
 
-Mengapa kita harus menggunakan `requestAnimationFrame` berbeda dari yang disediakan dengan objek jendela? Karena kita bekerja dengan tampilan yang laju penyegarannya mungkin berbeda dari mesin host! Jika headset memiliki laju penyegaran 120Hz, kita perlu menghasilkan bingkai menurut laju tersebut, bahkan jika mesin host menyegarkan layarnya pada 60Hz. WebVR API mempertimbangkan hal itu dengan memberi kita `requestAnimationFrame` API berbeda untuk dipanggil. Dalam hal perangkat seluler, biasanya hanya ada satu layar (dan pada Android saat ini, laju penyegarannya adalah 60Hz), meski demikian, kita harus menggunakan API yang tepat agar kode kita tak mudah usang dan sedapat mungkin kompatibel.
+Why do we need to use a different `requestAnimationFrame()` to the one provided with the window object? Because we’re working with a display whose refresh rate may differ from the host machine! If the headset has a refresh rate of 120Hz, we need to generate frames according to that rate, even if the host machine refreshes its screen at 60Hz. The WebVR API accounts for that by giving us a different `requestAnimationFrame()` API to call. In the case of a mobile device, there is typically only one display (and on Android today the refresh rate is 60Hz). Even so we should use the correct API to make our code future-proof and as broadly compatible as possible.
 
     _render () {
       // Use the VR display's in-built rAF (which can be a diff refresh rate to
       // the default browser one).  _update will call _render at the end.
-
+    
       this._vr.display.requestAnimationFrame(this._update);
       …
     }
+    
 
-Berikutnya kita perlu meminta informasi tentang kepala seseorang berada, putarannya, dan informasi lainnya yang kita butuhkan agar dapat menggambar dengan benar, yang kita lakukan dengan `getFrameData()`.
+Next, we need to request the information about where the person’s head is, its rotation, and any other information we need to be able to do the drawing correctly, which we do with `getFrameData()`.
 
     // Get all the latest data from the VR headset and dump it into frameData.
     this._vr.display.getFrameData(this._vr.frameData);
+    
 
-`getFrameData()` akan mengambil objek yang dapat menempatkan informasi yang dibutuhkan. Objeknya harus berupa objek `VRFrameData`, yang kita dapat buat dengan `new VRFrameData()`.
+`getFrameData()` takes an object on which it can place the information we need. It needs to be a `VRFrameData` object, which we can create with `new VRFrameData()`.
 
     this._vr.frameData = new VRFrameData();
+    
 
-Ada banyak informasi menarik dalam data bingkai, jadi, mari kita lihat sekilas.
+There’s lots of interesting information in the frame data, so let’s take a quick look over that.
 
-* **stempel waktu**. Stempel waktu pembaruan dari perangkat. Nilai ini dimulai dengan 0 pada waktu pertama getFrameData dipanggil pada layar VR.
+* **timestamp**. The timestamp of the update from the device. This value starts at 0 the first time getFrameData() is invoked on the VR display.
 
-* **leftProjectionMatrix** dan **rightProjectionMatrix**. Ada matriks untuk kamera yang mempertimbangkan sudut pandang mata dalam adegan. Kita akan berbicara lebih banyak tentang hal ini sebentar lagi.
+* **leftProjectionMatrix** and **rightProjectionMatrix**. These are the matrices for the camera that account for the perspective of the eyes in the scene. We’ll talk more about these in a moment.
 
-* **leftViewMatrix** dan **rightViewMatrix**. Ada dua matriks yang menyediakan tentang lokasi setiap mata di adegan.
+* **leftViewMatrix** and **rightViewMatrix**. These are two more matrices that provide about the location of each eye in the scene.
 
-Jika Anda baru mengenal matriks Proyeksi kerja 3D dan matriks Model-View bisa terlihat menakutkan. Sementara ada sedikit matematika di balik yang kita lakukan ini, kita secara teknis tidak perlu mengetahui cara kerjanya, lebih ke apa yang dikerjakan.
+If you’re new to 3D work Projection matrices and Model-View matrices can appear daunting. While there is some math behind what these do, we don’t technically need to know exactly how they work, more what they do.
 
-* **Matriks Proyeksi.** Matriks ini digunakan untuk membuat tayangan sudut pandang dalam adegan. Hal ini biasanya dilakukan dengan men-distorsi skala objek dalam adegan saat bergerak menjadi dari mata.
+* **Projection Matrices.** These are used to create an impression of perspective within a scene. They typically do this by distorting the scale of objects in the scene as they move further away from the eye.
 
-* **Matriks Model-View.** Matriks ini digunakan untuk memosisikan objek di ruang 3D. Karena cara matriks bekerja, Anda bisa membuat grafik adegan dan menggarap grafik, mengalikan setiap simpul matriks, sampai pada matriks model-vie final untuk objek yang bersangkutan.
+* **Model-View Matrices.** These are used to position an object in 3D space. Because of the way matrices work you can create scene graphs and work your way down the graph, multiplying each node’s matrix, arriving at the final model-view matrix for the object in question.
 
-Ada banyak panduan yang bagus di web yang menjelaskan matriks Proyeksi dan Model-View dengan amat mendalam, untuk itu, google-lah jika Anda ingin mendapatkan lebih banyak informasi latar belakang.
+There are many good guides around the web that explain Projection and Model-View matrices in much more depth, so have a google around if you want to get more background information.
 
-## Mengendalikan rendering adegan
+## Take control of the scene rendering
 
-Karena kita memiliki matriks yang dibutuhkan, mari kita menggambar tampilan untuk mata kiri. Untuk memulai, kita perlu memberi tahu Three.js untuk tidak mengosongkan materi WebGL setiap saat kita memanggil render, karena kita harus menggambar dua kali dan kita tidak ingin kehilangan gambar untuk mata kiri saat kita menggambarnya untuk mata kanan.
+Since we have the matrices we need, let’s draw the view for the left eye. To begin with we will need to tell Three.js not to clear out the WebGL context every time we call render, since we need to draw twice and we don’t want to lose the image for the left eye when we draw it for the right.
 
     // Make sure not to clear the renderer automatically, because we will need
     // to render it ourselves twice, once for each eye.
     this._renderer.autoClear = false;
-
+    
     // Clear the canvas manually.
     this._renderer.clear();
+    
 
-Berikutnya, mari kita buat renderer hanya untuk menggambar setengah yang kiri:
+Next let’s set the renderer to only draw the left half:
 
     this._renderer.setViewport(
         0, // x
         0, // y
         window.innerWidth * 0.5,
         window.innerHeight);
+    
 
-Kode ini mengasumsikan bahwa konteks GL itu layar penuh (`window.inner*`), yang merupakan taruhan yang baik untuk VR. Sekarang kita dapat memasukkan dua matriks untuk mata kiri.
+This code assumes that the GL context is full screen (`window.inner*`), which is a pretty good bet for VR. We can now plug in the two matrices for the left eye.
 
     const lViewMatrix = this._vr.frameData.leftViewMatrix;
     const lProjectionMatrix = this._vr.frameData.leftProjectionMatrix;
-
+    
     // Update the scene and camera matrices.
     this._camera.projectionMatrix.fromArray(lProjectionMatrix);
     this._scene.matrix.fromArray(lViewMatrix);
-
+    
     // Tell the scene to update (otherwise it will ignore the change of matrix).
     this._scene.updateMatrixWorld(true);
     this._renderer.render(this._scene, this._camera);
+    
 
-Ada sepasang detail implementasi yang penting.
+There are a couple of implementation details that are important.
 
-* **Kita menggerakkan sekitar, bukan kamera.** Tampaknya sedikit aneh jika Anda tidak mengalami hal itu sebelumnya, tapi dalam pekerjaan grafis, merupakan hal umum menetapkan kamera pada sumber (0, 0, 0) dan menggerakkan sekitarnya. Tanpa terlalu filosofis, jika saya bergerak 10 meter ke depan, apakah saya bergerak 10 meter ke depan atau bumi bergerak 10 meter ke belakang? Hal ini tergantung pada sudut pandang Anda, dan bukan masalah perspektif matematika mana yang kita lakukan. Karena WebVR API mengembalikan "*kebalikan* matriks model mata", kami diharapkan untuk menerapkannya ke dunia (`this._scene` di kode kita) bukan kamera itu sendiri.
+* **We move the world, not the camera.** It may seem a little odd if you’ve not encountered it before, but it’s common in graphics work to leave the camera at the origin (0, 0, 0) and move the world. Without getting too philosophical, if I move 10 metres forward did I move 10 metres forward or did the world move 10 metres backward? It’s relative to your point-of-view, and it doesn’t matter from a mathematical perspective which one we do. Since the WebVR API returns the "*inverse* of the model matrix of the eye" we’re expected to apply it to the world (`this._scene` in our code) not the camera itself.
 
-* **Secara manual, kita harus memperbarui matriks setelah mengubah nilainya.** Three.js meng-cache nilai dengan sangat berat (dan ini bagus untuk kinerja!), namun itu berarti Anda *harus* memberitahukannya bahwa sesuatu telah berubah agar dapat melihat perubahan itu. Ini dilakukan dengan metode `updateMatrixWorld()`, yang mengambil boolean untuk memastikan penghitungan menyebar ke bawah grafik adegan.
+* **We must manually update the matrix after we change its values.** Three.js caches values very heavily (which is great for performance!), but that means that you *must* tell it that something has changed in order to see changes. This is done with the `updateMatrixWorld()` method, which takes a boolean for ensuring the calculations propagate down the scene graph.
 
-Kita hampir selesai! Langkah terakhir adalah mengulang proses untuk mata kanan. Di sini kita akan menghapus penghitungan kedalaman renderer setelah menggambar pandangan untuk mata kiri, karena kita tidak ingin memengaruhi rendering pandangan mata kanan. Kemudian kita memperbarui tampilan yang terlihat menjadi sisi kanan, dan menggambar adegan lagi.
+We’re nearly there! The final step is repeat the process for the right eye. Here we’ll clear the renderer’s depth calculations after drawing the view for the left eye, since we don’t want it to affect the rendering of the right eye’s view. Then we update the viewport to be the right hand side, and draw the scene again.
 
     // Ensure that left eye calcs aren't going to interfere with right eye ones.
     this._renderer.clearDepth();
@@ -167,53 +169,57 @@ Kita hampir selesai! Langkah terakhir adalah mengulang proses untuk mata kanan. 
         0, // y
         window.innerWidth * 0.5,
         window.innerHeight);
+    
 
-Sekarang kita dapat memasukkan dua matriks untuk mata kanan.
+We can now plug in the two matrices for the right eye.
 
     const rViewMatrix = this._vr.frameData.rightViewMatrix;
     const rProjectionMatrix = this._vr.frameData.rightProjectionMatrix;
-
+    
     // Update the scene and camera matrices.
     this._camera.projectionMatrix.fromArray(rProjectionMatrix);
     this._scene.matrix.fromArray(rViewMatrix);
-
+    
     // Tell the scene to update (otherwise it will ignore the change of matrix).
     this._scene.updateMatrixWorld(true);
     this._renderer.render(this._scene, this._camera);
+    
 
-Dan, sekarang selesai! Sebenarnya, belum....
+And we’re done! Actually, not quite...
 
-## Memberi tahu perangkat untuk memperbarui
+## Tell the device to update
 
-Jika Anda menjalankan segala hal seperti ini, Anda akan melihat bahwa tampilan tidak pernah diperbarui. Ini karena kita bisa melakukan banyak rendering ke konteks WebGL, dan HMD tidak tahu kapan sebenarnya untuk memperbarui tampilannya sendiri. Tidak efisien untuk memperbarui setelah — katakanlah — setiap gambar mata individu dirender. Jadi, kita mengontrol diri kita sendiri dengan memanggil submitFrame.
+If you run things as they stand you’ll notice that the display never updates. This is because we can do a bunch of rendering to the WebGL context, and the HMD doesn’t know when to actually update its own display. It’s inefficient to update after — say — each individual eye’s image is rendered. So we take control of that ourselves by calling submitFrame.
 
     // Call submitFrame to ensure that the device renders the latest image from
     // the WebGL context.
     this._vr.display.submitFrame();
+    
 
-Dengan kode itu, kita benar-benar *memang* selesai sekarang. Jika Anda menginginkan versi final, jangan lupa Anda bisa melihat [repo Google Chrome sample](https://github.com/GoogleChrome/samples/tree/gh-pages/web-vr/hello-world).
+With that code we really *are* done this time. If you want the final version, don’t forget you can check out the [Google Chrome Samples repo](https://github.com/GoogleChrome/samples/tree/gh-pages/web-vr/hello-world).
 
-## Menutup pemikiran dan sumber daya
+## Closing thoughts and resources
 
-WebVR benar-benar cara yang luar biasa untuk menambahkan pencelupan ke materi Anda, dan menggunakan pustaka seperti Three.js memudahkan untuk berjalan dengan WebGL. Ada beberapa hal penting untuk diingat.
+WebVR is a really awesome way to add immersion to your content, and using libraries like Three.js makes it much easier to get going with WebGL. There are some important things to remember, though.
 
-* **Bangun di Peningkatan Progresif dari awal.** Sebagaimana telah kita sebutkan beberapa kali di panduan ini, penting untuk membangun pengalaman level dasar yang bagus, ke tempat yang Anda bisa lapisi WebVR. Banyak pengalaman yang bisa diimplementasikan dengan kontrol mouse/sentuh, dan bisa ditingkatkan versinya melalui kontrol akselerometer, ke pengalaman VR yang sepenuhnya matang. Memaksimalkan pengguna Anda selalu bermanfaat.
+* **Build in Progressive Enhancement from the start.** As we’ve mentioned several times, it’s important to build a good base level experience onto which you can layer WebVR. While billions of people can reach your page only a few million can see your VR content. Many experiences can be implemented with mouse / touch control, and can upgrade through accelerometer controls, to fully-fledged VR experiences. Maximizing your audience is always worthwhile.
 
-* **Ingatlah, Anda akan merender adegan dua kali.** Anda mungkin perlu memikirkan tentang Level of Detail (LOD) dan teknis-teknis lainnya guna memastikan bahwa saat Anda merender adegan dua kali, beban kerja komputasi akan diturunkan untuk CPU dan GPU. Di atas segalanya Anda harus mempertahankan laju bingkai yang solid! Dunia pertunjukan tidak dapat dinikmati oleh orang yang sedang pening!
+* **Remember you’re going to render your scene twice.** You may need to think about Level of Detail (LOD) and other techniques to ensure that when you render the scene twice it scales down the computation workload for the CPU and GPU. Above all else you must maintain a solid frame rate! No amount of showbiz is worth someone feeling extreme discomfort from motion sickness!
 
-* **Menguji di perangkat sungguhan.** Proses ini terkait dengan poin sebelumnya. Anda harus mencoba dan merasakan perangkat sungguhan yang Anda bisa uji dalam hal yang Anda sedang bangun, terutama jika Anda sedang menargetkan perangkat seluler. Seperti kata pepatah, ["laptop Anda kebohongan yang kotor"](https://youtu.be/4bZvq3nodf4?list=PLNYkxOF6rcIBTs2KPy1E6tIYaWoFcG3uj&t=405).
+* **Test on a real device.** This is related to the previous point. You should try and get a hold of real devices on which you can test what you’re building, especially if you’re targeting mobile devices. As the saying goes, ["your laptop is a filthy liar"](https://youtu.be/4bZvq3nodf4?list=PLNYkxOF6rcIBTs2KPy1E6tIYaWoFcG3uj&t=405).
 
-Selagi kita di sini, ada banyak sumber daya di luar sana untuk memberi Anda awal yang menjanjikan dalam hal membuat materi WebVR:
+While we’re here, there are plenty of resources out there to give you a flying start when it comes to making WebVR content:
 
-* **[VRView](https://github.com/googlevr/vrview)**. Pustaka ini membantu Anda menyematkan foto panoramik 360-derajat dan video.
+* **[VRView](https://github.com/googlevr/vrview)**. This library helps you embed 360-degree panoramic photos and videos.
 
-* **[WebVR Boilerplate](https://github.com/borismus/webvr-boilerplate)**. Untuk memulai dengan WebVR dan Three.js
+* **[WebVR Boilerplate](https://github.com/borismus/webvr-boilerplate)**. For getting started with WebVR and Three.js
 
-* **[WebVR Polyfill](https://github.com/googlevr/webvr-polyfill)**. Untuk melakukan back-fill API yang diperlukan untuk WebVR. Harap diingat bahwa ada penalti kinerja untuk menggunakan polyfill, jadi sementara fungsionalitas disediakan, pengguna akan lebih baik dengan pengalaman non-VR Anda.
+* **[WebVR Polyfill](https://github.com/googlevr/webvr-polyfill)**. To back-fill required APIs for WebVR. Please remember that there are performance penalties for using polyfills, so while this does provide functionality your users may be better off with your non-VR experience.
 
-* **[Ray-Input](https://github.com/borismus/ray-input)**. Pustaka akan membantu Anda menangani berbagai jenis masukan untuk perangkat VR dan non-VR, seperti mouse, pengontrol sentuh, dan VR Gamepad.
+* **[Ray-Input](https://github.com/borismus/ray-input)**. A library to help you handle the various types of input for VR- and non-VR-devices, such as mouse, touch, and VR Gamepad controllers.
 
-Sekarang, masuk dan buat VR yang bagus!
+Now go and make some awesome VR!
 
+## Feedback {: #feedback }
 
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
