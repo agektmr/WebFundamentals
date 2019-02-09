@@ -1,122 +1,134 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Gran parte del Web non è ottimizzata per l'utilizzo di dispositivi multipli. Apprendi i concetti fondamentali e ottimizza il sito per dispositivi mobili, PC desktop o su qualsiasi altro dispositivo dotato di schermo.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Much of the web isn't optimized for those multi-device experiences. Learn the fundamentals to get your site working on mobile, desktop, or anything else with a screen.
 
-{# wf_updated_on: 2014-04-29 #}
-{# wf_published_on: 2000-01-01 #}
+{# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2014-04-29 #} {# wf_blink_components: Blink>CSS #}
 
-# Nozioni di base sul Responsive Web Design {: .page-title }
+# Responsive Web Design Basics {: .page-title }
 
 {% include "web/_shared/contributors/petelepage.html" %}
 
+The use of mobile devices to surf the web is growing at an astronomical pace, but unfortunately much of the web isn't optimized for those mobile devices. Mobile devices are often constrained by display size and require a different approach to how content is laid out on the screen.
 
-L'impiego di dispositivi mobili per la navigazione sul Web è in forte aumento, ma gran parte del Web non è ancora ottimizzata in tal senso. Spesso i dispositivi mobili soffrono di limitazioni in termini di formato dello schermo e richiedono un nuovo approccio per la disposizione dei contenuti.
+A multitude of different screen sizes exist across phones, "phablets," tablets, desktops, game consoles, TVs, and even wearables. Screen sizes are always changing, so it's important that your site can adapt to any screen size, today or in the future.
 
+<video autoplay muted loop controls>
+  <source src="videos/resize.webm" type="video/webm">
+  <source src="videos/resize.mp4" type="video/mp4">
+</video>
+
+Responsive web design, originally defined by [Ethan Marcotte in A List Apart](http://alistapart.com/article/responsive-web-design/), responds to the needs of the users and the devices they're using. The layout changes based on the size and capabilities of the device. For example, on a phone users would see content shown in a single column view; a tablet might show the same content in two columns.
 
 {% include "web/_shared/udacity/ud893.html" %}
 
+## Set the viewport {: #set-the-viewport }
 
-
-I formati dello schermo utilizzati da telefoni, 'phablet', tablet, desktop, console per videogiochi, TV e dispositivi indossabili sono molteplici. I formati dello schermo sono in continua evoluzione ed è quindi importante creare un sito capace di adattarsi a qualsiasi formato futuro.
-
-
-  <video autoplay loop controls class="responsiveVideo">
-    <source src="videos/resize.webm" type="video/webm">
-    <source src="videos/resize.mp4" type="video/mp4">
-  </video>
-
-
-Il Responsive Web Design, creato da [Ethan Marcotte in A List Apart](http://alistapart.com/article/responsive-web-design/){: .external } risponde alle esigenze di utenti e dispositivi impiegati. La disposizione dei contenuti varia in base alle dimensioni e alle caratteristiche del dispositivo. Ad esempio, un telefono visualizza i contenuti su una sola colonna mentre un tablet ne adopera due.
-
-
-## Impostazione del viewport 
-
-Le pagine ottimizzate per dispositivi multipli devono contenere un elemento meta viewport nella sezione 'head' del documento, che indica al browser come controllare dimensioni e scala della pagina.
-
-
-
+Pages optimized for a variety of devices must include a meta viewport tag in the head of the document. A meta viewport tag gives the browser instructions on how to control the page's dimensions and scaling.
 
 ### TL;DR {: .hide-from-toc }
-- Utilizza i meta viewport tag per controllare larghezza e scala dei viewport dei browser.
-- Inserisci <code>width=device-width</code> per ottenere una corrispondenza con la larghezza dello schermo in pixel indipendenti dal dispositivo.
-- Inserisci <code>initial-scale=1</code> per stabilire una relazione 1:1 fra i pixel del CSS e quelli indipendenti dal dispositivo.
-- Controlla l'accessibilità della pagina senza disabilitare l'opzione di scalabilità dell'utente.
 
+- Use the meta viewport tag to control the width and scaling of the browser's viewport.
+- Include `width=device-width` to match the screen's width in device-independent pixels.
+- Include `initial-scale=1` to establish a 1:1 relationship between CSS pixels and device-independent pixels.
+- Ensure your page is accessible by not disabling user scaling.
 
-Per ottenere un'esperienza ideale, i browser mobili effettuano il rendering della pagina alla larghezza della schermata del desktop (di solito circa 980 pixel, ma variabile in base al dispositivo), quindi migliorano l'aspetto dei contenuti ingrandendo i caratteri e scalando i contenuti per adattarli allo schermo. Gli utenti potrebbero riscontrare una certa incoerenza nelle dimensioni dei caratteri e toccare due volte lo schermo o zoomare con due dita per visualizzare e interagire con i contenuti.
+To attempt to provide the best experience, mobile browsers render the page at a desktop screen width (usually about 980px, though this varies across devices), and then try to make the content look better by increasing font sizes and scaling the content to fit the screen. This means that font sizes may appear inconsistent to users, who may have to double-tap or pinch-to-zoom in order to see and interact with the content.
 
-
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     
 
+Using the meta viewport value `width=device-width` instructs the page to match the screen's width in device-independent pixels. This allows the page to reflow content to match different screen sizes, whether rendered on a small mobile phone or a large desktop monitor.
 
-Il valore meta viewport `width=device-width` garantisce la corrispondenza della pagina alla larghezza dello schermo in pixel indipendenti dal dispositivo. Pertanto, la pagina potrà riordinare il contenuto in modo da adattarlo ai diversi formati dello schermo, da quello di piccole dimensioni dei cellulari ai monitor desktop più ampi.
+<div class="attempt-left">
+  <a href="https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/responsive/vp-no.html">
+  <figure>
+    <img src="imgs/no-vp.png" srcset="imgs/no-vp.png 1x, imgs/no-vp-2x.png 2x" alt="Page without a viewport set">
+    <figcaption>
+      Page without a viewport set
+     </figcaption>
+  </figure>
+  </a>
+</div>
 
-<img src="imgs/no-vp.png" class="attempt-left" srcset="imgs/no-vp.png 1x, imgs/no-vp-2x.png 2x" alt="Pagina senza viewport">
-<img src="imgs/vp.png" class="attempt-right"  srcset="imgs/vp.png 1x, imgs/vp-2x.png 2x" alt="Pagina con viewport">
-<div class="clearfix"></div>
+<div class="attempt-right">
+  <a href="https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/responsive/vp.html">
+  <figure>
+    <img src="imgs/vp.png" srcset="imgs/vp.png 1x, imgs/vp-2x.png 2x" alt="Page with a viewport set">
+    <figcaption>
+      Page with a viewport set
+     </figcaption>
+  </figure>
+  </a>
+</div>
 
+Some browsers keep the page's width constant when rotating to landscape mode, and zoom rather than reflow to fill the screen. Adding the attribute `initial-scale=1` instructs browsers to establish a 1:1 relationship between CSS pixels and device-independent pixels regardless of device orientation, and allows the page to take advantage of the full landscape width.
 
-In caso di rotazione orizzontale, alcuni browser mantengono costante la larghezza della pagina eseguendo uno zoom invece di riordinare i contenuti su schermo. L'attributo `initial-scale=1` impone al browser di definire una relazione univoca fra i pixel del CSS e quelli indipendenti dal dispositivo con qualsiasi orientamento, consentendo alla pagina di sfruttare appieno la larghezza orizzontale.
+Note: To ensure that older browsers can properly parse the attributes, use a comma to separate attributes.
 
-Note: Utilizza virgole per separare gli attributi per consentire anche ai browser meno aggiornati di analizzarli in modo corretto.
+### Ensure an accessible viewport
 
-### Garantire l'accessibilità del viewport
+In addition to setting an `initial-scale`, you can also set the following attributes on the viewport:
 
-Oltre a impostare il valore `initial-scale` puoi anche impostare i seguenti attributi del viewport:
+- `minimum-scale`
+- `maximum-scale`
+- `user-scalable`
 
-* `minimum-scale`
-* `maximum-scale`
-* `user-scalable`
+When set, these can disable the user's ability to zoom the viewport, potentially causing accessibility issues.
 
-Se impostati, possono impedire all'utente di zoomare nel viewport a causa di potenziali problemi di accessibilità.
+## Size content to the viewport
 
-
-## Dimensionamento dei contenuti in base al viewport 
-
-Usando dispositivi mobili o desktop, gli utenti preferiscono scorrere i siti Web in verticale e non in orizzontale, per cui la necessità di uno scorrimento orizzontale o della riduzione dello schermo per visualizzare l'intera pagina potrebbe compromettere l'esperienza d'uso.
-
-
-### TL;DR {: .hide-from-toc }
-- Non utilizzare elementi di grandi dimensioni e larghezza fissa.
-- La resa ottimale dei contenuti non deve essere legata alla larghezza di un viewport specifico.
-- Utilizza i media query CSS per applicare diversi stili per gli schermi ampi e ristretti.
-
-
-Durante lo sviluppo di un sito mobile con tag `meta viewport`, potresti creare per errore contenuti di pagina inadatti al viewport specificato, come ad esempio un'immagine con una larghezza maggiore del viewport che potrebbe costringere a uno scorrimento in orizzontale. Modifica il contenuto in modo da adattarlo alla larghezza del viewport per evitare agli utenti di eseguire uno scorrimento in orizzontale.
-
-A causa della variabilità di dimensioni e larghezza dello schermo in pixel CSS fra dispositivi diversi (es. telefoni, tablet o persino modelli diversi di telefono), la resa ottimale dei contenuti non deve basarsi su un viewport specifico.
-
-L'assegnazione di elevate larghezze CSS assolute agli elementi della pagina (come nell'esempio sottostante) produrranno un `div` troppo ampio per i viewport dei dispositivi più piccoli (es. quelli con larghezza di 320 pixel CSS come i primi iPhone). Piuttosto, utilizza valori di larghezza relativi come `width: 100%`. Fai attenzione anche nell'utilizzo dei valori di posizionamento assoluti che potrebbero causare la fuoriuscita dell'elemento dal viewport degli schermi di piccole dimensioni.
-
-<img src="imgs/vp-fixed-iph.png" srcset="imgs/vp-fixed-iph.png 1x, imgs/vp-fixed-iph-2x.png 2x"  alt="Pagina con un elemento con larghezza fissa di 344 pixel in uno dei primi iPhone." class="attempt-left">
-<img src="imgs/vp-fixed-n5.png" srcset="imgs/vp-fixed-n5.png 1x, imgs/vp-fixed-n5-2x.png 2x"  alt="Pagina con un elemento a larghezza fissa di 344 pixel di un Nexus 5." class="attempt-right">
-<div class="clearfix"></div>
-
-
-
-### Utilizzo delle media query CSS per ridurre i tempi di risposta 
-
-Le media query sono filtri intuitivi applicabili agli stili CSS che aiutano a modificarli in base alle caratteristiche al dispositivo che esegue il rendering di contenuti, come ad esempio tipo, larghezza, altezza, orientamento e risoluzione del display.
-
-
-
+On both desktop and mobile devices, users are used to scrolling websites vertically but not horizontally; forcing the user to scroll horizontally or to zoom out in order to see the whole page results in a poor user experience.
 
 ### TL;DR {: .hide-from-toc }
-- Puoi usare le media query per applicare gli stili in base alle caratteristiche del dispositivo.
-- Utilizza <code>min-width</code> al posto di <code>min-device-width</code> per ottenere un'esperienza adatta al maggior numero di dispositivi possibile.
-- Usa dimensioni relative degli elementi per evitare interruzioni della disposizione.
 
+- Do not use large fixed width elements.
+- Content should not rely on a particular viewport width to render well.
+- Use CSS media queries to apply different styling for small and large screens.
 
+When developing a mobile site with a `meta viewport` tag, it's easy to accidentally create page content that doesn't quite fit within the specified viewport. For example, an image that is displayed at a width wider than the viewport can cause the viewport to scroll horizontally. You should adjust this content to fit within the width of the viewport, so that the user does not need to scroll horizontally.
 
-Ad esempio, posiziona gli stili necessari per la stampa in una media query di stampa:
+Since screen dimensions and width in CSS pixels vary widely between devices (for example, between phones and tablets, and even between different phones), content should not rely on a particular viewport width to render well.
 
+Setting large absolute CSS widths for page elements (such as the example below), cause the `div` to be too wide for the viewport on a narrower device (for example, a device with a width of 320 CSS pixels, such as an iPhone). Instead, consider using relative width values, such as `width: 100%`. Similarly, beware of using large absolute positioning values that may cause the element to fall outside the viewport on small screens.
+
+<div class="attempt-left">
+  <a href="https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/responsive/vp-fixed.html">
+  <figure>
+    <img src="imgs/vp-fixed-iph.png" srcset="imgs/vp-fixed-iph.png 1x, imgs/vp-fixed-iph-2x.png 2x" alt="Page with a 344px fixed width element on an iPhone.">
+    <figcaption>
+      Page with a 344px fixed width element on an iPhone
+    </figcaption>
+  </figure>
+  </a>
+</div>
+
+<div class="attempt-right">
+  <a href="https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/responsive/vp-fixed.html">
+  <figure>
+    <img src="imgs/vp-fixed-n5.png" srcset="imgs/vp-fixed-n5.png 1x, imgs/vp-fixed-n5-2x.png 2x" alt="Page with a 344px fixed width element on a Nexus 5.">
+    <figcaption>
+      Page with a 344px fixed width element on a Nexus 5
+    </figcaption>
+  </figure>
+  </a>
+</div>
+
+<div class="clearfix"></div>
+
+## Use CSS media queries for responsiveness {: #css-media-queries }
+
+Media queries are simple filters that can be applied to CSS styles. They make it easy to change styles based on the characteristics of the device rendering the content, including the display type, width, height, orientation, and even resolution.
+
+### TL;DR {: .hide-from-toc }
+
+- Use media queries to apply styles based on device characteristics.
+- Use `min-width` over `min-device-width` to ensure the broadest experience.
+- Use relative sizes for elements to avoid breaking layout.
+
+For example, you could place all styles necessary for printing inside a print media query:
 
     <link rel="stylesheet" href="print.css" media="print">
     
 
-Oltre all'utilizzo dell'attributo `media` nel link del foglio di stile, esistono altri due modi per applicare le media query che è possibile incorporare in un file CSS, ovvero `@media` e `@import`. Per motivi di rendimento, i primi due metodi offrono maggiori risultati rispetto alla sintassi `@import` (consultare 'Evita le importazioni CSS'/web/fundamentals/performance/critical-rendering-path/page-speed-rules-and-recommendations).
-
+In addition to using the `media` attribute in the style sheet link, there are two other ways to apply media queries that can be embedded in a CSS file: `@media` and `@import`. For performance reasons, either of the first two methods are recommended over the `@import` syntax (see [Avoid CSS imports](/web/fundamentals/performance/critical-rendering-path/page-speed-rules-and-recommendations)).
 
     @media print {
       /* print style sheets go here */
@@ -125,185 +137,257 @@ Oltre all'utilizzo dell'attributo `media` nel link del foglio di stile, esistono
     @import url(print.css) print;
     
 
-La logica applicata alle media query non è reciprocamente esclusiva, mentre ai filtri che soddisfano tali criteri viene applicato il blocco di CSS risultante utilizzando le regole standard di precedenza dei CSS.
+The logic that applies to media queries is not mutually exclusive, and for any filter meeting that criteria the resulting CSS block is applied using the standard rules of precedence in CSS.
 
-### Applicazione delle media query in base alle dimensioni del viewport
+### Apply media queries based on viewport size
 
-Le media query offrono un'esperienza reattiva con l'applicazione di stili specifici agli schermi di piccole, medie e grandi dimensioni. La sintassi delle media query consente la creazione di regole applicabili in base alle caratteristiche del dispositivo.
-
+Media queries enable us to create a responsive experience where specific styles are applied to small screens, large screens, and anywhere in between. The media query syntax allows for the creation of rules that can be applied depending on device characteristics.
 
     @media (query) {
       /* CSS Rules used when query matches */
     }
     
 
-Anche se esistono diversi elementi a cui applicare le query, i più adatti all'ottimizzazione dei tempi di risposta della grafica web sono `min-width`, `max-width`, `min-height` e `max-height`.
+While there are several different items we can query on, the ones used most often for responsive web design are `min-width`, `max-width`, `min-height`, and `max-height`.
 
-
-<table>
-    <thead>
+<table class="responsive">
+  <thead>
     <tr>
-      <th data-th="attribute">attributo</th>
-      <th data-th="Result">Risultato</th>
+      <th colspan="2">Parameters</th>
     </tr>
   </thead>
   <tbody>
     <tr>
       <td data-th="attribute"><code>min-width</code></td>
-     <td data-th="Result">Regole applicate per  qualsiasi larghezza del browser superiore al valore definito nella query.</td>
+      <td data-th="Result">Rules applied for any browser width greater than the value defined in the query.</td>
     </tr>
     <tr>
       <td data-th="attribute"><code>max-width</code></td>
-     <td data-th="Result">Regole applicate per qualsiasi larghezza del browser inferiore al valore definito nella query.</td>
+      <td data-th="Result">Rules applied for any browser width less than the value defined in the query.</td>
     </tr>
     <tr>
       <td data-th="attribute"><code>min-height</code></td>
-     <td data-th="Result">Regole applicate per qualsiasi altezza del browser superiore al valore definito in query.</td>
+      <td data-th="Result">Rules applied for any browser height greater than the value defined in the query.</td>
     </tr>
     <tr>
       <td data-th="attribute"><code>max-height</code></td>
-     <td data-th="Result">Regole applicate per qualsiasi altezza del browser inferiore al valore definito nella query.</td>
+      <td data-th="Result">Rules applied for any browser height less than the value defined in the query.</td>
     </tr>
     <tr>
       <td data-th="attribute"><code>orientation=portrait</code></td>
-      <td data-th="Result">Regole applicate per qualsiasi browser di altezza superiore o uguale alla larghezza.</td>
+      <td data-th="Result">Rules applied for any browser where the height is greater than or equal to the width.</td>
     </tr>
     <tr>
       <td data-th="attribute"><code>orientation=landscape</code></td>
-      <td data-th="Result">Regole per qualsiasi browser di larghezza superiore all'altezza.</td>
+      <td data-th="Result">Rules for any browser where the width is greater than the height.</td>
     </tr>
   </tbody>
 </table>
 
-Di seguito viene indicato un esempio:
+Let's take a look at an example:
 
-<img src="imgs/mq.png" class="center" srcset="imgs/mq.png 1x, imgs/mq-2x.png 2x" alt="Anteprima di una pagina che utilizza le media query per la modifica delle proprietà con il progressivo ridimensionamento.">
-
+<figure>
+  <a href="https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/responsive/media-queries.html">
+    <img src="imgs/mq.png" srcset="imgs/mq.png 1x, imgs/mq-2x.png 2x" alt="Preview of a page using media queries to change properties as it is resized.">
+    <figcaption>
+      Preview of a page using media queries to change properties as it is resized.
+    </figcaption>
+  </a>
+</figure>
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/design-and-ux/responsive/_code/media-queries.html" region_tag="mqueries" adjust_indentation="auto" %}
 </pre>
 
-* Se il browser ha una dimensione compresa fra <b>0 pixel</b> e <b>640 pixel</b> viene applicato `max-640px.css`.
-* Se il browser ha una dimensione compresa fra <b>500 pixel</b> e <b>600 pixel</b> vengono applicati gli stili in `maxpx.css`.
-* Se il browser ha una dimensione di almeno <b>640 pixel</b> viene applicato `min-640px.css`.
-* Se la larghezza del browser <b>è superiore all'altezza</b> viene applicato `landscape.css`.
-* Se l'altezza del browser <b>è superiore all larghezza</b> viene applicato `portrait.css`.
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/responsive/media-queries.html){: target="_blank" .external }
 
+- When the browser is between **0px** and **640px** wide, `max-640px.css` is applied.
+- When the browser is between **500px** and **600px** wide, styles within the `@media` is applied.
+- When the browser is **640px or wider**, `min-640px.css` is applied.
+- When the browser **width is greater than the height**, `landscape.css` is applied.
+- When the browser **height is greater than the width**, `portrait.css` is applied.
 
-###Nota su `min-device-width`
+### A note on `min-device-width`
 
-È possibile creare query basate su `*-device-width` anche se si tratta di un'operazione **caldamente sconsigliata**.
+It is also possible to create queries based on `min-device-width`, though this practice is **strongly discouraged**.
 
-La differenza è piccola ma importante: `min-width` si basa sulla dimensione della finestra del browser, mentre `min-device-width` su quella dello schermo. Alcuni browser Android di precedente generazione potrebbero non indicare in modo corretto la larghezza del dispositivo, restituendo la dimensione dello schermo usando i pixel del dispositivo invece della larghezza del viewport prevista.
+The difference is subtle but very important: `min-width` is based on the size of the browser window whereas `min-device-width` is based on the size of the screen. Unfortunately some browsers, including the legacy Android browser, don't report the device width properly; they report the screen size in device pixels instead of the expected viewport width.
 
-Inoltre, l'utilizzo di `*-device-width` previene l'adattamento dei contenuti su computer desktop o altri dispositivi che consentono il ridimensionamento delle finestre, poiché la query si basa sulle dimensioni effettive del dispositivo e non su quelle della finestra del browser.
+In addition, using `min-device-width` can prevent content from adapting on desktops or other devices that allow windows to be resized because the query is based on the actual device size, not the size of the browser window.
 
-### Utilizzo di unità relative
+### Use `any-pointer` and `any-hover` for flexible interactions
 
-Due importanti concetti di design reattivo sono la fluidità e la proporzionalità, condizioni opposte alle disposizioni a larghezza fissa. L'utilizzo di unità di misura relative semplifica la creazione delle disposizioni ed evita la creazione involontaria di componenti troppo grandi per il viewport.
+Starting with Chrome 39, your style sheets can write selectors that cover multiple pointer types and hover behaviors. The `any-pointer` and `any-hover` media features are similar to `pointer` and `hover` in that they allow you to query the capabilities of the user's pointer. However, unlike the latter, `any-pointer` and `any-hover` operate on the union of all pointer devices rather than just the primary pointer device.
 
-Ad esempio, l'impostazione di una larghezza del 100% per un `div` superiore consente di non superare la larghezza e le dimensioni del viewport.  Il `div` viene visualizzato in modo corretto anche su iPhone da 320 pixel, Blackberry Z10 da 342 pixel o Nexus 5 da 360 pixel.
+### Use relative units
 
-Inoltre, usando le unità relative è possibile eseguire il rendering dei contenuti nel browser in base al livello di zoom selezionato, evitando l'aggiunta di barre di scorrimento orizzontali alla pagina.
+A key concept behind responsive design is fluidity and proportionality as opposed to fixed width layouts. Using relative units for measurements can help simplify layouts and prevent accidental creation of components that are too big for the viewport.
 
-<span class="compare-worse">Not recommended</span> — fixed width
+For example, setting width: 100% on a top level `div`, ensures that it spans the width of the viewport and is never too big or too small for the viewport. The `div` fits, no matter if it's a 320px wide iPhone, 342px wide Blackberry Z10, or a 360px wide Nexus 5.
+
+In addition, using relative units allows browsers to render the content based on the user's zoom level without the need for adding horizontal scroll bars to the page.
+
+<span class="compare-worse">Not recommended</span>&mdash;fixed width
 
     div.fullWidth {
       width: 320px;
       margin-left: auto;
       margin-right: auto;
     }
+    
 
-
-<span class="compare-better">Recommended</span> — responsive width
+<span class="compare-better">Recommended</span>&mdash;responsive width
 
     div.fullWidth {
       width: 100%;
     }
+    
 
+## How to choose breakpoints
 
-
-## Scelta dei breakpoint 
-
-
-Anche se può essere utile definire i breakpoint in base alle classi dei dispositivi, occorre prestare attenzione: la definizione dei breakpoint in base a dispositivi, prodotti, brand o sistemi operativi potrebbe diventare un problema dal punto di vista della manutenzione. Sono i contenuti a dover determinare la regolazione della disposizione rispetto al relativo contenitore.
-
-
+Don't define breakpoints based on device classes. Defining breakpoints based on specific devices, products, brand names, or operating systems that are in use today can result in a maintenance nightmare. Instead, the content itself should determine how the layout adjusts to its container.
 
 ### TL;DR {: .hide-from-toc }
-- Crea breakpoint in base ai contenuti e non a dispositivi, prodotti o brand specifici.
-- Progetta per i dispositivi mobili più piccoli, quindi incrementa l''esperienza con la progressiva disponibilità di spazio su schermo.
-- Mantieni le linee di testo a un massimo di 70 o 80 caratteri.
 
+- Create breakpoints based on content, never on specific devices, products, or brands.
+- Design for the smallest mobile device first; then progressively enhance the experience as more screen real estate becomes available.
+- Keep lines of text to a maximum of around 70 or 80 characters.
 
-### Seleziona i breakpoint principali iniziando dagli spazi piccoli e passando progressivamente a quelli più grandi
+### Pick major breakpoints by starting small, then working up
 
-Progetta i contenuti in funzione degli schermi di piccole dimensioni, quindi espandi lo schermo fino al punto in cui occorre inserire un breakpoint. Così facendo, puoi ottimizzare i breakpoint in base ai contenuti e ridurne il numero.
+<figure class="attempt-right">
+  <img src="imgs/weather-1.png" srcset="imgs/weather-1.png 1x, imgs/weather-1-2x.png 2x" alt="">
+  <figcaption>
+    <a href="https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/responsive/weather-1.html">
+      Preview of the weather forecast displayed on a small screen.
+    </a>
+  </figcaption>
+</figure>
 
-Passiamo all'esempio preso in esame all'inizio, le [previsioni del tempo](/web/fundamentals/design-and-ux/responsive/).
-Innanzitutto, occorre conferire un aspetto gradevole alle previsioni su schermo.
+Design the content to fit on a small screen size first, then expand the screen until a breakpoint becomes necessary. This allows you to optimize breakpoints based on content and maintain the least number of breakpoints possible.
 
-<img src="imgs/weather-1.png" class="center" srcset="imgs/weather-1.png 1x, imgs/weather-1-2x.png 2x" alt="Anteprima delle previsioni del tempo su schermo di piccole dimensioni.">
+Let's work through the example we saw at the beginning: the weather forecast. The first step is to make the forecast look good on a small screen.
 
-Quindi, ridimensiona lo schermo fino a visualizzare un eccesso di spazio bianco fra gli elementi. In questo caso le previsioni assumono un aspetto poco gradevole.  600 pixel sono una dimensione eccessiva, anche se si tratta di un aspetto opinabile.
+<div style="clear:both;"></div>
 
-<img src="imgs/weather-2.png" class="center" srcset="imgs/weather-2.png 1x, imgs/weather-2-2x.png 2x" alt="Anteprima delle previsioni del tempo con l'aumento dell'ampiezza della pagina.">
+<figure class="attempt-right">
+  <img src="imgs/weather-2.png" class="center" srcset="imgs/weather-2.png 1x, imgs/weather-2-2x.png 2x" alt="Preview of the weather forecast as the page gets wider.">
+  <figcaption>
+    <a href="https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/responsive/weather-1.html">
+      Preview of the weather forecast as the page gets wider.
+    </a>
+  </figcaption>
+</figure>
 
+Next, resize the browser until there is too much white space between the elements, and the forecast simply doesn't look as good. The decision is somewhat subjective, but above 600px is certainly too wide.
 
-Per inserire un breakpoint a 600 pixel, crea due nuovi fogli di stile, uno per il browser con dimensioni massime di 600 pixel e l'altro per le dimensioni superiori ai 600 pixel.
+<div style="clear:both;"></div>
+
+To insert a breakpoint at 600px, create two new style sheets, one to use when the browser is 600px and below, and one for when it is wider than 600px.
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/design-and-ux/responsive/_code/weather-2.html" region_tag="mqweather2" adjust_indentation="auto" %}
 </pre>
 
-Infine, esegui il refactoring del CSS. In questo esempio, in `weather.css` abbiamo inserito stili comuni quali caratteri, icone, posizionamento di base e colori. Le disposizioni specifiche per gli schermi di piccole dimensioni sono state posizionate in `weather-small.css`, mentre quelle per gli schermi di grandi dimensioni in `weather-large.css`.
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/responsive/weather-2.html){: target="_blank" .external }
 
-<img src="imgs/weather-3.png" class="center" srcset="imgs/weather-3.png 1x, imgs/weather-3-2x.png 2x" alt="Preview of the weather forecast designed for a wider screen.">
+<figure class="attempt-right">
+  <img src="imgs/weather-3.png"  srcset="imgs/weather-3.png 1x, imgs/weather-3-2x.png 2x" alt="Preview of the weather forecast designed for a wider screen.">
+  <figcaption>
+    <a href="https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/responsive/weather-2.html">
+      Preview of the weather forecast designed for a wider screen.
+    </a>
+  </figcaption>
+</figure>
 
+Finally, refactor the CSS. In this example, we've placed the common styles such as fonts, icons, basic positioning, and colors in `weather.css`. Specific layouts for the small screen are then placed in `weather-small.css`, and large screen styles are placed in `weather-large.css`.
 
-### Selezione dei breakpoint secondari secondo necessità
+<div style="clear:both"></div>
 
-I breakpoint principali sono adatti a eseguire cambiamenti sostanziali della disposizione e modifiche di minore entità.  Ad esempio, fra i breakpoint principali è possibile regolare i margini o il padding di un elemento o aumentare le dimensioni dei caratteri per una disposizione più naturale.
+### Pick minor breakpoints when necessary
 
-Iniziamo ottimizzando la disposizione per gli schermi di piccole dimensioni. In questo caso aumentiamo il carattere se la larghezza del viewport supera i 360 pixel.  Una volta ottenuto spazio a sufficienza è possibile separare la temperatura massima e minima in modo da inserirle sulla stessa riga e non più in pila. Ingrandiamo anche le icone del meteo.
+In addition to choosing major breakpoints when layout changes significantly, it is also helpful to adjust for minor changes. For example, between major breakpoints it may be helpful to adjust the margins or padding on an element, or increase the font size to make it feel more natural in the layout.
 
-<pre class="prettyprint">
-{% includecode content_path="web/fundamentals/design-and-ux/responsive/_code/weather-small.css" region_tag="mqsmallbpsm"   adjust_indentation="auto" %}
-</pre>
-
-
-<img src="imgs/weather-4-l.png" srcset="imgs/weather-4-l.png 1x, imgs/weather-4-l-2x.png 2x" alt="Before adding minor breakpoints." class="attempt-left">
-<img src="imgs/weather-4-r.png" srcset="imgs/weather-4-r.png 1x, imgs/weather-4-r-2x.png 2x" alt="After adding minor breakpoints." class="attempt-right">
-<div class="clearfix"></div>
-
-
-In maniera analoga, usando schermi più grandi possiamo limitare la larghezza massima del riquadro delle previsioni in modo che non occupi tutta la larghezza dello schermo.
+Let's start by optimizing the small screen layout. In this case, let's boost the font when the viewport width is greater than 360px. Second, when there is enough space, we can separate the high and low temperatures so that they're on the same line instead of on top of each other. And let's also make the weather icons a bit larger.
 
 <pre class="prettyprint">
-{% includecode content_path="web/fundamentals/design-and-ux/responsive/_code/weather-large.css" region_tag="mqsmallbplg"   adjust_indentation="auto" %}
+{% includecode content_path="web/fundamentals/design-and-ux/responsive/_code/weather-small.css" region_tag="mqsmallbpsm" adjust_indentation="auto" %}
 </pre>
 
-### Ottimizzazione del testo per la lettura
+<div class="attempt-left">
+  <figure>
+    <img src="imgs/weather-4-l.png" srcset="imgs/weather-4-l.png 1x, imgs/weather-4-l-2x.png 2x" alt="Before adding minor breakpoints.">
+    <figcaption>
+      Before adding minor breakpoints.
+     </figcaption>
+  </figure>
+</div>
 
-Secondo la teoria classica della leggibilità, una colonna dovrebbe contenere da 70 a 80 caratteri per linea (circa 8-10 parole in italiano). Pertanto, quando un blocco di testo supera le 10 parole occorre inserire un breakpoint.
+<div class="attempt-right">
+  <figure>
+    <img src="imgs/weather-4-r.png" srcset="imgs/weather-4-r.png 1x, imgs/weather-4-r-2x.png 2x" alt="After adding minor breakpoints.">
+    <figcaption>
+      After adding minor breakpoints.
+     </figcaption>
+  </figure>
+</div>
 
-<img src="imgs/reading-ph.png" srcset="imgs/reading-ph.png 1x, imgs/reading-ph-2x.png 2x" alt="Prima dell'aggiunta di breakpoint minori." class="attempt-left">
-<img src="imgs/reading-de.png" srcset="imgs/reading-de.png 1x, imgs/reading-de-2x.png 2x" alt="Dopo l'aggiunta di breakpoint minori." class="attempt-right">
-<div class="clearfix"></div>
+<div style="clear:both;"></div>
 
-
-Osserviamo attentamente il post del blog dell'esempio precedente. Su schermi piccoli, il carattere Roboto a 1 em offre una resa ottimale con 10 parole per linea, anche se con schermi più grandi occorre un breakpoint. In questo caso, con una larghezza del browser superiore a 575 pixel, la larghezza ideale dei contenuti è di 550 pixel.
+Similarly, for the large screens it's best to limit to maximum width of the forecast panel so it doesn't consume the whole screen width.
 
 <pre class="prettyprint">
-{% includecode content_path="web/fundamentals/design-and-ux/responsive/_code/reading.html" region_tag="mqreading"   adjust_indentation="auto" %}
+{% includecode content_path="web/fundamentals/design-and-ux/responsive/_code/weather-large.css" region_tag="mqsmallbplg" adjust_indentation="auto" %}
 </pre>
 
-### Mai nascondere completamente i contenuti
+### Optimize text for reading
 
-Attenzione alla scelta dei contenuti da nascondere o visualizzare in base al formato dello schermo.
-Non nascondere i contenuti solo a causa dell'impossibilità di inserirli su schermo: il formato dello schermo non offre un'indicazione definitiva dei desideri di un utente. Ad esempio, l'eliminazione del conteggio dei pollini dalle previsioni del tempo potrebbe costituire un problema grave per le persone con allergie stagionali in cerca di informazioni per uscire all'aperto.
+Classic readability theory suggests that an ideal column should contain 70 to 80 characters per line (about 8 to 10 words in English). Thus, each time the width of a text block grows past about 10 words, consider adding a breakpoint.
 
+<div class="attempt-left">
+  <figure>
+    <img src="imgs/reading-ph.png" srcset="imgs/reading-ph.png 1x, imgs/reading-ph-2x.png 2x" alt="Before adding minor breakpoints.">
+    <figcaption>Before adding minor breakpoints.</figcaption>
+  </figure>
+</div>
 
+<div class="attempt-right">
+  <figure>
+    <img src="imgs/reading-de.png" srcset="imgs/reading-de.png 1x, imgs/reading-de-2x.png 2x" alt="After adding minor breakpoints.">
+    <figcaption>After adding minor breakpoints.</figcaption>
+  </figure>
+</div>
 
+<div style="clear:both;"></div>
 
+Let's take a deeper look at the above blog post example. On smaller screens, the Roboto font at 1em works perfectly giving 10 words per line, but larger screens require a breakpoint. In this case, if the browser width is greater than 575px, the ideal content width is 550px.
+
+<pre class="prettyprint">
+{% includecode content_path="web/fundamentals/design-and-ux/responsive/_code/reading.html" region_tag="mqreading" adjust_indentation="auto" %}
+</pre>
+
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/responsive/reading.html){: target="_blank" .external }
+
+### Never completely hide content
+
+Be careful when choosing what content to hide or show depending on screen size. Don't simply hide content just because you can't fit it on the screen. Screen size is not a definitive indication of what a user may want. For example, eliminating the pollen count from the weather forecast could be a serious issue for spring-time allergy sufferers who need the information to determine if they can go outside or not.
+
+## View media query breakpoints in Chrome DevTools {: #devtools }
+
+Once you've got your media query breakpoints set up, you'll want to see how your site looks with them. You *could* resize your browser window to trigger the breakpoints, but there's a better way: Chrome DevTools. The two screenshots below demonstrate using DevTools to view how a page looks under different breakpoints.
+
+![Example of DevTools' media queries feature](imgs/devtools-media-queries-example.png)
+
+To view your page under different breakpoints:
+
+[Open DevTools](/web/tools/chrome-devtools/#open) and then turn on [Device Mode](/web/tools/chrome-devtools/device-mode/#toggle).
+
+Use the [viewport controls](/web/tools/chrome-devtools/device-mode/emulate-mobile-viewports#viewport-controls) to select **Responsive**, which puts DevTools into responsive mode.
+
+Last, open the Device Mode menu and select [**Show media queries**](/web/tools/chrome-devtools/device-mode/emulate-mobile-viewports#media-queries) to display your breakpoints as colored bars above your page.
+
+Click on one of the bars to view your page while that media query is active. Right-click on a bar to jump to the media query's definition. See [Media queries](/web/tools/chrome-devtools/device-mode/emulate-mobile-viewports#media-queries) for more help.
+
+## Feedback {: #feedback }
+
+{% include "web/_shared/helpful.html" %}
