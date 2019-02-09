@@ -1,114 +1,73 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml
 
-{# wf_updated_on: 2016-11-08 #}
-{# wf_published_on: 2016-11-08 #}
+{# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2016-11-08 #} {# wf_blink_components: Blink>SecurityFeature>CredentialManagement #}
 
-# Credential Management API {: .page-title }
+# The Credential Management API {: .page-title }
 
-{% include "web/_shared/contributors/agektmr.html" %}
-{% include "web/_shared/contributors/megginkearney.html" %}
+{% include "web/_shared/contributors/agektmr.html" %} {% include "web/_shared/contributors/megginkearney.html" %}
 
-[Credential Management API](https://www.w3.org/TR/credential-management/)
-adalah API browser berbasis standar yang menyediakan antarmuka programatik
-antara situs dan browser untuk masuk tanpa kendala, ke berbagai perangkat, dan
-menghilangkan gesekan dari aliran masuk.
+The [Credential Management API](https://www.w3.org/TR/credential-management/) is a standards-based browser API that provides a programmatic interface between the site and the browser for seamless sign-in across devices.
 
-<div class="attempt-right">
-  <figure>
-    <video src="animations/credential-management-smaller.mov" style="max-height: 400px;" autoplay muted loop controls></video>
-    <figcaption>Aliran Masuk Pengguna</figcaption>
-  </figure>
-</div>
+The Credential Management API:
 
-Credential Management API:
+* **Removes friction from sign-in flows** - Users can be automatically signed back into a site even if their session has expired or they saved credentials on another device.
+* **Allows one tap sign in with account chooser** - Users can choose an account in a native account chooser.
+* **Stores credentials** - Your application can store either a username and password combination or even federated account details. These credentials can be synced across devices by the browser.
 
-* **Menyederhanakan aliran masuk** - Pengguna bisa secara otomatis masuk kembali ke 
-  situs, bahkan jika sesinya telah berakhir.
-* **Memungkinkan masuk dengan satu ketukan menggunakan pemilih akun** - Sebuah pemilih akun asli akan ditampilkan
-  yang meniadakan formulir masuk.
-* **Menyimpan kredensial** - Bisa menyimpan kombinasi nama pengguna & sandi
-  atau bahkan detail akun gabungan.
+Key Point: Using the Credential Management API requires the page be served from a secure origin.
 
-Ingin melihat aksinya? Cobalah
-[demo Credential Management API](https://credential-management-sample.appspot.com)
-dan lihat
-[kodenya](https://github.com/GoogleChrome/credential-management-sample).
+Want to see it in action? Try the [Credential Management API Demo](https://credential-management-sample.appspot.com) and take a look at the [code](https://github.com/GoogleChrome/credential-management-sample).
 
 <div class="clearfix"></div>
 
+### Check Credential Management API browser support
 
-## Langkah-langkah untuk mengimplementasikan Pengelolaan Kredensial
+Before using the Credential Management API, first check if `PasswordCredential` or `FederatedCredential` is supported.
 
-Walaupun ada banyak cara agar berhasil mengintegrasikan Credential Management
-API, spesifik integrasi ini bergantung pada struktur dan pengalaman
-pengguna situs, situs yang menggunakan aliran tersebut memiliki keunggulan pengalaman
-pengguna ini:
+    if (window.PasswordCredential || window.FederatedCredential) {
+      // Call navigator.credentials.get() to retrieve stored
+      // PasswordCredentials or FederatedCredentials.
+    }
+    
 
-* Pengguna layanan yang sudah ada dengan kredensial tunggal tersimpan ke
-  browser akan langsung masuk, dan dialihkan ke laman yang pernah dimasuki
-  begitu autentikasi selesai.
-* Pengguna yang memiliki beberapa kredensial tersimpan atau yang telah menonaktifkan
-  proses masuk otomatis perlu merespons ke satu dialog sebelum masuk ke laman masuk
-  situs web.
-* Bila pengguna keluar, situs web akan memastikan mereka tidak dimasukkan kembali
-  secara otomatis.
+Warning: Feature detection by checking `navigator.credentials` may break your website on browsers supporting [WebAuthn](https://www.w3.org/TR/webauthn/)(PublicKeyCredential) but not all credential types (`PasswordCredential` and `FederatedCredential`) defined by the Credential Management API. [Learn more](/web/updates/2018/03/webauthn-credential-management).
 
-Poin Utama: Penggunaan Credential Management API mengharuskan laman disajikan
-dari asal yang aman.
+### Sign in user
 
-### Ambil kredensial dan masuk pengguna
+To sign in the user, retrieve the credentials from the browser's password manager and use them to log in the user.
 
-Untuk memasukkan pengguna, ambil kredensial dari pengelola sandi di browser
-dan gunakan untuk memproses masuknya pengguna.
+For example:
 
-Misalnya:
+1. When a user lands on your site and they are not signed in, call [`navigator.credentials.get()`](https://developer.mozilla.org/en-US/docs/Web/API/CredentialsContainer/get).
+2. Use the retrieved credentials to sign in the user.
+3. Update the UI to indicate the user has been signed in.
 
-1. Bila pengguna mendarat di situs Anda dan mereka tidak masuk, 
-   panggil `navigator.credential.get()`
-2. Gunakan kredensial yang diambil untuk memasukkan pengguna.
-3. Perbarui UI untuk menunjukkan bahwa pengguna yang telah masuk.
+Learn more in [Sign In Users](/web/fundamentals/security/credential-management/retrieve-credentials#auto-sign-in).
 
-Ketahui selengkapnya di
-[Ambil Kredensial](/web/fundamentals/security/credential-management/retrieve-credentials).
+### Save or update user credentials
 
-### Simpan atau perbarui kredensial pengguna
+If the user signed in with a federated identity provider such as Google Sign-In, Facebook, GitHub:
 
-Jika pengguna telah masuk dengan nama pengguna dan sandi:
+1. After the user successfully signs in or creates an account, create the [`FederatedCredential`](https://developer.mozilla.org/en-US/docs/Web/API/FederatedCredential) with the user's email address as the ID and specify the identity provider with `FederatedCredentials.provider`.
+2. Save the credential object using [`navigator.credentials.store()`](https://developer.mozilla.org/en-US/docs/Web/API/CredentialsContainer/store).
 
-1. Setelah pengguna berhasil masuk, membuat akun atau mengubah
-   sandi, buat `PasswordCredential` dengan ID pengguna dan
-   sandi.
-2. Simpan objek kredensial menggunakan `navigator.credentials.store()`.
+Learn more in [Sign In Users](/web/fundamentals/security/credential-management/retrieve-credentials#federated-login).
 
+If the user signed in with a username and password:
 
-Jika pengguna masuk dengan penyedia identitas gabungan seperti Google
-Sign-In, Facebook, GitHub, dll:
+1. After the user successfully signs in or creates an account, create the [`PasswordCredential`](https://developer.mozilla.org/en-US/docs/Web/API/PasswordCredential) with the user ID and the password.
+2. Save the credential object using [`navigator.credentials.store()`](https://developer.mozilla.org/en-US/docs/Web/API/CredentialsContainer/store).
 
-1. Setelah pengguna berhasil masuk, membuat akun atau mengubah
-   sandi, buat `FederatedCredential` dengan alamat email pengguna sebagai
-   ID dan tetapkan penyedia identitas dengan `.provider` 
-2. Simpan objek kredensial menggunakan `navigator.credentials.store()`.
+Learn more in [Save Credentials from Forms](/web/fundamentals/security/credential-management/save-forms).
 
-Ketahui selengkapnya di
-[Simpan Kredensial](/web/fundamentals/security/credential-management/store-credentials).
+### Sign out
 
-### Keluar
+When the user signs out, call [`navigator.credentials.preventSilentAccess()`](/web/fundamentals/security/credential-management/retrieve-credentials#turn_off_auto_sign-in_for_future_visits) to prevent the user from being automatically signed back in.
 
-Bila pengguna keluar, panggil `navigator.credentials.requireUserMediation()`
-untuk mencegah pengguna dimasukkan kembali secara otomatis.
+Disabling auto-sign-in also enables users to switch between accounts easily, for example, between work and personal accounts, or between accounts on shared devices, without having to re-enter their sign-in information.
 
-Dengan menonaktifkan masuk-otomatis juga memungkinkan pengguna beralih akun dengan mudah,
-misalnya, antara akun pribadi dan kantor, atau antara akun di
-perangkat bersama, tanpa harus memasukkan kembali informasi masuk mereka.
+Learn more in [Sign out](/web/fundamentals/security/credential-management/retrieve-credentials#sign-out).
 
-Ketahui selengkapnya di
-[Keluar](/web/fundamentals/security/credential-management/retrieve-credentials#sign-out).
+## Feedback {: #feedback }
 
-
-## Referensi Tambahan
-
-[Credential Management API di MDN](https://developer.mozilla.org/en-US/docs/Web/API/Credential_Management_API)
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
