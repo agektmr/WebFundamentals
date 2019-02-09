@@ -1,100 +1,86 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Cookie は、[Application] パネルで調査および削除します。
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Inspect and delete cookies from the Application panel.
 
-{# wf_updated_on:2016-07-28 #}
-{# wf_published_on:2015-04-13 #}
+{# wf_updated_on: 2018-07-27 #} {# wf_published_on: 2015-04-13 #} {# wf_blink_components: Platform>DevTools #}
 
-# Cookie の調査と削除 {: .page-title }
+# Inspect and Delete Cookies {: .page-title }
 
 {% include "web/_shared/contributors/kaycebasques.html" %}
 
-Cookie は、[<strong>Application</strong>] パネルで調査および削除します。
+Inspect and delete cookies from the
+<strong>Application</strong> panel.
 
-
-![[Cookies] ペイン](imgs/cookies.png)
-
+![cookies pane](imgs/cookies.png)
 
 ### TL;DR {: .hide-from-toc }
-- Cookie の名前、値、ドメイン、サイズなどの詳細情報を表示します。
-- 単一の Cookie、選択したドメインの複数の Cookie、またはすべてのドメインのすべての Cookie を削除します。
 
+* View detailed information about a cookie, such as its name, value, domain, size, and more.
+* Delete a single cookie, cookies from a selected domain, or all cookies from all domains.
 
-##  概要{:#cookies}
+## Overview {:#cookies}
 
-Cookie を表示および削除するには、[**Cookies**] ペインを使用します。Cookie の値は変更できません。
+Use the **Cookies** pane to view and delete cookies. You cannot modify cookie values.
 
+![cookies pane](/web/tools/chrome-devtools/manage-data/imgs/cookies.png)
 
-![[Cookies] ペイン][cookies]
+Cookies are listed by domain. This includes the main document as well as all nested frames. Selecting one of these “frame groups” displays all cookies, for all resources, for all frames in that group. There are two consequences of this grouping to be aware of:
 
-Cookie は、ドメインごとに表示されます。これには、メイン ドキュメントやすべてのネストされたフレームが含まれます。
-これらの「フレーム グループ」のいずれかを選択すると、すべてのリソース、そのグループ内のすべてのフレームの Cookie がすべて表示されます。
-このようにグループ化することには、注意が必要な 2 つの影響があります。
+* Cookies from different domains may appear in the same frame group.
+* The same cookie may appear in several frame groups.
 
+## Fields {:#fields}
 
-* さまざまなドメインの Cookie が同じフレーム グループに表示される場合があります。
-* 同じ Cookie が複数のフレーム グループに表示される場合があります。
-
-[cookies]: /web/tools/chrome-devtools/manage-data/imgs/cookies.png
-
-##  項目{:#fields}
-
-各 Cookie に次の項目があります。
+The following fields are provided for each cookie:
 
 <table class="responsive">
   <thead>
     <tr>
-      <th colspan="2">Cookie の項目と説明</th>
+      <th colspan="2">Cookie Field &amp; Description</th>
     </tr>
   </thead>
   <tbody>
         <tr>
       <td data-th="Cookie Field">Name</td>
-      <td data-th="Description">Cookie の名前。</td>
+      <td data-th="Description">The cookie's name.</td>
     </tr>
     <tr>
       <td data-th="Cookie Field">Value</td>
-      <td data-th="Description">Cookie の値。</td>
+      <td data-th="Description">The cookie's value.</td>
     </tr>
     <tr>
       <td data-th="Cookie Field">Domain</td>
-      <td data-th="Description">Cookie のドメイン。</td>
+      <td data-th="Description">The cookie's domain.</td>
     </tr>
     <tr>
       <td data-th="Cookie Field">Path</td>
-      <td data-th="Description">Cookie のパス。</td>
+      <td data-th="Description">The cookie's path.</td>
     </tr>
     <tr>
       <td data-th="Cookie Field">Expires / Maximum Age</td>
-      <td data-th="Description">Cookie の有効期限または残存期間。セッション Cookie の場合、この項目は常に "Session" です。</td>
+      <td data-th="Description">The cookie's expiration time, or maximum age. For session cookies, this field is always "Session".</td>
     </tr>
     <tr>
       <td data-th="Cookie Field">Size</td>
-      <td data-th="Description">Cookie のサイズ（バイト）。</td>
+      <td data-th="Description">The cookie's size in bytes.</td>
     </tr>
     <tr>
       <td data-th="Cookie Field">HTTP</td>
-      <td data-th="Description">存在する場合は、Cookie を HTTP でのみ使用する必要があり、JavaScript の変更は許可されないことを示します。</td>
+      <td data-th="Description">If present, indicates that cookies should be used only over HTTP, and JavaScript modification is not allowed.</td>
     </tr>
     <tr>
       <td data-th="Cookie Field">Secure</td>
-      <td data-th="Description">存在する場合は、この Cookie の通信を暗号化された送信でのみ行う必要があることを示します。</td>
+      <td data-th="Description">If present, indicates that communication for this cookie must be over an encrypted transmission.</td>
     </tr>
   </tbody>
 </table>
 
-##  Cookie の削除{:#delete}
+## Delete cookies {:#delete}
 
-Cookie を削除する方法はいくつかあります。
+There are a few ways you can delete cookies:
 
-* Cookie を選択し、**削除**ボタン（![削除ボタン][delete]{:.inline}）をクリックしてその Cookie のみを削除します。
-* **消去**ボタン（![消去ボタン][cos]{:.inline}）をクリックして、指定したフレーム グループのすべての Cookie を削除します。
-* Cookie の [**Domain**] 値を右クリックし、[**Clear all from "..."**]（**"..."** はドメイン名）を選択して、そのドメインからすべての Cookie を削除します。
+* Select a cookie and press the **delete** button (![delete button](imgs/delete.png){:.inline}) to delete just that cookie.
+* Press the **clear** button (![clear button](imgs/clear-object-store.png){:.inline}) to delete all cookies for the specified frame group.
+* Right-click on the **Domain** value of a cookie and select **Clear all from "..."** (where **"..."** is the name of the domain) to delete all cookies from that domain.
 
+## Feedback {: #feedback }
 
-
-[delete]: imgs/delete.png
-[cos]: imgs/clear-object-store.png
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
