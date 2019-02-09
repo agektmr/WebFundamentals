@@ -1,36 +1,28 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Membandingkan objek data serupa menggunakan metode table().
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Compare similar data objects using the table() method.
 
-{# wf_updated_on: 2015-05-11 #}
-{# wf_published_on: 2015-04-13 #}
+{# wf_updated_on: 2018-07-27 #} {# wf_published_on: 2015-04-13 #} {# wf_blink_components: Platform>DevTools #}
 
-# Membandingkan Objek Data Serupa {: .page-title }
+# Compare Similar Data Objects {: .page-title }
 
-{% include "web/_shared/contributors/megginkearney.html" %}
-{% include "web/_shared/contributors/pbakaus.html" %}
-Menampilkan data terstruktur dan membandingkan objek data menggunakan metode table().
+{% include "web/_shared/contributors/megginkearney.html" %} {% include "web/_shared/contributors/pbakaus.html" %} View structured data and compare data objects using the table() method.
 
-Metode `table()` memberikan cara mudah untuk melihat objek dan larik yang berisi data serupa. Bila dipanggil, maka properti objek akan dipanggil dan membuat header. Data baris berasal dari setiap nilai properti indeks.
+The `table()` method provides an easy way to view objects and arrays that include similar data. When called, it will take the properties of an object and create a header. The row data then comes from each index's properties value.
 
+## Basic example: Logging an array of objects
 
-## Contoh dasar: Mencatat larik objek dalam log
-
-Dalam bentuknya yang paling dasar, Anda hanya perlu sebuah larik berisi sekumpulan objek yang memiliki properti sama, dan selebihnya akan dilakukan oleh perintah `table()`:
-
+In it's most basic form, all you need is an array with a bunch of objects that have the same properties, and the `table()` command will do the rest:
 
     console.table([{a:1, b:2, c:3}, {a:"foo", b:false, c:undefined}]);
     console.table([[1,2,3], [2,3,4]]);
     
-  
-Ini akan menghasilkan keluaran:
 
-![tampilan tabel konsol](images/table-arrays.png)
+This will output:
 
-## Contoh lanjutan: Mencatat properti spesifik dalam log
+![console table display](images/table-arrays.png)
 
-Parameter kedua untuk `table()` bisa digunakan untuk mencatat objek yang lebih canggih ke log. Definisikan larik berisi string properti yang ingin Anda tampilkan, seperti:
+## Advanced example: Logging specific properties
 
+The second parameter to `table()` can be used to log more advanced objects. Define an array containing the property strings you wish to display, like so:
 
     function Person(firstName, lastName, age) {
       this.firstName = firstName;
@@ -47,11 +39,10 @@ Parameter kedua untuk `table()` bisa digunakan untuk mencatat objek yang lebih c
     console.table(family, ["firstName", "lastName", "age"]);
     
 
-Keluarannya akan seperti berikut ini:
+This will output the following:
 
-![keluaran konsol dengan objek tabel](images/table-people-objects.png)
+![console output with table objects](images/table-people-objects.png)
 
+## Feedback {: #feedback }
 
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
