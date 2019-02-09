@@ -1,554 +1,484 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Referensi dari semua pintasan keyboard di Chrome DevTools.
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: The canonical documentation for Chrome DevTools keyboard shortcuts.
 
-{# wf_updated_on: 2016-11-28 #}
-{# wf_published_on: 2015-04-29 #}
+{# wf_updated_on: 2018-12-14 #} {# wf_published_on: 2015-04-29 #} {# wf_blink_components: Platform>DevTools #}
 
-# Referensi Pintasan Keyboard {: .page-title }
+# Chrome DevTools Keyboard Shortcuts {: .page-title }
 
-{% include "web/_shared/contributors/megginkearney.html" %}
+{% include "web/tools/chrome-devtools/_shared/styles.html" %}
+
 {% include "web/_shared/contributors/kaycebasques.html" %}
 
-Laman ini adalah referensi pintasan keyboard di Chrome DevTools.
-Meskipun beberapa pintasan tersedia secara global, yang lainnya khusus
-untuk satu panel.
+This page is a reference of keyboard shortcuts in Chrome DevTools.
 
-Anda juga bisa menemukan pintasan di keterangan alat. Arahkan kursor ke atas elemen UI DevTools
-untuk menampilkan keterangan alatnya. Jika elemen memiliki pintasan, keterangan alat akan menyertakannya.
+You can also find shortcuts in tooltips. Hover over a UI element of DevTools to display its tooltip. If the element has a shortcut, the tooltip includes it.
 
-## Mengakses DevTools
+## Keyboard shortcuts for opening DevTools {: #open }
 
-<table>
-  <thead>
-      <th>Mengakses DevTools</th>
-      <th>Di Windows</th>
-      <th>Di Mac</th>
-  </thead>
-  <tbody>
-    <tr>
-      <td data-th="Launch DevTools">Membuka Developer Tools</td>
-      <td data-th="Windows"><kbd class="kbd">F12</kbd>, <kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">Shift</kbd> + <kbd class="kbd">I</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Cmd</kbd> + <kbd class="kbd">Opt</kbd> + <kbd class="kbd">I</kbd></td>
-    </tr>
-    <tr>
-      <td data-th="Launch DevTools">Membuka / beralih dari mode pemeriksaan elemen dan jendela browser</td>
-      <td data-th="Windows"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">Shift</kbd> + <kbd class="kbd">C</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Cmd</kbd> + <kbd class="kbd">Shift</kbd> + <kbd class="kbd">C</kbd></td>
-    </tr>
-    <tr>
-      <td data-th="Launch DevTools">Membuka Developer Tools dan memindah fokus ke konsol</td>
-      <td data-th="Windows"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">Shift</kbd> + <kbd class="kbd">J</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Cmd</kbd> + <kbd class="kbd">Opt</kbd> + <kbd class="kbd">J</kbd></td>
-    </tr>
-    <tr>
-      <td data-th="Launch DevTools">Memeriksa Inspector (terlebih dahulu lepaskan dok dan tekan)</td>
-      <td data-th="Windows"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">Shift</kbd> + <kbd class="kbd">I</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Cmd</kbd> + <kbd class="kbd">Opt</kbd> + <kbd class="kbd">I</kbd></td>
-    </tr>
-  </tbody>
-</table>
-
-## Pintasan keyboard global
-
-Pintasan keyboard berikut tersedia di semua panel DevTools:
+To open DevTools, press the following keyboard shortcuts while your cursor is focused on the browser viewport:
 
 <table>
   <thead>
-      <th>Pintasan Global</th>
-      <th>Windows</th>
+      <th>Action</th>
       <th>Mac</th>
+      <th>Windows / Linux</th>
   </thead>
   <tbody>
     <tr>
-      <td data-th="Global Shortcuts">Menampilkan dialog General Settings</td>
-      <td data-th="Windows"><kbd class="kbd">?</kbd>, <kbd class="kbd">F1</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">?</kbd></td>
+      <td>Open whatever panel you used last</td>
+      <td><kbd>Command</kbd>+<kbd>Option</kbd>+<kbd>I</kbd></td>
+      <td><kbd>F12</kbd> or <kbd>Control</kbd>+<kbd>Shift</kbd>+<kbd>I</kbd></td>
     </tr>
     <tr>
-      <td data-th="Global Shortcuts">Panel berikutnya</td>
-      <td data-th="Windows"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">]</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Cmd</kbd> + <kbd class="kbd">]</kbd></td>
+      <td>Open the <b>Console</b> panel</td>
+      <td><kbd>Command</kbd>+<kbd>Option</kbd>+<kbd>J</kbd></td>
+      <td><kbd>Control</kbd>+<kbd>Shift</kbd>+<kbd>J</kbd></td>
     </tr>
     <tr>
-      <td data-th="Global Shortcuts">Panel sebelumnya</td>
-      <td data-th="Windows"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">[</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Cmd</kbd> + <kbd class="kbd">[</kbd></td>
-    </tr>
-    <tr>
-      <td data-th="Global Shortcuts">Mundur di riwayat panel</td>
-      <td data-th="Windows"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">Alt</kbd> + <kbd class="kbd">[</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Cmd</kbd> + <kbd class="kbd">Opt</kbd> + <kbd class="kbd">[</kbd></td>
-    </tr>
-    <tr>
-      <td data-th="Global Shortcuts">Maju di riwayat panel</td>
-      <td data-th="Windows"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">Alt</kbd> + <kbd class="kbd">]</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Cmd</kbd> + <kbd class="kbd">Opt</kbd> + <kbd class="kbd">]</kbd></td>
-    </tr>
-    <tr>
-      <td data-th="Global Shortcuts">Mengubah lokasi pasang ke dok</td>
-      <td data-th="Windows"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">Shift</kbd> + <kbd class="kbd">D</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Cmd</kbd> + <kbd class="kbd">Shift</kbd> + <kbd class="kbd">D</kbd></td>
-    </tr>
-    <tr>
-      <td data-th="Global Shortcuts">Membuka Device Mode</td>
-      <td data-th="Windows"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">Shift</kbd> + <kbd class="kbd">M</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Cmd</kbd> + <kbd class="kbd">Shift</kbd> + <kbd class="kbd">M</kbd></td>
-    </tr>
-    <tr>
-      <td data-th="Global Shortcuts">Beralih konsol / menutup dialog setelan bila terbuka</td>
-      <td data-th="Windows"><kbd class="kbd">Esc</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Esc</kbd></td>
-    </tr>
-    <tr>
-      <td data-th="Global Shortcuts">Menyegarkan laman</td>
-      <td data-th="Windows"><kbd class="kbd">F5</kbd>, <kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">R</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Cmd</kbd> + <kbd class="kbd">R</kbd></td>
-    </tr>
-    <tr>
-      <td data-th="Global Shortcuts">Menyegarkan laman dengan mengabaikan materi yang di-cache</td>
-      <td data-th="Windows"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">F5</kbd>, <kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">Shift</kbd> + <kbd class="kbd">R</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Cmd</kbd> + <kbd class="kbd">Shift</kbd> + <kbd class="kbd">R</kbd></td>
-    </tr>
-    <tr>
-      <td data-th="Global Shortcuts">Penelusuran teks dalam file atau panel saat ini</td>
-      <td data-th="Windows"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">F</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Cmd</kbd> + <kbd class="kbd">F</kbd></td>
-    </tr>
-    <tr>
-      <td data-th="Global Shortcuts">Penelusuran teks di semua sumber</td>
-      <td data-th="Windows"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">Shift</kbd> + <kbd class="kbd">F</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Cmd</kbd> + <kbd class="kbd">Opt</kbd> + <kbd class="kbd">F</kbd></td>
-    </tr>
-    <tr>
-      <td data-th="Global Shortcuts">Menelusuri berdasarkan nama file (kecuali pada Timeline)</td>
-      <td data-th="Windows"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">O</kbd>, <kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">P</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Cmd</kbd> + <kbd class="kbd">O</kbd>, <kbd class="kbd">Cmd</kbd> + <kbd class="kbd">P</kbd></td>
-    </tr>
-    <tr>
-      <td data-th="Global Shortcuts">Memperbesar (saat memfokus di DevTools)</td>
-      <td data-th="Windows"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">+</kbd></td>
-      <td data-th="Mac"><kbd>Cmd</kbd> + <kbd class="kbd">Shift</kbd> + <kbd class="kbd">+</kbd></td>
-    </tr>
-    <tr>
-      <td data-th="Global Shortcuts">Memperkecil</td>
-      <td data-th="Windows"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">-</kbd></td>
-      <td data-th="Mac"><kbd>Cmd</kbd> + <kbd class="kbd">Shift</kbd> + <kbd class="kbd">-</kbd></td>
-    </tr>
-    <tr>
-      <td data-th="Global Shortcuts">Mengembalikan ukuran teks default</td>
-      <td data-th="Windows"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">0</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Cmd</kbd> + <kbd class="kbd">0</kbd></td>
+      <td>Open the <b>Elements</b> panel</td>
+      <td><kbd>Command</kbd>+<kbd>Option</kbd>+<kbd>C</kbd></td>
+      <td><kbd>Control</kbd>+<kbd>Shift</kbd>+<kbd>C</kbd></td>
     </tr>
   </tbody>
 </table>
 
-## Pintasan keyboard berdasarkan panel
+## Global keyboard shortcuts {: #global }
 
-### Elemen
+The following keyboard shortcuts are available in most, if not all, DevTools panels.
 
 <table>
   <thead>
-      <th>Panel Elements</th>
-      <th>Windows</th>
+      <th>Action</th>
       <th>Mac</th>
+      <th>Windows / Linux</th>
   </thead>
   <tbody>
     <tr>
-      <td data-th="Elements Panel">Mengurungkan perubahan</td>
-      <td data-th="Windows"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">Z</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Cmd</kbd> + <kbd class="kbd">Z</kbd></td>
+      <td>Show <b>Settings</b></td>
+      <td><kbd>?</kbd> or <kbd>Function</kbd>+<kbd>F1</kbd></td>
+      <td><kbd>?</kbd> or <kbd>F1</kbd></td>
     </tr>
     <tr>
-      <td data-th="Elements Panel">Mengulangi perubahan</td>
-      <td data-th="Windows"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">Y</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Cmd</kbd> + <kbd class="kbd">Y</kbd>, <kbd class="kbd">Cmd</kbd> + <kbd class="kbd">Shift</kbd> + <kbd class="kbd">Z</kbd></td>
+      <td>Focus the next panel</td>
+      <td><kbd>Command</kbd>+<kbd>]</kbd></kbd></td>
+      <td><kbd>Control</kbd>+<kbd>]</kbd></kbd></td>
     </tr>
     <tr>
-      <td data-th="Elements Panel">Navigasi</td>
-      <td data-th="Windows"><kbd class="kbd">Naik</kbd>, <kbd class="kbd">Turun</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Naik</kbd>, <kbd class="kbd">Turun</kbd></td>
+      <td>Focus the previous panel</td>
+      <td><kbd>Command</kbd>+<kbd>[</kbd></td>
+      <td><kbd>Control</kbd>+<kbd>[</kbd></td>
     </tr>
     <tr>
-      <td data-th="Elements Panel">Meluaskan / menciutkan simpul</td>
-      <td data-th="Windows"><kbd class="kbd">Kanan</kbd>, <kbd class="kbd">Kiri</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Kanan</kbd>, <kbd class="kbd">Kiri</kbd></td>
+      <!-- TODO make a bug about this shortcut being ambiguous -->
+      <td>
+        Switch back to whatever <a href="/web/tools/chrome-devtools/ui#placement">docking position</a> you last used.
+        If DevTools has been in its default position for the entire session, then this shortcut undocks
+        DevTools into a separate window
+      </td>
+      <td><kbd>Command</kbd>+<kbd>Shift</kbd>+<kbd>D</kbd></td>
+      <td><kbd>Control</kbd>+<kbd>Shift</kbd>+<kbd>D</kbd></td>
     </tr>
     <tr>
-      <td data-th="Elements Panel">Meluaskan simpul</td>
-      <td data-th="Windows"><kbd class="kbd">Klik sekali pada panah</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Klik sekali pada panah</kbd></td>
+      <td>Toggle <b><a href="/web/tools/chrome-devtools/device-mode/">Device Mode</a><b></td>
+      <td><kbd>Command</kbd>+<kbd>Shift</kbd>+<kbd>M</kbd></td>
+      <td><kbd>Control</kbd>+<kbd>Shift</kbd>+<kbd>M</kbd></td>
     </tr>
     <tr>
-      <td data-th="Elements Panel">Meluaskan / menciutkan simpul dan semua anaknya</td>
-      <td data-th="Windows"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">Alt</kbd> + <kbd class="kbd">Klik ikon panah</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Opt</kbd> + <kbd class="kbd">Klik ikon panah</kbd></td>
+      <!-- TODO: Link "Inspect Element Mode" when a good section exists. -->
+      <td>Toggle <b>Inspect Element Mode</b></td>
+      <td><kbd>Command</kbd>+<kbd>Shift</kbd>+<kbd>C</kbd></td>
+      <td><kbd>Control</kbd>+<kbd>Shift</kbd>+<kbd>C</kbd></td>
     </tr>
     <tr>
-      <td data-th="Elements Panel">Mengedit atribut</td>
-      <td data-th="Windows"><kbd class="kbd">Enter</kbd>, <kbd class="kbd">Klik dua kali pada atribut</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Enter</kbd>, <kbd class="kbd">Klik dua kali pada atribut</kbd></td>
+      <td>Open the <b><a href="/web/tools/chrome-devtools/ui#command-menu">Command Menu</a></b></td>
+      <td><kbd>Command</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd></td>
+      <td><kbd>Control</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd></td>
     </tr>
     <tr>
-      <td data-th="Elements Panel">Menyembunyikan elemen</td>
-      <td data-th="Windows"><kbd class="kbd">H</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">H</kbd></td>
+      <td>Toggle the <b><a href="/web/tools/chrome-devtools/ui#drawer">Drawer</a></b></td>
+      <td><kbd>Escape</kbd></td>
+      <td><kbd>Escape</kbd></td>
     </tr>
     <tr>
-      <td data-th="Elements Panel">Beralih edit sebagai HTML</td>
-      <td data-th="Windows"><kbd class="kbd">F2</kbd></td>
-      <td data-th="Mac"></td>
+      <td>Normal reload</td>
+      <td><kbd>Command</kbd>+<kbd>R</kbd></td>
+      <td><kbd>F5</kbd> or <kbd>Control</kbd>+<kbd>R</kbd></td>
+    </tr>
+    <tr>
+      <td>Hard reload</td>
+      <td><kbd>Command</kbd>+<kbd>Shift</kbd>+<kbd>R</kbd></td>
+      <td><kbd>Control</kbd>+<kbd>F5</kbd> or <kbd>Control</kbd>+<kbd>Shift</kbd>+<kbd>R</kbd></td>
+    </tr>
+    <tr>
+      <td>
+        Search for text within the current panel. Not supported in the <b>Audits</b>, <b>Application</b>, and <b>Security</b> panels
+      </td>
+      <td><kbd>Command</kbd>+<kbd>F</kbd></td>
+      <td><kbd>Control</kbd>+<kbd>F</kbd></td>
+    </tr>
+    <tr>
+      <td>Opens the <b>Search</b> tab in the <b><a href="/web/tools/chrome-devtools/ui#drawer">Drawer</a></b>, which lets you search for text across all loaded resources</td>
+      <td><kbd>Command</kbd>+<kbd>Option</kbd>+<kbd>F</kbd></td>
+      <td><kbd>Control</kbd>+<kbd>Shift</kbd>+<kbd>F</kbd></td>
+    </tr>
+    <tr>
+      <td>Open a file in the <b>Sources</b> panel</td>
+      <td><kbd>Command</kbd>+<kbd>O</kbd> or <kbd>Command</kbd>+<kbd>P</kbd></td>
+      <td><kbd>Control</kbd>+<kbd>O</kbd> or <kbd>Control</kbd>+<kbd>P</kbd></td>
+    </tr>
+    <tr>
+      <td>Zoom in</td>
+      <td><kbd>Command</kbd>+<kbd>Shift</kbd>+<kbd>+</kbd></td>
+      <td><kbd>Control</kbd>+<kbd>Shift</kbd>+<kbd>+</kbd></td>
+    </tr>
+    <tr>
+      <td>Zoom out</td>
+      <td><kbd>Command</kbd>+<kbd>-</kbd></td>
+      <td><kbd>Control</kbd>+<kbd>-</kbd></td>
+    </tr>
+    <tr>
+      <td>Restore default zoom level</td>
+      <td><kbd>Command</kbd>+<kbd>0</kbd></td>
+      <td><kbd>Control</kbd>+<kbd>0</kbd></td>
+    </tr>
+    <tr>
+      <td>Run snippet</td>
+      <td>Press <kbd>Command</kbd>+<kbd>O</kbd> to open the <b><a href="/web/tools/chrome-devtools/ui#command-menu">Command Menu</a></b>, type <kbd>!</kbd> followed by the name of the script, then press <kbd>Enter</kbd></td>
+      <td>Press <kbd>Control</kbd>+<kbd>O</kbd> to open the <b><a href="/web/tools/chrome-devtools/ui#command-menu">Command Menu</a></b>, type <kbd>!</kbd> followed by the name of the script, then press <kbd>Enter</kbd></td>
     </tr>
   </tbody>
 </table>
 
-#### Bilah sisi Styles
-
-Pintasan yang tersedia di bilah sisi Styles:
+## Elements panel keyboard shortcuts {: #elements }
 
 <table>
   <thead>
-      <th>Bilah sisi Styles</th>
-      <th>Windows</th>
+      <th>Action</th>
       <th>Mac</th>
+      <th>Windows / Linux</th>
   </thead>
   <tbody>
     <tr>
-      <td data-th="Styles Sidebar">Mengedit aturan</td>
-      <td data-th="Windows"><kbd class="kbd">Klik sekali</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Klik sekali</kbd></td>
+      <td>Undo change</td>
+      <td><kbd>Command</kbd>+<kbd>Z</kbd></td>
+      <td><kbd>Control</kbd>+<kbd>Z</kbd></td>
     </tr>
     <tr>
-      <td data-th="Styles Sidebar">Menyisipkan properti baru</td>
-      <td data-th="Windows"><kbd class="kbd">Klik sekali pada spasi kosong</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Klik sekali pada spasi kosong</kbd></td>
+      <td>Redo change</td>
+      <td><kbd>Command</kbd>+<kbd>Shift</kbd>+<kbd>Z</kbd></td>
+      <td><kbd>Control</kbd>+<kbd>Y</kbd></td>
     </tr>
     <tr>
-      <td data-th="Styles Sidebar">Berpindah ke baris deklarasi properti aturan gaya di sumber</td>
-      <td data-th="Windows"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">Klik pada properti</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Cmd</kbd> + <kbd class="kbd">Klik pada properti</kbd></td>
+      <td>Select the element above / below the currently-selected element</td>
+      <td><kbd>Up Arrow</kbd> / <kbd>Down Arrow</kbd></td>
+      <td><kbd>Up Arrow</kbd> / <kbd>Down Arrow</kbd></td>
     </tr>
     <tr>
-      <td data-th="Styles Sidebar">Berpindah ke baris deklarasi nilai properti di sumber</td>
-      <td data-th="Windows"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">Klik pada nilai properti</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Cmd</kbd> + <kbd class="kbd">Klik pada nilai properti</kbd></td>
+      <td>Expand the currently-selected node. If the node is already expanded, this shortcut selects the element below it</td>
+      <td><kbd>Right Arrow</kbd></td>
+      <td><kbd>Right Arrow</kbd></td>
     </tr>
     <tr>
-      <td data-th="Styles Sidebar">Berganti-ganti nilai definisi warna</td>
-      <td data-th="Windows"><kbd class="kbd">Shift</kbd> + <kbd class="kbd">Klik pada kotak pemilih warna</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Shift</kbd> + <kbd class="kbd">Klik pada kotak pemilih warna</kbd></td>
+      <td>Collapse the currently-selected node. If the node is already collapsed, this shortcut selects the element above it</td>
+      <td><kbd>Left Arrow</kbd></td>
+      <td><kbd>Left Arrow</kbd></td>
     </tr>
     <tr>
-      <td data-th="Styles Sidebar">Mengedit properti berikutnya / sebelumnya</td>
-      <td data-th="Windows"><kbd class="kbd">Tab</kbd>, <kbd class="kbd">Shift</kbd> + <kbd class="kbd">Tab</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Tab</kbd>, <kbd class="kbd">Shift</kbd> + <kbd class="kbd">Tab</kbd></td>
+      <td>Expand or collapse the currently-selected node and all of its children</td>
+      <td>Hold <kbd>Option</kbd> then click the arrow icon next to the element's name</td>
+      <td>Hold <kbd>Control</kbd>+<kbd>Alt</kbd> then click the arrow icon next to the element's name</td>
     </tr>
     <tr>
-      <td data-th="Styles Sidebar">Menambah / mengurangi nilai</td>
-      <td data-th="Windows"><kbd class="kbd">Naik</kbd>, <kbd class="kbd">Turun</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Naik</kbd>, <kbd class="kbd">Turun</kbd></td>
+      <td>Toggle <b>Edit Attributes</b> mode on the currently-selected element</td>
+      <td><kbd>Enter</kbd></td>
+      <td><kbd>Enter</kbd></td>
     </tr>
     <tr>
-      <td data-th="Styles Sidebar">Menambah / mengurangi nilai sebanyak 10</td>
-      <td data-th="Windows"><kbd class="kbd">Shift</kbd> + <kbd class="kbd">Naik</kbd>, <kbd class="kbd">Shift</kbd> + <kbd class="kbd">Turun</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Shift</kbd> + <kbd class="kbd">Naik</kbd>, <kbd class="kbd">Shift</kbd> + <kbd class="kbd">Turun</kbd></td>
+      <td>Select the next / previous attribute after entering <b>Edit Attributes</b> mode</td>
+      <td><kbd>Tab</kbd> / <kbd>Shift</kbd>+<kbd>Tab</kbd></td>
+      <td><kbd>Tab</kbd> / <kbd>Shift</kbd>+<kbd>Tab</kbd></td>
     </tr>
     <tr>
-      <td data-th="Styles Sidebar">Menambah / mengurangi nilai sebanyak 10</td>
-      <td data-th="Windows"><kbd class="kbd">PgUp</kbd>, <kbd class="kbd">PgDown</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">PgUp</kbd>, <kbd class="kbd">PgDown</kbd></td>
+      <td>Hide the currently-selected element</td>
+      <td><kbd>H</kbd></td>
+      <td><kbd>H</kbd></td>
     </tr>
     <tr>
-      <td data-th="Styles Sidebar">Menambah / mengurangi nilai sebanyak 100</td>
-      <td data-th="Windows"><kbd class="kbd">Shift</kbd> + <kbd class="kbd">PgUp</kbd>, <kbd class="kbd">Shift</kbd> + <kbd class="kbd">PgDown</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Shift</kbd> + <kbd class="kbd">PgUp</kbd>, <kbd class="kbd">Shift</kbd> + <kbd class="kbd">PgDown</kbd></td>
-    </tr>
-    <tr>
-      <td data-th="Styles Sidebar">Menambah / mengurangi nilai sebanyak 0,1</td>
-      <td data-th="Windows"><kbd class="kbd">Alt</kbd> + <kbd class="kbd">Naik</kbd>, <kbd class="kbd">Alt</kbd> + <kbd class="kbd">Turun</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Opt</kbd> + <kbd class="kbd">Naik</kbd>, <kbd class="kbd">Opt</kbd> + <kbd class="kbd">Turun</kbd></td>
+      <td>Toggle <b>Edit as HTML</b> mode on the currently-selected element</td>
+      <td><kbd>Function</kbd>+<kbd>F2</kbd></td>
+      <td><kbd>F2</kbd></td>
     </tr>
   </tbody>
 </table>
 
-### Sumber daya
+### Styles pane keyboard shortcuts {: #styles }
 
 <table>
   <thead>
-      <th>Panel Sources</th>
-      <th>Windows</th>
+      <th>Action</th>
       <th>Mac</th>
+      <th>Windows / Linux</th>
   </thead>
   <tbody>
     <tr>
-      <td data-th="Sources Panel">Menghentikan sementara / melanjutkan eksekusi skrip</td>
-      <td data-th="Windows"><kbd class="kbd">F8</kbd>, <kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">\</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">F8</kbd>, <kbd class="kbd">Cmd</kbd> + <kbd class="kbd">\</kbd></td>
+      <td>Go to the line where a property value is declared</td>
+      <td>Hold <kbd>Command</kbd> then click the property value</td>
+      <td>Hold <kbd>Control</kbd> then click the property value</td>
     </tr>
     <tr>
-      <td data-th="Sources Panel">Melangkahi panggilan fungsi berikutnya</td>
-      <td data-th="Windows"><kbd class="kbd">F10</kbd>, <kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">'</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">F10</kbd>, <kbd class="kbd">Cmd</kbd> + <kbd class="kbd">'</kbd></td>
+      <td>Cycle through the RBGA, HSLA, and Hex representations of a color value</td>
+      <td>Hold <kbd>Shift</kbd> then click the <b>Color Preview</b> box next to the value</td>
+      <td>Hold <kbd>Shift</kbd> then click the <b>Color Preview</b> box next to the value</td>
     </tr>
     <tr>
-      <td data-th="Sources Panel">Masuk ke dalam panggilan fungsi berikutnya</td>
-      <td data-th="Windows"><kbd class="kbd">F11</kbd>, <kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">;</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">F11</kbd>, <kbd class="kbd">Cmd</kbd> + <kbd class="kbd">;</kbd></td>
+      <td>Select the next / previous property or value</td>
+      <td>Click a property name or value then press <kbd>Tab</kbd> / <kbd>Shift</kbd>+<kbd>Tab</kbd></td>
+      <td>Click a property name or value then press <kbd>Tab</kbd> / <kbd>Shift</kbd>+<kbd>Tab</kbd></td>
     </tr>
     <tr>
-      <td data-th="Sources Panel">Keluar dari fungsi saat ini</td>
-      <td data-th="Windows"><kbd class="kbd">Shift</kbd> + <kbd class="kbd">F11</kbd>, <kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">Shift</kbd> + <kbd class="kbd">;</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Shift</kbd> + <kbd class="kbd">F11</kbd>, <kbd class="kbd">Cmd</kbd> + <kbd class="kbd">Shift</kbd> + <kbd class="kbd">;</kbd></td>
+      <td>Increment / decrement a property value by 0.1</td>
+      <td>Click a value then press <kbd>Option</kbd>+<kbd>Up Arrow</kbd> / <kbd>Option</kbd>+<kbd>Down Arrow</kbd></td>
+      <td>Click a value then press <kbd>Alt</kbd>+<kbd>Up Arrow</kbd> / <kbd>Alt</kbd>+<kbd>Down Arrow</kbd></td>
     </tr>
     <tr>
-      <td data-th="Sources Panel">Memilih bingkai panggilan berikutnya</td>
-      <td data-th="Windows"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">.</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Opt</kbd> + <kbd class="kbd">.</kbd></td>
+      <td>Increment / decrement a property value by 1</td>
+      <td>Click a value then press <kbd>Up Arrow</kbd> / <kbd>Down Arrow</kbd></td>
+      <td>Click a value then press <kbd>Up Arrow</kbd> / <kbd>Down Arrow</kbd></td>
     </tr>
     <tr>
-      <td data-th="Sources Panel">Memilih bingkai panggilan sebelumnya</td>
-      <td data-th="Windows"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">,</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Opt</kbd> + <kbd class="kbd">,</kbd></td>
+      <td>Increment / decrement a property value by 10</td>
+      <td>Click a value then press <kbd>Shift</kbd>+<kbd>Up Arrow</kbd> / <kbd>Shift</kbd>+<kbd>Down Arrow</kbd></td>
+      <td>Click a value then press <kbd>Shift</kbd>+<kbd>Up Arrow</kbd> / <kbd>Shift</kbd>+<kbd>Down Arrow</kbd></td>
     </tr>
     <tr>
-      <td data-th="Sources Panel">Beralih ketentuan breakpoint</td>
-      <td data-th="Windows"><kbd class="kbd">Klik nomor baris</kbd>, <kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">B</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Klik nomor baris</kbd>, <kbd class="kbd">Cmd</kbd> + <kbd class="kbd">B</kbd></td>
-    </tr>
-    <tr>
-      <td data-th="Sources Panel">Mengedit ketentuan breakpoint</td>
-      <td data-th="Windows"><kbd class="kbd">Klik-kanan nomor baris</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Klik-kanan nomor baris</kbd></td>
-    </tr>
-    <tr>
-      <td data-th="Sources Panel">Menghapus kata satu per satu</td>
-      <td data-th="Windows"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">Delete</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Opt</kbd> + <kbd class="kbd">Delete</kbd></td>
-    </tr>
-    <tr>
-      <td data-th="Sources Panel">Berkomentar pada baris atau teks yang dipilih</td>
-      <td data-th="Windows"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">/</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Cmd</kbd> + <kbd class="kbd">/</kbd></td>
-    </tr>
-    <tr>
-      <td data-th="Sources Panel">Menyimpan perubahan ke modifikasi lokal</td>
-      <td data-th="Windows"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">S</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Cmd</kbd> + <kbd class="kbd">S</kbd></td>
-    </tr>
-    <tr>
-      <td data-th="Sources Panel">Menyimpan semua perubahan</td>
-      <td data-th="Windows"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">Alt</kbd> + <kbd class="kbd">S</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Cmd</kbd> + <kbd class="kbd">Opt</kbd> + <kbd class="kbd">S</kbd></td>
-    </tr>
-    <tr>
-      <td data-th="Sources Panel">Berpindah ke baris</td>
-      <td data-th="Windows"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">G</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">G</kbd></td>
-    </tr>
-    <tr>
-      <td data-th="Sources Panel">Menelusuri berdasarkan nama file</td>
-      <td data-th="Windows"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">O</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Cmd</kbd> + <kbd class="kbd">O</kbd></td>
-    </tr>
-    <tr>
-      <td data-th="Sources Panel">Melompat ke nomor baris</td>
-      <td data-th="Windows"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">P</kbd> + <span class="kbd">:<i>nomor</i></span></td>
-      <td data-th="Mac"><kbd class="kbd">Cmd</kbd> + <kbd class="kbd">P</kbd> + <span class="kbd">:<i>nomor</i></span></td>
-    </tr>
-    <tr>
-      <td data-th="Sources Panel">Melompat ke kolom</td>
-      <td data-th="Windows"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">O</kbd> + <span class="kbd">:<i>nomor</i></span> + <span class="kbd">:<i>nomor</i></span></td>
-      <td data-th="Mac"><kbd class="kbd">Cmd</kbd> + <kbd class="kbd">O</kbd> + <span class="kbd">:<i>nomor</i></span> + <span class="kbd">:<i>nomor</i></span></td>
-    </tr>
-    <tr>
-      <td data-th="Sources Panel">Berpindah ke anggota</td>
-      <td data-th="Windows"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">Shift</kbd> + <kbd class="kbd">O</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Cmd</kbd> + <kbd class="kbd">Shift</kbd> + <kbd class="kbd">O</kbd></td>
-    </tr>
-    <tr>
-      <td data-th="Sources Panel">Menutup tab aktif</td>
-      <td data-th="Windows"><kbd class="kbd">Alt</kbd> + <kbd class="kbd">W</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Opt</kbd> + <kbd class="kbd">W</kbd></td>
-    </tr>
-    <tr>
-      <td data-th="Sources Panel">Menjalankan cuplikan</td>
-      <td data-th="Windows"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">Enter</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Cmd</kbd> + <kbd class="kbd">Enter</kbd></td>
+      <td>Increment / decrement a property value by 100</td>
+      <td>Click a value then press <kbd>Command</kbd>+<kbd>Up Arrow</kbd> / <kbd>Command</kbd>+<kbd>Down Arrow</kbd></td>
+      <td>Click a value then press <kbd>Control</kbd>+<kbd>Up Arrow</kbd> / <kbd>Control</kbd>+<kbd>Down Arrow</kbd></td>
     </tr>
   </tbody>
 </table>
 
-#### Di dalam editor kode
+## Sources panel keyboard shortcuts {: #sources }
 
 <table>
   <thead>
-      <th>Editor Kode</th>
-      <th>Windows</th>
+      <th>Action</th>
       <th>Mac</th>
+      <th>Windows / Linux</th>
   </thead>
   <tbody>
     <tr>
-      <td data-th="Code Editor">Berpindah ke braket yang cocok</td>
-      <td data-th="Windows"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">M</kbd></td>
-      <td data-th="Mac"><span class="kbd"></span></td>
+      <td>Pause script execution (if currently running) or resume (if currently paused)</td>
+      <td><kbd>F8</kbd> or <kbd>Command</kbd>+<kbd>\</kbd></td>
+      <td><kbd>F8</kbd> or <kbd>Control</kbd>+<kbd>\</kbd></td>
     </tr>
     <tr>
-      <td data-th="Code Editor">Melompat ke nomor baris</td>
-      <td data-th="Windows"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">P</kbd> + <span class="kbd">:<i>nomor</i></span></td>
-      <td data-th="Mac"><kbd class="kbd">Cmd</kbd> + <kbd class="kbd">P</kbd> + <span class="kbd">:<i>nomor</i></span></td>
+      <td>Step over next function call</td>
+      <td><kbd>F10</kbd> or <kbd>Command</kbd>+<kbd>'</kbd></td>
+      <td><kbd>F10</kbd> or <kbd>Control</kbd>+<kbd>'</kbd></td>
     </tr>
     <tr>
-      <td data-th="Code Editor">Melompat ke kolom</td>
-      <td data-th="Windows"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">O</kbd> + <span class="kbd">:<i>nomor</i></span> + <span class="kbd">:<i>nomor</i></span></td>
-      <td data-th="Mac"><kbd class="kbd">Cmd</kbd> + <kbd class="kbd">O</kbd> + <span class="kbd">:<i>nomor</i></span> + <span class="kbd">:<i>nomor</i></span></td>
+      <td>Step into next function call</td>
+      <td><kbd>F11</kbd> or <kbd>Command</kbd>+<kbd>;</kbd></td>
+      <td><kbd>F11</kbd> or <kbd>Control</kbd>+<kbd>;</kbd></td>
     </tr>
     <tr>
-      <td data-th="Code Editor">Beralih komentar</td>
-      <td data-th="Windows"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">/</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Cmd</kbd> + <kbd class="kbd">/</kbd></td>
+      <td>Step out of current function</td>
+      <td><kbd>Shift</kbd>+<kbd>F11</kbd> or <kbd>Command</kbd>+<kbd>Shift</kbd>+<kbd>;</kbd></td>
+      <td><kbd>Shift</kbd>+<kbd>F11</kbd> or <kbd>Control</kbd>+<kbd>Shift</kbd>+<kbd>;</kbd></td>
     </tr>
     <tr>
-      <td data-th="Code Editor">Memilih kekerapan berikutnya</td>
-      <td data-th="Windows"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">D</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Cmd</kbd> + <kbd class="kbd">D</kbd></td>
+      <td><a href="/web/updates/2017/05/devtools-release-notes#continue">Continue to a certain line of code while paused</a></td>
+      <td>Hold <kbd>Command</kbd> and then click the line of code</td>
+      <td>Hold <kbd>Control</kbd> and then click the line of code</td>
     </tr>
     <tr>
-      <td data-th="Code Editor">Mengurungkan pilihan terakhir</td>
-      <td data-th="Windows"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">U</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Cmd</kbd> + <kbd class="kbd">U</kbd></td>
+      <!-- TODO mention that it only works when paused on a line -->
+      <td>Select the call frame below / above the currently-selected frame</td>
+      <td><kbd>Control</kbd>+<kbd>.</kbd> / <kbd>Control</kbd>+<kbd>,</kbd></td>
+      <td><kbd>Control</kbd>+<kbd>.</kbd> / <kbd>Control</kbd>+<kbd>,</kbd></td>
+    </tr>
+    <tr>
+      <td>Save changes to local modifications</td>
+      <td><kbd>Command</kbd>+<kbd>S</kbd></td>
+      <td><kbd>Control</kbd>+<kbd>S</kbd></td>
+    </tr>
+    <tr>
+      <td>Save all changes</td>
+      <td><kbd>Command</kbd>+<kbd>Option</kbd>+<kbd>S</kbd></td>
+      <td><kbd>Control</kbd>+<kbd>Alt</kbd>+<kbd>S</kbd></td>
+    </tr>
+    <tr>
+      <td>Go to line</td>
+      <td><kbd>Control</kbd>+<kbd>G</kbd></td>
+      <td><kbd>Control</kbd>+<kbd>G</kbd></td>
+    </tr>
+    <tr>
+      <td>Jump to a line number of the currently-open file</td>
+      <td>Press <kbd>Command</kbd>+<kbd>O</kbd> to open the <b><a href="/web/tools/chrome-devtools/ui#command-menu">Command Menu</a></b>, type <kbd>:</kbd> followed by the line number, then press <kbd>Enter</kbd></td>
+      <td>Press <kbd>Control</kbd>+<kbd>O</kbd> to open the <b><a href="/web/tools/chrome-devtools/ui#command-menu">Command Menu</a></b>, type <kbd>:</kbd> followed the line number, then press <kbd>Enter</kbd></td>
+    </tr>
+    <tr>
+      <td>Jump to a column of the currently-open file (for example line 5, column 9)</td>
+      <td>Press <kbd>Command</kbd>+<kbd>O</kbd> to open the <b><a href="/web/tools/chrome-devtools/ui#command-menu">Command Menu</a></b>, type <kbd>:</kbd>, then the line number, then another <kbd>:</kbd>, then the column number, then press <kbd>Enter</kbd></td>
+      <td>Press <kbd>Control</kbd>+<kbd>O</kbd> to open the <b><a href="/web/tools/chrome-devtools/ui#command-menu">Command Menu</a></b>, type <kbd>:</kbd>, then the line number, then another <kbd>:</kbd>, then the column number, then press <kbd>Enter</kbd></td>
+    </tr>
+    <tr>
+      <td>Go to a function declaration (if currently-open file is HTML or a script), or a rule set (if currently-open file is a stylesheet)</td>
+      <td>Press <kbd>Command</kbd>+<kbd>Shift</kbd>+<kbd>O</kbd>, then type in the name of the declaration / rule set, or select it from the list of options</td>
+      <td>Press <kbd>Control</kbd>+<kbd>Shift</kbd>+<kbd>O</kbd>, then type in the name of the declaration / rule set, or select it from the list of options</td>
+    </tr>
+    <tr>
+      <td>Close the active tab</td>
+      <td><kbd>Option</kbd>+<kbd>W</kbd></td>
+      <td><kbd>Alt</kbd>+<kbd>W</kbd></td>
     </tr>
   </tbody>
 </table>
 
-### Timeline
+### Code Editor keyboard shortcuts {: #editor }
 
 <table>
   <thead>
-      <th>Panel Timeline</th>
-      <th>Windows</th>
+      <th>Action</th>
       <th>Mac</th>
+      <th>Windows / Linux</th>
   </thead>
   <tbody>
     <tr>
-      <td data-th="Timeline Panel">Memulai / menghentikan perekaman</td>
-      <td data-th="Windows"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">E</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Cmd</kbd> + <kbd class="kbd">E</kbd></td>
+      <td>Delete all characters in the last word, up to the cursor</td>
+      <td><kbd>Option</kbd>+<kbd>Delete</kbd></td>
+      <td><kbd>Control</kbd>+<kbd>Delete</kbd></td>
     </tr>
     <tr>
-      <td data-th="Timeline Panel">Menyimpan data timeline</td>
-      <td data-th="Windows"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">S</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Cmd</kbd> + <kbd class="kbd">S</kbd></td>
+      <td>Add or remove a <a href="/web/tools/chrome-devtools/javascript/breakpoints#loc">line-of-code breakpoint</a></td>
+      <td>Focus your cursor on the line and then press <kbd>Command</kbd>+<kbd>B</kbd></td>
+      <td>Focus your cursor on the line and then press <kbd>Control</kbd>+<kbd>B</kbd></td>
     </tr>
     <tr>
-      <td data-th="Timeline Panel">Memuat data timeline</td>
-      <td data-th="Windows"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">O</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Cmd</kbd> + <kbd class="kbd">O</kbd></td>
+      <td>Go to matching bracket</td>
+      <td><kbd>Control</kbd>+<kbd>M</kbd></td>
+      <td><kbd>Control</kbd>+<kbd>M</kbd></td>
+    </tr>
+    <tr>
+      <td>Toggle single-line comment. If multiple lines are selected, DevTools adds a comment to the start of each line</td>
+      <td><kbd>Command</kbd>+<kbd>/</kbd></td>
+      <td><kbd>Control</kbd>+<kbd>/</kbd></td>
+    </tr>
+    <tr>
+      <td>Select / de-select the next occurrence of whatever word the cursor is on. Each occurrence is highlighted simultaneously</td>
+      <td><kbd>Command</kbd>+<kbd>D</kbd> / <kbd>Command</kbd>+<kbd>U</kbd></td>
+      <td><kbd>Control</kbd>+<kbd>D</kbd> / <kbd>Control</kbd>+<kbd>U</kbd></td>
     </tr>
   </tbody>
 </table>
 
-### Profil
+## Performance panel keyboard shortcuts {: #performance }
 
 <table>
   <thead>
-      <th>Panel Profiles</th>
-      <th>Windows</th>
+      <th>Action</th>
       <th>Mac</th>
+      <th>Windows / Linux</th>
   </thead>
   <tbody>
     <tr>
-      <td data-th="Profiles Panel">Memulai / menghentikan perekaman</td>
-	  <td data-th="Windows"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">E</kbd></td>
-	  <td data-th="Mac"><kbd class="kbd">Cmd</kbd> + <kbd class="kbd">E</kbd></td>
+      <td>Start / stop recording</td>
+      <td><kbd>Command</kbd>+<kbd>E</kbd></td>
+      <td><kbd>Control</kbd>+<kbd>E</kbd></td>
+    </tr>
+    <tr>
+      <td>Save recording</td>
+      <td><kbd>Command</kbd>+<kbd>S</kbd></td>
+      <td><kbd>Control</kbd>+<kbd>S</kbd></td>
+    </tr>
+    <tr>
+      <td>Load recording</td>
+      <td><kbd>Command</kbd>+<kbd>O</kbd></td>
+      <td><kbd>Control</kbd>+<kbd>O</kbd></td>
     </tr>
   </tbody>
 </table>
 
-### Konsol
+## Memory panel keyboard shortcuts {: #memory }
 
 <table>
   <thead>
-      <th>Pintasan Konsol</th>
-      <th>Windows</th>
+      <th>Action</th>
       <th>Mac</th>
+      <th>Windows / Linux</th>
   </thead>
   <tbody>
     <tr>
-      <td data-th="Console Shortcuts">Menerima saran</td>
-      <td data-th="Windows"><kbd class="kbd">Kanan</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Kanan</kbd></td>
-    </tr>
-    <tr>
-      <td data-th="Console Shortcuts">Baris / perintah sebelumnya</td>
-      <td data-th="Windows"><kbd class="kbd">Naik</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Naik</kbd></td>
-    </tr>
-    <tr>
-      <td data-th="Console Shortcuts">Baris / perintah berikutnya</td>
-      <td data-th="Windows"><kbd class="kbd">Turun</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Turun</kbd></td>
-    </tr>
-    <tr>
-      <td data-th="Console Shortcuts">Memfokus Konsol</td>
-      <td data-th="Windows"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">`</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">`</kbd></td>
-    </tr>
-    <tr>
-      <td data-th="Console Shortcuts">Mengosongkan Konsol</td>
-      <td data-th="Windows"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">L</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Cmd</kbd> + <kbd class="kbd">K</kbd>, <kbd class="kbd">Opt</kbd> + <kbd class="kbd">L</kbd></td>
-    </tr>
-    <tr>
-      <td data-th="Console Shortcuts">Entri multi-baris</td>
-      <td data-th="Windows"><kbd class="kbd">Shift</kbd> + <kbd class="kbd">Enter</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">Return</kbd></td>
-    </tr>
-    <tr>
-      <td data-th="Console Shortcuts">Eksekusi</td>
-      <td data-th="Windows"><kbd class="kbd">Enter</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Return</kbd></td>
+      <td>Start / stop recording</td>
+      <td><kbd>Command</kbd>+<kbd>E</kbd></td>
+      <td><kbd>Control</kbd>+<kbd>E</kbd></td>
     </tr>
   </tbody>
 </table>
 
-### Device Mode
+## Console panel keyboard shortcuts {: #console }
 
 <table>
   <thead>
-      <th>Pintasan Device Mode</th>
-      <th>Windows</th>
+      <th>Action</th>
       <th>Mac</th>
+      <th>Windows / Linux</th>
   </thead>
   <tbody>
     <tr>
-      <td data-th="Emulation Shortcuts">Cubit untuk memperbesar dan memperkecil</td>
-      <td data-th="Windows"><kbd class="kbd">Shift</kbd> + <kbd class="kbd">Gulir</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Shift</kbd> + <kbd class="kbd">Gulir</kbd></td>
+      <td>Accept autocomplete suggestion</td>
+      <td><kbd>Right Arrow</kbd> or <kbd>Tab</kbd></td>
+      <td><kbd>Right Arrow</kbd> or <kbd>Tab</kbd></td>
+    </tr>
+    <tr>
+      <td>Reject autocomplete suggestion</td>
+      <td><kbd>Escape</kbd></td>
+      <td><kbd>Escape</kbd></td>
+    </tr>
+    <tr>
+      <td>Get previous statement</td>
+      <td><kbd>Up Arrow</kbd></td>
+      <td><kbd>Up Arrow</kbd></td>
+    </tr>
+    <tr>
+      <td>Get next statement</td>
+      <td><kbd>Down Arrow</kbd></td>
+      <td><kbd>Down Arrow</kbd></td>
+    </tr>
+    <tr>
+      <td>Focus the <b>Console</b></td>
+      <td><kbd>Control</kbd>+<kbd>`</kbd></td>
+      <td><kbd>Control</kbd>+<kbd>`</kbd></td>
+    </tr>
+    <tr>
+      <td>Clear the <b>Console</b></td>
+      <td><kbd>Command</kbd>+<kbd>K</kbd> or <kbd>Option</kbd>+<kbd>L</kbd></td>
+      <td><kbd>Control</kbd>+<kbd>L</kbd></td>
+    </tr>
+    <tr>
+      <td>Force a multi-line entry. Note that DevTools should detect multi-line scenarios by default, so this shortcut is now usually unnecessary</td>
+      <td><kbd>Command</kbd>+<kbd>Return</kbd></td>
+      <td><kbd>Shift</kbd>+<kbd>Enter</kbd></td>
+    </tr>
+    <tr>
+      <td>Execute</td>
+      <td><kbd>Return</kbd></td>
+      <td><kbd>Enter</kbd></td>
+    </tr>
+    <tr>
+      <td>Expand all sub-properties of an object that's been logged to the Console</td>
+      <td>
+        Hold <kbd>Alt</kbd> then click <b>Expand</b>
+        <img class="cdt-inl" src="/web/tools/chrome-devtools/images/expand.png"/>
+      </td>
+      <td>
+        Hold <kbd>Alt</kbd> then click <b>Expand</b>
+        <img class="cdt-inl" src="/web/tools/chrome-devtools/images/expand.png"/>
+      </td>
     </tr>
   </tbody>
 </table>
 
-#### Saat siaran layar
+## Feedback {: #feedback .hide-from-toc }
 
-<table>
-  <thead>
-      <th>Pintasan Siaran Layar</th>
-      <th>Windows</th>
-      <th>Mac</th>
-  </thead>
-  <tbody>
-    <tr>
-      <td data-th="Screencasting Shortcuts">Cubit untuk memperbesar dan memperkecil</td>
-      <td data-th="Windows"><kbd class="kbd">Alt</kbd> + <kbd class="kbd">Gulir</kbd>,<kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">Klik dan seret dengan dua jari</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Opt</kbd> + <kbd class="kbd">Gulir</kbd>, <kbd class="kbd">Cmd</kbd> + <kbd class="kbd">Klik dan seret dengan dua jari</kbd></td>
-    </tr>
-    <tr>
-      <td data-th="Screencasting Shortcuts">Memeriksa alat bantu elemen</td>
-      <td data-th="Windows"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">Shift</kbd> + <kbd class="kbd">C</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Cmd</kbd> + <kbd class="kbd">Shift</kbd> + <kbd class="kbd">C</kbd></td>
-    </tr>
-  </tbody>
-</table>
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
