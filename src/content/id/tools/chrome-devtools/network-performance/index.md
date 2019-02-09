@@ -1,10 +1,6 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Mulai menganalisis performa jaringan.
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Get started analyzing network performance.
 
-{# wf_updated_on: 2019-02-06 #}
-{# wf_published_on: 2017-01-17 #}
-{# wf_blink_components: Platform>DevTools #}
+{# wf_updated_on: 2018-07-27 #} {# wf_published_on: 2017-01-17 #} {# wf_blink_components: Platform>DevTools #} 
 
 <style>
 .devtools-inline {
@@ -16,239 +12,149 @@ figcaption {
 }
 </style>
 
-# Mulai Menganalisis Performa Jaringan di Chrome DevTools {: .page-title }
+ 
+
+# Get Started with Analyzing Network Performance in Chrome DevTools {: .page-title }
 
 {% include "web/_shared/contributors/kaycebasques.html" %}
 
-Note: Baca [Mengoptimalkan Kecepatan Situs](/web/tools/chrome-devtools/speed/get-started) untuk
-pendekatan komprehensif dalam meningkatkan kecepatan muat. Tutorial tersebut berisi alur kerja yang disarankan
-untuk menganalisis performa pemuatan.
+Note: See [Optimize Website Speed](/web/tools/chrome-devtools/speed/get-started) for a comprehensive approach to improving load speed. That tutorial contains the recommended workflow for analyzing load performance.
 
-Pelajari cara menggunakan panel Jaringan Chrome DevTools untuk memahami penyebab halaman
-dimuat secara lambat pada tutorial interaktif langkah demi langkah ini.
+Learn how to use the Chrome DevTools Network panel to understand why a page loads slowly in this step-by-step, interactive tutorial.
 
-## Langkah 1: Siapkan DevTools {: #set-up }
+## Step 1: Set up DevTools {: #set-up }
 
-Anggaplah Anda menerima laporan dari pengguna ponsel bahwa halaman tertentu
-di situs Anda lambat. Tugas Anda mempercepat halaman.
+Suppose that you're receiving reports from mobile users that a particular page on your site is slow. Your job is to make the page fast.
 
-1. Klik **Open Slow Page**. Halaman terbuka di tab baru.
+1. Click **Open Slow Page**. The page opens in a new tab.
+    
+    <a href="https://googlechrome.github.io/devtools-samples/network/gs/v1.html"
+   target="devtools" class="gc-analytics-event" rel="noopener noreferrer"
+   data-category="DevTools / Network / Get Started"
+   data-label="Slow Page Opened"> <button>Open Slow Page</button> </a>
 
-     <a href="https://googlechrome.github.io/devtools-samples/network/gs/v1.html"
-       target="devtools" class="gc-analytics-event" rel="noopener noreferrer"
-       data-category="DevTools / Network / Get Started"
-       data-label="Slow Page Opened">
-       <button>Buka Halaman Lambat</button>
-     </a>
+2. While the page is in focus, press <kbd>Command</kbd>+<kbd>Option</kbd>+<kbd>I</kbd> (Mac) or <kbd>Control</kbd>+<kbd>Shift</kbd>+<kbd>I</kbd> (Windows, Linux) to open DevTools on the page.
 
-1. Saat halaman dalam fokus, tekan
-   <kbd>Command</kbd>+<kbd>Option</kbd>+<kbd>I</kbd> (Mac) atau
-   <kbd>Control</kbd>+<kbd>Shift</kbd>+<kbd>I</kbd> (Windows, Linux) untuk
-   membuka DevTools di halaman.
+3. In DevTools, click the **Network** tab.
+    
+    <figure> 
+    
+    ![The Chrome DevTools Network panel, opened on the slow
+          page that you're going to diagnose.](imgs/get-started-network-panel.png) <figcaption> **Figure 1**. The Chrome DevTools Network panel, opened next to the slow page that you're going to diagnose. </figcaption> </figure> 
+    <aside class="note"> 
+    
+    **Note:** For the rest of the screenshots, DevTools is <a
+   href="/web/tools/chrome-devtools/ui#placement" target="_blank"> undocked to a separate window</a>, so that you can see its contents better. </aside>
+4. Enable **Capture Screenshots** ![Capture
+Screenshots](imgs/capture-screenshots.png){:.devtools-inline}, which turns blue when enabled. DevTools captures screenshots during the page load.
 
-1. Di DevTools, klik tab **Network**.
+## Step 2: Emulate a mobile user's experience {: #emulate }
 
-     <figure>
-       <img src="imgs/get-started-network-panel.png"
-         alt="Panel Jaringan Chrome DevTools, yang terbuka di halaman
-              lambat yang akan Anda diagnosis.">
-       <figcaption>
-         <b>Gambar 1</b>. Panel Jaringan Chrome DevTools, terbuka di samping
-         halaman lambat yang akan Anda diagnosis.
-       </figcaption>
-     </figure>
+Testing network performance on a laptop or desktop can be deceiving. Your internet connection is much faster than a mobile user's, and your browser caches resources from previous visits.
 
-     <aside class="note">
-       <b>Note:</b> Untuk screenshot lainnya, DevTools <a
-       href="/web/tools/chrome-devtools/ui#placement" target="_blank">
-       dilepas ke jendela terpisah</a>, sehingga Anda dapat melihat kontennya
-       lebih baik.
-     </aside>
+1. Check the **Disable Cache** checkbox. When this checkbox is enabled, DevTools doesn't serve any resources from the cache. This more accurately emulates what first-time users experience when they view your page.
 
-1. Aktifkan **Capture Screenshots** ![Ambil
-   Screenshot][screenshots]{:.devtools-inline}, yang berubah menjadi biru saat diaktifkan.
-   DevTools mengambil screenshot selama pemuatan halaman.
-
-## Langkah 2: Tirukan pengalaman pengguna seluler {: #emulate }
-
-Menguji performa jaringan di laptop atau desktop dapat mengecoh. Koneksi
-internet jauh lebih cepat daripada pengguna seluler, dan browser
-menyimpan cache resource dari kunjungan sebelumnya.
-
-1. Centang kotak **Disable Cache**. Bila kotak centang
-   ini aktif, DevTools tidak menyajikan sumber apa pun dari cache.
-   Ini lebih akurat mengemulasi yang pertama kali pengguna alami ketika mereka
-   melihat halaman Anda.
-
-1. Dari menu turun **No Throttling**, piih
-   **Regular 2G**. DevTools membatasi sambungan jaringan untuk menyimulasikan
-   pengalaman 2G biasa. Inilah bagaimana pengguna ponsel merasakan situs
-   di tempat-tempat dengan koneksi buruk.
+2. From the dropdown menu that currently says **No Throttling**, select **Regular 2G**. DevTools throttles the network connection to simulate a regular 2G experience. This is how mobile users experience your site in places with poor connections.
 
 <figure>
   <img src="imgs/get-started-setup.svg"
-    alt="Panel Jaringan Chrome DevTools, setelah mengatur screenshot,
-         penonaktifan cache, dan pembatasan.">
+    alt="The Chrome DevTools Network panel, after setting up screenshots,
+         cache disabling, and throttling.">
   <figcaption>
-    <b>Gambar 2</b>. Panel Jaringan Chrome DevTools, atur untuk mengemulasikan
-    pengalaman pengguna ponsel. Screenshot, penonaktifan
-    cache, dan pembatasan ditunjukkan dalam warna biru, dari kiri ke kanan,
-    masing-masing.
+    <b>Figure 2</b>. The Chrome DevTools Network panel, set up to emulate
+    a mobile user's experience. Screenshots, cache
+    disabling, and throttling are outlined in blue, from left to right,
+    respectively.
   </figcaption>
 </figure>
 
-Proses ini adalah persiapan kasus terburuk. Jika Anda bisa membuat halaman
-memuat cepat di persiapan ini, halaman akan cepat untuk semua pengguna!
+This is a worst-case setup. If you can get your page loading fast on this setup, it'll be fast for all your users!
 
-[screenshots]: imgs/capture-screenshots.png
+## Step 3: Analyze requests {: #analyze }
 
-## Langkah 3: Menganalisis permintaan {: #analyze }
+Figure out what's making the page slow by reloading the page and analyzing the requests that come in.
 
-Cari tahu apa yang membuat halaman lambat dengan memuat ulang halaman dan menganalisis
-asal permintaan.
+### Part A: Find render-blocking scripts
 
-### Bagian A: Temukan skrip pemblokiran-render
+When the browser encounters a `<script>` tag, it must pause rendering and execute the script immediately. Find scripts that aren't needed for page load and mark them asynchronous or defer their execution to speed up load time.
 
-Saat browser bertemu dengan tag `<script>`, ini pasti menjeda rendering dan
-menjalankan skrip langsung. Temukan skrip yang tidak diperlukan untuk pemuatan halaman
-tandai sebagai tidak bersamaan atau tunda eksekusi untuk mempercepat waktu muat.
+1. Press <kbd>Command</kbd>+<kbd>R</kbd> (Mac) or <kbd>Control</kbd>+<kbd>R</kbd> (Windows, Linux) to reload the page. On a good Wi-Fi connection, the page takes more than 10 seconds to load completely.
+    
+    <figure> 
+    
+    ![The Chrome DevTools Network panel, after reloading the page.](imgs/get-started-post-load.png) <figcaption> **Figure 3**. The Chrome DevTools Network panel, after reloading the page. </figcaption> </figure>
+2. Note the value for [`DOMContentLoaded`](https://developer.mozilla.org/en-US/docs/Web/Events/DOMContentLoaded) in the [Summary pane](reference#summary), on the bottom of the Network panel. You should see a value of at least 4 seconds. When you see this event firing late like this, be on the lookout for scripts that are delaying the main document's load and parse.
 
-1. Tekan <kbd>Command</kbd>+<kbd>R</kbd> (Mac) atau
-   <kbd>Control</kbd>+<kbd>R</kbd> (Windows, Linux) untuk memuat ulang halaman.
-   Dengan koneksi Wi-Fi yang bagus, perlu lebih dari 10 detik untuk memuat halaman
-   keseluruhan.
+3. Click **main.js** to investigate that request further. DevTools shows a set of new tabs that provide more information about this request.
 
-     <figure>
-       <img src="imgs/get-started-post-load.png"
-         alt="Panel Jaringan Chrome DevTools, setelan memuat ulang halaman.">
-       <figcaption>
-         <b>Gambar 3</b>. Panel Jaringan Chrome DevTools, setelah memuat ulang
-         halaman.
-       </figcaption>
-     </figure>
+4. Click the **Preview** tab to view the request's source code. You can see that the script just hangs for 4000ms. By marking this script with the `async` attribute and moving it to the bottom of the document's `<body>`, the page can load without waiting for the script.
+    
+    <figure> 
+    
+    ![Viewing the source code for main.js in the Preview pane.](imgs/get-started-preview.png) <figcaption> **Figure 4**. Viewing the source code for `main.js` in the Preview pane. </figcaption> </figure>
 
-1. Catat nilai untuk [`DOMContentLoaded`][DOMContentLoaded] di panel [Riwayat
-   ](reference#summary), di bagian bawah panel Jaringan.
-   Anda akan melihat nilai setidaknya 4 detik. Saat Anda melihat kejadian ini
-   telat aktif seperti ini, berhati-hatilah terhadap skrip yang menunda
-   pemuatan dan penguraian dokumen utama.
+See [Parser-blocking versus asynchronous JavaScript](/web/fundamentals/performance/critical-rendering-path/adding-interactivity-with-javascript#parser_blocking_versus_asynchronous_javascript) to learn more about render-blocking scripts.
 
-1. Klik **main.js** untuk menyelidiki permintaan itu lebih lanjut. DevTools menampilkan
-   serangkaian tab baru yang menyediakan informasi lebih lanjut tentang permintaan ini.
+### Part B: Find large requests
 
-1. Klik tab **Preview** untuk melihat kode sumber permintaan. Anda bisa
-   melihat skrip itu hanya berhenti selama 4.000mdtk.
-   Dengan menandai skrip ini dengan `async` atribut dan memindahkannya
-   ke bagian bawah `<body>` dokumen, halaman
-   bisa memuat tanpa menunggu skrip.
+When the page loaded, did you notice that the DevTools logo took a long time to load? It's not blocking the load, but it's making the page *appear* slow. Users like it when pages *appear* fast.
 
-     <figure>
-       <img src="imgs/get-started-preview.png"
-         alt="Melihat kode sumber untuk main.js di panel Pratinjau.">
-       <figcaption>
-         <b>Gambar 4</b>. Melihat kode sumber untuk <code>main.js</code> di
-         panel Pratinjau.
-       </figcaption>
-     </figure>
+1. Click **Close** ![Close](imgs/close.png){:.devtools-inline} so that you can see the [**Requests pane**](reference#requests) again.
 
-Baca [Pemblokiran-parser versus JavaScript tidak bersamaan][async] untuk mempelajari lebih lanjut
-tentang skrip pemblokiran-render.
+2. Double-click on the top-left screenshot.
 
-### Bagian B: Cari permintaan besar
+3. Press your right-arrow key to scan through the set of screenshots. The time below the screenshot indicates when the screenshot was taken. The screenshot takes multiple seconds to load. That means it's probably too large of a file.
 
-Bila halaman dimuat, apakah Anda memperhatikan logo DevTools perlu waktu lama
-untuk memuat? Logo ini tidak memblokir pemuatan, tetapi membuat halaman *muncul*
-dengan lambat. Pengguna suka saat halaman *muncul* dengan cepat.
+4. Click anywhere outside of the screenshot to minimize it.
 
-1. Klik **Close** ![Tutup][close]{:.devtools-inline} sehingga Anda bisa melihat
-   [**panel Permintaan**](reference#requests) lagi.
+5. Hover over the [Waterfall](reference#waterfall) for the `logo-1024px.png` request. The request spends most of its time downloading the image. This confirms that the image is too large.
+    
+    <figure> 
+    
+    ![The waterfall for logo-1024px.png.](imgs/get-started-waterfall.png) <figcaption> **Figure 5**. The waterfall for `logo-1024px.png`. </figcaption> </figure>
 
-1. Klik dua kali screenshot kiri atas.
+## Step 4: Verify fixes on updated page {: #verify }
 
-1. Tekan tombol kiri bawah untuk memindai serangkaian screenshot. Waktu
-   di bawah screenshot menunjukkan kapan screenshot diambil. Screenshot
-   perlu beberapa detik untuk memuat. Itu berarti mungkin
-   ukuran file terlalu besar.
+You're just about done. Suppose now that you've already made two changes to the page:
 
-1. Klik di mana pun di luar screenshot untuk meminimalkannya.
+* You moved the script to the bottom of the `<body>` and marked it `async` to prevent it from blocking the page load.
+* You converted the logo to SVG to reduce its size.
 
-1. Arahkan kursor ke [Air Terjun](reference#waterfall) untuk permintaan `logo-1024px.png`
-   . Permintaan meluangkan sebagian besar waktu
-   untuk mendownload gambar. Ini berarti gambar terlalu besar.
+All that's left to do is to test out the updated page to verify that your fixes do indeed make the page load faster.
 
-     <figure>
-       <img src="imgs/get-started-waterfall.png"
-         alt="Air terjun untuk logo-1024px.png.">
-       <figcaption>
-         <b>Gambar 5</b>. Air terjun untuk <code>logo-1024px.png</code>.
-       </figcaption>
-     </figure>
+1. Click **Open Fast Page**. The fixed page opens in a new tab.
+    
+    <a href="https://googlechrome.github.io/devtools-samples/network/gs/v2.html"
+   target="devtools" class="gc-analytics-event" rel="noopener noreferrer"
+   data-category="DevTools / Network / Get Started"
+   data-label="Fast Page Opened"> <button>Open Fast Page</button> </a>
 
-[DOMContentLoaded]: https://developer.mozilla.org/en-US/docs/Web/Events/DOMContentLoaded
+2. Set up DevTools the same as before. Screenshots and cache disabling should be on, and network throttling should be set to **Regular 2G**.
 
-[async]: /web/fundamentals/performance/critical-rendering-path/adding-interactivity-with-javascript#parser_blocking_versus_asynchronous_javascript
-
-[close]: imgs/close.png
-
-## Langkah 4: Verifikasi perbaikan di halaman yang diperbarui {: #verify }
-
-Anda hampir selesai. Anggap sekarang Anda sudah membuat dua perubahan pada
-halaman:
-
-* Anda memindahkan skrip ke bagian bawah `<body>` dan menandainya `async`
-  agar tidak memblokir pemuatan halaman.
-* Anda mengubah logo menjadi SVG untuk mengubah ukurannya.
-
-Yang perlu dilakukan adalah menguji halaman yang diperbarui untuk memverifikasi
-perbaikan memang menjadikan halaman memuat lebih cepat.
-
-1. Klik **Open Fast Page**. Halaman yang diperbaiki terbuka di tab baru.
-
-     <a href="https://googlechrome.github.io/devtools-samples/network/gs/v2.html"
-       target="devtools" class="gc-analytics-event" rel="noopener noreferrer"
-       data-category="DevTools / Network / Get Started"
-       data-label="Fast Page Opened">
-       <button>Buka Halaman Cepat</button>
-     </a>
-
-1. Atur DevTools sama seperti sebelumnya. Screenshot dan penonaktifan cache akan
-   nyala, dan pembatasan jaringan akan diatur menjadi **Regular 2G**.
-1. Muat ulang halaman. Halaman memuat jauh lebih cepat.
-
-     <figure>
-       <img src="imgs/get-started-post-fix.png"
-         alt="Rekaman pemuatan halaman, setelah menerapkan perbaikan.">
-       <figcaption>
-         <b>Gambar 6</b>. Rekaman pemuatan halaman, setelah menerapkan
-         perbaikan. Halaman yang biasanya perlu sekitar 10 detik agar muncul
-         lengkap secara visual. Sekarang hanya perlu waktu sekitar 1 detik.
-       </figcaption>
-     </figure>
+3. Reload the page. The page loads much faster.
+    
+    <figure> 
+    
+    ![A recording of the page's load, after applying the fixes.](imgs/get-started-post-fix.png) <figcaption> **Figure 6**. A recording of the page's load, after applying the fixes. The page used to take about 10 seconds to appear visually complete. Now it only takes about 1 second. </figcaption> </figure>
 
 <aside class="note">
-  <b>Catatan</b>: Meski halaman memuat lebih cepat, halaman ini masih tidak bisa digunakan selama
-  sekitar 5 detik. Ini karena halaman ini menjalankan skrip yang menghentikan
-  utas utama halaman.
+  <b>Note</b>: Although the page loads much faster, it's still unusable for
+  about 5 seconds. This is because it still runs the script that hangs
+  the main thread of the page.
 </aside>
 
-## Langkah Berikutnya {: #next-steps }
+## Next Steps {: #next-steps }
 
-Bagus. Sekarang Anda seorang ahli yang bonafide dalam panel Jaringan Chrome DevTools
-. Yah... mungkin bukan seorang ahli. Tetapi Anda memiliki dasar
-keahlian dan ilmu pengetahuan yang sangat baik.
+Good job. You are now a bona fide expert in the Chrome DevTools Network panel. Well... maybe not an expert. You do have an excellent foundation of skills and knowledge, though.
 
-* Baca <a class="gc-analytics-event" data-category="DevTools / Network /
-  Get Started" data-label="Next Steps / CRP"
-  href="/web/fundamentals/performance/critical-rendering-path">
-  Jalur Rendering Penting</a> untuk mempelajari lebih lanjut mengenai teori pemuatan halaman
-  yang sangat cepat.
-* Baca <a class="gc-analytics-event" data-category="DevTools / Network /
-  Get Started" data-label="Next Steps / Issues Guide" href="issues">
-  Panduan Masalah Jaringan</a> untuk mempelajari cara menemukan lebih banyak masalah jaringan.
-* Baca <a class="gc-analytics-event" data-category="DevTools / Network /
-  Get Started" data-label="Next Steps / Reference" href="reference">
-  Referensi Panel Jaringan</a> untuk mengetahui daftar lengkap dari fitur panel Jaringan.
+* See <a class="gc-analytics-event" data-category="DevTools / Network /
+Get Started" data-label="Next Steps / CRP"
+href="/web/fundamentals/performance/critical-rendering-path">Critical Rendering Path</a> to learn more about the theory of lightning-fast page loading.
+* See <a class="gc-analytics-event" data-category="DevTools / Network /
+Get Started" data-label="Next Steps / Issues Guide" href="issues">Network Issues Guide</a> to learn how to spot more network issues.
+* See <a class="gc-analytics-event" data-category="DevTools / Network /
+Get Started" data-label="Next Steps / Reference" href="reference">Network Panel Reference</a> for a comprehensive list of Network panel features.
 
-## Masukan {: #feedback }
+## Feedback {: #feedback }
 
 {% include "web/_shared/helpful.html" %}
