@@ -1,127 +1,120 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Paint adalah proses pengisian piksel yang pada akhirnya akan dikomposisikan ke layar pengguna. Sering kali ini yang paling lama berjalan dari semua tugas di pipeline, dan harus dihindari jika memungkinkan.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Paint is the process of filling in pixels that eventually get composited to the users' screens. It is often the longest-running of all tasks in the pipeline, and one to avoid if at all possible.
 
-{# wf_updated_on: 2017-07-12 #}
-{# wf_published_on: 2015-03-20 #}
+{# wf_updated_on: 2018-08-17 #} {# wf_published_on: 2015-03-20 #} {# wf_blink_components: Blink>Paint #}
 
-# Menyederhanakan Kompleksitas Paint dan Mengurangi Area Paint {: .page-title }
+# Simplify Paint Complexity and Reduce Paint Areas {: .page-title }
 
 {% include "web/_shared/contributors/paullewis.html" %}
 
-Paint adalah proses pengisian piksel yang pada akhirnya akan dikomposisikan ke 
-layar pengguna. Sering kali ini yang paling lama berjalan dari semua tugas 
-di pipeline, dan harus dihindari jika memungkinkan.
+Paint is the process of filling in pixels that eventually get composited to the users' screens. It is often the longest-running of all tasks in the pipeline, and one to avoid if at all possible.
 
-### TL;DR {: .hide-from-toc } 
+### TL;DR {: .hide-from-toc }
 
-* Mengubah properti selain transform dan opacity akan selalu memicu paint.
-* Paint sering kali merupakan bagian paling berat dari pipeline piksel; hindari bila Anda bisa.
-* Kurangi area paint melalui promosi layer dan orkestrasi animasi.
-* Gunakan paint profiler di Chrome DevTools untuk menilai kompleksitas paint dan biayanya; kurangi bila Anda bisa.
+* Changing any property apart from transforms or opacity always triggers paint.
+* Paint is often the most expensive part of the pixel pipeline; avoid it where you can.
+* Reduce paint areas through layer promotion and orchestration of animations.
+* Use the Chrome DevTools paint profiler to assess paint complexity and cost; reduce where you can.
 
-## Memicu Layout atau Paint.
+## Triggering Layout And Paint
 
-Jika Anda memicu layout, Anda akan _selalu memicu paint_, karena mengubah geometri elemen berarti pikselnya perlu diperbaiki!
+If you trigger layout, you will *always trigger paint*, since changing the geometry of any element means its pixels need fixing!
 
-<img src="images/simplify-paint-complexity-and-reduce-paint-areas/frame.jpg"  alt="Pipeline piksel penuh.">
+<img src="images/simplify-paint-complexity-and-reduce-paint-areas/frame.jpg"  alt="The full pixel pipeline." />
 
-Anda juga bisa memicu paint jika mengubah properti non-geometrik, seperti latar belakang, warna teks, atau bayangan. Dalam hal itu, layout tidak akan diperlukan dan pipeline akan terlihat seperti ini:
+You can also trigger paint if you change non-geometric properties, like backgrounds, text color, or shadows. In those cases layout won’t be needed and the pipeline will look like this:
 
-<img src="images/simplify-paint-complexity-and-reduce-paint-areas/frame-no-layout.jpg"  alt="Pipeline piksel tanpa layout.">
+<img src="images/simplify-paint-complexity-and-reduce-paint-areas/frame-no-layout.jpg"  alt="The pixel pipeline without layout." />
 
-## Gunakan Chrome DevTools untuk mengidentifikasi bottleneck paint dengan cepat
+## Use Chrome DevTools to quickly identify paint bottlenecks
 
 <div class="attempt-right">
   <figure>
-    <img src="images/simplify-paint-complexity-and-reduce-paint-areas/show-paint-rectangles.jpg" alt="Opsi Show paint rectangles di DevTools.">
+    <img src="images/simplify-paint-complexity-and-reduce-paint-areas/show-paint-rectangles.jpg" alt="The show paint rectangles option in DevTools.">
   </figure>
 </div>
 
-Anda bisa menggunakan Chrome DevTools untuk mengidentifikasi dengan cepat area yang akan digambar. Masuk ke DevTools dan tekan tombol escape di keyboard Anda. Masuk ke tab rendering di panel yang muncul dan pilih “Show paint rectangles”.
+You can use Chrome DevTools to quickly identify areas that are being painted. Go to DevTools and hit the escape key on your keyboard. Go to the rendering tab in the panel that appears and choose “Show paint rectangles”.
 
 <div style="clear:both;"></div>
 
-Mengaktifkan opsi ini di Chrome akan mengisi layar dengan warna hijau bila terjadi penggambaran. Jika Anda melihat seluruh layar berisi warna hijau, atau area layar yang menurut Anda seharusnya tidak digambar, berarti Anda harus menyelidiki sedikit lebih jauh lagi.
+With this option switched on Chrome will flash the screen green whenever painting happens. If you’re seeing the whole screen flash green, or areas of the screen that you didn’t think should be painted, then you should dig in a little further.
 
-<img src="images/simplify-paint-complexity-and-reduce-paint-areas/show-paint-rectangles-green.jpg"  alt="Laman berkedip hijau bila penggambaran terjadi.">
-
+<img src="images/simplify-paint-complexity-and-reduce-paint-areas/show-paint-rectangles-green.jpg"  alt="The page flashing green whenever painting occurs." />
 
 <div class="attempt-right">
   <figure>
-    <img src="images/simplify-paint-complexity-and-reduce-paint-areas/paint-profiler-toggle.jpg" alt="Toggle untuk mengaktifkan pembuatan profil paint di Chrome DevTools.">
+    <img src="images/simplify-paint-complexity-and-reduce-paint-areas/paint-profiler-toggle.jpg" alt="The toggle to enable paint profiling in Chrome DevTools.">
   </figure>
 </div>
 
-Ada opsi di Timeline di Chrome DevTools yang akan memberi Anda informasi lebih banyak: paint profiler. Untuk mengaktifkannya, masuk ke Timeline dan centang kotak “Paint” di bagian atas. Anda perlu _mengaktifkannya hanya saat mencoba membuat profil masalah paint_, karena ini menimbulkan overhead dan akan membuat proses pembuatan profil kinerja Anda melenceng. Ini paling baik digunakan saat Anda menginginkan wawasan lebih banyak mengenai apa yang sebenarnya sedang digambar.
+There’s an option in the Chrome DevTools timeline which will give you more information: a paint profiler. To enable it, go to the Timeline and check the “Paint” box at the top. It’s important to *only have this switched on when trying to profile paint issues*, as it carries an overhead and will skew your performance profiling. It’s best used when you want more insight into what exactly is being painted.
 
 <div style="clear:both;"></div>
 
 <div class="attempt-right">
   <figure>
-    <img src="images/simplify-paint-complexity-and-reduce-paint-areas/paint-profiler-button.jpg" alt="Tombol untuk menampilkan paint profiler." class="screenshot">
+    <img src="images/simplify-paint-complexity-and-reduce-paint-areas/paint-profiler-button.jpg" alt="The button to bring up the paint profiler." class="screenshot">
   </figure>
 </div>
 
-Dari sini Anda sekarang dapat menjalankan perekaman Timeline, dan catatan paint akan memberikan detail yang jauh lebih banyak. Dengan mengeklik catatan paint dalam bingkai, Anda sekarang mendapatkan akses ke Paint Profiler untuk bingkai itu:
+From here you can now run a Timeline recording, and paint records will carry significantly more detail. By clicking on a paint record in a frame you will now get access to the Paint Profiler for that frame:
 
 <div style="clear:both;"></div>
 
-Mengeklik paint profiler akan memberikan tampilan tempat Anda bisa melihat apa yang digambar, waktu yang diperlukan, dan panggilan setiap paint yang diperlukan:
+Clicking on the paint profiler brings up a view where you can see what got painted, how long it took, and the individual paint calls that were required:
 
-<img src="images/simplify-paint-complexity-and-reduce-paint-areas/paint-profiler.jpg"  alt="Chrome DevTools Paint Profiler.">
+<img src="images/simplify-paint-complexity-and-reduce-paint-areas/paint-profiler.jpg"  alt="Chrome DevTools Paint Profiler." />
 
-Profiler ini memungkinkan Anda mengetahui area maupun kompleksitas (yakni waktu yang sebenarnya diperlukan untuk menggambar), dan keduanya merupakan area yang bisa Anda lihat untuk diperbaiki jika tidak bisa menghindari paint.
+This profiler lets you know both the area and the complexity (which is really the time it takes to paint), and both of these are areas you can look to fix if avoiding paint is not an option.
 
-## Promosikan elemen yang berpindah atau memudar
+## Promote elements that move or fade
 
-Penggambaran tidak selalu dilakukan ke dalam satu gambar di memori. Sebenarnya, browser bisa saja menggambar ke dalam beberapa gambar, atau layer compositor, jika perlu.
+Painting is not always done into a single image in memory. In fact, it’s possible for the browser to paint into multiple images, or compositor layers, if necessary.
 
-<img src="images/simplify-paint-complexity-and-reduce-paint-areas/layers.jpg"  alt="Representasi layer compositor.">
+<img src="images/simplify-paint-complexity-and-reduce-paint-areas/layers.jpg"  alt="A representation of compositor layers." />
 
-Manfaat pendekatan ini adalah elemen rutin digambar ulang, atau berpindah pada layar dengan transformasi, bisa ditangani tanpa memengaruhi elemen lain. Ini sama seperti pada paket aplikasi seni seperti Sketch, GIMP atau Photoshop, di mana masing-masing layer bisa ditangani dan dikomposisikan di atas layer lain untuk membuat gambar akhir.
+The benefit of this approach is that elements that are regularly repainted, or are moving on screen with transforms, can be handled without affecting other elements. This is the same as with art packages like Sketch, GIMP, or Photoshop, where individual layers can be handled and composited on top of each other to create the final image.
 
-Cara terbaik untuk membuat layer baru adalah menggunakan properti CSS `will-change`. Ini akan berfungsi di Chrome, Opera, dan Firefox, dan, dengan nilai `transform`, akan membuat layer compositor baru:
-
+The best way to create a new layer is to use the `will-change` CSS property. This will work in Chrome, Opera and Firefox, and, with a value of `transform`, will create a new compositor layer:
 
     .moving-element {
       will-change: transform;
     }
+    
 
-
-Untuk browser yang tidak mendukung `will-change`, namun memanfaatkan pembuatan layer, seperti Safari dan Mobile Safari, Anda perlu (salah)gunakan transformasi 3D untuk memaksa layer baru:
-
+For browsers that don’t support `will-change`, but benefit from layer creation, such as Safari and Mobile Safari, you need to (mis)use a 3D transform to force a new layer:
 
     .moving-element {
       transform: translateZ(0);
     }
+    
 
+Care must be taken not to create too many layers, however, as each layer requires both memory and management. There is more information on this in the [Stick to compositor-only properties and manage layer count](stick-to-compositor-only-properties-and-manage-layer-count) section.
 
-Berhati-hatilah agar tidak terlalu banyak membuat layer, karena setiap layer memerlukan memori dan manajemen. Ada informasi selengkapnya mengenai hal ini di bagian [Berpeganglah pada properti compositor-saja dan kelola jumlah layer](stick-to-compositor-only-properties-and-manage-layer-count).
+If you have promoted an element to a new layer, use DevTools to confirm that doing so has given you a performance benefit. **Don't promote elements without profiling.**
 
-Jika Anda telah mempromosikan elemen ke layer baru, gunakan DevTools untuk mengkonfirmasikan bahwa melakukan hal itu memberi Anda manfaat kinerja. **Jangan promosikan elemen tanpa pembuatan profil.**
+## Reduce paint areas
 
-## Kurangi area paint
+Sometimes, however, despite promoting elements, paint work is still necessary. A large challenge of paint issues is that browsers union together two areas that need painting, and that can result in the entire screen being repainted. So, for example, if you have a fixed header at the top of the page, and something being painted at the bottom the screen, the entire screen may end up being repainted.
 
-Kadang-kadang walaupun mempromosikan elemen, pekerjaan paint tetap diperlukan. Tantangan besar dalam masalah paint adalah karena browser menyatukan dua area yang memerlukan penggambaran, dan itu bisa mengakibatkan seluruh layar digambar ulang. Jadi, misalnya, jika Anda telah menetapkan header di bagian atas laman, sesuatu sedang digambar di bagian bawah layar, seluruh layar akhirnya mungkin akan digambar ulang.
+Note: On High DPI screens elements that are fixed position are automatically promoted to their own compositor layer. This is not the case on low DPI devices because the promotion changes text rendering from subpixel to grayscale, and layer promotion needs to be done manually.
 
-Note: Pada elemen layar DPI Tinggi yang sudah ditetapkan, posisi secara otomatis dipromosikan ke layer kompositor-nya sendiri. Ini tidak jadi masalah pada perangkat DPI rendah karena promosi mengubah rendering teks dari subpiksel menjadi abu-abu, dan promosi layer perlu dilakukan secara manual.
+Reducing paint areas is often a case of orchestrating your animations and transitions to not overlap as much, or finding ways to avoid animating certain parts of the page.
 
-Mengurangi area paint sering kali merupakan masalah orkestrasi animasi dan transisi Anda agar tidak banyak tumpang-tindih, atau menemukan cara untuk menghindari bagian laman tertentu.
-
-## Menyederhanakan kompleksitas paint
+## Simplify paint complexity
 
 <div class="attempt-right">
   <figure>
-    <img src="images/simplify-paint-complexity-and-reduce-paint-areas/profiler-chart.jpg" alt="Waktu yang diperlukan untuk menggambar bagian layar.">
+    <img src="images/simplify-paint-complexity-and-reduce-paint-areas/profiler-chart.jpg" alt="The time taken to paint part of the screen.">
   </figure>
 </div>
 
-Dalam hal menggambar, beberapa hal lebih berat daripada yang lainnya. Misalnya, apa saja yang melibatkan blur (seperti bayangan, misalnya) akan memakan waktu lebih lama untuk digambar daripada -- katakan -- menggambar kotak merah. Walau demikian, dalam konteks CSS, hal ini tidak selalu jelas: `background: red;` dan `box-shadow: 0, 4px, 4px, rgba(0,0,0,0.5);` tidak harus terlihat memiliki karakteristik kinerja yang sangat berbeda, namun kenyataannya berbeda.
+When it comes to painting, some things are more expensive than others. For example, anything that involves a blur (like a shadow, for example) is going to take longer to paint than -- say -- drawing a red box. In terms of CSS, however, this isn’t always obvious: `background: red;` and `box-shadow: 0, 4px, 4px, rgba(0,0,0,0.5);` don’t necessarily look like they have vastly different performance characteristics, but they do.
 
-Paint profiler di atas akan memungkinkan Anda menentukan apakah perlu mencari cara lain untuk menghasilkan efek. Tanyakan pada diri sendiri mungkinkah menggunakan set gaya yang lebih murah atau cara alternatif untuk mendapatkan hasil akhir.
+The paint profiler above will allow you to determine if you need to look at other ways to achieve effects. Ask yourself if it’s possible to use a cheaper set of styles or alternative means to get to your end result.
 
-Bila bisa, Anda selalu ingin menghindari paint khususnya selama animasi, karena **10 md** yang Anda miliki per bingkai biasanya tidak cukup lama untuk menyelesaikan pekerjaan paint, terlebih pada perangkat seluler.
+Where you can you always want to avoid paint during animations in particular, as the **10ms** you have per frame is normally not long enough to get paint work done, especially on mobile devices.
 
+## Feedback {: #feedback }
 
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
