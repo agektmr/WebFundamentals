@@ -1,17 +1,12 @@
-project_path: /web/_project.yaml
-book_path: /web/updates/_book.yaml
-description: ヘッドレス Chrome とはなにか、そしてその使い方を紹介します。
+project_path: /web/_project.yaml book_path: /web/updates/_book.yaml description: Getting started with Headless Chrome
 
-{# wf_updated_on: 2017-10-06 #}
-{# wf_published_on: 2017-04-27 #}
+{# wf_updated_on: 2018-02-23 #} {# wf_published_on: 2017-04-27 #}
 
-{# wf_tags: chrome59,headless,testing #}
-{# wf_featured_image: /web/updates/images/generic/headless-chrome.png #}
-{# wf_featured_snippet: Chrome 59 から搭載されたヘッドレス Chrome は Chrome をヘッドレス環境で実行するものです。ヘッドレス Chrome によって、Chromium とそのエンジン Blink が提供するモダンなウェブプラットフォームの機能すべてがコマンドラインにもたらされます。 #}
+{# wf_tags: chrome59,headless,testing #} {# wf_blink_components: Internals>Headless #} {# wf_featured_image: /web/updates/images/generic/headless-chrome.png #} {# wf_featured_snippet: Headless Chrome (shipping in Chrome 59) is a way to run the Chrome browser in a headless environment. It brings all modern web platform features provided by Chromium and the Blink rendering engine to the command line. #}
 
-# ヘッドレス Chrome ことはじめ {: .page-title }
+# Getting Started with Headless Chrome {: .page-title }
 
-{% include "web/_shared/contributors/ericbidelman.html" %}
+{% include "web/_shared/contributors/ericbidelman.html" %} 
 
 <style>
 figure {
@@ -19,95 +14,162 @@ figure {
 }
 </style>
 
+ 
+
 ### TL;DR {: #tldr .hide-from-toc}
 
-[Headless Chrome](https://chromium.googlesource.com/chromium/src/+/master/headless/README.md) が Chrome 59 に搭載されます！これは Chrome をヘッドレス環境で実行する手段です。Chrome をクローム（ブラウザーのUIのこと）なしに実行します！ヘッドレス Chrome によって、Chromium とそのエンジン Blink が提供する**モダンなウェブプラットフォームの機能すべて**がコマンドラインにもたらされるのです。
+[Headless Chrome](https://chromium.googlesource.com/chromium/src/+/lkgr/headless/README.md) is shipping in Chrome 59. It's a way to run the Chrome browser in a headless environment. Essentially, running Chrome without chrome! It brings **all modern web platform features** provided by Chromium and the Blink rendering engine to the command line.
 
-でも、いったいその何が便利なんでしょうか？
+Why is that useful?
 
-ヘッドレスブラウザは、GUI を持つ必要のない自動テスト環境やサーバー環境にとてもよいツールです。例としては、実際のウェブページに対してなにかテストを実行する、そのページの PDF を生成する、またはただ、そのページがどう表示されるかを検証するなどが挙げられるでしょうか。
+A headless browser is a great tool for automated testing and server environments where you don't need a visible UI shell. For example, you may want to run some tests against a real web page, create a PDF of it, or just inspect how the browser renders an URL.
 
-Note: ヘッドレスモードは Chrome 59 から、Mac と Linux で提供されます。[Windows のサポート](https://bugs.chromium.org/p/chromium/issues/detail?id=686608)はもうちょっとです！現在使っている Chrome のバージョンを調べるには、`chrome://version` を開きます。
+Note: Headless mode has been available on Mac and Linux since **Chrome 59**. [Windows support](https://bugs.chromium.org/p/chromium/issues/detail?id=686608) came in Chrome 60.
 
-## ヘッドレス Chrome を立ち上げる (CLI) {: #cli }
+## Starting Headless (CLI) {: #cli }
 
-もっとも楽なヘッドレスモードの起動方法は、Chrome のバイナリをコマンドラインから開くことです。Chrome 59 以降を用意し、`--headless` フラグをつけて Chrome を実行します。
+The easiest way to get started with headless mode is to open the Chrome binary from the command line. If you've got Chrome 59+ installed, start Chrome with the `--headless` flag:
 
     chrome \
-      --headless \                   # Chrome をヘッドレスモードで実行する
-      --disable-gpu \                # 暫定的に必要なフラグ
+      --headless \                   # Runs Chrome in headless mode.
+      --disable-gpu \                # Temporarily needed if running on Windows.
       --remote-debugging-port=9222 \
-      https://www.chromestatus.com   # 開きたい URL（デフォルトは about:blank）
+      https://www.chromestatus.com   # URL to open. Defaults to about:blank.
+    
 
-Note: 現在は、`--disable-gpu` を含めなければいけません。このフラグはそのうち不要になります。
+Note: Right now, you'll also want to include the `--disable-gpu` flag if you're running on Windows. See [crbug.com/737678](https://bugs.chromium.org/p/chromium/issues/detail?id=737678).
 
-ここで `chrome` はインストールされた Chrome のパスを指します。正確なインストール先はプラットフォームによって異なります。わたしは Mac を使っているのですが、以下のようなエイリアスを作っています。
+`chrome` should point to your installation of Chrome. The exact location will vary from platform to platform. Since I'm on Mac, I created convenient aliases for each version of Chrome that I have installed.
 
-もし Chrome の Stable（安定版）を使っており、Beta をインストールできない場合は、`chrome-canary` をおすすめします。
+If you're on the stable channel of Chrome and cannot get the Beta, I recommend using `chrome-canary`:
 
     alias chrome="/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome"
     alias chrome-canary="/Applications/Google\ Chrome\ Canary.app/Contents/MacOS/Google\ Chrome\ Canary"
     alias chromium="/Applications/Chromium.app/Contents/MacOS/Chromium"
+    
 
-[Chrome Canary のダウンロードはこちら](https://www.google.com/chrome/browser/canary.html)
+Download Chrome Canary [here](https://www.google.com/chrome/browser/canary.html).
 
-## コマンドラインの機能 {: features }
+## Command line features {: features }
 
-やりたいことによっては、[プログラムを書く](#node)必要さえありません。よくあるタスクには、[便利なコマンドラインフラグ](https://cs.chromium.org/chromium/src/headless/app/headless_shell_switches.cc)が用意されています。
+In some cases, you may not need to [programmatically script](#node) Headless Chrome. There are some [useful command line flags](https://cs.chromium.org/chromium/src/headless/app/headless_shell_switches.cc) to perform common tasks.
 
-### DOM を出力する {: dom }
+### Printing the DOM {: dom }
 
-`--dump-dom` フラグを使うと、`document.body.innerHTML` 標準出力に表示します。
+The `--dump-dom` flag prints `document.body.innerHTML` to stdout:
 
     chrome --headless --disable-gpu --dump-dom https://www.chromestatus.com/
+    
 
-### PDF を作成する {: pdf }
+### Create a PDF {: dom }
 
-`--print-to-pdf` フラグを使うと、ページの PDF を作成します。
+The `--print-to-pdf` flag creates a PDF of the page:
 
     chrome --headless --disable-gpu --print-to-pdf https://www.chromestatus.com/
+    
 
-### スクリーンショットを撮る {: #screenshots }
+### Taking screenshots {: #screenshots }
 
-スクリーンショットを撮るには、`--screenshot` フラグを使用します。
+To capture a screenshot of a page, use the `--screenshot` flag:
 
     chrome --headless --disable-gpu --screenshot https://www.chromestatus.com/
-
-    # レターヘッドの大きさ
+    
+    # Size of a standard letterhead.
     chrome --headless --disable-gpu --screenshot --window-size=1280,1696 https://www.chromestatus.com/
-
-    # Nexus 5X
+    
+    # Nexus 5x
     chrome --headless --disable-gpu --screenshot --window-size=412,732 https://www.chromestatus.com/
+    
 
-`--screenshot` フラグつきでヘッドレス Chrome を実行すると、現在のディレクトリに `screenshot.png` というファイルが生成されます。ページ全体のスクリーンショットを撮りたい場合、やることは少し複雑になります。こちらは David Schnurr がすでに “[Using headless Chrome as an automated screenshot tool](https://medium.com/@dschnr/using-headless-chrome-as-an-automated-screenshot-tool-4b07dffba79a)” というブログ記事で取り上げているので、そちらをご覧ください。
+Running with `--screenshot` will produce a file named `screenshot.png` in the current working directory. If you're looking for full page screenshots, things are a tad more involved. There's a great blog post from David Schnurr that has you covered. Check out [Using headless Chrome as an automated screenshot tool ](https://medium.com/@dschnr/using-headless-chrome-as-an-automated-screenshot-tool-4b07dffba79a).
 
-## ブラウザ UI なしに Chrome をデバッグ？ {: #frontend }
+### REPL mode (read-eval-print loop) {: #repl }
 
-Chrome を `--remote-debugging-port=9222` フラグつきで実行すると、[DevTools Protocol][dtviewer] が有効になった状態でインスタンスが起動します。このプロトコルは Chrome と通信し、ヘッドレスブラウザのインスタンスを制御するのに使われています。また、Sublime や VS Code、Node がアプリケーションをリモートデバッグする際にも使われます。 #シナジー
+The `--repl` flag runs Headless in a mode where you can evaluate JS expressions in the browser, right from the command line:
 
-ヘッドレスモードではページを見るためのブラウザ UI が存在しないため、他のブラウザから `http://localhost:9222` に移動し、問題がないかを確認します。ページに移動すると、ヘッドレス Chrome がレンダリングしている、検証可能なページのリストを見られます。
+    $ chrome --headless --disable-gpu --repl --crash-dumps-dir=./tmp https://www.chromestatus.com/
+    [0608/112805.245285:INFO:headless_shell.cc(278)] Type a Javascript expression to evaluate or "quit" to exit.
+    >>> location.href
+    {"result":{"type":"string","value":"https://www.chromestatus.com/features"}}
+    >>> quit
+    $
+    
+
+Note: the addition of the --crash-dumps-dir flag when using repl mode.
+
+## Debugging Chrome without a browser UI? {: #frontend }
+
+When you run Chrome with `--remote-debugging-port=9222`, it starts an instance with the [DevTools protocol](https://chromedevtools.github.io/devtools-protocol/) enabled. The protocol is used to communicate with Chrome and drive the headless browser instance. It's also what tools like Sublime, VS Code, and Node use for remote debugging an application. #synergy
+
+Since you don't have browser UI to see the page, navigate to `http://localhost:9222` in another browser to check that everything is working. You'll see a list of inspectable pages where you can click through and see what Headless is rendering:
 
 <figure>
-  <img src="/web/updates/images/2017/04/headless-chrome/remote-debugging-ui.png"
-       class="screenshot">
-  <figcaption>DevTools のリモートデバッグ UI</figcaption>
+  <img src="/web/updates/images/2017/04/headless-chrome/remote-debugging-ui.jpg"
+       class="screenshot" alt="DevTools Remote">
+  <figcaption>DevTools remote debugging UI</figcaption>
 </figure>
 
-リモートデバッグ UI では、検証やデバッグ、コンテンツの編集など、いつも使っている DevTools の機能を普段通りに使えます。ヘッドレス Chrome をプログラムから利用する場合も、ブラウザと通信している生の DevTools プロトコルのコマンドを確認できるためとても便利です。
+From here, you can use the familiar DevTools features to inspect, debug, and tweak the page as you normally would. If you're using Headless programmatically, this page is also a powerful debugging tool for seeing all the raw DevTools protocol commands going across the wire, communicating with the browser.
 
-## プログラムから利用する（Node） {: #node }
+## Using programmatically (Node) {: #node }
 
-### Chrome の起動 {: #nodelaunch }
+### Puppeteer {: #puppeteer }
 
-前のセクションでは、`--headless --remote-debugging-port=9222` フラグをつけ [Chrome を手動で起動](#cli)していました。しかしテストを完全に自動化するには、アプリケーション「から」Chrome を実行したくなるのではないでしょうか。
+[Puppeteer](/web/tools/puppeteer/) is a Node library developed by the Chrome team. It provides a high-level API to control headless (or full) Chrome. It's similar to other automated testing libraries like Phantom and NightmareJS, but it only works with the latest versions of Chrome.
 
-それを実現するひとつの方法が `child_process` です。
+Among other things, Puppeteer can be used to easily take screenshots, create PDFs, navigate pages, and fetch information about those pages. I recommend the library if you want to quickly automate browser testing. It hides away the complexities of the DevTools protocol and takes care of redundant tasks like launching a debug instance of Chrome.
+
+Install it:
+
+    npm i --save puppeteer
+    
+
+**Example** - print the user agent
+
+```javascript
+const puppeteer = require('puppeteer');
+
+(async() => {
+  const browser = await puppeteer.launch();
+  console.log(await browser.version());
+  await browser.close();
+})();
+```
+
+**Example** - taking a screenshot of the page
+
+```javascript
+const puppeteer = require('puppeteer');
+
+(async() => {
+const browser = await puppeteer.launch();
+const page = await browser.newPage();
+await page.goto('https://www.chromestatus.com', {waitUntil: 'networkidle2'});
+await page.pdf({path: 'page.pdf', format: 'A4'});
+
+await browser.close();
+})();
+```
+
+Check out [Puppeteer's documentation](https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md) to learn more about the full API.
+
+### The CRI library {: #cri }
+
+[chrome-remote-interface](https://www.npmjs.com/package/chrome-remote-interface) is a lower-level library than Puppeteer's API. I recommend it if you want to be close to the metal and use the [DevTools protocol](https://chromedevtools.github.io/devtools-protocol/) directly.
+
+#### Launching Chrome {: #nodelaunch }
+
+chrome-remote-interface doesn't launch Chrome for you, so you'll have to take care of that yourself.
+
+In the CLI section, we [started Chrome manually](#cli) using `--headless --remote-debugging-port=9222`. However, to fully automate tests, you'll probably want to spawn Chrome *from* your application.
+
+One way is to use `child_process`:
 
 ```javascript
 const execFile = require('child_process').execFile;
 
 function launchHeadlessChrome(url, callback) {
-  // macOS を想定
+  // Assuming MacOSx.
   const CHROME = '/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome';
   execFile(CHROME, ['--headless', '--disable-gpu', '--remote-debugging-port=9222', url], callback);
 }
@@ -117,220 +179,304 @@ launchHeadlessChrome('https://www.chromestatus.com', (err, stdout, stderr) => {
 });
 ```
 
-しかしこの方法では、複数のプラットフォームをサポートしようとするときにめんどくさくなります。ハードコードされた Chrome のパスを見てください :(
+But things get tricky if you want a portable solution that works across multiple platforms. Just look at that hard-coded path to Chrome :(
 
-#### Lighthouse の ChromeLauncher を使う {: #nodechromelauncher }
+##### Using ChromeLauncher {: #nodechromelauncher }
 
-[Lighthouse](/web/tools/lighthouse/) ウェブアプリのクオリティをテストする素晴らしいツールです。ご存じないかもしれませんが、Lighthouse には Chrome を操作するとても便利なヘルパーモジュールが搭載されています。そのモジュールのひとつが `ChromeLauncher` です。`ChromeLauncher` は Chrome がどこにインストールされているかを探したり、デバッグ用のインスタンスをセットアップしたり、Chrome を起動したり、プログラムが終了したときに Chrome も終了したりと、いろんなことをしてくれます。なによりも嬉しいのが、Node のお陰でクロスプラットフォームなことです！
+[Lighthouse](/web/tools/lighthouse/) is a marvelous tool for testing the quality of your web apps. A robust module for launching Chrome was developed within Lighthouse and is now extracted for standalone use. The [`chrome-launcher` NPM module](https://www.npmjs.com/package/chrome-launcher) will find where Chrome is installed, set up a debug instance, launch the browser, and kill it when your program is done. Best part is that it works cross-platform thanks to Node!
 
-Note: Lighthouse チームはよりよい API を搭載した `ChromeLauncher` のスタンドアロン版を検討しています。気になることがあれば、ぜひ[フィードバックを](https://github.com/GoogleChrome/lighthouse/issues/2092)お願いします。
+By default, **`chrome-launcher` will try to launch Chrome Canary** (if it's installed), but you can change that to manually select which Chrome to use. To use it, first install from npm:
 
-デフォルトでは、**`ChromeLauncher` は Chrome Canary を起動しようとします**（インストールされていれば）。もちろんどの Chrome を利用するかは決められます。`ChromeLauncher` を使うには、まず Lighthouse をインストールします。
+    npm i --save chrome-launcher
+    
 
-    yarn add lighthouse
-
-**例** - `ChromeLauncher` を使ってヘッドレス Chrome を起動する
+**Example** - using `chrome-launcher` to launch Headless
 
 ```javascript
-const {ChromeLauncher} = require('lighthouse/lighthouse-cli/chrome-launcher');
+const chromeLauncher = require('chrome-launcher');
+
+// Optional: set logging level of launcher to see its output.
+// Install it using: npm i --save lighthouse-logger
+// const log = require('lighthouse-logger');
+// log.setLevel('info');
 
 /**
- * デバッグ用の Chrome インスタンスをポート 9222 で起動する。
- * @param {boolean=} headless Chrome をヘッドレスモードで起動。
- *     デフォルトは true。値を false にセットすると通常モードで起動。
+ * Launches a debugging instance of Chrome.
+ * @param {boolean=} headless True (default) launches Chrome in headless mode.
+ *     False launches a full version of Chrome.
  * @return {Promise<ChromeLauncher>}
  */
-function launchChrome(headless = true) {
-  const launcher = new ChromeLauncher({
-    port: 9222,
-    autoSelectChrome: true, // false にした場合は手動で Chrome を選択する
-    additionalFlags: [
+function launchChrome(headless=true) {
+  return chromeLauncher.launch({
+    // port: 9222, // Uncomment to force a specific port of your choice.
+    chromeFlags: [
       '--window-size=412,732',
       '--disable-gpu',
       headless ? '--headless' : ''
     ]
   });
-
-  return launcher.run().then(() => launcher)
-    .catch(err => {
-      return launcher.kill().then(() => { // エラーな場合 Chrome を終了
-        throw err;
-      }, console.error);
-    });
 }
 
-launchChrome(true).then(launcher => {
+launchChrome().then(chrome => {
+  console.log(`Chrome debuggable on port: ${chrome.port}`);
   ...
+  // chrome.kill();
 });
 ```
 
-このスクリプトは小さいものですが、`about:blank` を読み込んだ Chrome のインスタンスがタスクマネージャに現れるのを確認できると思います。なお、ブラウザ UI は立ち上がりません。ヘッドレスですから。
+Running this script doesn't do much, but you should see an instance of Chrome fire up in the task manager that loaded `about:blank`. Remember, there won't be any browser UI. We're headless.
 
-立ち上がった Chrome を操作するには、DevTools プロトコルが必要です！
+To control the browser, we need the DevTools protocol!
 
-### ページの情報を取得する {: #useprotocol }
+#### Retrieving information about the page {: #useprotocol }
 
-[chrome-remote-interface](https://www.npmjs.com/package/chrome-remote-interface) は [DevTools Protocol][dtviewer] 上に構築された、ハイレベルな API を提供するとてもいい Node のパッケージです。これを使うとヘッドレス Chrome を操作し、ページを移動し、そしてページに関する情報を取得できます。
+Warning: The DevTools protocol can do a ton of interesting stuff, but it can be a bit daunting at first. I recommend spending a bit of time browsing the [DevTools Protocol Viewer](https://chromedevtools.github.io/devtools-protocol/), first. Then, move on to the `chrome-remote-interface` API docs to see how it wraps the raw protocol.
 
-要Note: DevTools プロトコルでほんとに色んなことができるので、最初はすこしウッとなるかと思います。まずは [DevTools Protocol Viewer][dtviewer] を眺めましょう。そのあと `chrome-remote-interface` の API ドキュメンテーションを読み、生プロトコルをどうラップしているのか確認するとといでしょう。
+Let's install the library:
 
-では、ライブラリをインストールしましょう。
+    npm i --save chrome-remote-interface
+    
 
-    yarn add chrome-remote-interface
+##### Examples
 
-#### 例
-
-**例** - UA 文字列を出力する
+**Example** - print the user agent
 
 ```javascript
-launchChrome().then(launcher => {
-  chrome.Version().then(version => console.log(version['User-Agent']));
+const CDP = require('chrome-remote-interface');
+
+...
+
+launchChrome().then(async chrome => {
+  const version = await CDP.Version({port: chrome.port});
+  console.log(version['User-Agent']);
 });
 ```
 
-`HeadlessChrome/60.0.3082.0` といった文字列が出てくるでしょう。
+Results in something like: `HeadlessChrome/60.0.3082.0`
 
-**例** - サイトに [web app manifest](/web/fundamentals/web-app-manifest) があるかを確認する
+**Example** - check if the site has a [web app manifest](/web/fundamentals/web-app-manifest)
 
 ```javascript
-const chrome = require('chrome-remote-interface');
+const CDP = require('chrome-remote-interface');
 
-function onPageLoad(Page) {
-  return Page.getAppManifest().then(response => {
-    if (!response.url) {
-      console.log('Site has no app manifest');
-      return;
-    }
-    console.log('Manifest: ' + response.url);
-    console.log(response.data);
-  });
-}
+...
 
-launchChrome().then(launcher => {
+(async function() {
 
-  chrome(protocol => {
-    // DevTools プロトコルから、必要なタスク部分を抽出する。
-    // API ドキュメンテーション: https://chromedevtools.github.io/devtools-protocol/
-    const {Page} = protocol;
+const chrome = await launchChrome();
+const protocol = await CDP({port: chrome.port});
 
-    // まず、使用する Page ドメインを有効にする。
-     Page.enable().then(() => {
-      Page.navigate({url: 'https://www.chromestatus.com/'});
+// Extract the DevTools protocol domains we need and enable them.
+// See API docs: https://chromedevtools.github.io/devtools-protocol/
+const {Page} = protocol;
+await Page.enable();
 
-      // window.onload を待つ。
-      Page.loadEventFired(() => {
-        onPageLoad(Page)).then(() => {
-          protocol.close();
-          launcher.kill(); // Chrome を終了させる。
-        });
-      });
-    });
+Page.navigate({url: 'https://www.chromestatus.com/'});
 
-  }).on('error', err => {
-    throw Error('Cannot connect to Chrome:' + err);
-  });
+// Wait for window.onload before doing stuff.
+Page.loadEventFired(async () => {
+  const manifest = await Page.getAppManifest();
 
+  if (manifest.url) {
+    console.log('Manifest: ' + manifest.url);
+    console.log(manifest.data);
+  } else {
+    console.log('Site has no app manifest');
+  }
+
+  protocol.close();
+  chrome.kill(); // Kill Chrome.
 });
+
+})();
 ```
 
-**例** - DOM API を使ってページの `<title>` を抽出する
+**Example** - extract the `<title>` of the page using DOM APIs.
 
 ```javascript
-const chrome = require('chrome-remote-interface');
+const CDP = require('chrome-remote-interface');
 
-function onPageLoad(Runtime) {
+...
+
+(async function() {
+
+const chrome = await launchChrome();
+const protocol = await CDP({port: chrome.port});
+
+// Extract the DevTools protocol domains we need and enable them.
+// See API docs: https://chromedevtools.github.io/devtools-protocol/
+const {Page, Runtime} = protocol;
+await Promise.all([Page.enable(), Runtime.enable()]);
+
+Page.navigate({url: 'https://www.chromestatus.com/'});
+
+// Wait for window.onload before doing stuff.
+Page.loadEventFired(async () => {
   const js = "document.querySelector('title').textContent";
+  // Evaluate the JS expression in the page.
+  const result = await Runtime.evaluate({expression: js});
 
-  // ページ内で JS の式を評価する。
-  return Runtime.evaluate({expression: js}).then(result => {
-    console.log('Title of page: ' + result.result.value);
-  });
-}
+  console.log('Title of page: ' + result.result.value);
 
-launchChrome().then(launcher => {
-
-  chrome(protocol => {
-    // DevTools プロトコルから、必要なタスク部分を抽出する。
-    // API ドキュメンテーション: https://chromedevtools.github.io/devtools-protocol/
-    const {Page, Runtime} = protocol;
-
-    // まず、使用するドメインを有効にする。
-    Promise.all([
-      Page.enable(),
-      Runtime.enable()
-    ]).then(() => {
-      Page.navigate({url: 'https://www.chromestatus.com/'});
-
-      // window.onload を待つ。
-      Page.loadEventFired(() => {
-        onPageLoad(Runtime).then(() => {
-          protocol.close();
-          launcher.kill(); // Chrome を終了させる。
-        });
-      });
-
-    });
-
-  }).on('error', err => {
-    throw Error('Cannot connect to Chrome:' + err);
-  });
-
+  protocol.close();
+  chrome.kill(); // Kill Chrome.
 });
+
+})();
 ```
 
-## あわせて読みたい
+## Using Selenium, WebDriver, and ChromeDriver {: #drivers }
 
-ヘッドレス Chrome を始めるにあたり便利なリソースを紹介します。
+Right now, Selenium opens a full instance of Chrome. In other words, it's an automated solution but not completely headless. However, Selenium can be configured to run headless Chrome with a little work. I recommend [Running Selenium with Headless Chrome](https://intoli.com/blog/running-selenium-with-headless-chrome/) if you want the full instructions on how to set things up yourself, but I've dropped in some examples below to get you started.
 
-ドキュメンテーション
+#### Using ChromeDriver
 
-* [DevTools Protocol Viewer][dtviewer] - API リファレンス
+[ChromeDriver](https://sites.google.com/a/chromium.org/chromedriver/) 2.32 uses Chrome 61 and works well with headless Chrome.
 
-ツール
+Install:
 
-* [chrome-remote-interface](https://www.npmjs.com/package/chrome-remote-interface) - DevTools プロトコルのラッパーを提供する Node モジュール
-* [Lighthouse](https://github.com/GoogleChrome/lighthouse) - ウェブアプリのクオリティをテストする自動化ツール
+    npm i --save-dev selenium-webdriver chromedriver
+    
 
-デモ
+Example:
 
-* "[The Headless Web](https://paul.kinlan.me/the-headless-web/)" - ヘッドレス Chrome と api.ai を組み合わせる、Paul Kinlan のとてもよいブログ記事
+```javascript
+const fs = require('fs');
+const webdriver = require('selenium-webdriver');
+const chromedriver = require('chromedriver');
+
+const chromeCapabilities = webdriver.Capabilities.chrome();
+chromeCapabilities.set('chromeOptions', {args: ['--headless']});
+
+const driver = new webdriver.Builder()
+  .forBrowser('chrome')
+  .withCapabilities(chromeCapabilities)
+  .build();
+
+// Navigate to google.com, enter a search.
+driver.get('https://www.google.com/');
+driver.findElement({name: 'q'}).sendKeys('webdriver');
+driver.findElement({name: 'btnG'}).click();
+driver.wait(webdriver.until.titleIs('webdriver - Google Search'), 1000);
+
+// Take screenshot of results page. Save to disk.
+driver.takeScreenshot().then(base64png => {
+  fs.writeFileSync('screenshot.png', new Buffer(base64png, 'base64'));
+});
+
+driver.quit();
+```
+
+#### Using WebDriverIO
+
+[WebDriverIO](http://webdriver.io/) is a higher level API on top of Selenium WebDriver.
+
+Install:
+
+    npm i --save-dev webdriverio chromedriver
+    
+
+Example: filter CSS features on chromestatus.com
+
+```javascript
+const webdriverio = require('webdriverio');
+const chromedriver = require('chromedriver');
+
+const PORT = 9515;
+
+chromedriver.start([
+  '--url-base=wd/hub',
+  `--port=${PORT}`,
+  '--verbose'
+]);
+
+(async () => {
+
+const opts = {
+  port: PORT,
+  desiredCapabilities: {
+    browserName: 'chrome',
+    chromeOptions: {args: ['--headless']}
+  }
+};
+
+const browser = webdriverio.remote(opts).init();
+
+await browser.url('https://www.chromestatus.com/features');
+
+const title = await browser.getTitle();
+console.log(`Title: ${title}`);
+
+await browser.waitForText('.num-features', 3000);
+let numFeatures = await browser.getText('.num-features');
+console.log(`Chrome has ${numFeatures} total features`);
+
+await browser.setValue('input[type="search"]', 'CSS');
+console.log('Filtering features...');
+await browser.pause(1000);
+
+numFeatures = await browser.getText('.num-features');
+console.log(`Chrome has ${numFeatures} CSS features`);
+
+const buffer = await browser.saveScreenshot('screenshot.png');
+console.log('Saved screenshot...');
+
+chromedriver.stop();
+browser.end();
+
+})();
+```
+
+## Further resources
+
+Here are some useful resources to get you started:
+
+Docs
+
+* [DevTools Protocol Viewer](https://chromedevtools.github.io/devtools-protocol/) - API reference docs
+
+Tools
+
+* [chrome-remote-interface](https://www.npmjs.com/package/chrome-remote-interface) - node module that wraps the DevTools protocol
+* [Lighthouse](https://github.com/GoogleChrome/lighthouse) - automated tool for testing web app quality; makes heavy use of the protocol
+* [chrome-launcher](https://github.com/GoogleChrome/lighthouse/tree/master/chrome-launcher) - node module for launching Chrome, ready for automation
+
+Demos
+
+* "[The Headless Web](https://paul.kinlan.me/the-headless-web/)" - Paul Kinlan's great blog post on using Headless with api.ai.
 
 ## FAQ
 
-**`--diable-gpu` フラグは必要ですか？**
+**Do I need the `--disable-gpu` flag?**
 
-今のところですが、必要です。`--disable-gpu` フラグはいくつかのバグを回避するための暫定的な手段です。将来の Chrome のバージョンでは必要なくなるでしょう。詳しくは [https://crbug.com/546953#c152](https://bugs.chromium.org/p/chromium/issues/detail?id=546953#c152) と [https://crbug.com/695212](https://bugs.chromium.org/p/chromium/issues/detail?id=695212) をご覧ください。
+Only on Windows. Other platforms no longer require it. The `--disable-gpu` flag is a temporary work around for a few bugs. You won't need this flag in future versions of Chrome. See [crbug.com/737678](https://bugs.chromium.org/p/chromium/issues/detail?id=737678) for more information.
 
-**Xvfb はまだ必要なのでしょうか？**
+**So I still need Xvfb?**
 
-いいえ。ヘッドレス Chrome はウインドウを仕様しないため、Xvfb などのディスプレイサーバはもう必要ありません。自動化テストを Xvfb なしに実行できます。うれしいですね。
+No. Headless Chrome doesn't use a window so a display server like Xvfb is no longer needed. You can happily run your automated tests without it.
 
-Xvfb がわからない？Xvfb は Unix ライクなシステム向けに提供される、インメモリなディスプレイサーバです。これを使うと、グラフィカルなアプリケーション（Chrome など）を、ディスプレイを物理的に接続せず実行できます。「ヘッドレス」なテストを実行する際、以前は Xvfb を利用して古い Chrome を動かしていました。
+What is Xvfb? Xvfb is an in-memory display server for Unix-like systems that enables you to run graphical applications (like Chrome) without an attached physical display. Many people use Xvfb to run earlier versions of Chrome to do "headless" testing.
 
-**ヘッドレス Chrome を実行できる Docker コンテナはどうやって作れますか？**
+**How do I create a Docker container that runs Headless Chrome?**
 
-[lighthouse-ci](https://github.com/ebidel/lighthouse-ci) をチェックしてください。Ubuntu をベースイメージに、App Engine Flexible コンテナ内で Lighthouse をインストールし実行する [Dockerfile の例](https://github.com/ebidel/lighthouse-ci/blob/master/builder/Dockerfile) があります。
+Check out [lighthouse-ci](https://github.com/ebidel/lighthouse-ci). It has an [example Dockerfile](https://github.com/ebidel/lighthouse-ci/blob/master/builder/Dockerfile) that uses `node:8-slim` as a base image, installs + [runs Lighthouse](https://github.com/ebidel/lighthouse-ci/blob/master/builder/entrypoint.sh) on App Engine Flex.
 
-**PhantomJS との関連は？**
+Note: `--no-sandbox` is not needed if you [properly setup a user](https://github.com/ebidel/lighthouse-ci/blob/master/builder/Dockerfile#L35-L40) in the container.
 
-ヘッドレス Chrome は [PhantomJS](http://phantomjs.org/) に似ています。どちらもヘッドレス環境での自動化テストに使われます。大きな違いは、PhantomJS が古い WebKit を使用するのに対し、ヘッドレス Chrome は最新版の Blink を使用するということです。
+**Can I use this with Selenium / WebDriver / ChromeDriver**?
 
-現時点で、PhantomJS のほうが [DevTools Protocol][dtviewer] よりもハイレベルな API を提供しています。
+Yes. See [Using Selenium, WebDrive, or ChromeDriver](#drivers).
 
-**ヘッドレス Chrome を Selenium / WebDriver / ChromeDriver と組み合わせられますか？**
+**How is this related to PhantomJS?**
 
-現時点で、Selenium は Chrome のフルインスタンスを実行します。つまり、Selenium は自動化ソリューションではありますが、完全にヘッドレスではないということです。しかし、将来的には `--headless` の採用もありうるでしょう。
+Headless Chrome is similar to tools like [PhantomJS](http://phantomjs.org/). Both can be used for automated testing in a headless environment. The main difference between the two is that Phantom uses an older version of WebKit as its rendering engine while Headless Chrome uses the latest version of Blink.
 
-Selenium でヘッドレス Chrome を試したいという方は、[Running Selenium with Headless Chrome](https://intoli.com/blog/running-selenium-with-headless-chrome/) を読んでセットアップしてみましょう。
+At the moment, Phantom also provides a higher level API than the [DevTools protocol](https://chromedevtools.github.io/devtools-protocol/).
 
-Note: [ChromeDriver](https://github.com/SeleniumHQ/selenium/wiki/ChromeDriver) でバグに出会ったかもしれません。執筆時点での最新版（2.29）は Chrome 58 のみをサポートしています。ヘッドレス Chrome は Chrome 59 以降が必要です。
+**Where do I report bugs?**
 
-**バグの報告先はどこですか？**
+For bugs against Headless Chrome, file them on [crbug.com](https://bugs.chromium.org/p/chromium/issues/entry?components=Blink&blocking=705916&cc=skyostil%40chromium.org&Proj=Headless).
 
-ヘッドレス Chrome についてのバグは [crbug.com](https://bugs.chromium.org/p/chromium/issues/entry?components=Blink&blocking=705916&cc=skyostil%40chromium.org&Proj=Headless) にお願いします。
+For bugs in the DevTools protocol, file them at [github.com/ChromeDevTools/devtools-protocol](https://github.com/ChromeDevTools/devtools-protocol/issues/new).
 
-DevTools プロトコルに関するバグは [github.com/ChromeDevTools/devtools-protocol](https://github.com/ChromeDevTools/devtools-protocol/issues/new) にお願いします。
-
-<br>
-
-[dtviewer]: https://chromedevtools.github.io/debugger-protocol-viewer/
+<br />
