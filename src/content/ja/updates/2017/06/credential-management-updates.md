@@ -1,289 +1,260 @@
-project_path: /web/_project.yaml
-book_path: /web/updates/_book.yaml
-description: Latest Updates to the Credential Management API
+project_path: /web/_project.yaml book_path: /web/updates/_book.yaml description: Latest Updates to the Credential Management API
 
-{# wf_updated_on: 2017-06-22 #}
-{# wf_published_on: 2017-06-12 #}
-{# wf_tags: performance #}
-{# wf_featured_image: /web/updates/images/generic/security.png #}
-{# wf_featured_snippet: Chrome 60 で変更される Credential Management API について。Chrome 57 での変更点についても触れています。 #}
+{# wf_updated_on: 2018-03-14 #} {# wf_published_on: 2017-06-12 #} {# wf_tags: credentials,chrome57,chrome60 #} {# wf_featured_image: /web/updates/images/generic/security.png #} {# wf_featured_snippet: Latest updates coming to the Credential Management API in Chrome 60. Also includes an update landed in Chrome 57. #} {# wf_blink_components: Blink>SecurityFeature>CredentialManagement #}
 
-# Credential Management API の仕様が変更されました {: .page-title }
+# Latest Updates to the Credential Management API {: .page-title }
 
 {% include "web/_shared/contributors/agektmr.html" %}
 
-このポストで説明している変更点のいくつかは Google I/O のセッション **Secure and Seamless Sign-In: Keeping Users Engaged** でも触れています ：
-
+Some of the updates described here are explained in the Google I/O session, **Secure and Seamless Sign-In: Keeping Users Engaged**:
 
 <div class="video-wrapper-full-width">
-  <iframe class="devsite-embedded-youtube-video" data-video-id="DBBFK7bvEQo" data-autohide="1" data-showinfo="0" frameborder="0" allowfullscreen>
+  <iframe class="devsite-embedded-youtube-video" data-video-id="DBBFK7bvEQo"
+          data-autohide="1" data-showinfo="0" frameborder="0" allowfullscreen>
   </iframe>
 </div>
 
-
 ## Chrome 57
 
-Chrome 57 における [Credential Management API](/web/fundamentals/security/credential-management) の重要な変更点は以下のとおりです。
+Chrome 57 introduced this important change to the [Credential Management API](/web/fundamentals/security/credential-management).
 
-### クレデンシャルが異なるサブドメイン間で共有できるようになりました
+### Credentials can be shared from a different subdomain
 
-Chrome は [Credential Management API](/web/fundamentals/security/credential-management) を使って、異なるサブドメインに保存されたクレデンシャルを取得できるようになりました。
-例えば、パスワードが `login.example.com` に保存されている場合、`www.example.com` にあるスクリプトは、アカウントチューザーダイアログで表示するアカウントの一つとして利用することができます。
+Chrome can now retrieve a credential stored in a different subdomain using the [Credential Management API](/web/fundamentals/security/credential-management). For example, if a password is stored in `login.example.com`, a script on `www.example.com` can show it as one of account items in account chooser dialog.
 
-ユーザーがダイアログをタップしてクレデンシャルを選択した際、現在のオリジンに渡してコピーするためには、パスワードを明示的に `navigator.credentials.store()` で保存する必要があります。
+You must explicitly store the password using `navigator.credentials.store()`, so that when a user chooses a credential by tapping on the dialog, the password gets passed and copied to the current origin.
 
-一度保存してしまえば、以後そのパスワードは同じオリジン `www.example.com` に保存されたクレデンシャルとして扱われるようになります。
+Once it's stored, the password is available as a credential in the exact same origin `www.example.com` onward.
 
-以下のスクリーンショットでは、`login.aliexpress.com` に保存されたクレデンシャルが `m.aliexpress.com` から見えており、ユーザーにより選択可能である状態を示しています。
-
+In the following screenshot, credential information stored under `login.aliexpress.com` is visible to `m.aliexpress.com` and available for the user to choose from:
 
 <figure>
-  <img src="/web/updates/images/2017/06/credentials.png" alt="Account chooser showing selected subdomain login details">
+  <img src="/web/updates/images/2017/06/credentials.png"
+       alt="Account chooser showing selected subdomain login details"/>
 </figure>
-
-
 
 <aside class="note">
   <strong>Coming soon:</strong>
-  全く違うドメイン間におけるクレデンシャルの共有も現在開発中です。</aside>
-
+  Sharing credentials between totally different domains is in development.
+</aside>
 
 ## Chrome 60
 
-Chrome 60 の [Credential Management API](/web/fundamentals/security/credential-management) では重要な変更点がいくつかあります：
+Chrome 60 introduces several important changes to the [Credential Management API](/web/fundamentals/security/credential-management):
 
-- [`PasswordCredential` オブジェクトがパスワードを含むようになります。](#password)
--  パスワードの特別な扱いが必要なくなるため、カスタマイズされた `fetch()` 関数が[まもなく廃止されます](#fetchdeprecation)。
-- `navigator.credentials.get()` は boolean の `unmediated` ではなく、[enum の `mediation` を受け取る](#mediation)ようになります。
+* [`PasswordCredential` object now includes a password.](#password)
 
-- [`requireUserMediation()` は `preventSilentAccess()` に変更されます](#preventsilentaccess)。
-- [新しいメソッド `navigator.credentials.create()`](#credentialscreate) を使って、非同期にクレデンシャルオブジェクトを作成できるようになります。
+* As the custom `fetch()` function is no longer required to fetch the password, [it will be deprecated soon](#fetchdeprecation).
 
-### 機能検知に注意が必要です
+* [`navigator.credentials.get()` now accepts an enum `mediation`](#mediation) instead of boolean flag `unmediated`.
 
+* [`requireUserMediation()` renamed to `preventSilentAccess()`](#preventsilentaccess).
 
-<aside class="warning">
-  <strong>Warning:</strong>
-Chrome 60 から利用可能になる Credential Management API の変更点が後方互換のない変更を含むため、新しい実装では古いバージョンの API を使わないように注意が必要です（意図的にそうしたい場合は、<a href="https://docs.google.com/document/d/154cO-0d5paDFfhN79GNdet1VeMUmELKhNv3YHvVSOh8/edit">こちらのマイグレーションガイド</a>をご覧ください）。</aside>
+* [New method `navigator.credentials.create()`](#credentialscreate) asynchronously creates credential objects.
 
+### Feature detection needs attention
 
-新しい Credential Management API が利用可能かどうかを調べるには、`preventSilentAccess` が存在するかどうかをチェックします。
+To see if the Credential Management API for accessing password-based and federated credentials is available, check if `window.PasswordCredential` or `window.FederatedCredential` is available.
 
 ```js
-if (navigator.credentials && navigator.credentials.preventSilentAccess) {
-  // 新しい Credential Management API が利用可能
+if (window.PasswordCredential || window.FederatedCredential) {
+  // The Credential Management API is available
 }
 ```
 
-### `PasswordCredential` オブジェクトがパスワードを含むようになります {: #password}
+Warning: Feature detection by checking `navigator.credentials` may break your website on browsers supporting [WebAuthn](https://www.w3.org/TR/webauthn/)(PublicKeyCredential) but not all credential types (`PasswordCredential` and `FederatedCredential`) defined by the Credential Management API. [Learn more](/web/updates/2018/03/webauthn-credential-management).
 
-Credential Management API はこれまでパスワードの扱いについて保守的なアプローチを取っていました。JavaScript からパスワードを隠蔽していたため、開発者は若干カスタマイズされた `fetch()` API を使って、直接 `PasswordCredential` オブジェクトをサーバーに送って、認証を行う必要がありました。 
+### `PasswordCredential` object now includes password {: #password}
 
-しかしこのアプローチでは、いくつもの制約がありました。
-API を採用できない理由として頂いたフィードバックには下記のようなものがあります：
+The Credential Management API took a conservative approach to handling passwords. It concealed passwords from JavaScript, requiring developers to send the `PasswordCredential` object directly to their server for validation via an extension to the `fetch()` API.
 
-- JSON オブジェクトの一部としてパスワードを送らなければならない。
-- サーバーにパスワードのハッシュ値を送らなければならない。
+But this approach introduced a number of restrictions. We received feedback that developers could not use the API because:
 
-慎重なセキュリティ分析を行った結果、JavaScript からパスワードを隠蔽しても、すべてのアタックベクターに対して期待したほど成果を挙げられないということが判明しました。そして、我々は今回の変更を行うという結論に至ったのです。
+* They had to send the password as part of a JSON object.
 
-新しい Credential Management API では、取得したクレデンシャルオブジェクトに生のパスワードが含まれるため、プレーンテキストとして扱うことができます。そのため開発者は、従来と同様の方法を使ってクレデンシャルをサーバーに送ることができます。
+* They had to send the hash value of the password to their server.
 
-```
-navigator.credentials.get({
-  password: true,
-  federated: {
-    provider: [ 'https://accounts.google.com' ]
-  },
-  mediation: 'silent'
-}).then(c => {
-  if (c) {
-    let form = new FormData();
-    form.append('email', c.id);
-    form.append('password', c.password);
-    form.append('csrf_token', csrf_token);
-    return fetch('/signin', {
-      method: 'POST',
-      credentials: 'include',
-      body: form
+After performing a security analysis and recognizing that concealing passwords from JavaScript did not prevent all attack vectors as effectively as we were hoping, we have decided to make a change.
+
+The Credential Management API now includes a raw password in a returned credential object so you have access to it as plain text. You can use existing methods to deliver credential information to your server:
+
+    navigator.credentials.get({
+      password: true,
+      federated: {
+        providers: [ 'https://accounts.google.com' ]
+      },
+      mediation: 'silent'
+    }).then(passwordCred => {
+      if (passwordCred) {
+        let form = new FormData();
+        form.append('email', passwordCred.id);
+        form.append('password', passwordCred.password);
+        form.append('csrf_token', csrf_token);
+        return fetch('/signin', {
+          method: 'POST',
+          credentials: 'include',
+          body: form
+        });
+      } else {
+    
+        // Fallback to sign-in form
+      }
+    }).then(res => {
+      if (res.status === 200) {
+        return res.json();
+      } else {
+        throw 'Auth failed';
+      }
+    }).then(profile => {
+      console.log('Auth succeeded', profile);
     });
-  } else {
-    // ログインフォームにフォールバック
-  }
-}).then(res => {
-  if (res.status === 200) {
-    return res.json();
-  } else {
-    throw 'Auth failed';
-  }
-}).then(profile => {
-  console.log('Auth succeeded', profile);
-});
-```
+    
 
-### カスタマイズされた fetch 関数はまもなく使えなくなります {: #fetchdeprecation}
+### Custom fetch will be deprecated soon {: #fetchdeprecation}
 
+Warning: Now that passwords are returned in the `PasswordCredential` object, the custom `fetch()` function will stop working in Chrome 64 (expected [23 Jan 2018](https://www.chromestatus.com/features/schedule). Developers **must** update their code.
 
-<aside class="warning">
-  <strong>Warning:</strong>
-  パスワードが <code>PasswordCredential</code> オブジェクトに隠されることがなくなったため、カスタマイズされた <code>fetch()</code> 関数は不要となり、Chrome 62 で利用できなくなります。利用者の方はコードを<stromg>更新しなければなりません</stromg>。</aside>
+To determine if you are using a custom `fetch()` function, check if it uses a `PasswordCredential` object or a `FederatedCredential` object as a value of `credentials` property, for example:
 
+    fetch('/signin', {
+      method: 'POST',
+      credentials: c
+    })
+    
 
-カスタマイズされた `fetch()` 関数を使っているかを検証するには、`PasswordCredential` オブジェクト、もしくは `FederatedCredential` オブジェクトを `credentials` プロパティの値として使っているかをご確認ください。例えば：
+Using a regular `fetch()` function as shown in the previous code example, or using an `XMLHttpRequest` is recommended.
 
-```
-fetch('/signin', {
-  method: 'POST',
-  credentials: c
-})
-```
+### `navigator.credentials.get()` now accepts an enum mediation {: #mediation}
 
-ひとつ前のサンプルコードのように、通常の `fetch()` 関数、もしくは `XMLHttpRequest` を使うことが推奨されます。
+Until Chrome 60, `navigator.credentials.get()` accepted an optional `unmediated` property with a boolean flag. For example:
 
-### `navigator.credentials.get()` が enum の mediation を受け取るようになります {: #mediation}
+    navigator.credentials.get({
+      password: true,
+      federated: {
+        providers: [ 'https://accounts.google.com' ]
+      },
+      unmediated: true
+    }).then(c => {
+    
+      // Sign-in
+    });
+    
 
-Chrome 60 まで `navigator.credentials.get()` はオプショナルな `unmediated` プロパティとして Boolean を受け取っていました。
-例えば：
+Setting `unmediated: true` prevents the browser from showing the account chooser when passing a credential.
 
-```
-navigator.credentials.get({
-  password: true,
-  federated: {
-    provider: [ 'https://accounts.google.com' ]
-  },
-  unmediated: true
-}).then(c => {
-  // Sign-in
-});
-```
+The flag is now extended as mediation. The user mediation could happen when:
 
-`unmediated: true` とすることで、クレデンシャルを取得する際にブラウザがアカウントチューザーを表示するのを防ぐことができます。
+* A user needs to choose an account to sign-in with.
 
-このフラグは mediation に変更され、ユーザーの仲介は下記のような状況で発生するようになります：
+* A user wants to explicitly sign-in after `navigator.credentials.requireUseMediation()` call.
 
-- ユーザーがログインするアカウントを選択する必要がある場合。
-- `navigator.credentials.requireUseMediation()` を呼び出した後にユーザーが明示的にログインしたい場合。
-
-`mediation` の値として下記のいずれかを選びます：
-
+Choose one of the following options for the `mediation` value:
 
 <table>
   <tr>
-    <th>
-<code>mediation</code> 値</th>
-    <th>
-<code>unmediated</code> の等値</th>
-    <th>振る舞い</th>
+    <th><code>mediation</code> value</th>
+    <th>Compared to boolean flag</th>
+    <th>Behavior</th>
   </tr>
   <tr>
     <td><code>silent</code></td>
-    <td> <code>unmediated: true</code>
-</td>
-    <td>アカウントチューザーを表示せずにクレデンシャルを返す。</td>
+    <td>Equals <code>unmediated: true</code></td>
+    <td>Credential passed without showing an account chooser.</td>
   </tr>
   <tr>
     <td><code>optional</code></td>
-    <td> <code>unmediated: false</code>
-</td>
-    <td>前回 <code>preventSilentAccess()</code> が呼ばれている場合、アカウントチューザーを表示する。</td>
+    <td>Equals <code>unmediated: false</code></td>
+    <td>Shows an account chooser if
+    <code>preventSilentAccess()</code> called previously.</td>
     <td></td>
   </tr>
   <tr>
     <td><code>required</code></td>
-    <td>新しい値</td>
-    <td>毎回アカウントチューザーを表示する。アカウントの切り替えに便利。</td>
+    <td>A new option</td>
+    <td>Always show an account chooser.
+    Useful when you want to let a user to switch an account
+    using the native account chooser dialog.</td>
   </tr>
 </table>
 
+In this example, the credential is passed without showing an account chooser, the equivalent of the previous flag, `unmediated: true`:
 
-この例では、先程のフラグ `unmediated: true` の等値を使うことで、アカウントチューザーを表示することなくクレデンシャルを返します：
+    navigator.credentials.get({
+      password: true,
+      federated: {
+        providers: [ 'https://accounts.google.com' ]
+      },
+      mediation: 'silent'
+    }).then(c => {
+    
+      // Sign-in
+    });
+    
 
-```
-navigator.credentials.get({
-  password: true,
-  federated: {
-    provider: [ 'https://accounts.google.com' ]
-  },
-  mediation: 'silent'
-}).then(c => {
-  // Sign-in
-});
-```
+### `requireUserMediation()` renamed to `preventSilentAccess()` {: #preventsilentaccess}
 
-### `requireUserMediation()` は `preventSilentAccess()` に変更されます {: #preventsilentaccess}
+To align nicely with the new `mediation` property offered in the `get()` call, the `navigator.credentials.requireUserMediation()` method has been renamed to `navigator.credentials.preventSilentAccess()`.
 
-`get()` の新しいオプション `mediation` に合わせ、`navigator.credentials.requireUserMediation()` は `navigator.credentials.preventSilentAccess()` に変更されます。
+The renamed method prevents passing a credential without showing the account chooser (sometimes called without user mediation). This is useful when a user signs out of a website or unregisters from one and doesn't want to get signed back in automatically at the next visit.
 
-このメソッドはアカウントチューザーを表示せずに（「ユーザーの仲介」とも呼ばれます）クレデンシャルを渡すことを防ぎます。
-これを使うことで、ユーザーがログアウト後に戻ってきた時、自動ログインしないようにすることができます。
+    signoutUser();
+    if (navigator.credentials) {
+      navigator.credentials.preventSilentAccess();
+    }
+    
 
-```
-signoutUser();
-if (navigator.credentials) {
-  navigator.credentials.preventSilentAccess();
-}
-```
+### Create credential objects asynchronously with new method `navigator.credentials.create()` {: #credentialscreate}
 
-### 新しいメソッド `navigator.credentials.create()` を使って非同期にクレデンシャルオブジェクトを生成できるようになります {: #credentialscreate}
+You now have the option to create credential objects asynchronously with the new method, `navigator.credentials.create()`. Read on for a comparison between both the sync and async approaches.
 
-新しいメソッド `navigator.credentials.create()` を使って非同期にクレデンシャルオブジェクトを生成できるようになります。同期・非同期両方のアプローチを比較してみましょう。
+#### Creating a `PasswordCredential` object
 
-#### `PasswordCredential` オブジェクトを生成する
+##### Sync approach
 
-##### 同期的アプローチ
+    let c = new PasswordCredential(form);
+    
 
-```
-let c = new PasswordCredential(form);
-```
+##### Async approach (new)
 
-##### 非同期的アプローチ (new)
+    let c = await navigator.credentials.create({
+      password: form
+    });
+    
 
-```
-let c = await navigator.credentials.create({
-  password: form
-});
-```
+or:
 
-もしくは：
+    let c = await navigator.credentials.create({
+      password: {
+        id: id,
+        password: password
+      }
+    });
+    
 
-```
-let c = await navigator.credentials.create({
-  password: {
-    id: id,
-    password: password
-  }
-});
-```
+#### Creating a `FederatedCredential` object
 
-#### `FederatedCredential` オブジェクトを生成する
+##### Sync approach
 
-##### 同期的アプローチ
+    let c = new FederatedCredential({
+      id:       'agektmr',
+      name:     'Eiji Kitamura',
+      provider: 'https://accounts.google.com',
+      iconURL:  'https://*****'
+    });
+    
 
-```
-let c = new FederatedCredential({
-  id:       'agektmr',
-  name:     'Eiji Kitamura',
-  provider: 'https://accounts.google.com',
-  iconURL:  'https://*****'
-});
-```
+##### Async approach (new)
 
-##### 非同期的アプローチ (new)
+    let c = await navigator.credentials.create({
+      federated: {
+        id:       'agektmr',
+        name:     'Eiji Kitamura',
+        provider: 'https://accounts.google.com',
+        iconURL:  'https://*****'
+      }
+    });
+    
 
-```
-let c = await navigator.credentials.create({
-  federated: {
-    id:       'agektmr',
-    name:     'Eiji Kitamura',
-    provider: 'https://accounts.google.com',
-    iconURL:  'https://*****'
-  }
-});
-```
+## Migration guide
 
-## マイグレーションガイド
-
-既存の Credential Management API の実装をお持ちですか？こちらの[マイグレーションガイド](https://docs.google.com/document/d/154cO-0d5paDFfhN79GNdet1VeMUmELKhNv3YHvVSOh8/edit)
-
-を参考にして下さい。新しい API への対応方法をステップ・バイ・ステップでご紹介します。
-
+Have an existing implementation of the Credential Management API? We have [a migration guide doc](https://docs.google.com/document/d/154cO-0d5paDFfhN79GNdet1VeMUmELKhNv3YHvVSOh8/edit) you can follow to upgrade to the new version.
