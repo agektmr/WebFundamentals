@@ -1,45 +1,40 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Selecione o easing adequado para seu projeto, seja easing in, out ou ambos. Você pode até mesmo usar bounces para deixar tudo mais divertido!
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Choose the appropriate easing for your project, whether that's easing in, out, or both. Maybe even use bounces for extra fun!
 
-{# wf_updated_on: 2016-08-23 #}
-{# wf_published_on: 2014-08-08 #}
+{# wf_blink_components: Blink>Animation #} {# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2014-08-08 #}
 
-# Escolher o easing certo {: .page-title }
+# Choosing the Right Easing {: .page-title }
 
 {% include "web/_shared/contributors/paullewis.html" %}
 
-Já discutimos as várias opções disponíveis para easing em animações, então, qual é o tipo ideal para seus projetos e qual deve ser a duração das animações?
+Having discussed the various options available for easing in animations, what kind should you use in your projects, and what kind of durations should your animations have?
 
 ### TL;DR {: .hide-from-toc }
-* Use animações ease-out para elementos de interface de usuários; o Quintic é um ease-out ótimo e rápido.
-* Use a duração da animação; ease-outs e ease-ins devem ter de 200 ms a 500 ms, enquanto eases bounces e elastic devem ter duração mais longa, de 800 ms a 1200 ms.
 
+* Use ease-out animations for UI elements; a Quintic ease-out is a very nice, albeit quick, ease.
+* Be sure to use the animation duration; ease-outs and ease-ins should be 200ms-500ms, whereas bounces and elastic eases should clock in a longer duration of 800ms-1200ms.
 
-<img src="images/quintic-ease-out-markers.png" alt="Uma curva de animação Quintic ease-out" style="max-width: 300px" class="attempt-right"/>
+<img src="images/quintic-ease-out-markers.png" alt="A Quintic ease-out animation curve" style="max-width: 300px" class="attempt-right" />
 
-No geral, um **ease-out** é a escolha correta e certamente é um bom padrão. Ela tem um início rápido, confere às animações capacidade de resposta, o que é desejável, mas com uma certa desaceleração no final.
+Generally speaking, an **ease-out** will be the right call, and certainly a good default. It is quick to start, giving your animations a feeling of responsiveness, which is desirable, but with a nice slowdown at the end.
 
-Há um grupo de equações de ease-out muito conhecidas além daquela especificada com a palavra-chave `ease-out` no CSS, que variam em "agressividade". Para obter um efeito ease-out muito rápido, considere um [Quintic ease-out](http://easings.net/#easeOutQuint).
+There is a group of well-known ease-out equations beyond the one specified with the `ease-out` keyword in CSS, which range in their "aggressiveness." For a fast ease-out effect, consider a [Quintic ease-out](http://easings.net/#easeOutQuint).
 
+[See a Quintic ease-out animation](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/animations/box-move-quintic-ease-out.html){: target="_blank" .external }
 
-[Veja uma animação Quintic ease-out](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/animations/box-move-quintic-ease-out.html){: target="_blank" .external }
+Other easing equations, particularly bounces or elastic eases, should be used sparingly, and only when it’s appropriate to your project. There are few things that bring a user out of an experience like a jarring animation. If your project isn’t intended to be fun, then don’t have elements bouncing around the UI. Conversely, if you’re creating a site that is supposed to be lighthearted, then by all means use bounces!
 
-Outras equações de easing, particularmente eases bounces ou elastic, devem ser usadas em moderação e apenas quando for adequado para o projeto. Uma animação desagradável pode fazer com que o usuário desista da experiência. Se o objetivo do seu projeto não for ser divertido, não adicione animações de bounce nos elementos da IU. Por outro lado, se estiver criando um site que deva ser alegre, use os bounces que quiser!
+Play around with eases, see which ones match your project’s personality, and go from there. For a full list of easing types, along with demos, see [easings.net](http://easings.net).
 
-Brinque com os eases, veja quais correspondem à personalidade do seu projeto e parta desse princípio. Para ver uma lista completa dos tipos de easing e demonstrações, consulte [easings.net](http://easings.net).
+## Pick the right animation duration
 
-## Escolha a duração correta da animação
+It is important that any animation added to your project has the correct duration. Too short and the animation will feel aggressive and sharp; too long and it will be obstructive and annoying.
 
-É importante que qualquer animação adicionada ao seu projeto tenha a duração correta. Se for curta demais, a animação parecerá agressiva e brusca; se for longa, será obstrutiva e chata.
+* **Ease-outs: around 200ms-500ms**. This gives the eye a chance to see the animation, but it doesn’t feel obstructive.
+* **Ease-ins: around 200ms-500ms**. Bear in mind that it will jolt at the end, and no amount of timing changes will soften that impact.
+* **Bounce or elastic effects: around 800ms-1200ms**. You need to allow time for the elastic or bounce effect to "settle." Without this extra time, the elastic bouncing part of the animation will be aggressive and unpleasant to the eye.
 
-* **Ease-outs: cerca de 200 ms a 500 ms**. Seus olhos terão tempo de ver a animação sem que ela pareça obstrutiva.
-* **Ease-ins: cerca de 200 ms a 500 ms**. Lembre-se de que haverá um choque no final e nenhuma mudança na quantidade de tempo suavizará esse impacto.
-* **Efeitos bounce ou elastic: cerca de 800 ms a 1200 ms**. Deixe tempo suficiente para que os efeitos elastic ou bounce sejam "concluídos". Sem esse tempo adicional, a parte elastic bouncing da animação será agressiva e desagradável aos olhos.
+Of course, these are just guidelines. Experiment with your own eases and choose what feels right for your projects.
 
-Evidentemente, estas são apenas orientações. Teste seus próprios eases e escolha aquele que melhor se adapte ao seu projeto.
+## Feedback {: #feedback }
 
-
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
