@@ -1,121 +1,84 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Inspecione e edite o HTML e o CSS das suas páginas.
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Inspect and edit the HTML and CSS of your pages.
 
-{# wf_updated_on: 2016-01-28 #}
-{# wf_published_on: 2015-04-13 #}
+{# wf_updated_on: 2018-07-27 #} {# wf_published_on: 2015-04-13 #} {# wf_blink_components: Platform>DevTools #}
 
-# Inspecionar e editar páginas e estilos {: .page-title }
+# Inspect and Edit Pages and Styles {: .page-title }
 
-{% include "web/_shared/contributors/megginkearney.html" %}
-{% include "web/_shared/contributors/kaycebasques.html" %}
+{% include "web/_shared/contributors/megginkearney.html" %} {% include "web/_shared/contributors/kaycebasques.html" %}
 
-Inspecione e edite em tempo real o HTML e o CSS de uma página usando 
-o painel Elements do Chrome DevTools.
+Inspect and live-edit the HTML and CSS of a page using the Chrome DevTools Elements panel.
 
-![Painel Elements do Chrome DevTools](imgs/elements-panel.png)
-
+![Chrome DevTools Elements panel](imgs/elements-panel.png)
 
 ### TL;DR {: .hide-from-toc }
-- Inspecione e edite instantaneamente qualquer elemento na árvore do DOM no painel Elements.
-- Visualize e altere as regras de CSS aplicadas a qualquer elemento no painel Styles.
-- Visualize e edite o modelo de caixa de um elemento selecionado no painel Computed.
-- Visualize todas as mudanças feitas na sua página localmente no painel Sources.
 
+* Inspect and edit on the fly any element in the DOM tree in the Elements panel.
+* View and change the CSS rules applied to any selected element in the Styles pane.
+* View and edit a selected element's box model in the Computed pane.
+* View any changes made to your page locally in the Sources panel.
 
-## Editar um nó do DOM em tempo real
+## Live-edit a DOM node
 
-Para editar um nó do DOM em tempo real, basta clicar duas vezes em um 
-[elemento selecionado](#inspect-an-element) e fazer alterações:
+To live-edit a DOM node, simply double-click a [selected element](#inspect-an-element) and make changes:
 
 <video src="animations/edit-element-name.mp4" style="max-width:100%;"
        loop muted autoplay controls></video>
 
-A visualização em árvore do DOM mostra o estado atual da árvore; ele pode não corresponder 
-ao HTML carregado originalmente por diferentes motivos. Por exemplo, 
-você pode modificar a árvore do DOM usando JavaScript, o mecanismo do navegador pode tentar 
-corrigir a marcação de autor inválida e produzir um DOM inesperado.
+The DOM tree view shows the current state of the tree; it may not match the HTML that was originally loaded for different reasons. For example, you can modify the DOM tree using JavaScript; the browser engine can try to correct invalid author markup and produce an unexpected DOM.
 
-## Editar um estilo em tempo real
+## Live-edit a style
 
-Edite os nomes e valores da propriedade style em tempo real no painel **Styles**. Todos
-os estilos são editáveis, exceto os cinzas (como no caso
-com folhas de estilo do user-agent).
+Live-edit style property names and values in the **Styles** pane. All styles are editable, except the ones that are greyed out (as is the case with user agent stylesheets).
 
-Para editar um nome ou valor, clique nele, faça as alterações e pressione
-<kbd class="kbd">Tab</kbd> ou <kbd class="kbd">Enter</kbd> para salvá-las.
+To edit a name or value, click on it, make your changes, and press
+<kbd class="kbd">Tab</kbd> or <kbd class="kbd">Enter</kbd> to save the change.
 
-![editar nome de propriedade](imgs/edit-property-name.png)
+![edit property name](imgs/edit-property-name.png)
 
-Por padrão, suas modificações no CSS não são permanentes, elas são perdidas 
-ao recarregar a página. Configure a [criação 
-persistente](/web/tools/setup/setup-workflow) se quiser manter as 
-alterações entre carregamentos de página. 
+By default, your CSS modifications are not permanent, changes are lost when you reload the page. Set up [persistent authoring](/web/tools/setup/setup-workflow) if you want to persist your changes between page loads.
 
-## Examinar e editar os parâmetros de modelo de caixa
+## Examine and edit box model parameters
 
-Examine e edite os parâmetros de modelo de caixa do elemento atual usando o 
-**painel Computed**. Todos os valores no modelo de caixa são editáveis; basta clicar 
-neles.
+Examine and edit the current element's box model parameters using the **Computed pane**. All values in the box model are editable, just click on them.
 
-![Painel Computed](imgs/computed-pane.png)
+![Computed pane](imgs/computed-pane.png)
 
-Os retângulos concêntricos contêm os valores **top**, **bottom**, **left** e **right**
-para as propriedades **padding**, **border** e **margin**
- do elemento. 
+The concentric rectangles contain the **top**, **bottom**, **left**, **right** values for the current element's **padding**, **border**, and **margin** properties.
 
-Para elementos posicionados de forma não estatística, um retângulo **position** 
-também é exibido, contendo os valores das propriedades **top**, 
-**right**, **bottom** e **left**.
+For non-statically positioned elements, a **position** rectangle is also displayed, containing the values of the **top**, **right**, **bottom**, and **left** properties.
 
-![elemento calculado não estático](imgs/computed-non-static.png)
+![non-static computed element](imgs/computed-non-static.png)
 
-Para elementos `position: fixed` e `position: absolute`, o campo central 
-contém as dimensões **offsetWidth × offsetHeight** reais em pixels 
-do elemento selecionado. Todos os valores podem ser modificados clicando duas vezes 
-neles, como os valores da propriedade no painel Styles. Entretanto, não é garantido que as alterações 
-terão efeito, pois isso está sujeito aos dados específicos de posicionamento 
-do elemento concreto.
+For `position: fixed` and `position: absolute` elements, the central field contains the actual **offsetWidth × offsetHeight** pixel dimensions of the selected element. All values can be modified by double-clicking them, like property values in the Styles pane. The changes are not, however, guaranteed to take effect, as this is subject to the concrete element positioning specifics.
 
-![elemento calculado fixo](imgs/computed-fixed.png)
+![fixed computed element](imgs/computed-fixed.png)
 
-## Visualizar alterações locais
+## View local changes
 
 <video src="animations/revisions.mp4" style="max-width:100%;"
        autoplay loop muted controls></video>
 
-Para visualizar um histórico de alterações realizadas em tempo real na sua página:
+To view a history of live-edits made to your page:
 
-1. No painel **Styles**, clique no arquivo que você modificou. O DevTools
-  leva você ao painel **Sources**.
-1. Clique com o botão direito no arquivo.
-1. Selecione **Local modifications**.
+1. In the **Styles** pane, click on the file that you modified. DevTools takes you to the **Sources** panel.
+2. Right-click on the file. 
+3. Select **Local modifications**.
 
-Para explorar as alterações realizadas:
+To explore the changes made:
 
-* Expanda os nomes de arquivo de nível superior para visualizar a hora 
-  ![hora da modificação](imgs/image_25.png){:.inline} 
-   em que uma modificação ocorreu.
-* Expanda os itens de segundo nível para visualizar uma 
-  [comparação](https://en.wikipedia.org/wiki/Diff) (antes e depois) 
-  correspondente à modificação. Uma linha com um plano de fundo rosa significa 
- uma remoção e uma linha com um plano de fundo verde significa uma adição.
+* Expand top-level file names to view the time ![time modification occurred](imgs/image_25.png){:.inline} a modification occurred.
+* Expand second-level items to view a [diff](https://en.wikipedia.org/wiki/Diff) (before and after) corresponding to the modification. A line with a pink background signifies a removal while a line with a green background signifies an addition.
 
-## Desfazer alterações
+## Undo changes
 
-Se você não [configurou a criação persistente](/web/tools/setup/setup-workflow), 
-todas as edições realizadas em tempo real serão perdidas sempre que você recarregar a página.
+If you haven't [set up persistent authoring](/web/tools/setup/setup-workflow), any time you reload the page, all live-edits are lost.
 
-Pressupondo que você tenha configurado a criação persistente, para desfazer alterações:
+Assuming you've set up persistent authoring, to undo changes:
 
-* Use <kbd class="kbd">Ctrl</kbd>+<kbd class="kbd">Z</kbd> (Windows) ou 
-  <kbd class="kbd">Cmd</kbd>+<kbd class="kbd">Z</kbd> (Mac) para desfazer 
-  rapidamente mudanças pequenas para o DOM ou estilos pelo painel Elements.
+* Use <kbd class="kbd">Ctrl</kbd>+<kbd class="kbd">Z</kbd> (Windows) or <kbd class="kbd">Cmd</kbd>+<kbd class="kbd">Z</kbd> (Mac) to quickly undo minor changes to the DOM or styles via the Elements panel.
 
-* Para desfazer todas as modificações locais feitas em um arquivo, abra o painel **Sources** 
- e selecione **revert** ao lado do nome do arquivo.
+* To undo all local modifications made to a file, open the **Sources** panel and select **revert** next to the filename.
 
-[inspecionar]: /web/tools/chrome-devtools/debug/command-line/command-line-reference#inspect
+## Feedback {: #feedback }
 
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
