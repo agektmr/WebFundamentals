@@ -1,33 +1,28 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Layout is where the browser figures out the geometric information for elements: their size and location in the page. Each element will have explicit or implicit sizing information based on the CSS that was used, the contents of the element, or a parent element. The process is called Layout in Chrome.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Layout is where the browser figures out the geometric information for elements: their size and location in the page. Each element will have explicit or implicit sizing information based on the CSS that was used, the contents of the element, or a parent element. The process is called Layout in Chrome.
 
-{# wf_updated_on: 2015-03-19 #}
-{# wf_published_on: 2000-01-01 #}
+# Avoid Large, Complex Layouts and Layout Thrashing {: .page-title }
 
-# Не используйте большие сложные макеты и избегайте подтормаживания макетов {: .page-title }
+{# wf_updated_on: 2018-08-17 #} {# wf_published_on: 2015-03-20 #} {# wf_blink_components: Blink>Layout #}
 
 {% include "web/_shared/contributors/paullewis.html" %}
 
+Layout is where the browser figures out the geometric information for elements: their size and location in the page. Each element will have explicit or implicit sizing information based on the CSS that was used, the contents of the element, or a parent element. The process is called Layout in Chrome, Opera, Safari, and Internet Explorer. In Firefox it’s called Reflow, but effectively the process is the same.
 
-Макет ― это источник, из которого браузеры получают информацию о геометрии элементов: об их размере и расположении на странице. Для каждого элемента будет предоставлена явная или скрытая информация о размере, основанная на использовавшемся CSS, содержимом элемента или о родительском элементе. В браузерах Chrome, Opera, Safari и в Internet Explorer этот процесс называется Layout (Перерасчет макета). В Firefox он называется Reflow (Перерасчет дерева отрисовки), но по сути это один и тот же процесс
+Similarly to style calculations, the immediate concerns for layout cost are:
+
+1. The number of elements that require layout.
+2. The complexity of those layouts.
 
 ### TL;DR {: .hide-from-toc }
-- Перерасчет макета обычно выполняется для всего документа целиком.
-- Количество элементов DOM влияет на производительность, поэтому при любой возможности следует избегать вызова операции перерасчета макета.
-- Оценивайте производительность модели макета; новый Flexbox обычно быстрее старого Flexbox или моделей макетов на основе float.
-- Избегайте принудительного синхронного перерасчета макета и подтормаживания макета; сначала следует прочитать значения стилей, а затем вносить изменения в стили.
 
+* Layout is normally scoped to the whole document.
+* The number of DOM elements will affect performance; you should avoid triggering layout wherever possible.
+* Assess layout model performance; new Flexbox is typically faster than older Flexbox or float-based layout models.
+* Avoid forced synchronous layouts and layout thrashing; read style values then make style changes.
 
-Как и в отношении расчета стилей, на потребление ресурсов при перерасчете макета влияют следующие факторы:
+## Avoid layout wherever possible
 
-1. Количество элементов, которые требуется рассчитать в макете.
-2. Степень сложности этих макетов.
-
-## При любой возможности избегайте перерасчета макета
-
-При изменении стилей браузер проверяет, требуется ли для какого-либо из изменений перерасчет дерева визуализации. Изменение всех "геометрических свойств", таких как width, height, left, или top влечет за собой перерасчет макета.
-
+When you change styles the browser checks to see if any of the changes require layout to be calculated, and for that render tree to be updated. Changes to “geometric properties”, such as widths, heights, left, or top all require layout.
 
     .box {
       width: 20px;
@@ -44,40 +39,41 @@ description: Layout is where the browser figures out the geometric information f
     }
     
 
-**Перерасчет макета почти всегда выполняется для всего документа.** Если элементов много, на определение мест расположения и размеров всех этих элементов потребуется длительное время.
+**Layout is almost always scoped to the entire document.** If you have a lot of elements, it’s going to take a long time to figure out the locations and dimensions of them all.
 
-Если избежать перерасчета макета невозможно, то, опять же, необходимо с помощью Chrome DevTools посмотреть, сколько времени займет эта операция, и определить, является ли эта она причиной проблем с производительностью. Прежде всего, откройте DevTools, перейдите на вкладку Timeline, запустите запись и начните взаимодействовать со своим сайтом. После того как запись будет остановлена, программа выдаст подробную информацию о том, как работал ваш сайт:
+If it’s not possible to avoid layout then the key is to once again use Chrome DevTools to see how long it’s taking, and determine if layout is the cause of a bottleneck. Firstly, open DevTools, go to the Timeline tab, hit record and interact with your site. When you stop recording you’ll see a breakdown of how your site performed:
 
-<img src="images/avoid-large-complex-layouts-and-layout-thrashing/big-layout.jpg"  alt="DevTools показывает, что на перерасчет макета потребуется много времени" />
+![DevTools showing a long time in Layout](images/avoid-large-complex-layouts-and-layout-thrashing/big-layout.jpg)
 
-При разборе кадра из приведенного выше примера мы видим, что на перерасчет макета тратится более 20 мс, а это очень много с учетом того, что у нас есть 16 мс для вывода кадра на экран в анимации. Также видно, что программа DevTools сообщает размер дерева визуализации (в данном случае это 1618 элементов) и количество узлов, для которых его требовалось перерасчитать.
+When digging into the frame in the above example, we see that over 20ms is spent inside layout, which, when we have 16ms to get a frame on screen in an animation, is far too high. You can also see that DevTools will tell you the tree size (1,618 elements in this case), and how many nodes were in need of layout.
 
-Note: Желаете ознакомиться с исчерпывающим перечнем свойств CSS, которые вызывают операции перерасчета макета, перерисовки или компоновки? См. раздел <a href='http://csstriggers.com/'>Срабатывание событий при изменении CSS</a>.
+Note: Want a definitive list of which CSS properties trigger layout, paint, or composite? Check out [CSS Triggers](https://csstriggers.com).
 
-## Используйте модуль flexbox для старых моделей макета
-В Интернете имеется несколько моделей макетов, одни имеют более широкую, а другие менее широкую поддержку. Самая старая модель макета CSS позволяет использовать при верстке страницы на экране относительное позиционирование, абсолютное позиционирование и использовать плавающие элементы.
+## Use flexbox over older layout models
 
-На приведенном далее снимке экрана показано, во что обходится перерасчет макета при использовании 1300 плавающих элементов. Допускаем, что это надуманный пример, поскольку в большинстве приложений для позиционирования элементов используются различные средства.
+The web has a range of layout models, some being more widely supported than others. The oldest CSS layout model allows us to position elements on screen relatively, absolutely, and by floating elements.
 
-<img src="images/avoid-large-complex-layouts-and-layout-thrashing/layout-float.jpg"  alt="Верстка страниц с использованием плавающих элементов" />
+The screenshot below shows the layout cost when using floats on 1,300 boxes. It is, admittedly, a contrived example, because most applications will use a variety of means to position elements.
 
-Если обновить этот образец с использованием Flexbox, последнего новшества в веб-платформе, мы получим другую картину:
+![Using floats as layout](images/avoid-large-complex-layouts-and-layout-thrashing/layout-float.jpg)
 
-<img src="images/avoid-large-complex-layouts-and-layout-thrashing/layout-flex.jpg"  alt="Верстка страниц с использованием flexbox" />
+If we update the sample to use Flexbox, a more recent addition to the web platform, we get a different picture:
 
-Теперь на перерасчет макета для _такого же числа элементов_ и такого же внешнего вида требуется намного меньше времени (в данном случае 3,5 мс против 14 мс). Важно помнить, что в некоторых ситуациях может оказаться, что использовать Flexbox невозможно, поскольку он [поддерживается совсем не так широко, как float](http://caniuse.com/#search=flexbox), однако при любой возможности следует хотя бы проанализировать влияние модели макета на производительность и выбрать ту из них, на реализацию которой требуется меньше ресурсов.
+![Using flexbox as layout](images/avoid-large-complex-layouts-and-layout-thrashing/layout-flex.jpg)
 
-В любом случае, выберете вы Flexbox или нет, все равно следует **попытаться полностью избежать вызова операции перерасчета макета** в точках высокой нагрузки при работе приложения!
+Now we spend far less time (3.5ms vs 14ms in this case) in layout for the *same number of elements* and the same visual appearance. It’s important to remember that for some contexts you may not be able to choose Flexbox, since it’s [less widely supported than floats](http://caniuse.com/#search=flexbox), but where you can you should at least investigate the layout model’s impact on your performance, and go with the one that minimizes the cost of performing it.
 
-## Не используйте принудительный синхронный перерасчет макета
-Вывод кадра на экран выполняется в следующем порядке:
+In any case, whether you choose Flexbox or not, you should still **try and avoid triggering layout altogether** during high pressure points of your application!
 
-<img src="images/avoid-large-complex-layouts-and-layout-thrashing/frame.jpg"  alt="Верстка страниц с использованием flexbox" />
+## Avoid forced synchronous layouts
 
-Сначала выполняется JavaScript, _затем_ вычисление стилей, _затем_перерасчет макета. Однако с помощью JavaScript можно заставит браузер сначала выполнить перерасчет макета. Это называется **принудительным синхронным перерасчетом макета**.
+Shipping a frame to screen has this order:
 
-Прежде всего, следует помнить о том, что при выполнении JavaScript все старые значения макета из предыдущего кадра известны и их можно запрашивать. Поэтому если, например, требуется записать высоту элемента (назовем его "поле") в начале кадра, можно написать примерно вот такой код:
+![Using flexbox as layout](images/avoid-large-complex-layouts-and-layout-thrashing/frame.jpg)
 
+First the JavaScript runs, *then* style calculations, *then* layout. It is, however, possible to force a browser to perform layout earlier with JavaScript. It is called a **forced synchronous layout**.
+
+The first thing to keep in mind is that as the JavaScript runs all the old layout values from the previous frame are known and available for you to query. So if, for example, you want to write out the height of an element (let’s call it “box”) at the start of the frame you may write some code like this:
 
     // Schedule our function to run at the start of the frame.
     requestAnimationFrame(logBoxHeight);
@@ -88,8 +84,7 @@ Note: Желаете ознакомиться с исчерпывающим пе
     }
     
 
-Все становится сложнее, если стиль поля был изменен _до того,_ как поступил запрос его высоты:
-
+Things get problematic if you’ve changed the styles of the box *before* you ask for its height:
 
     function logBoxHeight() {
     
@@ -101,12 +96,11 @@ Note: Желаете ознакомиться с исчерпывающим пе
     }
     
 
-Теперь, чтобы ответить на вопрос о высоте, браузер должен _сначала_ применить изменение стиля (из-за добавления класса `super-big`), а _затем_ выполнить перерасчет макета. Только после этого он сможет вернуть правильное значение высоты. Это ненужная и потенциально ресурсоемкая работа.
+Now, in order to answer the height question, the browser must *first* apply the style change (because of adding the `super-big` class), and *then* run layout. Only then will it be able to return the correct height. This is unnecessary and potentially expensive work.
 
-Из-за этого всегда следует объединять в пакет операции чтения стилей и выполнять сначала их (когда браузер может использовать значения макета из предыдущего кадра), и только затем выполнять операции записи:
+Because of this you should always batch your style reads and do them first (where the browser can use the previous frame’s layout values) and then do any writes:
 
-Если правильно написать эту функцию, она будет иметь следующий вид:
-
+Done correctly the above function would be:
 
     function logBoxHeight() {
       // Gets the height of the box in pixels
@@ -117,11 +111,11 @@ Note: Желаете ознакомиться с исчерпывающим пе
     }
     
 
-По большей части применять стили, а затем запрашивать значения не требуется. Использовать значения последнего кадра обычно бывает достаточно. Выполнение вычисления стилей и перерасчета макета синхронно и до того, как это бы сделал сам браузер, может потенциально сказаться на производительности. Обычно делать этого не следует.
+For the most part you shouldn’t need to apply styles and then query values; using the last frame’s values should be sufficient. Running the style calculations and layout synchronously and earlier than the browser would like are potential bottlenecks, and not something you will typically want to do.
 
-## Избегайте подтормаживания макетов
-Есть способ сделать синхронный перерасчет макета еще более плохим: _быстро выполнить несколько таких перерасчетов подряд_. Взгляните на этот код:
+## Avoid layout thrashing
 
+There’s a way to make forced synchronous layouts even worse: *do lots of them in quick succession*. Take a look at this code:
 
     function resizeAllParagraphsToMatchBlockWidth() {
     
@@ -132,10 +126,9 @@ Note: Желаете ознакомиться с исчерпывающим пе
     }
     
 
-Этот код проходит по группе абзацев и задает ширину каждого из них в соответствии с шириной элемента "поле". Выглядит довольно безвредно, однако проблема заключается в том, что при каждом проходе выполняется считывание значения стиля (`box.offsetWidth`), после чего оно сразу же используется для изменения ширины абзаца (`paragraphs[i].style.width`). При следующем проходе браузер должен будет учесть, что стили с момента последнего запроса значения `offsetWidth` изменились (при предыдущем проходе), поэтому он должен применить изменения стилей и выполнить перерасчет макета. И это будет происходить при _каждом проходе!_.
+This code loops over a group of paragraphs and sets each paragraph’s width to match the width of an element called “box”. It looks harmless enough, but the problem is that each iteration of the loop reads a style value (`box.offsetWidth`) and then immediately uses it to update the width of a paragraph (`paragraphs[i].style.width`). On the next iteration of the loop, the browser has to account for the fact that styles have changed since `offsetWidth` was last requested (in the previous iteration), and so it must apply the style changes, and run layout. This will happen on *every single iteration!*.
 
-В данном образце, чтобы исправить эту ситуацию, нужно опять же _считывать,_ а затем _записывать_ значения:
-
+The fix for this sample is to once again *read* then *write* values:
 
     // Read.
     var width = box.offsetWidth;
@@ -148,6 +141,8 @@ Note: Желаете ознакомиться с исчерпывающим пе
     }
     
 
-Если требуется гарантировать надежность, следует воспользоваться [FastDOM](https://github.com/wilsonpage/fastdom), который автоматически собирает операции чтения и записи в пакеты и не позволяет вам непреднамеренно вызывать принудительный синхронный перерасчет макета или подтормаживание макета.
+If you want to guarantee safety you should check out [FastDOM](https://github.com/wilsonpage/fastdom), which automatically batches your reads and writes for you, and should prevent you from triggering forced synchronous layouts or layout thrashing accidentally.
 
+## Feedback {: #feedback }
 
+{% include "web/_shared/helpful.html" %}
