@@ -1,16 +1,12 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Documentación de referencia para la auditoría de Lighthouse "El sitio no usa eventos de mutación en sus propias secuencias de comandos".
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Reference documentation for the "Avoids Mutation Events In Its Own Scripts" Lighthouse audit.
 
-{# wf_updated_on: 2016-10-04 #}
-{# wf_published_on: 2016-10-04 #}
+{# wf_updated_on: 2018-07-23 #} {# wf_published_on: 2016-10-04 #} {# wf_blink_components: N/A #}
 
-# El sitio no usa eventos de mutación en sus propias secuencias de comandos  {: .page-title }
+# Avoids Mutation Events In Its Own Scripts {: .page-title }
 
-## Por qué es importante la auditoría {: #why }
+## Overview {: #overview }
 
-Los siguientes eventos de mutación afectan negativamente el rendimiento y dejaron de estar disponibles en las
-especificaciones de los eventos del DOM:
+The following mutation events harm performance and are deprecated in the DOM events spec:
 
 * `DOMAttrModified`
 * `DOMAttributeNameChanged`
@@ -22,19 +18,14 @@ especificaciones de los eventos del DOM:
 * `DOMNodeRemovedFromDocument`
 * `DOMSubtreeModified`
 
-## Cómo aprobar la auditoría {: #how }
+## Recommendations {: #recommendations }
 
-En **URLs**, Lighthouse informa los detectores de eventos de mutación que encontró en
-tu código. Reemplaza cada uno de estos eventos de mutación con `MutationObserver`.
-Consulta [`MutationObserver`][mdn] en MDN para obtener más información.
+Under **URLs**, Lighthouse reports each mutation event listener that it found in your code. Replace each of these mutation events with a `MutationObserver`. See [`MutationObserver`](https://developer.mozilla.org/en-US/docs/Web/API/MutationObserver) on MDN for more help.
 
-[mdn]: https://developer.mozilla.org/en-US/docs/Web/API/MutationObserver
+## More information {: #more-info }
 
-{% include "web/tools/lighthouse/audits/implementation-heading.html" %}
+Lighthouse collects all of the event listeners on the page, and flags any listener that uses one of the types listed above.
 
-Lighthouse recopila todos los detectores de eventos de la página y marca
-aquellos que usan los tipos de eventos indicados en la sección [Por qué es
-importante la auditoría](#why).
+## Feedback {: #feedback }
 
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
