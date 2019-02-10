@@ -1,99 +1,93 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: A composição é o agrupamento das partes gravadas da página para exibição na tela.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Compositing is where the painted parts of the page are put together for displaying on screen.
 
-{# wf_updated_on: 2015-03-20 #}
-{# wf_published_on: 2015-03-20 #}
+{# wf_updated_on: 2018-08-17 #} {# wf_published_on: 2015-03-20 #} {# wf_blink_components: Blink>Compositing #}
 
-# Trabalhar apenas com propriedades do compositor e gerenciar o número de camadas {: .page-title }
+# Stick to Compositor-Only Properties and Manage Layer Count {: .page-title }
 
 {% include "web/_shared/contributors/paullewis.html" %}
 
-A composição é o agrupamento das partes gravadas da página 
-para exibição na tela.
+Compositing is where the painted parts of the page are put together for displaying on screen.
 
-Há dois fatores principais nesta área que afetam o desempenho da página: o número de camadas do compositor que precisam ser gerenciadas e as propriedades usadas para animações.
+There are two key factors in this area that affect page performance: the number of compositor layers that need to be managed, and the properties that you use for animations.
 
 ### TL;DR {: .hide-from-toc }
 
-* Limitar-se a mudanças de "transform" e "opacity" nas animações.
-* Promover elementos movimentáveis com `will-change` ou `translateZ`.
-* Evitar uso excessivo das regras de promoção — as camadas exigem memória e gerenciamento.
+* Stick to transform and opacity changes for your animations.
+* Promote moving elements with `will-change` or `translateZ`.
+* Avoid overusing promotion rules; layers require memory and management.
 
-## Use mudanças de transform e opacity para animações
+## Use transform and opacity changes for animations
 
-A versão do pipeline de pixels com o melhor desempenho evita o layout e a coloração e exige apenas mudanças de composição:
+The best-performing version of the pixel pipeline avoids both layout and paint, and only requires compositing changes:
 
-<img src="images/stick-to-compositor-only-properties-and-manage-layer-count/frame-no-layout-paint.jpg"  alt="O pipeline de pixels sem layout ou coloração.">
+<img src="images/stick-to-compositor-only-properties-and-manage-layer-count/frame-no-layout-paint.jpg"  alt="The pixel pipeline with no layout or paint." />
 
-Para isso, você precisará se limitar a mudar propriedades que podem ser tratadas apenas pelo compositor. Atualmente, existem apenas duas propriedades onde isso é verdade: **`transforms`** e **`opacity`**:
+In order to achieve this you will need to stick to changing properties that can be handled by the compositor alone. Today there are only two properties for which that is true - `transform`s and `opacity`:
 
-<img src="images/stick-to-compositor-only-properties-and-manage-layer-count/safe-properties.jpg"  alt="As propriedades que podem ser animadas sem acionar o layout ou a coloração.">
+<img src="images/stick-to-compositor-only-properties-and-manage-layer-count/safe-properties.jpg"  alt="The properties you can animate without triggering layout or paint." />
 
-A limitação do uso de `transform`s e `opacity` é que o elemento em que essas propriedades são alteradas deve estar em _sua própria camada de composição_. Para criar uma camada, você deve promover o elemento. Veremos esse tópico a seguir.
+The caveat for the use of `transform`s and `opacity` is that the element on which you change these properties should be on *its own compositor layer*. In order to make a layer you must promote the element, which we will cover next.
 
-Observação: se você está preocupado que pode não ter como limitar as animações apenas para a propriedades, dê uma olhada no [Princípio FLIP](https://aerotwist.com/blog/flip-your-animations) para obter ajudar para remapear as animações nas mudanças de transforms e opacity por parte de propriedades mais pesadas.
+Note: If you’re concerned that you may not be able to limit your animations to just those properties, take a look at the [FLIP principle](https://aerotwist.com/blog/flip-your-animations), which may help you remap animations to changes in transforms and opacity from more expensive properties.
 
-## Promover os elementos que serão animados
+## Promote elements that you plan to animate
 
-Como mencionado na seção "[Simplificar a complexidade da coloração e reduzir as áreas de coloração](simplify-paint-complexity-and-reduce-paint-areas)", promova os elementos que pretende animar (com bom senso, sem exageros!) para a sua própria camada:
-
+As we mentioned in the “[Simplify paint complexity and reduce paint areas](simplify-paint-complexity-and-reduce-paint-areas)” section, you should promote elements that you plan to animate (within reason, don’t overdo it!) to their own layer:
 
     .moving-element {
       will-change: transform;
     }
+    
 
-
-Ou, para navegadores mais antigos ou que não permitem will-change:
-
+Or, for older browsers, or those that don’t support will-change:
 
     .moving-element {
       transform: translateZ(0);
     }
+    
 
+This gives the browser the forewarning that changes are incoming and, depending on what you plan to change, the browser can potentially make provisions, such as creating compositor layers.
 
-Isso envia ao navegador uma advertência sobre alterações iminentes. Dependendo do que será alterado, o navegador poderá tomar algumas medidas, como a criação de camadas do compositor.
+## Manage layers and avoid layer explosions
 
-## Gerenciar camadas e evitar um número excessivo de camadas
-
-Como as camadas podem frequentemente ajudar no desempenho, pode ser tentador promover todos os elementos da página da seguinte forma:
-
+It’s perhaps tempting, then, knowing that layers often help performance, to promote all the elements on your page with something like the following:
 
     * {
       will-change: transform;
       transform: translateZ(0);
     }
+    
 
+Which is a roundabout way of saying that you’d like to promote every single element on the page. The problem here is that every layer you create requires memory and management, and that’s not free. In fact, on devices with limited memory the impact on performance can far outweigh any benefit of creating a layer. Every layer’s textures needs to be uploaded to the GPU, so there are further constraints in terms of bandwidth between CPU and GPU, and memory available for textures on the GPU.
 
-O que é uma forma indireta de dizer que você quer promover todos os elementos da página. O problema é que cada camada criada exige memória e gerenciamento, e isso gera custos. Na verdade, em dispositivos com memória limitada, o impacto negativo sobre o desempenho pode superar qualquer benefício da criação da camada. Cada textura de camada precisa ser carregada na GPU. Portanto, há mais restrições em termos de largura de banda entre a CPU e a GPU e de memória disponível para texturas na GPU.
+Warning: Do not promote elements unnecessarily.
 
-Aviso: não promova elementos sem necessidade.
-
-## Usar o Chrome DevTools para compreender as camadas do aplicativo
+## Use Chrome DevTools to understand the layers in your app
 
 <div class="attempt-right">
   <figure>
-    <img src="images/stick-to-compositor-only-properties-and-manage-layer-count/paint-profiler.jpg" alt="A ativação do gerador de perfis de coloração no Chrome DevTools.">
+    <img src="images/stick-to-compositor-only-properties-and-manage-layer-count/paint-profiler.jpg" alt="The toggle for the paint profiler in Chrome DevTools.">
   </figure>
 </div>
 
-Para uma melhor compreensão das camadas do aplicativo e do motivo pelo qual um elemento tem uma camada, ative o gerador de perfis de coloração no Timeline do Chrome DevTools:
+To get an understanding of the layers in your application, and why an element has a layer you must enable the Paint profiler in Chrome DevTools’ Timeline:
 
 <div style="clear:both;"></div>
 
-Após a ativação, faça uma gravação. Quando a gravação for finalizada, você poderá clicar em quadros individuais que se encontram entre barras de quadros por segundo e os detalhes:
+With this switched on you should take a recording. When the recording has finished you will be able to click individual frames, which is found between the frames-per-second bars and the details:
 
-<img src="images/stick-to-compositor-only-properties-and-manage-layer-count/frame-of-interest.jpg"  alt="Um quadro para o qual o desenvolvedor quer gerar um perfil.">
+<img src="images/stick-to-compositor-only-properties-and-manage-layer-count/frame-of-interest.jpg"  alt="A frame the developer is interested in profiling." />
 
-Clique no quadro para exibir uma nova opção nos detalhes: uma guia Layer.
+Clicking on this will provide you with a new option in the details: a layer tab.
 
-<img src="images/stick-to-compositor-only-properties-and-manage-layer-count/layer-tab.jpg"  alt="O botão da guia Layer no Chrome DevTools.">
+<img src="images/stick-to-compositor-only-properties-and-manage-layer-count/layer-tab.jpg"  alt="The layer tab button in Chrome DevTools." />
 
-Essa opção exibirá uma nova visualização que permite deslocar, percorrer e aumentar o zoom em todas as camadas desse quadro, bem como os motivos pelos quais cada camada foi criada.
+This option will bring up a new view that allows you to pan, scan and zoom in on all the layers during that frame, along with reasons that each layer was created.
 
-<img src="images/stick-to-compositor-only-properties-and-manage-layer-count/layer-view.jpg"  alt="A visualização de camadas no Chrome DevTools.">
+<img src="images/stick-to-compositor-only-properties-and-manage-layer-count/layer-view.jpg"  alt="The layer view in Chrome DevTools." />
 
-Com essa visualização, você pode controlar o número de camadas. Se você estiver gastando muito tempo na composição durante ações de desempenho crítico, como rolagem ou transições (o ideal é algo em torno de **4 a 5 ms**), poderá usar essas informações para verificar o número de camadas e o motivo da sua criação, além de gerenciar o número de camadas do aplicativo.
+Using this view you can track the number of layers you have. If you’re spending a lot time in compositing during performance-critical actions like scrolling or transitions (you should aim for around **4-5ms**), you can use the information here to see how many layers you have, why they were created, and from there manage layer counts in your app.
 
+## Feedback {: #feedback }
 
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
