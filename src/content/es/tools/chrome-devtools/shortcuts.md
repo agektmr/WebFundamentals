@@ -1,554 +1,484 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Una referencia de todas las combinaciones de teclas en Chrome DevTools.
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: The canonical documentation for Chrome DevTools keyboard shortcuts.
 
-{# wf_updated_on: 2016-11-28 #}
-{# wf_published_on: 2015-04-29 #}
+{# wf_updated_on: 2018-12-14 #} {# wf_published_on: 2015-04-29 #} {# wf_blink_components: Platform>DevTools #}
 
-# Referencia de combinaciones de teclas {: .page-title }
+# Chrome DevTools Keyboard Shortcuts {: .page-title }
 
-{% include "web/_shared/contributors/megginkearney.html" %}
+{% include "web/tools/chrome-devtools/_shared/styles.html" %}
+
 {% include "web/_shared/contributors/kaycebasques.html" %}
 
-Esta página es una referencia de las combinaciones de teclas de Chrome DevTools.
-Si bien algunas combinaciones de teclas son generales, otras son específicas de
-un solo panel.
+This page is a reference of keyboard shortcuts in Chrome DevTools.
 
-En información sobre la herramienta, también puedes encontrar combinaciones de teclas. Desplaza el curso sobre un elemento de la IU de DevTools
-para mostrar la información sobre la herramienta. Si el elemento tiene una combinación de teclas asociada, se incluirá en la información sobre la herramienta.
+You can also find shortcuts in tooltips. Hover over a UI element of DevTools to display its tooltip. If the element has a shortcut, the tooltip includes it.
 
-## Acceder a DevTools
+## Keyboard shortcuts for opening DevTools {: #open }
 
-<table>
-  <thead>
-      <th>Acceder a DevTools</th>
-      <th>En Windows</th>
-      <th>En Mac</th>
-  </thead>
-  <tbody>
-    <tr>
-      <td data-th="Launch DevTools">Abrir Developer Tools</td>
-      <td data-th="Windows"><kbd class="kbd">F12</kbd>, <kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">Mayús</kbd> + <kbd class="kbd">I</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Cmd</kbd> + <kbd class="kbd">Opción</kbd> + <kbd class="kbd">I</kbd></td>
-    </tr>
-    <tr>
-      <td data-th="Launch DevTools">Abrir y alternar entre del modo de inspección de elemento y la ventana del navegador</td>
-      <td data-th="Windows"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">Mayúscula</kbd> + <kbd class="kbd">C</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Cmd</kbd> + <kbd class="kbd">Mayúscula</kbd> + <kbd class="kbd">C</kbd></td>
-    </tr>
-    <tr>
-      <td data-th="Launch DevTools">Abrir Developer Tools y seleccionar Console</td>
-      <td data-th="Windows"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">Mayúscula</kbd> + <kbd class="kbd">J</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Cmd</kbd> + <kbd class="kbd">Opción</kbd> + <kbd class="kbd">J</kbd></td>
-    </tr>
-    <tr>
-      <td data-th="Launch DevTools">Inspeccionar el Inspector (desacoplar el primero y presionar)</td>
-      <td data-th="Windows"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">Mayúscula</kbd> + <kbd class="kbd">I</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Cmd</kbd> + <kbd class="kbd">Opción</kbd> + <kbd class="kbd">I</kbd></td>
-    </tr>
-  </tbody>
-</table>
-
-## Combinaciones de teclas generales
-
-Las siguientes combinaciones de teclas están disponibles en todos los paneles de DevTools:
+To open DevTools, press the following keyboard shortcuts while your cursor is focused on the browser viewport:
 
 <table>
   <thead>
-      <th>Combinación de teclas general</th>
-      <th>Windows</th>
+      <th>Action</th>
       <th>Mac</th>
+      <th>Windows / Linux</th>
   </thead>
   <tbody>
     <tr>
-      <td data-th="Global Shortcuts">Mostrar el diálogo General Settings</td>
-      <td data-th="Windows"><kbd class="kbd">?</kbd>, <kbd class="kbd">F1</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">?</kbd></td>
+      <td>Open whatever panel you used last</td>
+      <td><kbd>Command</kbd>+<kbd>Option</kbd>+<kbd>I</kbd></td>
+      <td><kbd>F12</kbd> or <kbd>Control</kbd>+<kbd>Shift</kbd>+<kbd>I</kbd></td>
     </tr>
     <tr>
-      <td data-th="Global Shortcuts">Panel siguiente</td>
-      <td data-th="Windows"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">]</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Cmd</kbd> + <kbd class="kbd">]</kbd></td>
+      <td>Open the <b>Console</b> panel</td>
+      <td><kbd>Command</kbd>+<kbd>Option</kbd>+<kbd>J</kbd></td>
+      <td><kbd>Control</kbd>+<kbd>Shift</kbd>+<kbd>J</kbd></td>
     </tr>
     <tr>
-      <td data-th="Global Shortcuts">Panel anterior</td>
-      <td data-th="Windows"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">[</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Cmd</kbd> + <kbd class="kbd">[</kbd></td>
-    </tr>
-    <tr>
-      <td data-th="Global Shortcuts">Ir hacia atrás en el historial del panel</td>
-      <td data-th="Windows"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">Alt</kbd> + <kbd class="kbd">[</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Cmd</kbd> + <kbd class="kbd">Opción</kbd> + <kbd class="kbd">[</kbd></td>
-    </tr>
-    <tr>
-      <td data-th="Global Shortcuts">Ir hacia adelante en el historial del panel</td>
-      <td data-th="Windows"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">Alt</kbd> + <kbd class="kbd">]</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Cmd</kbd> + <kbd class="kbd">Opción</kbd> + <kbd class="kbd">[</kbd></td>
-    </tr>
-    <tr>
-      <td data-th="Global Shortcuts">Cambiar la ubicación del acoplamiento</td>
-      <td data-th="Windows"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">Mayúscula</kbd> + <kbd class="kbd">D</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Cmd</kbd> + <kbd class="kbd">Mayúscula</kbd> + <kbd class="kbd">D</kbd></td>
-    </tr>
-    <tr>
-      <td data-th="Global Shortcuts">Abrir Device Mode</td>
-      <td data-th="Windows"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">Mayúscula</kbd> + <kbd class="kbd">M</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Cmd</kbd> + <kbd class="kbd">Mayúscula</kbd> + <kbd class="kbd">M</kbd></td>
-    </tr>
-    <tr>
-      <td data-th="Global Shortcuts">Activar o desactivar Console/cerrar el diálogo Settings si está abierto</td>
-      <td data-th="Windows"><kbd class="kbd">Esc</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Esc</kbd></td>
-    </tr>
-    <tr>
-      <td data-th="Global Shortcuts">Actualiza la página</td>
-      <td data-th="Windows"><kbd class="kbd">F5</kbd>, <kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">R</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Cmd</kbd> + <kbd class="kbd">R</kbd></td>
-    </tr>
-    <tr>
-      <td data-th="Global Shortcuts">Actualizar la página e ignorar el contenido almacenado en caché</td>
-      <td data-th="Windows"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">F5</kbd>, <kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">Mayúscula</kbd> + <kbd class="kbd">R</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Cmd</kbd> + <kbd class="kbd">Mayúscula</kbd> + <kbd class="kbd">R</kbd></td>
-    </tr>
-    <tr>
-      <td data-th="Global Shortcuts">Buscar texto dentro del archivo o panel actual</td>
-      <td data-th="Windows"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">F</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Cmd</kbd> + <kbd class="kbd">F</kbd></td>
-    </tr>
-    <tr>
-      <td data-th="Global Shortcuts">Buscar texto en todos los orígenes</td>
-      <td data-th="Windows"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">Mayúscula</kbd> + <kbd class="kbd">F</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Cmd</kbd> + <kbd class="kbd">Opción</kbd> + <kbd class="kbd">F</kbd></td>
-    </tr>
-    <tr>
-      <td data-th="Global Shortcuts">Buscar por nombre de archivo (salvo en Timeline)</td>
-      <td data-th="Windows"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">O</kbd>, <kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">P</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Cmd</kbd> + <kbd class="kbd">O</kbd>, <kbd class="kbd">Cmd</kbd> + <kbd class="kbd">P</kbd></td>
-    </tr>
-    <tr>
-      <td data-th="Global Shortcuts">Acercar (con DevTools seleccionado)</td>
-      <td data-th="Windows"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">+</kbd></td>
-      <td data-th="Mac"><kbd>Cmd</kbd> + <kbd class="kbd">Mayúscula</kbd> + <kbd class="kbd">+</kbd></td>
-    </tr>
-    <tr>
-      <td data-th="Global Shortcuts">Alejar</td>
-      <td data-th="Windows"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">-</kbd></td>
-      <td data-th="Mac"><kbd>Cmd</kbd> + <kbd class="kbd">Mayúscula</kbd> + <kbd class="kbd">-</kbd></td>
-    </tr>
-    <tr>
-      <td data-th="Global Shortcuts">Restaurar el tamaño del texto predeterminado</td>
-      <td data-th="Windows"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">0</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Cmd</kbd> + <kbd class="kbd">0</kbd></td>
+      <td>Open the <b>Elements</b> panel</td>
+      <td><kbd>Command</kbd>+<kbd>Option</kbd>+<kbd>C</kbd></td>
+      <td><kbd>Control</kbd>+<kbd>Shift</kbd>+<kbd>C</kbd></td>
     </tr>
   </tbody>
 </table>
 
-## Combinaciones de teclas por panel
+## Global keyboard shortcuts {: #global }
 
-### Elements
+The following keyboard shortcuts are available in most, if not all, DevTools panels.
 
 <table>
   <thead>
-      <th>Panel Elements</th>
-      <th>Windows</th>
+      <th>Action</th>
       <th>Mac</th>
+      <th>Windows / Linux</th>
   </thead>
   <tbody>
     <tr>
-      <td data-th="Elements Panel">Deshacer cambio</td>
-      <td data-th="Windows"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">Z</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Cmd</kbd> + <kbd class="kbd">Z</kbd></td>
+      <td>Show <b>Settings</b></td>
+      <td><kbd>?</kbd> or <kbd>Function</kbd>+<kbd>F1</kbd></td>
+      <td><kbd>?</kbd> or <kbd>F1</kbd></td>
     </tr>
     <tr>
-      <td data-th="Elements Panel">Rehacer cambio</td>
-      <td data-th="Windows"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">Y</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Cmd</kbd> + <kbd class="kbd">Y</kbd>, <kbd class="kbd">Cmd</kbd> + <kbd class="kbd">Mayúscula</kbd> + <kbd class="kbd">Z</kbd></td>
+      <td>Focus the next panel</td>
+      <td><kbd>Command</kbd>+<kbd>]</kbd></kbd></td>
+      <td><kbd>Control</kbd>+<kbd>]</kbd></kbd></td>
     </tr>
     <tr>
-      <td data-th="Elements Panel">Navegar</td>
-      <td data-th="Windows"><kbd class="kbd">Arriba</kbd>, <kbd class="kbd">Abajo</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Arriba</kbd>, <kbd class="kbd">Abajo</kbd></td>
+      <td>Focus the previous panel</td>
+      <td><kbd>Command</kbd>+<kbd>[</kbd></td>
+      <td><kbd>Control</kbd>+<kbd>[</kbd></td>
     </tr>
     <tr>
-      <td data-th="Elements Panel">Expandir/contraer nodo</td>
-      <td data-th="Windows"><kbd class="kbd">Derecha</kbd>, <kbd class="kbd">Izquierda</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Derecha</kbd>, <kbd class="kbd">Izquierda</kbd></td>
+      <!-- TODO make a bug about this shortcut being ambiguous -->
+      <td>
+        Switch back to whatever <a href="/web/tools/chrome-devtools/ui#placement">docking position</a> you last used.
+        If DevTools has been in its default position for the entire session, then this shortcut undocks
+        DevTools into a separate window
+      </td>
+      <td><kbd>Command</kbd>+<kbd>Shift</kbd>+<kbd>D</kbd></td>
+      <td><kbd>Control</kbd>+<kbd>Shift</kbd>+<kbd>D</kbd></td>
     </tr>
     <tr>
-      <td data-th="Elements Panel">Expandir nodo</td>
-      <td data-th="Windows"><kbd class="kbd">Un solo clic en la flecha</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Un solo clic en la flecha</kbd></td>
+      <td>Toggle <b><a href="/web/tools/chrome-devtools/device-mode/">Device Mode</a><b></td>
+      <td><kbd>Command</kbd>+<kbd>Shift</kbd>+<kbd>M</kbd></td>
+      <td><kbd>Control</kbd>+<kbd>Shift</kbd>+<kbd>M</kbd></td>
     </tr>
     <tr>
-      <td data-th="Elements Panel">Expandir/contraer nodo y todos los elementos secundarios</td>
-      <td data-th="Windows"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">Alt</kbd> + <kbd class="kbd">Clic en ícono de flecha</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Opt</kbd> + <kbd class="kbd">Clic en ícono de flecha</kbd></td>
+      <!-- TODO: Link "Inspect Element Mode" when a good section exists. -->
+      <td>Toggle <b>Inspect Element Mode</b></td>
+      <td><kbd>Command</kbd>+<kbd>Shift</kbd>+<kbd>C</kbd></td>
+      <td><kbd>Control</kbd>+<kbd>Shift</kbd>+<kbd>C</kbd></td>
     </tr>
     <tr>
-      <td data-th="Elements Panel">Editar atributo</td>
-      <td data-th="Windows"><kbd class="kbd">Entrar</kbd>, <kbd class="kbd">Doble clic en atributo</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Entrar</kbd>, <kbd class="kbd">Doble clic en atributo</kbd></td>
+      <td>Open the <b><a href="/web/tools/chrome-devtools/ui#command-menu">Command Menu</a></b></td>
+      <td><kbd>Command</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd></td>
+      <td><kbd>Control</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd></td>
     </tr>
     <tr>
-      <td data-th="Elements Panel">Ocultar elemento</td>
-      <td data-th="Windows"><kbd class="kbd">H</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">H</kbd></td>
+      <td>Toggle the <b><a href="/web/tools/chrome-devtools/ui#drawer">Drawer</a></b></td>
+      <td><kbd>Escape</kbd></td>
+      <td><kbd>Escape</kbd></td>
     </tr>
     <tr>
-      <td data-th="Elements Panel">Activar o desactivar la edición como HTML</td>
-      <td data-th="Windows"><kbd class="kbd">F2</kbd></td>
-      <td data-th="Mac"></td>
+      <td>Normal reload</td>
+      <td><kbd>Command</kbd>+<kbd>R</kbd></td>
+      <td><kbd>F5</kbd> or <kbd>Control</kbd>+<kbd>R</kbd></td>
+    </tr>
+    <tr>
+      <td>Hard reload</td>
+      <td><kbd>Command</kbd>+<kbd>Shift</kbd>+<kbd>R</kbd></td>
+      <td><kbd>Control</kbd>+<kbd>F5</kbd> or <kbd>Control</kbd>+<kbd>Shift</kbd>+<kbd>R</kbd></td>
+    </tr>
+    <tr>
+      <td>
+        Search for text within the current panel. Not supported in the <b>Audits</b>, <b>Application</b>, and <b>Security</b> panels
+      </td>
+      <td><kbd>Command</kbd>+<kbd>F</kbd></td>
+      <td><kbd>Control</kbd>+<kbd>F</kbd></td>
+    </tr>
+    <tr>
+      <td>Opens the <b>Search</b> tab in the <b><a href="/web/tools/chrome-devtools/ui#drawer">Drawer</a></b>, which lets you search for text across all loaded resources</td>
+      <td><kbd>Command</kbd>+<kbd>Option</kbd>+<kbd>F</kbd></td>
+      <td><kbd>Control</kbd>+<kbd>Shift</kbd>+<kbd>F</kbd></td>
+    </tr>
+    <tr>
+      <td>Open a file in the <b>Sources</b> panel</td>
+      <td><kbd>Command</kbd>+<kbd>O</kbd> or <kbd>Command</kbd>+<kbd>P</kbd></td>
+      <td><kbd>Control</kbd>+<kbd>O</kbd> or <kbd>Control</kbd>+<kbd>P</kbd></td>
+    </tr>
+    <tr>
+      <td>Zoom in</td>
+      <td><kbd>Command</kbd>+<kbd>Shift</kbd>+<kbd>+</kbd></td>
+      <td><kbd>Control</kbd>+<kbd>Shift</kbd>+<kbd>+</kbd></td>
+    </tr>
+    <tr>
+      <td>Zoom out</td>
+      <td><kbd>Command</kbd>+<kbd>-</kbd></td>
+      <td><kbd>Control</kbd>+<kbd>-</kbd></td>
+    </tr>
+    <tr>
+      <td>Restore default zoom level</td>
+      <td><kbd>Command</kbd>+<kbd>0</kbd></td>
+      <td><kbd>Control</kbd>+<kbd>0</kbd></td>
+    </tr>
+    <tr>
+      <td>Run snippet</td>
+      <td>Press <kbd>Command</kbd>+<kbd>O</kbd> to open the <b><a href="/web/tools/chrome-devtools/ui#command-menu">Command Menu</a></b>, type <kbd>!</kbd> followed by the name of the script, then press <kbd>Enter</kbd></td>
+      <td>Press <kbd>Control</kbd>+<kbd>O</kbd> to open the <b><a href="/web/tools/chrome-devtools/ui#command-menu">Command Menu</a></b>, type <kbd>!</kbd> followed by the name of the script, then press <kbd>Enter</kbd></td>
     </tr>
   </tbody>
 </table>
 
-#### Barra lateral Styles
-
-Combinación de teclas disponibles en la barra lateral Styles:
+## Elements panel keyboard shortcuts {: #elements }
 
 <table>
   <thead>
-      <th>Barra lateral Styles</th>
-      <th>Windows</th>
+      <th>Action</th>
       <th>Mac</th>
+      <th>Windows / Linux</th>
   </thead>
   <tbody>
     <tr>
-      <td data-th="Styles Sidebar">Editar regla</td>
-      <td data-th="Windows"><kbd class="kbd">Un clic</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Un clic</kbd></td>
+      <td>Undo change</td>
+      <td><kbd>Command</kbd>+<kbd>Z</kbd></td>
+      <td><kbd>Control</kbd>+<kbd>Z</kbd></td>
     </tr>
     <tr>
-      <td data-th="Styles Sidebar">Insertar nueva propiedad</td>
-      <td data-th="Windows"><kbd class="kbd">Clic en espacio en blanco</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Clic en espacio en blanco</kbd></td>
+      <td>Redo change</td>
+      <td><kbd>Command</kbd>+<kbd>Shift</kbd>+<kbd>Z</kbd></td>
+      <td><kbd>Control</kbd>+<kbd>Y</kbd></td>
     </tr>
     <tr>
-      <td data-th="Styles Sidebar">Ir a la línea de la declaración de propiedad de la regla de estilo en el origen</td>
-      <td data-th="Windows"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">Clic en la propiedad</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Cmd</kbd> + <kbd class="kbd">Clic en la propiedad</kbd></td>
+      <td>Select the element above / below the currently-selected element</td>
+      <td><kbd>Up Arrow</kbd> / <kbd>Down Arrow</kbd></td>
+      <td><kbd>Up Arrow</kbd> / <kbd>Down Arrow</kbd></td>
     </tr>
     <tr>
-      <td data-th="Styles Sidebar">Ir a la línea de la declaración del valor de una propiedad en el origen</td>
-      <td data-th="Windows"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">Clic en el valor de la propiedad</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Cmd</kbd> + <kbd class="kbd">Clic en el valor de la propiedad</kbd></td>
+      <td>Expand the currently-selected node. If the node is already expanded, this shortcut selects the element below it</td>
+      <td><kbd>Right Arrow</kbd></td>
+      <td><kbd>Right Arrow</kbd></td>
     </tr>
     <tr>
-      <td data-th="Styles Sidebar">Recorrer el valor de definición de color</td>
-      <td data-th="Windows"><kbd class="kbd">Mayúscula</kbd> + <kbd class="kbd">Clic en la casilla del selector de color</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Mayúscula</kbd> + <kbd class="kbd">Clic en la casilla del selector de color</kbd></td>
+      <td>Collapse the currently-selected node. If the node is already collapsed, this shortcut selects the element above it</td>
+      <td><kbd>Left Arrow</kbd></td>
+      <td><kbd>Left Arrow</kbd></td>
     </tr>
     <tr>
-      <td data-th="Styles Sidebar">Editar propiedad siguiente/anterior
-      <td data-th="Windows"><kbd class="kbd">Tab</kbd>, <kbd class="kbd">Mayúscula</kbd> + <kbd class="kbd">Tab</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Tab</kbd>, <kbd class="kbd">Mayúscula</kbd> + <kbd class="kbd">Tab</kbd></td>
+      <td>Expand or collapse the currently-selected node and all of its children</td>
+      <td>Hold <kbd>Option</kbd> then click the arrow icon next to the element's name</td>
+      <td>Hold <kbd>Control</kbd>+<kbd>Alt</kbd> then click the arrow icon next to the element's name</td>
     </tr>
     <tr>
-      <td data-th="Styles Sidebar">Aumentar/disminuir valor</td>
-      <td data-th="Windows"><kbd class="kbd">Arriba</kbd>, <kbd class="kbd">Abajo</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Arriba</kbd>, <kbd class="kbd">Abajo</kbd></td>
+      <td>Toggle <b>Edit Attributes</b> mode on the currently-selected element</td>
+      <td><kbd>Enter</kbd></td>
+      <td><kbd>Enter</kbd></td>
     </tr>
     <tr>
-      <td data-th="Styles Sidebar">Aumentar/disminuir valor por 10</td>
-      <td data-th="Windows"><kbd class="kbd">Mayúscula</kbd> + <kbd class="kbd">Arriba</kbd>, <kbd class="kbd">Mayúscula</kbd> + <kbd class="kbd">Abajo</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Mayúscula</kbd> + <kbd class="kbd">Arriba</kbd>, <kbd class="kbd">Mayúscula</kbd> + <kbd class="kbd">Abajo</kbd></td>
+      <td>Select the next / previous attribute after entering <b>Edit Attributes</b> mode</td>
+      <td><kbd>Tab</kbd> / <kbd>Shift</kbd>+<kbd>Tab</kbd></td>
+      <td><kbd>Tab</kbd> / <kbd>Shift</kbd>+<kbd>Tab</kbd></td>
     </tr>
     <tr>
-      <td data-th="Styles Sidebar">Aumentar/disminuir valor por 10</td>
-      <td data-th="Windows"><kbd class="kbd">Re Pág</kbd>, <kbd class="kbd">Av Pág</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Re Pág</kbd>, <kbd class="kbd">Av Pág</kbd></td>
+      <td>Hide the currently-selected element</td>
+      <td><kbd>H</kbd></td>
+      <td><kbd>H</kbd></td>
     </tr>
     <tr>
-      <td data-th="Styles Sidebar">Aumentar/disminuir valor por 100</td>
-      <td data-th="Windows"><kbd class="kbd">Mayúscula</kbd> + <kbd class="kbd">Re Pág</kbd>, <kbd class="kbd">Mayúscula</kbd> + <kbd class="kbd">Av Pág</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Mayúscula</kbd> + <kbd class="kbd">Re Pág</kbd>, <kbd class="kbd">Mayúscula</kbd> + <kbd class="kbd">Av Pág</kbd></td>
-    </tr>
-    <tr>
-      <td data-th="Styles Sidebar">Aumentar/disminuir valor por 0,1</td>
-      <td data-th="Windows"><kbd class="kbd">Alt</kbd> + <kbd class="kbd">Arriba</kbd>, <kbd class="kbd">Alt</kbd> + <kbd class="kbd">Abajo</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Opt</kbd> + <kbd class="kbd">Arriba</kbd>, <kbd class="kbd">Opt</kbd> + <kbd class="kbd">Abajo</kbd></td>
+      <td>Toggle <b>Edit as HTML</b> mode on the currently-selected element</td>
+      <td><kbd>Function</kbd>+<kbd>F2</kbd></td>
+      <td><kbd>F2</kbd></td>
     </tr>
   </tbody>
 </table>
 
-### Sources
+### Styles pane keyboard shortcuts {: #styles }
 
 <table>
   <thead>
-      <th>Panel Sources</th>
-      <th>Windows</th>
+      <th>Action</th>
       <th>Mac</th>
+      <th>Windows / Linux</th>
   </thead>
   <tbody>
     <tr>
-      <td data-th="Sources Panel">Pausar/reanudar ejecución de la secuencia de comandos</td>
-      <td data-th="Windows"><kbd class="kbd">F8</kbd>, <kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">\</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">F8</kbd>, <kbd class="kbd">Cmd</kbd> + <kbd class="kbd">\</kbd></td>
+      <td>Go to the line where a property value is declared</td>
+      <td>Hold <kbd>Command</kbd> then click the property value</td>
+      <td>Hold <kbd>Control</kbd> then click the property value</td>
     </tr>
     <tr>
-      <td data-th="Sources Panel">Saltear próxima llamada de función</td>
-      <td data-th="Windows"><kbd class="kbd">F10</kbd>, <kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">'</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">F10</kbd>, <kbd class="kbd">Cmd</kbd> + <kbd class="kbd">'</kbd></td>
+      <td>Cycle through the RBGA, HSLA, and Hex representations of a color value</td>
+      <td>Hold <kbd>Shift</kbd> then click the <b>Color Preview</b> box next to the value</td>
+      <td>Hold <kbd>Shift</kbd> then click the <b>Color Preview</b> box next to the value</td>
     </tr>
     <tr>
-      <td data-th="Sources Panel">Entrar a la próxima llamada de función</td>
-      <td data-th="Windows"><kbd class="kbd">F11</kbd>, <kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">;</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">F11</kbd>, <kbd class="kbd">Cmd</kbd> + <kbd class="kbd">;</kbd></td>
+      <td>Select the next / previous property or value</td>
+      <td>Click a property name or value then press <kbd>Tab</kbd> / <kbd>Shift</kbd>+<kbd>Tab</kbd></td>
+      <td>Click a property name or value then press <kbd>Tab</kbd> / <kbd>Shift</kbd>+<kbd>Tab</kbd></td>
     </tr>
     <tr>
-      <td data-th="Sources Panel">Salir de la función actual</td>
-      <td data-th="Windows"><kbd class="kbd">Mayúscula</kbd> + <kbd class="kbd">F11</kbd>, <kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">Mayúscula</kbd> + <kbd class="kbd">;</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Mayúscula</kbd> + <kbd class="kbd">F11</kbd>, <kbd class="kbd">Cmd</kbd> + <kbd class="kbd">Mayúscula</kbd> + <kbd class="kbd">;</kbd></td>
+      <td>Increment / decrement a property value by 0.1</td>
+      <td>Click a value then press <kbd>Option</kbd>+<kbd>Up Arrow</kbd> / <kbd>Option</kbd>+<kbd>Down Arrow</kbd></td>
+      <td>Click a value then press <kbd>Alt</kbd>+<kbd>Up Arrow</kbd> / <kbd>Alt</kbd>+<kbd>Down Arrow</kbd></td>
     </tr>
     <tr>
-      <td data-th="Sources Panel">Seleccionar el marco de llamada siguiente</td>
-      <td data-th="Windows"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">.</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Opt</kbd> + <kbd class="kbd">.</kbd></td>
+      <td>Increment / decrement a property value by 1</td>
+      <td>Click a value then press <kbd>Up Arrow</kbd> / <kbd>Down Arrow</kbd></td>
+      <td>Click a value then press <kbd>Up Arrow</kbd> / <kbd>Down Arrow</kbd></td>
     </tr>
     <tr>
-      <td data-th="Sources Panel">Seleccionar el marco de llamada anterior</td>
-      <td data-th="Windows"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">,</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Opt</kbd> + <kbd class="kbd">,</kbd></td>
+      <td>Increment / decrement a property value by 10</td>
+      <td>Click a value then press <kbd>Shift</kbd>+<kbd>Up Arrow</kbd> / <kbd>Shift</kbd>+<kbd>Down Arrow</kbd></td>
+      <td>Click a value then press <kbd>Shift</kbd>+<kbd>Up Arrow</kbd> / <kbd>Shift</kbd>+<kbd>Down Arrow</kbd></td>
     </tr>
     <tr>
-      <td data-th="Sources Panel">Activar o desactivar la condición del punto de interrupción</td>
-      <td data-th="Windows"><kbd class="kbd">Hacer clic en el número de la línea</kbd>, <kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">B</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Hacer clic en el número de la línea</kbd>, <kbd class="kbd">Cmd</kbd> + <kbd class="kbd">B</kbd></td>
-    </tr>
-    <tr>
-      <td data-th="Sources Panel">Editar condición del punto de interrupción</td>
-      <td data-th="Windows"><kbd class="kbd">Hacer clic con el botón secundario en el número de la línea</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Hacer clic con el botón secundario en el número de la línea</kbd></td>
-    </tr>
-    <tr>
-      <td data-th="Sources Panel">Borrar palabras individuales</td>
-      <td data-th="Windows"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">Suprimir</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Opt</kbd> + <kbd class="kbd">Suprimir</kbd></td>
-    </tr>
-    <tr>
-      <td data-th="Sources Panel">Insertar un comentario en una línea o en un texto seleccionado</td>
-      <td data-th="Windows"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">/</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Cmd</kbd> + <kbd class="kbd">/</kbd></td>
-    </tr>
-    <tr>
-      <td data-th="Sources Panel">Guardar cambios de las modificaciones locales</td>
-      <td data-th="Windows"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">S</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Cmd</kbd> + <kbd class="kbd">S</kbd></td>
-    </tr>
-    <tr>
-      <td data-th="Sources Panel">Guardar todos los cambios</td>
-      <td data-th="Windows"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">Alt</kbd> + <kbd class="kbd">S</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Cmd</kbd> + <kbd class="kbd">Opt</kbd> + <kbd class="kbd">S</kbd></td>
-    </tr>
-    <tr>
-      <td data-th="Sources Panel">Ir a línea</td>
-      <td data-th="Windows"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">G</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">G</kbd></td>
-    </tr>
-    <tr>
-      <td data-th="Sources Panel">Buscar por nombre de archivo</td>
-      <td data-th="Windows"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">O</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Cmd</kbd> + <kbd class="kbd">O</kbd></td>
-    </tr>
-    <tr>
-      <td data-th="Sources Panel">Ir a número de línea</td>
-      <td data-th="Windows"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">P</kbd> + <span class="kbd">:<i>número</i></span></td>
-      <td data-th="Mac"><kbd class="kbd">Cmd</kbd> + <kbd class="kbd">P</kbd> + <span class="kbd">:<i>número</i></span></td>
-    </tr>
-    <tr>
-      <td data-th="Sources Panel">Ir a columna</td>
-      <td data-th="Windows"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">O</kbd> + <span class="kbd">:<i>número</i></span> + <span class="kbd">:<i>número</i></span></td>
-      <td data-th="Mac"><kbd class="kbd">Cmd</kbd> + <kbd class="kbd">O</kbd> + <span class="kbd">:<i>número</i></span> + <span class="kbd">:<i>número</i></span></td>
-    </tr>
-    <tr>
-      <td data-th="Sources Panel">Ir a miembro</td>
-      <td data-th="Windows"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">Mayúscula</kbd> + <kbd class="kbd">O</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Cmd</kbd> + <kbd class="kbd">Mayúscula</kbd> + <kbd class="kbd">O</kbd></td>
-    </tr>
-    <tr>
-      <td data-th="Sources Panel">Cerrar pestaña activa</td>
-      <td data-th="Windows"><kbd class="kbd">Alt</kbd> + <kbd class="kbd">W</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Opt</kbd> + <kbd class="kbd">W</kbd></td>
-    </tr>
-    <tr>
-      <td data-th="Sources Panel">Ejecutar fragmento</td>
-      <td data-th="Windows"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">Entrar</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Cmd</kbd> + <kbd class="kbd">Entrar</kbd></td>
+      <td>Increment / decrement a property value by 100</td>
+      <td>Click a value then press <kbd>Command</kbd>+<kbd>Up Arrow</kbd> / <kbd>Command</kbd>+<kbd>Down Arrow</kbd></td>
+      <td>Click a value then press <kbd>Control</kbd>+<kbd>Up Arrow</kbd> / <kbd>Control</kbd>+<kbd>Down Arrow</kbd></td>
     </tr>
   </tbody>
 </table>
 
-#### Dentro de Code Editor
+## Sources panel keyboard shortcuts {: #sources }
 
 <table>
   <thead>
-      <th>Code Editor</th>
-      <th>Windows</th>
+      <th>Action</th>
       <th>Mac</th>
+      <th>Windows / Linux</th>
   </thead>
   <tbody>
     <tr>
-      <td data-th="Code Editor">Ir al corchete coincidente</td>
-      <td data-th="Windows"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">M</kbd></td>
-      <td data-th="Mac"><span class="kbd"></span></td>
+      <td>Pause script execution (if currently running) or resume (if currently paused)</td>
+      <td><kbd>F8</kbd> or <kbd>Command</kbd>+<kbd>\</kbd></td>
+      <td><kbd>F8</kbd> or <kbd>Control</kbd>+<kbd>\</kbd></td>
     </tr>
     <tr>
-      <td data-th="Code Editor">Ir a número de línea</td>
-      <td data-th="Windows"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">P</kbd> + <span class="kbd">:<i>número</i></span></td>
-      <td data-th="Mac"><kbd class="kbd">Cmd</kbd> + <kbd class="kbd">P</kbd> + <span class="kbd">:<i>número</i></span></td>
+      <td>Step over next function call</td>
+      <td><kbd>F10</kbd> or <kbd>Command</kbd>+<kbd>'</kbd></td>
+      <td><kbd>F10</kbd> or <kbd>Control</kbd>+<kbd>'</kbd></td>
     </tr>
     <tr>
-      <td data-th="Code Editor">Ir a columna</td>
-      <td data-th="Windows"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">O</kbd> + <span class="kbd">:<i>número</i></span> + <span class="kbd">:<i>número</i></span></td>
-      <td data-th="Mac"><kbd class="kbd">Cmd</kbd> + <kbd class="kbd">O</kbd> + <span class="kbd">:<i>número</i></span> + <span class="kbd">:<i>número</i></span></td>
+      <td>Step into next function call</td>
+      <td><kbd>F11</kbd> or <kbd>Command</kbd>+<kbd>;</kbd></td>
+      <td><kbd>F11</kbd> or <kbd>Control</kbd>+<kbd>;</kbd></td>
     </tr>
     <tr>
-      <td data-th="Code Editor">Activar o desactivar comentario</td>
-      <td data-th="Windows"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">/</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Cmd</kbd> + <kbd class="kbd">/</kbd></td>
+      <td>Step out of current function</td>
+      <td><kbd>Shift</kbd>+<kbd>F11</kbd> or <kbd>Command</kbd>+<kbd>Shift</kbd>+<kbd>;</kbd></td>
+      <td><kbd>Shift</kbd>+<kbd>F11</kbd> or <kbd>Control</kbd>+<kbd>Shift</kbd>+<kbd>;</kbd></td>
     </tr>
     <tr>
-      <td data-th="Code Editor">Seleccionar el caso siguiente</td>
-      <td data-th="Windows"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">D</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Cmd</kbd> + <kbd class="kbd">D</kbd></td>
+      <td><a href="/web/updates/2017/05/devtools-release-notes#continue">Continue to a certain line of code while paused</a></td>
+      <td>Hold <kbd>Command</kbd> and then click the line of code</td>
+      <td>Hold <kbd>Control</kbd> and then click the line of code</td>
     </tr>
     <tr>
-      <td data-th="Code Editor">Deshacer última selección</td>
-      <td data-th="Windows"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">U</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Cmd</kbd> + <kbd class="kbd">U</kbd></td>
+      <!-- TODO mention that it only works when paused on a line -->
+      <td>Select the call frame below / above the currently-selected frame</td>
+      <td><kbd>Control</kbd>+<kbd>.</kbd> / <kbd>Control</kbd>+<kbd>,</kbd></td>
+      <td><kbd>Control</kbd>+<kbd>.</kbd> / <kbd>Control</kbd>+<kbd>,</kbd></td>
+    </tr>
+    <tr>
+      <td>Save changes to local modifications</td>
+      <td><kbd>Command</kbd>+<kbd>S</kbd></td>
+      <td><kbd>Control</kbd>+<kbd>S</kbd></td>
+    </tr>
+    <tr>
+      <td>Save all changes</td>
+      <td><kbd>Command</kbd>+<kbd>Option</kbd>+<kbd>S</kbd></td>
+      <td><kbd>Control</kbd>+<kbd>Alt</kbd>+<kbd>S</kbd></td>
+    </tr>
+    <tr>
+      <td>Go to line</td>
+      <td><kbd>Control</kbd>+<kbd>G</kbd></td>
+      <td><kbd>Control</kbd>+<kbd>G</kbd></td>
+    </tr>
+    <tr>
+      <td>Jump to a line number of the currently-open file</td>
+      <td>Press <kbd>Command</kbd>+<kbd>O</kbd> to open the <b><a href="/web/tools/chrome-devtools/ui#command-menu">Command Menu</a></b>, type <kbd>:</kbd> followed by the line number, then press <kbd>Enter</kbd></td>
+      <td>Press <kbd>Control</kbd>+<kbd>O</kbd> to open the <b><a href="/web/tools/chrome-devtools/ui#command-menu">Command Menu</a></b>, type <kbd>:</kbd> followed the line number, then press <kbd>Enter</kbd></td>
+    </tr>
+    <tr>
+      <td>Jump to a column of the currently-open file (for example line 5, column 9)</td>
+      <td>Press <kbd>Command</kbd>+<kbd>O</kbd> to open the <b><a href="/web/tools/chrome-devtools/ui#command-menu">Command Menu</a></b>, type <kbd>:</kbd>, then the line number, then another <kbd>:</kbd>, then the column number, then press <kbd>Enter</kbd></td>
+      <td>Press <kbd>Control</kbd>+<kbd>O</kbd> to open the <b><a href="/web/tools/chrome-devtools/ui#command-menu">Command Menu</a></b>, type <kbd>:</kbd>, then the line number, then another <kbd>:</kbd>, then the column number, then press <kbd>Enter</kbd></td>
+    </tr>
+    <tr>
+      <td>Go to a function declaration (if currently-open file is HTML or a script), or a rule set (if currently-open file is a stylesheet)</td>
+      <td>Press <kbd>Command</kbd>+<kbd>Shift</kbd>+<kbd>O</kbd>, then type in the name of the declaration / rule set, or select it from the list of options</td>
+      <td>Press <kbd>Control</kbd>+<kbd>Shift</kbd>+<kbd>O</kbd>, then type in the name of the declaration / rule set, or select it from the list of options</td>
+    </tr>
+    <tr>
+      <td>Close the active tab</td>
+      <td><kbd>Option</kbd>+<kbd>W</kbd></td>
+      <td><kbd>Alt</kbd>+<kbd>W</kbd></td>
     </tr>
   </tbody>
 </table>
 
-### Timeline
+### Code Editor keyboard shortcuts {: #editor }
 
 <table>
   <thead>
-      <th>Panel Timeline</th>
-      <th>Windows</th>
+      <th>Action</th>
       <th>Mac</th>
+      <th>Windows / Linux</th>
   </thead>
   <tbody>
     <tr>
-      <td data-th="Timeline Panel">Iniciar/detener grabación</td>
-      <td data-th="Windows"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">E</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Cmd</kbd> + <kbd class="kbd">E</kbd></td>
+      <td>Delete all characters in the last word, up to the cursor</td>
+      <td><kbd>Option</kbd>+<kbd>Delete</kbd></td>
+      <td><kbd>Control</kbd>+<kbd>Delete</kbd></td>
     </tr>
     <tr>
-      <td data-th="Timeline Panel">Guardar datos del Timeline</td>
-      <td data-th="Windows"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">S</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Cmd</kbd> + <kbd class="kbd">S</kbd></td>
+      <td>Add or remove a <a href="/web/tools/chrome-devtools/javascript/breakpoints#loc">line-of-code breakpoint</a></td>
+      <td>Focus your cursor on the line and then press <kbd>Command</kbd>+<kbd>B</kbd></td>
+      <td>Focus your cursor on the line and then press <kbd>Control</kbd>+<kbd>B</kbd></td>
     </tr>
     <tr>
-      <td data-th="Timeline Panel">Cargar datos del Timeline</td>
-      <td data-th="Windows"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">O</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Cmd</kbd> + <kbd class="kbd">O</kbd></td>
+      <td>Go to matching bracket</td>
+      <td><kbd>Control</kbd>+<kbd>M</kbd></td>
+      <td><kbd>Control</kbd>+<kbd>M</kbd></td>
+    </tr>
+    <tr>
+      <td>Toggle single-line comment. If multiple lines are selected, DevTools adds a comment to the start of each line</td>
+      <td><kbd>Command</kbd>+<kbd>/</kbd></td>
+      <td><kbd>Control</kbd>+<kbd>/</kbd></td>
+    </tr>
+    <tr>
+      <td>Select / de-select the next occurrence of whatever word the cursor is on. Each occurrence is highlighted simultaneously</td>
+      <td><kbd>Command</kbd>+<kbd>D</kbd> / <kbd>Command</kbd>+<kbd>U</kbd></td>
+      <td><kbd>Control</kbd>+<kbd>D</kbd> / <kbd>Control</kbd>+<kbd>U</kbd></td>
     </tr>
   </tbody>
 </table>
 
-### Profiles
+## Performance panel keyboard shortcuts {: #performance }
 
 <table>
   <thead>
-      <th>Panel Profiles</th>
-      <th>Windows</th>
+      <th>Action</th>
       <th>Mac</th>
+      <th>Windows / Linux</th>
   </thead>
   <tbody>
     <tr>
-      <td data-th="Profiles Panel">Iniciar/detener grabación</td>
-	  <td data-th="Windows"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">E</kbd></td>
-	  <td data-th="Mac"><kbd class="kbd">Cmd</kbd> + <kbd class="kbd">E</kbd></td>
+      <td>Start / stop recording</td>
+      <td><kbd>Command</kbd>+<kbd>E</kbd></td>
+      <td><kbd>Control</kbd>+<kbd>E</kbd></td>
+    </tr>
+    <tr>
+      <td>Save recording</td>
+      <td><kbd>Command</kbd>+<kbd>S</kbd></td>
+      <td><kbd>Control</kbd>+<kbd>S</kbd></td>
+    </tr>
+    <tr>
+      <td>Load recording</td>
+      <td><kbd>Command</kbd>+<kbd>O</kbd></td>
+      <td><kbd>Control</kbd>+<kbd>O</kbd></td>
     </tr>
   </tbody>
 </table>
 
-### Console
+## Memory panel keyboard shortcuts {: #memory }
 
 <table>
   <thead>
-      <th>Combinaciones de teclas de Console</th>
-      <th>Windows</th>
+      <th>Action</th>
       <th>Mac</th>
+      <th>Windows / Linux</th>
   </thead>
   <tbody>
     <tr>
-      <td data-th="Console Shortcuts">Aceptar sugerencia</td>
-      <td data-th="Windows"><kbd class="kbd">Derecha</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Derecha</kbd></td>
-    </tr>
-    <tr>
-      <td data-th="Console Shortcuts">Comando o línea anterior</td>
-      <td data-th="Windows"><kbd class="kbd">Arriba</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Arriba</kbd></td>
-    </tr>
-    <tr>
-      <td data-th="Console Shortcuts">Comando o línea siguiente</td>
-      <td data-th="Windows"><kbd class="kbd">Abajo</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Abajo</kbd></td>
-    </tr>
-    <tr>
-      <td data-th="Console Shortcuts">Seleccionar la consola</td>
-      <td data-th="Windows"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">`</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">`</kbd></td>
-    </tr>
-    <tr>
-      <td data-th="Console Shortcuts">Borrar la consola</td>
-      <td data-th="Windows"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">L</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Cmd</kbd> + <kbd class="kbd">K</kbd>, <kbd class="kbd">Opt</kbd> + <kbd class="kbd">L</kbd></td>
-    </tr>
-    <tr>
-      <td data-th="Console Shortcuts">Entrada de varias líneas</td>
-      <td data-th="Windows"><kbd class="kbd">Mayúscula</kbd> + <kbd class="kbd">Entrar</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">Entrar</kbd></td>
-    </tr>
-    <tr>
-      <td data-th="Console Shortcuts">Ejecutar</td>
-      <td data-th="Windows"><kbd class="kbd">Entrar</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Entrar</kbd></td>
+      <td>Start / stop recording</td>
+      <td><kbd>Command</kbd>+<kbd>E</kbd></td>
+      <td><kbd>Control</kbd>+<kbd>E</kbd></td>
     </tr>
   </tbody>
 </table>
 
-### Device Mode
+## Console panel keyboard shortcuts {: #console }
 
 <table>
   <thead>
-      <th>Combinaciones de teclas de Device Mode</th>
-      <th>Windows</th>
+      <th>Action</th>
       <th>Mac</th>
+      <th>Windows / Linux</th>
   </thead>
   <tbody>
     <tr>
-      <td data-th="Emulation Shortcuts">Pellizcar para acercar y alejar</td>
-      <td data-th="Windows"><kbd class="kbd">Mayúscula</kbd> + <kbd class="kbd">Desplazar</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Mayúscula</kbd> + <kbd class="kbd">Desplazar</kbd></td>
+      <td>Accept autocomplete suggestion</td>
+      <td><kbd>Right Arrow</kbd> or <kbd>Tab</kbd></td>
+      <td><kbd>Right Arrow</kbd> or <kbd>Tab</kbd></td>
+    </tr>
+    <tr>
+      <td>Reject autocomplete suggestion</td>
+      <td><kbd>Escape</kbd></td>
+      <td><kbd>Escape</kbd></td>
+    </tr>
+    <tr>
+      <td>Get previous statement</td>
+      <td><kbd>Up Arrow</kbd></td>
+      <td><kbd>Up Arrow</kbd></td>
+    </tr>
+    <tr>
+      <td>Get next statement</td>
+      <td><kbd>Down Arrow</kbd></td>
+      <td><kbd>Down Arrow</kbd></td>
+    </tr>
+    <tr>
+      <td>Focus the <b>Console</b></td>
+      <td><kbd>Control</kbd>+<kbd>`</kbd></td>
+      <td><kbd>Control</kbd>+<kbd>`</kbd></td>
+    </tr>
+    <tr>
+      <td>Clear the <b>Console</b></td>
+      <td><kbd>Command</kbd>+<kbd>K</kbd> or <kbd>Option</kbd>+<kbd>L</kbd></td>
+      <td><kbd>Control</kbd>+<kbd>L</kbd></td>
+    </tr>
+    <tr>
+      <td>Force a multi-line entry. Note that DevTools should detect multi-line scenarios by default, so this shortcut is now usually unnecessary</td>
+      <td><kbd>Command</kbd>+<kbd>Return</kbd></td>
+      <td><kbd>Shift</kbd>+<kbd>Enter</kbd></td>
+    </tr>
+    <tr>
+      <td>Execute</td>
+      <td><kbd>Return</kbd></td>
+      <td><kbd>Enter</kbd></td>
+    </tr>
+    <tr>
+      <td>Expand all sub-properties of an object that's been logged to the Console</td>
+      <td>
+        Hold <kbd>Alt</kbd> then click <b>Expand</b>
+        <img class="cdt-inl" src="/web/tools/chrome-devtools/images/expand.png"/>
+      </td>
+      <td>
+        Hold <kbd>Alt</kbd> then click <b>Expand</b>
+        <img class="cdt-inl" src="/web/tools/chrome-devtools/images/expand.png"/>
+      </td>
     </tr>
   </tbody>
 </table>
 
-#### En una presentación en pantalla
+## Feedback {: #feedback .hide-from-toc }
 
-<table>
-  <thead>
-      <th>Combinaciones de teclas para presentación en pantalla</th>
-      <th>Windows</th>
-      <th>Mac</th>
-  </thead>
-  <tbody>
-    <tr>
-      <td data-th="Screencasting Shortcuts">Pellizcar para acercar y alejar</td>
-      <td data-th="Windows"><kbd class="kbd">Alt</kbd> + <kbd class="kbd">Desplazar</kbd>,<kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">Clic y arrastrar con dos dedos</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Opt</kbd> + <kbd class="kbd">Desplazar</kbd>, <kbd class="kbd">Cmd</kbd> + <kbd class="kbd">Clic y arrastrar con dos dedos</kbd></td>
-    </tr>
-    <tr>
-      <td data-th="Screencasting Shortcuts">Inspeccionar una herramienta del elemento</td>
-      <td data-th="Windows"><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">Mayúscula</kbd> + <kbd class="kbd">C</kbd></td>
-      <td data-th="Mac"><kbd class="kbd">Cmd</kbd> + <kbd class="kbd">Mayúscula</kbd> + <kbd class="kbd">C</kbd></td>
-    </tr>
-  </tbody>
-</table>
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
