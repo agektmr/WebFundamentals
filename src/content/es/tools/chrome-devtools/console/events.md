@@ -1,94 +1,73 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Command Line API de Chrome DevTools ofrece varias formas de observar e inspeccionar a los receptores de eventos
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: The Chrome DevTools Command Line API offers various ways to observe and inspect event listeners
 
-{# wf_updated_on: 2015-08-02 #}
-{# wf_published_on: 2015-04-13 #}
+{# wf_updated_on: 2018-07-27 #} {# wf_published_on: 2015-04-13 #} {# wf_blink_components: Platform>DevTools #}
 
-# Controlar eventos {: .page-title }
+# Monitor Events {: .page-title }
 
-{% include "web/_shared/contributors/megginkearney.html" %}
-{% include "web/_shared/contributors/flaviocopes.html" %}
-Command Line API de Chrome DevTools ofrece varias formas de observar e inspeccionar a los receptores de eventos. JavaScript tiene una función fundamental en las páginas interactivas, y el navegador te proporciona herramientas útiles para depurar eventos y controladores de eventos.
-
+{% include "web/_shared/contributors/megginkearney.html" %} {% include "web/_shared/contributors/flaviocopes.html" %} The Chrome DevTools Command Line API offers various ways to observe and inspect event listeners. JavaScript plays a central role in interactive pages, and the browser provides you some useful tools to debug events and event handlers.
 
 ### TL;DR {: .hide-from-toc }
-- Escucha a los eventos de un tipo determinado mediante <code>monitorEvents()</code>.
-- Usa <code>unmonitorEvents()</code> para dejar de escuchar.
-- Obtén receptores de un elemento del DOM mediante <code>getEventListeners()</code>.
-- Usa el panel Event Listeners Inspector para obtener información acerca de receptores de eventos.
 
+- Listen to events of a certain type using `monitorEvents()`.
+- Use `unmonitorEvents()` to stop listening.
+- Get listeners of a DOM element using `getEventListeners()`.
+- Use the Event Listeners Inspector panel to get information on event listeners.
 
-## Controla los eventos
+## Monitor events
 
-El método [monitorEvents()](/web/tools/chrome-devtools/debug/command-line/command-line-reference#monitoreventsobject-events)
-le indica a DevTools que registre información sobre los objetivos especificados.
+The [monitorEvents()](/web/tools/chrome-devtools/debug/command-line/command-line-reference#monitoreventsobject-events) method instructs the DevTools to log information on the specified targets.
 
-El primer parámetro es el objeto a controlar.
-Se muestran todos los eventos si no se proporciona un segundo parámetro.
-Para especificar qué eventos escuchar,
-pasa una cadena o una matriz de cadenas como segundo parámetro.
+The first parameter is the object to monitor. All events return if the second parameter is not provided. To specify the events to listen to, pass either a string or an array of strings as the second parameter.
 
-Escucha a los eventos de clic en el cuerpo de la página:
+Listen to click events on the body of the page:
 
     monitorEvents(document.body, "click");
+    
 
-Si el evento controlado es un *tipo de evento* admitido
-que DevTools asigna a un conjunto de nombres de eventos estándar,
-el método escucha a los eventos de ese tipo.
+If the monitored event is a supported *event type* that the DevTools maps to a set of standard event names, then the method listens to the events for that type.
 
-[Command Line API](/web/tools/chrome-devtools/debug/command-line/command-line-reference) cuenta con una admisión completa de *tipos de eventos* para los eventos que cubren.
+The [Command Line API](/web/tools/chrome-devtools/debug/command-line/command-line-reference) has a full mapping of *event types* to the events they cover.
 
-Para detener el control de eventos,
-llama al método `unmonitorEvents()` y proporciónale el objeto para dejar de controlar.
+To stop monitoring events, call the `unmonitorEvents()` method and give it the object to stop monitoring.
 
-Deja de escuchar eventos en el objeto `body` :
+Stop listening to events on the `body` object:
 
     unmonitorEvents(document.body);
+    
 
-## Ver receptores de eventos registrados en objetos
+## View event listeners registered on objects
 
-La [API getEventListeners() ](/web/tools/chrome-devtools/debug/command-line/command-line-reference#geteventlistenersobject)
-muestra los receptores de eventos registrados en el objeto especificado.
+The [getEventListeners() API](/web/tools/chrome-devtools/debug/command-line/command-line-reference#geteventlistenersobject) returns the event listeners registered on the specified object.
 
-El valor mostrado es un objeto que contiene una matriz para cada tipo de evento registrado (por ejemplo, `click` o`keydown`).
-Los miembros de cada matriz son objetos que describen
-al receptor registrado para cada tipo.
-Por ejemplo,
-el siguiente código enumera todos los receptores de eventos registrados en el objeto del documento:
+The return value is an object that contains an array for each registered event type (`click` or `keydown`, for example). The members of each array are objects that describe the listener registered for each type. For example, the following code lists all the event listeners registered on the document object:
 
     getEventListeners(document);
+    
 
-![Resultado de la aplicación de getEventListeners()](images/events-call-geteventlisteners.png)
+![Output of using getEventListeners()](images/events-call-geteventlisteners.png)
 
-Si más de un receptor está registrado en el objeto especificado,
-la matriz contiene un miembro para cada receptor.
-En el siguiente ejemplo
-hay dos receptores de eventos registrados en el elemento #scrollingList para el `mousedown` evento:
+If more than one listener is registered on the specified object, then the array contains a member for each listener. In the following example, there are two event listeners registered on the #scrollingList element for the `mousedown` event:
 
-![Vista de los receptores de eventos adjuntados a mousedown](images/events-geteventlisteners_multiple.png)
+![View of the event listeners attached to mousedown](images/events-geteventlisteners_multiple.png)
 
-Además, amplía cada uno de estos objetos para explorar sus propiedades.
+Further expand each of these objects to explore their properties:
 
-![Vista ampliada de un objeto receptor](images/events-geteventlisteners_expanded.png)
+![Expanded view of listener object](images/events-geteventlisteners_expanded.png)
 
-## Ver los receptores de eventos registrados en los elementos del DOM
+## View event listeners registered on DOM elements
 
-De manera predeterminada,
-el panel *Event Listeners* en Elements Inspector muestra todos los eventos adjuntados a una página:
+By default, the *Event Listeners* panel in the Elements Inspector shows all the events attached to a page:
 
-![Panel Event listeners](images/events-eventlisteners_panel.png)
+![Event listeners panel](images/events-eventlisteners_panel.png)
 
-El filtro limita los eventos al nodo seleccionado:
+The filter limits the events just to the selected node:
 
-![Panel Event listeners, filtrado únicamente por el nodo seleccionado](images/events-eventlisteners_panel_filtered.png)
+![Event listeners panel, filtered by selected node only](images/events-eventlisteners_panel_filtered.png)
 
-Al expandir el objeto, el panel muestra los detalles del receptor de eventos.
-En este ejemplo,
-la página tiene dos receptores de eventos adjuntados a través de jQuery:
+By expanding the object, the panel shows the event listener details. In this example, the page has two event listeners attached via jQuery:
 
-![Vista ampliada de los receptores de eventos](images/events-eventlisteners_panel_details.png)
+![Expanded view of the event listeners](images/events-eventlisteners_panel_details.png)
 
+## Feedback {: #feedback }
 
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
