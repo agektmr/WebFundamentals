@@ -1,318 +1,161 @@
-project_path: /web/fundamentals/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Mantenha um custo baixo de transmissão e análise/compilação de sua rede para JavaScript para garantir que as páginas interajam rapidamente.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Keep your network transmission and parse/compile cost for JavaScript low to ensure pages get interactive quickly.
 
-{# wf_updated_on: 2019-02-06 #}
-{# wf_published_on: 2017-11-30 #}
-{# wf_blink_components: Blink>JavaScript #}
+{# wf_updated_on: 2018-07-02 #} {# wf_published_on: 2017-11-30 #} {# wf_blink_components: Blink>JavaScript #}
 
-# Otimização da inicialização em JavaScript {: .page-title }
+# JavaScript Start-up Optimization {: .page-title }
 
 {% include "web/_shared/contributors/addyosmani.html" %}
 
-Ao criar sites que dependem fortemente de JavaScript, às vezes pagamos pelo que
-enviamos de maneiras que nem sempre visualizamos com facilidade. Neste artigo,
-abordaremos por que um pouco de **disciplina** pode ser útil se você quiser que o site carregue e seja
-interativo com rapidez em dispositivos móveis. Oferecer menos JavaScript significa menos
-tempo para transmissão de rede, menos tempo gasto para descompactar códigos e menos tempo
-para analisar e compilar esse JavaScript.
+As we build sites more heavily reliant on JavaScript, we sometimes pay for what we send down in ways that we can’t always easily see. In this article, we’ll cover why a little **discipline** can help if you’d like your site to load and be interactive quickly on mobile devices. Delivering less JavaScript can mean less time in network transmission, less spent decompressing code and less time parsing and compiling this JavaScript.
 
-## Rede
+## Network
 
-Quando a maioria dos desenvolvedores pensa no custo de JavaScript, é em
-termos de **custo de download e execução**. Quanto mais lenta for a conexão de um usuário,
-mais tempo demorará para enviar mais bytes de JavaScript pela rede.
+When most developers think about the cost of JavaScript, they think about it in terms of the **download and execution cost**. Sending more bytes of JavaScript over the wire takes longer the slower a user’s connection is.
 
-<img src="images/1_U00XcnhqoczTuJ8NH8UhOw.png" alt="Quando um navegador solicita um
-recurso, esse recurso precisa ser recuperado e descompactado. No caso
-de recursos como JavaScript, eles precisam ser analisados e compilados antes da
-execução."/>
+![When a browser requests a
+resource, that resource needs to be fetched and then decompressed. In the case
+of resources like JavaScript, they must be parsed and compiled prior to
+execution.](images/1_U00XcnhqoczTuJ8NH8UhOw.png)
 
-Isso pode ser um problema, até mesmo em países de primeiro mundo, já que o **tipo de conexão
-de rede eficaz** que um usuário tem talvez não seja 3G, 4G ou Wi-Fi. O usuário pode estar usando uma rede
-Wi-Fi pública, mas na realidade estar conectado a um ponto de acesso de rede móvel com velocidades de 2G.
+This can be a problem, even in first-world countries, as the **effective network connection type** a user has might not actually be 3G, 4G or Wi-Fi. You can be on coffee-shop Wi-Fi but connected to a cellular hotspot with 2G speeds.
 
-É possível **reduzir** o custo de transferência de rede do JavaScript com estas opções:
+You can **reduce** the network transfer cost of JavaScript through:
 
-* **Somente enviar o código que um usuário precisa**.
-    * Use a [divisão de código](/web/updates/2017/06/supercharged-codesplit) para dividir
-      seu JavaScript entre o que é e não é essencial. Os pacotes de módulo,
-      como o [webpack](https://webpack.js.org), são compatíveis com a
-      [divisão de código](https://webpack.js.org/guides/code-splitting/).
-    * Carregar lentamente códigos não críticos.
-* **Minificação**
-    * Use [UglifyJS](https://github.com/mishoo/UglifyJS) para
-      [minificar](/web/fundamentals/performance/optimizing-content-efficiency/optimize-encoding-and-transfer#minification_preprocessing_context-specific_optimizations)
-      o código ES5.
-    * Use [babel-minify](https://github.com/babel/minify) ou
-      [uglify-es](https://www.npmjs.com/package/uglify-es) para minificar ES2015+.
-* **Compressão**
-    * No mínimo, use
-      [gzip](/web/fundamentals/performance/optimizing-content-efficiency/optimize-encoding-and-transfer#text_compression_with_gzip)
-      para compactar recursos baseados em texto.
-    * Considere usar
-      [Brotli](https://www.smashingmagazine.com/2016/10/next-generation-server-compression-with-brotli/)
-      ~[q11](https://twitter.com/paulcalvano/status/924660429846208514). O Brotli
-      tem melhor desempenho em taxas de compressão do que o gzip. Ele ajudou a CertSimple a economizar
-      [17%](https://speakerdeck.com/addyosmani/the-browser-hackers-guide-to-instant-loading?slide=30)
-      no tamanho de bytes de JS compactado e a LinkedIn a economizar
-      [4%](https://engineering.linkedin.com/blog/2017/05/boosting-site-speed-using-brotli-compression)
-      nos tempos de carregamento.
-* **Remover código não utilizado**.
-    * Identifique códigos que podem ser removidos ou lentamente carregados
-      com a [cobertura de código
-      do DevTools](/web/updates/2017/04/devtools-release-notes#coverage).
-    * Use
-      [babel-preset-env](https://github.com/babel/babel/tree/master/packages/babel-preset-env)
-      e browserlist para evitar transcompilar recursos que já existem em navegadores modernos.
-      Para desenvolvedores avançados, a [análise cuidadosa dos pacotes de
-      webpack](https://github.com/webpack-contrib/webpack-bundle-analyzer) talvez seja útil
-      para identificar onde cortar dependências irrelevantes.
-    * Para extrair o código, confira
-      [tree-shaking](https://webpack.js.org/guides/tree-shaking/), os plug-ins de corte de biblioteca e otimizações avançadas da [Closure
-      Compiler](/closure/compiler/)
-      como o
-      [lodash-babel-plugin](https://github.com/lodash/babel-plugin-lodash) ou
-      o
-      [ContextReplacementPlugin](https://iamakulov.com/notes/webpack-front-end-size-caching/#moment-js)
-      da webpack para bibliotecas como Moment.js.
-* **Armazenar código em cache para reduzir as viagens da rede.**
-    * Use [HTTP
-      o armazenamento em cache](/web/fundamentals/performance/optimizing-content-efficiency/http-caching)
-      para garantir que os navegadores armazenem as respostas em cache de maneira eficaz. Determine o ciclo de vida
-      ideal para scripts (max-age) e forneça tokens de validação (ETag) para evitar
-      a transferência de bytes inalterados.
-    * O armazenamento em cache do service worker pode tornar a rede do seu app resiliente e oferecer
-      acesso ávido a recursos como o [cache de código
-      do V8](https://v8project.blogspot.com/2015/07/code-caching.html).
-    * Use o armazenamento em cache de longo prazo para não precisar recuperar novamente recursos que não
-      mudaram. Se for usar o Webpack, consulte o [hash
-      de nome de arquivo](https://webpack.js.org/guides/caching/).
+* **Only sending the code a user needs**. 
+    * Use [code-splitting](/web/updates/2017/06/supercharged-codesplit) to break up your JavaScript into what is critical and what is not. Module bundlers like [webpack](https://webpack.js.org) support [code-splitting](https://webpack.js.org/guides/code-splitting/).
+    * Lazily loading in code that is non-critical.
+* **Minification** 
+    * Use [UglifyJS](https://github.com/mishoo/UglifyJS) for [minifying](/web/fundamentals/performance/optimizing-content-efficiency/optimize-encoding-and-transfer#minification_preprocessing_context-specific_optimizations) ES5 code.
+    * Use [babel-minify](https://github.com/babel/minify) or [uglify-es](https://www.npmjs.com/package/uglify-es) to minify ES2015+.
+* **Compression** 
+    * At minimum, use [gzip](/web/fundamentals/performance/optimizing-content-efficiency/optimize-encoding-and-transfer#text_compression_with_gzip) to compress text-based resources.
+    * Consider using [Brotli](https://www.smashingmagazine.com/2016/10/next-generation-server-compression-with-brotli/) ~[q11](https://twitter.com/paulcalvano/status/924660429846208514). Brotli outperforms gzip on compression ratio. It helped CertSimple save [17%](https://speakerdeck.com/addyosmani/the-browser-hackers-guide-to-instant-loading?slide=30) on the size of compressed JS bytes and LinkedIn save [4%](https://engineering.linkedin.com/blog/2017/05/boosting-site-speed-using-brotli-compression) on their load times.
+* **Removing unused code**. 
+    * Identify opportunities for code that can be removed or lazily loaded in with [DevTools code coverage](/web/updates/2017/04/devtools-release-notes#coverage).
+    * Use [babel-preset-env](https://github.com/babel/babel/tree/master/packages/babel-preset-env) and browserlist to avoid transpiling features already in modern browsers. Advanced developers may find careful [analysis of their webpack bundles](https://github.com/webpack-contrib/webpack-bundle-analyzer) helps identify opportunities to trim unneeded dependencies.
+    * For stripping code, see [tree-shaking](https://webpack.js.org/guides/tree-shaking/), [Closure Compiler](/closure/compiler/)’s advanced optimizations and library trimming plugins like [lodash-babel-plugin](https://github.com/lodash/babel-plugin-lodash) or webpack’s [ContextReplacementPlugin](https://iamakulov.com/notes/webpack-front-end-size-caching/#moment-js) for libraries like Moment.js.
+* **Caching code to minimize network trips.** 
+    * Use [HTTP caching](/web/fundamentals/performance/optimizing-content-efficiency/http-caching) to ensure browsers cache responses effectively. Determine optimal lifetimes for scripts (max-age) and supply validation tokens (ETag) to avoid transferring unchanged bytes.
+    * Service Worker caching can make your app network resilient and give you eager access to features like [V8’s code cache](https://v8project.blogspot.com/2015/07/code-caching.html).
+    * Use long-term caching to avoid having to re-fetch resources that haven't changed. If using Webpack, see [filename hashing](https://webpack.js.org/guides/caching/).
 
-## Analisar/compilar
+## Parse/Compile
 
-Após o download, um dos custos **mais pesados** de JavaScript é quando um mecanismo de
-JS **analisa/compila** esse código. No [Chrome
-DevTools](/web/tools/chrome-devtools/), a análise e a compilação fazem parte do
-tempo de “Script" amarelo no painel “Performance”.
+Once downloaded, one of JavaScript’s **heaviest** costs is the time for a JS engine to **parse/compile** this code. In [Chrome DevTools](/web/tools/chrome-devtools/), parse and compile are part of the yellow "Scripting" time in the Performance panel.
 
-<img src="images/1__4gNDmBlXxOF2-KmsOrKkw.png"/>
+![](images/1__4gNDmBlXxOF2-KmsOrKkw.png)
 
-As guias “Bottom-Up” e “Call Tree” mostram os tempos exatos de análise/compilação:
+The Bottom-Up and Call Tree tabs show you exact Parse/compile timings:<figure> 
 
-<figure> <img src="images/1_GdrVt_BTTzzBOIoyZZsQZQ.png"/> <figcaption> Painel
-“Performance” > “Bottom-Up” do Chrome DevTools. Com a opção “Runtime Call Stats” do V8 ativada,
-podemos ver o tempo gasto nas fases Parse e Compile </figcaption> </figure>
+![](images/1_GdrVt_BTTzzBOIoyZZsQZQ.png) <figcaption> Chrome DevTools Performance panel > Bottom-Up. With V8’s Runtime Call Stats enabled, we can see time spent in phases like Parse and Compile </figcaption> </figure> 
 
-Note: a compatibilidade do painel “Performance” com “Runtime Call Stats” atualmente está na fase experimental.
-Para ativar, acesse chrome://flags/#enable-devtools-experiments -> reinicie o Chrome ->
-acesse DevTools -> Settings -> Experiments -> aperte Shift 6 vezes -> marque a opção
-chamada `Timeline: V8 Runtime Call Stats on Timeline` e feche e reabra o DevTools.
+Note: Performance panel support for Runtime Call Stats is currently experimental. To enable, go to chrome://flags/#enable-devtools-experiments -> restart Chrome -> go to DevTools -> Settings -> Experiments -> hit shift 6 times -> check the option called `Timeline: V8 Runtime Call Stats on Timeline` and close then re-open DevTools.
 
-Mas, por que isso é importante?
+But, why does this matter?
 
-<img src="images/1_Dirw7RdQj9Dktc-Ny6-xbA.png"/>
+![](images/1_Dirw7RdQj9Dktc-Ny6-xbA.png)
 
-Passar muito tempo analisando/compilando um código pode atrasar muito a rapidez com a qual um usuário
-pode interagir com o site. Quanto mais você enviar JavaScript, mais demorado será para
-analisar e compilá-lo antes de o site ficar interativo.
+Spending a long time parsing/compiling code can heavily delay how soon a user can interact with your site. The more JavaScript you send, the longer it will take to parse and compile it before your site is interactive.
 
-> Byte por byte, **o JavaScript é mais caro para o navegador processar do que
-> imagens ou fontes da Web de mesmo tamanho** — Tom Dale
+> Byte-for-byte, **JavaScript is more expensive for the browser to process than the equivalently sized image or Web Font** — Tom Dale
 
-Em comparação ao JavaScript, há inúmeros custos envolvidos no processamento de
-imagens de mesmo tamanho (elas ainda precisam ser decodificadas!), mas, no
-hardware móvel médio, é mais provável que o JS afete negativamente a interatividade da página.
+Compared to JavaScript, there are numerous costs involved in processing equivalently sized images (they still have to be decoded!) but on average mobile hardware, JS is more likely to negatively impact a page’s interactivity.<figure> 
 
-<figure> <img src="images/1_PRVzNizF9jQ_QADF5lQHpA.png"/> <figcaption>Bytes de JavaScript
-e imagem possuem custos muito diferentes. As imagens geralmente não bloqueiam o thread
-principal nem impedem que as interfaces fiquem interativas enquanto são decodificadas e
-rasterizadas. No entanto, o JS pode atrasar a interatividade por causa da análise, da compilação e dos
-custos de execução.</figcaption> </figure>
+![](images/1_PRVzNizF9jQ_QADF5lQHpA.png) <figcaption>JavaScript and image bytes have very different costs. Images usually don’t block the main thread or prevent interfaces from getting interactive while being decoded and rasterized. JS however can delay interactivity due to parse, compile and execution costs.</figcaption> </figure> 
 
-Quando falamos sobre a lentidão da análise e compilação, estamos
-falando sobre o smartphones **medianos** aqui. É importante levar esse contexto em consideração. **Usuários médios podem ter smartphones
-com CPUs e GPUs lentas, sem cache L2/L3 e inclusive com memória
-limitada.**
+When we talk about parse and compile being slow; context is important — we’re talking about **average** mobile phones here. **Average users can have phones with slow CPUs and GPUs, no L2/L3 cache and which may even be memory constrained.**
 
-> Nem sempre os recursos de rede e do dispositivo se equiparam. Um usuário
-> com uma conexão Fiber incrível não necessariamente tem a melhor CPU para
-> analisar e avaliar o JavaScript enviado para seu dispositivo. O inverso
-> também é válido, uma conexão de rede terrível, mas uma CPU megarrápida. — Kristofer
-> Baxter, LinkedIn
+> Network capabilities and device capabilities don’t always match up. A user with an amazing Fiber connection doesn’t necessarily have the best CPU to parse and evaluate JavaScript sent to their device. This is also true in reverse..a terrible network connection, but a blazing fast CPU. — Kristofer Baxter, LinkedIn
 
-Abaixo, vemos o custo de analisar aproximadamente 1 MB de JavaScript descompactado (simples) em um
-hardware de baixa e alta capacidade. **Há uma diferença de 2 a 5x no tempo para analisar/compilar
-código entre os smartphones mais rápidos do mercado e os smartphones medianos**.
+Below we can see the cost of parsing ~1MB of decompressed (simple) JavaScript on low and high-end hardware. **There is a 2–5x difference in time to parse/compile code between the fastest phones on the market and average phones**.<figure> 
 
-<figure> <img src="images/1_8BQ3bCYu1AVvJWPR1x8Yig.png"/> <figcaption>Este gráfico
-destaca os tempos de análise de um pacote de 1 MB de JavaScript (aproximadamente 250 KB comprimido com zgip) em
-dispositivos móveis e computadores desktop de classes diferentes. Ao analisar o custo de
-análise, é preciso considerar os números não comprimidos, por exemplo, aproximadamente 250 KB de JS comprimido com gzip
-descompacta para aproximadamente 1 MB de código.</figcaption> </figure>
+![](images/1_8BQ3bCYu1AVvJWPR1x8Yig.png) <figcaption>This graph highlights parse times for a 1MB bundle of JavaScript (~250KB gzipped) across desktop and mobile devices of differing classes. When looking at the cost of parse, it’s the decompressed figures to consider e.g ~250KB gzipped JS decompresses to ~1MB of code.</figcaption> </figure> 
 
-O que ocorre com um site real, tipo CNN.com?
+What about a real-world site, like CNN.com?
 
-**No iPhone 8 de alta capacidade, leva apenas cerca de 4 segundos para analisar/compilar o JS da CNN em comparação
-a cerca de 13 segundos em um smartphone mediano (Moto G4)**. Isso pode afetar significativamente a
-rapidez com a qual um usuário pode interagir completamente com esse site.
+**On the high-end iPhone 8 it takes just ~4s to parse/compile CNN’s JS compared to ~13s for an average phone (Moto G4)**. This can significantly impact how quickly a user can fully interact with this site.<figure> 
 
-<figure> <img src="images/1_7ysArXJ4nN0rQEMT9yZ_Sg.png"/> <figcaption>Acima,
-vemos os tempos de análise comparando o desempenho do chip A11 Bionic da Apple ao
-Snapdragon 617 no hardware mais mediano de um dispositivo Android.</figcaption> </figure>
+![](images/1_7ysArXJ4nN0rQEMT9yZ_Sg.png) <figcaption>Above we see parse times comparing the performance of Apple’s A11 Bionic chip to the Snapdragon 617 in more average Android hardware.</figcaption> </figure> 
 
-Isso destaca a importância de testar em hardware **mediano** (como o Moto
-G4) em vez de testar somente no smartphone que está no seu bolso. No entanto, o contexto
-é importante: **otimize para as condições de dispositivo e rede dos seus usuários.**
+This highlights the importance of testing on **average** hardware (like the Moto G4) instead of just the phone that might be in your pocket. Context matters however: **optimize for the device and network conditions your users have.**<figure> 
 
-<figure> <img src="images/1_6oEpMEi_pjRNjmtN9i2TCA.png"/> <figcaption>O Google
-Analytics pode oferecer insights sobre as <a
-href="https://crossbrowsertesting.com/blog/development/use-google-analytics-find-devices-customers-use/">classes
-de dispositivos móveis</a> que usuários reais usam para acessar seu site. Isso pode
-oferecer oportunidades para entender as limitações reais de CPU/GPU
-que os usuários possuem.</figcaption> </figure>
+![](images/1_6oEpMEi_pjRNjmtN9i2TCA.png) <figcaption>Google Analytics can provide insight into the [mobile device classes](https://crossbrowsertesting.com/blog/development/use-google-analytics-find-devices-customers-use/) your real users are accessing your site with. This can provide opportunities to understand the real CPU/GPU constraints they’re operating with.</figcaption> </figure> 
 
+**Are we really sending down too much JavaScript? Err, possibly :)**
 
-**Será que realmente estamos enviando JavaScript demais? Sim, é possível :)**
+Using HTTP Archive (top ~500K sites) to analyze the state of [JavaScript on mobile](http://beta.httparchive.org/reports/state-of-javascript#bytesJs), we can see that 50% of sites take over 14 seconds to get interactive. These sites spend up to 4 seconds just parsing and compiling JS.
 
-Ao usar o HTTP Archive (os principais 500 mil sites) para analisar o estado de [JavaScript em
-dispositivos móveis](http://beta.httparchive.org/reports/state-of-javascript#bytesJs), vemos
-que 50% dos sites levam mais de 14 segundos para ficarem interativos. Esses sites gastam
-até 4 segundos apenas para analisar e compilar JS.
+![](images/1_sVgunAoet0i5FWEI9NSyMg.png)
 
-<img src="images/1_sVgunAoet0i5FWEI9NSyMg.png"/>
+Factor in the time it takes to fetch and process JS and other resources and it’s perhaps not surprising that users can be left waiting a while before feeling pages are ready to use. We can definitely do better here.
 
-Leve em consideração o tempo que leva para recuperar e processar o JS e outros recursos e
-talvez não seja surpreendente que usuários aguardem um pouco até acharem que
-páginas estão prontas para serem usadas. Certamente podemos melhorar isso.
+**Removing non-critical JavaScript from your pages can reduce transmission times, CPU-intensive parsing and compiling and potential memory overhead. This also helps get your pages interactive quicker.**
 
-**Remover o JavaScript que não é essencial para as páginas pode reduzir os
-tempos de transmissão, análise e compilação intensivas da CPU, além da possível sobrecarga da memória. Isso
-também ajuda a acelerar a interatividade das suas páginas.**
+## Execution time
 
-## Tempo de execução
+It’s not just parse and compile that can have a cost. **JavaScript execution** (running code once parsed/compiled) is one of the operations that has to happen on the main thread. Long execution times can also push out how soon a user can interact with your site.
 
-A análise e a compilação não são as únicas a terem um custo. A **execução de JavaScript**
-(executar o código após ser analisado/compilado) é uma das operações que precisa ocorrer
-no thread principal. Tempos de execução longos também podem atrasar a rapidez com a qual um usuário pode
-interagir com o site.
+![](images/1_ec0wEKKVl7iQidBks3oDKg.png)
 
-<img src="images/1_ec0wEKKVl7iQidBks3oDKg.png"/>
+> If script executes for more than 50ms, time-to-interactive is delayed by the *entire* amount of time it takes to download, compile, and execute the JS — Alex Russell
 
-> Se o script for executado por mais de 50 ms, o tempo de interação é atrasado pela
-> quantia *total* de tempo que leva para fazer o download, compilar e executar o JS —
-> Alex Russell
+To address this, JavaScript benefits from being in **small chunks** to avoid locking up the main thread. Explore if you can reduce how much work is being done during execution.
 
-Para resolver esse problema, é bom ter o JavaScript em **pequenos pedaços** para evitar
-o bloqueio do thread principal. Descubra se você pode reduzir a quantidade de trabalho
-feito durante a execução.
+## Other costs
 
-## Outros custos
+JavaScript can impact page performance in other ways:
 
-O JavaScript pode afetar o desempenho da página de outras formas:
+* Memory. Pages can appear to jank or pause frequently due to GC (garbage collection). When a browser reclaims memory, JS execution is paused so a browser frequently collecting garbage can pause execution more frequently than we may like. Avoid [memory leaks](/web/tools/chrome-devtools/memory-problems/) and frequent gc pauses to keep pages jank free.
+* During runtime, long-running JavaScript can block the main-thread causing pages that are unresponsive. Chunking up work into smaller pieces (using `<a
+href="/web/fundamentals/performance/rendering/optimize-javascript-execution#use_requestanimationframe_for_visual_changes">requestAnimationFrame()</a>` or `<a
+href="/web/updates/2015/08/using-requestidlecallback">requestIdleCallback()</a>` for scheduling) can minimize responsiveness issues.
 
-* Memória. As páginas podem ficar instáveis ou pausar frequentemente devido à GC (coleta de
-  lixo). Quando um navegador recupera a memória, a execução de JS é pausada para que um
-  navegador que coleta lixo com frequência possa pausar a execução com uma frequência maior do que a
-  desejada. Evite [vazamentos de memória](/web/tools/chrome-devtools/memory-problems/)
-  e pausas frequentes de GC para ter páginas sem instabilidade.
-* Durante o tempo de execução, o JavaScript de longa duração pode bloquear o thread principal, resultando em
-  páginas não responsivas. Quebrar o trabalho em pedaços menores (usando
-  <code><a
-  href="/web/fundamentals/performance/rendering/optimize-javascript-execution#use_requestanimationframe_for_visual_changes">requestAnimationFrame()</a></code>
-  ou <code><a
-  href="/web/updates/2015/08/using-requestidlecallback">requestIdleCallback()</a></code>
-  para agendamento) pode minimizar problemas de responsividade.
+## Patterns for reducing JavaScript delivery cost
 
-## Padrões para reduzir o custo de entrega de JavaScript
-
-Quando se está tentando manter os tempos de análise/compilação e transmissão da rede para JavaScript
-lentos, há padrões que podem ajudar, como agrupamento baseado em rotas ou
-[PRPL](/web/fundamentals/performance/prpl-pattern/).
+When you’re trying to keep parse/compile and network transmit times for JavaScript slow, there are patterns that can help like route-based chunking or [PRPL](/web/fundamentals/performance/prpl-pattern/).
 
 ### PRPL
 
-PRPL (sigla para push, renderizar, pré-armazenar em cache e carregar lentamente) é um padrão que otimiza a
-interatividade pelo armazenamento em cache e pela divisão de código agressivos:
+PRPL (Push, Render, Pre-cache, Lazy-load) is a pattern that optimizes for interactivity through aggressive code-splitting and caching:
 
-<img src="images/1_VgdNbnl08gcetpqE1t9P9w.png"/>
+![](images/1_VgdNbnl08gcetpqE1t9P9w.png)
 
-Vamos conferir seu impacto.
+Let’s visualize the impact it can have.
 
-Analisamos o tempo de carregamento de sites conhecidos para dispositivos móveis e Progressive Web Apps usando o
-Runtime Call Stats do V8. Como podemos ver, o tempo de análise (mostrado em laranja) é uma
-porção significativa do tempo gasto por muitos destes sites:
+We analyze the load-time of popular mobile sites and Progressive Web Apps using V8’s Runtime Call Stats. As we can see, parse time (shown in orange) is a significant portion of where many of these sites spend their time:
 
-<img src="images/1_9BMRW5i_bS4By_JSESXX8A.png"/>
+![](images/1_9BMRW5i_bS4By_JSESXX8A.png)
 
-[Wego](https://www.wego.com), um site que usa PRPL, consegue manter um tempo de
-análise baixo para suas rotas, obtendo interatividade muito rapidamente. Muitos dos outros sites
-acima adotaram a divisão de código e os orçamentos de desempenho para tentar reduzir os custos
-de JS.
+[Wego](https://www.wego.com), a site that uses PRPL, manages to maintain a low parse time for their routes, getting interactive very quickly. Many of the other sites above adopted code-splitting and performance budgets to try lowering their JS costs.
 
+### Progressive Bootstrapping
 
-### Bootstrap progressivo
+Many sites optimize content visibility at the expensive of interactivity. To get a fast first paint when you do have large JavaScript bundles, developers sometimes employ server-side rendering; then "upgrade" it to attach event handlers when the JavaScript finally gets fetched.
 
-Muitos sites otimizam a visibilidade do conteúdo em detrimento da interatividade. Para ter
-uma primeira gravação rápida com pacotes grandes de JavaScript, os desenvolvedores
-às vezes empregam renderização no servidor. Depois disso, eles fazem "upgrade" para anexar gerenciadores
-de evento quando o JavaScript finalmente for recuperado.
+Be careful — this has its own costs. You 1) generally send down a *larger* HTML response which can push our interactivity, 2) can leave the user in an uncanny valley where half the experience can’t actually be interactive until JavaScript finishes processing.
 
-Mas, cuidado, pois isso tem um preço. Você 1) geralmente envia uma resposta HTML
-*maior*, que pode impulsionar a interatividade; 2) pode deixar o usuário isolado
-de modo que metade da experiência não fique realmente interativa até que o JavaScript
-termine de ser processado.
+Progressive Bootstrapping may be a better approach. Send down a minimally functional page (composed of just the HTML/JS/CSS needed for the current route). As more resources arrive, the app can lazy-load and unlock more features.<figure> 
 
-O bootstrap progressivo pode ser uma abordagem mais adequada. Envie uma página minimamente
-funcional (composta apenas pelo HTML/JS/CSS necessário para a rota atual).
-À medida que mais recursos chegarem, o app poderá carregar lentamente e desbloquear mais recursos.
+![](images/1_zY03Y5nVEY21FXA63Qe8PA.png) <figcaption> [Progressive Bootstrapping](https://twitter.com/aerotwist/status/729712502943174657) by Paul Lewis </figcaption> </figure> 
 
-<figure> <img src="images/1_zY03Y5nVEY21FXA63Qe8PA.png"/> <figcaption> <a
-href="https://twitter.com/aerotwist/status/729712502943174657">Bootstrap
-progressivo</a> por Paul Lewis </figcaption> </figure>
+Loading code proportionate to what’s in view is the holy grail. PRPL and Progressive Bootstrapping are patterns that can help accomplish this.
 
-Carregar o código em proporção ao que está sendo visualizado é o principal objetivo. PRPL e
-Bootsrap progressivo são padrões que podem ajudar a fazer isso.
+## Conclusions
 
-## Conclusões
+**Transmission size is critical for low end networks. Parse time is important for CPU bound devices. Keeping these low matters.**
 
-**O tamanho de transmissão é essencial para redes de baixa capacidade. O tempo de análise é importante para
-dispositivos com CPU. É importante mantê-los baixos.**
+Teams have found success adopting strict performance budgets for keeping their JavaScript transmission and parse/compile times low. See Alex Russell’s "[Can You Afford It?: Real-world Web Performance Budgets](https://infrequently.org/2017/10/can-you-afford-it-real-world-web-performance-budgets/)" for guidance on budgets for mobile.<figure> 
 
-Equipes foram bem-sucedidas ao adotar orçamentos de desempenho rigorosos para manter os
-tempos de transmissão, análise e compilação de JavaScript baixos. Confira "[Can You
-Afford It?: Real-world Web Performance
-Budgets (Dá para pagar? Os orçamentos de desempenho do mundo real)](https://infrequently.org/2017/10/can-you-afford-it-real-world-web-performance-budgets/)"
-de Alex Russel para ver orientações sobre orçamentos para dispositivos móveis.
+![](images/1_U8PJVNrA_tYADQ6_S4HUYw.png) <figcaption>It’s useful to consider how much JS "headroom" the architectural decisions we make can leave us for app logic.</figcaption> </figure> 
 
-<figure> <img src="images/1_U8PJVNrA_tYADQ6_S4HUYw.png"/> <figcaption>É
-útil considerar o espaço de JS que as decisões arquitetônicas que tomamos
-nos deixam para a lógica do app.</figcaption> </figure>
+If you’re building a site that targets mobile devices, do your best to develop on representative hardware, keep your JavaScript parse/compile times low and adopt a Performance Budget for ensuring your team are able to keep an eye on their JavaScript costs.
 
-Se você estiver criando um site que segmente dispositivos móveis, faça o seu melhor para desenvolver
-em hardware representativo, manter os tempos de análise/compilação de JavaScript baixos e
-adotar um orçamento de desempenho para garantir que sua equipe consiga monitorar os
-custos de JavaScript.
+## Learn More
 
-## Saiba mais
-
-* [Chrome Dev Summit 2017 - Modern Loading Best
-  Practices (Melhores práticas para carregamento moderno)](https://www.youtube.com/watch?v=_srJ7eHS3IM)
-* [JavaScript Start-up
-  Performance (Desempenho de inicialização do JavaScript)](https://medium.com/reloading/javascript-start-up-performance-69200f43b201)
-* [Solving the web performance
-  crisis (Como solucionar a crise do desempenho de Web)](https://nolanlawson.github.io/frontendday-2016/) — Nolan Lawson
-* [Can you afford it? Real-world performance
-  budgets (Dá para pagar? Os orçamentos de desempenho do mundo real)](https://infrequently.org/2017/10/can-you-afford-it-real-world-web-performance-budgets/)
-  — Alex Russell
-* [Evaluating web frameworks and
-  libraries (Avaliação das bibliotecas e estruturas da Web)](https://twitter.com/kristoferbaxter/status/908144931125858304) —
-  Kristofer Baxter
-* [Cloudflare’s Results of experimenting with
-  Brotli (Resultados da experimentação com Brotli da Cloudfare)](https://blog.cloudflare.com/results-experimenting-brotli/) para
-  compressão (o Brotli dinâmico com uma qualidade mais alta pode atrasar a renderização
-  da página inicial. Avalie com cuidado. Em vez disso, recomendamos comprimir
-  estatisticamente.)
-* [Performance
-  Futures (Futuros do desempenho)](https://medium.com/@samccone/performance-futures-bundling-281543d9a0d5)
-  — Sam Saccone
+* [Chrome Dev Summit 2017 - Modern Loading Best Practices](https://www.youtube.com/watch?v=_srJ7eHS3IM)
+* [JavaScript Start-up Performance](https://medium.com/reloading/javascript-start-up-performance-69200f43b201)
+* [Solving the web performance crisis](https://nolanlawson.github.io/frontendday-2016/) — Nolan Lawson
+* [Can you afford it? Real-world performance budgets](https://infrequently.org/2017/10/can-you-afford-it-real-world-web-performance-budgets/) — Alex Russell
+* [Evaluating web frameworks and libraries](https://twitter.com/kristoferbaxter/status/908144931125858304) — Kristofer Baxter
+* [Cloudflare’s Results of experimenting with Brotli](https://blog.cloudflare.com/results-experimenting-brotli/) for compression (note dynamic Brotli at a higher quality can delay initial page render so evaluate carefully. You probably want to statically compress instead.)
+* [Performance Futures](https://medium.com/@samccone/performance-futures-bundling-281543d9a0d5) — Sam Saccone
