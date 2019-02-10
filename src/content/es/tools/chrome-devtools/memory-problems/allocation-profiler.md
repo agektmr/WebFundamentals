@@ -1,70 +1,51 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Usa la herramienta de generación de perfiles de asignación para buscar objetos que la recolección de elementos no usados no procese correctamente, y que sigan reteniendo memoria.
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Use the allocation profiler tool to find objects that aren't being properly garbage collected, and continue to retain memory.
 
-{# wf_updated_on: 2017-07-12 #}
-{# wf_published_on: 2015-04-13 #}
+{# wf_updated_on: 2018-07-27 #} {# wf_published_on: 2015-04-13 #} {# wf_blink_components: Platform>DevTools #}
 
-# Cómo usar la herramienta de generación de perfiles de asignación {: .page-title }
+# How to Use the Allocation Profiler Tool {: .page-title }
 
-{% include "web/_shared/contributors/megginkearney.html" %}
-Usa la herramienta de generación de perfiles de asignación para buscar objetos que la recolección de elementos no usados no procese correctamente, y que sigan reteniendo memoria.
+{% include "web/_shared/contributors/megginkearney.html" %} Use the allocation profiler tool to find objects that aren't being properly garbage collected, and continue to retain memory.
 
+## How the tool works
 
-## Cómo funciona la herramienta
+The **allocation profiler** combines the detailed snapshot information of the [heap profiler](/web/tools/chrome-devtools/profile/memory-problems/heap-snapshots) with the incremental updating and tracking of the [Timeline panel](/web/tools/chrome-devtools/profile/evaluate-performance/timeline-tool). Similar to these tools, tracking objects’ heap allocation involves starting a recording, performing a sequence of actions, then stop the recording for analysis.
 
-El **generador de perfiles de asignación** combina la información de captura de pantalla detallada del
-[generador de perfiles de montón](/web/tools/chrome-devtools/profile/memory-problems/heap-snapshots)
-con la actualización y el seguimiento incrementar del
-[Panel de línea de tiempo](/web/tools/chrome-devtools/profile/evaluate-performance/timeline-tool).
-En forma similar a estas herramientas, la asignación de montón de los objetos de seguimiento involucra comenzar una grabación,
-realizar una secuencia de acciones, y detener la grabación para fines de análisis.
+The tool takes heap snapshots periodically throughout the recording (as frequently as every 50 ms!) and one final snapshot at the end of the recording.
 
-La herramienta toma periódicamente capturas de pantalla de montón de toda la grabación (¡cada 50 ms!) y una captura de pantalla final al final de la grabación.
+![Allocation profiler](imgs/object-tracker.png)
 
-![Generador de perfiles de asignación](imgs/object-tracker.png)
+Note: The number after the @ is an object ID that persists among multiple snapshots taken. This allows precise comparison between heap states. Displaying an object's address makes no sense, as objects are moved during garbage collections.
 
-Note: El número después del @ es un ID de objeto que se conserva entre las distintas capturas de pantalla tomadas. Esto permite una comparación precisa entre los estados de montón. Mostrar la dirección de un objeto no tiene sentido, ya que estos se mueven durante la recolección de elementos no usados.
+## Enable allocation profiler
 
-## Habilita el generador de perfiles de asignación
+To begin using the allocation profiler:
 
-Para comenzar a utilizar el generador de perfiles de asignación:
+1. Make sure you have the latest [Chrome Canary](https://www.google.com/intl/en/chrome/browser/canary.html).
+2. Open the Developer Tools and click on the gear icon in the lower right.
+3. Now, open the Profiler panel, you should see a profile called "Record Heap Allocations"
 
-1. Asegúrate de tener el último [Chrome Canary](https://www.google.com/intl/en/chrome/browser/canary.html).
-2. Abre Developer Tools y haz clic en el ícono de ajustes en la parte inferior derecha.
-3. Ahora, abre el panel del generador de perfiles. Deberás ver un perfil denominado "Record Heap Allocations".
+![Record heap allocations profiler](imgs/record-heap.png)
 
-![Grabar generador de perfiles de asignación de montón](imgs/record-heap.png)
+## Read a heap allocation profile
 
-## Lee un perfil de asignación de montón
+The heap allocation profile shows where objects are being created and identifies the retaining path. In the snapshot below, the bars at the top indicate when new objects are found in the heap.
 
-El perfil de asignación de montón muestra dónde se crean los objetos e identifica la ruta de retención.
-En la siguiente captura de pantalla, las barras de la parte superior indican cuándo se encuentran nuevos objetos en el montón.
+The height of each bar corresponds to the size of the recently allocated objects, and the color of the bars indicate whether or not those objects are still live in the final heap snapshot. Blue bars indicate objects that are still live at the end of the timeline, Gray bars indicate objects that were allocated during the timeline, but have since been garbage collected:
 
-La altura de cada barra corresponde al tamaño de los objetos asignados recientemente
-y el color de las barras indica si esos objetos todavía existen en la captura de pantalla de montón final.
-Las barras azules indican los objetos que todavía existen al final de la línea de tiempo,
-las barras grises indican los objetos que fueron asignados durante la línea de tiempo,
-pero que desde entonces se sometieron a la recolección de elementos sin usar:
+![Allocation profiler snapshot](imgs/collected.png)
 
-![Captura de pantalla del generador de perfiles de asignación](imgs/collected.png)
+In the snapshot below, an action was performed 10 times. The sample program caches five objects, so the last five blue bars are expected. But the leftmost blue bar indicates a potential problem.
 
-En la siguiente captura de pantalla, se ejecutó una acción diez veces.
-El programa de muestra almacena en caché cinco objetos, por lo que se esperan las últimas cinco barras azules.
-Sin embargo, la barra azul más a la izquierda indica un posible problema.
+You can then use the sliders in the timeline above to zoom in on that particular snapshot and see the objects that were recently allocated at that point:
 
-Luego, puedes usar los controles deslizantes de la línea de tiempo que figura arriba para acercar ese captura en particular
-y ver los objetos que se asignaron recientemente en ese punto:
+![Zoom in on snapshot](imgs/sliders.png)
 
- ![Acercar la captura de pantalla](imgs/sliders.png)
+Clicking on a specific object in the heap will show its retaining tree in the bottom portion of the heap snapshot. Examining the retaining path to the object should give you enough information to understand why the object was not collected, and you can make the necessary code changes to remove the unnecessary reference.
 
-Al hacer clic en un objeto específico del montón se mostrará su árbol de retención en la parte inferior de la captura de pantalla del montón. Si examinas la ruta de acceso de retención del objeto, obtendrás suficiente información para comprender la razón por la cual el objeto no fue recolectado y podrás efectuar los cambios requeridos en el código para quitar la referencia innecesaria.
+## View memory allocation by function {: #allocation-profiler }
 
-## Ve la asignación de memoria por función {: #allocation-profiler }
+You can also view memory allocation by JavaScript function. See [Investigate memory allocation by function](index#allocation-profile) for more information.
 
-También puedes ver la asignación de memoria por función JavaScript. Consulta
-[Investigar asignación de memoria por función](index#allocation-profile) para
-obtener más información.
+## Feedback {: #feedback }
 
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
