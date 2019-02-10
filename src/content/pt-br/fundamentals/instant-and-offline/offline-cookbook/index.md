@@ -1,55 +1,32 @@
-project_path: /web/fundamentals/_project.yaml
-book_path: /web/fundamentals/_book.yaml
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml
 
-{# wf_updated_on: 2019-02-06 #}
-{# wf_published_on: 2014-12-09 #}
-{# wf_blink_components: N/A #}
+{# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2014-12-09 #} {# wf_blink_components: N/A #}
 
-# O manual off-line {: .page-title }
+# The Offline Cookbook {: .page-title }
 
 {% include "web/_shared/contributors/jakearchibald.html" %}
 
-Quando o AppCache foi disponibilizado, ofereceu alguns padrões para permitir
-acesso off-line ao conteúdo. Se esses eram os padrões de que precisava, parabéns,
-você ganhou na loteria do AppCache (o prêmio principal continua sem ganhador). No entanto, o resto
-de nós ficou
-[sem saber o que fazer](http://alistapart.com/article/application-cache-is-a-douchebag).
+When AppCache arrived on the scene it gave us a couple of patterns to make content work offline. If those were the patterns you needed, congratulations, you won the AppCache lottery (the jackpot remains unclaimed), but the rest of us were left huddled in a corner [rocking back & forth](http://alistapart.com/article/application-cache-is-a-douchebag).
 
-Com o [ServiceWorker][sw_primer], desistimos de tentar resolver a questão do off-line e disponibilizamos
-aos desenvolvedores as peças necessárias para que eles mesmos resolvessem essa questão. O service worker oferece
-controle sobre o armazenamento em cache e como as solicitações são processadas. Isso significa que você mesmo
-cria os próprios padrões. Vamos examinar isoladamente alguns padrões possíveis
-, mas na prática você usará vários deles em conjunto
-dependendo do URL e do contexto.
+With [ServiceWorker](/web/fundamentals/getting-started/primers/service-workers) we gave up trying to solve offline, and gave developers the moving parts to go solve it themselves. It gives you control over caching and how requests are handled. That means you get to create your own patterns. Let's take a look at a few possible patterns in isolation, but in practice you'll likely use many of them in tandem depending on URL & context.
 
-Todos os exemplos de código funcionam atualmente no Chrome e no Firefox, a menos que haja uma observação em contrário.
-Para detalhes completos sobre o suporte ao service worker, consulte ["O service worker está pronto?"][is_sw_ready].
+All code examples work today in Chrome & Firefox, unless otherwise noted. For full details on service worker support, see ["Is Service Worker Ready?"](https://jakearchibald.github.io/isserviceworkerready/).
 
-Para uma demonstração funcional de alguns desses padrões, consulte [Trained-to-thrill][ttt]
-e [este vídeo](https://www.youtube.com/watch?v=px-J9Ghvcx4),
-que mostra o impacto sobre o desempenho.
+For a working demo of some of these patterns, see [Trained-to-thrill](https://jakearchibald.github.io/trained-to-thrill/), and [this video](https://www.youtube.com/watch?v=px-J9Ghvcx4) showing the performance impact.
 
-## A máquina de cache – quando armazenar recursos
+## The cache machine - when to store resources
 
-O [ServiceWorker][sw_primer] permite processar solicitações de forma independente do
-cache. Portanto, faremos um exame individual. Para começar, armazenamento em cache: quando deve
-ser feito?
+[ServiceWorker](/web/fundamentals/getting-started/primers/service-workers) lets you handle requests independently from caching, so we'll look at them separately. First up, caching, when should it be done?
 
-### Na instalação – como uma dependência {: #on-install-as-dependency }
+### On install - as a dependency {: #on-install-as-dependency }
 
-<img src="images/cm-on-install-dep.png">
+<img src="images/cm-on-install-dep.png" />
 
-O ServiceWorker oferece um evento `install`. Você pode usar isso para preparar o
-que precisa estar pronto antes de processar outros eventos. Enquanto isso
-acontece, todas as versões anteriores do ServiceWorker ainda estão executando e
-entregando páginas. Portanto, o que você fizer agora não pode interferir com essas atividades.
+ServiceWorker gives you an `install` event. You can use this to get stuff ready, stuff that must be ready before you handle other events. While this happens any previous version of your ServiceWorker is still running & serving pages, so the things you do here mustn't disrupt that.
 
-**Ideal para:** CSS, imagens, fontes, JS, modelos… basicamente, tudo que
-você considere estático para essa "versão" do site.
+**Ideal for:** CSS, images, fonts, JS, templates… basically anything you'd consider static to that "version" of your site.
 
-São os itens que, em caso de falha de acesso,
-interromperiam totalmente o site, itens que um aplicativo nativo equivalente incluiria
-como parte do download inicial.
+These are things that would make your site entirely non-functional if they failed to fetch, things an equivalent native-app would make part of the initial download.
 
     self.addEventListener('install', function(event) {
       event.waitUntil(
@@ -64,27 +41,19 @@ como parte do download inicial.
         })
       );
     });
+    
 
-O `event.waitUntil` faz uma promessa para definir a duração e o sucesso da
-instalação. Se a promessa for rejeitada, a instalação será considerada uma falha
-e esse ServiceWorker será abandonado (se houver uma versão anterior
-em execução, ela ficará intacta). `caches.open` e `cache.addAll` retornam
-promessas. Se a recuperação de um dos recursos falhar, a chamada de `cache.addAll`
-será rejeitada.
+`event.waitUntil` takes a promise to define the length & success of the install. If the promise rejects, the installation is considered a failure and this ServiceWorker will be abandoned (if an older version is running, it'll be left intact). `caches.open` and `cache.addAll` return promises. If any of the resources fail to fetch, the `cache.addAll` call rejects.
 
-Em [trained-to-thrill][ttt], uso isso para
-[armazenar recursos estáticos em cache](https://github.com/jakearchibald/trained-to-thrill/blob/3291dd40923346e3cc9c83ae527004d502e0464f/www/static/js-unmin/sw/index.js#L3).
+On [trained-to-thrill](https://jakearchibald.github.io/trained-to-thrill/) I use this to [cache static assets](https://github.com/jakearchibald/trained-to-thrill/blob/3291dd40923346e3cc9c83ae527004d502e0464f/www/static/js-unmin/sw/index.js#L3).
 
+### On install - not as a dependency {: #on-install-not }
 
-### Na instalação, não como uma dependência {: #on-install-not }
+<img src="images/cm-on-install-not.png" />
 
-<img src="images/cm-on-install-not.png">
+Similar to above, but won't delay install completing and won't cause installation to fail if caching fails.
 
-Semelhante à anterior, mas sem retardar a conclusão da instalação e sem provocar erros
-na instalação em caso de falha no armazenamento em cache.
-
-**Ideal para:** recursos maiores que não sejam imediatamente necessários, como
-arquivos de níveis posteriores de um jogo.
+**Ideal for:** Bigger resources that aren't needed straight away, such as assets for later levels of a game.
 
     self.addEventListener('install', function(event) {
       event.waitUntil(
@@ -98,27 +67,19 @@ arquivos de níveis posteriores de um jogo.
         })
       );
     });
+    
 
-Não estamos passando a promessa `cache.addAll` para os níveis 11 a 20 de volta para
-`event.waitUntil`. Portanto, mesmo se houver falha, o jogo continuará disponível
-off-line. Naturalmente, você terá de considerar a possível ausência desses
-níveis e tentar armazená-los em cache de novo se estiverem ausentes.
+We're not passing the `cache.addAll` promise for levels 11-20 back to `event.waitUntil`, so even if it fails, the game will still be available offline. Of course, you'll have to cater for the possible absence of those levels & reattempt caching them if they're missing.
 
-O ServiceWorker pode ser encerrado durante o download dos níveis 11 a 20, porque já
-concluiu o processamento dos eventos, o que significa que eles não serão armazenados em cache. Futuramente, pretendemos
-adicionar uma API para downloads em segundo plano para processar esses tipos de casos, bem como downloads
-maiores como filmes.
+The ServiceWorker may be killed while levels 11-20 download since it's finished handling events, meaning they won't be cached. In future we plan to add a background downloading API to handle cases like this, and larger downloads such as movies.
 
-### Na ativação {: #on-activate }
+### On activate {: #on-activate }
 
-<img src="images/cm-on-activate.png">
+<img src="images/cm-on-activate.png" />
 
-**Ideal para:** limpeza e migração.
+**Ideal for:** Clean-up & migration.
 
-Após a instalação de um novo ServiceWorker, se nenhuma versão anterior estiver sendo usada,
-a versão nova será ativada e você receberá um evento `activate`. Como a versão
-antiga não está ativa, é um bom momento para processar migrações de esquema no
-IndexedDB e também excluir caches não utilizados.
+Once a new ServiceWorker has installed & a previous version isn't being used, the new one activates, and you get an `activate` event. Because the old version is out of the way, it's a good time to handle schema migrations in IndexedDB and also delete unused caches.
 
     self.addEventListener('activate', function(event) {
       event.waitUntil(
@@ -135,29 +96,23 @@ IndexedDB e também excluir caches não utilizados.
         })
       );
     });
+    
 
-Durante a ativação, outros eventos como `fetch` são colocados em uma fila. Portanto, uma
-ativação longa poderá bloquear carregamentos de páginas. Mantenha a ativação
-o mais leve possível. Use-a apenas para atividades que _não podem_ ser feitas enquanto a versão
-antiga estiver ativa.
+During activation, other events such as `fetch` are put into a queue, so a long activation could potentially block page loads. Keep your activation as lean as possible, only use it for things you *couldn't* do while the old version was active.
 
-Em [trained-to-thrill][ttt], uso isso para
-[remover caches antigos](https://github.com/jakearchibald/trained-to-thrill/blob/3291dd40923346e3cc9c83ae527004d502e0464f/www/static/js-unmin/sw/index.js#L17).
+On [trained-to-thrill](https://jakearchibald.github.io/trained-to-thrill/) I use this to [remove old caches](https://github.com/jakearchibald/trained-to-thrill/blob/3291dd40923346e3cc9c83ae527004d502e0464f/www/static/js-unmin/sw/index.js#L17).
 
-### Na interação do usuário {: #on-user-interaction }
+### On user interaction {: #on-user-interaction }
 
-<img src="images/cm-on-user-interaction.png">
+<img src="images/cm-on-user-interaction.png" />
 
-**Ideal para:** se não for possível que o site todo fique off-line, você poderá permitir que o
-usuário selecione o conteúdo que quiser disponibilizar off-line. Por exemplo, um vídeo
-sobre um tópico no YouTube, um artigo na Wikipédia, uma determinada galeria no Flickr.
+**Ideal for:** If the whole site can't be taken offline, you may allow the user to select the content they want available offline. E.g. a video on something like YouTube, an article on Wikipedia, a particular gallery on Flickr.
 
-Ofereça ao usuário um botão "Read later" ou "Save for offline". Quando
-clicado, recupere o que for necessário da rede e armazene-o no cache.
+Give the user a "Read later" or "Save for offline" button. When it's clicked, fetch what you need from the network & pop it in the cache.
 
     document.querySelector('.cache-article').addEventListener('click', function(event) {
       event.preventDefault();
-
+    
       var id = this.dataset.articleId;
       caches.open('mysite-article-' + id).then(function(cache) {
         fetch('/get-article-urls?id=' + id).then(function(response) {
@@ -169,27 +124,19 @@ clicado, recupere o que for necessário da rede e armazene-o no cache.
         });
       });
     });
+    
 
-A [caches API][caches_api] está disponível em páginas e em service
-workers. Isso significa que você não precisa envolver o service worker para adicionar
-algo ao cache.
+The [caches API](https://developer.mozilla.org/en-US/docs/Web/API/Cache) is available from pages as well as service workers, meaning you don't need to involve the service worker to add things to the cache.
 
+### On network response {: #on-network-response }
 
-### Na resposta da rede {: #on-network-response }
+<img src="images/cm-on-network-response.png" />
 
-<img src="images/cm-on-network-response.png">
+**Ideal for:** Frequently updating resources such as a user's inbox, or article contents. Also useful for non-essential content such as avatars, but care is needed.
 
-**Ideal para:** atualização frequente de recursos, como a caixa de entrada do usuário ou
-conteúdo de artigos. Também é útil para conteúdo não essencial, como avatares,
-mas é preciso tomar cuidado.
+If a request doesn't match anything in the cache, get it from the network, send it to the page & add it to the cache at the same time.
 
-Se um item solicitado não estiver no cache, busque-o na rede,
-envie-o para a página e, ao mesmo tempo, adicione-o ao cache.
-
-Se você fizer isso para um grupo de URLs, como avatares, será necessário tomar
-cuidado para não ocupar excessivamente a memória da origem. Caso o usuário precise liberar
-espaço em disco, é melhor não ser o primeiro candidato. Não deixe de descartar
-itens desnecessários do cache.
+If you do this for a range of URLs, such as avatars, you'll need to be careful you don't bloat the storage of your origin — if the user needs to reclaim disk space you don't want to be the prime candidate. Make sure you get rid of items in the cache you don't need any more.
 
     self.addEventListener('fetch', function(event) {
       event.respondWith(
@@ -203,24 +150,19 @@ itens desnecessários do cache.
         })
       );
     });
+    
 
-Para possibilitar o uso eficiente de memória, você pode ler um corpo de resposta/solicitação
-uma única vez. No código acima,
-[`.clone()`](https://fetch.spec.whatwg.org/#dom-request-clone) é usado para
-criar cópias adicionais que podem ser lidas separadamente.
+To allow for efficient memory usage, you can only read a response/request's body once. In the code above, [`.clone()`](https://fetch.spec.whatwg.org/#dom-request-clone) is used to create additional copies that can be read separately.
 
-Em [trained-to-thrill][ttt], uso isso para
-[armazenar imagens do Flickr em cache](https://github.com/jakearchibald/trained-to-thrill/blob/3291dd40923346e3cc9c83ae527004d502e0464f/www/static/js-unmin/sw/index.js#L109).
+On [trained-to-thrill](https://jakearchibald.github.io/trained-to-thrill/) I use this to [cache Flickr images](https://github.com/jakearchibald/trained-to-thrill/blob/3291dd40923346e3cc9c83ae527004d502e0464f/www/static/js-unmin/sw/index.js#L109).
 
 ### Stale-while-revalidate {: #stale-while-revalidate }
 
-<img src="images/cm-stale-while-revalidate.png">
+<img src="images/cm-stale-while-revalidate.png" />
 
-**Ideal para:** atualizar recursos frequentemente quando não é essencial ter a versão
-mais recente. Os avatares podem estar nessa categoria.
+**Ideal for:** Frequently updating resources where having the very latest version is non-essential. Avatars can fall into this category.
 
-Se houver uma versão armazenada em cache disponível, use-a, mas recupere uma atualização para
-a próxima vez.
+If there's a cached version available, use it, but fetch an update for next time.
 
     self.addEventListener('fetch', function(event) {
       event.respondWith(
@@ -235,25 +177,17 @@ a próxima vez.
         })
       );
     });
+    
 
-Isso é bastante semelhante ao
-[stale-while-revalidate](https://www.mnot.net/blog/2007/12/12/stale) do HTTP.
+This is very similar to HTTP's [stale-while-revalidate](https://www.mnot.net/blog/2007/12/12/stale).
 
-### Na mensagem push {: #on-push-message }
+### On push message {: #on-push-message }
 
-<img src="images/cm-on-push.png">
+<img src="images/cm-on-push.png" />
 
-A [Push API](/web/fundamentals/push-notifications)
-é outro recurso baseado no service worker. Isso permite que o
-service worker seja despertado em resposta a uma mensagem do serviço de
-mensagens do SO. Isso acontecerá mesmo se o usuário não tiver uma guia aberta no
-próprio site. Somente o service worker será despertado. Você solicita permissão para fazer isso
-em uma página, e o usuário será notificado.
+The [Push API](/web/fundamentals/push-notifications) is another feature built on top of ServiceWorker. This allows the ServiceWorker to be awoken in response to a message from the OS's messaging service. This happens even when the user doesn't have a tab open to your site, only the ServiceWorker is woken up. You request permission to do this from a page & the user will be prompted.
 
-**Ideal para:** conteúdo relacionado a uma notificação, como uma mensagem de
-bate-papo, uma notícia recente ou um e-mail. Também se aplica a conteúdo com poucas
-mudanças que se beneficie com uma sincronização imediata, como uma atualização de lista de tarefas
-ou uma alteração de calendário.
+**Ideal for:** Content relating to a notification, such as a chat message, a breaking news story, or an email. Also infrequently changing content that benefits from immediate sync, such as a todo list update or a calendar alteration.
 
 <div class="video-wrapper">
   <iframe class="devsite-embedded-youtube-video" data-video-id="0i7YdSEQI1w"
@@ -261,21 +195,13 @@ ou uma alteração de calendário.
   </iframe>
 </div>
 
-O resultado final comum é uma notificação que, quando tocada,
-abre/foca uma página relevante. No entanto, a atualização dos caches antes que isso aconteça é
-_extremamente_ importante. Obviamente, o usuário está on-line no momento de receber a
-mensagem push, mas poderá não estar quando finalmente interagir com a
-notificação. Portanto, é importante disponibilizar esse conteúdo off-line. O aplicativo nativo do
-Twitter, que em sua maior parte é um exemplo excelente de
-aplicativo voltado ao modo off-line, não aplicou isso corretamente.
+The common final outcome is a notification which, when tapped, opens/focuses a relevant page, but updating caches before this happens is *extremely* important. The user is obviously online at the time of receiving the push message, but they may not be when they finally interact with the notification, so making this content available offline is important. The Twitter native app, which is for the most part an excellent example of offline-first, gets this a bit wrong.
 
-Sem uma conexão, o Twitter falha ao fornecer o conteúdo relacionado à
-mensagem push. O toque na mensagem não remove a notificação. No entanto, o
-usuário fica com menos informações que antes do toque. Não faça isso!
+Without a connection, Twitter fails to provide the content relating to the push message. Tapping it does remove the notification however, leaving the user with less information than before they tapped. Don't do this!
 
 <div style="clear:both;"></div>
 
-Este código atualiza os caches antes de mostrar uma notificação:
+This code updates caches before showing a notification:
 
     self.addEventListener('push', function(event) {
       if (event.data.text() == 'new-email') {
@@ -294,7 +220,7 @@ Este código atualiza os caches antes de mostrar uma notificação:
         );
       }
     });
-
+    
     self.addEventListener('notificationclick', function(event) {
       if (event.notification.tag == 'new-email') {
         // Assume that all of the resources needed to render
@@ -303,23 +229,15 @@ Este código atualiza os caches antes de mostrar uma notificação:
         new WindowClient('/inbox/');
       }
     });
+    
 
+### On background-sync {: #on-background-sync }
 
-### Na sincronização em segundo plano {: #on-background-sync }
+<img src="images/cm-on-bg-sync.png" />
 
-<img src="images/cm-on-bg-sync.png">
+[Background sync](/web/updates/2015/12/background-sync) is another feature built on top of ServiceWorker. It allows you to request background data synchronization as a one-off, or on an (extremely heuristic) interval. This happens even when the user doesn't have a tab open to your site, only the ServiceWorker is woken up. You request permission to do this from a page & the user will be prompted.
 
-A [sincronização em segundo plano](/web/updates/2015/12/background-sync)
-é outro recurso baseado no
-service worker. Ela permite solicitar a sincronização de dados em segundo plano
-uma única vez ou em determinados intervalos (extremamente heurísticos). Isso acontecerá mesmo
-se o usuário não tiver uma guia aberta no site. Somente o service worker
-será despertado. Você solicita permissão para fazer isso em uma página e o usuário será
-notificado.
-
-**Ideal para:** atualizações não urgentes, particularmente as que ocorrem com alguma regularidade,
-fazendo com que uma mensagem push por atualização seja muito frequente, como linhas do tempo
-de redes sociais ou notícias.
+**Ideal for:** Non-urgent updates, especially those that happen so regularly that a push message per update would be too frequent, such as social timelines or news articles.
 
     self.addEventListener('sync', function(event) {
       if (event.id == 'update-leaderboard') {
@@ -330,16 +248,13 @@ de redes sociais ou notícias.
         );
       }
     });
+    
 
+## Cache persistence {: #cache-persistence }
 
-## Persistência do cache {: #cache-persistence }
+Your origin is given a certain amount of free space to do what it wants with. That free space is shared between all origin storage: LocalStorage, IndexedDB, Filesystem, and of course Caches.
 
-Sua origem recebe uma determinada quantidade de espaço livre para usar como achar melhor.
-Esse espaço livre é compartilhado entre todos os armazenamentos de origem: LocalStorage,
-IndexedDB, Filesystem e, claro, Caches.
-
-A quantidade recebida não é especificada. Ela será diferente em função do dispositivo e
-das condições do armazenamento. Você pode descobrir quanto você recebeu por meio de:
+The amount you get isn't spec'd, it will differ depending on device and storage conditions. You can find out how much you've got via:
 
     navigator.storageQuota.queryInfo("temporary").then(function(info) {
       console.log(info.quota);
@@ -347,14 +262,11 @@ das condições do armazenamento. Você pode descobrir quanto você recebeu por 
       console.log(info.usage);
       // Result: <used data in bytes>
     });
+    
 
-No entanto, como todo o armazenamento do navegador, esse tem liberdade de descartá-lo
-se o dispositivo ficar com pouco armazenamento disponível. O navegador
-não consegue distinguir entre os filmes que você quer manter a qualquer custo
-e o jogo com o qual você não se preocupa muito.
+However, like all browser storage, the browser is free to throw it away if the device becomes under storage pressure. Unfortunately the browser can't tell the different between those movies you want to keep at all costs, and the game you don't really care about.
 
-Para contornar isso, há uma proposta de API,
-[`requestPersistent`](https://storage.spec.whatwg.org/){: .external }:
+To work around this, there's a proposed API, [`requestPersistent`](https://storage.spec.whatwg.org/){: .external }:
 
     // From a page:
     navigator.storage.requestPersistent().then(function(granted) {
@@ -362,64 +274,51 @@ Para contornar isso, há uma proposta de API,
         // Hurrah, your data is here to stay!
       }
     });
+    
 
-Naturalmente, o usuário precisa conceder a permissão. Tornar os usuários parte desse
-fluxo é importante, já que agora podemos esperar que eles estejam no controle da remoção.
-Se o dispositivo do usuário estiver sob pressão e limpar os dados não essenciais
-não resolver, ele poderá determinar que itens
-deve manter ou remover.
+Of course, the user has to grant permission. Making the user part of this flow is important, as we can now expect them to be in control of deletion. If their device comes under storage pressure, and clearing non-essential data doesn't solve it, the user gets to make a judgment call on which items to keep and remove.
 
-Para que isso funcione, é necessário que os sistemas operacionais tratem origens "duráveis"
-como o equivalente a aplicativos nativos no detalhamento do uso de armazenamento, em
-vez de relatar o navegador como um único item.
+For this to work, it requires operating systems to treat "durable" origins as equivalent to native apps in their breakdowns of storage usage, rather than reporting the browser as a single item.
 
+## Serving Suggestions - responding to requests {: #serving-suggestions }
 
-## Sugestões de entrega – responder solicitações {: #serving-suggestions }
+It doesn't matter how much caching you do, the ServiceWorker won't use the cache unless you tell it when & how. Here are a few patterns for handling requests:
 
-Não importa a quantidade de armazenamento em cache, o service worker não usará esse
-cache a menos que você informe quando e como fazer isso. Veja a seguir alguns padrões
-para processar solicitações:
+### Cache only {: #cache-only }
 
-### Somente cache {: #cache-only }
+<img src="images/ss-cache-only.png" />
 
-<img src="images/ss-cache-only.png">
-
-**Ideal para:** tudo que você considere estático para essa "versão" do site.
-Você deve ter armazenado em cache esses itens no evento de instalação. Portanto, pode confiar que
-eles estarão lá.
+**Ideal for:** Anything you'd consider static to that "version" of your site. You should have cached these in the install event, so you can depend on them being there.
 
     self.addEventListener('fetch', function(event) {
       // If a match isn't found in the cache, the response
       // will look like a connection error
       event.respondWith(caches.match(event.request));
     });
+    
 
-… embora você nem sempre precise processar esse caso especificamente,
-[Cache, fallback para rede](#cache-falling-back-to-network) fará isso.
+…although you don't often need to handle this case specifically, [Cache, falling back to network](#cache-falling-back-to-network) covers it.
 
-### Somente rede {: #network-only }
+### Network only {: #network-only }
 
-<img src="images/ss-network-only.png">
+<img src="images/ss-network-only.png" />
 
-**Ideal para:** itens que não tenham equivalente off-line, como pings
-de análises, solicitações diferentes de GET.
+**Ideal for:** Things that have no offline equivalent, such as analytics pings, non-GET requests.
 
     self.addEventListener('fetch', function(event) {
       event.respondWith(fetch(event.request));
       // or simply don't call event.respondWith, which
       // will result in default browser behaviour
     });
+    
 
-… embora você nem sempre precise processar esse caso especificamente,
-[Cache, fallback para rede](#cache-falling-back-to-network) fará isso.
+…although you don't often need to handle this case specifically, [Cache, falling back to network](#cache-falling-back-to-network) covers it.
 
-### Cache, fallback para rede {: #cache-falling-back-to-network }
+### Cache, falling back to network {: #cache-falling-back-to-network }
 
-<img src="images/ss-falling-back-to-network.png">
+<img src="images/ss-falling-back-to-network.png" />
 
-**Ideal para:** se estiver criando um aplicativo voltado ao modo off-line, é assim que você processará
-a maioria das solicitações. Outros padrões serão exceções, de acordo com a
-solicitação recebida.
+**Ideal for:** If you're building offline-first, this is how you'll handle the majority of requests. Other patterns will be exceptions based on the incoming request.
 
     self.addEventListener('fetch', function(event) {
       event.respondWith(
@@ -428,22 +327,17 @@ solicitação recebida.
         })
       );
     });
+    
 
-Com isso, você terá o comportamento "somente cache" para os itens do cache e o
-comportamento "somente rede" para qualquer item não armazenado em cache (incluindo todas as solicitações diferentes de
-GET, porque elas não podem ser armazenadas em cache).
+This gives you the "Cache only" behaviour for things in the cache and the "Network only" behaviour for anything not-cached (which includes all non-GET requests, as they cannot be cached).
 
-### Corrida entre cache e rede {: #cache-and-network-race }
+### Cache & network race {: #cache-and-network-race }
 
-<img src="images/ss-cache-and-network-race.png">
+<img src="images/ss-cache-and-network-race.png" />
 
-**Ideal para:** recursos pequenos quando você procura desempenho em dispositivos com
-acesso a disco lento.
+**Ideal for:** Small assets where you're chasing performance on devices with slow disk access.
 
-Em algumas combinações de discos rígidos mais antigos, antivírus e conexões mais rápidas
-com a Internet, buscar recursos de rede poderá ser mais rápido que
-acessar o disco. No entanto, acessar a rede quando o usuário tem o conteúdo
-no dispositivo pode ser um desperdício de dados. Portanto, considere isso.
+With some combinations of older hard drives, virus scanners, and faster internet connections, getting resources from the network can be quicker than going to disk. However, going to the network when the user has the content on their device can be a waste of data, so bear that in mind.
 
     // Promise.race is no good to us because it rejects if
     // a promise rejects before fulfilling. Let's make a proper
@@ -459,7 +353,7 @@ no dispositivo pode ser um desperdício de dados. Portanto, considere isso.
           .catch(() => reject(Error("All failed")));
       });
     };
-
+    
     self.addEventListener('fetch', function(event) {
       event.respondWith(
         promiseAny([
@@ -468,25 +362,17 @@ no dispositivo pode ser um desperdício de dados. Portanto, considere isso.
         ])
       );
     });
+    
 
+### Network falling back to cache {: #network-falling-back-to-cache }
 
-### Rede com fallback para cache {: #network-falling-back-to-cache }
+<img src="images/ss-network-falling-back-to-cache.png" />
 
-<img src="images/ss-network-falling-back-to-cache.png">
+**Ideal for:** A quick-fix for resources that update frequently, outside of the "version" of the site. E.g. articles, avatars, social media timelines, game leader boards.
 
-**Ideal para:** uma solução rápida para recursos com atualização frequente, fora
-da "versão" do site. Por exemplo, artigos, avatares, linhas do tempo de mídia social,
-placares de jogos.
+This means you give online users the most up-to-date content, but offline users get an older cached version. If the network request succeeds you'll most-likely want to [update the cache entry](#on-network-response).
 
-Isso significa que você oferece aos usuários on-line o conteúdo mais atualizado, mas os usuários
-off-line recebem uma versão anterior armazenada em cache. Se a solicitação de rede for bem-sucedida, você
-poderá [atualizar a entrada no cache](#on-network-response).
-
-No entanto, esse método tem falhas. Um usuário com conexão intermitente ou
-lenta terá de esperar por uma falha de rede até receber o conteúdo perfeitamente
-aceitável que já está no dispositivo. Isso pode
-demorar muito e ser uma experiência do usuário frustrante. Veja o próximo
-padrão, [Cache, depois rede](#cache-then-network) para uma solução melhor.
+However, this method has flaws. If the user has an intermittent or slow connection they'll have to wait for the network to fail before they get the perfectly acceptable content already on their device. This can take an extremely long time and is a frustrating user experience. See the next pattern, [Cache then network](#cache-then-network), for a better solution.
 
     self.addEventListener('fetch', function(event) {
       event.respondWith(
@@ -495,35 +381,26 @@ padrão, [Cache, depois rede](#cache-then-network) para uma solução melhor.
         })
       );
     });
+    
 
-### Cache, depois rede {: #cache-then-network }
+### Cache then network {: #cache-then-network }
 
-<img src="images/ss-cache-then-network.png">
+<img src="images/ss-cache-then-network.png" />
 
-**Ideal para:** conteúdo com atualizações frequentes. Por exemplo, artigos, linhas do tempo
-de mídia social, placares de jogos.
+**Ideal for:** Content that updates frequently. E.g. articles, social media timelines, game leaderboards.
 
-Isso exige que a página faça duas solicitações, uma para o cache, outra para a
-rede. A ideia é mostrar antes o conteúdo armazenado em cache e depois atualizar a página
-quando/se os dados da rede chegarem.
+This requires the page to make two requests, one to the cache, one to the network. The idea is to show the cached data first, then update the page when/if the network data arrives.
 
-Às vezes, você pode simplesmente substituir os dados atuais quando novos dados chegarem
-(por exemplo placares de jogos), mas isso pode ser prejudicial com conteúdos
-maiores. Basicamente, não "suma" com algo que o usuário pode estar lendo ou
-com o que pode estar interagindo.
+Sometimes you can just replace the current data when new data arrives (e.g. game leaderboard), but that can be disruptive with larger pieces of content. Basically, don't "disappear" something the user may be reading or interacting with.
 
-O Twitter adiciona o novo conteúdo sobre o conteúdo anterior e ajusta a posição de
-rolagem para que o usuário não seja interrompido. Isso é possível porque o Twitter mantém
-na maioria das vezes uma ordem basicamente linear do conteúdo. Copiei esse padrão para o
-[trained-to-thrill][ttt] a fim de colocar o conteúdo na tela com a maior rapidez
-possível, sem deixar de exibir conteúdo atualizado quando recebido.
+Twitter adds the new content above the old content & adjusts the scroll position so the user is uninterrupted. This is possible because Twitter mostly retains a mostly-linear order to content. I copied this pattern for [trained-to-thrill](https://jakearchibald.github.io/trained-to-thrill/) to get content on screen as fast as possible, but still display up-to-date content once it arrives.
 
-**Código na página:**
+**Code in the page:**
 
     var networkDataReceived = false;
-
+    
     startSpinner();
-
+    
     // fetch fresh data
     var networkUpdate = fetch('/data.json').then(function(response) {
       return response.json();
@@ -531,7 +408,7 @@ possível, sem deixar de exibir conteúdo atualizado quando recebido.
       networkDataReceived = true;
       updatePage(data);
     });
-
+    
     // fetch cached data
     caches.match('/data.json').then(function(response) {
       if (!response) throw Error("No data");
@@ -545,11 +422,11 @@ possível, sem deixar de exibir conteúdo atualizado quando recebido.
       // we didn't get cached data, the network is our last hope:
       return networkUpdate;
     }).catch(showErrorMessage).then(stopSpinner);
+    
 
+**Code in the ServiceWorker:**
 
-**Código no Service Worker:**
-
-Voltamos sempre à rede e atualizamos o cache durante o processamento.
+We always go to the network & update a cache as we go.
 
     self.addEventListener('fetch', function(event) {
       event.respondWith(
@@ -561,23 +438,17 @@ Voltamos sempre à rede e atualizamos o cache durante o processamento.
         })
       );
     });
+    
 
+In [trained-to-thrill](https://jakearchibald.github.io/trained-to-thrill/) I worked around this by using [XHR instead of fetch](https://github.com/jakearchibald/trained-to-thrill/blob/3291dd40923346e3cc9c83ae527004d502e0464f/www/static/js-unmin/utils.js#L3), and abusing the Accept header to tell the ServiceWorker where to get the result from ([page code](https://github.com/jakearchibald/trained-to-thrill/blob/3291dd40923346e3cc9c83ae527004d502e0464f/www/static/js-unmin/index.js#L70), [ServiceWorker code](https://github.com/jakearchibald/trained-to-thrill/blob/3291dd40923346e3cc9c83ae527004d502e0464f/www/static/js-unmin/sw/index.js#L61)).
 
-Em [trained-to-thrill][ttt], contornei essa situação
-usando [XHR em vez de fetch](https://github.com/jakearchibald/trained-to-thrill/blob/3291dd40923346e3cc9c83ae527004d502e0464f/www/static/js-unmin/utils.js#L3)
-e abusando do cabeçalho de Accept para informar o service worker onde buscar o
-resultado ([código da página](https://github.com/jakearchibald/trained-to-thrill/blob/3291dd40923346e3cc9c83ae527004d502e0464f/www/static/js-unmin/index.js#L70),
-[código do service worker](https://github.com/jakearchibald/trained-to-thrill/blob/3291dd40923346e3cc9c83ae527004d502e0464f/www/static/js-unmin/sw/index.js#L61)).
+### Generic fallback {: #generic-fallback }
 
-### Fallback genérico {: #generic-fallback }
+<img src="images/ss-generic-fallback.png" />
 
-<img src="images/ss-generic-fallback.png">
+If you fail to serve something from the cache and/or network you may want to provide a generic fallback.
 
-Se ocorrer uma falha na disponibilização de algum item do cache e/ou da rede, você poderá
-oferecer um fallback genérico.
-
-**Ideal para:** imagens secundárias como avatares, falha em solicitações POST,
-página "Não disponível em modo off-line".
+**Ideal for:** Secondary imagery such as avatars, failed POST requests, "Unavailable while offline" page.
 
     self.addEventListener('fetch', function(event) {
       event.respondWith(
@@ -594,30 +465,25 @@ página "Não disponível em modo off-line".
         })
       );
     });
+    
 
-O item para o qual você fizer fallback será provavelmente uma [dependência de instalação](#on-install-as-dependency).
+The item you fallback to is likely to be an [install dependency](#on-install-as-dependency).
 
-Caso sua página esteja enviando um e-mail, o service worker poderá fazer fallback para
-armazenar o e-mail em uma "caixa de saída" do IDB e responder informando a página que
-o envio falhou, mas os dados foram retidos.
+If your page is posting an email, your ServiceWorker may fall back to storing the email in an IDB 'outbox' & respond letting the page know that the send failed but the data was successfully retained.
 
-### Modelos do service worker {: #serviceworker-side-templating }
+### ServiceWorker-side templating {: #serviceworker-side-templating }
 
-<img src="images/ss-sw-side-templating.png">
+<img src="images/ss-sw-side-templating.png" />
 
-**Ideal para:** páginas que não podem armazenar em cache a resposta do servidor.
+**Ideal for:** Pages that cannot have their server response cached.
 
-[A renderização de páginas no servidor acelera tudo](https://jakearchibald.com/2013/progressive-enhancement-is-faster/),
-mas isso pode significar a inclusão de dados de estado que podem não fazer sentido em um cache
-como, por exemplo, "Login efetuado como...". Se sua página for controlada por um service worker,
-em vez disso, opte por solicitar dados JSON juntamente com um modelo
-e renderizá-los.
+[Rendering pages on the server makes things fast](https://jakearchibald.com/2013/progressive-enhancement-is-faster/), but that can mean including state data that may not make sense in a cache, e.g. "Logged in as…". If your page is controlled by a ServiceWorker, you may instead choose to request JSON data along with a template, and render that instead.
 
     importScripts('templating-engine.js');
-
+    
     self.addEventListener('fetch', function(event) {
       var requestURL = new URL(event.request.url);
-
+    
       event.respondWith(
         Promise.all([
           caches.match('/article-template.html').then(function(response) {
@@ -629,7 +495,7 @@ e renderizá-los.
         ]).then(function(responses) {
           var template = responses[0];
           var data = responses[1];
-
+    
           return new Response(renderTemplate(template, data), {
             headers: {
               'Content-Type': 'text/html'
@@ -638,25 +504,23 @@ e renderizá-los.
         })
       );
     });
+    
 
+## Putting it together
 
-## Como tudo funciona em conjunto
+You don't have to pick one of these methods, you'll likely use many of them depending on request URL. For example, [trained-to-thrill](https://jakearchibald.github.io/trained-to-thrill/) uses:
 
-Não é necessário escolher um desses métodos. Você provavelmente usará diversos
-deles, dependendo do URL da solicitação. Por exemplo,
-[trained-to-thrill][ttt] usa:
+* [Cache on install](#on-install-as-dependency), for the static UI and behaviour
+* [Cache on network response](#on-network-response), for the Flickr images and data
+* [Fetch from cache, falling back to network](#cache-falling-back-to-network), for most requests
+* [Fetch from cache, then network](#cache-then-network), for the Flickr search results
 
-* [Cache na instalação](#on-install-as-dependency), para IU e comportamento estático
-* [Cache na resposta de rede](#on-network-response), para as imagens e os dados do Flickr
-* [Busca do cache, de volta à rede](#cache-falling-back-to-network), para a maioria das solicitações
-* [Busca do cache, depois da rede](#cache-then-network), para os resultados de pesquisa do Flickr
-
-Basta examinar a solicitação e escolher o que fazer:
+Just look at the request and decide what to do:
 
     self.addEventListener('fetch', function(event) {
       // Parse the URL:
       var requestURL = new URL(event.request.url);
-
+    
       // Handle requests to a particular host specifically
       if (requestURL.hostname == 'api.example.com') {
         event.respondWith(/* some combination of patterns */);
@@ -686,7 +550,7 @@ Basta examinar a solicitação e escolher o que fazer:
           return;
         }
       }
-
+    
       // A sensible default pattern
       event.respondWith(
         caches.match(event.request).then(function(response) {
@@ -694,8 +558,9 @@ Basta examinar a solicitação e escolher o que fazer:
         })
       );
     });
+    
 
-... você sabe.
+…you get the picture.
 
 ## Feedback {: .hide-from-toc }
 
@@ -703,32 +568,27 @@ Basta examinar a solicitação e escolher o que fazer:
 
 <div class="clearfix"></div>
 
-### Créditos {: hide-from-toc }
-… pelos belos ícones:
+### Credits {: hide-from-toc }
 
-* [Código](http://thenounproject.com/term/code/17547/){: .external } por buzzyrobot
-* [Agenda](http://thenounproject.com/term/calendar/4672/){: .external } por Scott Lewis
-* [Rede por](http://thenounproject.com/term/network/12676/){: .external } Ben Rizzo
-* [SD](http://thenounproject.com/term/sd-card/6185/) por Thomas Le Bas
-* [CPU](http://thenounproject.com/term/cpu/72043/){: .external } por iconsmind.com
-* [Lixo](http://thenounproject.com/term/trash/20538/){: .external } por trasnik
-* [Notificação](http://thenounproject.com/term/notification/32514/){: .external } por @daosme
-* [Layout](http://thenounproject.com/term/layout/36872/){: .external } por Mister Pixel
-* [Nuvem](http://thenounproject.com/term/cloud/2788/){: .external } por P.J. Onori
+…for the lovely icons:
 
-Agradeço a [Jeff Posnick](https://twitter.com/jeffposnick) por detectar vários erros lamentáveis
-antes que eu clicasse em "Publicar".
+* [Code](http://thenounproject.com/term/code/17547/){: .external } by buzzyrobot
+* [Calendar](http://thenounproject.com/term/calendar/4672/){: .external } by Scott Lewis
+* [Network by](http://thenounproject.com/term/network/12676/){: .external } Ben Rizzo
+* [SD](http://thenounproject.com/term/sd-card/6185/) by Thomas Le Bas
+* [CPU](http://thenounproject.com/term/cpu/72043/){: .external } by iconsmind.com
+* [Trash](http://thenounproject.com/term/trash/20538/){: .external } by trasnik
+* [Notification](http://thenounproject.com/term/notification/32514/){: .external } by @daosme
+* [Layout](http://thenounproject.com/term/layout/36872/){: .external } by Mister Pixel
+* [Cloud](http://thenounproject.com/term/cloud/2788/){: .external } by P.J. Onori
 
-### Leia mais
-* [Service workers – uma introdução][sw_primer]
-* [O service worker está pronto?][is_sw_ready] – rastreie o status de implementação entre os principais navegadores
-* [Promessas do JavaScript – uma introdução](/web/fundamentals/getting-started/primers/promises) – guia para as promessas
+And thanks to [Jeff Posnick](https://twitter.com/jeffposnick) for catching many howling errors before I hit "publish".
 
+### Further reading
 
-[ttt]: https://jakearchibald.github.io/trained-to-thrill/
-[is_sw_ready]: https://jakearchibald.github.io/isserviceworkerready/
-[sw_primer]: /web/fundamentals/getting-started/primers/service-workers
-[caches_api]: https://developer.mozilla.org/en-US/docs/Web/API/Cache
+* [ServiceWorkers - an Introduction](/web/fundamentals/getting-started/primers/service-workers)
+* [Is ServiceWorker ready?](https://jakearchibald.github.io/isserviceworkerready/) - track the implementation status across the main browsers
+* [JavaScript Promises - an Introduction](/web/fundamentals/getting-started/primers/promises) - guide to promises
 
 ## Feedback {: #feedback }
 
