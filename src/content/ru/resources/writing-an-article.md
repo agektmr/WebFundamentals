@@ -1,109 +1,64 @@
-project_path: /web/_project.yaml
-book_path: /web/resources/_book.yaml
-description: Это описание страницы, расположенное в мета тэгах.
+project_path: /web/_project.yaml book_path: /web/resources/_book.yaml description: This is the page description placed in the head.
 
-{# wf_updated_on: 2016-09-13 #}
-{# wf_published_on: 2016-09-13 #}
+{# wf_updated_on: 2017-12-06 #} {# wf_published_on: 2016-09-13 #} {# wf_blink_components: N/A #}
 
-# Как писать статьи {: .page-title }
+# Writing an Article {: .page-title }
 
 {% include "web/_shared/contributors/petelepage.html" %}
 
-Это вводный параграф. Это все равно что старый yaml атрибут `introduction`, но
-вместо того, чтобы быть в YAML, он теперь находится в документе.
+This is the intro paragraph. It's the equivalent of the old `introduction` yaml attribute, but instead of living in the YAML front matter, it now lives in the document.
 
-Чтобы написать совершенно новую статью, следуйте этим шагам. Или просто
-скопируйте этот markdown файл, разместите его в нужной вам директории, и
-отредактируйте.
+To write a brand new article, follow these steps. Or simply make a copy of this markdown file, place it in the directory you want, and edit away.
 
 ## YAML Front Matter
 
-Все документы должны иметь минимальный набор YAML front matter включающий ссылку
-на `_project.yaml`, и еще одну на `_book.yaml`.
+All documents need to have a minimum set of YAML front matter including a link to the `_project.yaml`, and one to the `_book.yaml`.
 
-```
-project_path: /web/_project.yaml
-book_path: /web/section/_book.yaml
-```
+    project_path: /web/_project.yaml
+    book_path: /web/section/_book.yaml
+    
 
-Note: Если project или book не будут найдены, то на странице не будет навигации слева, а верхние вкладки не будут правильно подсвечены.
+Note: If the path to the project or book cannot be found, the page will not include the left nav and the upper tabs will not be properly highlighted.
 
-### Описание (необязательный)
+### Description (optional)
 
-Вы можете добавить описание страницы в блоке YAML front matter, которое
-используется в `meta` описания страницы. Описание должно быть коротким (<450
-символов), и представлять собой лишь краткое описание страницы.
+You can provide a page description in the YAML front matter that is used as the `meta` description for the page. The description should be short (<450 char), and only provide a brief synopsis of the page.
 
-```
-description: Lorem ipsum
-```
+    description: Lorem ipsum
+    
 
-Caution: Не добавляйте блоки &lt;code&gt; (или `) поле описания.
+Caution: Do not</span> include &lt;code&gt; blocks (or `) in the description field.
 
-### Другие YAML атрибуты
+### Other YAML Attributes
 
-<table class="responsive">
-  <tbody>
-    <tr>
-      <th colspan="2">Другие атрибуты</th>
-    </tr>
-    <tr>
-      <td><code>full_width: true</code></td>
-      <td>
-        Передаёт управление разметкой области ниже заголовка и панели проекта
-        и выше футера. Не поддерживается в development окружении.
-      </td>
-    </tr>
-    <tr>
-      <td><code>hide_last_updated: true</code></td>
-      <td>
-        Скрывает автоматически сгенерированное поле последних обновлений внизу страницы.
-        Не поддерживается в development окружении.
-      </td>
-    </tr>
-  </tbody>
-</table>
+See [YAML Front Matter and Attribute Reference](/web/resources/yaml-and-attr-reference) for all of the YAML Front Matter and other attributes you can or should use.
 
-## Заголовок страницы (обязательный)
+## Page Title (required)
 
-Заголовок страницы определяется первым H1-подобным тэгом с классом
-`.page-title`.
-Например:
+The page title is defined by the first H1-like tag with the `.page-title` class. For example:
 
 <pre class="prettyprint">
 &num; Writing an Article &#123;: .page-title }
 </pre>
 
-Caution: Заголовки страниц не должны включать никакие markdown или HTML тэги.
+Caution: Page titles should not include any markdown or HTML tags.
 
-## Автор и переводчик
+## Author and Translator Attribution
 
-Чтобы добавить автора и переводчика используйте:
+To include an author or translator attribution, use:
 
 <pre class="prettyprint">
 &#123;% include "web/_shared/contributors/petelepage.html" %}
 </pre>
 
-## Написать свой контент
+## Write Your Content
 
-Теперь пришло время добавить ваш контент. Подробные сведения о стилях, которые
-вы можете использовать смотрите в [руководство по стилю письма](/style/) и
-руководство по [markdown синтаксису](markdown-syntax). А так же о том как
-сделать, чтобы все выглядело красиво.
+Next, it's time to add your content. Refer to the [writing style guide](/style/) and [markdown syntax](markdown-syntax) guide for full details on the styles you can use and how to go about making stuff look pretty.
 
-## Добавить статью в меню
+## Add Article to the Book
 
-Чтобы ваша статья появилась в соответствующем блоке навигации нужно обновить
-`_book.yaml` или  `_toc.yaml`. Каждый раздел (обновления, демо, основы),
-имеет их собственный `_book.yaml`, а также связан с индивидуальным `_toc.yaml`.
-Вы, скорее всего, захотите добавить свою статью в один из `_toc.yaml`.
+To get your article to appear in the appropriate navigation, you need to update the `_book.yaml` or `_toc.yaml` file. Each section (updates, shows, fundamentals), has it's own `_book.yaml` and which links to individual `_toc.yaml` files. You most likely want to add your article to one of the `_toc.yaml` files.
 
-## Испытайте и отправьте свой PR
+## Test and Submit Your PR
 
-Когда будете готовы, запустите `gulp test`, чтобы убедиться, что нет проблем с
-вашим контентом, а затем посылайте ваш pull request.
-
-
-
-Translated by
-{% include "web/_shared/contributors/dmitryskripunov.html" %}
+When you're ready, run `gulp test` to make sure that there are no issues with your content, then submit your pull request.
