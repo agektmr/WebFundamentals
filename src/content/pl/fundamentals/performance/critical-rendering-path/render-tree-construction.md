@@ -1,84 +1,84 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Drzewo renderowania powstaje z połączenia drzew CSSOM i DOM. Wykorzystuje się je do wyznaczania rozmieszczenia każdego widocznego elementu na stronie, na jego podstawie procedura malowania renderuje piksele na ekranie. Aby osiągnąć najwyższą wydajność renderowania, ważne jest wykonanie optymalizacji każdego z powyższych etapów.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: TODO
 
+{# wf_updated_on: 2018-08-17 #} {# wf_published_on: 2014-03-31 #} {# wf_blink_components: Blink>Layout,Blink>Paint #}
 
-{# wf_updated_on: 2014-09-17 #}
-{# wf_published_on: 2014-03-31 #}
-
-# Tworzenie drzewa renderowania, układ strony i malowanie {: .page-title }
+# Render-tree Construction, Layout, and Paint {: .page-title }
 
 {% include "web/_shared/contributors/ilyagrigorik.html" %}
 
+The CSSOM and DOM trees are combined into a render tree, which is then used to compute the layout of each visible element and serves as an input to the paint process that renders the pixels to screen. Optimizing each of these steps is critical to achieving optimal rendering performance.
 
-Drzewo renderowania powstaje z połączenia drzew CSSOM i DOM. Wykorzystuje się je do wyznaczania rozmieszczenia każdego widocznego elementu na stronie, na jego podstawie procedura malowania renderuje piksele na ekranie. Aby osiągnąć najwyższą wydajność renderowania, ważne jest wykonanie optymalizacji każdego z powyższych etapów.
-
-
-W poprzedniej sekcji zawierającej opis tworzenia modelu obiektowego tworzyliśmy drzewa DOM i CSSOM w oparciu o dane wejściowe HTML i CSS. Jednak są one niezależnymi od siebie obiektami, charakteryzującymi różne aspekty dokumentu: jeden opisuje treść, drugi reguły stylu mające zastosowanie do dokumentu. W jaki sposób można je połączyć tak, by przeglądarka zrenderowała piksele na ekranie?
+In the previous section on constructing the object model, we built the DOM and the CSSOM trees based on the HTML and CSS input. However, both of these are independent objects that capture different aspects of the document: one describes the content, and the other describes the style rules that need to be applied to the document. How do we merge the two and get the browser to render pixels on the screen?
 
 ### TL;DR {: .hide-from-toc }
-- Drzewo renderowania powstaje z połączenia drzew CSSOM i DOM.
-- Drzewo renderowania zawiera tylko węzły wymagane do renderowania strony.
-- W trakcie wyznaczania rozmieszczenia na stronie obliczane jest dokładne położenie i rozmiar każdego obiektu.
-- Malowanie to ostatni krok, w którym na podstawie finalnego drzewa renderowania przeprowadza się renderowanie pikseli na ekranie.
 
+* The DOM and CSSOM trees are combined to form the render tree.
+* Render tree contains only the nodes required to render the page.
+* Layout computes the exact position and size of each object.
+* The last step is paint, which takes in the final render tree and renders the pixels to the screen.
 
-Pierwszym krokiem jest połączenie drzew DOM i CSSOM w jedno `drzewo renderowania` zawierające opis całej zawartości DOM widocznej na stronie. Do każdego węzła dołączane są informacje o stylach z drzewa CSSOM.
+First, the browser combines the DOM and CSSOM into a "render tree," which captures all the visible DOM content on the page and all the CSSOM style information for each node.
 
-<img src="images/render-tree-construction.png" alt="Drzewo renderowania powstaje z połączenia drzew CSSOM i DOM" class="center">
+<img src="images/render-tree-construction.png" alt="DOM and CSSOM are combined to create the render tree" />
 
-Aby utworzyć drzewo renderowania, przeglądarka wykonuje z grubsza następujące czynności:
+To construct the render tree, the browser roughly does the following:
 
-1. Odwiedzenie każdego widocznego węzła, począwszy od głównego węzła drzewa DOM.
-  * Niektóre niewidoczne węzły (np. tagi skryptów, metatagi) są pomijane, ponieważ nie mają wpływu na renderowany obraz wyjściowy.
-  * Niektóre węzły zostały ukryte przez kod CSS i są również wykluczane z drzewa renderowania &ndash; np. węzeł span w powyższym przykładzie jest nieobecny w drzewie renderowania, ponieważ jawnie określiliśmy jego właściwość `display: none`.
-1. Znalezienie dla każdego widocznego węzła pasujących reguł modelu CSSOM i ich zastosowanie.
-2. Wygenerowanie widocznych węzłów z treścią, przy uwzględnieniu wyznaczonych dla nich stylów.
+1. Starting at the root of the DOM tree, traverse each visible node.
+    
+    * Some nodes are not visible (for example, script tags, meta tags, and so on), and are omitted since they are not reflected in the rendered output.
+    * Some nodes are hidden via CSS and are also omitted from the render tree; for example, the span node\---in the example above\---is missing from the render tree because we have an explicit rule that sets the "display: none" property on it.
 
-Note: Na marginesie: pamiętaj, że atrybut <code>visibility: hidden</code> różni się od atrybutu <code>display: none</code>. Pierwszy z nich powoduje, że element jest niewidoczny, ale nadal zajmuje miejsce w układzie strony (tzn. jest renderowany jako puste pole), a drugi <code>display: none</code> powoduje całkowite usunięcie elementu z drzewa renderowania, przez co element staje się niewidoczny i przestaje należeć do układu strony.
+2. For each visible node, find the appropriate matching CSSOM rules and apply them.
 
-Końcowym efektem jest obraz zrenderowany na ekranie z odwzorowaniem zarówno całej widocznej treści, jak i jej stylów &ndash; zbliżamy się do celu.  **Po przygotowaniu drzewa renderowania możemy przejść do etapu wyznaczania `układu strony`.**
+3. Emit visible nodes with content and their computed styles.
 
-Do tej chwili określaliśmy, które węzły powinny być widoczne, oraz ich style. Nie wyznaczaliśmy ich dokładnego położenia w [widocznym obszarze](/web/fundamentals/design-and-ux/responsive/#set-the-viewport) urządzenia &ndash; to etap znajdowania `układu strony`, określanego również pojęciem `rozmieszczenia elementów`.
+Note: As a brief aside, note that `visibility: hidden` is different from `display: none`. The former makes the element invisible, but the element still occupies space in the layout (that is, it's rendered as an empty box), whereas the latter (`display: none`) removes the element entirely from the render tree such that the element is invisible and is not part of the layout.
 
-Przeglądarka rozpoczyna wyznaczanie dokładnego rozmiaru i położenia każdego obiektu od korzenia drzewa renderowania i przeszukuje całe drzewo, obliczając geometrię każdego obiektu na stronie. Oto prosty przykład:
+The final output is a render that contains both the content and style information of all the visible content on the screen. **With the render tree in place, we can proceed to the "layout" stage.**
+
+Up to this point we've calculated which nodes should be visible and their computed styles, but we have not calculated their exact position and size within the [viewport](/web/fundamentals/design-and-ux/responsive/#set-the-viewport) of the device\---that's the "layout" stage, also known as "reflow."
+
+To figure out the exact size and position of each object on the page, the browser begins at the root of the render tree and traverses it. Let's consider a simple, hands-on example:
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/performance/critical-rendering-path/_code/nested.html" region_tag="full" adjust_indentation="auto" %}
 </pre>
 
-Sekcja body powyższej strony zawiera dwa zagnieżdżone elementy div: pierwszy (nadrzędny) element div określa wartość rozmiaru wyświetlania jako 50% szerokości widocznego obszaru, drugi (zawarty w nadrzędnym elemencie div) określa szerokość jako 50% elementu nadrzędnego &ndash; tzn. 25% szerokości widocznego obszaru.
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/performance/critical-rendering-path/nested.html){: target="_blank" .external }
 
-<img src="images/layout-viewport.png" alt="Wyznaczanie informacji o układzie strony" class="center">
+The body of the above page contains two nested div's: the first (parent) div sets the display size of the node to 50% of the viewport width, and the second div\---contained by the parent\---sets its width to be 50% of its parent; that is, 25% of the viewport width.
 
-Wynikiem działania procedury wyznaczania układu strony jest `model ramkowy`, w którym precyzyjnie określono położenie i rozmiar każdego elementu w widocznym obszarze: wszystkie względne położenia są konwertowane do bezwzględnych położeń pikseli na ekranie.
+<img src="images/layout-viewport.png" alt="Calculating layout information" />
 
-Po określeniu widoczności węzłów oraz wyznaczeniu ich stylów i geometrii dane te są przekazywane do ostatniego etapu: przekształcenia każdego węzła w drzewie renderowania na rzeczywiste piksele na ekranie &ndash; ten krok często określa się mianem `malowania` lub `rasteryzacji`.
+The output of the layout process is a "box model," which precisely captures the exact position and size of each element within the viewport: all of the relative measurements are converted to absolute pixels on the screen.
 
-Czy rozumiesz wszystkie etapy? Każdy z tych etapów wymaga od przeglądarki ogromnej liczby czynności, dlatego mogą one zająć sporo czasu. Na szczęście Narzędzia Chrome dla programistów pozwalają uzyskać wgląd we wszystkie trzy opisane wyżej etapy. Rozpatrzmy etap wyznaczania układu strony z pierwotnym przykładem `Witaj Świecie`:
+Finally, now that we know which nodes are visible, and their computed styles and geometry, we can pass this information to the final stage, which converts each node in the render tree to actual pixels on the screen. This step is often referred to as "painting" or "rasterizing."
 
-<img src="images/layout-timeline.png" alt="Pomiary trwania wyznaczania układu strony w narzędziach DevTools" class="center">
+This can take some time because the browser has to do quite a bit of work. However, Chrome DevTools can provide some insight into all three of the stages described above. Let's examine the layout stage for our original "hello world" example:
 
-* Tworzenie drzewa renderowania oraz wyznaczanie położenia i rozmiaru są wykonywane w zdarzeniu `Layout` wyświetlanym na osi czasu.
-* Po zakończeniu wyznaczania układu strony przeglądarka wywołuje zdarzenia `Paint Setup` i `Paint`, podczas których na podstawie drzewa renderowania wyznaczane są rzeczywiste piksele na ekranie.
+<img src="images/layout-timeline.png" alt="Measuring layout in DevTools" />
 
-Czas potrzebny na utworzenie drzewa renderowania, wyznaczenie układu strony i malowanie zależy od rozmiaru dokumentu, użytych stylów i oczywiście urządzenia, na którym uruchomiona jest przeglądarka: im większą objętość ma dokument, tym więcej pracy musi wykonać przeglądarka; im bardziej skomplikowane style, tym więcej czasu zajmie malowanie (np. niezmienny kolor można odmalować szybko, ale obliczenie i renderowanie cienia trwa znacznie dłużej).
+* The "Layout" event captures the render tree construction, position, and size calculation in the Timeline.
+* When layout is complete, the browser issues "Paint Setup" and "Paint" events, which convert the render tree to pixels on the screen.
 
-Po wykonaniu tych wszystkich czynności nasza strona wyświetla się w końcu poprawnie w widocznym obszarze &ndash; hura!
+The time required to perform render tree construction, layout and paint varies based on the size of the document, the applied styles, and the device it is running on: the larger the document, the more work the browser has; the more complicated the styles, the more time taken for painting also (for example, a solid color is "cheap" to paint, while a drop shadow is "expensive" to compute and render).
 
-<img src="images/device-dom-small.png" alt="Zrenderowana strona Witaj Świecie" class="center">
+The page is finally visible in the viewport:
 
-Szybko podsumujmy wszystkie kroki wykonywane przez przeglądarkę:
+<img src="images/device-dom-small.png" alt="Rendered Hello World page" />
 
-1. Przetworzenie znaczników HTML i utworzenie drzewa DOM.
-2. Przetworzenie znaczników CSS i utworzenie drzewa CSSOM.
-3. Połączenie drzew DOM i CSSOM w jedno drzewo renderowania.
-4. Wyznaczenie układu strony na podstawie drzewa renderowania i określenie geometrii każdego węzła.
-5. Odmalowanie poszczególnych węzłów na ekranie.
+Here's a quick recap of the browser's steps:
 
-Nasza demonstracyjna strona może wyglądać na prostą, ale wymaga wykonania wielu czynności. A co się stanie po wprowadzeniu modyfikacji do modelu DOM lub CSSOM? Cały proces trzeba będzie powtórzyć, by określić, które piksele powinny zostać zrenderowane ponownie na ekranie.
+1. Process HTML markup and build the DOM tree.
+2. Process CSS markup and build the CSSOM tree.
+3. Combine the DOM and CSSOM into a render tree.
+4. Run layout on the render tree to compute geometry of each node.
+5. Paint the individual nodes to the screen.
 
-**Optymalizacja krytycznej ścieżki renderowania polega na minimalizacji łącznego czasu trwania kroków od 1 do 5 powyższej sekwencji.** Takie postępowanie ma na celu uzyskanie jak najszybszego renderowania treści na ekranie, jak również skrócenie odstępów między kolejnymi aktualizacjami ekranu po pierwszym renderowaniu, co oznacza uzyskanie wyższych częstotliwości odświeżania treści interaktywnej.
+Our demo page may look simple, but it requires quite a bit of work. If either the DOM or CSSOM were modified, you would have to repeat the process in order to figure out which pixels would need to be re-rendered on the screen.
 
+***Optimizing the critical rendering path* is the process of minimizing the total amount of time spent performing steps 1 through 5 in the above sequence.** Doing so renders content to the screen as quickly as possible and also reduces the amount of time between screen updates after the initial render; that is, achieve higher refresh rates for interactive content.
 
+## Feedback {: #feedback }
 
+{% include "web/_shared/helpful.html" %}
