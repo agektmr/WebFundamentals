@@ -1,114 +1,70 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Saiba como usar o Chrome e o DevTools para encontrar problemas de memória que afetam o desempenho da página, incluindo vazamentos de memória, ocupação excessiva de memória e coletas de lixo frequentes.
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Learn how to use Chrome and DevTools to find memory issues that affect page performance, including memory leaks, memory bloat, and frequent garbage collections.
 
-{# wf_updated_on: 2017-12-19 #}
-{# wf_published_on: 2015-04-13 #}
-{# wf_blink_components: Blink>MemoryAllocator #}
+{# wf_updated_on: 2018-07-27 #} {# wf_published_on: 2015-04-13 #} {# wf_blink_components: Blink>MemoryAllocator,Platform>DevTools #}
 
-# Consertar problemas de memória {: .page-title }
+# Fix Memory Problems {: .page-title }
 
 {% include "web/_shared/contributors/kaycebasques.html" %}
 
-Saiba como usar o Chrome e o DevTools para encontrar problemas de memória
-que afetam o desempenho da página, incluindo vazamentos de memória, ocupação excessiva de memória e
-coletas de lixo frequentes.
-
+Learn how to use Chrome and DevTools to find memory issues that affect page performance, including memory leaks, memory bloat, and frequent garbage collections.
 
 ### TL;DR {: .hide-from-toc }
-- Saiba quanta memória sua página está usando no momento com o gerenciador de tarefas do Chrome.
-- Veja o uso de memória ao longo do tempo com os registros da Timeline.
-- Identifique árvores do DOM desconectadas (uma causa comum de vazamentos de memória) com instantâneos de pilha.
-- Descubra quando nova memória é alocada à pilha do JS com as gravações da Allocation Timeline.
 
+* Find out how much memory your page is currently using with the Chrome Task Manager.
+* Visualize memory usage over time with Timeline recordings.
+* Identify detached DOM trees (a common cause of memory leaks) with Heap Snapshots.
+* Find out when new memory is being allocated in your JS heap with Allocation Timeline recordings.
 
-Visão geral do ## 
+## Overview
 
-De acordo com o modelo de desempenho [RAIL][RAIL], as atividades de
-desempenho devem se concentrar nos usuários.
+In the spirit of the [RAIL](/web/tools/chrome-devtools/profile/evaluate-performance/rail) performance model, the focus of your performance efforts should be your users.
 
-Os problemas de memória são importantes porque são frequentemente
-notados pelos usuários. Os usuários podem perceber problemas de memória das seguintes
-formas:
+Memory issues are important because they are often perceivable by users. Users can perceive memory issues in the following ways:
 
-* **O desempenho de uma página piora progressivamente ao longo do tempo.** Isso é possivelmente
-  um sintoma de vazamento de memória. Um vazamento de memória ocorre quando um erro na página 
-  faz com que ela use progressivamente mais e mais memória com o tempo. 
-* **O desempenho de uma página é consistentemente ruim.** Isso é possivelmente um sintoma
-  de ocupação excessiva da memória. A ocupação excessiva da memória ocorre quando uma página usa mais memória do que
-  o necessário para obter a maior velocidade.
-* **O desempenho de uma página atrasa ou parece pausar frequentemente.** Isso é
-  possivelmente um sintoma de coletas de lixo frequentes. A coleta de lixo
-  ocorre quando o navegador recupera memória. O navegador decide quando isso acontecerá.
-  Durante as coletas, toda execução de script é pausada. Portanto, se o navegador estiver
-  executando muitas coletas de lixo, a execução de scripts será pausada muitas vezes.
+* **A page's performance gets progressively worse over time.** This is possibly a symptom of a memory leak. A memory leak is when a bug in the page causes the page to progressively use more and more memory over time. 
+* **A page's performance is consistently bad.** This is possibly a symptom of memory bloat. Memory bloat is when a page uses more memory than is necessary for optimal page speed.
+* **A page's performance is delayed or appears to pause frequently.** This is possibly a symptom of frequent garbage collections. Garbage collection is when the browser reclaims memory. The browser decides when this happens. During collections, all script execution is paused. So if the browser is garbage collecting a lot, script execution is going to get paused a lot.
 
-### Ocupação excessiva de memória: quanto é "demais"?
+### Memory bloat: how much is "too much"?
 
-É fácil definir um vazamento de memória. Se um site estiver usando mais
-e mais memória progressivamente, há um vazamento. Mas a ocupação excessiva da memória é um pouco
-mais difícil de detectar. E o que pode ser classificado como "ocupação excessiva de memória"?
+A memory leak is easy to define. If a site is progressively using more and more memory, then you've got a leak. But memory bloat is a bit harder to pin down. What qualifies as "using too much memory"?
 
-Não existem números padrão porque dispositivos
-e navegadores diferentes têm recursos distintos. A mesma página que
-executa suavemente em um smartphone avançado pode falhar em um smartphone
-simples.
+There are no hard numbers here, because different devices and browsers have different capabilities. The same page that runs smoothly on a high-end smartphone might crash on a low-end smartphone.
 
-A saída é usar o modelo RAIL e manter o foco nos usuários. Descubra
-de que dispositivos os usuários mais gostam e teste sua página
-neles. Se a experiência for consistentemente ruim, a página
-poderá estar excedendo os recursos de memória desses dispositivos.
+The key here is to use the RAIL model and focus on your users. Find out what devices are popular with your users, and then test out your page on those devices. If the experience is consistently bad, the page may be exceeding the memory capabilities of those devices.
 
-[RAIL]: /web/tools/chrome-devtools/profile/evaluate-performance/rail
+## Monitor memory use in realtime with the Chrome Task Manager
 
-## Monitorar o uso de memória em tempo real com o gerenciador de tarefas do Chrome
+Use the Chrome Task Manager as a starting point to your memory issue investigation. The Task Manager is a realtime monitor that tells you how much memory a page is currently using.
 
-Use o gerenciador de tarefas do Chrome como ponto de partida para a investigação do
-problema de memória. O gerenciador de tarefas é um monitor em tempo real que informa
-quanta memória uma página está usando no momento.
+1. Press <kbd>Shift</kbd>+<kbd>Esc</kbd> or go to the Chrome main menu and select **More tools** > **Task manager** to open the Task Manager.
+    
+    ![opening the task
+manager](imgs/task-manager.png)
 
-1. Pressione <kbd>Shift</kbd>+<kbd>Esc</kbd> ou acesse o
-   menu principal do Chrome e selecione **More tools** > **Task manager** para abrir
-   o gerenciador de tarefas.
+2. Right-click on the table header of the Task Manager and enable **JavaScript memory**.
+    
+    ![enable javascript
+memory](imgs/js-memory.png)
 
-   ![abrir o gerenciador
-   de tarefas](imgs/task-manager.png)
+These two columns tell you different things about how your page is using memory:
 
-1. Clique com o botão direito no cabeçalho da tabela do gerenciador de tarefas e ative **JavaScript
-   memory**.
-
-   ![ativar javascript
-   memory](imgs/js-memory.png)
-
-Essas duas colunas contêm informações diferentes sobre a forma como a página usa a memória:
-
-* A coluna **Memory** representa a memória nativa. Os nós de DOM são armazenados na
-  memória nativa. Se este valor está aumentando, os nós do DOM estão sendo criados.
-* A coluna **JavaScript Memory** representa a pilha JS. Esta coluna
-  contém dois valores. O valor que você deve olhar é o número
-  ativo (o número entre parênteses). O número ativo representa
-  quanta memória os objetos acessíveis da sua página estão usando. Se este
-  número estiver aumentando, novos objetos estão sendo criados ou os já
-  existentes estão crescendo.
+* The **Memory** column represents native memory. DOM nodes are stored in native memory. If this value is increasing, DOM nodes are getting created.
+* The **JavaScript Memory** column represents the JS heap. This column contains two values. The value you're interested in is the live number (the number in parentheses). The live number represents how much memory the reachable objects on your page are using. If this number is increasing, either new objects are being created, or the existing objects are growing.
 
 <!-- live number reference: https://groups.google.com/d/msg/google-chrome-developer-tools/aTMVGoNM0VY/bLmf3l2CpJ8J -->
 
-## Visualizar vazamentos de memória com os registros da Timeline
+## Visualize memory leaks with Timeline recordings
 
-Você também pode usar o painel Timeline como outro ponto de entrada para sua
-investigação. O painel Timeline ajuda a visualizar o uso de memória pela página
-ao longo do tempo.
+You can also use the Timeline panel as another starting point in your investigation. The Timeline panel helps you visualize a page's memory use over time.
 
-1. Abra o painel **Timeline** no DevTools.
-1. Ative a caixa de seleção **Memory**.
-1. [Faça uma gravação][recording].
+1. Open the **Timeline** panel on DevTools.
+2. Enable the **Memory** checkbox.
+3. [Make a recording](/web/tools/chrome-devtools/profile/evaluate-performance/timeline-tool#make-a-recording).
 
-Dica: É uma boa prática começar e finalizar a gravação com uma coleta
-de lixo forçada. Clique no botão **collect garbage**
-(![botão force garbage collection][cg]{:.inline})
-durante a gravação para forçar a coleta de lixo.
+Tip: It's a good practice to start and end your recording with a forced garbage collection. Click the **collect garbage** button (![force garbage collection button](imgs/collect-garbage.png){:.inline}) while recording to force garbage collection.
 
-Para demonstrar as gravações de memória do Timeline, considere este código:
+To demonstrate Timeline memory recordings, consider the code below:
 
     var x = [];
     
@@ -120,55 +76,21 @@ Para demonstrar as gravações de memória do Timeline, considere este código:
     }
     
     document.getElementById('grow').addEventListener('click', grow);
+    
 
-Todas as vezes que o botão referenciado no código é pressionado, dez 
-mil nós `div` são anexados ao
-corpo do documento e uma string de um milhão de caracteres `x` é inserida
-na matriz `x`. A execução desse código gera uma gravação de Timeline semelhante à 
-esta captura de tela:
+Every time that the button referenced in the code is pressed, ten thousand `div` nodes are appended to the document body, and a string of one million `x` characters is pushed onto the `x` array. Running this code produces a Timeline recording like the following screenshot:
 
-![exemplo simples de crescimento][sg]
+![simple growth example](imgs/simple-growth.png)
 
-Em primeiro lugar, uma explicação da interface do usuário.
-O gráfico **HEAP** no painel **Overview** (abaixo de **NET**) representa a pilha do
-JS. Embaixo do painel **Overview** está o painel **Counter**. Aqui, o uso da memória
-é exibido dividido por pilha do JS (como no gráfico **HEAP** no
-painel **Overview**), documentos, nós do DOM, detectores e memória GPU.
-A desativação de uma caixa de seleção oculta as informações no gráfico.
+First, an explanation of the user interface. The **HEAP** graph in the **Overview** pane (below **NET**) represents the JS heap. Below the **Overview** pane is the **Counter** pane. Here you can see memory usage broken down by JS heap (same as **HEAP** graph in the **Overview** pane), documents, DOM nodes, listeners, and GPU memory. Disabling a checkbox hides it from the graph.
 
-Agora, uma análise do código comparada com a captura de tela.
-Se você observar o contador de nós (o gráfico verde), verá que ele corresponde
-exatamente ao código. A contagem de nós aumenta
-em passos discretos. Você pode presumir que cada aumento na contagem de nós é uma
-chamada de `grow()`. O gráfico da pilha JS (o gráfico azul) não é tão direto.
-Em consistência com as práticas recomendadas, o primeiro fundo é, na verdade, uma coleta
- de lixo forçada (resultante do pressionar do botão **collect garbage**).
-À medida que a gravação progride, você pode ver que o tamanho da pilha JS apresenta picos. Isso é
-natural e esperado: o código JavaScript está criando os nós do DOM a cada
-clique no botão e trabalha muito quando cria a string de um milhão de
-caracteres. O principal fator aqui é o fato de que a pilha JS encerra mais alta
-do que começou (com o "início" sendo o ponto após a coleta
-de lixo forçada). No mundo real, se você perceber esse padrão de tamanho crescente
-de pilha de JS ou nó, isso poderá significar um vazamento de memória.
+Now, an analysis of the code compared with the screenshot. If you look at the node counter (the green graph) you can see that it matches up cleanly with the code. The node count increases in discrete steps. You can presume that each increase in the node count is a call to `grow()`. The JS heap graph (the blue graph) is not as straightforward. In keeping with best practices, the first dip is actually a forced garbage collection (achieved by pressing the **collect garbage** button). As the recording progresses you can see that the JS heap size spikes. This is natural and expected: the JavaScript code is creating the DOM nodes on every button click and doing a lot of work when it creates the string of one million characters. The key thing here is the fact that the JS heap ends higher than it began (the "beginning" here being the point after the forced garbage collection). In the real world, if you saw this pattern of increasing JS heap size or node size, it would potentially mean a memory leak.
 
-[recording]: /web/tools/chrome-devtools/profile/evaluate-performance/timeline-tool#make-a-recording
+## Discover detached DOM tree memory leaks with Heap Snapshots
 
-[cg]: imgs/collect-garbage.png
+A DOM node can only be garbage collected when there are no references to it from either the page's DOM tree or JavaScript code. A node is said to be "detached" when it's removed from the DOM tree but some JavaScript still references it. Detached DOM nodes are a common cause of memory leaks. This section teaches you how to use DevTools' heap profilers to identify detached nodes.
 
-[sg]: imgs/simple-growth.png
-
-[hngd]: https://jsfiddle.net/kaycebasques/tmtbw8ef/
-
-## Descobrir vazamentos de memória da árvore do DOM desconectada com instantâneos de pilha
-
-Um nó do DOM somente pode ser coletado como lixo quando não for referenciado
-pela árvore do DOM e pelo código JavaScript da página. Um nó é considerado 
-"desconectado" quando é removido da árvore do DOM mas ainda tem referências
-no JavaScript. Nós do DOM desconectados são uma causa comum de vazamentos de memória. Esta
-seção mostra como usar os criadores de perfil de pilha do DevTools para identificar nós
-desconectados.
-
-Veja a seguir um exemplo simples de nós de DOM desconectados. 
+Here's a simple example of detached DOM nodes.
 
     var detachedNodes;
     
@@ -178,147 +100,90 @@ Veja a seguir um exemplo simples de nós de DOM desconectados.
         var li = document.createElement('li');
         ul.appendChild(li);
       }
-      detachedTree = ul;
+      detachedNodes = ul;
     }
     
     document.getElementById('create').addEventListener('click', create);
+    
 
-Um clique no botão referenciado no código cria um nó `ul` com dez filhos `li`.
- Estes nós são referenciados pelo código, mas não existem na
-árvore do DOM. Portanto, estão desconectados.
+Clicking the button referenced in the code creates a `ul` node with ten `li` children. These nodes are referenced by the code but do not exist in the DOM tree, so they're detached.
 
-Os instantâneos de pilha são uma forma de identificar nós desconectados. Como indicado pelo nome,
-os instantâneos de pilha mostram como a memória é distribuída entre os objetos JS e os nós do DOM
-da página no momento do instantâneo.
+Heap snapshots are one way to identify detached nodes. As the name implies, heap snapshots show you how memory is distributed among your page's JS objects and DOM nodes at the point of time of the snapshot.
 
-Para criar um instantâneo, abra o DevTools e acesse o painel **Profiles**, selecione
-o botão de opção **Take Heap Snapshot** e pressione o botão **Take
-Snapshot**. 
+To create a snapshot, open DevTools and go to the **Profiles** panel, select the **Take Heap Snapshot** radio button, and then press the **Take Snapshot** button.
 
-![take heap snapshot][ths]
+![take heap snapshot](imgs/take-heap-snapshot.png)
 
-O processamento e o carregamento do instantâneo podem demorar algum tempo. Depois que acabar, selecione-o
- no painel à esquerda (chamado de **HEAP SNAPSHOTS**). 
+The snapshot may take some time to process and load. Once it's finished, select it from the lefthand panel (named **HEAP SNAPSHOTS**).
 
-Digite `Detached` na caixa de texto **Class filter** para buscar árvores
-do DOM desconectadas.
+Type `Detached` in the **Class filter** textbox to search for detached DOM trees.
 
-![filtrar por nós desconectados][df]
+![filtering for detached nodes](imgs/detached-filter.png)
 
-Expanda os quilates para investigar uma árvore desconectada.
+Expand the carats to investigate a detached tree.
 
-![investigar árvore desconectada][ed]
+![investigating detached tree](imgs/expanded-detached.png)
 
-Os nós destacados em amarelo fazem referência direta a eles no código 
-JavaScript. Os nós destacados em vermelho não têm referências diretas. Eles só
-estão ativos porque são parte da árvore dos nós amarelos. Em geral, você deve se
-concentrar nos nós amarelos. Altere o código para que o nó amarelo não fique ativo
-por mais tempo que o necessário. Com isso, você também se livrará dos nós vermelhos que fazem
-parte da árvore de nós amarelos.
+Nodes highlighted yellow have direct references to them from the JavaScript code. Nodes highlighted red do not have direct references. They are only alive because they are part of the yellow node's tree. In general, you want to focus on the yellow nodes. Fix your code so that the yellow node isn't alive for longer than it needs to be, and you also get rid of the red nodes that are part of the yellow node's tree.
 
-Clique em um nó amarelo para examiná-lo em detalhes. No painel **Objects**,
-você pode ver mais informações sobre o código que está referenciando-o. Por exemplo,
-na imagem acima, você pode ver que a variável `detachedTree` está
-referenciando o nó. Para corrigir esse vazamento de memória específico, você precisa estudar 
-o código que usa `detachedTree` e garantir que ele remova a referência ao
-nó quando não precisar mais dele.
+Click on a yellow node to investigate it further. In the **Objects** pane you can see more information about the code that's referencing it. For example, in the screenshot below you can see that the `detachedTree` variable is referencing the node. To fix this particular memory leak, you would study the code that uses `detachedTree` and ensure that it removes its reference to the node when it's no longer needed.
 
-![investigar um nó amarelo][yn]
+![investigating a yellow node](imgs/yellow-node.png)
 
-[ths]: imgs/take-heap-snapshot.png
+## Identify JS heap memory leaks with Allocation Timelines
 
-[df]: imgs/detached-filter.png
+The Allocation Timeline is another tool that can help you track down memory leaks in your JS heap.
 
-[ed]: imgs/expanded-detached.png
-
-[yn]: imgs/yellow-node.png
-
-## Identificar vazamentos de memória na pilha JS com Allocation Timelines
-
-A Allocation Timeline é outra ferramenta que pode ajudar a rastrear 
-vazamentos de memória na pilha JS. 
-
-Para demonstrar o Allocation Timeline, considere este código:
+To demonstrate the Allocation Timeline consider the following code:
 
     var x = [];
-
+    
     function grow() {
       x.push(new Array(1000000).join('x'));
     }
-
+    
     document.getElementById('grow').addEventListener('click', grow);
+    
 
-Todas as vezes que o botão referenciado no código for acionado, uma string de um
-milhão de caracteres será adicionada à matriz `x`.
+Every time that the button referenced in the code is pushed, a string of one million characters is added to the `x` array.
 
-Para gravar uma Allocation Timeline, abra o DevTools, acesse o painel **Profiles**,
-selecione o botão de opção **Record Allocation Timeline**, pressione o botão **Start**,
-execute a ação que você suspeita que esteja causando o vazamento de memória e,
-em seguida, pressione o botão **stop recording** 
-(![botão stop recording][sr]{:.inline})
-quando estiver tudo pronto. 
+To record an Allocation Timeline, open DevTools, go to the **Profiles** panel, select the **Record Allocation Timeline** radio button, press the **Start** button, perform the action that you suspect is causing the memory leak, and then press the **stop recording** button (![stop recording button](imgs/stop-recording.png){:.inline}) when you're done.
 
-Durante a gravação, observe se alguma barra azul aparece no Allocation
-Timeline, como na captura de tela abaixo. 
+As you're recording, notice if any blue bars show up on the Allocation Timeline, like in the screenshot below.
 
-![novas alocações][na]
+![new allocations](imgs/new-allocations.png)
 
-Essas barras azuis representam novas alocações de memória. Essas novas alocações de memória
-são seus candidatos a ter vazamentos de memória. Você pode aumentar o zoom em uma barra e filtrar o
-painel **Constructor** para exibir somente os objetos alocados durante o período
-especificado. 
+Those blue bars represent new memory allocations. Those new memory allocations are your candidates for memory leaks. You can zoom on a bar to filter the **Constructor** pane to only show objects that were allocated during the specified timeframe.
 
-![allocation timeline com zoom aumentado][zat]
+![zoomed allocation timeline](imgs/zoomed-allocation-timeline.png)
 
-Expanda o objeto e clique em seu valor para ver mais detalhes sobre ele no painel
-**Object**. Por exemplo, na captura de tela abaixo, ao examinar os detalhes
-do objeto recém-alocado, você poderá ver que ele foi
-alocado à variável `x` no escopo `Window`.
+Expand the object and click on its value to view more details about it in the **Object** pane. For example, in the screenshot below, by viewing the details of the object that was newly allocated, you'd be able to see that it was allocated to the `x` variable in the `Window` scope.
 
-![detalhes do objeto][od]
+![object details](imgs/object-details.png)
 
-[sr]: imgs/stop-recording.png
+## Investigate memory allocation by function {: #allocation-profile }
 
-[na]: imgs/new-allocations.png
-
-[zat]: imgs/zoomed-allocation-timeline.png
-
-[od]: imgs/object-details.png
-
-## Investigar a alocação de memória por função {: #allocation-profile }
-
-Use o tipo **Record Allocation Profiler** para ver a alocação de memória por
-função do JavaScript.
+Use the **Record Allocation Profiler** type to view memory allocation by JavaScript function.
 
 ![Record Allocation Profiler](imgs/record-allocation-profile.png)
 
-1. Selecione o botão de opção **Record Allocation Profiler**. Se houver um
-   worker na página, você poderá selecioná-lo como o destino da criação do perfil usando
-   o menu suspenso ao lado do botão **Start**.
-1. Pressione o botão **Start**.
-1. Execute as ações na página que quer investigar.
-1. Pressione o botão **Stop** quando concluir todas as ações.
+1. Select the **Record Allocation Profiler** radio button. If there is a worker on the page, you can select that as the profiling target using the dropdown menu next to the **Start** button.
+2. Press the **Start** button.
+3. Perform the actions on the page which you want to investigate.
+4. Press the **Stop** button when you have finished all of your actions.
 
-O DevTools exibe a distribuição da alocação de memória por função. A visualização
-padrão é **Heavy (Bottom Up)**, que exibe na parte superior as funções que
-mais alocaram memória.
+DevTools shows you a breakdown of memory allocation by function. The default view is **Heavy (Bottom Up)**, which displays the functions that allocated the most memory at the top.
 
-![Perfil de alocação](imgs/allocation-profile.png)
+![Allocation profile](imgs/allocation-profile.png)
 
-## Identificar coletas de lixo frequentes
+## Spot frequent garbage collections
 
-Se uma página aparentar estar pausando com frequência, poderão estar ocorrendo problemas de
-coleta de lixo. 
+If your page appears to pause frequently, then you may have garbage collection issues.
 
-Você pode usar o Gerenciador de tarefas do Chrome ou os registros de memória da Timeline para
-identificar coletas de lixo frequentes. No Gerenciador de tarefas, aumentar e reduzir
-frequentemente os valores de **Memória** ou **Memória JavaScript** representa coletas
-de lixo frequentes. Nas gravações da Timeline, gráficos frequentemente ascendentes e descendentes
-de pilha JS ou contagem de nós indicam coletas de lixo frequentes.
+You can use either the Chrome Task Manager or Timeline memory recordings to spot frequent garbage collections. In the Task Manager, frequently rising and falling **Memory** or **JavaScript Memory** values represent frequent garbage collections. In Timeline recordings, frequently rising and falling JS heap or node count graphs indicate frequent garbage collections.
 
-Depois de identificar o problema, você poderá usar uma gravação da
-Allocation Timeline para descobrir onde a memória está sendo alocada e que funções estão
-causando as alocações. 
+Once you've identified the problem, you can use an Allocation Timeline recording to find out where memory is being allocated and which functions are causing the allocations.
 
+## Feedback {: #feedback }
 
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
