@@ -1,127 +1,121 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: O modo de eventos de linha do tempo exibe todos os eventos acionados durante uma gravação. Use a referência ao evento de linha do tempo para saber mais sobre cada tipo de evento de linha do tempo.
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: The timeline events mode displays all events triggered while making a recording. Use the timeline event reference to learn more about each timeline event type.
 
-{# wf_updated_on: 2015-05-11 #}
-{# wf_published_on: 2015-04-13 #}
+{# wf_updated_on: 2018-07-27 #} {# wf_published_on: 2015-04-13 #} {# wf_blink_components: Platform>DevTools #}
 
-# Referência aos eventos de linha do tempo {: .page-title }
+# Timeline Event Reference {: .page-title }
 
-{% include "web/_shared/contributors/megginkearney.html" %}
-{% include "web/_shared/contributors/flaviocopes.html" %}
+{% include "web/_shared/contributors/megginkearney.html" %} {% include "web/_shared/contributors/flaviocopes.html" %}
 
-O modo de eventos de linha do tempo exibe todos os eventos acionados durante uma gravação. Use a referência ao evento de linha do tempo para saber mais sobre cada tipo de evento de linha do tempo.
+The timeline events mode displays all events triggered while making a recording. Use the timeline event reference to learn more about each timeline event type.
 
+## Common timeline event properties
 
-## Propriedades comuns de eventos de linha do tempo
+Certain details are present in events of all types, while some only apply to certain event types. This section lists properties common to different event types. Properties specific to certain event types are listed in the references for those event types that follow.
 
-Determinados detalhes são apresentados em eventos de todos os tipos, embora alguns se apliquem apenas a determinados tipos de evento. Esta seção lista as propriedades comuns a diferentes tipos de evento. As propriedades específicas de determinados tipos de evento são listadas nas referências a esses tipos de evento a seguir.
+| Property                 | When is it shown                                                                                                                                                      |
+| ------------------------ |:--------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Aggregated time          | For events with [nested events](/web/tools/chrome-devtools/profile/evaluate-performance/timeline-tool#view-nested-events), the time taken by each category of events. |
+| Call Stack               | For events with [child events](/web/tools/chrome-devtools/profile/evaluate-performance/timeline-tool#view-nested-events), the time taken by each category of events.  |
+| CPU time                 | How much CPU time the recorded event took.                                                                                                                            |
+| Details                  | Other details about the event.                                                                                                                                        |
+| Duration (at time-stamp) | How long it took the event with all of its children to complete; timestamp is the time at which the event occurred, relative to when the recording started.           |
+| Self time                | How long the event took without any of its children.                                                                                                                  |
+| Used Heap Size           | Amount of memory being used by the application when the event was recorded, and the delta (+/-) change in used heap size since the last sampling.                     |
 
-| Propriedade   |      Quando é exibida                                                       |
-|----------|:-----------------------------------------------------------------|
-| --|| Aggregated time | Para eventos com [eventos aninhados](/web/tools/chrome-devtools/profile/evaluate-performance/timeline-tool#view-nested-events), o tempo necessário de cada categoria de eventos.|
-| Call Stack | Para eventos com [eventos secundários](/web/tools/chrome-devtools/profile/evaluate-performance/timeline-tool#view-nested-events), o tempo necessário de cada categoria de eventos.|
-| CPU time | Quanto tempo do CPU o evento gravado tomou.|
-| Details | Outros detalhes sobre o evento.|
-| Duration (at time-stamp) | Quanto tempo o evento levou para concluir com todos os seus secundários; marcação de tempo é o tempo em que o evento ocorreu, em relação a quando a gravação começou.|
-| Self time    | Quanto tempo o evento levou sem seus aninhados.|
-| Used Heap Size | Quantidade de memória usada pelo aplicativo quando o evento foi gravado e a mudança de delta (+/-) em tamanho da pilha usado desde a última amostragem.|
+## Loading events
 
-## Eventos de carregamento
+This section lists events that belong to Loading category and their properties.
 
-Esta seção lista eventos que pertencem à categoria Loading e suas propriedades.
+| Event            | Description                                                                     |
+| ---------------- |:------------------------------------------------------------------------------- |
+| Parse HTML       | Chrome executed its HTML parsing algorithm.                                     |
+| Finish Loading   | A network request completed.                                                    |
+| Receive Data     | Data for a request was received. There will be one or more Receive Data events. |
+| Receive Response | The initial HTTP response from a request.                                       |
+| Send Request     | A network request has been sent.                                                |
 
-| Evento | Descrição |
-|-------|:----------|
-|Parse HTML|  O Chrome executou seu algoritmo de análise do HTML.|
-|Finish Loading|  Uma solicitação de rede concluída.|
-|Receive Data|  Os dados de uma solicitação foram recebidos. Haverá um ou mais eventos Receive Data.|
-|Receive Response|  A resposta inicial em HTTP a uma solicitação.|
-|Send Request|  Uma solicitação de rede foi enviada.|
+### Loading event properties
 
-### Propriedades do evento de carregamento
+| Property            | Description                                                  |
+| ------------------- |:------------------------------------------------------------ |
+| Resource            | The URL of the requested resource.                           |
+| Preview             | Preview of the requested resource (images only).             |
+| Request Method      | HTTP method used for the request (GET or POST, for example). |
+| Status Code         | HTTP response code.                                          |
+| MIME Type           | MIME type of the requested resource.                         |
+| Encoded Data Length | Length of requested resource in bytes.                       |
 
-| Propriedade | Descrição |
-|-------|:----------|
-|Resource|O URL do recurso solicitado.|
-|Preview|Prévia do recurso solicitado (somente imagens).|
-|Request Method|Método HTTP usado para a solicitação (GET ou POST, por exemplo).|
-|Status Code|Código da resposta em HTTP.|
-|MIME Type|Tipo de MIME do recurso solicitado.|
-|Encoded Data Length|Comprimento do recurso solicitado em bytes.|
+## Scripting events
 
-## Eventos de script
+This section lists events that belong to the Scripting category and their properties.
 
-Esta seção lista eventos que pertencem à categoria Scripting e suas propriedades.
+| Event                   | Description                                                                                                                                                                                                      |
+| ----------------------- |:---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Animation Frame Fired   | A scheduled animation frame fired, and its callback handler invoked.                                                                                                                                             |
+| Cancel Animation Frame  | A scheduled animation frame was canceled.                                                                                                                                                                        |
+| GC Event                | Garbage collection occurred.                                                                                                                                                                                     |
+| DOMContentLoaded        | The [DOMContentLoaded](https://developer.mozilla.org/en-US/docs/Web/Events/DOMContentLoaded) was fired by the browser. This event is fired when all of the page’s DOM content has been loaded and parsed.        |
+| Evaluate Script         | A script was evaluated.                                                                                                                                                                                          |
+| Event                   | A JavaScript event ("mousedown", or "key", for example).                                                                                                                                                         |
+| Function Call           | A top-level JavaScript function call was made (only appears when browser enters JavaScript engine).                                                                                                              |
+| Install Timer           | A timer was created with [setInterval()](https://developer.mozilla.org/en-US/docs/Web/API/WindowTimers/setInterval) or [setTimeout()](https://developer.mozilla.org/en-US/docs/Web/API/WindowTimers/setTimeout). |
+| Request Animation Frame | A `requestAnimationFrame()` call scheduled a new frame                                                                                                                                                           |
+| Remove Timer            | A previously created timer was cleared.                                                                                                                                                                          |
+| Time                    | A script called [console.time()](/web/tools/chrome-devtools/debug/console/console-reference#consoletimelabel)                                                                                                    |
+| Time End                | A script called [console.timeEnd()](/web/tools/chrome-devtools/debug/console/console-reference#consoletimeendlabel)                                                                                              |
+| Timer Fired             | A timer fired that was scheduled with `setInterval()` or `setTimeout()`.                                                                                                                                         |
+| XHR Ready State Change  | The ready state of an XMLHTTPRequest changed.                                                                                                                                                                    |
+| XHR Load                | An `XMLHTTPRequest` finished loading.                                                                                                                                                                            |
 
-| Evento | Descrição |
-|-------|:----------|
-|Animation Frame Fired| Um quadro de animação programado acionado e seu gerenciador de retorno de chamadas invocado.|
-|Cancel Animation Frame|  Um quadro de animação programado foi cancelado.|
-|GC Event|  Coleta de lixo realizada.|
-|DOMContentLoaded|  O [DOMContentLoaded](https://docs.webplatform.org/wiki/dom/events/DOMContentLoaded) foi acionado pelo navegador. Este evento será acionado quando todo o conteúdo DOM da página for carregado e analisado.|
-|Evaluate Script| Um script foi avaliado.|
-|Event| Um evento JavaScript ("mousedown" ou "key", por exemplo).|
-|Function Call| Uma chamada de função JavaScript de nível superior foi realizada (só aparece quando o navegador acessa o mecanismo JavaScript).|
-|Install Timer| Um cronômetro foi criado com [setInterval()](https://developer.mozilla.org/en-US/docs/Web/API/WindowTimers/setInterval) ou [setTimeout()](https://developer.mozilla.org/en-US/docs/Web/API/WindowTimers/setTimeout).|
-|Request Animation Frame| Uma chamada de `requestAnimationFrame()` programou um novo quadro|
-|Remove Timer|  Um cronômetro criado anteriormente foi excluído.|
-|Time|  Um script chamou [console.time()](/web/tools/chrome-devtools/debug/console/console-reference#consoletimelabel)|
-|Time End|  Um script chamou [console.timeEnd()](/web/tools/chrome-devtools/debug/console/console-reference#consoletimeendlabel)|
-|Timer Fired| Um cronômetro disparado que foi programado com `setInterval()` ou `setTimeout()`.|
-|XHR Ready State Change|  O estado de prontidão de uma XMLHTTPRequest alterada.|
-|XHR Load|  Um carregamento finalizado de `XMLHTTPRequest`.|
+### Scripting event properties
 
-### Propriedades do evento de scripts
+| Property      | Description                                  |
+| ------------- |:-------------------------------------------- |
+| Timer ID      | The timer ID.                                |
+| Timeout       | The timeout specified by the timer.          |
+| Repeats       | Boolean that specifies if the timer repeats. |
+| Function Call | A function that was invoked.                 |
 
-| Propriedade | Descrição |
-|-------|:----------|
-|Timer ID|O ID do temporizador.|
-|Timeout|O tempo limite especificado pelo temporizador.|
-|Repeats|Booleano que especifica se o temporizador é repetido.|
-|Function Call|Uma função que foi invocada.|
+## Rendering events
 
-## Eventos de renderização
+This section lists events that belong to Rendering category and their properties.
 
-Esta seção lista eventos que pertencem à categoria Rendering e suas propriedades.
+| Event             | Description                                      |
+| ----------------- |:------------------------------------------------ |
+| Invalidate layout | The page layout was invalidated by a DOM change. |
+| Layout            | A page layout was executed.                      |
+| Recalculate style | Chrome recalculated element styles.              |
+| Scroll            | The content of nested view was scrolled.         |
 
-| Evento | Descrição |
-|-------|:----------|
-|Invalidate layout| O layout da página foi invalidado por uma alteração no DOM.|
-|Layout|  O layout de uma página foi executado.|
-|Recalculate style| O Chrome recalculou estilos dos elementos.|
-|Scroll|  O conteúdo da vista aninhada foi rolado.|
+### Rendering event properties
 
-### Propriedades do evento de renderização
+| Property               | Description                                                                                                                                                                                                          |
+| ---------------------- |:-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Layout invalidated     | For Layout records, the stack trace of the code that caused the layout to be invalidated.                                                                                                                            |
+| Nodes that need layout | For Layout records, the number of nodes that were marked as needing layout before the relayout started. These are normally those nodes that were invalidated by developer code, plus a path upward to relayout root. |
+| Layout tree size       | For Layout records, the total number of nodes under the relayout root (the node that Chrome starts the relayout).                                                                                                    |
+| Layout scope           | Possible values are "Partial" (the re-layout boundary is a portion of the DOM) or "Whole document".                                                                                                                  |
+| Elements affected      | For Recalculate style records, the number of elements affected by a style recalculation.                                                                                                                             |
+| Styles invalidated     | For Recalculate style records, provides the stack trace of the code that caused the style invalidation.                                                                                                              |
 
-| Propriedade | Descrição |
-|-------|:----------|
-|Layout invalidated|Para registros de Layout, o rastreamento de pilha do código que tornou o layout inválido.|
-|Nodes that need layout|Para registros de Layout, o número dos nós que foram marcados como "precisa de layout" antes do início da criação do novo layout. Normalmente, esses são os nós que foram invalidados pelo código do desenvolvedor, mais um caminho ascendente para a raiz do novo layout.|
-|Layout tree size|Para registros de Layout, o total de nós na raiz de novo layout (o nó que faz o Chrome iniciar a criação do novo layout).|
-|Layout scope|Valores possíveis são "Partial" (O limite da criação do novo layout é uma parte do DOM) ou "Whole document".|
-|Elements affected|Para registros de estilo de Recalculate, o número de elementos afetados por um novo cálculo de estilos.|
-|Styles invalidated|Para registros de estilo de Recalculate, fornece o rastreamento de pilha do código que tornou o estilo inválido.|
+## Painting events
 
-## Eventos de coloração
+This section lists events that belong to Painting category and their properties.
 
-Esta seção lista eventos que pertencem à categoria Painting e suas propriedades.
+| Event            | Description                                                                                                                                    |
+| ---------------- |:---------------------------------------------------------------------------------------------------------------------------------------------- |
+| Composite Layers | Chrome's rendering engine composited image layers.                                                                                             |
+| Image Decode     | An image resource was decoded.                                                                                                                 |
+| Image Resize     | An image was resized from its native dimensions.                                                                                               |
+| Paint            | Composited layers were painted to a region of the display. Hovering over a Paint record highlights the region of the display that was updated. |
 
-| Evento | Descrição |
-|-------|:----------|
-|Composite Layers|  O mecanismo de renderização do Chrome combinou camadas de imagem.|
-|Image Decode|  Um recurso de imagem foi decodificado.|
-|Image Resize|  Uma imagem foi redimensionada a partir de suas dimensões nativas.|
-|Paint| Camadas combinadas foram coloridas para uma região da tela. Passar o cursor sobre o registro de Paint destaca a região da tela que foi atualizada.|
+### Painting event properties
 
-### Propriedades do evento de coloração
+| Property   | Description                                                       |
+| ---------- |:----------------------------------------------------------------- |
+| Location   | For Paint events, the x and y coordinates of the paint rectangle. |
+| Dimensions | For Paint events, the height and width of the painted region.     |
 
-| Propriedade | Descrição |
-|-------|:----------|
-|Location|Para eventos de Paint, as coordenadas x e y do retângulo de coloração.|
-|Dimensions|Para eventos de Paint, a altura e o comprimento da região colorida.|
+## Feedback {: #feedback }
 
-
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
