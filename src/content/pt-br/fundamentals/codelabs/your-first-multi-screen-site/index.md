@@ -1,318 +1,240 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: A Web pode ser acessada por diversos tipos de dispositivos, desde celulares com pequenas telas até televisores com grandes telas. Cada dispositivo inclui seus próprios benefícios e limitações. Como um desenvolvedor Web, você deve oferecer suporte a todos os tipos de dispositivos.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: The web is accessible on a huge range of devices, from small-screen phones to big-screen televisions. Each device presents its own benefits and constraints. As a web developer, you are expected to support a full ranges of devices.
 
-{# wf_updated_on: 2018-08-30 #}
-{# wf_published_on: 2013-12-31 #}
+{# wf_updated_on: 2015-10-05 #} {# wf_published_on: 2013-12-31 #}
 
-# Seu Primeiro Site para Vários Dispositivos {: .page-title }
+# Your First Multi-Device Site {: .page-title }
 
-Warning: Este artigo não é atualizado há algum tempo e pode não refletir a realidade. Confira o curso gratuito de [Web design responsivo](https://www.udacity.com/course/responsive-web-design-fundamentals--ud893) no Udacity.
+Caution: This article has not been updated in a while and may not reflect reality. Instead, check out the free [Responsive Web Design](https://www.udacity.com/course/responsive-web-design-fundamentals--ud893) course on Udacity.
 
 {% include "web/_shared/contributors/paulkinlan.html" %}
 
-<img src="images/finaloutput-2x.jpg" alt="muitos dispositivos mostrando o projeto final" class="attempt-right">
+<img src="images/finaloutput-2x.jpg" alt="many devices showing the final project" class="attempt-right" />
 
-Criar experiências para vários dispositivos não é tão difícil quando parece.
-Neste guia, criaremos uma página de destino de produto para o
-[CS256: Curso de desenvolvimento para Web móvel](https://www.udacity.com/course/mobile-web-development--cs256)
- que funciona bem em diferentes tipos de dispositivos.
+Creating multi-device experiences is not as hard as it might seem. In this guide, we will build a product landing page for the [CS256 Mobile Web Development course](https://www.udacity.com/course/mobile-web-development--cs256) that works well across different device types.
 
-O desenvolvimento para vários dispositivos com diferentes recursos, tamanhos de tela
-e métodos de interação amplamente diferentes pode parecer assustador, se não impossível
-de começar.
+Building for multiple devices with differing capabilities, vastly different screen sizes and interaction methods can seem daunting, if not impossible to get started.
 
-Criar um site totalmente responsivo não é tão difícil quanto você imagina e, para mostrar isso a
-você, este guia orienta você pelas etapas que podem ser usadas para começar o trabalho.
-Nós dividimos o guia em duas etapas simples:
+It is not as hard to build fully responsive sites as you think, and to show you, this guide takes you through the steps that you can use to get started. We have broken it into two simple steps:
 
-1. Definir a arquitetura de informações (comumente conhecida como IA) e a estrutura da página,
-2. Adicionar elementos de design para tornar a página responsiva e bonita em todos os dispositivos.
+1. Defining the information architecture (commonly known as IA) and structure of the page,
+2. Adding design elements to make it responsive and look good across all devices.
 
+## Create your content and structure
 
-## Crie seu conteúdo e sua estrutura
+Content is the most important aspect of any site. So let’s design for the content and not let the design dictate the content. In this guide, we identify the content we need first, create a page structure based on this content, and then present the page in a simple linear layout that works well on narrow and wide viewports.
 
-O conteúdo é o aspecto mais importante de qualquer site. Então, vamos criar o design para o
-conteúdo e não deixar que o design defina o conteúdo. Neste guia, identificaremos
-o conteúdo de que precisamos primeiro, criaremos uma estrutura de página com
-base nesse conteúdo e apresentaremos a página em um layout linear simples que
-funciona bem em janelas de visualização estreitas e largas.
+### Create the page structure
 
+We have identified we need:
 
-### Crie a estrutura da página
-
-Nós identificamos que precisamos de:
-
-1. Uma área que descreve com alto nível nosso produto "CS256: Curso de desenvolvimento para Web móvel"
-2.  Um formulário para coletar informações de usuários interessados no nosso produto
-3.  Uma descrição aprofundada e um vídeo
-4.  Imagens do produto em ação
-5.  Uma tabela de dados com informações para suportar as afirmações
+1. An area that describes at a high-level our product "CS256: Mobile web development" course
+2. A form to collect information from users who are interested in our product
+3. An in depth description and video
+4. Images of the product in action
+5. A data table with information to back the claims up
 
 #### TL;DR {: .hide-from-toc }
-- Primeiro, identifique o conteúdo de que precisa.
-- Esboce a Arquitetura de Informações (IA) para janelas de visualização largas e estreitas.
-- Crie uma visualização básica da página com o conteúdo, mas sem o estilo.
 
-Também criamos uma arquitetura de informações básica e um layout para
-janelas de visualização estreitas e largas.
+* Identify the content you need first.
+* Sketch out Information Architecture (IA) for narrow and wide viewports.
+* Create a skeleton view of the page with content but without styling.
+
+We have also come up with a rough information architecture and layout for both the narrow and wide viewports.
 
 <div class="attempt-left">
   <figure>
-    <img src="images/narrowviewport.png" alt="IA de janela de visualização estreita">
+    <img src="images/narrowviewport.png" alt="Narrow Viewport IA">
     <figcaption>
-      IA de janela de visualização estreita
+      Narrow Viewport IA
      </figcaption>
   </figure>
 </div>
+
 <div class="attempt-right">
   <figure>
-    <img src="images/wideviewport.png" alt="IA de janela de visualização larga">
+    <img src="images/wideviewport.png" alt="Wide Viewport IA">
     <figcaption>
-      IA de janela de visualização larga
+      Wide Viewport IA
      </figcaption>
   </figure>
 </div>
 
 <div style="clear:both;"></div>
 
-Isso pode ser facilmente convertido nas seções esboçadas de uma página básica que
-usaremos para o restante deste projeto.
+This can be converted easily into the rough sections of a skeleton page that we will use for the rest of this project.
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/codelabs/your-first-multi-screen-site/_code/addstructure.html" region_tag="structure" adjust_indentation="auto" %}
 </pre>
 
-[Experimente](https://googlesamples.github.io/web-fundamentals/fundamentals/getting-started/your-first-multi-screen-site/addstructure.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/codelabs/your-first-multi-screen-site/addstructure.html){: target="_blank" .external }
 
-### Adicione conteúdo à página
+### Add content to the page
 
-A estrutura básica do site está completa. Sabemos de que seções precisamos, o
-conteúdo que será exibido nessas seções e onde posicionar a
-arquitetura de informações geral. Agora podemos começar a compilar o site.
+The basic structure of the site is complete. We know the sections we need, the content to display in those sections, and where to position it in the overall information architecture. We can now start to build out the site.
 
-Observação: Aplicaremos o estilo depois
+Note: We'll add the styling later
 
-### Crie o título e o formulário
+### Create the headline and form
 
-O título e o formulário de notificação de solicitação são componentes essenciais da
-nossa página. Eles devem ser apresentados ao usuário imediatamente.
+The headline and request notification form are the critical components of our page. These must be presented to the user immediately.
 
-No título, adicione um texto simples para descrever o curso:
+In the headline, add simple text to describe the course:
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/codelabs/your-first-multi-screen-site/_code/addheadline.html" region_tag="headline" adjust_indentation="auto" %}
 </pre>
 
-[Experimente](https://googlesamples.github.io/web-fundamentals/fundamentals/getting-started/your-first-multi-screen-site/addheadline.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/codelabs/your-first-multi-screen-site/addheadline.html){: target="_blank" .external }
 
-Também precisamos preencher o formulário.
-Ele será um formulário simples que coleta o nome dos usuários, seus endereços de email
-e números de telefone.
+We need to also fill out the form. It will be a simple form that collects the users' name, email address, and phone number.
 
-Todos os formulários devem ter rótulos e marcadores para permitir que os usuários
-foquem em elementos, entendam as informações que devem ser preenchidas e para ajudar
-ferramentas de acessibilidade a entender a estrutura do formulário.  O atributo name
-não só envia o valor do formulário ao servidor, como também é usado para fornecer dicas importantes
-ao navegador sobre como preencher o formulário automaticamente para o usuário.
+All forms should have labels and placeholders to make it easy for users to focus elements, understand what is supposed to go in them, and to also help accessibility tools understand the structure of the form. The name attribute not only sends the form value to the server, it is also used to give important hints to the browser about how to automatically fill in the form for the user.
 
-Adicionaremos tipos semânticos para que os usuários possam inserir
-conteúdo em dispositivos móveis de forma simples e rápida.  Por exemplo, ao inserir um número
-de telefone, o usuário deve ver apenas um teclado numérico.
+We will add semantic types to make it quick and simple for users to be able to enter content on a mobile device. For example, when entering a telephone number, the user should just see a dial pad.
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/codelabs/your-first-multi-screen-site/_code/addform.html" region_tag="form" adjust_indentation="auto" %}
 </pre>
 
-[Experimente](https://googlesamples.github.io/web-fundamentals/fundamentals/getting-started/your-first-multi-screen-site/addform.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/codelabs/your-first-multi-screen-site/addform.html){: target="_blank" .external }
 
-#### Crie a seção de vídeo e informações
+#### Create the Video and Information section
 
-A seção de vídeo e informações do conteúdo será um pouco mais aprofundada.
-Ela conterá uma lista de recursos dos nossos produtos e um
-marcador de vídeo que mostra o produto em funcionamento para o usuário.
+The Video and Information section of content will contain a little more depth. It will have a bulleted list of features of our products and will also contain a video placeholder that shows our product working for the user.
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/codelabs/your-first-multi-screen-site/_code/addvideo.html" region_tag="section1" adjust_indentation="auto" %}
 </pre>
 
-[Experimente](https://googlesamples.github.io/web-fundamentals/fundamentals/getting-started/your-first-multi-screen-site/addvideo.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/codelabs/your-first-multi-screen-site/addvideo.html){: target="_blank" .external }
 
-Vídeos são frequentemente usados para descrever conteúdo de forma mais interativa
-e para demonstrar um produto ou conceito.
+Videos are often used to describe content in a more interactive manner and are frequently used to show a demonstration of a product or a concept.
 
-Ao seguir as práticas recomendadas, você pode integrar um vídeo em seu site com facilidade:
+By following the best practices, you can easily integrate video into your site:
 
-*  Adicione um atributo `controls` para facilitar a reprodução do vídeo.
-*  Adicione uma imagem de `poster` para dar uma prévia do conteúdo.
-*  Adicione vários elementos `<source>` de acordo com os formatos de vídeo suportados.
-*  Adicione texto reserva para que as pessoas possam fazer download do vídeo se não conseguirem reproduzi-lo na janela.
+* Add a `controls` attribute to make it easy for people to play the video.
+* Add a `poster` image to give people a preview of the content.
+* Add multiple `<source>` elements based on supported video formats.
+* Add fall-back text to let people download the video if they can't play it in the window.
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/codelabs/your-first-multi-screen-site/_code/addvideo.html" region_tag="video" adjust_indentation="auto" %}
 </pre>
 
-[Experimente](https://googlesamples.github.io/web-fundamentals/fundamentals/getting-started/your-first-multi-screen-site/addvideo.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/codelabs/your-first-multi-screen-site/addvideo.html){: target="_blank" .external }
 
-#### Crie a seção de imagens
+#### Create the Images Section
 
-Sites sem imagens podem ser um pouco chatos. Existem dois tipos de imagem:
+Sites without images can be a little boring. There are two types of images:
 
-*  Imagens de conteúdo &mdash; imagens em linha no documento e que são usadas
- para transmitir informações adicionais sobre o conteúdo.
-*  Imagens estilísticas &mdash; imagens usadas para que o site
- pareça mais bonito; frequentemente, são imagens de fundo, padrões e gradientes.  Abordaremos
- esse tópico na [próxima seção](#make-it-responsive).
+* Content images &mdash; images that are in-line in the document and are used to convey extra information about the content.
+* Stylistic images &mdash; images that are used to make the site look better; often these are background images, patterns and gradients. We will cover this in the [next section](#make-it-responsive).
 
-A seção de imagens da nossa página é um conjunto de imagens de conteúdo.
+The Images section in our page is a collection of content images.
 
-Imagens de conteúdo são essenciais para transmitir o significado da página. Considere-as
-como as imagens usadas em artigos de jornais.  As imagens que estamos usando são
-fotos dos instrutores do projeto:  Chris Wilson, Peter Lubbers e Sean
-Bennet.
+Content images are critical to conveying the meaning of the page. Think of them like the images used in newspaper articles. The images we are using are pictures of the tutors on the project: Chris Wilson, Peter Lubbers and Sean Bennet.
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/codelabs/your-first-multi-screen-site/_code/addimages.html" region_tag="images" adjust_indentation="auto" %}
 </pre>
 
-[Experimente](https://googlesamples.github.io/web-fundamentals/fundamentals/getting-started/your-first-multi-screen-site/addimages.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/codelabs/your-first-multi-screen-site/addimages.html){: target="_blank" .external }
 
-As imagens estão configuradas para serem dimensionadas a 100% da largura da tela. Isso funciona
-bem em dispositivos com uma janela de visualização estreita, mas não tão bem nos que têm uma
-janela de visualização larga (como um computador).  Isso será administrado na seção de design
-responsivo.
+The images are set to scale to 100% of the width of the screen. This works well on devices with a narrow viewport, but less well on those with a wide viewport (like desktop). We will manage this in the responsive design section.
 
-Muitas pessoas não têm a capacidade de visualizar imagens e frequentemente usam tecnologias
-de assistência, como um leitor de telas, para analisar os dados na página e
-transmitir essas informações ao usuário verbalmente.  Certifique-se de que todas as suas imagens
-de conteúdo tenham uma tag `alt` descritiva que o leitor de tela possa ler para
-o usuário.
+Many people don't have the ability to view images and often use an assistive technology such as a screen reader that will parse the data on the page and relay that to the user verbally. You should ensure that all your content images have a descriptive `alt` tag that the screen reader can speak out to the user.
 
-Ao adicionar tags `alt`, mantenha o texto delas o mais conciso possível
-para descrever a imagem por completo.  Por exemplo, na nossa demonstração, nós simplesmente
-formatamos o atributo como "Nome: Função", pois isso apresenta informações suficientes
-para que o usuário entenda que a seção é sobre os autores e seus
-cargos.
+When adding `alt` tags make sure that you keep the alt text as concise as possible to fully describe the image. For example in our demo we simply format the attribute to be "Name: Role", this presents enough information to the user to understand that this section is about the authors and what their job is.
 
-#### Adicione a seção de dados tabulados
+#### Add the Tabulated Data Section
 
-A última seção é uma tabela simples usada para mostrar estatísticas específicas
-sobre o produto.
+The final section is a simple table that is used to show specific product stats about the product.
 
-As tabelas só devem ser usadas para dados tabulares, como matrizes de informações.
+Tables should only be used for tabular data, i.e, matrices of information.
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/codelabs/your-first-multi-screen-site/_code/addtable.html" region_tag="section3" adjust_indentation="auto" %}
 </pre>
 
-[Experimente](https://googlesamples.github.io/web-fundamentals/fundamentals/getting-started/your-first-multi-screen-site/addtable.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/codelabs/your-first-multi-screen-site/addtable.html){: target="_blank" .external }
 
-#### Adicione um rodapé
+#### Add a Footer
 
-A maioria dos sites precisa de um rodapé para exibir conteúdo como Termos e Condições,
-avisos e outros conteúdos que não devem ser inseridos na navegação principal
-ou na área principal de conteúdo da página.
+Most sites need a footer to display content such as Terms and Conditions, disclaimers, and other content that isn't meant to be in the main navigation or in the main content area of the page.
 
-No nosso site, criaremos um simples rodapé de marcador.
+In our site, we'll just create a simple placeholder footer.
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/codelabs/your-first-multi-screen-site/_code/addcontent.html" region_tag="footer" adjust_indentation="auto" %}
 </pre>
 
-[Experimente](https://googlesamples.github.io/web-fundamentals/fundamentals/getting-started/your-first-multi-screen-site/addcontent.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/codelabs/your-first-multi-screen-site/addcontent.html){: target="_blank" .external }
 
-### Resumo
+### Summary
 
-Nós criamos o esboço do site e identificamos todos os principais
-elementos estruturais.  Também garantimos que todo o conteúdo
-relevante esteja pronto e no local adequado para atender às nossas necessidades de negócios.
+We have created the outline of the site and we have identified all the main structural elements. We have also made sure that we have all the relevant content ready and in-place to satisfy our business needs.
 
 <div class="attempt-left">
   <figure>
-    <img src="images/content.png" alt="Conteúdo">
+    <img src="images/content.png" alt="Content">
     <figcaption>
-      <a href="https://googlesamples.github.io/web-fundamentals/fundamentals/getting-started/your-first-multi-screen-site/content-without-styles.html"> Conteúdo e estrutura  </a>
+      <a href="https://googlesamples.github.io/web-fundamentals/fundamentals/codelabs/your-first-multi-screen-site/content-without-styles.html">Content and structure</a>
     </figcaption>
   </figure>
 </div>
+
 <div class="attempt-right">
   <figure>
-    <img  src="images/narrowsite.png" alt="Site projetado" style="max-width: 100%;">
+    <img  src="images/narrowsite.png" alt="Designed site" style="max-width: 100%;">
     <figcaption>
-      <a href="https://googlesamples.github.io/web-fundamentals/fundamentals/getting-started/your-first-multi-screen-site/content-with-styles.html"> Site final  </a>
+      <a href="https://googlesamples.github.io/web-fundamentals/fundamentals/codelabs/your-first-multi-screen-site/content-with-styles.html">Final site</a>
     </figcaption>
   </figure>
 </div>
 
-Você perceberá que, no momento, a aparência da página está péssima; isso é intencional.
-O conteúdo é o aspecto mais importante de qualquer site e precisamos garantir que
-tenhamos uma arquitetura e densidade de informações robustas. Este guia nos proporcionou uma ótima
-base para desenvolver. Definiremos o estilo do nosso conteúdo no próximo guia.
+You will notice that the page looks terrible right now; this is intentional. Content is the most important aspect of any site and we needed to make sure we had a good solid information architecture and density. This guide has given us an excellent base to build upon. We will style our content in the next guide.
 
+## Make it responsive {: #make-it-responsive }
 
+The web is accessible on a huge range of devices from small-screen phones through to huge-screen televisions. Each device presents its own unique benefits and also constraints. As a web developer, you are expected to support all ranges of devices.
 
-## Adote o design responsivo {: #make-it-responsive }
+We are building a site that works across multiple screen sizes and device types. We've crafted the Information Architecture of the page and created a basic structure. In this section, we will take our basic structure with content and turn it into a beautiful page that is responsive across a large number of screen sizes.
 
-A Web pode ser acessada por diversos tipos de dispositivos, desde celulares com pequenas
-telas até televisores com grandes telas. Cada dispositivo apresenta seus próprios
-benefícios e limitações. Como um desenvolvedor Web, você deve oferecer
-suporte a todos os tipos de dispositivos.
+Following the principles of Mobile First web development, we start with a narrow viewport &mdash; similar to a mobile phone &mdash; and build for that experience first. Then we scale up to larger device classes. We can do this by making our viewport wider and making a judgment call on whether the design and layout look right.
 
-
-Estamos criando um site que funciona em diversos tamanhos de tela e tipos
-de dispositivo. Nós criamos a arquitetura de informações da página e uma
-estrutura básica. Nesta seção, transformaremos nossa estrutura básica com
-conteúdo em uma bela página que é responsiva em uma grande quantidade
-de tamanhos de tela.
-
-Seguindo os princípios do desenvolvimento Web que prioriza os dispositivos móveis,
-começamos com uma janela de visualização estreita &mdash; similar a um celular &mdash; e compilamos
-primeiro para essa experiência. Em seguida, expandimos para classes de dispositivos maiores. Podemos fazer isso
-tornando a janela de visualização mais larga e verificando se o design e o
-layout estão adequados.
-
-Anteriormente, nós criamos alguns designs de alto nível diferentes para como o conteúdo
-deve ser exibido. Agora, precisamos fazer com que nossa página se adapte a esses diferentes layouts.
-Para isso, devemos decidir onde posicionar nossos pontos de interrupção &mdash; pontos
-onde o layout e os estilos mudam &mdash; com base em como o conteúdo se encaixa no
-tamanho da tela.
+Earlier we created a couple of different high-level designs for how our content should be displayed. Now we need to make our page adapt to those different layouts. We do this by making a decision on where to place our breakpoints &mdash; a point where the layout and styles change &mdash; based on how the content fits the screen-size.
 
 ### TL;DR {: .hide-from-toc }
-- Sempre use uma janela de visualização.
-- Sempre comece com uma janela de visualização estreita e vá ampliando.
-- Baseie seus pontos de interrupção em quando precisar adaptar o conteúdo.
-- Crie uma visão de alto nível do seu layout nos principais pontos de interrupção.
 
+* Always use a viewport.
+* Always start with a narrow viewport first and scale out.
+* Base your breakpoints off when you need to adapt the content.
+* Create a high-level vision of your layout across major breakpoints.
 
-### Adicione uma janela de visualização
+### Add a viewport
 
-Mesmo para uma página básica, você **precisa** sempre incluir uma meta tag de janela de visualização.
-A janela de visualização é o componente mais importante para criar experiências
-para vários dispositivos. Sem ela, seu site não funcionará bem em um dispositivo móvel.
+Even for a basic page, you **must** always include a viewport meta tag. The viewport is the most critical component you need for building multi-device experiences. Without it, your site will not work well on a mobile device.
 
-A janela de visualização indica para o navegador que a página precisa ser dimensionada para caber
-na tela. Existem muitas configurações diferentes que podem ser especificadas para
-a janela de visualização para controlar a exibição da página.  Como padrão, recomendamos:
+The viewport indicates to the browser that the page needs to be scaled to fit the screen. There are many different configurations that you can specify for your viewport to control the display of the page. As a default, we recommend:
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/codelabs/your-first-multi-screen-site/_code/viewport.html" region_tag="viewport" adjust_indentation="auto" %}
 </pre>
 
-[Experimente](https://googlesamples.github.io/web-fundamentals/fundamentals/getting-started/your-first-multi-screen-site/viewport.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/codelabs/your-first-multi-screen-site/viewport.html){: target="_blank" .external }
 
-A janela de visualização se encontra no cabeçalho do documento e só precisa ser declarada uma vez.
+The viewport lives in the head of the document and only needs to be declared once.
 
-### Aplique um estilo simples
+### Apply simple styling
 
-Nosso produto e nossa empresa já têm diretrizes de fonte e marca específicas apresentadas
-em um guia de estilo.
+Our product and company already has a very specific branding and font guide-lines supplied in a style guide.
 
-#### Guia de estilo
+#### Style guide
 
-Um guia de estilo é uma forma útil de obter uma compreensão de alto nível da representação visual
-da página e ajuda você a garantir um design totalmente consistente.
+A style guide is a useful way to get a high-level understanding of the visual representation of the page and it helps you ensure that you are consistent throughout the design.
 
-#### Cores
+#### Colors
 
 <div class="styles" style="font-family: monospace;">
   <div style="background-color: #39b1a4">#39b1a4</div>
@@ -323,20 +245,15 @@ da página e ajuda você a garantir um design totalmente consistente.
   <div style="background-color: #dc4d38">#dc4d38</div>
 </div>
 
-#### Adicione imagens estilísticas
+#### Add stylistic images
 
-<img  src="images/narrowsite.png" alt="Site projetado"  class="attempt-right" />
+<img  src="images/narrowsite.png" alt="Designed site"  class="attempt-right" />
 
-No guia anterior, nós adicionamos imagens chamadas "imagens de conteúdo".  Essas eram
-imagens que eram importantes para a narrativa do nosso produto.  Imagens estilísticas
-são imagens que não são necessárias como parte do conteúdo principal, mas que agregam um impacto visual
-ou ajudam a orientar a atenção do usuário para um conteúdo específico.
+In the previous guide, we added images called "content images". These were images that were important to the narrative of our product. Stylistic images are images that are not needed as part of the core content but add visual flare or help guide the user's attention to a specific piece of content.
 
-Um bom exemplo disso é uma imagem de título para o conteúdo "acima da dobra".  Esse
-tipo de imagem é frequentemente usado para incentivar o usuário a ler mais sobre o produto.
+A good example of this is a headline image for the 'above the fold' content. It is often used to entice the user to read more about the product.
 
-Elas podem ser muito fáceis de incluir. No nosso caso, ela será o plano de fundo do
-cabeçalho e a aplicaremos com um CSS simples.
+They can be very simple to include. In our case, it will be the background to the header and we will apply it via some simple CSS.
 
 <div style="clear:both;"></div>
 
@@ -347,69 +264,54 @@ cabeçalho e a aplicaremos com um CSS simples.
       background-image: url(backgroundimage.jpg);
       background-size: cover;
     }
+    
 
+We have chosen a simple background image that is blurred so it doesn't take away from the content and we have set it to `cover` the entire element; that way it always stretches whilst maintaining the correct aspect ratio.
 
-Nós escolhemos uma imagem de fundo simples que é desfocada e não desvia a atenção
-do conteúdo. Nós a definimos como `cover` para todo o elemento, para que ela seja sempre
-ampliada, mas mantenha a taxa de proporção correta.
+### Set your first breakpoint
 
-
-### Defina seu primeiro ponto de interrupção
-
-O design começa a ficar inadequado em cerca de 600 pixels de largura.  No nosso caso, o comprimento da
-linha ficará acima de 10 palavras (o comprimento ideal de leitura) e é isso
-que queremos alterar.
+The design starts to look bad at about 600px wide. In our case, the length of the line is going above 10 words (the optimal reading length) and that is where we want to change it.
 
 <video controls poster="images/firstbreakpoint.png" style="width: 100%;">
   <source src="videos/firstbreakpoint.mov" type="video/mov"></source>
   <source src="videos/firstbreakpoint.webm" type="video/webm"></source>
-  <p>Seu navegador não oferece suporte a vídeos.
-     <a href="videos/firstbreakpoint.mov">Faça download do vídeo</a>.
+  <p>Sorry your browser doesn't support video.
+     <a href="videos/firstbreakpoint.mov">Download the video</a>.
   </p>
 </video>
 
-600 pixels parece ser um bom local para criar nosso primeiro ponto de interrupção,
-pois ele nos dará o escopo para reposicionar elementos para que eles caibam na tela.
-Podemos fazer isso usando uma tecnologia chamada [consultas de mídia](/web/fundamentals/design-and-ux/responsive/fundamentals/use-media-queries).
+600px appears to be a good place to create our first breakpoint as it will give us scope to reposition elements to make them fit the screen better. We can do this using a technology called [Media Queries](/web/fundamentals/design-and-ux/responsive/#use-media-queries).
 
     @media (min-width: 600px) {
-
+    
     }
+    
 
-Uma tela maior tem mais espaço, portanto, há mais flexibilidade para a exibição
-do conteúdo.
+There is more space on a larger screen so there is more flexibility with how content can be displayed.
 
-Observação: Não é preciso mover todos os elementos de uma fez. Você pode fazer ajustes menores se necessário.
+Note: You don't have to move all the elements at once, you can make smaller adjustments if needed.
 
-No contexto da nossa página de produto, parece que
-precisaremos:
+In the context of our product page, it looks like we will need to:
 
-*  Limitar a largura máxima do design.
-*  Alterar o preenchimento dos elementos e reduzir o tamanho do texto.
-*  Mover o formulário para flutuar em linha com o conteúdo do cabeçalho.
-*  Fazer o vídeo flutuar em torno do conteúdo.
-*  Reduzir o tamanho das imagens e fazê-las aparecer em uma grade melhor.
+* Constrain the maximum width of the design.
+* Alter the padding of elements and reduce the text size.
+* Move the form to float in-line with the heading content.
+* Make the video float around the content.
+* Reduce the size of the images and have them appear in a nicer grid.
 
+### Constrain the maximum width of the design
 
-### Limitar a largura máxima do design
+We have chosen to have only two major layouts: a narrow viewport and a wide viewport, which greatly simplifies our build process.
 
-Nós escolhemos ter apenas dois layouts principais: uma janela de visualização estreita e uma larga,
-o que simplifica nosso processo de compilação de forma significativa.
+We have also decided to create full-bleed sections on the narrow viewport that stay full-bleed on the wide viewport. This means we should constrain the maximum width of the screen so that the text and paragraphs don't extend into one long, single line on ultra-wide screens. We have chosen this point to be about 800px.
 
-Também decidimos criar seções com sangria total na janela de visualização estreita que
-permanecem com a sangria total na janela de visualização larga.  Isso significa que devemos limitar a
-largura máxima da tela para que o texto e os parágrafos não se estendam em uma só
-longa linha em telas muito largas.  Nós escolhemos posicionar esse ponto
-a cerca de 800 pixels.
+To achieve this, we need to constrain the width and center the elements. We need to create a container around each major section and apply a `margin:
+auto`. This will allow the screen to grow but the content remain centered and at a maximum size of 800px.
 
-Para isso, precisamos limitar a largura e centralizar os elementos.  Precisamos
-criar um contêiner em torno de cada seção principal e aplicar um `margin:
-auto`.  Isso permitirá que a tela seja expandida, mas o conteúdo permanecerá centralizado
-e terá um tamanho máximo de 800 pixels.
-
-O contêiner será um simples `div` no seguinte formulário:
+The container will be a simple `div` in the following form:
 
     <div class="container">...</div>
+    
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/codelabs/your-first-multi-screen-site/_code/constrainwidth.html" region_tag="containerhtml" adjust_indentation="auto" %}
@@ -419,93 +321,72 @@ O contêiner será um simples `div` no seguinte formulário:
 {% includecode content_path="web/fundamentals/codelabs/your-first-multi-screen-site/_code/constrainwidth.html" region_tag="container" adjust_indentation="auto" %}
 </pre>
 
-[Experimente](https://googlesamples.github.io/web-fundamentals/fundamentals/getting-started/your-first-multi-screen-site/constrainwidth.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/codelabs/your-first-multi-screen-site/constrainwidth.html){: target="_blank" .external }
 
-### Alterar o preenchimento e reduzir o tamanho do texto
+### Alter the padding and reduce text size
 
-Na janela de visualização estreita, não temos muito espaço para exibir conteúdo, portanto,
-o tamanho e o peso da tipografia frequentemente são muito reduzidos para caber na
-tela.
+On the narrow viewport, we don't have a lot of space to display content so the size and weight of the typography is often drastically reduced to fit the screen.
 
-Com uma janela de visualização maior, precisamos considerar que o usuário tem mais probabilidade de estar usando
-uma tela maior, mas a uma distância maior.  Para aumentar a legibilidade do
-conteúdo, podemos aumentar o tamanho e o peso da tipografia, além de
-alterar o preenchimento para destacar mais áreas distintas.
+With a larger viewport, we need to consider that the user is more likely to be on a larger screen but further away. To increase the readability of the content, we can increase the size and weight of the typography and we can also alter the padding to make distinct areas stand out more.
 
-Na nossa página de produto, aumentaremos o preenchimento dos elementos de seção ao
-defini-lo para permanecer em 5% da largura.  Também aumentaremos o tamanho dos
-cabeçalhos para cada seção.
+In our product page, we will increase the padding of the section elements by setting it to remain at 5% of the width. We will also increase the size of the headers for each of the sections.
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/codelabs/your-first-multi-screen-site/_code/alterpadding.html" region_tag="padding" adjust_indentation="auto" %}
 </pre>
 
-[Experimente](https://googlesamples.github.io/web-fundamentals/fundamentals/getting-started/your-first-multi-screen-site/alterpadding.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/codelabs/your-first-multi-screen-site/alterpadding.html){: target="_blank" .external }
 
-### Adaptar elementos a uma janela de visualização larga
+### Adapt elements to wide viewport
 
-Nossa janela de visualização estreita era uma exibição linear empilhada.  Cada seção principal e seu respectivo conteúdo
-foi exibida, em ordem, da parte superior à inferior.
+Our narrow viewport was a stacked linear display. Each major section and the content inside them was displayed in order from top to bottom.
 
-Uma janela de visualização larga nos proporciona espaço adicional para exibir o conteúdo da maneira ideal
-para a tela em questão.  Para nossa página de produto, isso significa que, de acordo com nossa IA, podemos:
+A wide viewport gives us extra space to use to display the content in an optimal way for that screen. For our product page, this means that according to our IA we can:
 
-*  Mover o formulário em volta das informações de cabeçalho.
-*  Posicionar o vídeo à direita dos pontos principais.
-*  Organizar as imagens em blocos.
-*  Expandir a tabela.
+* Move the form around the header information.
+* Position the video to the right of the key points.
+* Tile the images.
+* Expand the table.
 
-#### Flutuar o elemento form
+#### Float the Form element
 
-A janela de visualização estreita significa que temos muito menos espaço horizontal disponível para
-posicionar os elementos de forma confortável na tela.
+The narrow viewport means that we have a lot less horizontal space available for us to comfortably position elements on the screen.
 
-Para fazer um uso mais eficaz do espaço em tela horizontal, precisamos romper
-p fluxo linear do cabeçalho e mover o formulário e a lista para que eles fiquem
-lado a lado.
+To make more effective use of the horizontal screen space, we need to break out of the linear flow of the header and move the form and list to be next to each other.
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/codelabs/your-first-multi-screen-site/_code/floattheform.html" region_tag="formfloat" adjust_indentation="auto" %}
 </pre>
 
-[Experimente](https://googlesamples.github.io/web-fundamentals/fundamentals/getting-started/your-first-multi-screen-site/floattheform.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/codelabs/your-first-multi-screen-site/floattheform.html){: target="_blank" .external }
 
 <video controls poster="images/floatingform.png" style="width: 100%;">
   <source src="videos/floatingform.mov" type="video/mov"></source>
   <source src="videos/floatingform.webm" type="video/webm"></source>
-  <p>Seu navegador não oferece suporte a vídeos.
-     <a href="videos/floatingform.mov">Faça download do vídeo</a>.
+  <p>Sorry your browser doesn't support video.
+     <a href="videos/floatingform.mov">Download the video</a>.
   </p>
 </video>
 
-#### Flutue o elemento video
+#### Float the Video element
 
-O vídeo na janela de visualização estreita foi projetado para ocupar toda a largura da
-tela e ser posicionado após a lista de principais recursos. Em uma janela de visualização larga,
-o vídeo será ampliado demais e parecerá incorreto ao lado
-da nossa lista de recursos.
+The video in the narrow viewport interface is designed to be the full width of the screen and positioned after the list of key features. On a wide viewport, the video will scale up to be too large and look incorrect when placed next to our list of features.
 
-O elemento video precisa ser removido do fluxo vertical da janela de visualização
-estreita e deve ser exibido ao lado da lista de tópicos de conteúdo em uma janela de visualização larga.
+The video element needs to be moved out of the vertical flow of the narrow viewport and should be displayed side-by-side with the bulleted list of content on a wide viewport.
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/codelabs/your-first-multi-screen-site/_code/floatthevideo.html" region_tag="floatvideo" adjust_indentation="auto" %}
 </pre>
 
-[Experimente](https://googlesamples.github.io/web-fundamentals/fundamentals/getting-started/your-first-multi-screen-site/floatthevideo.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/codelabs/your-first-multi-screen-site/floatthevideo.html){: target="_blank" .external }
 
-#### Organizar as imagens em blocos
+#### Tile the Images
 
-<img src="images/imageswide.png" class="attempt-right">
+<img src="images/imageswide.png" class="attempt-right" />
 
-As imagens na interface de janela de visualização estreita (dispositivos móveis, em sua maioria) são definidas para
-ocupar toda a largura da tela e empilhadas verticalmente.  Essas imagens não são
-dimensionadas corretamente em uma janela de visualização larga.
+The images in the narrow viewport (mobile devices mostly) interface are set to be the full width of the screen and stacked vertically. This doesn't scale well on a wide viewport.
 
-Para que as imagens fiquem adequadas em uma janela de visualização larga, elas são dimensionadas a 30%
-da largura do contêiner e dispostas horizontalmente (em vez de verticalmente, como na
-visualização estreita). Também adicionaremos raio de borda e box-shadow para que
-as imagens fiquem mais atraentes.
+To make the images look correct on a wide viewport, they are scaled to 30% of the container width and laid out horizontally (rather than vertically in the narrow view). We will also add some border radius and box-shadow to make the images look more appealing.
 
 <div style="clear:both;"></div>
 
@@ -513,79 +394,57 @@ as imagens fiquem mais atraentes.
 {% includecode content_path="web/fundamentals/codelabs/your-first-multi-screen-site/_code/tiletheimages.html" region_tag="tileimages" adjust_indentation="auto" %}
 </pre>
 
-[Experimente](https://googlesamples.github.io/web-fundamentals/fundamentals/getting-started/your-first-multi-screen-site/tiletheimages.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/codelabs/your-first-multi-screen-site/tiletheimages.html){: target="_blank" .external }
 
-#### Tornar as imagens responsivas ao DPI
+#### Make images responsive to DPI
 
-Ao usar imagens, leve em consideração o tamanho da janela de visualização
-e a densidade da tela.
+When using images, take the size of the viewport and the density of the display into consideration.
 
-A Web foi feita para telas de 96 dpi.  Com a introdução dos dispositivos móveis,
-observamos um aumento incrível da densidade de pixels das telas, sem falar nas
-telas de classe Retina em laptops.  Dessa forma, imagens codificadas para 96 dpi
-frequentemente ficam péssimas em um dispositivo de alto dpi.
+The web was built for 96dpi screens. With the introduction of mobile devices, we have seen a huge increase in the pixel density of screens not to mention Retina class displays on laptops. As such, images that are encoded to 96dpi often look terrible on a hi-dpi device.
 
-Temos uma solução que ainda não foi amplamente adotada. Para navegadores compatíveis,
-você pode exibir uma imagem de alta densidade em uma tela de alta densidade.
-
+We have a solution that is not widely adopted yet. For browsers that support it, you can display a high density image on a high density display.
 
     <img src="photo.png" srcset="photo@2x.png 2x">
+    
 
+#### Tables
 
-#### Tabelas
+Tables are very hard to get right on devices that have a narrow viewport and need special consideration.
 
-É muito difícil de exibir tabelas corretamente em dispositivos que têm uma janela de visualização estreita e precisam de
-consideração especial.
-
-Para uma janela de visualização estreita, recomendamos que você transforme
-cada linha da sua tabela em um bloco de pares de chave-valor (onde a chave é o elemento que
-era o cabeçalho da coluna e o valor continua sendo o valor da célula).
-Felizmente, essa não é uma tarefa difícil. Primeiro, anote cada elemento `td` com
-o cabeçalho correspondente como um atributo de dados. (Isso não terá efeitos
-visíveis até que adicionemos mais CSS.)
+We recommend on a narrow viewport that you transform your table by changing each row into a block of key-value pairs (where the key is what was previously the column header, and the value is still the cell value). Fortunately, this isn't too difficult. First, annotate each `td` element with the corresponding heading as a data attribute. (This won't have any visible effect until we add some more CSS.)
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/codelabs/your-first-multi-screen-site/_code/updatingtablehtml.html" region_tag="table-tbody" adjust_indentation="auto" %}
 </pre>
 
-[Experimente](https://googlesamples.github.io/web-fundamentals/fundamentals/getting-started/your-first-multi-screen-site/updatingtablehtml.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/codelabs/your-first-multi-screen-site/updatingtablehtml.html){: target="_blank" .external }
 
-Agora, basta adicionar o CSS para ocultar o `thead` original e
-mostrar os rótulos `data-th` usando um pseudoelemento `:before`. Isso resultará na
-experiência de vários dispositivos vista no vídeo a seguir.
+Now we just need to add the CSS to hide the original `thead` and instead show the `data-th` labels using a `:before` pseudoelement. This will result in the multi-device experience seen in the following video.
 
 <video controls poster="images/responsivetable.png" style="width: 100%;">
   <source src="videos/responsivetable.mov" type="video/mov"></source>
   <source src="videos/responsivetable.webm" type="video/webm"></source>
-  <p>Seu navegador não oferece suporte a vídeos.
-     <a href="videos/responsivetable.mov">Faça download do vídeo</a>.
+  <p>Sorry your browser doesn't support video.
+     <a href="videos/responsivetable.mov">Download the video</a>.
   </p>
 </video>
 
-No nosso site, precisamos criar um ponto de interrupção adicional apenas para o conteúdo da tabela.
-Ao compilar para um dispositivo móvel primeiro, é mais difícil desfazer estilos aplicativos,
-portanto, precisamos separar o CSS da tabela da janela de visualização estreita do CSS da janela de visualização larga.
-Isso proporciona uma interrupção clara e consistente.
+In our site, we had to create an extra breakpoint just for the table content. When you build for a mobile device first, it is harder to undo applied styles, so we must section off the narrow viewport table CSS from the wide viewport css. This gives us a clear and consistent break.
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/codelabs/your-first-multi-screen-site/_code/content-with-styles.html" region_tag="table-css" adjust_indentation="auto" %}
 </pre>
 
-[Experimente](https://googlesamples.github.io/web-fundamentals/fundamentals/getting-started/your-first-multi-screen-site/content-with-styles.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/codelabs/your-first-multi-screen-site/content-with-styles.html){: target="_blank" .external }
 
-## Conclusão
+## Wrapping up
 
-Success: Ao ler isto, você terá criado sua
-primeira página de destino de produto simples que funciona em diversos tipos de dispositivos,
-formatos e tamanhos de tela.
+Success: By the time you read this, you will have created your first simple product landing page that works across a large range of devices, form-factors, and screen sizes.
 
-Se seguir essas diretrizes, você começará bem:
+If you follow these guidelines, you will be off to a good start:
 
-1. Crie a IA básica e entenda seu conceito antes de criar o código.
-2. Sempre defina uma janela de visualização.
-3. Cria sua experiência básica com uma abordagem que prioriza os dispositivos móveis.
-4. Quando criar sua experiência de dispositivos móveis, aumente a largura da tela até que a aparência se degrade e defina seu ponto de interrupção nesse momento.
-5. Continue iterando.
-
-
-{# wf_devsite_translation #}
+1. Create a basic IA and understand your content before you code.
+2. Always set a viewport.
+3. Create your base experience around mobile-first approach.
+4. Once you have your mobile experience, increase the width of the display until it doesn't look right and set your breakpoint there.
+5. Keep iterating.
