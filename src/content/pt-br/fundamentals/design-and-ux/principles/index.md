@@ -1,470 +1,395 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Google e AnswerLab realizaram um estudo examinando como os usuários interagem com um conjunto diverso de sites móveis. O objetivo era responder à seguinte pergunta: 'o que torna um site móvel bom?'
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Google and AnswerLab undertook a study examining how users interact with a diverse set of mobile sites. The goal was to answer the question, 'What makes a good mobile site?'
 
-{# wf_published_on: 2014-08-08 #}
-{# wf_updated_on: 2018-02-05 #}
+{# wf_published_on: 2014-08-08 #} {# wf_updated_on: 2018-09-20 #} {# wf_blink_components: N/A #}
 
-# O Que Torna um Site Móvel Bom? {: .page-title }
+# What Makes a Good Mobile Site? {: .page-title }
 
 {% include "web/_shared/contributors/jennygove.html" %}
 
-A Google e a AnswerLab conduziram um [estudo de pesquisa](https://www.google.com/think/multiscreen/whitepaper-sitedesign.html?utm_source=web-fundamentals&utm_term=chrome&utm_content=ux-landing&utm_campaign=web-fundamentals) para responder a essa pergunta.
+Google and AnswerLab conducted a [research study](https://www.google.com/think/multiscreen/whitepaper-sitedesign.html?utm_source=web-fundamentals&utm_term=chrome&utm_content=ux-landing&utm_campaign=web-fundamentals) to answer this question.
 
->Usuários de dispositivos móveis têm objetivos muito definidos. Eles esperam poder obter o que
->precisam imediatamente e à sua maneira.
+> Mobile users are very goal-oriented. They expect to be able to get what they need, immediately, and on their own terms.
 
-O estudo foi conduzido em sessões de usabilidade presenciais de 119 horas com
- participantes dos EUA. Os participantes foram solicitados a realizar tarefas essenciais
-em um conjunto diverso de sites móveis. Usuários Android e iOS foram
-incluídos e eles testaram os sites em seus próprios celulares. Para cada site, os participantes foram
-solicitados a dar suas opiniões em voz alta quando concluíssem tarefas com foco
-em conversão, como uma compra ou o agendamento de uma reserva.
+The study was held through 119 hour-long, in-person usability sessions with participants in the US. Participants were asked to perform key tasks across a diverse set of mobile sites. iOS and Android users were included, and users tested the sites on their own phones. For each site, participants were asked to voice their thoughts aloud as they completed conversion-focused tasks like making a purchase or booking a reservation.
 
-O estudo descobriu 25 princípios de design de sites móveis, agrupados em cinco
-categorias.
+The study uncovered 25 mobile site design principles, grouped into five categories.
 
-## Navegação na página inicial e no site
+## Home page and site navigation
 
-Success: Direcione o foco da sua página inicial para dispositivos móveis a conectar os usuários com o conteúdo que buscam.
+Success: Focus your mobile homepage on connecting users to the content they’re looking for.
 
-### Mantenha as chamadas para ação em destaque
+### Keep calls to action front and center
 
-Disponibilize tarefas secundárias por meio de [menus](/web/fundamentals/design-and-ux/responsive/)
- ou "abaixo da dobra" (a parte da página que não pode ser vista sem rolar para baixo).
+Make secondary tasks available through [menus](/web/fundamentals/design-and-ux/responsive/) or “below the fold” (the part of the webpage that can’t be seen without scrolling down).
 
 <div class="attempt-left">
   <figure id="fig1">
     <img src="images/hpnav-cta-good.png">
     <figcaption class="success">
-      <b>CERTO</b>: Facilitar o acesso às tarefas mais comuns dos usuários.
-</figcaption>
+      <b>DO</b>: Make all of your users’ most common tasks easily available.
+     </figcaption>
   </figure>
 </div>
+
 <div class="attempt-right">
   <figure id="fig1">
     <img src="images/hpnav-cta-bad.png">
     <figcaption class="warning">
-      <b>ERRADO</b>: Desperdiçar espaço preciso acima da dobra com chamadas para ação vagas, como "saiba mais".
-</figcaption>
+      <b>DON'T</b>: Waste precious above-the-fold space with vague
+      calls-to-action like “learn more”.
+     </figcaption>
   </figure>
 </div>
 
 <div style="clear:both;"></div>
 
-### Reduza os menus
+### Keep menus short and sweet
 
 <div class="attempt-right">
   <figure id="fig1">
     <img src="images/hpnav-menus-good.png">
     <figcaption class="success">
-      <b>CERTO</b>: Reduzir os menus.
+      <b>DO</b>: Keep menus short and sweet.
      </figcaption>
   </figure>
 </div>
 
-Usuários de dispositivos móveis não têm paciência para navegar por uma
-longa lista de opções até encontrarem o que desejam. Reorganize seu menu para usar a menor quantidade possível de itens
-sem sacrificar a usabilidade.
+Mobile users don’t have the patience to scroll through a long list of options to find what they want. Reorganize your menu to use as few items as possible, without sacrificing usability.
 
 <div style="clear:both;"></div>
 
-### Facilite o retorno à página inicial
+### Make it easy to get back to the home page
 
 <div class="attempt-right">
   <figure id="fig1">
     <img src="images/hpnav-hp-good.png">
     <figcaption class="success">
-      <b>CERTO</b>: Facilitar o retorno à página inicial.
+      <b>DO</b>: Make it easy to get back to the home page.
      </figcaption>
   </figure>
 </div>
 
-Os usuários esperam voltar à página inicial quando tocarem no logotipo no canto superior esquerdo
-de uma página para dispositivos móveis e, quando esse recurso não está disponível ou operacional, eles se frustram.
+Users expect to go back to the homepage when they tap the logo in the top-left of a mobile page, and they become frustrated when it isn’t available or doesn’t work.
 
 <div style="clear:both;"></div>
 
-### Não deixe que promoções roubem a cena
+### Don't let promotions steal the show
 
-Grandes intersticiais de instalação de aplicativo (como promoções de página
-inteira que ocultam o conteúdo e incentivam o usuário a instalar um aplicativo)
- irritam os usuários e dificultam a realização de tarefas. Além disso, sites que usam intersticiais de instalação de aplicativos são
-reprovados no
-[Google Mobile-Friendly Test](https://search.google.com/test/mobile-friendly),
-o que pode afetar negativamente seus rankings de pesquisa.
+Large app install interstitials (e.g., full-page promotions that hide content and prompt users to install an app) annoy users and make it difficult to perform tasks. In addition to annoying users, [sites that use interstitials may see a negative impact to their search rankings](https://webmasters.googleblog.com/2016/08/helping-users-easily-access-content-on.html).
 
 <div class="attempt-left">
   <figure id="fig1">
     <img src="images/hpnav-promo-good.png">
     <figcaption class="success">
-      <b>CERTO</b>: As promoções devem ser fáceis de divulgar e não distrair o usuário da experiência.
+      <b>DO</b>: Promotions should be easily dismissable and not distract from
+      the experience.
      </figcaption>
   </figure>
 </div>
+
 <div class="attempt-right">
   <figure id="fig1">
     <img src="images/hpnav-promo-bad.png">
     <figcaption class="warning">
-      <b>ERRADO</b>: Intersticiais frequentemente irritam os usuários e prejudicam a usabilidade do site.
+      <b>DON'T</b>: Interstitials (sometimes called door slams) often annoy
+      users and make using the site a pain.
      </figcaption>
   </figure>
 </div>
 
 <div style="clear:both;"></div>
 
-## Pesquisa no site
+## Site search
 
-Success: Ajude os usuários de dispositivos móveis a encontrar o que procuram rapidamente.
+Success: Help mobile users find what they’re looking for in a hurry.
 
-### Deixe o recurso de pesquisa no site visível
+### Make site search visible
 
-Usuários que procuram informações geralmente utilizam a pesquisa, portanto, o campo de pesquisa
-deve ser uma das primeiras coisas que eles avistam em suas páginas. Não esconda a caixa de
-pesquisa em um menu.
+Users looking for information usually turn to search, so the search field should be one of the first things they see on your pages. Don’t hide the search box in a menu.
 
 <div class="attempt-left">
   <figure id="fig1">
     <img src="images/ss-search-good.jpg">
     <figcaption class="success">
-      <b>CERTO</b>: Deixar o recurso de pesquisa visível
+      <b>DO</b>: Make search visible
      </figcaption>
   </figure>
 </div>
+
 <div class="attempt-right">
   <figure id="fig1">
     <img src="images/ss-search-bad.jpg">
     <figcaption class="warning">
-      <b>ERRADO</b>: Ocultar o recurso de pesquisa em menus flutuantes
-</figcaption>
+      <b>DON'T</b>: Hide search in overflow menus
+     </figcaption>
   </figure>
 </div>
 
 <div style="clear:both;"></div>
 
-### Garanta que os resultados de pesquisas no seu site sejam relevantes
+### Ensure site search results are relevant
 
-Os usuários não verificam várias páginas de resultados para encontrar
-o que procuram. Facilite o trabalho dos usuários preenchendo consultas automaticamente, corrigindo
-erros de digitação e sugerindo consultas relacionadas. Em vez de reinventar a
-roda, considere produtos robustos como a [Pesquisa personalizada do Google](https://cse.google.com/cse/){: .external }.
+Users don’t scan through multiple pages of results to find what they’re looking for. Make life easier on users by auto-completing queries, correcting misspellings, and suggesting related queries. Rather than reinventing the wheel, consider robust products like [Google Custom Search](https://cse.google.com/cse/){: .external }.
 
 <div class="attempt-left">
   <figure id="fig1">
     <img src="images/ss-relevant-good.png">
     <figcaption class="success">
-      <b>CERTO</b>: A Macy's retorna apenas itens infantis.
+      <b>DO</b>: Macy's only returns kids items.
      </figcaption>
   </figure>
 </div>
+
 <div class="attempt-right">
   <figure id="fig1">
     <img src="images/ss-relevant-bad.png">
     <figcaption class="warning">
-      <b>ERRADO</b>: Retornar resultados para qualquer coisa que tenha a palavra infantil.
-</figcaption>
+      <b>DON'T</b>: Return results for anything with the word kid in it.
+     </figcaption>
   </figure>
 </div>
 
 <div style="clear:both;"></div>
 
+### Implement filters to narrow results
 
-### Implemente filtros para refinar os resultados
-
-Os participantes do estudo utilizam [filtros](/custom-search/docs/structured_search)
- para encontrar o que buscam e abandonam sites que não têm
-filtros eficazes. Coloque filtros acima dos resultados de pesquisa e ajude os usuários exibindo
-quando resultados serão retornados quando um determinado filtro for aplicado.
+Study participants rely on [filters](/custom-search/docs/structured_search) to find what they’re looking for, and abandon sites that do not have effective filters. Place filters above search results, and help users by displaying how many results will be returned when a specific filter is applied.
 
 <div class="attempt-left">
   <figure id="fig1">
     <img src="images/ss-filters-good.jpg">
     <figcaption class="success">
-      <b>CERTO</b>: Facilite o uso de filtros.
-</figcaption>
+      <b>DO</b>: Make it easy to filter.
+     </figcaption>
   </figure>
 </div>
+
 <div class="attempt-right">
   <figure id="fig1">
     <img src="images/ss-filters-bad.jpg">
     <figcaption class="warning">
-      <b>ERRADO</b>: Ocultar o recurso de filtragem.
-</figcaption>
+      <b>DON'T</b>: Hide filter functionality.
+     </figcaption>
   </figure>
 </div>
 
 <div style="clear:both;"></div>
 
-### Oriente os usuários a obterem resultados de pesquisa melhores
+### Guide users to better site search results
 
 <div class="attempt-right">
   <figure id="fig1">
-    <img src="images/ss-guide-good.png" alt="A Zappos orienta os usuários perguntando o que eles estão procurando.">
+    <img src="images/ss-guide-good.png"
+         alt="Zappos guides users by asking them what they're looking for.">
     <figcaption class="success">
-      <b>CERTO</b>: Ajudar os usuários a encontrar o que procuram direcionando-os para o caminho certo.
-</figcaption>
+      <b>DO</b>: Help users to find what they're looking for by guiding them
+      in the right direction.
+     </figcaption>
   </figure>
 </div>
 
-Para sites com segmentos de clientes diversificados, faça algumas perguntas antes
-de apresentar a caixa de pesquisa e use as respostas do cliente como filtros
-de consulta de pesquisa para garantir que os resultados apresentados sejam do segmento mais relevantes.
+For sites with diverse customer segments, ask a few questions before presenting the search box, and use the customer’s responses as search query filters to ensure that users get results from the most relevant segment.
 
 <div style="clear:both;"></div>
 
-## Comércio e conversão
+## Commerce and conversion
 
-Success: Entenda as jornadas dos seus clientes e deixe que os usuários realizem conversões como quiserem.
+Success: Understand your customer journeys and let users convert on their own terms.
 
-### Deixe que os usuários explorem antes de se comprometer
+### Let users explore before they commit
 
-Participantes de um estudo ficaram frustrados com sites que exigiam registros
-imediatos para que o conteúdo fosse visualizado, principalmente quando não conheciam a marca. Apesar de as informações
-do cliente serem essenciais para sua empresa, solicitá-las cedo demais
-pode reduzir o número de registros.
+Study participants were frustrated by sites that require upfront registrations to view the site, especially when the brand was unfamiliar. Although customer information may be integral to your business, asking for it too early may result in fewer registrations.
 
 <div class="attempt-left">
   <figure id="fig1">
     <img src="images/cc-gates-good.png">
     <figcaption class="success">
-      <b>CERTO</b>: Permitir que os usuários naveguem pelo site sem exigir que façam login.
-</figcaption>
+      <b>DO</b>: Allow users to browse the site without requiring sign in.
+     </figcaption>
   </figure>
 </div>
+
 <div class="attempt-right">
   <figure id="fig1">
     <img src="images/cc-gates-bad.png">
     <figcaption class="warning">
-      <b>ERRADO</b>: Exigir o login ou registro cedo demais em um site.
+      <b>DON'T</b>: Place login or registration too early in a site.
      </figcaption>
   </figure>
 </div>
 
 <div style="clear:both;"></div>
 
-
-### Deixe que os usuários façam compras como convidados
+### Let users purchase as guests
 
 <div class="attempt-right">
   <figure id="fig1">
     <img src="images/cc-purchase-guest-good.png">
     <figcaption class="success">
-      <b>CERTO</b>: Permitir que os usuários façam compras com uma conta de convidado.
-</figcaption>
+      <b>DO</b>: Allow users to purchase with a guest account.
+     </figcaption>
   </figure>
 </div>
 
-Participantes de um estudo consideraram compras realizadas como convidados
-algo "conveniente", "simples", "fácil" e "rápido". Os usuários se irritam com sites que os forçam a criar uma
-conta ao fazer uma compra, principalmente quando o benefício de ter um conta
-não é claro.
+Study participants viewed guest checkouts as “convenient”, “simple”, “easy”, and “quick”. Users are annoyed by sites that force them to register for an account when making a purchase, especially when the benefit of an account is unclear.
 
 <div style="clear:both;"></div>
 
-### Use as informações existentes para maximizar a conveniência
+### Use existing information to maximize convenience
 
-Lembre e
-[pré-preencha as preferências](/web/fundamentals/design-and-ux/input/forms/#label-and-name-inputs-properly)
- de usuários registrados. Ofereça serviços de compra de terceiros conhecidos para novos usuários.
+Remember and [pre-fill preferences](/web/fundamentals/design-and-ux/input/forms/#label-and-name-inputs-properly) for registered users. Offer familiar, third-party checkout services for new users.
 
-### Use botões click-to-call para tarefas complexas
+### Use click-to-call buttons for complex tasks
 
-Em dispositivos com recursos de chamada,
-[links click-to-call](/web/fundamentals/native-hardware/click-to-call/) permitem
-que os usuários façam uma chamada telefônica ao tocar em um link. Na maioria dos dispositivos móveis, o
-usuário recebe uma confirmação antes de o número ser discado ou um menu
-surge perguntando ao usuário como o número deve ser utilizado.
+On devices with calling capabilities, [click-to-call links](/web/fundamentals/native-hardware/click-to-call/) enable users to make a phone call by simply tapping a link. On most mobile devices the user receives a confirmation before the number is dialed, or a menu is presented asking the user how the number should be handled.
 
-### Facilite a conclusão em outro dispositivo
+### Make it easy to finish on another device
 
 <div class="attempt-right">
   <figure id="fig1">
     <img src="images/cc-other-device-good.png">
     <figcaption class="success">
-      <b>CERTO</b>: Fornecer maneiras fáceis para que os usuários continuem navegando ou comprando em outro dispositivo.
-</figcaption>
+      <b>DO</b>: Provide easy ways for users to continue browsing or shopping on another device.
+     </figcaption>
   </figure>
 </div>
 
-Os usuários sempre querem concluir tarefas em outros dispositivos. Por exemplo, eles
-podem querer ver um item em uma tela maior. Ou podem ficar ocupados e concluir
-a tarefa depois. Ofereça suporte a essas jornadas dos clientes permitindo que os usuários
-[compartilhem links em redes sociais](/web/fundamentals/discovery-and-monetization/social-discovery/),
-ou enviem e-mails a si mesmos diretamente pelo site.
+Users frequently want to finish tasks on other devices. For instance, they might wish to view an item on a larger screen. Or they might get busy and need to finish later. Support these customer journeys by enabling users to [share items on social networks](/web/fundamentals/discovery-and-monetization/social-discovery/), or by letting users email themselves links from directly within the site.
 
 <div style="clear:both;"></div>
 
-## Entrada de formulário
+## Form entry
 
-Success: Forneça uma experiência de conversão tranquila e sem qualquer problema com formulários utilizáveis.
+Success: Provide a seamless, frictionless conversion experience with usable forms.
 
+### Streamline information entry
 
-### Otimize a entrada de informações
+Automatically advance to the next field when a user presses Return. In general, the fewer taps the user must perform, the better.
 
-Avance automaticamente para o próximo campo quando um usuário pressionar Enter. Em geral,
-quando menos toques o usuário precisar realizar, melhor.
+### Choose the simplest input
 
-### Escolha a interação mais simples
+Use the most [appropriate input type](/web/fundamentals/design-and-ux/input/forms/choose-the-best-input-type) for each scenario. Use elements like [`datalist`](/web/fundamentals/design-and-ux/input/forms/choose-the-best-input-type#offer-suggestions-during-input-with-datalist) to provide suggested values for a field.
 
-Use o [tipo de interação mais apropriado](/web/fundamentals/design-and-ux/input/forms/choose-the-best-input-type)
- para cada cenário. Use elementos como
-[`datalist`](/web/fundamentals/design-and-ux/input/forms/choose-the-best-input-type#offer-suggestions-during-input-with-datalist)
- para fornecer valores sugeridos para um campo.
-
-### Forneça um calendário visual para a seleção de datas
+### Provide visual calendar for date selection
 
 <div class="attempt-right">
   <figure id="fig1">
     <img src="images/forms-calendar-good.png">
     <figcaption class="success">
-      <b>CERTO</b>: use widgets de calendário quando possível.
-</figcaption>
+      <b>DO</b>: Use calendar widgets when possible.
+     </figcaption>
   </figure>
 </div>
 
-Identifique com clareza as datas de início e fim. Os usuários não devem precisar sair de um site e
-consultar um aplicativo de calendário para agendar um compromisso.
+Clearly label start and end dates. Users should not need to leave a site and check a calendar app just to schedule a date.
 
 <div style="clear:both;"></div>
 
-### Minimize os erros de formulário com identificação e validação em tempo real
+### Minimize form errors with labeling and real-time validation
 
 <div class="attempt-right">
   <figure id="fig1">
     <img src="images/forms-multipart-good.png">
     <figcaption class="success">
-      <b>CERTO</b>: Pré-preencher o conteúdo quando possível.
-</figcaption>
+      <b>DO</b>: Label inputs clearly.
+     </figcaption>
   </figure>
 </div>
 
-Identifique as entradas corretamente e valide-as em tempo real.
+Label inputs properly and validate input in real-time.
 
 <div style="clear:both;"></div>
 
-### Crie formulários eficientes
+### Design efficient forms
 
-Utilize o recurso de [preenchimento automático](/web/fundamentals/design-and-ux/input/forms/#label-and-name-inputs-properly#use-metadata-to-enable-auto-complete)
- para que os usuários possam preencher formulários com facilidade com dados pré-preenchidos. Pré-preencha
-campos com informações que você já tem. Por exemplo, ao recuperar endereços
-de entrega e cobrança, tente usar
-[`requestAutocomplete`](/web/fundamentals/design-and-ux/input/forms/use-request-auto-complete)
- ou permita que os usuários copiem o endereço de entrega para o endereço de cobrança (ou vice-versa).
+Take advantage of [autofill](/web/fundamentals/design-and-ux/input/forms/#label-and-name-inputs-properly#use-metadata-to-enable-auto-complete) so that users can easily complete forms with pre-populated data. Pre-fill fields with information you already know. For example, when retrieving shipping and billing addresses, try to use [`requestAutocomplete`](/web/fundamentals/design-and-ux/input/forms/use-request-auto-complete) or enable users to copy their shipping address to their billing address (or vice versa).
 
-## Usabilidade e formato
+## Usability and form factor
 
-Success: Alegre seus usuários de dispositivos móveis com pequenas mudanças que aprimorem a experiência.
+Success: Delight your mobile users with small things that enhance their experiences.
 
-### Otimize todo o seu site para dispositivos móveis
+### Optimize your entire site for mobile
 
-Use um [layout responsivo](/web/fundamentals/design-and-ux/responsive/) que
-mude de acordo com o tamanho e os recursos do dispositivo do usuário. Participantes
-do estudo consideraram sites que misturavam páginas otimizadas para
-computadores e dispositivos móveis ainda mais difíceis de usar do que sites destinados a apenas computadores.
+Use a [responsive layout](/web/fundamentals/design-and-ux/responsive/) that changes based on the size and capabilities of the user’s device. Study participants found sites with a mix of desktop and mobile-optimized pages even harder to use than desktop-only sites.
 
-### Não force os usuários a usarem gestos de pinça para controlar o zoom
+### Don't make users pinch-to-zoom
 
-Os usuários estão acostumados a navegar verticalmente em sites, mas não horizontalmente.
-Evite elementos grandes com largura fixa. Use
-[consultas de mídia CSS](/web/fundamentals/design-and-ux/responsive/#use-css-media-queries-for-responsiveness)
- para aplicar diferentes estilos para diferentes telas. Não crie conteúdo que só seja
-exibido corretamente em uma
-[largura de janela de visualização](/web/fundamentals/design-and-ux/responsive/#set-the-viewport) específica.
-Sites que forçam os usuários a navegar horizontalmente são reprovados no
-[Google Mobile-Friendly Test](https://search.google.com/test/mobile-friendly),
-o que pode afetar negativamente suas classificações de pesquisa.
+Users are comfortable with scrolling sites vertically, but not horizontally. Avoid large, fixed-width elements. Use [CSS media queries](/web/fundamentals/design-and-ux/responsive/#use-css-media-queries-for-responsiveness) to apply different stylings for different screens. Don’t create content that only displays well at a particular [viewport width](/web/fundamentals/design-and-ux/responsive/#set-the-viewport). Sites that force users to horizontally scroll fail the [Google Mobile-Friendly Test](https://search.google.com/test/mobile-friendly), which may negatively impact their search rankings.
 
-### Permita que imagens de produtos possam ser ampliadas
+### Make product images expandable
 
 <div class="attempt-right">
   <figure id="fig1">
     <img src="images/sw-make-images-expandable-good.png">
     <figcaption class="success">
-      <b>CERTO</b>: Permita que as imagens de produtos sejam expandidas e visualizadas em detalhes com facilidade.
-</figcaption>
+      <b>DO</b>: Make product images expandable and easy to see in detail.
+     </figcaption>
   </figure>
 </div>
 
-Os clientes de varejo esperam que os sites permitam
-[visualizações de closes de alta resolução](/web/fundamentals/design-and-ux/media/images#make-product-images-expandable)
-de seus produtos. Participantes do estudo se frustraram quando não conseguiam ver
-o que estavam comprando.
+Retail customers expect sites to let them [view high resolution closeups](/web/fundamentals/design-and-ux/responsive/images#make-product-images-expandable) of products. Study participants got frustrated when they weren’t able to see what they were buying.
 
 <div style="clear:both;"></div>
 
-### Diga aos usuários qual orientação funciona melhor
+### Tell users which orientation works best
 
 <div class="attempt-right">
   <figure id="fig1">
     <img src="images/us-orientation.jpg">
     <figcaption class="success">
-      <b>CERTO</b>: Diga ao usuário qual orientação funciona melhor.
-</figcaption>
+      <b>DO</b>: Tell the user which orientation works best.
+     </figcaption>
   </figure>
 </div>
 
-Participantes do estudo tendiam a ficar na mesma orientação até que
-algo os incentivasse a trocar. Crie designs para as orientações de paisagem e retrato
-ou incentive os usuários a trocar para a orientação ideal. Certifique-se de que suas
-chamadas para ação importantes possam ser executadas pelo que os usuários
-ignorem a sugestão de trocar a orientação.
+Study participants tended to stay in the same screen orientation until something prompted them to switch. Design for both landscape and portrait, or encourage users to switch to the optimal orientation. Make sure that your important calls-to-action can be completed even if the users ignore the suggestion to switch orientations.
 
 <div style="clear:both;"></div>
 
-### Mantenha o usuário em uma só janela de navegador
+### Keep your user in a single browser window
 
 <div class="attempt-right">
   <figure id="fig1">
     <img src="images/sw-single-browser-good.png">
     <figcaption class="success">
-      <b>CERTO</b>: A Macy's mantém os usuários no seu site fornecendo cupons internamente.
-</figcaption>
+      <b>DO</b>: Macy's keeps their users on their site by providing coupons on site.
+     </figcaption>
   </figure>
 </div>
 
-Os usuários podem ter problemas para alternar entre janelas de navegador
-e podem não conseguir voltar ao site. Evite chamadas para ação que abram novas janelas.
-Identifique jornadas que possam fazer com que um usuário saia do seu site e
-forneça recursos para mantê-lo no site. Por exemplo, se você aceitar cupons,
-ofereça-os diretamente no site em vez de forçar os usuários a procurar
-promoções em outros sites.
+Users may have trouble switching between windows and might not be able to find their way back to the site. Avoid calls-to-action that launch new windows. Identify any journeys that might cause a user to look outside your site and provide features to keep them on your site. For example, if you accept coupons, offer them directly on the site, rather than forcing users to search other sites for deals.
 
 <div style="clear:both;"></div>
 
-### Evite a identificação "site completo"
+### Avoid "full site" labeling
 
-Quando os participantes do estudo viram uma opção para acessar o "site completo"
-(site para computador), em vez de um "site para dispositivos móveis", eles
-pensaram que o site para dispositivos móveis era incompleto e escolheram a versão "completa", sendo direcionados para o site para computador.
+When study participants saw an option for a "full site" (i.e., desktop site) versus a "mobile site", they thought the mobile site lacked content and chose the "full" one instead, directing them to the desktop site.
 
+### Be clear why you need a user's location
 
-### Seja claro ao indicar por que precisa da localização do usuário
-
-Os usuários devem sempre entender por que você está solicitando a
-[localização](/web/fundamentals/native-hardware/user-location/) deles. Participantes
-do estudo que tentavam reservar um hotel em outra cidade ficaram confusos
-quando um site de viagens detectou sua localização e ofereceu hotéis em
-sua cidade atual. Deixe os campos de localização em branco por padrão e permita que os usuários os
-preencham com uma chamada para ação clara, como "Encontrar em locais próximos".
+Users should always understand why you’re asking for their [location](/web/fundamentals/native-hardware/user-location/). Study participants trying to book a hotel in another city became confused when a travel site detected their location and offered hotels in their current city instead. Leave location fields blank by default, and let users choose to populate them through a clear call-to-action like “Find Near Me”.
 
 <div class="attempt-left">
   <figure id="fig1">
     <img src="images/sw-navigation-good.png">
     <figcaption class="success">
-      <b>CERTO</b>: Sempre solicitar acesso à localização em resposta a um gesto do usuário.
+      <b>DO</b>: Always request access to location on a user gesture.
      </figcaption>
   </figure>
 </div>
+
 <div class="attempt-right">
   <figure id="fig1">
     <img src="images/sw-navigation-bad.png">
     <figcaption class="warning">
-      <b>ERRADO</b>: Solicitar a localização imediatamente na página inicial conforme o site carrega resulta em uma experiência desagradável para o usuário.
+      <b>DON'T</b>: Request immediately access to location on the
+      homepage, as this results in a poor user experience.
      </figcaption>
   </figure>
 </div>
 
 <div style="clear:both;"></div>
 
+## Feedback {: #feedback }
 
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
