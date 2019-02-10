@@ -1,193 +1,122 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Приемы отзывчивого веб-дизайна быстро эволюционируют, но есть много проверенных вариантов, которые хорошо работают при использовании как настольных компьютеров, так и мобильных устройств
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Responsive web design patterns are quickly evolving, but there are a handful of established patterns that work well across the desktop and mobile devices
 
-{# wf_updated_on: 2014-10-20 #}
-{# wf_published_on: 2000-01-01 #}
+{# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2014-04-29 #} {# wf_blink_components: Blink>CSS #}
 
-# Приемы отзывчивого веб-дизайна {: .page-title }
+# Responsive Web Design Patterns {: .page-title }
 
 {% include "web/_shared/contributors/petelepage.html" %}
 
+Responsive web design patterns are quickly evolving, but there are a handful of established patterns that work well across the desktop and mobile devices.
 
+Most layouts used by responsive web pages can be categorized into one of five patterns: mostly fluid, column drop, layout shifter, tiny tweaks, and off canvas. In some cases, a page may use a combination of patterns, for example column drop and off canvas. These patterns, originally identified by [Luke Wroblewski](http://www.lukew.com/ff/entry.asp?1514), provide a solid starting point for any responsive page.
 
-Приемы отзывчивого веб-дизайна быстро эволюционируют, но есть много проверенных вариантов, которые хорошо работают при использовании как настольных компьютеров, так и мобильных устройств
+### The patterns
 
+For simplicity and ease of understanding, each the samples below were created with real markup using [`flexbox`](https://developer.mozilla.org/en-US/docs/Web/Guide/CSS/Flexible_boxes), typically with three content `div`'s contained within a primary container `div`. Each sample was written starting with the smallest view first, and breakpoints were added when necessary. The [flexbox layout mode is well supported](http://caniuse.com/#search=flexbox) for modern browsers, though may still require vendor prefixing for optimal support.
 
+## Mostly Fluid
 
-Большинство макетов, используемых для создания отзывчивых веб-страниц, можно отнести к одной из пяти
-категорий шаблонов: Mostly Fluid (Наиболее резиновый), Column Drop (Столбцы друг под другом), Layout Shifter (Двигающийся макет), Tiny Tweaks (Крошечные изменения) и Off Canvas (Вне экрана).
-В некоторых случаях на странице может использоваться сочетание шаблонов, например Column Drop
-и Off Canvas.  Эти шаблоны, которые изначально были определены [Люком Вроблевски (Luke
-Wroblewski)](http://www.lukew.com/ff/entry.asp?1514), являются надежной отправной
-точкой для создания любой отзывчивой страницы.
+The mostly fluid pattern consists primarily of a fluid grid. On large or medium screens, it usually remains the same size, simply adjusting the margins on wider screens.
 
-## Шаблоны
+On smaller screens, the fluid grid causes the main content to reflow, while columns are stacked vertically. One major advantage of this pattern is that it usually only requires one breakpoint between small screens and large screens.
 
-Чтобы сформировать простые для понимания образцы, каждый из приведенных
-далее образцов был создан с реальной разметкой на основе 
-[`flexbox`](https://developer.mozilla.org/en-US/docs/Web/Guide/CSS/Flexible_boxes),
-обычно с тремя контейнерами содержимого`div`, размещенными в основном `div`-контейнере.
- Каждый образец был написан начиная с самого небольшого представления, а в требуемых местах
-были добавлены контрольные точки.  [Режим макета flexbox хорошо
-поддерживается](http://caniuse.com/#search=flexbox) современными браузерами, однако для оптимальной поддержки
-его иногда все равно нужно предварять вендорными префиксами.
+<img src="imgs/mostly-fluid.svg" />
+<a href="https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/responsive/mostly-fluid.html" class="button button-primary">Try it</a>
 
+In the smallest view, each content `div` is stacked vertically. When the screen width hits 600px, the primary content `div` remains at `width: 100%`, while the secondary `div`'s are shown as two columns below the primary `div`. Beyond 800px, the container `div` becomes fixed width and is centered on the screen.
 
-## Mostly Fluid (Наиболее резиновый)
+Sites using this pattern include:
 
-
-
-
-Шаблон Mostly fluid (Наиболее резиновый) состоит главным образом из "резиновой" сетки.  На экранах большой или средней ширины ее размер обычно остается неизменным, в то время как на больших экранах регулируются только поля
-
-На небольших экранах "резиновая" сетка вызывает перерасчет макета для основного контента,
-а столбцы размещаются друг под другом.  Одним из основных достоинств этого шаблона является то, 
-что в нем необходима только одна контрольная точка между небольшими экранами и экранами большого
-размера.
-
-
-<img src="imgs/mostly-fluid.svg">
-
-
-
-В самом маленьком представлении все контейнеры `div` контента располагаются вертикально друг под другом.  Как только ширина 
-экрана превышает 600 пикселей, основной `div` контента остается с `width: 100%`, а
-второстепенные `div` отображаются в виде двух столбцов, расположенных под основным `div`.  На экранах шириной
-800 пикселей и более `div`-контейнер получает фиксированную ширину и располагается по центру экрана.
-
-Сайты, созданные с использованием этого шаблона:
-
- * [A List Apart](http://mediaqueri.es/ala/){: .external }
- * [Media Queries](http://mediaqueri.es/){: .external }
- * [SimpleBits](http://simplebits.com/){: .external }
-
+- [A List Apart](http://mediaqueri.es/ala/){: .external }
+- [Media Queries](http://mediaqueri.es/){: .external }
+- [SimpleBits](http://simplebits.com/){: .external }
 
 <pre class="prettyprint">
-{% includecode content_path="web/fundamentals/design-and-ux/responsive/_code/mostly-fluid.html" region_tag="mfluid"   adjust_indentation="auto" %}
+{% includecode content_path="web/fundamentals/design-and-ux/responsive/_code/mostly-fluid.html" region_tag="mfluid" adjust_indentation="auto" %}
 </pre>
 
+## Column drop
 
-## Column Drop (Столбцы друг под другом)
+For full-width multi-column layouts, column drop simply stacks the columns vertically as the window width becomes too narrow for the content.
 
+Eventually this results in all of the columns being stacked vertically. Choosing breakpoints for this layout pattern is dependent on the content and changes for each design.
 
+<img src="imgs/column-drop.svg" />
+<a href="https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/responsive/column-drop.html" class="button button-primary">Try it</a>
 
-В макетах, состоящих из нескольких столбцов, которые занимают всю ширину экрана, шаблон Column Drop просто размещает столбцы один за одним по вертикали, когда ширина окна становится слишком небольшой для отображения всего контента.
+Like the mostly fluid sample, content is stacked vertically in the smallest view, but as the screen expands beyond 600px, the primary and secondary content `div`'s take the full width of the screen. The order of the `div`'s is set using the order CSS property. At 800px all three content `div`'s are shown, using the full screen width.
 
-Со временем
-это приводит к тому, что все столбцы будут расположены вертикально друг под другом.  Выбор
-контрольных точек для этого шаблона макета зависит от контента и определяется для каждого варианта дизайна
-отдельно.
+Sites using this pattern include:
 
-
-<img src="imgs/column-drop.svg">
-
-
-
-Контент в этом наиболее "резиновом" образце, располагается вертикально в самом
-маленьком по размеру представлении, а когда ширина экрана становится больше 600 пикселей, `div` основного и второстепенного контента
- занимает всю ширину экрана.  Порядок расположения `div` задается с помощью свойства 
-CSS order.  На экране шириной более 800 пикселей отображаются все три контейнера `div` содержимого, занимая 
-всю ширину экрана.
-
-Сайты, созданные с использованием этого шаблона:
-
- * [Modernizr](http://modernizr.com/){: .external }
- * [Wee Nudge](http://weenudge.com/){: .external }
+- [Modernizr](https://modernizr.com/){: .external }
+- [Wee Nudge](http://weenudge.com/){: .external }
 
 <pre class="prettyprint">
-{% includecode content_path="web/fundamentals/design-and-ux/responsive/_code/column-drop.html" region_tag="cdrop"   adjust_indentation="auto" %}
+{% includecode content_path="web/fundamentals/design-and-ux/responsive/_code/column-drop.html" region_tag="cdrop" adjust_indentation="auto" %}
 </pre>
 
-## Layout shifter (Двигающийся макет)
+## Layout shifter
 
+The layout shifter pattern is the most responsive pattern, with multiple breakpoints across several screen widths.
 
+Key to this layout is the way content moves about, instead of reflowing and dropping below other columns. Due to the significant differences between each major breakpoint, it is more complex to maintain and likely involves changes within elements, not just overall content layout.
 
-Шаблон Layout shifter является наиболее отзывчивым, поскольку в нем предусмотрено наличие нескольких контрольных точек для экранов различной ширины
+<img src="imgs/layout-shifter.svg" />
+<a href="https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/responsive/layout-shifter.html" class="button button-primary">Try it</a>
 
-Основным отличием этого макета является то, что вместо перерасчета дерева отрисовки и
-размещения столбцов друг под другом перемещается контент.  Из-за значительных различий между
-основными контрольными точками, поддержка этого макета является более сложной задачей, кроме того, вероятно, придется менять
-не только общий макет контента, но и его элементы.
+This simplified example shows the layout shifter pattern, on smaller screens content is stacked vertically, but changes significantly as the screen becomes larger, with a left `div` and two stacked `div`'s on the right.
 
+Sites using this pattern include:
 
-<img src="imgs/layout-shifter.svg">
-
-
-В этом упрощенном образце показан шаблон Layout shifter: на небольших экранах
-контент размещается вертикально, но он значительно меняется, когда экран становится
-больше, с одним контейнером `div` слева и двумя расположенными друг под другом контейнерами `div` справа.
-
-Сайты, созданные с использованием этого шаблона:
-
- * [Food Sense](http://foodsense.is/){: .external }
- * [Seminal Responsive Design
-  Example](http://alistapart.com/d/responsive-web-design/ex/ex-site-FINAL.html)
- * [Andersson-Wise Architects](http://www.anderssonwise.com/){: .external }
+- [Food Sense](http://foodsense.is/){: .external }
+- [Seminal Responsive Design Example](http://alistapart.com/d/responsive-web-design/ex/ex-site-FINAL.html)
+- [Andersson-Wise Architects](http://www.anderssonwise.com/){: .external }
 
 <pre class="prettyprint">
-{% includecode content_path="web/fundamentals/design-and-ux/responsive/_code/layout-shifter.html" region_tag="lshifter"   adjust_indentation="auto" %}
+{% includecode content_path="web/fundamentals/design-and-ux/responsive/_code/layout-shifter.html" region_tag="lshifter" adjust_indentation="auto" %}
 </pre>
 
-## Tiny Tweaks (Крошечные изменения)
+## Tiny tweaks
 
+Tiny tweaks simply makes small changes to the layout, such as adjusting font size, resizing images, or moving content around in very minor ways.
 
+It works well on single column layouts such as one page linear websites and text-heavy articles.
 
+<img src="imgs/tiny-tweaks.svg" />
+<a href="https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/responsive/tiny-tweaks.html" class="button button-primary">Try it</a>
 
-Шаблон Tiny Tweaks (Крошечные изменения) просто вносит небольшие изменения в макет, например, регулирует размер шрифта, меняет размер изображений или перемещает контент.
+As its name implies, not much changes with this sample as the screen size changes. As the screen width gets larger, so do the font size and padding.
 
-Он хорошо работает на таких макетах, состоящих из одного столбца, как одностраничные линейные веб-сайты и статьи
-с большим количеством текста.
+Sites using this pattern include:
 
-
-  <img src="imgs/tiny-tweaks.svg">
-  Попробовать
-
-
-Как можно понять из названия шаблона, при изменении размера экрана в этот образец вносятся незначительные модификации.
-По мере увеличения ширины экрана, больше становятся размер шрифта и поля вокруг текста.
-
-Сайты, созданные с использованием этого шаблона:
-
- * [Opera's Shiny Demos](http://shinydemos.com/){: .external }
- * [Ginger Whale](http://gingerwhale.com/){: .external }
- * [Future Friendly](http://futurefriendlyweb.com/){: .external }
+- [Ginger Whale](http://gingerwhale.com/){: .external }
+- [Future Friendly](http://futurefriendlyweb.com/){: .external }
 
 <pre class="prettyprint">
-{% includecode content_path="web/fundamentals/design-and-ux/responsive/_code/tiny-tweaks.html" region_tag="ttweaks"   adjust_indentation="auto" %}
+{% includecode content_path="web/fundamentals/design-and-ux/responsive/_code/tiny-tweaks.html" region_tag="ttweaks" adjust_indentation="auto" %}
 </pre>
 
+## Off canvas
 
-## Off Canvas (Вне экрана)
+Rather than stacking content vertically, the off canvas pattern places less frequently used content&mdash;perhaps navigation or app menus&mdash;off screen, only showing it when the screen size is large enough, and on smaller screens, content is only a click away.
 
+<img src="imgs/off-canvas.svg" />
+<a href="https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/responsive/off-canvas.html" class="button button-primary">Try it</a>
 
+Rather than stacking content vertically, this sample uses a `transform: translate(-250px, 0)` declaration to hide two of the content `div`s off screen. JavaScript is used to show the divs by adding an open class to the element to make visible. As the screen gets wider, the off-screen positioning is removed from the elements and they're shown within the visible viewport.
 
-Вместо того чтобы размещать элементы контента вертикально друг под другом, шаблон размещает контент, который используется редко, скажем, элементы навигации или меню приложения за пределами экрана, показывая его только тогда, когда это позволяет сделать размер экрана. На небольших же экранах контент можно открыть одним щелчком
+Note in this sample, Safari for iOS 6 and Android Browser do not support the `flex-flow: row nowrap` feature of `flexbox`, so we’ve had to fall back to absolute positioning.
 
+Sites using this pattern include:
 
-<img src="imgs/off-canvas.svg">
-
-
-В этом образце элементы контента не размещены вертикально друг под другом, а два контейнера 
-`div` контента вынесены за пределы экрана с помощью `transform: translate(-250px, 0)`.  Для отображения
-этих div используется JavaScript: к элементу, который необходимо показать на экране, добавляется класс open.  По мере
-увеличения ширины экрана размещение элементов за пределами экрана убирается,и
-они отображаются в пределах видимости.
-
-По поводу этого образца следует отметить, что Safari для iOS 6 и Android Browser не поддерживают функцию 
-`flex-flow: row nowrap` элемента`flexbox`, поэтому пришлось вернуться к
-абсолютному позиционированию.
-
-Сайты, созданные с использованием этого шаблона:
-
- * [HTML5Rocks
-  Articles](http://www.html5rocks.com/en/tutorials/developertools/async-call-stack/)
- * [Google Nexus](http://www.google.com/nexus/){: .external }
- * [Сайт Facebook для мобильных устройств](https://m.facebook.com/){: .external }
+- [HTML5Rocks Articles](http://www.html5rocks.com/en/tutorials/developertools/async-call-stack/)
+- [Google Nexus](https://www.google.com/nexus/){: .external }
+- [Facebook's Mobile Site](https://m.facebook.com/){: .external }
 
 <pre class="prettyprint">
-{% includecode content_path="web/fundamentals/design-and-ux/responsive/_code/off-canvas.html" region_tag="ocanvas"   adjust_indentation="auto" %}
+{% includecode content_path="web/fundamentals/design-and-ux/responsive/_code/off-canvas.html" region_tag="ocanvas" adjust_indentation="auto" %}
 </pre>
 
+## Feedback {: #feedback }
 
-
+{% include "web/_shared/helpful.html" %}
