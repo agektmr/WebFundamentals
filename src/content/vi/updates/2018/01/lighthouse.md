@@ -1,51 +1,32 @@
-project_path: /web/_project.yaml
-book_path: /web/updates/_book.yaml
-description: New SEO audits and manual accessibility audits, and updates to the WebP audit.
-{% include "web/_shared/machine-translation-start.html" %}
+project_path: /web/_project.yaml book_path: /web/updates/_book.yaml description: New SEO audits and manual accessibility audits, and updates to the WebP audit.
 
-{# wf_updated_on: 2018-03-05 #}
-{# wf_published_on: 2018-01-05 #}
-{# wf_tags: lighthouse,accessibility,images #}
-{# wf_featured_image: /web/progressive-web-apps/images/pwa-lighthouse.png #}
-{# wf_featured_snippet: New SEO audits and manual accessibility audits, and updates to the WebP audit. #}
-{# wf_blink_components: N/A #}
+{# wf_updated_on: 2018-03-05 #} {# wf_published_on: 2018-01-05 #} {# wf_tags: lighthouse,accessibility,images #} {# wf_featured_image: /web/progressive-web-apps/images/pwa-lighthouse.png #} {# wf_featured_snippet: New SEO audits and manual accessibility audits, and updates to the WebP audit. #} {# wf_blink_components: N/A #}
 
 {% include "web/tools/chrome-devtools/_shared/styles.html" %}
 
-# Lighthouse 2.7 Cập nhật {: .page-title }
+# Lighthouse 2.7 Updates {: .page-title }
 
-{% include "web/_shared/contributors/vinamratasingal.html" %}
-{% include "web/_shared/contributors/patrickhulce.html" %}
-{% include "web/_shared/contributors/kaycebasques.html" %}
+{% include "web/_shared/contributors/vinamratasingal.html" %} {% include "web/_shared/contributors/patrickhulce.html" %} {% include "web/_shared/contributors/kaycebasques.html" %}
 
-[CDT]: /web/tools/lighthouse/#devtools
-[Node]: https://github.com/GoogleChrome/lighthouse#using-programmatically
-[CLI]: /web/tools/lighthouse/#cli
-[CE]: /web/tools/lighthouse/#extension
+Lighthouse 2.7 is out! Highlights include:
 
-Ngọn hải đăng 2.7 đã hết! Điểm nổi bật bao gồm:
+* [New SEO audits](#seo).
+* [New, manual accessibility audits](#a11y).
+* [Updates to the WebP audit](#webp).
 
-* [New SEO audits](#seo) .
-* [New, manual accessibility audits](#a11y) .
-* [Updates to the WebP audit](#webp) .
+See the [2.7 release notes](https://github.com/GoogleChrome/lighthouse/releases/tag/v2.7.0) for the full list of new features, changes, and bug fixes.
 
-Xem [2.7 release notes][RN] để biết danh sách đầy đủ các tính năng mới, thay đổi và sửa lỗi.
+## How to update to 2.7 {: #update }
 
-[RN]: https://github.com/GoogleChrome/lighthouse/releases/tag/v2.7.0
+* NPM. Run `npm update lighthouse`, or `npm update lighthouse -g` flag if you installed Lighthouse globally.
+* Chrome Extension. The extension should automatically update, but you can manually update it via `chrome://extensions`.
+* DevTools. Lighthouse 2.7 is shipping in Chrome 65. You can check what version of Chrome you're running via `chrome://version`. Chrome updates to a new version about every 6 weeks. You can run the latest Chrome code by downloading [Chrome Canary](https://www.google.com/chrome/browser/canary.html).
 
-## Cách cập nhật lên 2.7 {: #update }
+## New SEO audits {: #seo }
 
-* NPM. Run `npm update lighthouse` , hoặc `npm update lighthouse -g` cờ nếu bạn cài đặt Ngọn hải đăng trên toàn cầu.
-* Tiện ích mở rộng của Chrome. Tiện ích sẽ tự động cập nhật nhưng bạn có thể cập nhật tiện ích theo cách thủ công qua `chrome://extensions` .
-* Những công cụ của nhà phát triển. Ngọn hải đăng 2.7 đang giao hàng trong Chrome 65. Bạn có thể kiểm tra phiên bản Chrome nào bạn đang chạy qua `chrome://version` . Chrome cập nhật lên phiên bản mới khoảng 6 tuần một lần. Bạn có thể chạy mã Chrome mới nhất bằng cách tải xuống [Chrome Canary][Canary] .
+The new SEO category provides audits that help improve your page's ranking in search engine results.
 
-[Canary]: https://www.google.com/chrome/browser/canary.html
-
-## Kiểm tra SEO mới {: #seo }
-
-Danh mục SEO mới cung cấp các kiểm tra giúp cải thiện thứ hạng trang của bạn trong các kết quả của công cụ tìm kiếm.
-
-Note: Nhiều yếu tố ảnh hưởng đến xếp hạng của công cụ tìm kiếm của trang. Ngọn hải đăng không kiểm tra tất cả các yếu tố này. Một điểm số 100 hoàn hảo trong Lighthouse không đảm bảo một vị trí hàng đầu trên bất kỳ công cụ tìm kiếm nào!
+Note: Many factors affect a page's search engine ranking. Lighthouse does not test all of these factors. A perfect 100 score in Lighthouse does not guarantee a top ranking spot on any search engine!
 
 <figure>
   <img src="/web/updates/images/2018/01/seo.png"
@@ -59,9 +40,9 @@ Note: Nhiều yếu tố ảnh hưởng đến xếp hạng của công cụ tì
   </figcaption>
 </figure>
 
-## Kiểm tra khả năng truy cập {: #a11y }
+## New, manual accessibility audits {: #a11y }
 
-Kiểm tra khả năng truy cập thủ công mới, thông báo cho bạn về những điều bạn có thể làm để cải thiện khả năng truy cập trang của bạn. &quot;Thủ công&quot; ở đây có nghĩa là Ngọn hải đăng không thể tự động hóa các kiểm tra này, vì vậy bạn cần tự mình kiểm tra chúng.
+The new, manual accessibility audits inform you of things you can do to improve the accessibility of your page. "Manual" here means that Lighthouse can't automate these audits, so you need to manually test them yourself.
 
 <figure>
   <img src="/web/updates/images/2018/01/a11y.png"
@@ -77,12 +58,9 @@ Kiểm tra khả năng truy cập thủ công mới, thông báo cho bạn về 
   </figcaption>
 </figure>
 
-## Cập nhật cho kiểm toán WebP {: #webp }
+## Updates to the WebP audit {: #webp }
 
-Nhờ có một số [community feedback][feedback] , [WebP audit][webp] bây giờ đã bao gồm nhiều định dạng hình ảnh hiệu suất cao, thế hệ tiếp theo khác, như JPEG 2000 và JPEG XR.
-
-[feedback]: https://www.reddit.com/r/webdev/comments/75w7t0/so_exactly_what_do_i_do_google_put_my_css_in_js/doatllq/
-[webp]: /web/tools/lighthouse/audits/webp
+Thanks to some [community feedback](https://www.reddit.com/r/webdev/comments/75w7t0/so_exactly_what_do_i_do_google_put_my_css_in_js/doatllq/), the [WebP audit](/web/tools/lighthouse/audits/webp) is now more inclusive of other next-generation, high-performance image formats, like JPEG 2000 and JPEG XR.
 
 <figure>
   <img src="/web/updates/images/2018/01/webp.png"
@@ -93,5 +71,3 @@ Nhờ có một số [community feedback][feedback] , [WebP audit][webp] bây gi
 </figure>
 
 {% include "web/_shared/rss-widget-updates.html" %}
-
-{% include "web/_shared/translation-end.html" %}
