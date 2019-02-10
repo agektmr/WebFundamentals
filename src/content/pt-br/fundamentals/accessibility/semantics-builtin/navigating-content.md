@@ -1,74 +1,33 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: A função da semântica na navegação de páginas
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: The role of semantics in page navigation
 
+{# wf_blink_components: Blink>Accessibility #} {# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2016-10-04 #}
 
-{# wf_updated_on: 2017-07-12 #}
-{# wf_published_on: 2016-10-04 #}
+# Semantics and Navigating Content {: .page-title }
 
-# A semântica e a navegação de conteúdo {: .page-title }
+{% include "web/_shared/contributors/megginkearney.html" %} {% include "web/_shared/contributors/dgash.html" %} {% include "web/_shared/contributors/aliceboxhall.html" %}
 
-{% include "web/_shared/contributors/megginkearney.html" %}
-{% include "web/_shared/contributors/dgash.html" %}
-{% include "web/_shared/contributors/aliceboxhall.html" %}
+You've learned about affordances, semantics, and how assistive technologies use the accessibility tree to create an alternative user experience for their users. You can see that writing expressive, semantic HTML gives you a lot of accessibility with very little effort, as many standard elements have both the semantics and supporting behavior built in.
 
+In this lesson we'll cover some less obvious semantics that are very important to screen reader users, especially as regards navigation. In a simple page with lots of controls but not much content, it's easy to scan the page to find what you need. But on a content-heavy page, such as a Wikipedia entry or a news aggregator, it's not practical to read through everything from the top down; you need a way to efficiently navigate through the content.
 
+Developers often have the misconception that screen readers are tedious and slow to use, or that everything on the screen has to be focusable for the screen reader to find it. That's often not the case.
 
-Você já aprendeu sobre affordances, semântica e como as tecnologias assistivas usam
-a árvore de acessibilidade para criar uma experiência alternativa para seus usuários.
-Como você pode ver, programar um HTML semântico e expressivo proporciona
-muita acessibilidade sem exigir muito esforço, pois muitos elementos padrão têm
-a semântica e o comportamento de suporte incorporados.
+Screen reader users often rely on a list of headings to locate information. Most screen readers have easy ways to isolate and scan a list of page headings, an important feature called the *rotor*. Let's see how we can use HTML headings effectively to support this feature.
 
-Nesta lição, abordaremos algumas das semânticas menos óbvias que são muito importantes para usuários
-de leitores de tela, especialmente em termos de navegação. Em uma página simples com
-muitos controles, mas pouco conteúdo, é fácil procurar o que
-você precisa. No entanto, em uma página com muito conteúdo, como uma entrada da Wikipédia ou um agregador
-de notícias, não é prático ler todo o conteúdo da página. É preciso
-encontrar uma maneira eficiente de navegar pelo conteúdo.
+## Using headings effectively
 
-Os desenvolvedores frequentemente têm a concepção errada de que leitores de tela são lentos e tediosos
-de usar, ou que todos os elementos da tela precisam ser focáveis para que o leitor
-de tela os encontrem. Esse frequentemente não é o caso.
+First, let's reiterate an earlier point: [*DOM order matters*](/web/fundamentals/accessibility/focus/dom-order-matters), not only for focus order but for screen reader order. As you experiment with screen readers like VoiceOver, NVDA, JAWS, and ChromeVox, you'll find the heading list follows the DOM order rather than the visual order.
 
-Os usuários de leitores de tela muitas vezes usam uma lista de cabeçalhos para localizar informações. A maioria
-dos leitores de tela tem maneiras fáceis de isolar e analisar uma lista de cabeçalhos de páginas, um
-importante recurso chamado *rotor*. Vejamos como usar cabeçalhos HTML
-de forma eficaz para oferecer suporte a esse recurso.
+This is true for screen readers in general. Because screen readers interact with the accessibility tree, and the accessibility tree is based on the DOM tree, the order a screen reader perceives is thus directly based on the DOM order. This means that an appropriate heading structure is more important than ever.
 
-## Usar cabeçalhos de forma eficaz
+In most well-structured pages, the heading levels are nested to indicate parent-child relationships among content blocks. The [WebAIM checklist](http://webaim.org/standards/wcag/checklist) repeatedly refers to this technique.
 
-Primeiramente, vamos enfatizar um conceito que vimos antes: [*a ordem do DOM
-é importante*](/web/fundamentals/accessibility/focus/dom-order-matters), não só para a
-ordem do foco, mas também para a ordem do leitor de tela. Conforme você experimenta com leitores de tela
-como o VoiceOver, o NVDA, o JAWS e o ChromeVox, você descobrirá que a lista de cabeçalhos segue
-a ordem do DOM, não a ordem visual.
+- [1.3.1](http://webaim.org/standards/wcag/checklist#sc1.3.1){: .external } mentions "Semantic markup is used to designate headings"
+- [2.4.1](http://webaim.org/standards/wcag/checklist#sc2.4.1){: .external } mentions heading structure as a technique for bypassing blocks of content
+- [2.4.6](http://webaim.org/standards/wcag/checklist#sc2.4.6){: .external } discusses some details for writing useful headings
+- [2.4.10](http://webaim.org/standards/wcag/checklist#sc2.4.10){: .external } states "individual sections of content are designated using headings, where appropriate"
 
-Isso é válidos para leitores de tela de uma forma geral. Como os leitores de tela interagem com
-a árvore de acessibilidade e ela é baseada na árvore de DOM, a ordem
-que o leitor identifica é baseada diretamente no DOM. Isso
-significa que uma estrutura de cabeçalhos apropriada é mais importante do que nunca.
-
-Na maioria das páginas bem estruturadas, os níveis dos cabeçalhos são aninhados para indicar relações
-de pai-filho entre os blocos de conteúdo. A [lista de verificação
-WebAIM](http://webaim.org/standards/wcag/checklist) menciona essa técnica
-várias vezes.
-
- - [1.3.1](http://webaim.org/standards/wcag/checklist#sc1.3.1){: .external }
- indica que “a marcação semântica é usada para designar cabeçalhos”
- - [2.4.1](http://webaim.org/standards/wcag/checklist#sc2.4.1){: .external }
- menciona que a estrutura de cabeçalhos é uma técnica para ignorar
- blocos de conteúdo
- - [2.4.6](http://webaim.org/standards/wcag/checklist#sc2.4.6){: .external }
- discute alguns detalhes sobre como escrever cabeçalhos úteis
- - [2.4.10](http://webaim.org/standards/wcag/checklist#sc2.4.10){: .external }
- declara que “seções individuais de conteúdo são designadas usando cabeçalhos,
- quando apropriado”
-
-Nem todos os cabeçalhos precisam estar visíveis na tela.
-A [Wikipédia](https://www.wikipedia.org/), por exemplo, usa uma técnica que
-propositalmente posiciona alguns cabeçalhos fora da tela para torná-los especificamente
-acessíveis *apenas* para leitores de tela e outras tecnologias assistivas.
+Not all headings have to be visible on-screen. [Wikipedia](https://www.wikipedia.org/), for instance, uses a technique that deliberately places some headings off-screen to specifically make them accessible *only* to screen readers and other assistive technology.
 
     <style>
       .sr-only {
@@ -80,83 +39,42 @@ acessíveis *apenas* para leitores de tela e outras tecnologias assistivas.
         overflow:hidden;
       }
     </style>
-
+    
     <h2 class="sr-only">This heading is offscreen.</h2>
+    
 
-Observação: o site WebAIM discute essa técnica extensivamente [neste
-artigo sobre conteúdo fora da tela](http://webaim.org/techniques/css/invisiblecontent/).
+Note: The WebAIM site discusses this technique at length in [this article on offscreen content](http://webaim.org/techniques/css/invisiblecontent/).
 
-Para aplicativos completos, essa pode ser uma boa forma de acomodar cabeçalhos quando
-o design visual não exige ou tem espaço para um cabeçalho visível.
+For complex applications, this can be a good way to accommodate headings when the visual design doesn't require or have room for a visible heading.
 
-Warning: é importante ser comedido ao usar essa técnica. Lembre-se de que
-usuários de tecnologias assistivas também podem conseguir enxergar a tela, então
-exagerar ao tentar criar um conteúdo “apenas para leitores de tela” pode
-acabar prejudicando a experiência de alguns usuários. Isso também pode criar
-problemas de manutenção para você posteriormente.
+Caution: It's important not to go overboard with this technique. Remember that assistive technology users may also be able to see the screen for themselves, so going too far down the path of creating "screen reader only" content may actually degrade the user experience for some users. It can also create a maintenance headache for you later.
 
-## Outras opções de navegação
+## Other navigation options
 
-Apesar de páginas com bons cabeçalhos ajudarem usuários de leitores de tela a navegar, existem
-outros elementos que podem ser usados para navegar por uma página, incluindo*links*, *controles
-de forma* e *marcos*.
+Although pages with good headings help screen reader users navigate, there are other elements they can use to move around a page, including *links*, *form controls*, and *landmarks*.
 
-Os leitores podem usar o recurso de rotor do leitor de tela (uma maneira fácil de isolar e
-analisar uma lista de cabeçalhos de página) para acessar uma *lista de links* na página.
-Às vezes, um wiki contém muitos links, portanto, o leitor poderá procurar
-por um termo dentro dos links. Isso limita os resultados a links que realmente contêm o
-termo em vez de mostrar todas as ocorrências do termo na página.
+Readers can use the screen reader's rotor feature (an easy way to isolate and scan a list of page headings) to access a *list of links* on the page. Sometimes, as on a wiki, there are many links, so the reader might search for a term within the links. This limits the hits to links that actually contain the term, rather than every occurrence of the term on the page.
 
-Esse recurso é útil apenas se o leitor de tela puder encontrar os links e o texto dos
-links for significativo. Por exemplo, existem alguns padrões comuns que tornam os links
-difíceis de encontrar.
+This feature is useful only if the screen reader can find the links and the link text is meaningful. For example, here are some common patterns that make links hard to find.
 
- - Tags de âncora sem atributos `href`. Frequentemente usadas em aplicativos de
- uma página, esses destinos de link causam problemas para leitores de tela. Você pode
- ler mais a respeito [neste artigo sobre aplicativos de uma página](http://neugierig.org/software/blog/2014/02/single-page-app-links.html).
- - Botões implementados com links. Eles fazem com que o leitor de tela
- interprete o conteúdo como um link e a funcionalidade de botão é perdida. Para
- esses casos, substitua a tag de âncora por um botão de verdade e escolha um estilo
- apropriado para ele.
- - Imagem usada como conteúdo de link. Às vezes necessárias, imagens com links podem
- ser inutilizáveis para leitores de tela. Para garantir que o link seja corretamente exposto à
- tecnologia assistiva, garanta que a imagem tenha o texto de atributo `alt`.
+- Anchor tags without `href` attributes. Often used in single-page applications, these link targets cause problems for screen readers. You can read more in [this article on single-page apps](http://neugierig.org/software/blog/2014/02/single-page-app-links.html).
+- Buttons that are implemented with links. These cause the screen reader to interpret the content as a link, and the button functionality is lost. For these cases, replace the anchor tag with a real button and style it appropriately.
+- Images used as link content. Sometimes necessary, linked images can be unusable to screen readers. To guarantee that the link is properly exposed to assistive technology, make sure the image has `alt` attribute text.
 
-O texto de link inapropriado é outro problema. Expressões clicáveis como “saiba mais” ou “clique
-aqui” não fornecem informações semânticas sobre o destino do link. Em vez disso, use
-um texto descritivo como “saiba mais sobre o design responsivo” ou “consulte este tutorial
-sobre canvas” para ajudar os leitores de tela a fornecer conteúdo significativo sobre os links.
+Poor link text is another problem. Clickable text such as "learn more" or "click here" provides no semantic information about where the link goes. Instead, use descriptive text like "learn more about responsive design" or "see this canvas tutorial" to help screen readers provide meaningful context about links.
 
-O rotor também pode recuperar uma *lista de controles de forma*. Com essa lista, os leitores podem
-pesquisar itens específicos e ir diretamente a eles.
+The rotor can also retrieve a *form control list*. Using this list, readers can search for specific items and go directly to them.
 
-Um erro comum cometido por leitores de tela é a pronúncia. Por exemplo, um leitor
-de tela pode pronunciar "Udacity" como "oo-dacity", ou ler um número de telefone
-como um número inteiro longo, ou mesmo ler texto em maiúsculas como se ele fosse um acrônimo.
-O interessante é que os usuários de leitores de tela estão muito acostumados com essa peculiaridade e a levam em
-consideração.
+A common error that screen readers make is pronunciation. For example, a screen reader might pronounce "Udacity" as "oo-dacity", or read a phone number as a large integer, or read capitalized text as though it were an acronym. Interestingly, screen reader users are quite used to this quirk and take it into consideration.
 
-Alguns desenvolvedores tentam amenizar essa situação fornecendo textos exclusivos para leitores de tela
-com ortografia fonética. Uma regra simples para a ortografia fonética:
-**evite-a**! Ela apenas piora a situação. Se, por exemplo, um usuário estiver usando
-um terminal braille, a palavra estará escrita incorretamente, causando mais
-confusão. Leitores de tela permitem que as palavras sejam soletradas, então deixe que o
-usuário controle sua experiência e decida quando isso é necessário.
+Some developers try to ameliorate this situation by providing screen-reader-only text that is spelled phonetically. Here's a simple rule for phonetic spelling: **don't do it**; it only makes the problem worse! If, for example, a user is using a braille display, the word will be spelled incorrectly, leading to more confusion. Screen readers allow words to be spelled aloud, so leave it to the reader to control their experience and decide when this is necessary.
 
-Os leitores podem usar o rotor para ver uma *lista de marcos*. Essa lista os ajuda
-a encontrar o conteúdo principal e definir um conjunto de marcos de navegação fornecidos pelos elementos de marcos
-HTML.
+Readers can use the rotor to see a *landmarks list*. This list helps readers find the main content and a set of navigational landmarks provided by HTML landmark elements.
 
-O HTML5 introduziu alguns novos elementos para ajudar a definir a estrutura semântica da
-página, incluindo `header`, `footer`, `nav`, `article`, `section`, `main` e
-`aside`. Esses elementos especificamente fornecem indicações estruturais na página
-sem forçar estilos incorporados (o que é obrigatório no CSS).
+HTML5 introduced some new elements that help define the semantic structure of the page, including `header`, `footer`, `nav`, `article`, `section`, `main`, and `aside`. These elements specifically provide structural clues in the page without forcing any built-in styling (which you should do with CSS anyway).
 
-Elementos estruturais semânticos substituem o uso de vários blocos `div` repetitivos e oferecem
-uma maneira mais clara e descritiva de expressar a estrutura da página
-intuitivamente para autores e leitores.
+Semantic structural elements replace multiple, repetitive `div` blocks, and provide a clearer, more descriptive way to intuitively express page structure for both authors and readers.
 
+## Feedback {: #feedback }
 
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
