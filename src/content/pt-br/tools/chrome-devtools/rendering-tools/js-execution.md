@@ -1,148 +1,102 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Identifique funções pesadas usando o criador de perfis de CPU do Chrome DevTools.
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Identify expensive functions using the Chrome DevTools CPU Profiler.
 
-{# wf_updated_on: 2016-03-30 #}
-{# wf_published_on: 2015-04-13 #}
+{# wf_updated_on: 2018-07-27 #} {# wf_published_on: 2015-04-13 #} {# wf_blink_components: Platform>DevTools #}
 
-# Acelerar a execução do JavaScript {: .page-title }
+# Speed Up JavaScript Execution {: .page-title }
 
-{% include "web/_shared/contributors/kaycebasques.html" %}
-{% include "web/_shared/contributors/megginkearney.html" %}
+{% include "web/_shared/contributors/kaycebasques.html" %} {% include "web/_shared/contributors/megginkearney.html" %}
 
-Identifique funções pesadas usando o criador de perfis de CPU 
-do Chrome DevTools.
+Identify expensive functions using the Chrome DevTools CPU Profiler.
 
-![perfil de CPU](imgs/cpu-profile.png)
-
+![CPU profile](imgs/cpu-profile.png)
 
 ### TL;DR {: .hide-from-toc }
-- Registre exatamente que funções foram chamadas e quanto tempo cada uma levou com o criador de perfis de CPU.
-- Visualize seus perfis como uma diagrama de chamas.
 
+* Record exactly which functions were called and how long each took with the CPU Profiler.
+* Visualize your profiles as a flame chart.
 
-## Gravar um perfil de CPU {:#record-profile}
+## Record a CPU profile {:#record-profile}
 
-Se você notar instabilidade no JavaScript, colete um perfil de CPU de JavaScript.
-Os perfis de CPU mostram onde o tempo de execução é gasto nas funções da página.
+If you’re noticing jank in your JavaScript, collect a JavaScript CPU profile. CPU profiles show where execution time is spent in your page’s functions.
 
-1. Acesse o painel **Profiles** de DevTools.
-2. Selecione o botão de opção **Collect JavaScript CPU Profile**.
-3. Pressione **Start**.
-4. Dependendo do que você estiver tentando analisar, poderá recarregar a 
-   página, interagir com ela, ou simplesmente deixar ela ser executada.
-5. Pressione o botão **Stop** quando acabar. 
+1. Go to the **Profiles** panel of DevTools.
+2. Select the **Collect JavaScript CPU Profile** radio button.
+3. Press **Start**. 
+4. Depending on what you are trying to analyze, you can either reload the page, interact with the page, or just let the page run.
+5. Press the **Stop** button when you are finished. 
 
-Você também pode usar a [Command Line API][profile] para gravar e agrupar perfis 
-na linha de comando.
+You can also use the [Command Line API](/web/tools/chrome-devtools/debug/command-line/command-line-reference#profilename-and-profileendname) to record and group profiles from the command line.
 
-[profile]: /web/tools/chrome-devtools/debug/command-line/command-line-reference#profilename-and-profileendname
+## View CPU profile {:#view-profile}
 
-## Visualizar o perfil de CPU {:#view-profile}
+When you finish recording, DevTools automatically populates the Profile panel with the data from your recording.
 
-Quando você encerrar a gravação, o DevTools preencherá automaticamente o painel Profile
-com os dados da gravação. 
+The default view is **Heavy (Bottom Up)**. This view enables you to see which functions had the most impact on performance and examine the calling paths to those functions.
 
-A vista padrão é **Heavy (Bottom Up)**. Esta vista permite saber 
-que funções produzem maior impacto no desempenho e examinar os caminhos
-de chamada dessas funções. 
+### Change sort order {:#sort}
 
-### Alterar ordenação {:#sort}
+To change the sorting order, click on the dropdown menu next to the **focus selected function** icon (![focus selected function icon](imgs/focus.png){:.inline}) and then choose one of the following options:
 
-Para alterar a ordenação, clique no menu suspenso perto do ícone de 
-**foco na função selecionada**
-(![ícone de foco na função selecionada](imgs/focus.png){:.inline}) 
-e, em seguida, escolha uma das opções a seguir:
+**Chart**. Displays a chronological flame chart of the recording.
 
-**Chart**. Exibe um diagrama de chamas cronológico da gravação.
+![flame chart](imgs/flamechart.png)
 
-![diagrama de chamas](imgs/flamechart.png)
+**Heavy (Bottom Up)**. Lists functions by impact on performance and enables you to examine the calling paths to the functions. This is the default view.
 
-**Heavy (Bottom Up)**. Lista as funções de acordo com o impacto no desempenho e permite
-examinar os caminhos de chamada delas. Essa é a visualização padrão. 
+![heavy chart](imgs/heavy.png)
 
-![gráfico heavy](imgs/heavy.png)
+**Tree (Top Down)**. Shows an overall picture of the calling structure, starting at the top of the call stack.
 
-**Tree (Top Down)**. Mostra uma imagem geral da estrutura de chamada, 
-começando pela parte superior da pilha de chamadas. 
+![tree chart](imgs/tree.png)
 
-![gráfico tree](imgs/tree.png)
+### Exclude functions {:#exclude}
 
-### Excluir funções {:#exclude}
+To exclude a function from your CPU profile, click on it to select it and then press the **exclude selected function** icon (![exclude function icon](imgs/exclude.png){:.inline}). The caller of the excluded function is charged with the excluded function's total time.
 
-Para excluir uma função do perfil de CPU, clique nela para selecioná-la e 
-pressione o ícone de **excluir função selecionada** 
-(![exclude function icon](imgs/exclude.png){:.inline}). O autor da chamada da 
-função excluída é cobrado pelo tempo total da função excluída.
+Click the **restore all functions** icon (![restore all functions icon](imgs/restore.png){:.inline}) to restore all excluded functions back into the recording.
 
-Clique no ícone de **restaurar todas as funções** 
-(![ícone de restaurar todas as funções](imgs/restore.png){:.inline})
-para restaurar todas as funções excluídas à gravação.
+## View CPU profile as Flame Chart {:#flame-chart}
 
-## Visualizar perfil de CPU como diagrama de chamas {:#flame-chart}
+The Flame Chart view provides a visual representation of the CPU profile over time.
 
-A visualização Flame Chart oferece uma representação visual do perfil da CPU ao longo
-do tempo.
+After [recording a CPU profile](#record-profile), view the recording as a flame chart by [changing the sort order](#sort) to **Chart**.
 
-Após [gravar um perfil de CPU](#record-profile), visualize a gravação como 
-diagrama de chamas [alterando a ordenação](#sort) para **Chart**.
+![Flamechart view](imgs/flamechart.png)
 
-![Visualização Flame Chart](imgs/flamechart.png)
+The flame chart is split into two parts:
 
-O diagrama de chamas é dividido em duas partes:
+1. **Overview**. A birds-eye view of the entire recording. The height of the bars correspond to the depth of the call stack. So, the higher the bar, the deeper the call stack.
 
-1. **Overview**. Uma vista "aérea" de toda a gravação.
-   A altura das barras corresponde à profundidade da 
-   pilha de chamadas. Assim, quanto mais alta a barra, mais profunda a pilha de chamadas. 
+2. **Call Stacks**. This is an in-depth view of the functions that were called during the recording. The horizontal axis is time and vertical axis is the call stack. The stacks are organized top-down. So, the function on top called the one below it, and so on.
+    
+    Functions are colored randomly. There is no correlation to the colors used in the other panels. However, functions are always colored the same across invocations so that you can see patterns of executions.
 
-2. **Call Stacks**. Esta é uma vista detalhada das funções que foram chamadas 
-   durante a gravação. O eixo horizontal é o tempo e o vertical, 
-   a pilha de chamadas. As pilhas são organizadas de cima para baixo. Assim, a função no topo
-   chamou a logo abaixo dela, e assim por diante. 
+![annotated flame chart](imgs/annotated-cpu-flame.png)
 
-   As funções são coloridas aleatoriamente. Não há correlação com as cores usadas
-   em outros painéis. No entanto, as funções são sempre coloridas igualmente
-  entre as invocações para que você possa ver os padrões de execução. 
+A tall call stack is not necessarily significant, it just means that a lot of functions were called. But a wide bar means that a call took a long time to complete. These are candidates for optimization.
 
-![diagrama de chamas anotado](imgs/annotated-cpu-flame.png)
+### Zoom in on specific parts of recording {:#zoom}
 
-Uma pilha de chamadas alta não é necessariamente significativa. Isso significa apenas que muitas
-funções foram chamadas. Mas uma barra larga significa que uma pilha levou muito tempo para 
-ser concluída. Essa é uma das candidatas a otimização. 
+Click, hold, and drag your mouse left and right across the overview to zoom in on particular parts of the call stack. After you zoom, the call stack automatically displays the portion of the recording that you've selected.
 
-### Aumentar o zoom em partes específicas da gravação {:#zoom}
+![flame chart zoomed](imgs/benchmark-zoom.png)
 
-Clique, mantenha e arraste o mouse para a direita e para a esquerda no overview para aproximar a vista
-em partes específicas da pilha de chamadas. Depois de aumentar o zoom, a pilha de chamadas 
-exibirá automaticamente a parte da gravação que você selecionou.
+### View function details {:#flame-chart-function-details}
 
-![diagrama de chamas com zoom aumentado](imgs/benchmark-zoom.png)
+Click on a function to view its definition in the **Sources** panel.
 
-### Visualizar detalhes da função {:#flame-chart-function-details}
+Hover over a function to display its name and timing data. The following information is provided:
 
-Clique em uma função para visualizar sua definição no painel **Sources**.
+* **Name**. The name of the function.
+* **Self time**. How long it took to complete the current invocation of the function, including only the statements in the function itself, not including any functions that it called.
+* **Total time**. The time it took to complete the current invocation of this function and any functions that it called.
+* **URL**. The location of the function definition in the form of `file.js:100` where `file.js` is the name of the file where the function is defined and `100` is the line number of the definition.
+* **Aggregated self time**. Aggregate time for all invocations of the function across the recording, not including functions called by this function.
+* **Aggregated total time**. Aggregate total time for all invocations of the function, including functions called by this function.
+* **Not optimized**. If the profiler has detected a potential optimization for the function it lists it here.
 
-Passe o cursor sobre uma função para exibir seu nome e dados de sincronização. As informações
-a seguir são fornecidas: 
+![viewing functions details in flame chart](imgs/details.png)
 
-*  **Name**. O nome da função.
-*  **Self time**. Quanto tempo levou para concluir a invocação atual da 
-   função, incluindo somente as declarações da própria função, não 
-   incluindo as funções que ela chamou.
-*  **Total time**. O tempo gasto para concluir a invocação atual desta 
-   função e de todas as funções que ela chamou.
-*  **URL**. O local da definição da função na forma de 
-   `file.js:100`, em que `file.js` é o nome do arquivo onde a função
-   foi definida e `100` é o número da linha da definição.
-*  **Aggregated self time**. Tempo agregado de todas as invocações da 
-   função durante a gravação, excluindo funções chamadas por essa 
-   função.
-*  **Aggregated total time**. Tempo total agregado de todas as invocações da 
-   função, incluindo funções chamadas por essa função.
-*  **Not optimized**. Se o criador de perfis detectou uma possível otimização
-   para a função, a listará aqui.
+## Feedback {: #feedback }
 
-![visualizar detalhes de funções no diagrama de chamas](imgs/details.png)
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
