@@ -1,584 +1,241 @@
-project_path: /web/fundamentals/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: HTTP/2 (o h2) es un protocolo binario que ofrece transmisiones de multiplexación insertadas y control de marcos a la Web.
-
-{# wf_updated_on: 2019-02-06 #}
-{# wf_published_on: 2016-09-29 #}
-{# wf_blink_components: Blink>Network,Internals>Network>HTTP2 #}
-
-# Introducción a HTTP/2 {: .page-title }
-
-{% include "web/_shared/contributors/ilyagrigorik.html" %}
-{% include "web/_shared/contributors/surma.html" %}
-
-Note: El siguiente contenido es un extracto de [High Performance Browser
-Networking](http://shop.oreilly.com/product/0636920028048.do) (Redes de navegadores de alto rendimiento) de Ilya
-Grigorik (O'Reilly). Para conocer la versión completa y el contenido relacionado, consulta
-[hpbn.co](https://hpbn.co/){: .external }.
-
-HTTP/2 hará que nuestras apps sean más veloces, más simples y más sólidas —una combinación
-extraña— al permitirnos deshacernos de los numerosos métodos alternativos de HTTP/1.1 aplicados anteriormente
-dentro de nuestras apps y abordar estas inquietudes en la capa
-de transporte. Mejor aún, también abre un abanico de oportunidades
-totalmente nuevas para optimizar nuestras apps y mejorar el rendimiento.
-
-Los objetivos principales de HTTP/2 son reducir la latencia permitiendo una multiplexación completa de solicitudes y
-respuestas, minimizar la sobrecarga de protocolo mediante una compresión eficiente de
-campos de encabezados de HTTP y agregar compatibilidad con la priorización de solicitudes y push de servidor.
-Con el fin de implementar estos requisitos, existe una vasta serie de otras
-mejoras de protocolo, como nuevos mecanismos de control de flujo, manejo de errores y actualizaciones
-, pero estas son las funciones más importantes que todo programador web
-debe entender y aprovechar en sus aplicaciones.
-
-HTTP/2 de ningún modo modifica la semántica de app de HTTP. Todos los
-conceptos centrales, como los métodos de HTTP, códigos de estado, URIs y campos de encabezados,
-permanecen vigentes. Por otra parte, HTTP/2 modifica el modo en que los datos se formatean (entraman) y
-se transportan entre el cliente y el servidor (ambos administran el proceso
-completo) y oculta toda complejidad de nuestras apps dentro de la nueva
-capa de entramado. En consecuencia, todas las apps existentes pueden proporcionarse sin
-ninguna modificación.
-
-*¿Por qué no HTTP/1.2?*
-
-A fin de lograr las metas de rendimiento fijadas por el Grupo de Trabajo de HTTP, HTTP/2
-introduce una nueva capa de entramado binario que no es compatible con
-servidores y clientes de HTTP/1.x anteriores, por ende, la versión de protocolo principal se incrementa
-hasta HTTP/2.
-
-Dicho esto, a menos que implementes un servidor web (o un cliente personalizado) mediante
-sockets de TCP sin procesar, no verás ninguna diferencia: todo el nuevo
-entramado de bajo nivel es realizado por el cliente y el servidor en tu nombre. Las únicas
-diferencias observables serán un rendimiento mejorado y la disponibilidad de
-capacidades nuevas, como priorización de solicitudes, control de flujo y servidor push.
-
-## Breve historia de SPDY y HTTP/2
-
-SPDY era un protocolo experimental desarrollado en Google y anunciado a
-mediados de 2009, cuya meta principal consistía en tratar de reducir la latencia de carga de las páginas web
-abordando algunas de las limitaciones de rendimiento conocidas de HTTP/1.1.
-Específicamente, las metas trazadas para el proyecto se fijaron de la siguiente manera:
-
-* Apuntar a una reducción del 50% en el tiempo de carga de la página (PLT).
-* Evitar la necesidad de que los autores del sitio web efectúen cambios en el contenido.
-* Minimizar la complejidad de implementación y evitar cambios en la infraestructura de red.
-* Desarrollar este protocolo nuevo en colaboración con la comunidad de código abierto.
-* Reunir datos de rendimiento reales para (in)validar el protocolo experimental.
-
-Note: A fin de lograr una mejora de tiempo de carga de la página en un 50%, SPDY aspiró a realizar un uso más eficiente
-de la conexión de TCP subyacente introduciendo una nueva capa de enmarcado binario para
-habilitar la multiplexación de solicitudes y respuestas, la priorización y la compresión
-de encabezados; consulta
-[Latency as a Performance Bottleneck](https://hpbn.co/primer-on-web-performance/#latency-as-a-performance-bottleneck) (La latencia como cuello de botella){: .external}.
-
-Poco tiempo después del anuncio inicial, Mike Belshe y Roberto Peon,
-ingenieros de software de Google, compartieron sus primeros resultados, la documentación y
-el código fuente para la implementación experimental del nuevo protocolo SPDY:
-
-> Hasta ahora, solo hicimos pruebas en laboratorio de SPDY. Los resultados iniciales son
-> muy alentadores: cuando descargamos los 25 sitios web principales mediante conexiones de red hogareñas
-> simuladas, vimos una mejora significativa en el rendimiento: las páginas
-> se cargaron hasta un 55% más rápido.
-> [*(Blog de Chromium)*](https://blog.chromium.org/2009/11/2x-faster-web.html)
-
-Haciendo un salto hasta 2012, el nuevo protocolo experimental era compatible con Chrome,
-Firefox y Opera. Además, una cantidad cada vez mayor de sitios, tanto grandes (por ejemplo,
-Google, Twitter, Facebook) como pequeños, implementaban SPDY dentro de su
-infraestructura. De hecho, SPDY estaba encaminado para convertirse en un estándar de facto
-mediante la creciente adopción por parte de la industria.
-
-Al observar esta tendencia, el Grupo de Trabajo de HTTP (HTTP-WG) lanzó un nuevo
-esfuerzo para considerar lo aprendido con SPDY, aprovecharlo y mejorar en base a ello, y
-ofrecer un estándar "HTTP/2" oficial. Se redactó el borrador de una nueva carta, se realizó una convocatoria abierta
-para propuestas de HTTP/2 y, después de un extenso debate dentro del grupo
-de trabajo, la especificación de SPDY se adoptó como punto de partida para el nuevo protocolo
-HTTP/2.
-
-En los años siguientes SPDY y HTTP/2 continuaron evolucionando en paralelo:
-SPDY actuaba como una parte experimental que se usaba para probar funciones
-y propuestas nuevas para el estándar HTTP/2. Lo que parece bien en la teoría puede que no funcione
-en la práctica y viceversa, y SPDY ofreció una vía para probar y evaluar cada
-propuesta antes de su inclusión en el estándar HTTP/2. Finalmente, este proceso
-duró tres años y dio como resultado más de una docena de borradores intermedios:
-
-* Marzo de 2012: Convocatoria de propuestas para HTTP/2
-* Noviembre de 2012: Primer borrador de HTTP/2 (basado en SPDY)
-* Agosto de 2014: Se publicaron el borrador 17 de HTTP/2 y el borrador 12 de HPACK
-* Agosto de 2014: Última reunión del grupo de trabajo para HTTP/2
-* Febrero de 2015: IESG aprobó los borradores de HTTP/2 y HPACK
-* Mayo de 2015: Se publicaron RFC 7540 (HTTP/2) y RFC 7541 (HPACK)
-
-A principios de 2015, IESG revisó y aprobó el nuevo estándar HTTP/2 para su
-publicación. Poco tiempo después, el equipo de Google Chrome anunció su plan
-de dejar a SPDY y la extensión NPN para TLS en desuso:
-
-> Los principales cambios de HTTP/2 en comparación con HTTP/1.1 se centran en un rendimiento mejorado. Algunas funciones
-> clave como multiplexación, compresión de encabezados, priorización y negociación de
-> protocolo evolucionaron a partir del trabajo realizado en un anterior protocolo de código abierto pero no estándar
-> llamado SPDY. Chrome ha sido compatible con SPDY a partir de Chrome 6 pero, dado que la mayoría
-> de los beneficios están presentes en HTTP/2, ya es hora de despedirse. Tenemos planeado
-> quitar la compatibilidad con SPDY a principios de 2016 y también quitar la compatibilidad con la extensión
-> TLS llamada NPN a favor de ALPN en Chrome al mismo tiempo. Se recomienda con vehemencia a los programadores de
-> servidores que pasen a HTTP/2 y ALPN.
->
-> Nos complace haber contribuido al proceso de estándares abiertos que dio como resultado
-> HTTP/2 y esperamos ver una adopción masiva, dada la amplia participación de la industria para
-> la estandarización y la implementación. [*(Blog de
-> Chromium)*](https://blog.chromium.org/2015/02/hello-http2-goodbye-spdy.html)
-
-La evolución conjunta de SPDY y HTTP/2 permitió que los programadores de servidores, navegadores y sitios
-adquirieran experiencia en el mundo real con el nuevo protocolo a medida que se desarrollaba.
-En consecuencia, el estándar HTTP/2 es uno de los mejores estándares y de los más probados
-desde el principio. En el momento en que IESG aprobó HTTP/2,
-existían docenas de implementaciones para clientes y servidores completamente probadas y listas para
-producción. De hecho, unas pocas semanas después de que se aprobara el protocolo final, muchos
-usuarios ya gozaban de los beneficios, dado que varios navegadores populares (y muchos
-sitios) implementaron una compatibilidad total con HTTP/2.
-
-## Metas técnicas y de diseño
-
-Las versiones anteriores del protocolo HTTP se diseñaron de manera intencional a fin de lograr la simplicidad
-de implementación: HTTP/0.9 era un protocolo de una línea para arrancar la World Wide
-Web; HTTP/1.0 documentó las populares extensiones a HTTP/0.9 en un estándar
-informativo; HTTP/1.1 introdujo un estándar IETF oficial; consulta
-[Brief History of HTTP](https://hpbn.co/brief-history-of-http/){: .external} (Breve historia de HTTP).
-Como tal, HTTP/0.9-1.x ofreció exactamente lo que se proponía: HTTP es uno de
-los protocolos de aplicaciones más masivamente adoptados en Internet.
-
-Desafortunadamente, la simplicidad de implementación también perjudicó el rendimiento de la
-app: los clientes de HTTP/1.x necesitan conexiones múltiples para lograr
-concurrencia y reducir la latencia; HTTP/1.x no comprime los encabezados de solicitudes y
-respuestas, lo que provoca un tráfico de red innecesario; HTTP/1.x no permite una priorización de recursos
-efectiva, lo que produce el uso deficiente de la conexión de TCP subyacente;
-etc.
-
-Estas limitaciones no eran graves pero, dado que las apps web continuaban aumentando
-su alcance, complejidad e importancia en nuestras vidas diarias, imponían una
-carga cada vez mayor tanto a los programadores como a los usuarios de la Web, precisamente para abordar esa brecha es que
-se creó a HTTP/2:
-
-> HTTP/2 habilita un uso más eficiente de los recursos de red y una reducida
-> percepción de la latencia introduciendo la compresión de campos de encabezados y permitiendo
-> múltiples intercambios simultáneos en la misma conexión. Específicamente, permite
-> que los mensajes de solicitudes y respuestas se intercalen en la misma conexión y utiliza una
-> codificación eficiente para los campos de encabezados de HTTP. Asimismo, permite la priorización de
-> solicitudes, que hace que las solicitudes más importantes se completen con mayor rapidez y, de esta manera, mejora
-> aún más el rendimiento.
->
-> El protocolo resultante se adapta mejor a la red, ya que se pueden utilizar menos conexiones de TCP
-> en comparación con HTTP/1.x. Esto significa menos competencia
-> con otros flujos y conexiones con mayor duración que, a su vez, resulta en una mejor
-> utilización de la capacidad de red disponible. Por último, HTTP/2 también habilita un procesamiento de mensajes más
-> eficiente a través del enmarcado de mensajes binario.
-> [*(Versión 2 del protocolo de transferencia de hipertexto, borrador
-> 17).*](https://tools.ietf.org/html/draft-ietf-httpbis-http2-17)
-
-
-Es importante observar que HTTP/2 extiende y no reemplaza a los estándares
-HTTP anteriores. La semántica de app de HTTP es la misma y no se realizó ningún cambio
-en la funcionalidad ofrecida ni en los conceptos centrales tales como métodos de HTTP,
-códigos de estado, URIs y campos de encabezados. Estos cambios estaban explícitamente fuera del alcance
-del esfuerzo HTTP/2. Dicho esto, mientras la API de alto nivel sigue siendo la misma,
-es importante entender cómo los cambios de bajo nivel abordan las limitaciones
-de rendimiento de los protocolos anteriores. Hagamos un breve recorrido por la capa
-de enmarcado binario y sus funciones.
-
-## Capa de enmarcado binario
-
-En el centro de todas las mejoras de rendimiento de HTTP/2 se encuentra la nueva capa de enmarcado
-binario, que determina la forma en que los mensajes de HTTP se encapsulan y se transfieren
-entre el cliente y el servidor.
-
-![Capa de enmarcado binario de HTTP/2](images/binary_framing_layer01.svg)
-
-La "capa" se refiere a una elección de diseño para introducir un nuevo mecanismo de codificación optimizado
-entre la interfaz del socket y la API de HTTP superior expuesta a nuestras
-aplicaciones: la semántica de HTTP, como verbos, métodos y encabezados, no se ven
-afectados; lo que difiere es la forma en que se codifican mientras están en tránsito.
-A diferencia del protocolo HTTP/1.x de texto plano delimitado por línea nueva, toda la
-comunicación de HTTP/2 se divide en mensajes y marcos más pequeños, cada uno de los cuales está
-codificado en formato binario.
-
-En consecuencia, tanto el cliente como el servidor deben usar el nuevo mecanismo de codificación binaria
-para entenderse entre sí: un cliente de HTTP/1.x no entenderá un servidor únicamente compatible con HTTP/2
-y viceversa. Afortunadamente, nuestras aplicaciones desconocen
-todos estos cambios, ya que el cliente y el servidor realizan todo el trabajo de enmarcado necesario
-en nuestro nombre.
-
-## Transmisiones, mensajes y marcos
-
-La introducción del nuevo mecanismo de enmarcado binario cambia la forma en que los datos se
-intercambian entre el cliente y el servidor. Para describir este proceso, familiaricémonos
-con la terminología de HTTP/2:
-
-* *Transmisión*: un flujo bidireccional de bytes dentro de una conexión establecida,
-  que puede llevar uno o más mensajes.
-* *Mensaje*: una secuencia completa de marcos que se asignan a un mensaje lógico de solicitud o respuesta.
-* *Marco*: la unidad de comunicación más pequeña en HTTP/2, cada una de las cuales contiene un encabezado de marco que,
-  como mínimo, identifica a la transmisión a la cual pertenece el marco.
-
-La relación de estos términos puede resumirse de la siguiente manera:
-
-* Toda la comunicación se efectúa mediante una única conexión de TCP que puede llevar cualquier cantidad de
-  transmisiones bidireccionales.
-* Cada transmisión cuenta con un identificador único e información prioritaria opcional que se usa para llevar
-  mensajes bidireccionales.
-* Cada mensaje es un mensaje de HTTP lógico, como una solicitud o respuesta, que consiste en
-  uno o más marcos.
-* El marco es la unidad de comunicación más pequeña que lleva un tipo de datos específico, p. ej.,
-  encabezados de HTTP, carga útil de mensajes, etc. Los marcos de diferentes transmisiones pueden intercalarse
-  y luego reensamblarse mediante el identificador de transmisión incorporado en el encabezado de cada marco.
-
-![Transmisiones, mensajes y tramas de HTTP/2](images/streams_messages_frames01.svg)
-
-En resumen, HTTP/2 desglosa la comunicación del protocolo HTTP en un intercambio de
-tramas con codificación binaria, que luego se asignan a los mensajes que pertenecen a una
-transmisión específica, todo está multiplexado dentro de una única conexión
-de TCP. Esta es la base que habilita al resto de las funciones y
-las optimizaciones de rendimiento ofrecidas por el protocolo HTTP/2.
-
-## Multiplexación de solicitudes y respuestas
-
-Con HTTP/1.x, si el cliente desea realizar múltiples solicitudes paralelas para mejorar
-el rendimiento, se deben usar múltiples conexiones de TCP; consulta
-[Using Multiple TCP Connections](https://hpbn.co/http1x/#using-multiple-tcp-connections)
-(Uso de múltiples conexiones de TCP). Este comportamiento es una consecuencia directa del modelo de entrega de HTTP/1.x, que
-asegura que solo una respuesta pueda entregarse por vez (cola de respuestas) por
-conexión. Peor aún, esto también desencadena el bloqueo de cabeza de línea y el uso
-ineficiente de la conexión de TCP subyacente.
-
-La nueva capa de entramado binario de HTTP/2 elimina estas limitaciones y habilita
-una multiplexación total de solicitudes y respuestas, al permitir que el cliente y el servidor
-desglosen un mensaje de HTTP en tramas diferentes, intercalarlas y luego
-reensamblarlas en el otro extremo.
-
-![Multiplexación de solicitudes y respuestas de HTTP/2 dentro de una conexión compartida](images/multiplexing01.svg)
-
-La imagen captura múltiples transmisiones en tránsito dentro de la misma conexión. El
-cliente transmite un marco `DATA` (stream 5) al servidor, mientras este
-transmite una secuencia intercalada de marcos al cliente para las transmisiones 1
-y 3. En consecuencia, hay tres transmisiones paralelas en tránsito.
-
-La capacidad de desglosar un mensaje de HTTP en marcos independientes, intercalarlos
-y luego reensamblarlos en el otro extremo es la mejora
-más importante de HTTP/2. De hecho, produce un efecto dominó con numerosos
-beneficios de rendimiento en toda la pila de tecnologías web, lo que nos
-permite:
-
-* Intercalar múltiples solicitudes en paralelo sin bloquear ninguna.
-* Intercalar múltiples respuestas en paralelo sin bloquear ninguna.
-* Usar una única conexión para entregar múltiples solicitudes y respuestas en paralelo.
-* Eliminar métodos alternativos de HTTP/1.x innecesarios, como archivos concatenados, image sprites y fragmentos de dominio; consulta
-  [Optimizing for HTTP/1.x](https://hpbn.co/optimizing-application-delivery/#optimizing-for-http1x)
-  (Optimización para HTTP/1.x).
-* Proporcionar tiempos de carga de páginas inferiores mediante la eliminación de la latencia innecesaria y la mejora de
-  la utilización de la capacidad de red disponible.
-* *Y mucho más…*
-
-La nueva capa de enmarcado binario en HTTP/2 resuelve el problema del bloqueo de encabezado de línea
-que se encuentra en HTTP/1.x y elimina la necesidad de conexiones múltiples para
-habilitar el procesamiento y la entrega paralelos de solicitudes y respuestas. En consecuencia,
-esto hace que la implementación de nuestras aplicaciones sea más rápida, más simple y más barata.
-
-## Priorización de transmisiones
-
-Una vez que un mensaje de HTTP puede dividirse en muchos marcos individuales y permitimos que
-los marcos de múltiples transmisiones estén multiplexados, el orden en el cual el cliente y el servidor
-intercalan y entregan los marcos se convierte en una consideración
-de rendimiento crítica. Para facilitar esto, el estándar HTTP/2 permite que cada
-transmisión tenga un peso y una dependencia asociados:
-
-* A cada transmisión se le puede asignar un peso entero de entre 1 y 256.
-* Cada transmisión puede recibir una dependencia explícita de otra transmisión.
-
-La combinación de dependencias y pesos de transmisión permite que el cliente
-construya y comunique un "árbol de priorización" que exprese cómo
-preferiría recibir las respuestas. A su vez, el servidor puede usar esta información para
-priorizar el procesamiento de transmisión al controlar la asignación de CPU, memoria y
-otros recursos y, una vez que los datos de la respuesta están disponibles, la asignación de
-ancho de banda para asegurar la entrega óptima de respuestas de prioridad alta al cliente.
-
-![Dependencias y pesos de transmisión de HTTP/2](images/stream_prioritization01.svg)
-
-Una dependencia de transmisión dentro de HTTP/2 se declara al hacer referencia al único
-identificador de otra transmisión como su primaria; si se omite el identificador,
-se dice que la transmisión depende de la "transmisión raíz". Declarar una dependencia de
-transmisión indica que, de ser posible, a la transmisión primaria se le deben asignar
-recursos antes que a sus dependencias. En otras palabras, "Por favor, procesa y entrega la
-respuesta D antes que la respuesta C".
-
-A las transmisiones que comparten la misma transmisión primaria (en otras palabras, transmisiones del mismo nivel) se les deben asignar
-recursos proporcionales a su peso. Por ejemplo, si la transmisión A tiene un peso
-de 12 y la transmisión B de su mismo nivel tiene un peso de 4, se debe hacer lo siguiente para determinar la proporción
-de los recursos que cada una de estas transmisiones debe recibir:
-
-1. Suma todos los pesos: `4 + 12 = 16`
-1. Divide el peso de cada transmisión por el peso total: `A = 12/16, B = 4/16`
-
-Por lo tanto, la transmisión A debe recibir tres cuartos y la transmisión B debe recibir un
-cuarto de los recursos disponibles; la transmisión B debe recibir un tercio de los
-recursos asignados a la transmisión A. Veamos algunos ejemplos prácticos
-en la imagen anterior. De izquierda a derecha:
-
-1. Ni la transmisión A ni la B especifican una dependencia primaria y se dice que dependen
-   de la "transmisión raíz" implícita. A tiene un peso de 12 y B tiene un peso de 4.
-   Por lo tanto, según los pesos proporcionales, la transmisión B debe recibir un tercio de los
-   recursos asignados a la transmisión A.
-1. La transmisión D depende de la transmisión raíz; C depende de D. Por lo tanto, D debe
-   recibir una asignación total de recursos antes que C. Los pesos son intrascendentes,
-   ya que la dependencia de C comunica una preferencia más fuerte.
-1. La transmisión D debe recibir una asignación total de los recursos antes que C. C debe recibir
-   una asignación total de recursos antes que A y B. La transmisión B debe recibir un tercio de
-   los recursos asignados a la transmisión A.
-1. La transmisión D debe recibir una asignación total de recursos antes que E y C. E y C
-   deben recibir asignaciones iguales antes que A y B. A y B deben recibir una asignación
-   proporcional basada en sus pesos.
-
-Tal como lo ilustran los ejemplos anteriores, la combinación de dependencias y pesos
-de transmisión aporta un lenguaje expresivo para la priorización de recursos, lo cual es una
-función crítica para mejorar el rendimiento de la navegación cuando contamos con muchos tipos de
-recursos con dependencias y pesos diferentes. Algo aún mejor, el protocolo HTTP/2
-también permite al cliente actualizar estas preferencias en cualquier momento, lo cual habilita
-más optimizaciones en el navegador. En otras palabras, podemos cambiar dependencias
-y reasignar pesos en respuesta a la interacción del usuario y otras señales.
-
-Note: Las dependencias y pesos de transmisión expresan una preferencia de transporte, no un
-requisito, y como tales, no garantizan un proceso ni una
-orden de transmisión específicos. Es decir, el cliente no puede forzar al servidor a que procese la
-transmisión en un orden específico mediante la priorización de transmisión. Si bien esto parece ser
-contraintuitivo, de hecho es el comportamiento deseado. No deberíamos bloquear
-al servidor en su progreso hacia un recurso de prioridad más baja si se bloquea un
-recurso de prioridad más alta.
-
-## Una conexión por origen
-
-Con el nuevo mecanismo de enmarcado binario en funcionamiento, HTTP/2 no necesita más de múltiples
-conexiones de TCP para multiplexar transmisiones en paralelo: cada transmisión se divide en muchos
-marcos, que pueden intercalarse y priorizarse. Como resultado, todas las conexiones de HTTP/2
-son persistentes y solo se requiere una conexión por origen,
-lo cual ofrece numerosos beneficios de rendimiento.
-
-> Tanto para SPDY como para HTTP/2, la función exitosa es la multiplexación arbitraria en un
-> único canal con buen control de congestión. Me sorprende cuán importante es
-> y lo bien que funciona. Una gran métrica que disfruto es la
-> fracción de conexiones creada que lleva solo una única transacción de HTTP (y
->, por ende, hace que la transacción cargue con toda la sobrecarga). Respecto de HTTP/1, el 74% de nuestras
-> conexiones activas llevan solo una transacción; las conexiones persistentes
-> no son tan útiles como deseamos. Sin embargo, en HTTP/2 esta cifra se desploma hasta el 25%.
-> Esto implica una gran reducción de la sobrecarga. [*(HTTP/2 is Live in Firefox —HTTP/2 está vivo en Firefox— de Patrick
-> McManus)*](http://bitsup.blogspot.co.uk/2015/02/http2-is-live-in-firefox.html)
-
-La mayoría de las transferencias de HTTP son breves e intermitentes, mientras que TCP está optimizado para tener
-transferencias de datos masivas de larga duración. Al reutilizar la misma conexión, HTTP/2 es capaz de
-hacer un uso más eficiente de cada conexión de TCP y también reducir
-de manera significativa la sobrecarga de protocolo total. Además, el uso de menos conexiones
-reduce la superficie de memoria y procesamiento en toda la memoria en toda la ruta de conexión
-(en otras palabras, cliente, intermediarios y servidores de origen). Esto reduce los costos
-operativos totales y mejora la utilización y capacidad de la red. Como resultado,
-el traspaso a HTTP/2 no solo debería reducir la latencia de red, sino también ayudar a
-mejorar el procesamiento y reducir los costos operativos.
-
-Note: La menor cantidad de conexiones es una función especialmente importante para
-mejorar el rendimiento de implementaciones de HTTPS, que se traduce en menos acuerdos TLS
-costosos, mejor reutilización de sesión y una reducción general en
-los recursos de cliente y servidor requeridos.
-
-## Control de flujo
-
-El control de flujo es un mecanismo para evitar que el emisor abrume al receptor
-con datos que tal vez no desee o no pueda procesar: es posible que el receptor esté ocupado, que esté soportando una
-carga pesada o que solo se desee asignar una cantidad determinada de recursos a una
-transmisión específica. Por ejemplo, el cliente podría haber solicitado una gran transmisión de
-video con prioridad alta, pero el usuario ha pausado el video y el cliente ahora
-desea pausar o regular su entrega desde el servidor para evitar obtener datos innecesarios y
-almacenarlos en búfer. Como alternativa, un servidor proxy puede tener conexiones
-descendentes rápidas y conexiones ascendentes lentas y, del mismo modo, desea regular la velocidad de entrega de datos
-de la conexión descendente para alcanzar la velocidad de la conexión ascendente a fin de controlar
-el uso de sus recursos, etc.
-
-¿Los requisitos anteriores te recuerdan el control de flujo de TCP? Deberían hacerlo, ya que
-el problema es efectivamente idéntico; consulta
-[Flow Control](https://hpbn.co/building-blocks-of-tcp/#flow-control) (Control de flujo). Sin embargo,
-dado que las transmisiones de HTTP/2 se multiplexan dentro de una única conexión de TCP, el control de flujo de TCP
-no es lo suficientemente detallado y no proporciona las APIs a nivel de app
-necesarias para regular la entrega de transmisiones individuales. Para
-abordar esto, HTTP/2 proporciona un conjunto de elementos básicos simples que permiten que el
-cliente y el servidor implementen su propio control de flujo en el nivel de transmisión y
-de conexión:
-
-* El control de flujo es direccional. Cada receptor puede optar por configurar cualquier tamaño de ventana
-  que desee para cada transmisión y para toda la conexión.
-* El control de flujo se basa en el crédito. Cada receptor indica su conexión inicial
-  y la ventana de control de flujo de transmisión (en bytes), que se reduce cuando el
-  emisor emite un marco `DATA` y se incrementa mediante un marco `WINDOW_UPDATE` enviado
-   por el receptor.
-* El control de flujo no se puede inhabilitar. Cuando se establece la conexión de HTTP/2, el
-  cliente y el servidor intercambian marcos `SETTINGS`, que configuran los tamaños de la ventana de control de flujo
-  en ambas direcciones. El valor predeterminado de la ventana de control de flujo se configura
-  en 65,535 bytes, pero el receptor puede configurar un mayor tamaño de ventana máximo
-  (`2^31-1` bytes) y mantenerlo mediante el envío de un marco `WINDOW_UPDATE` cada vez que
-  se reciben datos.
-* El control de flujo es de salto a salto, no de extremo a extremo. Es decir, un intermediario puede usarlo
-  para controlar el uso de recursos e implementar mecanismos de asignación de recursos basados en
-  criterios y heurística propios.
-
-HTTP/2 no especifica ningún algoritmo en especial para implementar el control de flujo.
-En cambio, proporciona elementos básicos simples y concede la implementación al
-cliente y el servidor, que lo pueden usar para implementar estrategias personalizadas a fin de
-regular el uso y la asignación de recursos, además de implementar nuevas capacidades de entrega
-que ayuden a mejorar tanto el rendimiento real como el percibido de nuestras aplicaciones web. Consulta
-[Speed, Performance, and Human Perception](https://hpbn.co/primer-on-web-performance/#speed-performance-and-human-perception))
-(Velocidad, rendimiento y percepción humana).
-
-Por ejemplo, el control de flujo de la capa de aplicaciones permite que el navegador obtenga solo una
-parte de un recurso específico, coloque la obtención en espera mediante la reducción a cero de la ventana de control del
-flujo de transmisión y luego lo reanude. En otras palabras, permite que
-el navegador obtenga una vista previa o un primer escaneo de una imagen, la muestre y permita
-que otras obtenciones de prioridad alta continúen. Luego, puede reanudar la obtención una vez que los recursos
-más críticos se hayan terminado de cargar.
-
-## Servidor push
-
-Otra nueva función poderosa de HTTP/2 es la capacidad del servidor de enviar
-respuestas múltiples para una única solicitud del cliente. Es decir, además de
-la respuesta a la solicitud original, el servidor puede insertar recursos adicionales en el
-cliente (figura 12-5), sin necesidad de que este los solicite
-de manera explícita.
-
-![El servidor inicia transmisiones (promesas) nuevas para recursos push
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: HTTP/2 (or h2) is a binary protocol that brings push, multiplexing streams and frame control to the web.
+
+{# wf_updated_on: 2018-08-17 #} {# wf_published_on: 2016-09-29 #} {# wf_blink_components: Blink>Network,Internals>Network>HTTP2 #}
+
+# Introduction to HTTP/2 {: .page-title }
+
+{% include "web/_shared/contributors/ilyagrigorik.html" %} {% include "web/_shared/contributors/surma.html" %}
+
+Note: The following content is an excerpt from [High Performance Browser Networking](http://shop.oreilly.com/product/0636920028048.do) (O'Reilly, Ilya Grigorik). For full version and related content, see [hpbn.co](https://hpbn.co/){: .external }.
+
+HTTP/2 will make our applications faster, simpler, and more robust — a rare combination — by allowing us to undo many of the HTTP/1.1 workarounds previously done within our applications and address these concerns within the transport layer itself. Even better, it also opens up a number of entirely new opportunities to optimize our applications and improve performance!
+
+The primary goals for HTTP/2 are to reduce latency by enabling full request and response multiplexing, minimize protocol overhead via efficient compression of HTTP header fields, and add support for request prioritization and server push. To implement these requirements, there is a large supporting cast of other protocol enhancements, such as new flow control, error handling, and upgrade mechanisms, but these are the most important features that every web developer should understand and leverage in their applications.
+
+HTTP/2 does not modify the application semantics of HTTP in any way. All the core concepts, such as HTTP methods, status codes, URIs, and header fields, remain in place. Instead, HTTP/2 modifies how the data is formatted (framed) and transported between the client and server, both of which manage the entire process, and hides all the complexity from our applications within the new framing layer. As a result, all existing applications can be delivered without modification.
+
+*Why not HTTP/1.2?*
+
+To achieve the performance goals set by the HTTP Working Group, HTTP/2 introduces a new binary framing layer that is not backward compatible with previous HTTP/1.x servers and clients—hence the major protocol version increment to HTTP/2.
+
+That said, unless you are implementing a web server (or a custom client) by working with raw TCP sockets, then you won’t see any difference: all the new, low-level framing is performed by the client and server on your behalf. The only observable differences will be improved performance and availability of new capabilities like request prioritization, flow control, and server push.
+
+## A brief history of SPDY and HTTP/2
+
+SPDY was an experimental protocol, developed at Google and announced in mid 2009, whose primary goal was to try to reduce the load latency of web pages by addressing some of the well-known performance limitations of HTTP/1.1. Specifically, the outlined project goals were set as follows:
+
+* Target a 50% reduction in page load time (PLT).
+* Avoid the need for any changes to content by website authors.
+* Minimize deployment complexity, and avoid changes in network infrastructure.
+* Develop this new protocol in partnership with the open-source community.
+* Gather real performance data to (in)validate the experimental protocol.
+
+Note: To achieve the 50% PLT improvement, SPDY aimed to make more efficient use of the underlying TCP connection by introducing a new binary framing layer to enable request and response multiplexing, prioritization, and header compression; see [Latency as a Performance Bottleneck](https://hpbn.co/primer-on-web-performance/#latency-as-a-performance-bottleneck){: .external}.
+
+Not long after the initial announcement, Mike Belshe and Roberto Peon, both software engineers at Google, shared their first results, documentation, and source code for the experimental implementation of the new SPDY protocol:
+
+> So far we have only tested SPDY in lab conditions. The initial results are very encouraging: when we download the top 25 websites over simulated home network connections, we see a significant improvement in performance—pages loaded up to 55% faster. [*(Chromium Blog)*](https://blog.chromium.org/2009/11/2x-faster-web.html)
+
+Fast-forward to 2012 and the new experimental protocol was supported in Chrome, Firefox, and Opera, and a rapidly growing number of sites, both large (for example, Google, Twitter, Facebook) and small, were deploying SPDY within their infrastructure. In effect, SPDY was on track to become a de facto standard through growing industry adoption.
+
+Observing this trend, the HTTP Working Group (HTTP-WG) kicked off a new effort to take the lessons learned from SPDY, build and improve on them, and deliver an official "HTTP/2" standard. A new charter was drafted, an open call for HTTP/2 proposals was made, and after a lot of discussion within the working group, the SPDY specification was adopted as a starting point for the new HTTP/2 protocol.
+
+Over the next few years SPDY and HTTP/2 continued to coevolve in parallel, with SPDY acting as an experimental branch that was used to test new features and proposals for the HTTP/2 standard. What looks good on paper may not work in practice, and vice versa, and SPDY offered a route to test and evaluate each proposal before its inclusion in the HTTP/2 standard. In the end, this process spanned three years and resulted in a over a dozen intermediate drafts:
+
+* March 2012: Call for proposals for HTTP/2
+* November 2012: First draft of HTTP/2 (based on SPDY)
+* August 2014: HTTP/2 draft-17 and HPACK draft-12 are published
+* August 2014: Working Group last call for HTTP/2
+* February 2015: IESG approved HTTP/2 and HPACK drafts
+* May 2015: RFC 7540 (HTTP/2) and RFC 7541 (HPACK) are published
+
+In early 2015 the IESG reviewed and approved the new HTTP/2 standard for publication. Shortly after that, the Google Chrome team announced their schedule to deprecate SPDY and NPN extension for TLS:
+
+> HTTP/2's primary changes from HTTP/1.1 focus on improved performance. Some key features such as multiplexing, header compression, prioritization and protocol negotiation evolved from work done in an earlier open, but non-standard protocol named SPDY. Chrome has supported SPDY since Chrome 6, but since most of the benefits are present in HTTP/2, it’s time to say goodbye. We plan to remove support for SPDY in early 2016, and to also remove support for the TLS extension named NPN in favor of ALPN in Chrome at the same time. Server developers are strongly encouraged to move to HTTP/2 and ALPN.
+> 
+> We’re happy to have contributed to the open standards process that led to HTTP/2, and hope to see wide adoption given the broad industry engagement on standardization and implementation. [*(Chromium Blog)*](https://blog.chromium.org/2015/02/hello-http2-goodbye-spdy.html)
+
+The coevolution of SPDY and HTTP/2 enabled server, browser, and site developers to gain real-world experience with the new protocol as it was being developed. As a result, the HTTP/2 standard is one of the best and most extensively tested standards right out of the gate. By the time HTTP/2 was approved by the IESG, there were dozens of thoroughly tested and production-ready client and server implementations. In fact, just weeks after the final protocol was approved, many users were already enjoying its benefits as several popular browsers (and many sites) deployed full HTTP/2 support.
+
+## Design and technical goals
+
+Earlier versions of the HTTP protocol were intentionally designed for simplicity of implementation: HTTP/0.9 was a one-line protocol to bootstrap the World Wide Web; HTTP/1.0 documented the popular extensions to HTTP/0.9 in an informational standard; HTTP/1.1 introduced an official IETF standard; see [Brief History of HTTP](https://hpbn.co/brief-history-of-http/){: .external}. As such, HTTP/0.9-1.x delivered exactly what it set out to do: HTTP is one of the most widely adopted application protocols on the Internet.
+
+Unfortunately, implementation simplicity also came at a cost of application performance: HTTP/1.x clients need to use multiple connections to achieve concurrency and reduce latency; HTTP/1.x does not compress request and response headers, causing unnecessary network traffic; HTTP/1.x does not allow effective resource prioritization, resulting in poor use of the underlying TCP connection; and so on.
+
+These limitations were not fatal, but as the web applications continued to grow in their scope, complexity, and importance in our everyday lives, they imposed a growing burden on both the developers and users of the web, which is the exact gap that HTTP/2 was designed to address:
+
+> HTTP/2 enables a more efficient use of network resources and a reduced perception of latency by introducing header field compression and allowing multiple concurrent exchanges on the same connection… Specifically, it allows interleaving of request and response messages on the same connection and uses an efficient coding for HTTP header fields. It also allows prioritization of requests, letting more important requests complete more quickly, further improving performance.
+> 
+> The resulting protocol is more friendly to the network, because fewer TCP connections can be used in comparison to HTTP/1.x. This means less competition with other flows, and longer-lived connections, which in turn leads to better utilization of available network capacity. Finally, HTTP/2 also enables more efficient processing of messages through use of binary message framing. [*(Hypertext Transfer Protocol version 2, Draft 17)*](https://tools.ietf.org/html/draft-ietf-httpbis-http2-17)
+
+It is important to note that HTTP/2 is extending, not replacing, the previous HTTP standards. The application semantics of HTTP are the same, and no changes were made to the offered functionality or core concepts such as HTTP methods, status codes, URIs, and header fields. These changes were explicitly out of scope for the HTTP/2 effort. That said, while the high-level API remains the same, it is important to understand how the low-level changes address the performance limitations of the previous protocols. Let’s take a brief tour of the binary framing layer and its features.
+
+## Binary framing layer
+
+At the core of all performance enhancements of HTTP/2 is the new binary framing layer, which dictates how the HTTP messages are encapsulated and transferred between the client and server.
+
+![HTTP/2 binary framing layer](images/binary_framing_layer01.svg)
+
+The "layer" refers to a design choice to introduce a new optimized encoding mechanism between the socket interface and the higher HTTP API exposed to our applications: the HTTP semantics, such as verbs, methods, and headers, are unaffected, but the way they are encoded while in transit is different. Unlike the newline delimited plaintext HTTP/1.x protocol, all HTTP/2 communication is split into smaller messages and frames, each of which is encoded in binary format.
+
+As a result, both client and server must use the new binary encoding mechanism to understand each other: an HTTP/1.x client won’t understand an HTTP/2 only server, and vice versa. Thankfully, our applications remain blissfully unaware of all these changes, as the client and server perform all the necessary framing work on our behalf.
+
+## Streams, messages, and frames
+
+The introduction of the new binary framing mechanism changes how the data is exchanged between the client and server. To describe this process, let’s familiarize ourselves with the HTTP/2 terminology:
+
+* *Stream*: A bidirectional flow of bytes within an established connection, which may carry one or more messages.
+* *Message*: A complete sequence of frames that map to a logical request or response message.
+* *Frame*: The smallest unit of communication in HTTP/2, each containing a frame header, which at a minimum identifies the stream to which the frame belongs.
+
+The relation of these terms can be summarized as follows:
+
+* All communication is performed over a single TCP connection that can carry any number of bidirectional streams.
+* Each stream has a unique identifier and optional priority information that is used to carry bidirectional messages.
+* Each message is a logical HTTP message, such as a request, or response, which consists of one or more frames.
+* The frame is the smallest unit of communication that carries a specific type of data—e.g., HTTP headers, message payload, and so on. Frames from different streams may be interleaved and then reassembled via the embedded stream identifier in the header of each frame.
+
+![HTTP/2 streams, messages, and frames](images/streams_messages_frames01.svg)
+
+In short, HTTP/2 breaks down the HTTP protocol communication into an exchange of binary-encoded frames, which are then mapped to messages that belong to a particular stream, all of which are multiplexed within a single TCP connection. This is the foundation that enables all other features and performance optimizations provided by the HTTP/2 protocol.
+
+## Request and response multiplexing
+
+With HTTP/1.x, if the client wants to make multiple parallel requests to improve performance, then multiple TCP connections must be used (see [Using Multiple TCP Connections](https://hpbn.co/http1x/#using-multiple-tcp-connections) ). This behavior is a direct consequence of the HTTP/1.x delivery model, which ensures that only one response can be delivered at a time (response queuing) per connection. Worse, this also results in head-of-line blocking and inefficient use of the underlying TCP connection.
+
+The new binary framing layer in HTTP/2 removes these limitations, and enables full request and response multiplexing, by allowing the client and server to break down an HTTP message into independent frames, interleave them, and then reassemble them on the other end.
+
+![HTTP/2 request and response multiplexing within a shared connection](images/multiplexing01.svg)
+
+The snapshot captures multiple streams in flight within the same connection. The client is transmitting a `DATA` frame (stream 5) to the server, while the server is transmitting an interleaved sequence of frames to the client for streams 1 and 3. As a result, there are three parallel streams in flight.
+
+The ability to break down an HTTP message into independent frames, interleave them, and then reassemble them on the other end is the single most important enhancement of HTTP/2. In fact, it introduces a ripple effect of numerous performance benefits across the entire stack of all web technologies, enabling us to:
+
+* Interleave multiple requests in parallel without blocking on any one.
+* Interleave multiple responses in parallel without blocking on any one.
+* Use a single connection to deliver multiple requests and responses in parallel.
+* Remove unnecessary HTTP/1.x workarounds (see [Optimizing for HTTP/1.x](https://hpbn.co/optimizing-application-delivery/#optimizing-for-http1x), such as concatenated files, image sprites, and domain sharding.
+* Deliver lower page load times by eliminating unnecessary latency and improving utilization of available network capacity.
+* *And much more…*
+
+The new binary framing layer in HTTP/2 resolves the head-of-line blocking problem found in HTTP/1.x and eliminates the need for multiple connections to enable parallel processing and delivery of requests and responses. As a result, this makes our applications faster, simpler, and cheaper to deploy.
+
+## Stream prioritization
+
+Once an HTTP message can be split into many individual frames, and we allow for frames from multiple streams to be multiplexed, the order in which the frames are interleaved and delivered both by the client and server becomes a critical performance consideration. To facilitate this, the HTTP/2 standard allows each stream to have an associated weight and dependency:
+
+* Each stream may be assigned an integer weight between 1 and 256.
+* Each stream may be given an explicit dependency on another stream.
+
+The combination of stream dependencies and weights allows the client to construct and communicate a "prioritization tree" that expresses how it would prefer to receive responses. In turn, the server can use this information to prioritize stream processing by controlling the allocation of CPU, memory, and other resources, and once the response data is available, allocation of bandwidth to ensure optimal delivery of high-priority responses to the client.
+
+![HTTP/2 stream dependencies and weights](images/stream_prioritization01.svg)
+
+A stream dependency within HTTP/2 is declared by referencing the unique identifier of another stream as its parent; if the identifier is omitted the stream is said to be dependent on the "root stream". Declaring a stream dependency indicates that, if possible, the parent stream should be allocated resources ahead of its dependencies. In other words, "Please process and deliver response D before response C".
+
+Streams that share the same parent (in other words, sibling streams) should be allocated resources in proportion to their weight. For example, if stream A has a weight of 12 and its one sibling B has a weight of 4, then to determine the proportion of the resources that each of these streams should receive:
+
+1. Sum all the weights: `4 + 12 = 16`
+2. Divide each stream weight by the total weight: `A = 12/16, B = 4/16`
+
+Thus, stream A should receive three-quarters and stream B should receive one- quarter of available resources; stream B should receive one-third of the resources allocated to stream A. Let’s work through a few more hands-on examples in the image above. From left to right:
+
+1. Neither stream A nor B specifies a parent dependency and are said to be dependent on the implicit "root stream"; A has a weight of 12, and B has a weight of 4. Thus, based on proportional weights: stream B should receive one-third of the resources allocated to stream A.
+2. Stream D is dependent on the root stream; C is dependent on D. Thus, D should receive full allocation of resources ahead of C. The weights are inconsequential because C’s dependency communicates a stronger preference.
+3. Stream D should receive full allocation of resources ahead of C; C should receive full allocation of resources ahead of A and B; stream B should receive one-third of the resources allocated to stream A.
+4. Stream D should receive full allocation of resources ahead of E and C; E and C should receive equal allocation ahead of A and B; A and B should receive proportional allocation based on their weights.
+
+As the above examples illustrate, the combination of stream dependencies and weights provides an expressive language for resource prioritization, which is a critical feature for improving browsing performance where we have many resource types with different dependencies and weights. Even better, the HTTP/2 protocol also allows the client to update these preferences at any point, which enables further optimizations in the browser. In other words, we can change dependencies and reallocate weights in response to user interaction and other signals.
+
+Note: Stream dependencies and weights express a transport preference, not a requirement, and as such do not guarantee a particular processing or transmission order. That is, the client cannot force the server to process the stream in a particular order using stream prioritization. While this may seem counterintuitive, it is in fact the desired behavior. We do not want to block the server from making progress on a lower priority resource if a higher priority resource is blocked.
+
+## One connection per origin
+
+With the new binary framing mechanism in place, HTTP/2 no longer needs multiple TCP connections to multiplex streams in parallel; each stream is split into many frames, which can be interleaved and prioritized. As a result, all HTTP/2 connections are persistent, and only one connection per origin is required, which offers numerous performance benefits.
+
+> For both SPDY and HTTP/2 the killer feature is arbitrary multiplexing on a single well congestion controlled channel. It amazes me how important this is and how well it works. One great metric around that which I enjoy is the fraction of connections created that carry just a single HTTP transaction (and thus make that transaction bear all the overhead). For HTTP/1 74% of our active connections carry just a single transaction—persistent connections just aren’t as helpful as we all want. But in HTTP/2 that number plummets to 25%. That’s a huge win for overhead reduction. [*(HTTP/2 is Live in Firefox, Patrick McManus)*](http://bitsup.blogspot.co.uk/2015/02/http2-is-live-in-firefox.html)
+
+Most HTTP transfers are short and bursty, whereas TCP is optimized for long- lived, bulk data transfers. By reusing the same connection, HTTP/2 is able to both make more efficient use of each TCP connection, and also significantly reduce the overall protocol overhead. Further, the use of fewer connections reduces the memory and processing footprint along the full connection path (in other words, client, intermediaries, and origin servers). This reduces the overall operational costs and improves network utilization and capacity. As a result, the move to HTTP/2 should not only reduce network latency, but also help improve throughput and reduce the operational costs.
+
+Note: Reduced number of connections is a particularly important feature for improving performance of HTTPS deployments: this translates to fewer expensive TLS handshakes, better session reuse, and an overall reduction in required client and server resources.
+
+## Flow control
+
+Flow control is a mechanism to prevent the sender from overwhelming the receiver with data it may not want or be able to process: the receiver may be busy, under heavy load, or may only be willing to allocate a fixed amount of resources for a particular stream. For example, the client may have requested a large video stream with high priority, but the user has paused the video and the client now wants to pause or throttle its delivery from the server to avoid fetching and buffering unnecessary data. Alternatively, a proxy server may have fast downstream and slow upstream connections and similarly wants to regulate how quickly the downstream delivers data to match the speed of upstream to control its resource usage; and so on.
+
+Do the above requirements remind you of TCP flow control? They should, as the problem is effectively identical (see [Flow Control](https://hpbn.co/building-blocks-of-tcp/#flow-control)). However, because the HTTP/2 streams are multiplexed within a single TCP connection, TCP flow control is both not granular enough, and does not provide the necessary application-level APIs to regulate the delivery of individual streams. To address this, HTTP/2 provides a set of simple building blocks that allow the client and server to implement their own stream- and connection-level flow control:
+
+* Flow control is directional. Each receiver may choose to set any window size that it desires for each stream and the entire connection.
+* Flow control is credit-based. Each receiver advertises its initial connection and stream flow control window (in bytes), which is reduced whenever the sender emits a `DATA` frame and incremented via a `WINDOW_UPDATE` frame sent by the receiver.
+* Flow control cannot be disabled. When the HTTP/2 connection is established the client and server exchange `SETTINGS` frames, which set the flow control window sizes in both directions. The default value of the flow control window is set to 65,535 bytes, but the receiver can set a large maximum window size (`2^31-1` bytes) and maintain it by sending a `WINDOW_UPDATE` frame whenever any data is received.
+* Flow control is hop-by-hop, not end-to-end. That is, an intermediary can use it to control resource use and implement resource allocation mechanisms based on own criteria and heuristics.
+
+HTTP/2 does not specify any particular algorithm for implementing flow control. Instead, it provides the simple building blocks and defers the implementation to the client and server, which can use it to implement custom strategies to regulate resource use and allocation, as well as implement new delivery capabilities that may help improve both the real and perceived performance (see [Speed, Performance, and Human Perception](https://hpbn.co/primer-on-web-performance/#speed-performance-and-human-perception)) of our web applications.
+
+For example, application-layer flow control allows the browser to fetch only a part of a particular resource, put the fetch on hold by reducing the stream flow control window down to zero, and then resume it later. In other words, it allows the browser to fetch a preview or first scan of an image, display it and allow other high priority fetches to proceed, and resume the fetch once more critical resources have finished loading.
+
+## Server push
+
+Another powerful new feature of HTTP/2 is the ability of the server to send multiple responses for a single client request. That is, in addition to the response to the original request, the server can push additional resources to the client (Figure 12-5), without the client having to request each one explicitly.
+
+![Server initiates new streams (promises) for push resources
 ](images/push01.svg)
 
-Note: HTTP/2 se separa de la semántica estricta de solicitud y respuesta y habilita
-uno a varios flujos de trabajo push iniciados en el servidor que abren un abanico de nuevas
-posibilidades de interacción dentro y fuera del navegador. Se trata de una
-función habilitante que tendrá importantes consecuencias a largo plazo tanto para la forma en que
-consideramos al protocolo como para el lugar y la forma en que se usa.
+Note: HTTP/2 breaks away from the strict request-response semantics and enables one-to-many and server-initiated push workflows that open up a world of new interaction possibilities both within and outside the browser. This is an enabling feature that will have important long-term consequences both for how we think about the protocol, and where and how it is used.
 
-¿Por que necesitaríamos dicho mecanismo en un navegador? Una app web típica
-consiste en docenas de recursos, todos ellos son descubiertos por el cliente cuando
-examina el documento proporcionado por el servidor. En consecuencia, ¿por qué no se elimina
-la latencia adicional y se facilita al servidor push los recursos asociados
-con anticipación? El servidor ya sabe qué recursos requerirá el cliente: de eso se trata el
-servidor push.
+Why would we need such a mechanism in a browser? A typical web application consists of dozens of resources, all of which are discovered by the client by examining the document provided by the server. As a result, why not eliminate the extra latency and let the server push the associated resources ahead of time? The server already knows which resources the client will require; that’s server push.
 
-De hecho, si alguna vez has incorporado un recurso de CSS, JavaScript o cualquier otro a través de un
-URI de datos (consulta [Resource Inlining (Incorporación de recursos)](https://hpbn.co/http1x/#resource-inlining)),
-entonces ya tienes experiencia práctica con el servidor push. En efecto, al incorporar manualmente el recurso
-en el documento, estamos insertando dicho recurso al
-cliente, sin esperar a que este lo solicite. Con HTTP/2 podemos lograr
-los mismos resultados pero con beneficios de rendimiento adicionales. Los recursos push pueden ser:
+In fact, if you have ever inlined a CSS, JavaScript, or any other asset via a data URI (see [Resource Inlining](https://hpbn.co/http1x/#resource-inlining)), then you already have hands-on experience with server push. By manually inlining the resource into the document, we are, in effect, pushing that resource to the client, without waiting for the client to request it. With HTTP/2 we can achieve the same results, but with additional performance benefits. Push resources can be:
 
-* Almacenados en caché por el cliente
-* Reutilizados en páginas diferentes
-* Multiplexados junto con otros recursos
-* Priorizados por el servidor
-* Rechazados por el cliente
+* Cached by the client
+* Reused across different pages
+* Multiplexed alongside other resources
+* Prioritized by the server
+* Declined by the client
 
-### Introducción a PUSH_PROMISE
+### PUSH_PROMISE 101
 
-Todas las transmisiones del servidor push se inician a través de marcos `PUSH_PROMISE`, que indican la
-intención del servidor de insertar los recursos descritos en el cliente y se deben
-entregar antes que los datos de respuesta que solicitan los recursos insertados. Este
-orden de entrega es crítico: el cliente necesita saber qué recursos son los que el servidor
-intenta insertar a fin de evitar duplicar solicitudes para estos
-recursos. La estrategia más simple para cumplir este requisito es enviar todos los
-marcos `PUSH_PROMISE`, que contienen solamente los encabezados de HTTP del recurso
-prometido, antes que la respuesta de los elementos superiores (en otras palabras, los marcos de `DATA`).
+All server push streams are initiated via `PUSH_PROMISE` frames, which signal the server’s intent to push the described resources to the client and need to be delivered ahead of the response data that requests the pushed resources. This delivery order is critical: the client needs to know which resources the server intends to push to avoid creating duplicate requests for these resources. The simplest strategy to satisfy this requirement is to send all `PUSH_PROMISE` frames, which contain just the HTTP headers of the promised resource, ahead of the parent’s response (in other words, `DATA` frames).
 
-Una vez que el cliente recibe un marco `PUSH_PROMISE`, tiene la opción de rechazar la
-transmisión (a través de un marco `RST_STREAM`), si así lo desea. (Esto podría ocurrir, por ejemplo,
-debido a que el recurso ya está en la caché). Esta es una mejora importante en comparación con
-HTTP/1.x. Por el contrario, el uso de incorporación de recursos, que es una "optimización"
-popular de HTTP/1.x, equivale a una "inserción forzada": el cliente no puede
-desactivar el recurso incorporado, ni cancelarlo o procesarlo de manera individual.
+Once the client receives a `PUSH_PROMISE` frame it has the option to decline the stream (via a `RST_STREAM` frame) if it wants to. (This might occur for example because the resource is already in cache.) This is an important improvement over HTTP/1.x. By contrast, the use of resource inlining, which is a popular "optimization" for HTTP/1.x, is equivalent to a "forced push": the client cannot opt-out, cancel it, or process the inlined resource individually.
 
-Con HTTP/2, el cliente mantiene el control total de la forma en que se utiliza el servidor push. El
-cliente puede limitar la cantidad de transmisiones insertadas de manera simultánea, ajustar la ventana de control de flujo
-inicial para controlar cuántos datos se insertan cuando se abre la transmisión
-por primera vez o inhabilitar el servidor push en su totalidad. Estas preferencias se comunican a través de
-los marcos `SETTINGS` al comienzo de la conexión de HTTP/2 y pueden actualizarse
-en cualquier momento.
+With HTTP/2 the client remains in full control of how server push is used. The client can limit the number of concurrently pushed streams; adjust the initial flow control window to control how much data is pushed when the stream is first opened; or disable server push entirely. These preferences are communicated via the `SETTINGS` frames at the beginning of the HTTP/2 connection and may be updated at any time.
 
-Cada recurso insertado es una transmisión que, a diferencia de un recurso incorporado, puede
-ser multiplexado, priorizado y procesado de manera individual por el cliente. La única
-restricción de seguridad impuesta por el navegador consiste en que los recursos insertados deben
-obedecer la política del mismo origen: el servidor debe estar autorizado para entregar el contenido
-proporcionado.
+Each pushed resource is a stream that, unlike an inlined resource, allows it to be individually multiplexed, prioritized, and processed by the client. The only security restriction, as enforced by the browser, is that pushed resources must obey the same-origin policy: the server must be authoritative for the provided content.
 
-## Compresión de encabezado
+## Header compression
 
-Cada transferencia de HTTP lleva un conjunto de encabezados que describen al recurso
-transferido y sus propiedades. En HTTP/1.x, estos metadatos siempre se envían como texto
-sin formato y agregan entre 500 y 800 bytes de sobrecarga por transferencia o
-a veces incluso kilobytes, si se usan cookies de HTTP. Consulta
-[Measuring and Controlling Protocol Overhead](https://hpbn.co/http1x/#measuring-and-controlling-protocol-overhead)
- (Medición y control de sobrecarga de protocolo). Para reducir esta sobrecarga y mejorar el rendimiento, HTTP/2 comprime los metadatos
-del encabezado de solicitud y respuesta mediante el formato de compresión HPACK, que usa dos
-técnicas simples pero poderosas:
+Each HTTP transfer carries a set of headers that describe the transferred resource and its properties. In HTTP/1.x, this metadata is always sent as plain text and adds anywhere from 500–800 bytes of overhead per transfer, and sometimes kilobytes more if HTTP cookies are being used. (See [Measuring and Controlling Protocol Overhead](https://hpbn.co/http1x/#measuring-and-controlling-protocol-overhead) .) To reduce this overhead and improve performance, HTTP/2 compresses request and response header metadata using the HPACK compression format that uses two simple but powerful techniques:
 
-1. Permite que los campos del encabezado transmitido se codifiquen a través de un código Huffman
-   estático, que reduce su tamaño de transferencia individual.
-1. Requiere que tanto el cliente como el servidor mantengan y actualicen una lista
-   indexada de campos de encabezado previamente vistos (en otras palabras, establece un contexto
-   de compresión compartido), que luego se usa como referencia para codificar de manera eficaz los valores
-   transmitidos con anterioridad.
+1. It allows the transmitted header fields to be encoded via a static Huffman code, which reduces their individual transfer size.
+2. It requires that both the client and server maintain and update an indexed list of previously seen header fields (in other words, it establishes a shared compression context), which is then used as a reference to efficiently encode previously transmitted values.
 
-La codificación Huffman permite que los valores individuales se compriman cuando se transfieren
-y la lista indexada de los valores transferidos anteriormente nos permite codificar
-valores duplicados transfiriendo valores indexados que pueden usarse para buscar
-y reconstruir todas las claves y los valores del encabezado de manera eficaz.
+Huffman coding allows the individual values to be compressed when transferred, and the indexed list of previously transferred values allows us to encode duplicate values by transferring index values that can be used to efficiently look up and reconstruct the full header keys and values.
 
-![HPACK: Compresión de encabezado para HTTP/2](images/header_compression01.svg)
+![HPACK: Header Compression for HTTP/2](images/header_compression01.svg)
 
-Como una optimización adicional, el contexto de la compresión de HPACK consiste en una tabla estática
-y una tabla dinámica: la tabla estática está definida en la especificación y
-proporciona una lista de campos de encabezados de HTTP comunes que todas las conexiones tienen más posibilidades de
-usar (p. ej., nombres de encabezado válidos); la tabla dinámica inicialmente está vacía y se
-actualiza en base a los valores intercambiados dentro de una conexión específica. Como resultado,
-el tamaño de cada solicitud se reduce al usar codificación Huffman estática para los valores
-nunca antes vistos y una sustitución de índices por valores que ya
-están presentes en las tablas estáticas o dinámicas a cada lado.
+As one further optimization, the HPACK compression context consists of a static and dynamic table: the static table is defined in the specification and provides a list of common HTTP header fields that all connections are likely to use (e.g., valid header names); the dynamic table is initially empty and is updated based on exchanged values within a particular connection. As a result, the size of each request is reduced by using static Huffman coding for values that haven’t been seen before, and substitution of indexes for values that are already present in the static or dynamic tables on each side.
 
-Note: Las definiciones de los campos de encabezados de solicitud y respuesta en HTTP/2 se mantienen
-sin cambios, salvo por muy pocas excepciones: todos los nombres del campo de encabezado están en minúscula
-y la línea de solicitud ahora se divide en campos individuales de seudoencabezados `:method`, `:scheme`,
-`:authority` y `:path`.
+Note: The definitions of the request and response header fields in HTTP/2 remains unchanged, with a few minor exceptions: all header field names are lowercase, and the request line is now split into individual `:method`, `:scheme`, `:authority`, and `:path` pseudo-header fields.
 
-### Seguridad y rendimiento de HPACK
+### Security and performance of HPACK
 
-Las versiones anteriores de HTTP/2 y SPDY usaban zlib, con un diccionario personalizado, para
-comprimir todos los encabezados de HTTP. Esto proporcionaba una reducción de entre el 85% y 88% en el tamaño
-de los datos de encabezado transferidos y una mejora significativa en la latencia del tiempo de carga
-de la página:
+Early versions of HTTP/2 and SPDY used zlib, with a custom dictionary, to compress all HTTP headers. This delivered an 85% to 88% reduction in the size of the transferred header data, and a significant improvement in page load time latency:
 
-> En el vínculo DSL de ancho de banda bajo, en el cual el vínculo de carga solo es de 375 Kbps,
-> la compresión de encabezado de solicitud específicamente dio como resultado mejoras significativas en el tiempo de carga de la página
-> para determinados sitios (aquellos que emitían grandes cantidades de
-> solicitudes de recursos). Descubrimos una reducción de entre 45 y 1,142 ms en el tiempo de carga de la página
-> debido simplemente a la compresión de encabezados. [*(Documento técnico de SPDY,
-> chromium.org)*](https://www.chromium.org/spdy/spdy-whitepaper)
+> On the lower-bandwidth DSL link, in which the upload link is only 375 Kbps, request header compression in particular, led to significant page load time improvements for certain sites (in other words, those that issued large number of resource requests). We found a reduction of 45–1142 ms in page load time simply due to header compression. [*(SPDY whitepaper, chromium.org)*](https://www.chromium.org/spdy/spdy-whitepaper)
 
-Sin embargo, en el verano de 2012, se publicó un ataque a la seguridad "CRIME" en contra de
-los algoritmos de compresión TLS y SPDY, que podía dar como resultado el secuestro de la sesión. En
-consecuencia, el algoritmo de compresión zlib fue reemplazado por HPACK, que se
-diseñó especialmente para abordar los problemas de seguridad descubiertos, ser eficaz
-y simple a fin de implementarse de manera correcta y, por supuesto, habilitar una buena compresión de
-metadatos de encabezado de HTTP.
+However, in the summer of 2012, a "CRIME" security attack was published against TLS and SPDY compression algorithms, which could result in session hijacking. As a result, the zlib compression algorithm was replaced by HPACK, which was specifically designed to: address the discovered security issues, be efficient and simple to implement correctly, and of course, enable good compression of HTTP header metadata.
 
-Para obtener información completa sobre el algoritmo de compresión HPACK, consulta
-[IETF HPACK - Header Compression for HTTP/2](https://tools.ietf.org/html/draft-ietf-httpbis-header-compression) (HPACK de IETF: compresión de encabezado para HTTP/2).
+For full details of the HPACK compression algorithm, see [IETF HPACK - Header Compression for HTTP/2](https://tools.ietf.org/html/draft-ietf-httpbis-header-compression).
 
-## Lecturas adicionales:
+## Further reading:
 
-* [“HTTP/2”](https://hpbn.co/http2/){: .external }:
-    el artículo completo de Ilya Grigorik
-* [“Setting up HTTP/2”](https://surma.link/things/h2setup/) (Configuración de HTTP/2){: .external }:
-    artículo de Surma sobre cómo configurar HTTP/2 en backends diferentes
-* [“HTTP/2 is here,
-let’s optimize!”](https://docs.google.com/presentation/d/1r7QXGYOLCh4fcUq0jDdDwKJWNqWK1o4xMtYpKZCJYjM/edit#slide=id.p19)
-   (HTTP/2 está aquí, ¡a optimizar!), presentación de Ilya Grigorik de Velocity 2015
-* [“Rules of Thumb for HTTP/2 Push”](https://docs.google.com/document/d/1K0NykTXBbbbTlv60t5MyJvXjqKGsCVNYHyLEXIxYMv0/edit)(Reglas generales para HTTP/2 Push):
-   un análisis de Tom Bergan, Simon Pelchat y Michael Buettner sobre cuándo y cómo usar push
+* [“HTTP/2”](https://hpbn.co/http2/){: .external } – The full article by Ilya Grigorik
+* [“Setting up HTTP/2”](https://surma.link/things/h2setup/){: .external } – How to set up HTTP/2 in different backends by Surma
+* [“HTTP/2 is here, let’s optimize!”](https://docs.google.com/presentation/d/1r7QXGYOLCh4fcUq0jDdDwKJWNqWK1o4xMtYpKZCJYjM/edit#slide=id.p19) – Presentation by Ilya Grigorik from Velocity 2015
+* [“Rules of Thumb for HTTP/2 Push”](https://docs.google.com/document/d/1K0NykTXBbbbTlv60t5MyJvXjqKGsCVNYHyLEXIxYMv0/edit) – An analysis by Tom Bergan, Simon Pelchat and Michael Buettner on when and how to use push.
 
-## Comentarios {: #feedback }
+## Feedback {: #feedback }
 
 {% include "web/_shared/helpful.html" %}
