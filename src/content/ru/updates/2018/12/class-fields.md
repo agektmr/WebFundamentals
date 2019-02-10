@@ -1,24 +1,14 @@
-project_path: /web/_project.yaml
-book_path: /web/updates/_book.yaml
-description: Several proposals expand the existing JavaScript class syntax with new functionality. This article explains the new public class fields syntax in V8 v7.2 and Chrome 72, as well as the upcoming private class fields syntax.
+project_path: /web/_project.yaml book_path: /web/updates/_book.yaml description: Several proposals expand the existing JavaScript class syntax with new functionality. This article explains the new public class fields syntax in V8 v7.2 and Chrome 72, as well as the upcoming private class fields syntax.
 
-{% include "web/_shared/machine-translation-start.html" %}
+{# wf_updated_on: 2018-12-18 #} {# wf_published_on: 2018-12-13 #} {# wf_tags: javascript,chrome72 #} {# wf_featured_image: /web/updates/images/generic/js.png #} {# wf_featured_snippet: Several proposals expand the existing JavaScript class syntax with new functionality. This article explains the new public class fields syntax in V8 v7.2 and Chrome 72, as well as the upcoming private class fields syntax. #} {# wf_blink_components: Blink>JavaScript>Language #}
 
-{# wf_updated_on: 2019-02-07 #}
-{# wf_published_on: 2018-12-13 #}
-{# wf_tags: javascript,chrome72 #}
-{# wf_featured_image: /web/updates/images/generic/js.png #}
-{# wf_featured_snippet: Several proposals expand the existing JavaScript class syntax with new functionality. This article explains the new public class fields syntax in V8 v7.2 and Chrome 72, as well as the upcoming private class fields syntax. #}
-{# wf_blink_components: Blink>JavaScript>Language #}
-
-# Публичные и приватные поля классов {: .page-title }
+# Public and private class fields {: .page-title }
 
 {% include "web/_shared/contributors/mathiasbynens.html" %}
 
-Несколько предложений расширяют существующий синтаксис классов в JavaScript новой функциональностью. Эта статья
-объясняет новый синтаксис публичных полей классов в V8 v7.2 и Chrome 72, а также грядущих приватных полей.
+Several proposals expand the existing JavaScript class syntax with new functionality. This article explains the new public class fields syntax in V8 v7.2 and Chrome 72, as well as the upcoming private class fields syntax.
 
-Вот пример кода, который создает экземпляр класса `IncreasingCounter`:
+Here’s a code example that creates an instance of a class named `IncreasingCounter`:
 
 ```js
 const counter = new IncreasingCounter();
@@ -31,12 +21,11 @@ counter.value;
 // → 1
 ```
 
-Отметим, что обращение к `value` выполняет некоторый код (вывод сообщения в лог) перед тем, как вернуть значение. Теперь
-спросите себя: как бы Вы реализовали этот класс на JavaScript? 🤔
+Note that accessing the `value` executes some code (i.e., it logs a message) before returning the result. Now ask yourself, how would you implement this class in JavaScript? 🤔
 
-## Классы ES2015
+## ES2015 class syntax
 
-Ниже пример того, как класс `IncreasingCounter` может быть реализован с помощью синтаксиса ES2015:
+Here’s how `IncreasingCounter` could be implemented using ES2015 class syntax:
 
 ```js
 class IncreasingCounter {
@@ -53,10 +42,7 @@ class IncreasingCounter {
 }
 ```
 
-Класс предоставляет геттер `value` и метод для инкремента значения в прототипе. Обратите внимание, что у класса есть
-конструктор, который добавляет свойство `_count` и устанавливает его начальное значение в `0`. Сейчас мы используем
-префикс подчеркивания, чтобы обозначить, что `_count` не должен использоваться напрямую вне класса, но это просто
-соглашение; в действительности это не приватное свойство, а эта семантика не определена в самом языке.
+The class installs the `value` getter and an `increment` method on the prototype. More interestingly, the class has a constructor that creates an instance property `_count` and sets its default value to `0`. We currently tend to use the underscore prefix to denote that `_count` should not be used directly by consumers of the class, but that’s just a convention; it’s not *really* a “private” property with special semantics enforced by the language.
 
 ```js
 const counter = new IncreasingCounter();
@@ -74,9 +60,9 @@ counter.value;
 // → 42
 ```
 
-## Публичные поля классов
+## Public class fields
 
-Новый синтаксис для публичных полей позволяет упростить определение класса:
+The new public class fields syntax allows us to simplify the class definition:
 
 ```js
 class IncreasingCounter {
@@ -91,18 +77,13 @@ class IncreasingCounter {
 }
 ```
 
-Свойство `_count` теперь лаконично объявлено в начале класса. Нам больше не нужен конструктор только для того, чтобы
-определить некоторые поля. Отлично!
+The `_count` property is now nicely declared at the top of the class. We no longer need a constructor just to define some fields. Neat!
 
-Тем не менее, `_count` — все еще публичное свойство. А в этом конкретном примере мы хотим предотвратить обращение к
-этому полю напрямую.
+However, the `_count` field is still a public property. In this particular example, we want to prevent people from accessing the property directly.
 
-## Приватные поля классов
+## Private class fields
 
-Именно здесь на помощь приходят приватные поля. Новый синтаксис для приватных полей схож с синтаксисом публичных полей,
-за исключением того, что [Вы помечаете их как приватные, используя символ
-`#`](https://github.com/tc39/proposal-class-fields/blob/master/PRIVATE_SYNTAX_FAQ.md).
-Вы можете думать, что `#` — это просто часть имени поля:
+That’s where private class fields come in. The new private fields syntax is similar to public fields, except [you mark the field as being private by using `#`](https://github.com/tc39/proposal-class-fields/blob/master/PRIVATE_SYNTAX_FAQ.md). You can think of the `#` as being part of the field name:
 
 ```js
 class IncreasingCounter {
@@ -117,7 +98,7 @@ class IncreasingCounter {
 }
 ```
 
-Приватные поля недоступны вне тела класса:
+Private fields are not accessible outside of the class body:
 
 ```js
 const counter = new IncreasingCounter();
@@ -127,10 +108,9 @@ counter.#count = 42;
 // → SyntaxError
 ```
 
-## Статические свойства
+## Public and static properties
 
-Синтаксис полей классов может быть использован для создания публичных и приватных статических свойств и методов, как
-показано ниже:
+Class fields syntax can be used to create public and private static properties and methods as well:
 
 ```js
 class FakeMath {
@@ -164,10 +144,9 @@ FakeMath.#computeRandomNumber();
 // → SyntaxError
 ```
 
-## Упрощение работы с подклассами
+## Simpler subclassing
 
-Преимущества нового синтаксиса полей классов становятся более очевидны при работе с подклассами, которые вводят
-дополнительные поля. Представим следующий базовый класс `Animal`:
+The benefits of the class fields syntax become even clearer when dealing with subclasses that introduce additional fields. Imagine the following base class `Animal`:
 
 ```js
 class Animal {
@@ -177,8 +156,7 @@ class Animal {
 }
 ```
 
-Чтобы создать подкласс `Cat`, который добавляет новое свойство для экземпляра, ранее требовалось обратиться к `super()`,
-чтобы вызвать конструктор базового класса `Animal` перед тем, как создать это свойство:
+To create a `Cat` subclass that introduces an additional instance property, you’d previously have to call `super()` to run the constructor of the `Animal` base class before creating the property:
 
 ```js
 class Cat extends Animal {
@@ -192,8 +170,7 @@ class Cat extends Animal {
 }
 ```
 
-Здесь много шаблонного кода только для того, чтобы указать, что коты не очень любят принимать ванну. К счастью, новый
-синтаксис полей классов избавляет от необходимости определения этого конструктора с неуклюжим вызовом `super()`:
+That’s a lot of boilerplate just to indicate that cats don’t enjoy taking baths. Luckily, the class fields syntax removes the need for the whole constructor, including the awkward `super()` call:
 
 ```js
 class Cat extends Animal {
@@ -204,16 +181,14 @@ class Cat extends Animal {
 }
 ```
 
-## Итого
+## Conclusion
 
-Публичные поля классов доступны, начиная с V8 v7.2 и Chrome 72. Скоро планируется релиз и приватных полей классов.
+Public class fields are shipping in V8 v7.2 and Chrome 72. We plan on shipping private class fields soon.
 
-У Вас есть вопросы о новых возможностях языка? Комментарии к этой статье? Не стесняйтесь писать мне в Твиттер [@mathias](https://twitter.com/mathias)!
+Questions about this new feature? Comments about this article? Feel free to ping me on Twitter via [@mathias](https://twitter.com/mathias)!
 
-## Обратная связь
+## Feedback
 
 {% include "web/_shared/helpful.html" %}
 
 {% include "web/_shared/rss-widget-updates.html" %}
-
-{% include "web/_shared/translation-end.html" %}
