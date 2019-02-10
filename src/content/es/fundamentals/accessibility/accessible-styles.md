@@ -1,82 +1,44 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Uso de estilo adecuado para mejorar la accesibilidad
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Using proper styling to improve accessibility
 
+{# wf_updated_on: 2018-11-19 #} {# wf_published_on: 2016-10-04 #} {# wf_blink_components: Blink>CSS #}
 
-{# wf_updated_on: 2018-05-23 #}
-{# wf_published_on: 2016-10-04 #}
+# Accessible Styles {: .page-title }
 
-# Estilos accesibles {: .page-title }
+{% include "web/_shared/contributors/megginkearney.html" %} {% include "web/_shared/contributors/dgash.html" %} {% include "web/_shared/contributors/robdodson.html" %}
 
-{% include "web/_shared/contributors/megginkearney.html" %}
-{% include "web/_shared/contributors/dgash.html" %}
-{% include "web/_shared/contributors/robdodson.html" %}
+We've explored two of the crucial pillars of accessibility, focus and semantics. Now let's tackle the third, styling. It's a broad topic that we can cover in three sections.
 
+- Ensuring that elements are styled to support our accessibility efforts by adding styles for focus and various ARIA states.
+- Styling our UIs for flexibility so they can be zoomed or scaled to accommodate users who may have trouble with small text.
+- Choosing the right colors and contrast to avoid conveying information with color alone.
 
+## Styling focus
 
-Hemos explorado dos de los pilares cruciales de la accesibilidad: el foco y la semántica.
-Ahora, analicemos un tercero: el estilo. Es un tema amplio que podemos tratar en
-tres secciones.
+Generally, any time we focus an element, we rely on the built-in browser focus ring (the CSS `outline` property) to style the element. The focus ring is handy because, without it, it's impossible for a keyboard user to tell which element has the focus. The [WebAIM checklist](http://webaim.org/standards/wcag/checklist){: .external } makes a point of this, requiring that "It is visually apparent which page element has the current keyboard focus (i.e., as you tab through the page, you can see where you are)."
 
- - Asegurarnos que los elementos tienen el estilo adecuado para respaldar nuestros esfuerzos de accesibilidad, al
-   agregar estilos para lograr foco y varios estados de ARIA.
- - Crear un estilo para nuestras IU para que las mismas sean flexibles, y se les pueda hacer zoom o se puedan escalar para
-   los usuarios con dificultad para leer texto con letra pequeña.
- - Seleccionar el contraste y los colores adecuados para evitar transmitir información solo con
-   color.
+![form elements with a focus ring](imgs/focus-ring.png)
 
-## Estilo del foco
+However, sometimes the focus ring can look distorted or it may just not fit in with your page design. Some developers remove this style altogether by setting the element's `outline` to `0` or `none`. But without a focus indicator, how is a keyboard user supposed to know which item they're interacting with?
 
-Generalmente, siempre que nos enfocamos en un elemento, dependemos del anillo de enfoque
-incluido en el navegador (la propiedad CSS `outline`) para darle estilo al elemento. El anillo de enfoque es útil
-porque, sin él, es imposible que un usuario que usa el teclado distinga qué elemento
-tiene el foco. La [lista de comprobación
-de WebAIM](http://webaim.org/standards/wcag/checklist){: .external } destaca
-esto, solicitando que "Sea visualmente notable qué element de la página tiene
-el foco actual del teclado (es decir, mientras navegas por la página presionan tab, puedes ver dónde
-estás)".
+Warning: Never set outline to 0 or none without providing a focus alternative!
 
-![elementos de formulario con anillo de enfoque](imgs/focus-ring.png)
-
-Sin embargo, a veces el anillo de enfoque puede lucir distorsionado o puede no adaptarse
-al diseño de tu página. Algunos programadores quitan este estilo por completo configurando
-el `outline` del elemento en `0` o `none`. Pero sin indicador de foco, ¿cómo puede
-un usuario de teclado saber con qué artículo está interactuando?
-
-Warning: Nunca configures el contorno en 0 ni none sin brindar una alternativa de foco.
-
-Puede ser que conozcas cómo agregar estados de desplazamiento a tus controles con la *pseudoclase*
-`:hover` del CSS. Por ejemplo, puedes usar `:hover` en un elemento vínculo
-para modificarle el color o el fondo cuando tiene el mouse encima. Como con
-`:hover`, puedes usar la pseudoclase `:focus` para seleccionar como objetivo un elemento cuando tiene
-foco.
+You might be familiar with adding hover states to your controls using the CSS `:hover` *pseudo-class*. For example, you might use `:hover` on a link element to change its color or background when the mouse is over it. Similar to `:hover`, you can use the `:focus` pseudo-class to target an element when it has focus.
 
     /* At a minimum you can add a focus style that matches your hover style */
     :hover, :focus {
       background: #c0ffee;
     }
+    
 
-Una solución alternativa al problema de quitar el anillo de enfoque es darle
-a tu elemento los mismos estilo de desplazamiento y foco, lo cual resuelve el problema de
-"¿Dónde está el foco?" de los usuarios de teclado. Como siempre, mejorar la
-experiencia de accesibilidad mejora la experiencia de todos.
+An alternative solution to the problem of removing the focus ring is to give your element the same hover and focus styles, which solves the "where's-the-focus?" problem for keyboard users. As usual, improving the accessibility experience improves everyone's experience.
 
-### Modalidad de entrada
+### Input modality
 
-![un botón HTML nativo con anillo de enfoque](imgs/sign-up.png){: .attempt-right }
+![a native HTML button with a focus ring](imgs/sign-up.png){: .attempt-right }
 
-Para elementos nativos como `button`, los navegadores pueden detectar si la interacción de usuario
-ocurrió mediante mouse o teclado, y suele solo mostrar el
-anillo de enfoque para interacción de teclado. Por ejemplo, cuando haces clic en un
-`button`  nativo con el mouse, no hay anillo de enfoque, pero, cuando llegas a él presionando tab con el
-teclado, aparece el anillo de enfoque.
+For native elements like `button`, browsers can detect whether user interaction occurred via the mouse or the keyboard press, and typically only display the focus ring for keyboard interaction. For example, when you click a native `button` with the mouse there is no focus ring, but when you tab to it with the keyboard the focus ring appears.
 
-La lógica es que es menos probable que los usuarios de mouse necesiten el anillo de enfoque
-porque saben en qué elemento hicieron clic. Lamentablemente, actualmente no existe
-un sola solución para varios navegadores que responda con el mismo comportamiento. Como resultado, si
-le das a cualquier elemento un estilo `:focus`, ese estilo aparecerá cuando el
-usuario haga clic en el elemento o haga foco en el mismo con el teclado. Intenta hacer clic en este
-botón falso y nota que el estilo `:focus` siempre está aplicado.
+The logic here is that mouse users are less likely to need the focus ring because they know what element they clicked. Unfortunately there isn't currently a single cross-browser solution that yields this same behavior. As a result, if you give any element a `:focus` style, that style will display when *either* the user clicks on the element or focuses it with the keyboard. Try clicking on this fake button and notice the `:focus` style is always applied.
 
     <style>
       fake-button {
@@ -86,276 +48,142 @@ botón falso y nota que el estilo `:focus` siempre está aplicado.
         cursor: pointer;
         user-select: none;
       }
-
+    
       fake-button:focus {
         outline: none;
         background: pink;
       }
     </style>
-    <fake-button tabindex="0">¡Haz clic aquí!</fake-button>
+    <fake-button tabindex="0">Click Me!</fake-button>
+    
 
 {% framebox height="80px" %}
-<style>
-  fake-button {
-    display: inline-block;
-    padding: 10px;
-    border: 1px solid black;
-    cursor: pointer;
-    user-select: none;
-  }
+<style>fake-button {display: inline-block;padding: 10px;border: 1px solid black;cursor: pointer;user-select: none;}fake-button:focus {outline: none;background: pink;}</style>
+<fake-button tabindex="0">Click Me!</fake-button> {% endframebox %}
 
-  fake-button:focus {
-    outline: none;
-    background: pink;
-  }
-</style>
-<fake-button tabindex="0">¡Haz clic aquí!</fake-button>
-{% endframebox %}
+This can be a bit annoying, and often times developer will resort to using JavaScript with custom controls to help differentiate between mouse and keyboard focus.
 
-Esto puede resultar molesto y a menudo el programador recurre al uso de
-JavaScript con controles personalizados para ayudar a diferenciar entre foco de
-mouse y teclado.
+In Firefox, the `:-moz-focusring` CSS pseudo-class allows you to write a focus style that is only applied if the element is focused via the keyboard, quite a handy feature. While this pseudo-class is currently only supported in Firefox, [there is currently work going on to turn it into a standard](https://github.com/wicg/modality){: .external }.
 
-En Firefox, la pseudoclase `:-moz-focusring` de CSS te permite escribir un estilo
-de foco que solo se aplique si ele elemento recibe foco mediante el teclado, una
-característica útil. A pesar de que la pseudoclase actualmente solo funciona con Firefox,
-[se está trabajando para convertirla en un
-estándar](https://github.com/wicg/modality){: .external }.
+There is also [this great article by Alice Boxhall and Brian Kardell](https://www.oreilly.com/ideas/proposing-css-input-modality){: .external } that explores the topic of modality and contains prototype code for differentiating between mouse and keyboard input. You can use their solution today, and then include the focus ring pseudo-class later when it has more widespread support.
 
-También existe [este excelente artículo de Alice Boxhall y Brian
-Kardell](https://www.oreilly.com/ideas/proposing-css-input-modality){: .external }
-que explora el tema de modalidad y contiene un prototipo de código para
-diferenciar entre entrada de mouse y de teclado. Puedes usar su solución
-hoy e incluir la pseudoclase de anillo de enfoque más adelante, cuando tenga un
-soporte más difundido.
+## Styling states with ARIA
 
-## Estilo de estados con ARIA
+When you build components, it's common practice to reflect their state, and thus their appearance, using CSS classes controlled with JavaScript.
 
-Cuando creas componentes, es una práctica común reflejar su estado y también
-su apariencia, usando clases de CSS controladas por JavaScript.
+For example, consider a toggle button that goes into a "pressed" visual state when clicked and retains that state until it is clicked again. To style the state, your JavaScript might add a `pressed` class to the button. And, because you want good semantics on all your controls, you would also set the `aria-pressed` state for the button to `true`.
 
-Por ejemplo, piensa en un botón de alternancia que entra en estado visual "presionado"
-cuando se le hace clic y mantiene ese estado hasta que se le vuelve a hacer clic. Para darle estilo al
-estado, tu JavaScript puede agregarle una clase `pressed` al botón. Y, ya que
-quieres una buena semántica en todos tus controles, también configurarías el
- estado `aria-pressed` del botón como `true`.
-
-Una técnica útil para emplear aquí es quitar la clase completa y
-usar los atributos de ARIA para darle estilo al elemento. Ahora puedes actualizar el selector de
-CSS para el estado presionado del botón de este
-
+A useful technique to employ here is to remove the class altogether, and just use the ARIA attributes to style the element. Now you can update the CSS selector for the pressed state of the button from this
 
     .toggle.pressed { ... }
     
 
-a este.
-
+to this.
 
     .toggle[aria-pressed="true"] { ... }
     
 
-Esto crea una relación lógica y semántica entre el estado ARIA
-y la apariencia del elemento, y también reduce el código extra.
+This creates both a logical and a semantic relationship between the ARIA state and the element's appearance, and cuts down on extra code as well.
 
-## Diseño adaptable multidispositivo
+## Multi-device responsive design
 
-Sabemos que es buena idea diseñar en forma receptiva para brindar la mejor
-experiencia multidispositivo, pero el diseño adaptable también proporciona un beneficio de
-accesibilidad.
+We know that it's a good idea to design responsively to provide the best multi-device experience, but responsive design also yields a win for accessibility.
 
-Piensa en un sitio como [Udacity.com](https://www.udacity.com/courses/all):
+Consider a site like [Udacity.com](https://www.udacity.com/courses/all):
 
-![Udacity.com con 100% de ampliación](imgs/udacity.jpg)
+![Udacity.com at 100% magnification](imgs/udacity.jpg)
 
-Un usuario de baja visión que tiene dificultad para leer letras pequeñas puede acercar la página,
-tal vez hasta un 400%. Ya que el sitio está diseñado de forma receptiva, la IU
-se reacomodará para la "ventana más pequeña" (en realidad para la página más grande),
-lo cual es excelente para los usuarios de escritorio que requieren ampliación de la pantalla y para los usuarios
-lectores de pantalla móvil. No hay lado negativo. Esta es la misma página ampliada a
-400%:
+A low-vision user who has difficulty reading small print might zoom in the page, perhaps as much as 400%. Because the site is designed responsively, the UI will rearrange itself for the "smaller viewport" (actually for the larger page), which is great for desktop users who require screen magnification and for mobile screen reader users as well. It's a win-win. Here's the same page magnified to 400%:
 
-![Udacity.com con 400% de ampliación](imgs/udacity-zoomed.jpg)
+![Udacity.com at 400% magnification](imgs/udacity-zoomed.jpg)
 
-De hecho, mediante una designación responsable, estamos cumpliendo la [regla 1.4.4 de la lista de comprobación
-de WebAIM](http://webaim.org/standards/wcag/checklist#sc1.4.4){: .external },
-que indica que una página "...debería ser legible y funcional cuando se duplica el
-tamaño del texto".
+In fact, just by designing responsively, we're meeting [rule 1.4.4 of the WebAIM checklist](http://webaim.org/standards/wcag/checklist#sc1.4.4){: .external }, which states that a page "...should be readable and functional when the text size is doubled."
 
-El repaso de todo el diseño adaptable está fuera del alcance de esta guía, pero
-estas son algunas importantes decisiones que beneficiarán a tu experiencia receptiva
-y les darán a tus usuarios mejor acceso a tu contenido.
+Going over all of responsive design is outside the scope of this guide, but here are a few important takeaways that will benefit your responsive experience and give your users better access to your content.
 
- - Primero, asegúrate de usar siempre la metaetiqueta `viewport` adecuada.<br>
-   `<meta name="viewport" content="width=device-width, initial-scale=1.0">`
-   <br>La configuración de `width=device-width`
-   coincidirá con el ancho de la pantalla en píxeles independientes del dispositivo, y la configuración
-   `initial-scale=1` establece una relación de 1:1 entre los píxeles de CSS y
-   los píxeles independientes del dispositivo. Esto le indica al navegador que adapte tu
-   contenido al tamaño de la pantalla, para que os usuarios no vean solamente un grupo de texto
-   apretado.
+- First, make sure you always use the proper `viewport` meta tag.  
+    `<meta name="viewport" content="width=device-width, initial-scale=1.0">`   
+    Setting `width=device-width` will match the screen's width in device-independent pixels, and setting `initial-scale=1` establishes a 1:1 relationship between CSS pixels and device-independent pixels. Doing this instructs the browser to fit your content to the screen size, so users don't just see a bunch of scrunched-up text.
 
-![una pantalla de teléfono sin y con la metaetiqueta de ventana de visualización](imgs/scrunched-up.jpg)
+![a phone display without and with the viewport meta tag](imgs/scrunched-up.jpg)
 
-Warning: Cuando uses la metaetiqueta de ventana de visualización, asegúrate de no configurar
-la escala máxima=1 o establecer escalable por usuario=no. Permite que los usuarios amplíen si lo necesitan.
+Warning: When using the viewport meta tag, make sure you don't set maximum-scale=1 or set user-scaleable=no. Let users zoom if they need to!
 
- - Otra técnica para tener en cuenta es el diseño con una planilla receptiva. Como
-   viste con el sitio de Udacity, el diseño con planilla significa que tu contenido
-   se reprocesará cuando cambie el tamaño de la página. A menudo estos diseños se producen usando
-   unidades relativas como porcentajes, em o rem, en lugar de valores
-   de píxel codificados en forma rígida. La ventaja de hacerlo de esta forma es que el texto y el contenido pueden
-   agrandar y forzar a otros artículos a las que bajen en la página. Entonces el orden del DOM y el orden
-   de lectura permanecen iguales, incluyo si el diseño cambia debido a una ampliación.
+- Another technique to keep in mind is designing with a responsive grid. As you saw with the Udacity site, designing with a grid means your content will reflow when the page changes size. Often these layouts are produced using relative units like percents, ems, or rems instead of hard-coded pixel values. The advantage of doing it this way is that text and content can enlarge and force other items down the page. So the DOM order and the reading order remain the same, even if the layout changes because of magnification.
 
- - Además, piensa en usar unidades relativas como `em` o `rem` para cosas como tamaño
-   de texto, en lugar de valores de píxel. Algunos navegadores soportan el cambio de tamaño del texto solo en
-   preferencias de usuario, y si usas un valor de píxel para el texto, esta configuración
-   no afectará a tu copia. Si, sin embargo, has usado unidades relativas
-   en todo, la copia del sitio se actualizará para reflejar la preferencia del usuario.
+- Also, consider using relative units like `em` or `rem` for things like text size, instead of pixel values. Some browsers support resizing text only in user preferences, and if you're using a pixel value for text, this setting will not affect your copy. If, however, you've used relative units throughout, then the site copy will update to reflect the user's preference.
 
- - Finalmente, cuando tu diseño aparece en un dispositivo móvil, deberías asegurarte
-   de que los elementos interactivos como botones o vínculos sean lo suficientemente grandes y tengan
-   suficiente espacio alrededor, para que sea sencillo presionarlos sin superponerse
-   accidentalmente sobre otros elementos. Esto beneficia a todos los usuarios, pero es especialmente
-   útil para quien tenga una discapacidad motriz.
+- Finally, when your design is displayed on a mobile device, you should ensure that interactive elements like buttons or links are large enough, and have enough space around them, to make them easy to press without accidentally overlapping onto other elements. This benefits all users, but is especially helpful for anyone with a motor impairment.
 
-El tamaño mínimo de objetivo táctil recomendado es de alrededor de 48 píxeles independientes del dispositivo
-en un sitio con una ventana móvil establecida adecuadamente. Por ejemplo, a pesar de que un ícono puede
-solo tener un ancho y un alto de 24 px, puedes usar relleno adicional para llevar
-el tamaño de del objetivo de presión a hasta 48 px. El área de 48x48 píxeles corresponde a alrededor de 9 mm,
-que es alrededor del tamaño del área de la yema del dedo.
+A minimum recommended touch target size is around 48 device independent pixels on a site with a properly set mobile viewport. For example, while an icon may only have a width and height of 24px, you can use additional padding to bring the tap target size up to 48px. The 48x48 pixel area corresponds to around 9mm, which is about the size of a person's finger pad area.
 
-![un diagrama que muestra un par de objetivos táctiles de 48 píxeles](imgs/touch-target.jpg)
+![a diagram showing a couple of 48 pixel touch targets](imgs/touch-target.jpg)
 
-Los objetivos táctiles también deberían tener un espacio de alrededor de 8 píxeles
-de separación, en orientación horizontal y vertical, de manera que el dedo del usuario, al presionar un
-objetivo de presión, no toque inintencionalmente otro objetivo de presión.
+Touch targets should also be spaced about 8 pixels apart, both horizontally and vertically, so that a user's finger pressing on one tap target does not inadvertently touch another tap target.
 
-## Color y contraste
+## Color and contrast
 
-Si tienes buena visión, es fácil asumir que todas las personas perciben el color o
-la legibilidad del texto de la misma manera que tú &mdash; pero, por supuesto, eso no es real.
-Finalicemos viendo cómo podemos usar en forma efectiva el color y el contraste
-para crear diseños agradables accesibles para todos.
+If you have good vision, it's easy to assume that everyone perceives colors, or text legibility, the same way you do &mdash; but of course that's not the case. Let's wrap things up by looking at how we can effectively use color and contrast to create pleasant designs that are accessible to everyone.
 
-Como puedes imaginar, algunas combinaciones de colores que a algunas personas les resultan fáciles de
-leer les resultan difíciles o imposibles a otras. Esto se suele reducir a *color
-contraste*, la relación entre la *luminosidad* de los colores
-de primer plano y de segundo plano. Cuando los colores son similares, la relación de contraste es baja. Cuando son
-diferentes, la relación de contraste es alta.
+As you might imagine, some color combinations that are easy for some people to read are difficult or impossible for others. This usually comes down to *color contrast*, the relationship between the foreground and background colors' *luminance*. When the colors are similar, the contrast ratio is low; when they are different, the contrast ratio is high.
 
-Las [pautas de WebAIM](http://webaim.org/standards/wcag/){: .external }
-recomiendan una relación de contraste (mínima) AA de 4.5:1 para todo el texto. Se hace una excepción
-para texto muy grande (120 a 150% más grande que el texto de cuerpo predeterminado), para el que
-la relación puede disminuir a 3:1. Nota la diferencia de relaciones de contraste que se muestra
-a continuación.
+The [WebAIM guidelines](http://webaim.org/standards/wcag/){: .external } recommend an AA (minimum) contrast ratio of 4.5:1 for all text. An exception is made for very large text (120-150% larger than the default body text), for which the ratio can go down to 3:1. Notice the difference in the contrast ratios shown below.
 
-![comparación de varias relaciones de contraste](imgs/contrast-ratios.jpg)
+![comparison of various contrast ratios](imgs/contrast-ratios.jpg)
 
-La relación de contraste de 4:5:1 se escogió para el nivel AA porque compensa
-la pérdida de sensibilidad de contraste que los usuarios con pérdida de visión
-equivalente a una visión de aproximadamente 20/40 suelen experimentar. Se suele informar 20/40 como agudeza visual
-típica de personas de alrededor de 80 años. Para usuarios con leves daños visuales
-o deficiencias de colores, podemos incrementar el contraste hasta 7:1 en el texto del cuerpo.
+The contrast ratio of 4.5:1 was chosen for level AA because it compensates for the loss in contrast sensitivity usually experienced by users with vision loss equivalent to approximately 20/40 vision. 20/40 is commonly reported as typical visual acuity of people at about age 80. For users with low vision impairments or color deficiencies, we can increase the contrast up to 7:1 for body text.
 
-Puedes usar la [extensión de accesibilidad
-DevTools](https://chrome.google.com/webstore/detail/accessibility-developer-t/fpkknkljclfencbdbgkenhalefipecmb){: .external }
-para Chrome, para identificar las relaciones de contraste. Uno de los beneficios del uso de Chrome Devtools
-es que sugiere alternativas de AA y AAA (mejoradas) a tus colores
-actuales, y puede hacer clic en los valores para obtener una vista previa en tu app.
+You can use the [Accessibility DevTools extension](https://chrome.google.com/webstore/detail/accessibility-developer-t/fpkknkljclfencbdbgkenhalefipecmb){: .external } for Chrome to identify contrast ratios. One benefit of using the Chrome Devtools is that they will suggest AA and AAA (enhanced) alternatives to your current colors, and you can click the values to preview them in your app.
 
-Para auditar el color/contraste, sigue los siguientes pasos básicos.
+To run a color/contrast audit, follow these basic steps.
 
- 1. Después de la instalación de la extensión, haz clic en `Audits`
- 1. Desmarca todo excepto `Accessibility`
- 1. Haz clic en `Audit Present State`
- 1. Ten en cuenta todas las advertencias de contraste
+1. After installing the extension, click `Audits`
+2. Uncheck everything except `Accessibility`
+3. Click `Audit Present State`
+4. Note any contrast warnings
 
-![el diálogo de auditoría de contraste de devtools](imgs/contrast-audit.png)
+![the devtools contrast audit dialog](imgs/contrast-audit.png)
 
-WebAIM brinda un útil [revisor
-de contraste de color](http://webaim.org/resources/contrastchecker/){: .external } que puedes usar
-para evaluar el contraste de cualquier par de colores.
+WebAIM itself provides a handy [color contrast checker](http://webaim.org/resources/contrastchecker/){: .external } you can use to examine the contrast of any color pair.
 
-### No transmitas información solo con color
+### Don't convey information with color alone
 
-Existen alrededor de 320 millones de usuarios con deficiencia de visión en color. Alrededor de 1 de 12
-hombres y 1 de 200 mujeres tienen alguna forma de "daltonismo", lo que significa que alrededor de
-1 de cada 20, o el 5%, de tus usuarios no verán tu sitio en la forma que deseas.
-Cuando confiamos en el color para transmitir la información, movemos ese número hasta niveles
-inaceptables.
+There are roughly 320 million users with color vision deficiency. About 1 in 12 men and 1 in 200 women have some form of "color blindness"; that means about 1/20th, or 5%, of your users will not experience your site the way you intended. When we rely on color to convey information, we push that number to unacceptable levels.
 
-Note: El término "daltonismo" se usa para describir una afección visual
-debido a la que una persona tiene dificultades para distinguir los colores, pero muy pocas personas
-realmente no distinguen ningún color. La mayoría de las personas que sufren deficiencias de color ven algunos o la mayorías de los
-colores, pero tienen dificultades para diferenciar entre ciertos colores, tales como rojos
-y verdes (lo más común), marrones y naranjas, y azules y violetas.
+Note: The term "color blindness" is often used to describe a visual condition where a person has trouble distinguishing colors, but in fact very few people are truly color blind. Most people with color deficiencies can see some or most colors, but have difficulty differentiating between certain colors such as reds and greens (most common), browns and oranges, and blues and purples.
 
-Por ejemplo, en un formulario de entrada, un número de teléfono puede estar subrayado en rojo para
-demostrar que no es válido. Pero para alguien con deficiencias del color o un usuario lector de pantalla, esa
-información no se transmite bien, si es que algo se transmite. A pesar de esto, siempre deberías intentar
-brindar varios caminos para que el usuario acceda a información crítica.
+For example, in an input form, a telephone number might be underlined in red to show that it is invalid. But to a color deficient or screen reader user, that information is not conveyed well, if at all. Thus, you should always try to provide multiple avenues for the user to access critical information.
 
-![un formulario de entrada con un error subrayado en rojo](imgs/input-form1.png)
+![an input form with an error underlined in red](imgs/input-form1.png)
 
-La [lista de comprobación de WebAIM indica en la sección
-1.4.1](http://webaim.org/standards/wcag/checklist#sc1.4.1){: .external } que
-"el color no debería ser el único método para transmitir contenido ni
-para distinguir elementos visuales". También indica que "no se debería usar solo
-el color para diferenciar vínculos del texto que los rodea" a menos que cumplan ciertos
-requisitos de contraste. En cambio, la lista de comprobación recomienda agregar un indicador
-adicional como un guión bajo (incluida la propiedad `text-decoration` de CSS) para
-indicar cuando el vínculo está activo.
+The [WebAIM checklist states in section 1.4.1](http://webaim.org/standards/wcag/checklist#sc1.4.1){: .external } that "color should not be used as the sole method of conveying content or distinguishing visual elements." It also notes that "color alone should not be used to distinguish links from surrounding text" unless they meet certain contrast requirements. Instead, the checklist recommends adding an additional indicator such as an underscore (using the CSS `text-decoration` property) to indicate when the link is active.
 
-Una forma sencilla de solucionar el ejemplo anterior es agregarle un mensaje adicional al
-campo, para explicar que no es válido y por qué.
+An easy way to fix the previous example is to add an additional message to the field, announcing that it is invalid and why.
 
-![un formulario de entrada con un mensaje de error agregado con fines de claridad](imgs/input-form2.png)
+![an input form with an added error message for clarity](imgs/input-form2.png)
 
-Cuando construyas una app, ten estas cosas en mente y está atento
-a áreas en las que puedas estar confiando demasiado en el color para transmitir información
-importante.
+When you're building an app, keep these sorts of things in mind and watch out for areas where you may be relying too heavily on color to convey important information.
 
-Si te da curiosidad cómo luce tu sitio para distintas personas o si confías
-demasiado en el uso del color en tu IU, puedes usar la [extensión
-NoCoffee Chrome](https://chrome.google.com/webstore/detail/nocoffee/jjeeggmbnhckmgdhmgdckeigabjfbddl){: .external }
-para simular varias formas de daños visuales, incluidos distintos tipos de
-daltonismo.
+If you're curious about how your site looks to different people, or if you rely heavily on the use of color in your UI, you can use the [NoCoffee Chrome extension](https://chrome.google.com/webstore/detail/nocoffee/jjeeggmbnhckmgdhmgdckeigabjfbddl){: .external } to simulate various forms of visual impairment, including different types of color blindness.
 
-### Modo de contraste alto
+### High contrast mode
 
-El modo de contraste alto le permite al usuario invertir los colores del primer plano y el segundo plano,
-lo cual a menudo ayuda a que el texto se destaque mejor. Para alguien con un daño
-visual leve, el modo de contraste alto puede facilitar mucho la navegación por el contenido
-de la página. Existen varias formas de configurar un contraste alto en tu máquina.
+High-contrast mode allows a user to invert foreground and background colors, which often helps text stand out better. For someone with a low vision impairment, high-contrast mode can make it much easier to navigate the content on the page. There are a few ways to get a high-contrast setup on your machine.
 
-Los sistemas operativos como Mac OSX y Windows ofrecen modos de contraste alto que se pueden
-habilitar para todo al nivel del sistema. O los usuarios pueden instalar una extensión,
-como la [extensión
-Chrome High Contrast](https://chrome.google.com/webstore/detail/high-contrast/djcfdncoelnlbldjfhinnjlhdjlikmph){: .external }
-para habilitar el contraste alto solo en esa app específica.
+Operating systems like Mac OSX and Windows offer high-contrast modes that can be enabled for everything at the system level. Or users can install an extension, like the [Chrome High Contrast extension](https://chrome.google.com/webstore/detail/high-contrast/djcfdncoelnlbldjfhinnjlhdjlikmph){: .external } to enable high-contrast only in that specific app.
 
-Un ejercicio útil es encender la configuración de contraste alto y verificar que todas las
-IU de tu app sean visibles y usables.
+A useful exercise is to turn on high-contrast settings and verify that all of the UI in your application is still visible and usable.
 
-Por ejemplo, una barra de navegación puede tener un color de fondo sutil para indicar
-qué página está seleccionada. Si la ves en la extensión de contraste alto,
-esa sutileza desaparece por completo y, con ella, se va la comprensión del lector
-de qué página está activa.
+For example, a navigation bar might use a subtle background color to indicate which page is currently selected. If you view it in a high-contrast extension, that subtlety completely disappears, and with it goes the reader's understanding of which page is active.
 
-![una barra de navegación en modo de contraste alto](imgs/tab-contrast.png)
+![a navigation bar in high contrast mode](imgs/tab-contrast.png)
 
-De manera similar, si tienes en cuenta el ejemplo de la lección anterior, el subrayado
-rojo del campo de número de teléfono no válido puede aparecer en un
-color entre azul y verde difícil de distinguir.
+Similarly, if you consider the example from the previous lesson, the red underline on the invalid phone number field might be displayed in a hard-to-distinguish blue-green color.
 
-![un formulario con campo de error en el modo de contraste alto](imgs/high-contrast.jpg)
+![a form with an error field in high contrast mode](imgs/high-contrast.jpg)
 
-Si alcanzas las relaciones de contraste cubiertas en las lecciones anteriores,
-no deberías tener ningún problema a la hora de soportar el modo de contraste alto. Pero, para más
-tranquilidad, piensa en instalar la extensión Chrome High Contrast y darle
-a tu página una revisada para comprobar que todo funcione y luzca como
-esperas.
+If you are meeting the contrast ratios covered in the previous lessons you should be fine when it comes to supporting high-contrast mode. But for added peace of mind, consider installing the Chrome High Contrast extension and giving your page a once-over just to check that everything works, and looks, as expected.
 
+## Feedback {: #feedback }
 
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
