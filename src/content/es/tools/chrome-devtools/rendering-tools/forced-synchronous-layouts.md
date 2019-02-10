@@ -1,141 +1,89 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Sigue esta guía interactiva para aprender a usar DevTools a fin de diagnosticar diseños sincrónicos forzados.
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Follow along with this interactive guide to learn how to use DevTools to diagnose forced synchronous layouts.
 
-{# wf_updated_on: 2017-07-12 #}
-{# wf_published_on: 2015-04-13 #}
+{# wf_updated_on: 2018-07-27 #} {# wf_published_on: 2015-04-13 #} {# wf_blink_components: Platform>DevTools #}
 
-# Diagnosticar diseños sincrónicos forzados {: .page-title }
+# Diagnose Forced Synchronous Layouts {: .page-title }
 
-{% include "web/_shared/contributors/kaycebasques.html" %}
-{% include "web/_shared/contributors/megginkearney.html" %}
+{% include "web/_shared/contributors/kaycebasques.html" %} {% include "web/_shared/contributors/megginkearney.html" %}
 
-Obtén más información sobre cómo usar DevTools para diagnosticar diseños sincrónicos 
-forzados.
+Warning: This page is deprecated. See [Get Started With Analyzing Runtime Performance](/web/tools/chrome-devtools/evaluate-performance) for an up-to-date tutorial on forced synchronous layouts.
 
-En esta guía, aprenderás a depurar [diseños sincrónicos forzados][fsl] 
-identificando y solucionando problemas en una demostración en tiempo real.  En la demostración se animan imágenes 
-con [`requestAnimationFrame()`][raf], el enfoque recomendado para 
-la animación basada en fotogramas. Sin embargo, se produce una cantidad considerable de bloqueos en la 
-animación. Tu objetivo es identificar la causa de los bloqueos y solucionar el problema para 
-que la demostración se ejecute fluidamente a 60 FPS. 
+Learn how to use DevTools to diagnose forced synchronous layouts.
 
-[fsl]: /web/fundamentals/performance/rendering/avoid-large-complex-layouts-and-layout-thrashing#avoid-forced-synchronous-layouts
+In this guide you learn how to debug [forced synchronous layouts](/web/fundamentals/performance/rendering/avoid-large-complex-layouts-and-layout-thrashing#avoid-forced-synchronous-layouts) by identifying and fixing issues in a live demo. The demo animates images using [`requestAnimationFrame()`](/web/fundamentals/performance/rendering/optimize-javascript-execution#use-requestanimationframe-for-visual-changes), which is the recommended approach for frame-based animation. However, there's a considerable amount of jank in the animation. Your goal is to identify the cause of the jank and fix the issue so that the demo runs at a silky-smooth 60 FPS.
 
-[raf]: /web/fundamentals/performance/rendering/optimize-javascript-execution#use-requestanimationframe-for-visual-changes
+## Gather data
 
+First, you need to capture data so that you can understand exactly what happens as your page runs.
 
-## Recopilar datos
+1. Open the [demo](https://googlesamples.github.io/web-fundamentals/tools/chrome-devtools/rendering-tools/forcedsync.html).
+2. Open the **Timeline** panel of DevTools.
+3. Enable the **JS Profile** option. When analyzing the flame chart later, this option will let you see exactly which functions were called. 
+4. Click **Start** on the page to start the animation.
+5. Click the **Record** button on the Timeline panel to start the Timeline recording. 
+6. Wait two seconds.
+7. Click the **Record** button again to stop the recording. 
 
-Primero debes obtener datos para comprender con exactitud lo que sucede
-cuando se ejecuta la página. 
+When you are finished recording you should see something like the following on the Timeline panel.
 
-1. Abre la [demostración](https://googlesamples.github.io/web-fundamentals/tools/chrome-devtools/rendering-tools/forcedsync.html).
-1. Abre el panel **Timeline** de DevTools.
-1. Habilita la opción **JS Profile**. Cuando analices el gráfico de llamas posteriormente, esta
-   opción te permitirá ver exactamente las funciones que recibieron llamadas.
-1. Haz clic en **Start** en la página para iniciar la animación.
-1. Haz clic en el botón **Record** del panel Timeline para iniciar la grabación de la línea del
-   tiempo.
-1. Espera dos segundos.
-1. Haz clic en el botón **Record** de nuevo para detener la grabación. 
+![timeline recording of janky demo](imgs/demo-recording.png)
 
-Cuando termines la grabación, verás algo como lo siguiente
-en el panel Timeline. 
+## Identify problem
 
-![Grabación de Timeline de una demostración con bloqueos](imgs/demo-recording.png)
+Now that you have your data, it's time to start making sense of it.
 
-## Identificar el problema
+At a glance, you can see in the **Summary** pane of your Timeline recording that the browser spent most of its time rendering. Generally speaking, if you can [optimize your page's layout operations](/web/tools/chrome-devtools/profile/rendering-tools/analyze-runtime#layout), you may be able to reduce time spent rendering.
 
-Ahora que tienes los datos, es el momento de interpretarlos. 
+![Timeline summary](imgs/summary.png)
 
-De un vistazo, podrás ver en el subpanel **Summary** de la grabación en Timeline 
-que en el navegador se dedicó la mayor parte del tiempo a la representación. En términos generales, si puedes
-[optimizar las operaciones de diseño de la página][layout], es posible que puedas reducir
-el tiempo dedicado a la representación. 
+Now move your attention to the pink bars just below the **Overview** pane. These represent frames. Hover over them to see more information about the frame.
 
-![Summary, en Timeline](imgs/summary.png)
+![long frame](imgs/long-frame.png)
 
-A continuación, presta atención a las barras rosas que están justo debajo del subpanel **Overview**.
-Estas representan fotogramas. Desplázate sobre ellas para ver más información sobre los
-fotogramas.
+The frames are taking a long time to complete. For smooth animations you want to target 60 FPS.
 
-![Fotograma largo](imgs/long-frame.png)
+Now it's time to diagnose exactly what is wrong. Using your mouse, [zoom in](/web/tools/chrome-devtools/profile/evaluate-performance/timeline-tool#zoom) on a call stack.
 
-Los fotogramas tardan mucho tiempo en completarse. Para que las animaciones sean fluidas, tu
-objetivo debe ser un valor de 60 FPS. 
+![zoomed timeline recording](imgs/zoom.png)
 
-Llegó el momento de hacer un diagnóstico preciso de lo que no funciona bien. Con el mouse, 
-[acerca][zoom] una pila de llamadas. 
+The top of the stack is an `Animation Frame Fired` event. The function that you passed to `requestAnimationFrame()` is called whenever this event is fired. Below `Animation Frame Fired` you see `Function Call`, and below that you see `update`. You can infer that a method called `update()` is the callback for `requestAnimationFrame()`.
 
-![Grabación en Timeline ampliada](imgs/zoom.png)
+Note: This is where the **JS Profile** option that you enabled earlier is useful. If it was disabled, you would just see `Function Call`, followed by all the small purple events (discussed next), without details on exactly which functions were called.
 
-El elemento de la parte superior de la pila es un evento `Animation Frame Fired`. La función que
-pasaste a `requestAnimationFrame()` recibe llamadas cada vez que este evento se activa.
-Debajo de `Animation Frame Fired` verás `Function Call` y, debajo de este, 
-`update`. Puedes inferir que el método denominado `update()` es el callback de
-`requestAnimationFrame()`. 
+Now, focus your attention on all of the small purple events below the `update` event. The top part of many of these events are red. That's a warning sign. Hover over these events and you see that DevTools is warning you that your page may be a victim of forced reflow. Forced reflow is just another name for forced synchronous layouts.
 
-Note: En este punto, resultará útil la opción **JS Profile** que habilitaste 
-antes. Si estuviera inhabilitada, solo verías el evento `Function Call`, seguido
-de todos los pequeños eventos morados (se tratarán a continuación), sin detalles precisos de las funciones
-llamadas.
+![hovering over layout event](imgs/layout-hover.png)
 
-Centra tu atención en los pequeños eventos morados que están debajo del evento `update`.
- La parte superior de muchos de estos eventos es roja. Es una señal de advertencia.
-Desplázate sobre estos eventos. DevTools te advertirá que la 
-página puede verse afectada por un reprocesamiento forzado. “Reprocesamiento forzado” es simplemente otra denominación para los 
-diseños sincrónicos forzados. 
+Now it's time to take a look at the function which is causing all of the forced synchronous layouts. Click on one of the layout events to select it. In the Summary pane you should now see details about this event. Click on the link under **Layout Forced** (`update @ forcedsync.html:457`) to jump to the function definition.
 
-![Desplazamiento sobre un evento de diseño](imgs/layout-hover.png)
+![jump to function definition](imgs/jump.png)
 
-Es hora de analizar la función que genera todos los 
-diseños sincrónicos forzados. Haz clic en uno de los eventos de diseño para seleccionarlo
-En el subpanel Summary, verás los detalles de este evento. Haz clic en el
-vínculo que se halla debajo de **Layout Forced** (`update @ forcedsync.html:457`) para ir a
-la definición de la función.
+You should now see the function definition in the **Sources** panel.
 
-![Ir a la definición de la función](imgs/jump.png)
+![function definition in sources panel](imgs/definition.png)
 
-Verás la definición en el panel **Sources**. 
+The `update()` function is the callback handler for `requestAnimationCallback()`. The handler computes each image's `left` property based off of the image's `offsetTop` value. This forces the browser to perform a new layout immediately to make sure that it provides the correct value. Forcing a layout during every animation frame is the cause of the janky animations on the page.
 
-![Definición de la función en el panel Sources](imgs/definition.png)
+So now that you've identified the problem, you can try to fix it directly in DevTools.
 
-La función `update()` es el controlador de callbacks de 
-`requestAnimationCallback()`. El controlador computa la propiedad `left` de cada imagen
-según su valor `offsetTop`. Esto fuerza el navegador a realizar
-un diseño nuevo de inmediato para garantizar que proporcione el valor correcto.
-La realización forzosa de diseños en cada fotograma de la animación es la causa del bloqueo de las animaciones
-en la página. 
+## Apply fix within DevTools
 
-Ahora que has identificado el problema, puedes intentar solucionarlo
-en DevTools.
+This script is embedded in HTML, so you can't edit it via the **Sources** panel (scripts in `*.js` can be edited in the Sources panel, however).
 
-[Diseño]: /web/tools/chrome-devtools/profile/rendering-tools/analyze-runtime#layout
-[Zoom]: /web/tools/chrome-devtools/profile/evaluate-performance/timeline-tool#zoom
+However, to test your changes, you can redefine the function in the Console. Copy and paste the function definition from the HTML file into the DevTools Console. Delete the statement that uses `offsetTop` and uncomment the one below it. Press `Enter` when you're done.
 
-## Aplicar una solución con DevTools
+![redefining the problematic function](imgs/redefinition.png)
 
-Esta secuencia de comandos está incorporada en HTML, por lo que no puedes editarla en el panel **Sources**
-(sin embargo, las secuencias de comandos en `*.js` se pueden editar en este panel). 
+Restart the animation. You can verify visually that it's much smoother now.
 
-No obstante, para probar los cambios, puedes redefinir la función en la consola.
-Copia la definición de la función del archivo HTML y pégala en la consola de
-DevTools. Borra la instrucción que usa `offsetTop` y elimina el comentario en la instrucción que está 
-debajo de ella. Presiona `Enter` cuando finalices. 
+## Verify with another recording
 
-![Redefinir la función problemática](imgs/redefinition.png)
+It's always good practice to take another recording and verify that the animation truly is faster and more performant than before.
 
-Reinicia la animación. Podrás verificar visualmente que ahora es mucho más fluida. 
+![timeline recording after optimization](imgs/after.png)
 
-## Realizar verificaciones con otra grabación
+Much better.
 
-Se recomienda realizar otra grabación y verificar que la 
-animación sea realmente más rápida y tenga un mejor rendimiento que antes. 
+## Feedback {: #feedback }
 
-![Grabación en Timeline después de la optimización](imgs/after.png)
-
-Mucho mejor.
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
