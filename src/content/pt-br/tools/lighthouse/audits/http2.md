@@ -1,41 +1,29 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Documentação de referência para a auditoria do Lighthouse "Site usa HTTP/2 para seus próprios recursos".
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Reference documentation for the "Uses HTTP/2 For Its Own Resources" Lighthouse audit.
 
-{# wf_updated_on: 2016-12-05 #}
-{# wf_published_on: 2016-12-05 #}
+{# wf_updated_on: 2018-07-23 #} {# wf_published_on: 2016-12-05 #} {# wf_blink_components: N/A #}
 
-# Site usa HTTP/2 para seus próprios recursos  {: .page-title }
+# Uses HTTP/2 For Its Own Resources {: .page-title }
 
-## Por que a auditoria é importante {: #why }
+## Overview {: #overview }
 
-O HTTP/2 pode entregar os recursos da página com mais rapidez e menos dados percorrendo a
-rede.
+HTTP/2 can serve your page's resources faster, and with less data moving over the wire.
 
-Consulte [Perguntas frequentes sobre o HTTP/2][faq] para ver uma lista dos benefícios oferecidos pelo HTTP/2
-em relação ao HTTP/1.1.
+See [HTTP/2 Frequently Asked Question](https://http2.github.io/faq/) for a list of benefits that HTTP/2 provides over HTTP/1.1.
 
-Consulte [Introdução ao HTTP/2][intro] para obter uma visão geral técnica detalhada.
+See [Introduction to HTTP/2](/web/fundamentals/performance/http2/) for an in-depth technical overview.
 
-[faq]: https://http2.github.io/faq/
-[introdução]: /web/fundamentals/performance/http2/
+## Recommendations {: #recommendations }
 
-## Como ser aprovado na auditoria {: #how }
+Under **URLs**, Lighthouse lists every resource that was not served over HTTP/2. To pass this audit, serve each of those resources over HTTP/2.
 
-Em **URLs**, o Lighthouse lista todos os recursos não entregues por meio do HTTP/2.
-Para ser aprovado nesta auditoria, entregue todos esses recursos por meio do HTTP/2.
+To learn how to enable HTTP/2 on your servers, see [Setting Up HTTP/2](https://dassur.ma/things/h2setup/).
 
-Para saber como ativar o HTTP/2 nos servidores, consulte [Configurar o HTTP/2][setup].
+## More information {: #more-info }
 
-[setup]: https://dassur.ma/things/h2setup/
+Lighthouse gathers all of the resources that are from the same host as the page, and then checks the HTTP protocol version of each resource.
 
-{% include "web/tools/lighthouse/audits/implementation-heading.html" %}
+Lighthouse excludes resources from other hosts from this audit, because it assumes that you have no control over how these resources are served.
 
-O Lighthouse coleta dos os recursos que são do mesmo host que a
-página e verifica a versão do protocolo HTTP para cada recurso.
+## Feedback {: #feedback }
 
-O Lighthouse exclui recursos de outros hosts dessa auditoria porque
-supõe que você não tem controle sobre como esses recursos são entregues.
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
