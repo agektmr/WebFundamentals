@@ -1,115 +1,209 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Opção 1
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Get started with Google Chrome's built-in web developer tools.
 
-{# wf_updated_on: 2016-07-26 #}
-{# wf_published_on: 2016-03-28 #}
+{# wf_updated_on: 2018-12-20 #} {# wf_published_on: 2016-03-28 #} {# wf_blink_components: Platform>DevTools #}
 
 # Chrome DevTools {: .page-title }
 
-O Chrome DevTools é um conjunto de ferramentas de autoria e depuração de Web incorporado
-ao Google Chrome. Use o DevTools para iterar, depurar e criar o perfil do seu site.
+Chrome DevTools is a set of web developer tools built directly into the [Google Chrome](https://www.google.com/chrome/){: .external } browser. DevTools can help you edit pages on-the-fly and diagnose problems quickly, which ultimately helps you build better websites, faster.
 
-Dogfood: Se você está procurando a versão mais atualizada, o [Chrome Canary](https://www.google.com/intl/en/chrome/browser/canary.html) sempre tem o DevTools mais recente.
+<div class="video-wrapper">
+  <iframe class="devsite-embedded-youtube-video" data-video-id="G_P6rpRSr4g"
+          data-autohide="1" data-showinfo="0" frameborder="0" allowfullscreen>
+  </iframe>
+</div>
 
-## Abrir o Chrome DevTools {: #open }
+With DevTools you can view and change any page. Even the Google homepage, as the video demonstrates.
 
-* Selecione **More Tools** > **Developer Tools** no menu do Google Chrome.
-* Clique com o botão direito em um elemento da página e selecione Inspect
-* Use os [atalhos de teclado](/web/tools/chrome-devtools/inspect-styles/shortcuts)
-<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>I</kbd> (Windows) ou <kbd>Cmd</kbd>+<kbd>Opt</kbd>+<kbd>I</kbd> (Mac)
+## Open DevTools {: #open }
 
-## Descobrir os painéis
+There are many ways to open DevTools, because different users want quick access to different parts of the DevTools UI.
 
-### Device Mode
-<img src="images/devicemode.png" alt="Device Mode" class="attempt-right">
-Use o Device Mode para criar experiências web totalmente responsivas e voltadas a dispositivos móveis.</p>
+* When you want to work with the DOM or CSS, right-click an element on the page and select **Inspect** to jump into the **Elements** panel. Or press <kbd>Command</kbd>+<kbd>Option</kbd>+<kbd>C</kbd> (Mac) or <kbd>Control</kbd>+<kbd>Shift</kbd>+<kbd>C</kbd> (Windows, Linux, Chrome OS).
+* When you want to see logged messages or run JavaScript, press <kbd>Command</kbd>+<kbd>Option</kbd>+<kbd>J</kbd> (Mac) or <kbd>Control</kbd>+<kbd>Shift</kbd>+<kbd>J</kbd> (Windows, Linux, Chrome OS) to jump straight into the **Console** panel.
+
+See [Open Chrome DevTools](/web/tools/chrome-devtools/open) for more details and workflows.
+
+## DevTools for Beginners {: #beginners }
+
+DevTools for Beginners teaches you the **fundamentals of web development** as well as the basics of DevTools. Check out [Get started](#get-started) below if you'd prefer tutorials that focus on DevTools.
+
+* [Get Started with HTML and the DOM](/web/tools/chrome-devtools/beginners/html)
+* [Get Started with CSS](/web/tools/chrome-devtools/beginners/css)
+
+## Get started {: #get-started }
+
+If you're a more experienced web developer, here are the recommended starting points for learning how DevTools can improve your productivity:
+
+* [View and Change a Page's Styles (CSS)](/web/tools/chrome-devtools/css/)
+* [Debug JavaScript](/web/tools/chrome-devtools/javascript/)
+* [View Messages and Run JavaScript in the Console](console/get-started)
+* [Optimize Website Speed](/web/tools/chrome-devtools/speed/get-started)
+
+## Discover DevTools {: #discover }
+
+The DevTools UI can be a little overwhelming... there are so many tabs! But, if you take some time to get familiar with each tab to understand what's possible, you may discover that DevTools can seriously boost your productivity.
+
+Note: In the DevTools docs, the top-level tabs are called panels.
+
+### Device Mode {: #device-mode }
+
+<img src="images/device-mode.png" alt="Device Mode" class="attempt-right" />
+
+Simulate mobile devices.
 
 * [Device Mode](/web/tools/chrome-devtools/device-mode/)
-* [Testar janelas de visualização responsivas e específicas de dispositivo](/web/tools/chrome-devtools/device-mode/emulate-mobile-viewports)
-* [Emular sensores: acelerômetro de geolocalização](/web/tools/chrome-devtools/device-mode/device-input-and-sensors)
+* [Test Responsive and Device-specific Viewports](/web/tools/chrome-devtools/device-mode/emulate-mobile-viewports)
+* [Emulate Sensors: Geolocation & Accelerometer](/web/tools/chrome-devtools/device-mode/device-input-and-sensors)
 
 <div style="clear:both;"></div>
 
-### Elements
-<img src="images/elements-panel.png" alt="Painel Elements" class="attempt-right">
-Use o painel Elements para iterar no layout e criar um site manipulando livremente o DOM e o CSS.
+### Elements panel {: #elements }
 
-* [Inspecionar e melhorar suas páginas](/web/tools/chrome-devtools/inspect-styles/)
-* [Editar estilos](/web/tools/chrome-devtools/inspect-styles/edit-styles)
-* [Editar o DOM](/web/tools/chrome-devtools/inspect-styles/edit-dom)
+<img src="images/panels/elements.png" alt="Elements Panel" class="attempt-right" />
 
-<div style="clear:both;"></div>
+View and change the DOM and CSS.
 
-### Console
-<img src="images/console-panel.png" alt="Painel Console" class="attempt-right">
-Use o Console para registrar informações de diagnóstico durante o desenvolvimento ou como shell para interagir com o JavaScript da página.
-
-* [Usar o Console](/web/tools/chrome-devtools/console/)
-* [Interagir pelo Command Line](/web/tools/chrome-devtools/console/command-line-reference)
+* [Get Started With Viewing And Changing CSS](/web/tools/chrome-devtools/css/)
+* [Inspect and Tweak Your Pages](/web/tools/chrome-devtools/inspect-styles/)
+* [Edit Styles](/web/tools/chrome-devtools/inspect-styles/edit-styles)
+* [Edit the DOM](/web/tools/chrome-devtools/inspect-styles/edit-dom)
+* [Inspect Animations](/web/tools/chrome-devtools/inspect-styles/animations)
 
 <div style="clear:both;"></div>
 
-### Sources
-<img src="images/sources-panel.png" alt="Painel Sources" class="attempt-right">
-Depure o JavaScript usando pontos de interrupção no painel Sources ou conecte seus arquivos locais por meio de Espaços de trabalho para usar o editor em tempo real do DevTools.
+### Console panel {: #console }
 
-* [Depurar com pontos de interrupção](/web/tools/chrome-devtools/javascript/add-breakpoints)
-* [Depurar código ofuscado](/web/tools/chrome-devtools/javascript/add-breakpoints)
-* [Configurar persistência com os Espaços de trabalho do DevTools](/web/tools/setup/setup-workflow)
+<img src="images/panels/console.png" alt="Console Panel" class="attempt-right" />
 
-<div style="clear:both;"></div>
+View messages and run JavaScript from the Console.
 
-### Network
-<img src="images/network-panel.png" alt="Painel Network" class="attempt-right">
-Use o painel Network para obter insights sobre recursos solicitados e baixados e otimizar o desempenho do carregamento da página.
-
-* [Conceitos básicos do painel Network](/web/tools/chrome-devtools/network-performance/resource-loading)
-* [Como entender Resource Timing](/web/tools/chrome-devtools/network-performance/understanding-resource-timing)
-* [Limitação de rede](/web/tools/chrome-devtools/network-performance/network-conditions)
+* [Get Started With The Console](/web/tools/chrome-devtools/console/get-started)
+* [Using the Console](/web/tools/chrome-devtools/console/)
+* [Interact from Command Line](/web/tools/chrome-devtools/console/command-line-reference)
+* [Console API Reference](/web/tools/chrome-devtools/console/console-reference)
 
 <div style="clear:both;"></div>
 
-### Timeline
-<img src="images/timeline-panel.png" alt="Painel Timeline" class="attempt-right">
-Use o Timeline para melhorar o desempenho da página em tempo de execução, gravando e explorando os diversos eventos que acontecem durante o ciclo de vida de um site.
+### Sources panel {: #sources }
 
-* [Como avaliar o desempenho](/web/tools/chrome-devtools/evaluate-performance/timeline-tool)
-* [Analisar o desempenho em tempo de execução](/web/tools/chrome-devtools/rendering-tools/)
-* [Diagnosticar layouts síncronos forçados](/web/tools/chrome-devtools/rendering-tools/forced-synchronous-layouts)
+<img src="images/panels/sources.png" alt="Sources Panel" class="attempt-right" />
 
-<div style="clear:both;"></div>
+Debug JavaScript, persist changes made in DevTools across page reloads, save and run snippets of JavaScript, and save changes that you make in DevTools to disk.
 
-### Profiles
-<img src="images/profiles-panel.png" alt="Painel Profiles" class="attempt-right">
-Use o painel Profiles se precisar de mais informações que as fornecidas pelo Timeline como, por exemplo, para rastrear vazamentos de memória.
-
-* [Criador de perfil de CPU do JavaScript](/web/tools/chrome-devtools/rendering-tools/js-execution)
-* [Criador de perfile de pilha](/web/tools/chrome-devtools/memory-problems/)
+* [Get Started With Debugging JavaScript](/web/tools/chrome-devtools/javascript)
+* [Pause Your Code With Breakpoints](/web/tools/chrome-devtools/javascript/breakpoints)
+* [Save Changes to Disk with Workspaces](/web/tools/setup/setup-workflow)
+* [Run Snippets Of Code From Any Page](/web/tools/chrome-devtools/snippets)
+* [JavaScript Debugging Reference](/web/tools/chrome-devtools/javascript/reference)
+* [Persist Changes Across Page Reloads with Local Overrides](/web/updates/2018/01/devtools#overrides)
 
 <div style="clear:both;"></div>
 
-### Application
-<img src="images/application-panel.png" alt="Painel Application" class="attempt-right">
-Use o painel Resources para inspecionar todos os recursos carregados, incluindo bancos de dados Web SQL ou IndexedDB, armazenamento local e da sessão, cookies, cache do aplicativo, imagens, fontes e folhas de estilo.
+### Network panel {: #network }
 
-* [Gerenciar dados](/web/tools/chrome-devtools/manage-data/local-storage)
+<img src="images/panels/network.png" alt="Network Panel" class="attempt-right" />
 
-<div style="clear:both;"></div>
+View and debug network activity.
 
-### Security
-<img src="images/security-panel.png" alt="Painel Security" class="attempt-right">
-Use o painel Security para depurar problemas de conteúdo misto e com seu certificado, entre outros.
-
-* [Security](/web/tools/chrome-devtools/security)
+* [Get Started](/web/tools/chrome-devtools/network-performance/)
+* [Network Issues Guide](/web/tools/chrome-devtools/network-performance/issues)
+* [Network Panel Reference](/web/tools/chrome-devtools/network-performance/reference)
 
 <div style="clear:both;"></div>
 
-## Envolva-se
+### Performance panel {: #performance }
 
-[Twitter](https://twitter.com/ChromeDevTools){: .button .button-white}
-[Stack Overflow](https://stackoverflow.com/questions/tagged/google-chrome-devtools){: .button .button-white}
-[Slack](https://chromiumdev.slack.com/messages/devtools/){: .button .button-white}
+Note: In Chrome 58 the Timeline panel was renamed to the Performance panel.
 
+<img src="images/panels/performance.png" alt="Timeline Panel" class="attempt-right" />
 
-{# wf_devsite_translation #}
+Find ways to improve load and runtime performance.
+
+* [Optimize Website Speed](/web/tools/chrome-devtools/speed/get-started)
+* [Get Started With Analyzing Runtime Performance](/web/tools/chrome-devtools/evaluate-performance/)
+* [Performance Analysis Reference](/web/tools/chrome-devtools/evaluate-performance/reference)
+* [Analyze runtime performance](/web/tools/chrome-devtools/rendering-tools/)
+* [Diagnose Forced Synchronous Layouts](/web/tools/chrome-devtools/rendering-tools/forced-synchronous-layouts)
+
+<div style="clear:both;"></div>
+
+### Memory panel {: #memory }
+
+Note: In Chrome 58 the Profiles panel was renamed to the Memory panel.
+
+<img src="images/panels/memory.png" alt="Profiles Panel" class="attempt-right" /> Profile memory usage and track down leaks.
+
+* [Fix Memory Problems](/web/tools/chrome-devtools/memory-problems/)
+* [JavaScript CPU Profiler](/web/tools/chrome-devtools/rendering-tools/js-execution)
+
+<div style="clear:both;"></div>
+
+### Application panel {: #application }
+
+<img src="images/panels/application.png" alt="Application Panel" class="attempt-right" />
+
+Inspect all resources that are loaded, including IndexedDB or Web SQL databases, local and session storage, cookies, Application Cache, images, fonts, and stylesheets.
+
+* [Debug Progressive Web Apps](/web/tools/chrome-devtools/progressive-web-apps)
+* [Inspect and Manage Storage, Databases, and Caches](/web/tools/chrome-devtools/manage-data/local-storage)
+* [Inspect and Delete Cookies](/web/tools/chrome-devtools/manage-data/cookies)
+* [Inspect Resources](/web/tools/chrome-devtools/manage-data/page-resources)
+
+<div style="clear:both;"></div>
+
+### Security panel {: #security }
+
+<img src="images/panels/security.png" alt="Security Panel" class="attempt-right" />
+
+Debug mixed content issues, certificate problems, and more.
+
+* [Understand Security Issues](/web/tools/chrome-devtools/security)
+
+<div style="clear:both;"></div>
+
+## Join the DevTools community {: #community }
+
+<style>
+  .cdt-but {
+    display: inline-block;
+  }
+</style>
+
+The best place to file feature requests for Chrome DevTools is the mailing list. The team needs to understand use cases, gauge community interest, and discuss feasibility before implementing any new features.
+
+<a class="button button-primary gc-analytics-event cdt-but"
+   href="https://groups.google.com/forum/#!forum/google-chrome-developer-tools"
+   data-category="DevTools" data-label="Home / Mailing List">Mailing List</a>
+
+File bug reports in Crbug, which is the engineering team's bug tracker.
+
+<a class="button button-primary gc-analytics-event" href="https://crbug.com"
+   data-category="DevTools" data-label="Home / Crbug">Crbug</a>
+
+If you want to alert us to a bug or feature request but don't have much time, you're welcome to send a tweet to @ChromeDevTools. We reply and send announcements from the account regularly.
+
+<a class="button button-primary gc-analytics-event"
+   data-category="DevTools" data-label="Home / Twitter"
+   href="https://twitter.com/ChromeDevTools">Twitter</a>
+
+For help with using DevTools, Stack Overflow is the best channel.
+
+<a class="button button-primary gc-analytics-event cdt-but"
+   href="https://stackoverflow.com/questions/ask?tags=google-chrome-devtools"
+   data-category="DevTools" data-label="Home / Stack Overflow"> Stack Overflow </a>
+
+To file bugs or feature requests on the DevTools docs, open a GitHub issue on the Web Fundamentals repository.
+
+<a class="button button-primary gc-analytics-event"
+   href="https://github.com/google/webfundamentals/issues/new"
+   data-category="DevTools" data-label="Home / GitHub">Docs Issues</a>
+
+DevTools also has a Slack channel, but the team doesn't monitor it consistently.
+
+<a class="button button-primary gc-analytics-event"
+   href="https://chromiumdev.slack.com/messages/devtools/"
+   data-category="DevTools" data-label="Home / Slack">Slack</a>
+
+## Feedback {: #feedback }
+
+{% include "web/_shared/helpful.html" %}
