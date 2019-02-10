@@ -1,28 +1,20 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Navegadores modernos facilitam a personalização de determinados componentes, como ícones, a cor da barra de endereço e até mesmo elementos como blocos personalizados. Esses simples ajustes podem aumentar o engajamento e fazer com que os usuários voltem ao seu site.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Modern browsers make it easy to customize certain components, like icons, the address bar color, and even add things like custom tiles. These simple tweaks can increase engagement and bring users back to your site.
 
+{# wf_blink_components: N/A #} {# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2015-09-21 #}
 
-{# wf_updated_on: 2015-09-21 #}
-{# wf_published_on: 2015-09-21 #}
-
-# Cores de ícones e navegador {: .page-title }
+# Icons & Browser Colors {: .page-title }
 
 {% include "web/_shared/contributors/pbakaus.html" %}
 
-Navegadores modernos facilitam a personalização de determinados componentes, como ícones, a cor da barra de endereço e até mesmo elementos como blocos personalizados. Esses simples ajustes podem aumentar o engajamento e fazer com que os usuários voltem ao seu site.
+Modern browsers make it easy to customize certain components, like icons, the address bar color, and even add things like custom tiles. These simple tweaks can increase engagement and bring users back to your site.
 
+## Provide great icons & tiles
 
-## Forneça ícones e blocos excelentes 
+When a user visits your webpage, the browser tries to fetch an icon from the HTML. The icon may show up in many places, including the browser tab, recent app switch, the new (or recently visited) tab page, and more.
 
-Quando um usuário acessa sua página, o navegador tenta recuperar um ícone do HTML. Ele pode ser exibido em muitos locais, incluindo a guia do navegador, o botão de aplicativos recentes ou a guia de páginas novas (ou acessadas recentemente), entre outros.
+Providing a high quality image will make your site more recognizable, making it easier for users to find your site.
 
-Fornecer uma imagem de alta qualidade tornará seu site mais reconhecível, permitindo
-que os usuários o encontrem com facilidade. 
-
-Para oferecer suporte total a todos os navegadores, será preciso adicionar algumas tags ao elemento `<head>`
-de cada página.
-
+To fully support all browsers, you'll need to add a few tags to the `<head>` element of each page.
 
     <!-- icon in the highest resolution we need it for -->
     <link rel="icon" sizes="192x192" href="icon.png">
@@ -34,23 +26,17 @@ de cada página.
     <meta name="msapplication-square310x310logo" content="icon_largetile.png">
     
 
-### Chrome e Opera
+### Chrome & Opera
 
-O Chrome e o Opera usam `icon.png`, que é dimensionado para o tamanho necessário pelo 
-dispositivo. Para impedir o dimensionamento automático, você também pode fornecer tamanhos 
-adicionais especificando o atributo `sizes`.
+Chrome and Opera uses `icon.png`, which is scaled to the necessary size by the device. To prevent automatic scaling, you can also provide additional sizes by specifying the `sizes` attribute.
 
-
-Observação: Tamanhos de ícones devem ser múltiplos de 48 pixels, por exemplo, 48, 96, 144 e 192 pixels
+Note: Icons sizes should be based on 48px, for example 48px, 96px, 144px and 192px
 
 ### Safari
 
-O Safari também usa a tag `<link>` com o atributo `rel`: `apple-touch-icon`.
+Safari also uses the `<link>` tag with the `rel` attribute: `apple-touch-icon`.
 
-Você pode especificar [tamanhos exatos](https://developer.apple.com/library/ios/documentation/UserExperience/Conceptual/MobileHIG/IconMatrix.html#//apple_ref/doc/uid/TP40006556-CH27)
-fornecendo uma tag de link separada para cada ícone, evitando que o SO 
-precise redimensionar o ícone:
-
+You can specify [explicit sizes](https://developer.apple.com/library/ios/documentation/UserExperience/Conceptual/MobileHIG/IconMatrix.html#//apple_ref/doc/uid/TP40006556-CH27) by providing a separate link tag for each icon, preventing the OS from having to resize the icon:
 
     <link rel="apple-touch-icon" href="touch-icon-iphone.png">
     <link rel="apple-touch-icon" sizes="76x76" href="touch-icon-ipad.png">
@@ -58,96 +44,73 @@ precise redimensionar o ícone:
     <link rel="apple-touch-icon" sizes="152x152" href="touch-icon-ipad-retina.png">
     
 
-### Internet Explorer e Windows Phone
+### Internet Explorer & Windows Phone
 
-A nova experiência de tela inicial do Windows 8 oferece suporte a quatro layouts diferentes para 
-sites fixos e requer quatro ícones. Você pode deixar as meta 
-tags relevantes de fora se não desejar oferecer suporte a um tamanho específico.
-
+Windows 8's new home screen experience supports four different layouts for pinned sites, and requires four icons. You can leave out the relevant meta tags if you don't want to support a specific size.
 
     <meta name="msapplication-square70x70logo" content="icon_smalltile.png">
     <meta name="msapplication-square150x150logo" content="icon_mediumtile.png">
     <meta name="msapplication-wide310x150logo" content="icon_widetile.png">
     
 
-### Blocos no Internet Explorer
+### Tiles in Internet Explorer
 
-Os "Sites Fixos" e "Blocos Dinâmicos" giratórios da Microsoft vão muito além de outras
-implementações e estão fora do escopo deste guia. Saiba mais
-no artigo sobre
-[como criar blocos dinâmicos](//msdn.microsoft.com/en-us/library/ie/dn455115(v=vs.85).aspx) da MSDN.
+Microsoft’s "Pinned Sites" and rotating "Live Tiles" go far beyond other implementations and is beyond the scope of this guide. You can learn more at MSDN's [how to create live tiles](//msdn.microsoft.com/en-us/library/ie/dn455115(v=vs.85).aspx).
 
+## Color browser elements
 
-## Defina cores para elementos do navegador
+Using different `meta` elements, you can customize the browser and even elements of the platform. Keep in mind that some may only work on certain platforms or browsers, but they can greatly enhance the experience.
 
-Usando diferentes elementos `meta`, você pode personalizar o navegador e 
-até mesmo elementos da plataforma. Lembre-se de que algumas personalizações podem funcionar apenas em certas
-plataformas ou navegadores, mas elas podem aprimorar a experiência de forma significativa. 
+Chrome, Firefox OS, Safari, Internet Explorer and Opera Coast allow you to define colors for elements of the browser, and even the platform using meta tags.
 
-O Chrome, o Firefox OS, o Safari, o Internet Explorer e o Opera Coast permitem definir 
-cores para elementos do navegador e até para a plataforma usando meta tags.
+### Meta Theme Color for Chrome and Opera
 
-### Cor de tema meta para Chrome e Opera
-
-Para especificar a cor do tema para o Chrome no Android, use a cor de tema meta.
+To specify the theme color for Chrome on Android, use the meta theme color.
 
     <!-- Chrome, Firefox OS and Opera -->
     <meta name="theme-color" content="#4285f4">
     
 
-<img src="imgs/theme-color.png" alt="Cores de tema estilizando a barra de endereço no Chrome">
+<img src="imgs/theme-color.png" alt="Theme colors styling the address bar in Chrome" />
 
-### Estilo específico do Safari
+### Safari specific styling
 
-O Safari permite que você personalize a barra de status e especifique uma imagem de inicialização.
+Safari allows you to style the status bar and specify a startup image.
 
-#### Especifique uma imagem de inicialização
+#### Specify a startup image
 
-Por padrão, o Safari mostra uma tela vazia durante o tempo de carregamento e, depois de vários
-carregamentos, uma captura de tela de um estado anterior do aplicativo. Você pode evitar isso
-dizendo ao Safari para mostrar uma imagem de inicialização explícita, adicionando uma tag de link, com
-`rel=apple-touch-startup-image`. Por exemplo:
-
+By default, Safari shows a blank screen during load time and after multiple loads a screenshot of the previous state of the app. You can prevent this by telling Safari to show an explicit startup image, by adding a link tag, with `rel=apple-touch-startup-image`. For example:
 
     <link rel="apple-touch-startup-image" href="icon.png">
     
 
-A imagem deve estar no tamanho específico da tela do dispositivo de destino ou
-não será usada. Consulte as
-[Diretrizes de Conteúdo da Web do Safari](//developer.apple.com/library/ios/documentation/AppleApplications/Reference/SafariWebContent/ConfiguringWebApplications/ConfiguringWebApplications.html)
-para obter mais detalhes.
+The image has to be in the specific size of the target device's screen or it won't be used. Refer to [Safari Web Content Guidelines](//developer.apple.com/library/ios/documentation/AppleApplications/Reference/SafariWebContent/ConfiguringWebApplications/ConfiguringWebApplications.html) for further details.
 
-Embora a documentação da Apple sobre esse assunto seja escassa, a comunidade de desenvolvedores
-descobriu uma forma de direcionar todos os dispositivos usando consultas de mídia avançadas para
-selecionar o dispositivo adequado e especificar a imagem correta. Esta é uma
-solução que funciona, cortesia de [tfausak’s gist](//gist.github.com/tfausak/2222823):
+While Apple's documentation is sparse on this topic, the developer community has figured out a way to target all devices by using advanced media queries to select the appropriate device and then specify the correct image. Here's a working solution, courtesy of [tfausak's gist](//gist.github.com/tfausak/2222823)
 
-#### Altere a aparência da barra de status
+#### Change the status bar appearance
 
-Você pode alterar a aparência da barra de status padrão para `black` ou
-`black-translucent`. Com o `black-translucent`, a barra de status flutua no topo
-do conteúdo da tela cheia, em vez de empurrá-la para baixo. O layout torna-se mais alto
-, mas o topo fica obstruído.  O código necessário é o seguinte:
-
+You can change the appearance of the default status bar to either `black` or `black-translucent`. With `black-translucent`, the status bar floats on top of the full screen content, rather than pushing it down. This gives the layout more height, but obstructs the top. Here’s the code required:
 
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
     
+
 <div class="attempt-left">
   <figure>
     <img src="imgs/status-bar-translucent.png" srcset="imgs/status-bar-translucent.png 1x, imgs/status-bar-translucent-2x.png 2x" alt="black-translucent">
-    <figcaption>Captura de tela usando  <code>black-translucent</code></figcaption>
+    <figcaption>Screenshot using <code>black-translucent</code></figcaption>
   </figure>
 </div>
+
 <div class="attempt-right">
   <figure>
     <img src="imgs/status-bar-black.png" srcset="imgs/status-bar-black.png 1x, imgs/status-bar-black-2x.png 2x" alt="black-black">
-    <figcaption>Captura de tela usando  <code>black</code></figcaption>
+    <figcaption>Screenshot using <code>black</code></figcaption>
   </figure>
 </div>
 
 <div style="clear:both;"></div>
 
+## Feedback {: #feedback }
 
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
