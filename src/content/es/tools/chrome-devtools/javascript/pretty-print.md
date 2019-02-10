@@ -1,26 +1,23 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Transforma tu JavaScript en algo más legible: haz clic en el ícono Pretty-Print de Chrome DevTools.
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Transform your JavaScript into a more readable form by clicking the Pretty-Print icon in Chrome DevTools.
 
-{# wf_updated_on: 2016-02-21 #}
-{# wf_published_on: 2015-04-13 #}
+{# wf_updated_on: 2018-07-27 #} {# wf_published_on: 2015-04-13 #} {# wf_blink_components: Platform>DevTools #}
 
-# Logra que JavaScript tenga una apariencia estética {: .page-title }
+# Make JavaScript Look Pretty {: .page-title }
 
-{% include "web/_shared/contributors/megginkearney.html" %}
-{% include "web/_shared/contributors/kaycebasques.html" %}
+{% include "web/_shared/contributors/megginkearney.html" %} {% include "web/_shared/contributors/kaycebasques.html" %}
 
-Cuando veas una secuencia de comandos en el panel **Sources**, haz clic en el ícono **Pretty-Print**
-![el ícono pretty-print](imgs/prettyprint-icon.png){:.inline} 
-a fin de transformar una secuencia de comandos comprimida en algo más legible para las personas.
+Warning: This page is deprecated. See [Make a minified file readable](reference#format) for up-to-date information.
 
-A continuación, se muestra el aspecto que tendría una secuencia de comandos comprimida en el panel **Sources**:
+When viewing a script in the **Sources** panel, click the **Pretty-Print** ![the pretty-print icon](imgs/prettyprint-icon.png){:.inline} icon to transform a minified script into a more human-readable form.
 
-![una secuencia de comandos comprimida](imgs/pretty-print-off.jpg)
+Here is how a minified script might look in the **Sources** panel:
 
-Aquí se muestra el aspecto que tendría tras hacer clic en el ícono **Pretty-Print**:
+![a minified script](imgs/pretty-print-off.jpg)
 
-![una secuencia de comandos comprimida después de Pretty-Print](imgs/pretty-print-on.jpg)
+Here is how the same script looks after clicking the **Pretty-Print** icon:
 
+![a minified script after pretty print](imgs/pretty-print-on.jpg)
 
-{# wf_devsite_translation #}
+## Feedback {: #feedback }
+
+{% include "web/_shared/helpful.html" %}
