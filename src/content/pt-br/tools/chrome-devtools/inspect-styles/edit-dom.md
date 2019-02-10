@@ -1,182 +1,156 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: A vista da árvore do DOM no painel Elements do Chrome DevTools exibe a estrutura do DOM da página web atual. Edite em tempo real o conteúdo e a estrutura da sua página com atualizações do DOM.
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: The DOM tree view in the Chrome DevTools Elements panel displays the DOM structure of the current web page. Live-edit the content and structure of your page through DOM updates.
 
-{# wf_updated_on: 2015-04-29 #}
-{# wf_published_on: 2015-04-29 #}
+{# wf_updated_on: 2018-07-27 #} {# wf_published_on: 2015-04-29 #} {# wf_blink_components: Platform>DevTools #}
 
-# Editar o DOM {: .page-title }
+# Edit the DOM {: .page-title }
 
-{% include "web/_shared/contributors/kaycebasques.html" %}
-{% include "web/_shared/contributors/megginkearney.html" %}
+{% include "web/_shared/contributors/kaycebasques.html" %} {% include "web/_shared/contributors/megginkearney.html" %}
 
-A vista da árvore do DOM no painel Elements do Chrome DevTools exibe a estrutura do DOM da página web atual. Edite em tempo real o conteúdo e a estrutura da sua página com atualizações do DOM.
-
+The DOM tree view in the Chrome DevTools Elements panel displays the DOM structure of the current web page. Live-edit the content and structure of your page through DOM updates.
 
 ### TL;DR {: .hide-from-toc }
-- O DOM define a estrutura da sua página. Cada nó do DOM é um elemento da página, por exemplo, um nó de cabeçalho ou de parágrafo.
-- Edite em tempo real o conteúdo e a estrutura das suas páginas pelo DOM renderizado.
-- No entanto, lembre-se de que você não pode modificar os arquivos de origem com mudanças no DOM no painel Elements. Recarregar a página apaga todas as modificações da árvore do DOM.
-- Acompanhe as mudanças do DOM usando pontos de interrupção.
 
+* The DOM defines your page structure. Each DOM node is a page element, for example, a header node, paragraph node.
+* Live-edit the content and structure of your pages through the rendered DOM.
+* But remember, you can't modify source files through DOM changes in the Elements panel. Reloading the page erases any DOM tree modifications.
+* Watch for changes to the DOM using DOM breakpoints.
 
-## Inspecionar um elemento {:#inspect-an-element}
+## Inspect an element {:#inspect-an-element}
 
-Use o **painel Elements** para inspecionar todos os elementos na sua página em uma
-árvore do DOM. Selecione qualquer elemento e inspecione os estilos aplicados a ele.
+Use the **Elements panel** to inspect all elements in your page in one DOM tree. Select any element and inspect the styles applied to it.<video autoplay muted src="animations/inspect-element.mp4"> </video> 
 
-<video autoplay muted src="animations/inspect-element.mp4">
-</video>
+There are several ways to inspect an element:
 
-Existem diversas maneiras de inspecionar um elemento:
+Right-click any element on the page and select **Inspect**.
 
-Clique com o botão direito em qualquer elemento da página e selecione **Inspect**.
+![Inspect an element via right-click](/web/tools/chrome-devtools/inspect-styles/imgs/right-click-inspect.png)
 
-![Inspecionar um elemento clicando com o botão direito](/web/tools/chrome-devtools/inspect-styles/imgs/right-click-inspect.png)
+Press <kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">Shift</kbd>
 
-Pressione <kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">Shift</kbd>
-+ <kbd class="kbd">C</kbd> (Windows) ou <kbd class="kbd">Cmd</kbd>
-+ <kbd class="kbd">Shift</kbd> + <kbd class="kbd">C</kbd> (Mac) para abrir o
-DevTools em modo de inspeção de elemento e, em seguida, passe o cursor sobre um elemento. O DevTools
-destaca os elemento sobre o qual você passou o cursor automaticamente no
-painel **Elements**. Clique no elemento para sair do modo de inspeção mantendo o
-elemento em destaque dentro do painel **Elements**. 
+* <kbd class="kbd">C</kbd> (Windows) or <kbd class="kbd">Cmd</kbd>
+* <kbd class="kbd">Shift</kbd> + <kbd class="kbd">C</kbd> (Mac) to open DevTools in Inspect Element mode, then hover over an element. DevTools automatically highlights the element that you are hovering over in the **Elements** panel. Click on the element to exit inspect mode while keeping the element highlighted within the **Elements** panel. 
 
-Clique no botão **Inspect Element**
-![Ícone Inspect](/web/tools/chrome-devtools/inspect-styles/imgs/inspect-icon.png){:.inline}
-para ir para o modo de inspeção de elemento, e, então, clique em um elemento.
+Click the **Inspect Element** button ![Inspect icon](/web/tools/chrome-devtools/inspect-styles/imgs/inspect-icon.png){:.inline} to go into Inspect Element Mode, then click on an element.
 
-Use o método [`inspect`][inspect] no console, por exemplo,
-`inspect(document.body)`.
+Use the [`inspect`](/web/tools/chrome-devtools/debug/command-line/command-line-reference#inspect) method in the console, such as `inspect(document.body)`.
 
-## Navegar o DOM
+### View the rendered and natural sizes of an image {: #image-sizes }
 
-Navegue pela estrutura do DOM usando o mouse ou o teclado.
+Hover over an `img` tag in the **DOM Tree** to view the rendered and natural sizes of that image.
 
-Um nó recolhido tem uma seta ao lado apontada para a direita:
-![nó recolhido](imgs/collapsed-node.png){:.inline}
+![Rendered and natural image sizes](imgs/image-sizes.png)
 
-Um nó expandido tem uma seta ao lado apontada para baixo:
-![nó expandido](imgs/expanded-node.png){:.inline}
+### View which image in a source set (srcset) is being used {: #srcset }
 
-Usando o mouse:
+To view which version of an image in a `srcset` was loaded, select the `img` element, then evaluate `$0.currentSrc` in the **Console**.
 
-* Clique uma vez para destacar um nó.
-* Para expandir um nó, dê clique duplo em qualquer lugar nele ou clique na seta  
-  próxima a ele.
-* Para recolher um nó, clique na seta ao lado dele.
+Note: See [Enhance `img`s with `srcset` for high DPI devices](/web/fundamentals/design-and-ux/responsive/images#enhance_imgs_with_srcset_for_high_dpi_devices) to learn more about image optimization using `srcset`.
 
-Usando o teclado:
+![currentSrc in the Console](/web/tools/chrome-devtools/inspect-styles/imgs/currentSrc-console.png)
 
-* Pressione a tecla de **seta para cima** para selecionar o nó acima do atual.
-* Pressione **seta para baixo** para selecionar o nó abaixo do atual.
-* Pressione a tecla **seta para a direita** para expandir um nó recolhido. Pressione-a
-  novamente para seguir para o primeiro secundário (agora expandido) do nó. Você pode 
- usar essa técnica para navegar rapidamente por nós profundamente aninhados.
+Note: `$0` is a shortcut in the DevTools **Console**. It provides a reference to the currently-selected element in the **DOM Tree**.
 
-### Navegar a trilha de navegação estruturada
+You can also view `currentSrc` via the **Properties** tab. The **Properties** tab only displays properties for the currently-selected element, so make sure that you've selected the correct element before viewing.
 
-Na parte inferior do painel Elements se encontra uma trilha de navegação estruturada. 
+![currentSrc in the Properties tab](/web/tools/chrome-devtools/inspect-styles/imgs/currentSrc-properties.png)
 
-![Trilha de navegação estruturada](imgs/breadcrumb-body.png)
+## Navigate the DOM
 
-O nó selecionado é destacado em azul. O nó à esquerda fica o
-parente do nó atual. Há esquerda se encontra o pai do nó pai.
-E assim por diante, em toda a extensão da árvore.
+Navigate through the DOM structure using your mouse or keyboard.
 
-![Estender trilha de navegação estruturada](imgs/breadcrumb-footer.png)
+A collapsed node has an arrow next to it pointing right: ![collapsed node](imgs/collapsed-node.png){:.inline}
 
-Se você navegar para cima na estrutura, o realce será movido:
+An expanded node has an arrow next to it pointing down: ![expanded node](imgs/expanded-node.png){:.inline}
 
-![Navegar para cima na trilha de navegação estruturada](imgs/breadcrumb-trail.png)
+Using your mouse:
 
-O DevTools exibe quantos itens for possível na trilha.
-Se a trilha inteira não couber na barra de status, uma elipse (...) 
-mostra onde ela foi truncada. Clique na elipse para mostrar os 
-elementos ocultos:
+* Click once to highlight a node.
+* To expand a node, double-click anywhere on it or click on the arrow next  
+    to it.
+* To collapse a node, click on the arrow next to it.
 
-![Elipse na trilha de navegação estruturada](imgs/breadcrumb-ellipsis.png)
+Using your keyboard:
 
-## Editar nós e atributos do DOM
+* Press the **Up Arrow** key to select the node above the current one.
+* Press the **Down Arrow** to select the node below the current one.
+* Press the **Right Arrow** key to expand a collapsed node. Press it again to move to the first child of the (now-expanded) node. You can use this technique to quickly navigate deeply-nested nodes.
 
-Para editar o nome ou um atributo de um nó do DOM:
+### Navigate the breadcrumb trail
 
-* Dê clique duplo diretamente no nome ou no atributo do nó.
-* Realce o nó, pressione <kbd>Enter</kbd> e depois pressione <kbd>Tab</kbd>
-  até que o nome ou atributo seja selecionado.
-* Abra o [menu de mais ações](#more-actions) e selecione **Add Attribute**  ou 
-  **Edit Attribute**. A opção **Edit Attribute** é sensível ao contexto, a parte que
- você clicar determina o que é editado.
+At the bottom of the Elements panel is a breadcrumb trail.
 
-A tag de fechamento é automaticamente atualizada quando você termina.
+![Breadcrumb trail](imgs/breadcrumb-body.png)
 
-<video autoplay muted src="animations/edit-element-name.mp4">
-</video>
+The currently selected node is highlighted in blue. The node to the left is the current node's parent. And to the left of that is the parent's parent. And so on, all the way up the tree.
 
-### Editar um nó do DOM e seus filhos como HTML
+![Extend breadcrumb trail](imgs/breadcrumb-footer.png)
 
-Para editar um nó do DOM e seus filhos como HTML:
+Navigating back up the structure moves the highlight:
 
-* Abra o [menu de mais ações](#more-actions) e selecione **Edit as HTML**. 
-* Pressione <kbd>F2</kbd> (Windows / Linux) ou <kbd>Fn</kbd>+<kbd>F2</kbd> (Mac).
-* Pressione <kbd>Ctrl</kbd>+<kbd>Enter</kbd> (Windows/Linux) ou 
-  <kbd>Cmd</kbd>+<kbd>Enter</kbd> (Mac) para salvar as alterações. 
-* Pressione <kbd>Esc</kbd> para sair do editor sem salvar.
+![Navigate up breadcrumb trail](imgs/breadcrumb-trail.png)
 
-![Editar como HTML](imgs/edit-as-html.png)
+DevTools displays as many items as possible in the trail. If the entire trail doesn't fit in the status bar, an ellipsis (...) shows where the trail has been truncated. Click the ellipsis to show the hidden elements:
 
-## Mover um nó do DOM
+![Breadcrumb ellipsis](imgs/breadcrumb-ellipsis.png)
 
-Clique, segure e arraste um nó para movê-lo.
+## Edit DOM nodes and attributes
 
-<video autoplay muted src="animations/move-node.mp4">
-</video>
+To edit a DOM node name or attribute:
 
-## Excluir um nó do DOM
+* Double-click directly on the node name or attribute.
+* Highlight the node, press <kbd>Enter</kbd>, and then press <kbd>Tab</kbd> until the name or attribute is selected.
+* Open the [more actions menu](#more-actions) and select **Add Attribute** or **Edit Attribute**. **Edit Attribute** is context-sensitive; the portion you click on determines what gets edited.
 
-Para excluir um nó do DOM:
+The closing tag is automatically updated when you're finished.<video autoplay muted src="animations/edit-element-name.mp4"> </video> 
 
-* Abra o [menu de mais ações](#more-actions) e selecione **Delete Node**.
-* Selecione o nó e pressione a tecla <kbd>Delete</kbd>.
+### Edit DOM node and its children as HTML
 
-Observação: Se você excluir um nó por acidente, pressione <kbd class='kbd'>Ctrl</kbd> + <kbd class='kbd'>Z</kbd> (ou <kbd class='kbd'>Cmd</kbd> + <kbd class='kbd'>Z</kbd> no Mac) para desfazer sua última ação.
+To edit a DOM node and its children as HTML:
 
-## Mostrar menu more actions {:#more-actions}
+* Open the [more actions menu](#more-actions) and select **Edit as HTML**. 
+* Press <kbd>F2</kbd> (Windows / Linux) or <kbd>Fn</kbd>+<kbd>F2</kbd> (Mac).
+* Press <kbd>Ctrl</kbd>+<kbd>Enter</kbd> (Windows / Linux) or <kbd>Cmd</kbd>+<kbd>Enter</kbd> (Mac) to save your changes. 
+* Press <kbd>Esc</kbd> to exit the editor without saving.
 
-O menu **more actions** permite interagir com um nó do DOM de diversas
-maneiras. Para visualizar o menu, clique com o botão direito em um nó
-ou selecione-o e pressione o botão **more actions** (![botão more 
-action](imgs/more-actions-button.png){:.inline}). O botão só é 
-exibido no elemento atualmente selecionado.
+![edit as HTML](imgs/edit-as-html.png)
 
-![Menu more actions](imgs/more-actions-menu.png)
+## Move DOM node
 
-## Rolar para a visualização
+Click, hold, and drag a node to move it.<video autoplay muted src="animations/move-node.mp4"> </video> 
 
-Quando você passa o mouse ou seleciona um nó do DOM, o nó renderizado é realçado 
-na janela de visualização. Se o nó for rolado para fora da tela, você verá uma
-mensagem no topo da janela de visualização se o nó estiver acima da
-janela de visualização atual e uma mensagem no fundo se o nó estiver abaixo da janela de visualização
-atual. Por exemplo, na captura de tela abaixo, o DevTools está indicando que o
-elemento selecionado no painel **Elements** está abaixo da janela de visualização.
+## Delete DOM node
 
-![Elemento abaixo da janela de visualização](imgs/below-viewport.png)
+To delete a DOM node:
 
-Para rolar a página para que o nó apareça na janela de visualização,
-**clique com o botão direito** no nó e selecione **Scroll into View**.
+* Open the [more actions menu](#more-actions) and select **Delete Node**.
+* Select the node and press the <kbd>Delete</kbd> key.
 
-## Definir pontos de interrupção do DOM
+Note: If you delete a node by accident, <kbd class='kbd'>Ctrl</kbd> + <kbd class='kbd'>Z</kbd> (or <kbd class='kbd'>Cmd</kbd> + <kbd class='kbd'>Z</kbd> on Mac) to undo your last action.
 
-Defina pontos de interrupção do DOM para depurar aplicativos JavaScript complexos.
-Por exemplo, se seu JavaScript estiver alterando a estilização de um elemento do DOM,
-defina um ponto de interrupção a ser acionado quando os atributos do elemento forem modificados. Acione um ponto de interrupção em uma das seguintes mudanças do DOM: alteração de subárvore, alteração de atributo e remoção de nó.
+## Show more actions menu {:#more-actions}
+
+The **more actions** menu lets you interact with a DOM node in a variety of ways. To view the menu, right-click on a node, or select a node and then press the **more actions** button (![more action 
+button](imgs/more-actions-button.png){:.inline})). The button is only displayed on the currently selected element.
+
+![more actions menu](imgs/more-actions-menu.png)
+
+## Scroll into view
+
+When you hover over or select a DOM node, the rendered node is highlighted in the viewport. If the node is scrolled offscreen, you'll see a tooltip at the top of the viewport if the node is above the current viewport, and a tooltip at the bottom if the node is below the current viewport. For example, in the screenshot below DevTools is indicating that the currently selected element in the **Elements** panel is below the viewport.
+
+![element below viewport](imgs/below-viewport.png)
+
+To scroll the page so the node appears in the viewport, **Right-click** the node and select **Scroll into View**.
+
+## Set DOM breakpoints
+
+Set DOM breakpoints to debug complex JavaScript applications. For example, if your JavaScript is changing the styling of a DOM element, set a DOM breakpoint to fire when the element's attributes are modified. Trigger a breakpoint on one of the following DOM changes: subtree change, attribute change, node removal.
 
 {# include shared/related_guides.liquid inline=true list=page.related-guides.breakpoints #}
 
-### Modificações de subárvore
+### Subtree Modifications
 
-Um ponto de interrupção de modificação de subárvore é acionado quando um elemento filho é adicionado, removido ou movido. Por exemplo, se você definir um ponto de interrupção de modificação da subárvore no elemento `main-content`, o código a seguir aciona o ponto de interrupção:
-
+A subtree modification breakpoint is triggered when a child element is added, removed, or moved. For example, if you set a subtree modification breakpoint on the `main-content` element, the following code triggers the breakpoint:
 
     var element = document.getElementById('main-content');
     //modify the element's subtree.
@@ -184,154 +158,141 @@ Um ponto de interrupção de modificação de subárvore é acionado quando um e
     element.appendChild( mySpan );
     
 
-### Modificações de atributos
+### Attribute Modifications
 
-Uma modificação de atributo ocorre quando o atributo de um elemento (`class, id, name`) é alterado dinamicamente:
-
+An attribute modification occurs when the attribute of an element (`class, id, name`) is changed dynamically:
 
     var element = document.getElementById('main-content');
     // class attribute of element has been modified.
     element.className = 'active';
     
 
-### Remoção de nó
+### Node Removal
 
-Uma modificação de remoção de nó é acionada quando o nó
-em questão é removido do DOM:
-
+A node removal modification is triggered when the node in question is removed from the DOM:
 
     document.getElementById('main-content').remove();
     
 
-## Interagir com pontos de interrupção do DOM
+## Interact with DOM breakpoints
 
-Os painéis Elements e Sources incluem um painel para gerenciar os pontos de interrupção 
-do DOM.
+The Elements and Sources panels both include a pane for managing your DOM breakpoints.
 
-Cada ponto de interrupção é listado com um identificador de elemento e o tipo do ponto de interrupção.
+Each breakpoint is listed with an element identifier and the breakpoint type.
 
-![Painel de pontos de interrupção do DOM](imgs/dom-breakpoints-pane.png)
+![DOM breakpoints pane](imgs/dom-breakpoints-pane.png)
 
-Interaja com cada ponto de interrupção listado de qualquer uma das seguintes maneiras:
+Interact with each listed breakpoint in any of the following ways:
 
-* **Passe o cursor** sobre o identificador do elemento para exibir a posição correspondente 
-  do elemento na página (semelhante a passar o cursor sobre nós no painel Elements).
-* **Clique** em um elemento para selecioná-lo no painel Elements.
-* **Marque ou desmarque** a caixa de seleção para ativar ou desativar o ponto de interrupção.
+* **Hover** over the element identifier to show the element's corresponding position on the page (similar to hovering over nodes in the Elements panel).
+* **Click** an element to select it in the Elements panel.
+* **Toggle** the checkbox to enable or disable the breakpoint.
 
-Ao acionar um ponto de interrupção do DOM, ele é destacado no painel DOM 
-Breakpoints. O painel **Call Stack** exibe o **motivo** para uma 
-pausa do depurador:
+When you trigger a DOM breakpoint, the breakpoint is highlighted in the DOM Breakpoints pane. The **Call Stack** pane displays the **reason** for a debugger pause:
 
-![Motivo do ponto de interrupção](imgs/breakpoint-reason.png)
+![Breakpoint reason](imgs/breakpoint-reason.png)
 
-## Visualizar detectores de evento de elemento
+## View element event listeners
 
-Visualize os detectores de evento JavaScript associados com um nó do DOM no painel 
-**Event Listeners**. 
+View JavaScript event listeners associated with a DOM node in the **Event Listeners** pane.
 
-![painel event listeners](imgs/event-listeners-pane.png)
+![event listeners pane](imgs/event-listeners-pane.png)
 
-Os itens de nível superior no painel Event Listeners mostram os tipos de evento que têm 
-detectores registrados.
+The top-level items in the Event Listeners pane show the event types that have registered listeners.
 
-Clique na seta ao lado do tipo de evento (por exemplo, `click`) para ver 
-uma lista de detectores de evento registrados. Cada gerenciador é identificado por um identificador 
-de elemento de tipo seletor CSS, como `document` ou 
-`button#call-to-action`. Se mais de um gerenciador estiver registrado para o 
-mesmo elemento, esse elemento será listado várias vezes.
+Click the arrow next to the event type (for example `click`) to see a list of registered event handlers. Each handler is identified by a CSS selector-like element identifier, such as `document` or `button#call-to-action`. If more than one handler is registered for the same element, the element is listed repeatedly.
 
-Clique na janela de expansão ao lado do identificador de um elemento para ver as propriedades do gerenciador de evento. O painel Event Listeners lista as seguintes propriedades para cada detector:
+Click the expander arrow next to an element identifier to see the properties of the event handler. The Event Listeners pane lists the following properties for each listener:
 
 <table class="responsive">
   <thead>
     <tr>
-      <th colspan="2">Propriedades do detector de evento &amp; Descrição</th>
+      <th colspan="2">Event Listener Properties &amp; Description</th>
     </tr>
   </thead>
   <tbody>
-  	<tr>
+    <tr>
       <td data-th="Value"><code>handler</code></td>
-      <td data-th="Description">Contém uma função de retorno de chamada. Clique com o botão direito na função e selecione <strong>Show Function Definition</strong> para ver onde a função está definida (se o código-fonte estiver disponível).</td>
+      <td data-th="Description">Contains a callback function. Right-click on the function and select <strong>Show Function Definition</strong> to view where the function is defined (if source code is available).</td>
     </tr>
     <tr>
       <td data-th="Value"><code>useCapture</code></td>
-      <td data-th="Description">Um valor booleano que define se o sinalizador <a href="https://developer.mozilla.org/en-US/docs/Web/API/EventTarget.addEventListener">useCapture</a> em <code>addEventListener</code> estava definido.</td>
+      <td data-th="Description">A boolean value stating whether the <a href="https://developer.mozilla.org/en-US/docs/Web/API/EventTarget.addEventListener">useCapture</a> flag on <code>addEventListener</code> was set.</td>
     </tr>
   </tbody>
 </table>
 
-Observação: Muitas extensões do Chrome adicionam os próprios detectores de evento no DOM. Se você vir diversos detectores de evento que não foram definidos pelo seu código, pode ser conveniente reabrir a página em uma [janela anônima](https://support.google.com/chrome/answer/95464). As janelas anônimas impedem que as extensões sejam executadas por padrão.
+Note: Many Chrome extensions add their own event listeners onto the DOM. If you see a number of event listeners that aren't set by your code, you may want to reopen your page in an [Incognito window](https://support.google.com/chrome/answer/95464). Incognito windows prevent extensions from running by default.
 
-### Visualizar detectores de evento do ancestral
+### View ancestor event listeners
 
 {% comment %}
 
-código para captura de tela
+code for screenshot
 
 <!doctype html>
 <html>
-<body onload="console.log('onload');">
-  <div onfocus="console.log('focus');">
-    <button id="button" onclick="console.log('onclick');">clique aqui</button>
+<body onload="console.log('onload');"></p>
+
+<div onfocus="console.log('focus');">
+    <button id="button" onclick="console.log('onclick');">click me</button>
   </div>
-</body>
+
+<p></body>
 </html>
 
 {% endcomment %}
 
-Quando a caixa de seleção **Ancestors** é marcada, os detectores de evento dos 
-ancestrais do nó selecionado são exibidos, além dos
-detectores de evento do nó selecionado.
+When the **Ancestors** checkbox is enabled, the event listeners for the ancestors of the currently selected node are displayed, in addition to the currently selected node's event listeners.
 
-![opção ancestors ativada](imgs/ancestors-enabled.png)
+![ancestors enabled](imgs/ancestors-enabled.png)
 
-Quando a caixa de seleção é desmarcada, somente os detectores de evento do 
-nó selecionado são exibidos.
+When the checkbox is disabled, only the event listeners for the currently selected node are displayed.
 
-![opção ancestors desativada](imgs/ancestors-disabled.png)
+![ancestors disabled](imgs/ancestors-disabled.png)
 
-### Visualizar detectores de estrutura
+### View framework listeners
 
 {% comment %}
 
-código para captura de tela
+code for screenshot
 
-<!doctype html>
-<html>
+<!doctype html> 
 <script src="https://code.jquery.com/jquery-2.2.0.js"></script>
-<body>
-  <button id="button">clique aqui</button>
-  <script>
+<button id="button">click me, please</button></p> 
+
+<script>
     $('#button').click(function() {
       $('#button').text('hehe, that tickled, thanks');
     });
   </script>
-</body>
-</html>
+
+ 
+
+</body> </html>
 
 {% endcomment %}
 
-Algumas estruturas e bibliotecas JavaScript encapsula eventos de DOM nativos nas 
-APIs de evento personalizadas. No passado, isso dificultava a inspeção de detectores de evento
-com o DevTools porque a definição da função só se referenciava de volta para 
-o código da estrutura ou da biblioteca. O recurso **detectores de estrutura** soluciona 
-esse problema.
+Some JavaScript frameworks and libraries wrap native DOM events into their custom event APIs. In the past this made it hard to inspect the event listeners with DevTools, because the function definition would just reference back to the framework or library code. The **Framework listeners** feature solves this problem.
 
-Quando a caixa de seleção **Framework listeners** é marcada, o DevTools automaticamente 
-resolve a estrutura ou a parte envolvida da biblioteca do código do evento e, em seguida,
-ele informa onde você vinculou o evento no código.
+When the **Framework listeners** checkbox is enabled, DevTools automatically resolves the framework or library wrapping portion of the event code, and then tells you where you actually bound the event in your own code.
 
-![opção framework listeners ativada](imgs/framework-listeners-enabled.png)
+![framework listeners enabled](imgs/framework-listeners-enabled.png)
 
-Quando a caixa de seleção **Framework listeners** é desmarcada, o código do detector de evento
-provavelmente será resolvido na estrutura ou no código da biblioteca. 
+When the **Framework listeners** checkbox is disabled, the event listener code will probably resolve somewhere in the framework or library code.
 
-![opção framework listeners desativada](imgs/framework-listeners-disabled.png)
+![framework listeners disabled](imgs/framework-listeners-disabled.png)
 
+## Show HTML comments {: #show-html-comments }
 
+To show or hide HTML comments in the Elements panel:
 
-[inspect]: /web/tools/chrome-devtools/debug/command-line/command-line-reference#inspect
+1. Open [Settings](/web/tools/chrome-devtools/ui#settings).
+2. Click the **Preferences** tab.
+3. Under the **Elements** section, check the **Show HTML comments** checkbox.
 
+To show or hide HTML comments in the **Elements** panel, [open **Settings**](#settings), go to the **Preferences** panel, find the **Elements** section, and then toggle the **Show HTML comments** checkbox.
 
-{# wf_devsite_translation #}
+## Feedback {: #feedback }
+
+{% include "web/_shared/helpful.html" %}
