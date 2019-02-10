@@ -1,262 +1,300 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Los usuarios esperan que las páginas sean interactivas y fluidas. Cada etapa en la canalización de píxeles representa una oportunidad para introducir bloqueos. Conoce herramientas y estrategias para identificar y solucionar problemas comunes que lentifican el rendimiento del tiempo de ejecución.
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Users expect pages to be interactive and smooth. Each stage in the pixel pipeline represents an opportunity to introduce jank. Learn about tools and strategies to identify and fix common problems that slow down runtime performance.
 
-{# wf_updated_on: 2016-03-15 #}
-{# wf_published_on: 2015-04-13 #}
+{# wf_updated_on: 2018-07-27 #} {# wf_published_on: 2015-04-13 #} {# wf_blink_components: Platform>DevTools #}
 
-# Analiza el rendimiento del tiempo de ejecución {: .page-title }
+# Analyze Runtime Performance {: .page-title }
 
-{% include "web/_shared/contributors/kaycebasques.html" %}
-{% include "web/_shared/contributors/megginkearney.html" %}
+{% include "web/_shared/contributors/kaycebasques.html" %} {% include "web/_shared/contributors/megginkearney.html" %}
 
-Los usuarios esperan que las páginas sean interactivas y fluidas. Cada etapa 
-en la canalización de píxeles representa una oportunidad para introducir bloqueos. Conoce 
-herramientas y estrategias para identificar y solucionar problemas comunes que lentifican el 
-rendimiento del tiempo de ejecución.
-
+Users expect pages to be interactive and smooth. Each stage in the pixel pipeline represents an opportunity to introduce jank. Learn about tools and strategies to identify and fix common problems that slow down runtime performance.
 
 ### TL;DR {: .hide-from-toc }
-- No escribas JavaScript que fuerce al navegador a calcular de nuevo el diseño. Separa las funciones de lectura y escritura, y realiza las lecturas primero.
-- No compliques demasiado tu CSS. Usa menos CSS y procura que tus selectores de CSS sean simples.
-- Evita el diseño tanto como te sea posible. Elige una CSS que no active el diseño en ninguna circunstancia.
-- La pintura puede llevar más tiempo que cualquier otra actividad de la representación. Busca cuellos de botella de pintura.
 
+* Don't write JavaScript that forces the browser to recalculate layout. Separate read and write functions, and perform reads first.
+* Don't over-complicate your CSS. Use less CSS and keep your CSS selectors simple.
+* Avoid layout as much as possible. Choose CSS that doesn't trigger layout at all.
+* Painting can take up more time than any other rendering activity. Watch out for paint bottlenecks.
 
-## JavaScript 
+## JavaScript
 
-Los cálculos de JavaScript, en especial aquellos que activan cambios visuales abarcadores,
-pueden bloquear el rendimiento de la aplicación. No permitas que 
-JavaScript con una sincronización incorrecta o de ejecución prolongada interfiera en las interacciones del usuario.
+JavaScript calculations, especially ones that trigger extensive visual changes, can stall application performance. Don't let badly-timed or long-running JavaScript interfere with user interactions.
 
-### Herramientas
+### Tools
 
-Realiza una [grabación][recording] de **Timeline** y busca eventos 
-**Evaluate Script** de extensión sospechosa. Si encuentras alguno, puedes habilitar 
-[JS Profiler][profiler] y volver a realizar la grabación para obtener información 
-más detallada sobre cuáles fueron exactamente las funciones de JS llamadas y el tiempo que 
-demoró cada una.
+Make a **Timeline** [recording](../evaluate-performance/timeline-tool#make-a-recording) and look for suspiciously long **Evaluate Script** events. If you find any, you can enable the [JS Profiler](../evaluate-performance/timeline-tool#profile-js) and re-do your recording to get more detailed information about exactly which JS functions were called and how long each took.
 
-Si observas bloqueos en tu código JavaScript, es posible que debas
-llevar al análisis al próximo nivel y recopilar un perfil de CPU de JavaScript.
-Los perfiles de CPU muestran los aspectos a los que se destina el tiempo de ejecución en las funciones de la página.
-Aprende a crear perfiles de CPU con el artículo sobre [cómo acelerar la ejecución de JavaScript][cpu].
+If you're noticing quite a bit of jank in your JavaScript, you may need to take your analysis to the next level and collect a JavaScript CPU profile. CPU profiles show where execution time is spent within your page's functions. Learn how to create CPU profiles in [Speed Up JavaScript Execution](js-execution).
 
-[profiler]: ../evaluate-performance/timeline-tool#profile-js
-[cpu]: js-execution
+### Problems
 
-### Problemas
-
-En la siguiente tabla, se describen algunos problemas comunes de JavaScript y posibles soluciones:
+The following table describes some common JavaScript problems and potential solutions:
 
 <table>
-  <thead>
-      <th>Problema</th>
-      <th>Ejemplo</th>
-      <th>Solución</th>
-  </thead>
-  <tbody>
-    <tr>
-      <td data-th="Problem">Controladores de entrada costosos que afectan la respuesta o la animación.</td>
-      <td data-th="Example">Toque y desplazamiento parallax.</td>
-      <td data-th="Solution">Deja que el navegador gestione los toques y los desplazamientos, o vincula el receptor tan cerca del fin como sea posible (consulta <a href="http://calendar.perfplanet.com/2013/the-runtime-performance-checklist/">Controladores de entrada costosos en la lista de comprobación de rendimiento del tiempo de ejecución de Paul Lewis</a>).</td>
-    </tr>
-    <tr>
-      <td data-th="Problem">JavaScript con sincronización incorrecta que afecta la respuesta, la animación o la carga.</td>
-      <td data-th="Example">El usuario realiza un desplazamiento después de la carga de la página, setTimeout/setInterval.</td>
-      <td data-th="Solution"><a href="/web/fundamentals/performance/rendering/optimize-javascript-execution">Optimiza la ejecución de JavaScript</a>: usa <code>requestAnimationFrame</code>, amplía la manipulación del DOM hasta los fotogramas y usa Web Workers.</td>
-    </tr>
-    <tr>
-      <td data-th="Problem">JavaScript de ejecución prolongada que afecta la respuesta.</td>
-      <td data-th="Example">El evento <a href="https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Using_web_workers">DOMContentLoaded</a> se bloquea cuando se sobrecarga con trabajo de JS.</td>
-      <td data-th="Solution">Traslada el trabajo exclusivo de cálculo a los <a href="https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Using_web_workers">Web Workers</a>. Si necesitas acceso al DOM, usa  <code>requestAnimationFrame</code> (consulta también <a href="/web/fundamentals/performance/rendering/optimize-javascript-execution">Optimiza la ejecución de JavaScript</a>).</td>
-    </tr>
-    <tr>
-      <td data-th="Problem">Secuencias de comandos desechables que afectan la respuesta o la animación.</td>
-      <td data-th="Example">La recolección de elementos no usados puede realizarse en cualquier lugar.</td>
-      <td data-th="Solution">Escribe menos secuencias de comandos desechables (consulta <a href="http://calendar.perfplanet.com/2013/the-runtime-performance-checklist/">Recolección de elementos no usados en la lista de comprobación de rendimiento del tiempo de ejecución de Paul Lewis</a>).</td>
-    </tr>
-  </tbody>
+  <th>
+    Problem
+  </th>
+  
+  <th>
+    Example
+  </th>
+  
+  <th>
+    Solution
+  </th>
+  
+  <tr>
+    <td data-th="Problem">
+      Expensive input handlers affecting response or animation.
+    </td>
+    
+    <td data-th="Example">
+      Touch, parallax scrolling.
+    </td>
+    
+    <td data-th="Solution">
+      Let the browser handle touch and scrolls, or bind the listener as late as possible (see <a href="http://calendar.perfplanet.com/2013/the-runtime-performance-checklist/">Expensive Input Handlers in Paul Lewis' runtime performance checklist</a>).
+    </td>
+  </tr>
+  
+  <tr>
+    <td data-th="Problem">
+      Badly-timed JavaScript affecting response, animation, load.
+    </td>
+    
+    <td data-th="Example">
+      User scrolls right after page load, setTimeout / setInterval.
+    </td>
+    
+    <td data-th="Solution">
+      <a href="/web/fundamentals/performance/rendering/optimize-javascript-execution">Optimize JavaScript execution</a>: use <code>requestAnimationFrame</code>, spread DOM manipulation over frames, use Web Workers.
+    </td>
+  </tr>
+  
+  <tr>
+    <td data-th="Problem">
+      Long-running JavaScript affecting response.
+    </td>
+    
+    <td data-th="Example">
+      The <a href="https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Using_web_workers">DOMContentLoaded event</a> stalls as it's swamped with JS work.
+    </td>
+    
+    <td data-th="Solution">
+      Move pure computational work to <a href="https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Using_web_workers">Web Workers</a>. If you need DOM access, use <code>requestAnimationFrame</code> (see also <a href="/web/fundamentals/performance/rendering/optimize-javascript-execution">Optimize JavaScript Execution</a>).
+    </td>
+  </tr>
+  
+  <tr>
+    <td data-th="Problem">
+      Garbage-y scripts affecting response or animation.
+    </td>
+    
+    <td data-th="Example">
+      Garbage collection can happen anywhere.
+    </td>
+    
+    <td data-th="Solution">
+      Write less garbage-y scripts (see <a href="http://calendar.perfplanet.com/2013/the-runtime-performance-checklist/">Garbage Collection in Animation in Paul Lewis' runtime performance checklist</a>).
+    </td>
+  </tr>
 </table>
 
-## Estilo 
+## Style
 
-Los cambios de estilo son pesados, en especial si afectan a más de un 
-elemento en el DOM. Cada vez que aplicas estilos a un elemento, el navegador debe 
-identificar el efecto en todos los elementos relacionados, volver a calcular el diseño y 
-aplicar pintura nuevamente.
+Style changes are costly, especially if those changes affect more than one element in the DOM. Any time you apply styles to an element, the browser has to figure out the impact on all related elements, recalculate the layout, and repaint.
 
-Guías relacionadas:
+Related Guides:
 
-* [Reduce el alcance y la complejidad de 
-  los cálculos de estilo](/web/fundamentals/performance/rendering/reduce-the-scope-and-complexity-of-style-calculations)
+* [Reduce the Scope and Complexity of Styles Calculations](/web/fundamentals/performance/rendering/reduce-the-scope-and-complexity-of-style-calculations)
 
-### Herramientas
+### Tools
 
-Realiza una [grabación][recording] en **Timeline**. Busca en la grabación eventos
-**Recalculate Style** de volumen importante (se muestran en morado).
+Make a **Timeline** [recording](../evaluate-performance/timeline-tool#make-a-recording). Check the recording for large **Recalculate Style** events (displayed in purple).
 
-Haz clic en un evento **Recalculate Style** para ver más información sobre él en el 
-subpanel **Details**. Si los cambios de estilo tardan mucho en aplicarse, este será un 
-punto de rendimiento que deberá mejorarse. Si los cálculos de estilo afectan una gran cantidad de 
-elementos, habrá otro aspecto para mejorar.
+Click on a **Recalculate Style** event to view more information about it in the **Details** pane. If the style changes are taking a long time, that's a performance hit. If the style calculations are affecting a large number of elements, that's another area with room for improvement.
 
-![Estilo de recálculo prolongado](imgs/recalculate-style.png)
+![Long recalculate style](imgs/recalculate-style.png)
 
-Para reducir el efecto de los eventos **Recalculate Style**, realiza lo siguiente:
+To reduce the impact of **Recalculate Style** events:
 
-* Usa los [desencadenantes de CSS](https://csstriggers.com) para conocer las propiedades de CSS
-  que activan diseño, pintura y composición. Estas propiedades tienen el efecto más negativo
-  en el rendimiento de la representación.
-* Realiza un cambio a propiedades cuyo impacto sea menor. Consulta [Limítate solo a 
-  propiedades del compositor y administra el recuento de capas][compositor] para obtener más información.
+* Use the [CSS Triggers](https://csstriggers.com) to learn which CSS properties trigger layout, paint, and composite. These properties have the worst impact on rendering performance.
+* Switch to properties that have less impact. See [Stick to compositor-only properties and manage layer count](/web/fundamentals/performance/rendering/stick-to-compositor-only-properties-and-manage-layer-count) for more guidance.
 
-[compositor]: /web/fundamentals/performance/rendering/stick-to-compositor-only-properties-and-manage-layer-count
+### Problems
 
-### Problemas
-
-En la siguiente tabla, se describen algunos problemas comunes de estilo y posibles 
-soluciones:
+The following table describes some common style problems and potential solutions:
 
 <table>
-  <thead>
-      <th>Problema</th>
-      <th>Ejemplo</th>
-      <th>Solución</th>
-  </thead>
-  <tbody>
-    <tr>
-      <td data-th="Problem">Cálculos de estilo pesados que afectan la respuesta o la animación.</td>
-      <td data-th="Example">Cualquier propiedad de CSS que cambie la geometría de un elemento, como su longitud, altura o posición; el navegador debe comprobar el resto de los elementos y rehacer el diseño.</td>
-      <td data-th="Solution"><a href="/web/fundamentals/performance/rendering/avoid-large-complex-layouts-and-layout-thrashing">Evita la CSS que desencadena diseños.</a></td>
-    </tr>
-    <tr>
-      <td data-th="Problem">Selectores complejos que afectan la respuesta o la animación.</td>
-      <td data-th="Example">Los selectores anidados obligan al navegador a tener información completa sobre el resto de los elementos, incluidos los primarios y los secundarios.</td>
-      <td data-th="Solution"><a href="/web/fundamentals/performance/rendering/reduce-the-scope-and-complexity-of-style-calculations">Referencia a un elemento de la CSS con una sola clase</a></td>
-    </tr>
-  </tbody>
+  <th>
+    Problem
+  </th>
+  
+  <th>
+    Example
+  </th>
+  
+  <th>
+    Solution
+  </th>
+  
+  <tr>
+    <td data-th="Problem">
+      Expensive style calculations affecting response or animation.
+    </td>
+    
+    <td data-th="Example">
+      Any CSS property that changes an element's geometry, like its width, height, or position; the browser has to check all other elements and redo the layout.
+    </td>
+    
+    <td data-th="Solution">
+      <a href="/web/fundamentals/performance/rendering/avoid-large-complex-layouts-and-layout-thrashing">Avoid CSS that triggers layouts.</a>
+    </td>
+  </tr>
+  
+  <tr>
+    <td data-th="Problem">
+      Complex selectors affecting response or animation.
+    </td>
+    
+    <td data-th="Example">
+      Nested selectors force the browser to know everything about all the other elements, including parents and children.
+    </td>
+    
+    <td data-th="Solution">
+      <a href="/web/fundamentals/performance/rendering/reduce-the-scope-and-complexity-of-style-calculations">Reference an element in your CSS with just a class.</a>
+    </td>
+  </tr>
 </table>
 
-Guías relacionadas:
+Related Guides:
 
-* [Reduce el alcance y la complejidad de 
-  los cálculos de estilo](/web/fundamentals/performance/rendering/reduce-the-scope-and-complexity-of-style-calculations)
+* [Reduce the Scope and Complexity of Styles Calculations](/web/fundamentals/performance/rendering/reduce-the-scope-and-complexity-of-style-calculations)
 
-## Diseño 
+## Layout
 
-El diseño (o reflow en Firefox) es el proceso mediante el cual el navegador calcula 
-la posición y el tamaño de todos los elementos de la página. El modelo de diseño de la Web 
-implica que un elemento puede afectar a otros; por ejemplo, el ancho del elemento 
-`<body>` normalmente afecta el ancho de sus campos secundarios, y así sucesivamente,
-hacia arriba y hacia abajo en el árbol. El proceso puede involucrar bastante al 
-navegador.
+Layout (or reflow in Firefox) is the process by which the browser calculates the positions and sizes of all the elements on a page. The web’s layout model means that one element can affect others; for example, the width of the `<body>` element typically affects its children’s widths, and so on, all the way up and down the tree. The process can be quite involved for the browser.
 
-Como regla general, si solicitas un valor geométrico al 
-DOM antes de que se complete un fotograma, como resultado obtendrás 
-“diseños sincrónicos forzados”, lo cual puede representar un gran cuello de botella de rendimiento si 
-se repite con frecuencia o tiene lugar en un árbol de DOM grande. 
+As a general rule of thumb, if you ask for a geometric value back from the DOM before a frame is complete, you are going to find yourself with "forced synchronous layouts", which can be a big performance bottleneck if repeated frequently or performed for a large DOM tree.
 
-Guías relacionadas:
+Related Guides:
 
-* [Evita la paginación excesiva de
- diseños](/web/fundamentals/performance/rendering/avoid-large-complex-layouts-and-layout-thrashing)
-* [Diagnostica diseños sincrónicos
- forzados](/web/tools/chrome-devtools/rendering-tools/forced-synchronous-layouts)
+* [Avoid Layout Thrashing](/web/fundamentals/performance/rendering/avoid-large-complex-layouts-and-layout-thrashing)
+* [Diagnose Forced Synchronous Layouts](/web/tools/chrome-devtools/rendering-tools/forced-synchronous-layouts)
 
+### Tools
 
-### Herramientas
+The Chrome DevTools **Timeline** identifies when a page causes forced synchronous layouts. These **Layout** events are marked with red bars.
 
-La **Timeline** de Chrome DevTools identifica los casos en que una página genera
-diseños sincrónicos forzados. Estos eventos **Layout** están marcados con barras rojas. 
+![forced synchronous layout](imgs/forced-synchronous-layout.png)
 
-![diseño sincrónico forzado](imgs/forced-synchronous-layout.png)
+"Layout thrashing" is a repetition of forced synchronous layout conditions. This occurs when JavaScript writes and reads from the DOM repeatedly, which forces the browser to recalculate the layout over and over. To identify layout thrashing, look for a pattern of multiple forced synchronous layout warnings (as in the screenshot above).
 
-La “paginación excesiva de diseños” es una repetición de condiciones de diseño sincrónico forzado.
-Esto sucede cuando JavaScript escribe en el DOM y lee desde este reiteradamente, lo que
-fuerza al navegador a calcular de nuevo el diseño una y otra vez. Para identificar
-la paginación excesiva de diseños, busca un patrón de varias advertencias de diseño
-sincrónico forzado (como se muestra en la captura de pantalla anterior).
+### Problems
 
-### Problemas
-
-En la siguiente tabla, se describen algunos problemas comunes de diseño y posibles
-soluciones:
+The following table describes some common layout problems and potential solutions:
 
 <table>
-  <thead>
-      <th>Problema</th>
-      <th>Ejemplo</th>
-      <th>Solución</th>
-  </thead>
-  <tbody>
-    <tr>
-      <td data-th="Problem">Diseño sincrónico forzado que afecta la respuesta o la animación.</td>
-      <td data-th="Example">Obligar al navegador a realizar el diseño antes en la canalización de píxeles. Como resultado, se repiten pasos en el proceso de representación.</td>
-      <td data-th="Solution">Primero agrupa las lecturas de estilo y luego realiza las escrituras necesarias (consulta también <a href="/web/fundamentals/performance/rendering/avoid-large-complex-layouts-and-layout-thrashing">Evita los diseños grandes y complejos, y la paginación excesiva de diseños</a>).</td>
-    </tr>
-  </tbody>
-    <tr>
-      <td data-th="Problem">Paginación excesiva de diseños que afecta la respuesta o la animación.</td>
-      <td data-th="Example">Un bucle que coloca al navegador en un ciclo de lectura-escritura-lectura-escritura. Esto obliga al navegador a calcular de nuevo el diseño una y otra vez.
-      <td data-th="Solution">Agrupa automáticamente operaciones de lectura y escritura por lotes con la <a href="https://github.com/wilsonpage/fastdom">biblioteca FastDom</a>.</td>
-    </tr>
-  </tbody>
+  <th>
+    Problem
+  </th>
+  
+  <th>
+    Example
+  </th>
+  
+  <th>
+    Solution
+  </th>
+  
+  <tr>
+    <td data-th="Problem">
+      Forced synchronous layout affecting response or animation.
+    </td>
+    
+    <td data-th="Example">
+      Forcing the browser to perform layout earlier in the pixel pipeline, resulting in repeating steps in the rendering process.
+    </td>
+    
+    <td data-th="Solution">
+      Batch your style reads first, then do any writes (see also <a href="/web/fundamentals/performance/rendering/avoid-large-complex-layouts-and-layout-thrashing">Avoid large, complex layouts and layout thrashing</a>).
+    </td>
+  </tr>
+  
+  <tr>
+    <td data-th="Problem">
+      Layout thrashing affecting response or animation.
+    </td>
+    
+    <td data-th="Example">
+      A loop that puts the browser into a read-write-read-write cycle, forcing the browser to recalculate layout over and over again.
+    </td>
+    
+    <td data-th="Solution">
+      Automatically batch read-write operations using <a href="https://github.com/wilsonpage/fastdom">FastDom library</a>.
+    </td>
+  </tr></tbody>
 </table>
 
-## Pintura y composición 
+## Paint and composite
 
-La pintura es el proceso por el cual se colocan píxeles. Suele ser la parte más cargada del 
-proceso de representación. Si has observado que la página se bloquea de alguna 
-manera, es posible que estés ante problemas de pintura.
+Paint is the process of filling in pixels. It is often the most costly part of the rendering process. If you've noticed that your page is janky in any way, it's likely that you have paint problems.
 
-Composición hace referencia al proceso en el que las partes pintadas de la página se unen para 
-mostrarlas en la pantalla. Por lo general, si te limitas a las propiedades que son solo del 
-compositor y evitas la pintura completamente, observarás una mejora importante en el 
-rendimiento, pero debes estar atento a los recuentos excesivos de capas (consulta 
-también [Limítate solo a propiedades del compositor y administra el recuento de capas](/web/fundamentals/performance/rendering/stick-to-compositor-only-properties-and-manage-layer-count)).
+Compositing is where the painted parts of the page are put together for displaying on screen. For the most part, if you stick to compositor-only properties and avoid paint altogether, you should see a major improvement in performance, but you need to watch out for excessive layer counts (see also [Stick to compositor-only properties and manage layer count](/web/fundamentals/performance/rendering/stick-to-compositor-only-properties-and-manage-layer-count)).
 
-### Herramientas
+### Tools
 
-¿Deseas saber el tiempo que lleva la pintura o la frecuencia con que se aplica? Habilita el 
-[generador de perfiles de pintura][paint] en el panel **Timeline** y luego [realiza una
-grabación][recording]. Si la mayor parte del tiempo de representación se usa para la pintura, 
-estarás ante problemas de pintura. 
+Want to know how long painting takes or how often painting occurs? Enable the [Paint profiler](../evaluate-performance/timeline-tool#profile-painting) on the **Timeline** panel and then [make a recording](../evaluate-performance/timeline-tool#make-a-recording). If most of your rendering time is spent painting, you have paint problems.
 
-![Tiempos de pintura prolongados en la grabación de Timeline](imgs/long-paint.png)
+![Long paint times in timeline recording](imgs/long-paint.png)
 
-Revisa el menú [**Rendering settings**][rendering settings] para conocer más 
-configuraciones que pueden ayudar a diagnosticar problemas de pintura. 
+Check out the [**rendering settings**](../evaluate-performance/timeline-tool#rendering-settings) menu for further configurations that can help diagnose paint problems.
 
-### Problemas
+### Problems
 
-En la siguiente tabla, se describen algunos problemas comunes de pintura y composición y posibles soluciones:
+The following table describes some common paint and composite problems and potential solutions:
 
 <table>
-  <thead>
-      <th>Problema</th>
-      <th>Ejemplo</th>
-      <th>Solución</th>
-  </thead>
-  <tbody>
-    <tr>
-      <td data-th="Problem">Excesos de pintura que afectan la respuesta o la animación.</td>
-      <td data-th="Example">Amplias áreas de pintura o pinturas pesadas que afectan la respuesta o la animación.</td>
-      <td data-th="Solution">Evita la pintura, promueve elementos que se muevan a sus propias capas y usa los parámetros transforms y opacity (consulta <a href="/web/fundamentals/performance/rendering/simplify-paint-complexity-and-reduce-paint-areas">Simplifica la complejidad de la pintura y reduce las áreas de pintura</a>).</td>
-    </tr>
-        <tr>
-      <td data-th="Problem"> Explosiones de capas que afectan las animaciones.</td>
-      <td data-th="Example">La promoción excesiva de grandes cantidades de elementos con translateZ(0) afecta enormemente el rendimiento de la animación.
-</td>
-      <td data-th="Solution">Realiza la promoción a capas con moderación y solo cuando sepas que proporcionará mejoras notables (consulta <a href="/web/fundamentals/performance/rendering/stick-to-compositor-only-properties-and-manage-layer-count">Limítate solo a las propiedades del compositor y administra el recuento de capas</a>).</td>
-    </tr>
-  </tbody>
+  <th>
+    Problem
+  </th>
+  
+  <th>
+    Example
+  </th>
+  
+  <th>
+    Solution
+  </th>
+  
+  <tr>
+    <td data-th="Problem">
+      Paint storms affecting response or animation.
+    </td>
+    
+    <td data-th="Example">
+      Big paint areas or expensive paints affecting response or animation.
+    </td>
+    
+    <td data-th="Solution">
+      Avoid paint, promote elements that are moving to their own layer, use transforms and opacity (see <a href="/web/fundamentals/performance/rendering/simplify-paint-complexity-and-reduce-paint-areas">Simplify paint complexity and reduce paint areas</a>).
+    </td>
+  </tr>
+  
+  <tr>
+    <td data-th="Problem">
+      Layer explosions affecting animations.
+    </td>
+    
+    <td data-th="Example">
+      Overpromotion of too many elements with translateZ(0) greatly affects animation performance.
+    </td>
+    
+    <td data-th="Solution">
+      Promote to layers sparingly, and only when you know it offers tangible improvements (see <a href="/web/fundamentals/performance/rendering/stick-to-compositor-only-properties-and-manage-layer-count">Stick to composite-only properties and manage layer count</a>).
+    </td>
+  </tr>
 </table>
 
+## Feedback {: #feedback }
 
-[recording]: ../evaluate-performance/timeline-tool#make-a-recording
-[paint]: ../evaluate-performance/timeline-tool#profile-painting
-[rendering settings]: ../evaluate-performance/timeline-tool#rendering-settings
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
