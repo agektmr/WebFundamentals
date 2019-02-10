@@ -1,45 +1,27 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: De manera predeterminada, cada navegador de escritorio viene con un conjunto de herramientas para el desarrollador. Puedes ampliar este conjunto con extensiones o complementos para el navegador.
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Out of the box, every desktop browser comes with a set of developer tools, you can extend and add to these with extensions or plugins for your browser.
 
-{# wf_updated_on: 2015-04-13 #}
-{# wf_published_on: 2015-04-13 #}
+{# wf_updated_on: 2015-04-13 #} {# wf_published_on: 2015-04-13 #}
 
-# Configura extensiones del navegador {: .page-title }
+# Set Up Browser Extensions {: .page-title }
 
-{% include "web/_shared/contributors/megginkearney.html" %}
-{% include "web/_shared/contributors/mattgaunt.html" %}
+{% include "web/_shared/contributors/megginkearney.html" %} {% include "web/_shared/contributors/mattgaunt.html" %}
 
-De manera predeterminada, cada navegador de escritorio viene con un conjunto de herramientas para el desarrollador. Puedes ampliar este conjunto con extensiones o complementos para el navegador.
+Out of the box, every desktop browser comes with a set of developer tools, you can extend and add to these with extensions or plugins for your browser.
 
-Aquí se ofrecen dos extensiones de Chrome que tienen funcionalidad útil para ayudar con
-la depuración de los diseños.
-
+Here are two Chrome Extensions that have some useful functionality to help with debugging your designs.
 
 ## Emmet Re:View
 
-Emmet Re:View es una herramienta que te permite ver fácilmente la apariencia del sitio
-en cada una de las consultas de medios y sincroniza el desplazamiento de todas las páginas. Puedes ver
-una demostración [en el
-sitio](http://re-view.emmet.io/).
+Emmet Re:View is a tool which makes it easy to see what your site looks like at each of your media queries and syncs the scrolling of all the pages. You can see a demo of it [on their site](http://re-view.emmet.io/).
 
-[Descargar en Chrome Web
-Store](https://chrome.google.com/webstore/detail/emmet-review/epejoicbhllgiimigokgjdoijnpaphdp)
+[Download on the Chrome Web Store](https://chrome.google.com/webstore/detail/emmet-review/epejoicbhllgiimigokgjdoijnpaphdp)
 
-<img src="imgs/emmet-review-extension.png" alt="Captura de pantalla de la extensión Emmet Re:View" />
+![Screenshot of Emmet Review Extension](imgs/emmet-review-extension.png)
 
-## WhatFont?
+## What Font?
 
-La última extensión que usamos normalmente es *WhatFont?*. Esta extensión de Chrome
-te indicará el nombre de la fuente que se usa actualmente en la página. Es
-muy útil para depurar cualquier problema de fuentes web.
+The last extension we use on a regular basis is *What Font?*. This Chrome Extension will tell you the name of the font currently being used on the page. This is really handy for debugging any web font issues.
 
-[Descargar en Chrome Web
-Store](https://chrome.google.com/webstore/detail/whatfont/jabopobgcpjmedljpbcaablpmlmfcogm)
+[Download on the Chrome Web Store](https://chrome.google.com/webstore/detail/whatfont/jabopobgcpjmedljpbcaablpmlmfcogm)
 
-<img src="imgs/what-font-extension.png" alt="Captura de pantalla de la extensión WhatFont de Chrome" />
-
-
-
-
-{# wf_devsite_translation #}
+![Screenshot of the What Font Chrome Extension](imgs/what-font-extension.png)
