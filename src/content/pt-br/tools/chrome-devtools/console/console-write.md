@@ -1,56 +1,44 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Registrar no Console é algo eficaz para inspecionar o que sua página ou seu aplicativo faz. Vamos começar com console.log() e explorar outros usos avançados.
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Console logging is a powerful way to inspect what your page or application does. Let's start with console.log() and explore other advanced usage.
 
-{# wf_updated_on: 2018-04-06 #}
-{# wf_published_on: 2015-04-13 #}
+{# wf_updated_on: 2018-07-27 #} {# wf_published_on: 2015-04-13 #} {# wf_blink_components: Platform>DevTools #}
 
-# Diagnosticar e registrar no Console {: .page-title }
+# Diagnose and Log to Console {: .page-title }
 
-{% include "web/_shared/contributors/pbakaus.html" %}
-{% include "web/_shared/contributors/megginkearney.html" %}
-{% include "web/_shared/contributors/flaviocopes.html" %}
-Registrar no Console é algo eficaz para inspecionar o que sua página ou seu aplicativo faz. Vamos começar com console.log() e explorar outros usos avançados.
-
+{% include "web/_shared/contributors/pbakaus.html" %} {% include "web/_shared/contributors/megginkearney.html" %} {% include "web/_shared/contributors/flaviocopes.html" %} Console logging is a powerful way to inspect what your page or application does. Let's start with console.log() and explore other advanced usage.
 
 ### TL;DR {: .hide-from-toc }
-- Use <a href=''/web/tools/chrome-devtools/debug/console/console-reference#consolelogobject--object-''>console.log()</a> para  registros básicos
-- Use <a href=''/web/tools/chrome-devtools/debug/console/console-reference#consoleerrorobject--object-''>console.error()</a> e <a href=''/web/tools/chrome-devtools/debug/console/console-reference#consolewarnobject--object-''>console.warn()</a> para coisas que chamam a atenção
-- Use <a href=''/web/tools/chrome-devtools/debug/console/console-reference#consolegroupobject-object-''>console.group()</a> e <a href=''/web/tools/chrome-devtools/debug/console/console-reference#consolegroupend''>console.groupEnd()</a> para agrupar mensagens relacionadas e evitar desorganização
-- Use <a href=''/web/tools/chrome-devtools/debug/console/console-reference#consoleassertexpression-object''>console.assert()</a> para exibir mensagens de erro condicional
 
+- Use [console.log()](/web/tools/chrome-devtools/console/console-reference#log) for basic logging
+- Use [console.error()](/web/tools/chrome-devtools/debug/console/console-reference#error) and [console.warn()](/web/tools/chrome-devtools/debug/console/console-reference#warn) for eye-catching stuff
+- Use [console.group()](/web/tools/chrome-devtools/debug/console/console-reference#group) and [console.groupEnd()](/web/tools/chrome-devtools/debug/console/console-reference#groupend) to group related messages and avoid clutter
+- Use [console.assert()](/web/tools/chrome-devtools/debug/console/console-reference#assert) to show conditional error messages
 
-## Gravar no console
+## Writing to the console
 
-Use o método <a href="/web/tools/chrome-devtools/debug/console/console-reference#consolelogobject--object-">console.log()</a> para registros básicos no console. Ele assume uma ou mais expressões como parâmetros e grava seus valores atuais no console, concatenando diversos parâmetros em uma linha de espaço delimitado.
+Use the [console.log()](/web/tools/chrome-devtools/debug/console/console-reference#consolelogobject--object-) method for any basic logging to the console. It takes one or more expressions as parameters and writes their current values to the console, concatenating multiple parameters into a space-delimited line.
 
-Executar esta linha de código no JavaScript:
-
+Executing this line of code in your JavaScript:
 
     console.log("Node count:", a.childNodes.length, "and the current time is:", Date.now());
     
 
-Produzirá isto no Console:
-![Registrar múltiplos](images/console-write-log-multiple.png)
+Will output this in the Console: ![Log Multiple](images/console-write-log-multiple.png)
 
-## Preencher comandos automaticamente {:#autocomplete}
+## Autocompleting commands {:#autocomplete}
 
-o digitar no Console, ele automaticamente exibe um menu suspenso de 
-preenchimento automático de métodos relevantes correspondentes ao texto 
-que você digitou. Isso inclui comandos anteriormente executados.
+When you type in the Console, the Console automatically displays an autocomplete dropdown menu of relevant methods that match the text that you have already typed. This includes previous commands that you executed.
 
-![exemplo de preenchimento automático](images/autocomplete.png)
+![example of autocomplete](images/autocomplete.png)
 
-## Organizar saída do Console{:#organizing}
+## Organizing Console output {:#organizing}
 
-### Agrupar mensagens
+### Group messages together
 
-Você pode agrupar saídas relacionadas com comandos de grupo. O comando [`console.group()`](./console-reference#consolegroupobject-object-) assume um parâmetro com uma string para definir o nome do grupo. Depois de chamá-lo no JavaScript, o console começará a agrupar todas as saídas subsequentes.
+You can group related output together with the group commands. The [`console.group()`](./console-reference#consolegroupobject-object-) command takes a single string parameter to set the name of the group. After calling it in your JavaScript, the console will begin to group all subsequent output together.
 
-para encerrar o agrupamento, você só precisa chamar [`console.groupEnd()`](./console-reference#consolegroupend) quando terminar.
+To end the grouping you only need to call [`console.groupEnd()`](./console-reference#consolegroupend) when you're done.
 
-Exemplo de entrada:
-
+Example input:
 
     var user = "jsmith", authenticated = false;
     console.group("Authentication phase");
@@ -62,15 +50,13 @@ Exemplo de entrada:
     console.groupEnd();
     
 
-Exemplo de saída:
-![Saída simples de grupo do console](images/console-write-group.png)
+Example output: ![Simple console group output](images/console-write-group.png)
 
-#### Grupos aninhados
+#### Nested groups
 
-Grupos de registro também podem ser aninhados. Isso é útil porque possibilita ver um grupo grande em partes pequenas.
+Log groups may also nest within each other. This is useful to see a large group in smaller pieces at a time.
 
-Este exemplo mostra um grupo de registro para a fase de autenticação de um processo de acesso de login:
-
+This example shows a log group for the authentication phase of a login process:
 
     var user = "jsmith", authenticated = true, authorized = true;
     // Top-level group
@@ -90,13 +76,11 @@ Este exemplo mostra um grupo de registro para a fase de autenticação de um pro
     console.log("A group-less log trace.");
     
 
-E esta é a saída dos grupos aninhados no console:
-![Saída simples de grupo do console](images/console-write-nestedgroup.png)
+And here's the nested groups output in the console: ![Simple console group output](images/console-write-nestedgroup.png)
 
-#### Grupos de recolhimento automático
+#### Auto-collapsing groups
 
-Ao usar grupos demasiadamente, pode ser útil não ver tudo o que acontece. Nesses momentos, você pode recolher grupos automaticamente chamando [`console.groupCollapsed()`](./console-reference#consolegroupcollapsedobject-object-) em vez de `console.group()`:
-
+When using groups heavily, it can be very useful to not see everything as it happens. For these times you can automatically collapse groups by calling [`console.groupCollapsed()`](./console-reference#consolegroupcollapsedobject-object-) instead of `console.group()`:
 
     console.groupCollapsed("Authenticating user '%s'", user);
     if (authenticated) {
@@ -105,17 +89,15 @@ Ao usar grupos demasiadamente, pode ser útil não ver tudo o que acontece. Ness
     console.groupEnd();
     
 
-Saída groupCollapsed():
-![Grupo inicialmente recolhido](images/console-write-groupcollapsed.png)
+groupCollapsed() output: ![Initially collapsed group](images/console-write-groupcollapsed.png)
 
-## Erros e advertências
+## Errors and warnings
 
-Erros e advertências funcionam da mesma forma que o registro normal. A única diferença é que `error()` e `warn()` têm estilos para chamar a atenção.
+Errors and warnings act the same way as normal logging. The only difference is `error()` and `warn()` have styles to bring attention to them.
 
 ### console.error()
 
-O método [`console.error()`](./console-reference#consoleerrorobject--object-) exibe um ícone vermelho junto de uma mensagem de texto vermelho:
-
+The [`console.error()`](./console-reference#consoleerrorobject--object-) method displays a red icon along with red message text:
 
     function connectToServer() {
         console.error("Error: %s (%i)", "Server is  not responding",500);
@@ -123,91 +105,84 @@ O método [`console.error()`](./console-reference#consoleerrorobject--object-) e
     connectToServer();
     
 
-vira
+turns into
 
-![Exemplo de erro de saída](images/console-write-error-server-not-resp.png)
+![Error example output](images/console-write-error-server-not-resp.png)
 
 ### console.warn()
 
-O método [`console.warn()`](./console-reference#consolewarnobject--object-) exibe um ícone de advertência amarelo com a mensagem de texto:
-
+The [`console.warn()`](./console-reference#consolewarnobject--object-) method displays a yellow warning icon with the message text:
 
     if(a.childNodes.length < 3 ) {
         console.warn('Warning! Too few nodes (%d)', a.childNodes.length);
     }
     
 
-vira
+turns into
 
-![Exemplo de advertência](images/console-write-warning-too-few-nodes.png)
+![Warn example](images/console-write-warning-too-few-nodes.png)
 
-## Declarações
+## Assertions
 
-O método [`console.assert()`](./console-reference#consoleassertexpression-object) exibe uma string de erro condicionalmente (seu segundo parâmetro) somente se seu primeiro parâmetro avaliar como `false`.
+The [`console.assert()`](./console-reference#consoleassertexpression-object) method conditionally displays an error string (its second parameter) only if its first parameter evaluates to `false`.
 
-### Uma declaração simples e como ela é exibida
+### A simple assertion and how it displays
 
-O código a seguir gerará uma mensagem de erro no console somente se o número dos nós secundários que pertencem ao elemento `list` for superior a 500.
+The following code will cause an error message in the console only if the number of child nodes belonging to the `list` element is greater than 500.
 
-
-    console.assert(list.childNodes.length < 500, "Node count is > 500");
+    console.assert(list.childNodes.length <= 500, "Node count is > 500");
     
 
-Como uma falha de declaração é exibida no console:
-![Falha na declaração](images/console-write-assert-failed.png)
+How an assertion failure displays in the console: ![Assertion failed](images/console-write-assert-failed.png)
 
-## Substituição e formatação de strings
+## String substitution and formatting
 
-O primeiro parâmetro passado a qualquer método de registro pode conter um ou mais especificadores de formato. Um especificador de formato é composto de um símbolo `%` seguido de uma letra que indica a formatação que se aplica ao valor. Os parâmetros depois da string aplicam-se aos marcadores em ordem.
+The first parameter passed to any of the logging methods may contain one or more format specifiers. A format specifier consists of a `%` symbol followed by a letter that indicates the formatting that applies to the value. The parameters following the string apply to the placeholders in order.
 
-O exemplo a seguir usa a string e formatadores de dígito para inserir valores na string de saída. Você verá "Sam has 100 points" no console.
+The following example uses the string and digit formatters to insert values into the output string. You will see "Sam has 100 points" in the console.
 
     console.log("%s has %d points", "Sam", 100);
+    
 
-A lista completa de especificadores de formato é:
+The full list of format specifiers is:
 
-| Especificador | Saída                                                                            |
-|-----------|:----------------------------------------------------------------------------------|
-| %s        | Formata o valor como uma string                                                     |
-| %i or %d  | Formata o valor como um número inteiro                                                   |
-| %f        | Formata o valor como um valor de ponto flutuante                                       |
-| %o        | Formata o valor como um elemento de DOM expansível. Como visto no painel Elements     |
-| %O        | Formata o valor como um objeto JavaScript expansível                              |
-| %c        | Aplica regras de estilo CSS à string de saída conforme especificado pelo segundo parâmetro |
+| Specifier | Output                                                                            |
+| --------- |:--------------------------------------------------------------------------------- |
+| %s        | Formats the value as a string                                                     |
+| %i or %d  | Formats the value as an integer                                                   |
+| %f        | Formats the value as a floating point value                                       |
+| %o        | Formats the value as an expandable DOM element. As seen in the Elements panel     |
+| %O        | Formats the value as an expandable JavaScript object                              |
+| %c        | Applies CSS style rules to the output string as specified by the second parameter |
 
-Este exemplo usa o especificador de dígito para formatar o valor de `document.childNodes.length`. Ele também usa o especificador de ponto flutuante para formatar o valor de `Date.now()`.
+This example uses the digit specifier to format the value of `document.childNodes.length`. It also uses the floating point specifier to format the value of `Date.now()`.
 
-O código:
-
+The code:
 
     console.log("Node count: %d, and the time is %f.", document.childNodes.length, Date.now());
     
 
-A saída do exemplo de código anterior:
-[Exemplo de saída de substituição](images/console-write-log-multiple.png)
+The output of the previous code sample: ![Example substitution output](images/console-write-log-multiple.png)
 
-### Atribuir estilo à saída do console com CSS
+### Styling console output with CSS
 
-O especificador de formato CSS permite personalizar a exibição no console.
-Comece a string com o especificador e atribua o estilo que deseja aplicar como segundo parâmetro.
+The CSS format specifier allows you to customize the display in the console. Start the string with the specifier and give the style you wish to apply as the second parameter.
 
-Teste este código:
-
+Try this code:
 
     console.log("%cThis will be formatted with large, blue text", "color: blue; font-size: x-large");
     
 
-..para deixar sua saída de registro grande e azul:
+..to make your log output large and blue:
 
-![String formatada](images/console-write-format-string.png)
+![Formatted string](images/console-write-format-string.png)
 
-### Formatar elementos de DOM como objetos JavaScript
+### Formatting DOM elements as JavaScript objects
 
-Por padrão, elementos de DOM são registrados no console como representações do HTML, mas às vezes você pode querer acessar o elemento de DOM como um objeto JavaScript e verificar suas propriedades. Você pode usar o especificador de string `%O` (ver acima) ou usar o `console.dir` para fazer isso: 
+By default, DOM elements are logged into the console as representation of their HTML, but sometimes you want to access the DOM element as JavaScript object and inspect its properties. You can use the `%O` string specifier to do that (see above), or use `console.dir` to achieve the same:
 
-![Registrar um elemento usando dir()](images/dir-element.png)
+![Logging an element using dir()](images/dir-element.png)
 
+## Feedback {: #feedback }
 
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
