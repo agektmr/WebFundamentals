@@ -1,104 +1,59 @@
-project_path: /web/_project.yaml
-book_path: /web/resources/_book.yaml
-description: Если у вас короткое видео и вы хотите, чтобы оно воспроизводилось автоматически - в основном, если это GIF - то это руководство, возможно, то, что вам нужно.
+project_path: /web/_project.yaml book_path: /web/resources/_book.yaml description: If your video is short and you want it to auto-play&mdash;basically, if you are considering a GIF&mdash;then this guide might be just what you need.
 
-{# wf_updated_on: 2017-04-26 #}
-{# wf_published_on: 2016-10-12 #}
+{# wf_updated_on: 2017-04-26 #} {# wf_published_on: 2016-10-12 #}
 
-# Добавление видео {: .page-title }
+# Including Videos {: .page-title }
 
 {% include "web/_shared/contributors/surma.html" %}
 
-Если вы хотите добавить видео в ваше статью, рассмотрите возможность добавления
-его на [**YouTube**](https://youtube.com). YouTube автоматически адаптируется к
-ширине канала пользователя и предлагает знакомый интерфейс. Однако, если у вас
-короткое видео и вы хотите, чтобы оно воспроизводилось автоматически - в
-основном, если это GIF - то это руководство, возможно, то, что вам нужно.
+If you want to include a video in your article, you should consider uploading it to [**YouTube**](https://youtube.com). YouTube will automatically adapt to the user’s available bandwidth and offers a familiar UI. However, if your video is short and you want it to auto-play&mdash;basically if you are considering a GIF&mdash;then this guide might be just what you need.
 
-## Видео
+## Video source
 
-Ваше видео должно быть **высокого качества** и иметь **высокую кадровую
-частоту**. Если вы записываете скринкаст, убедитесь, что вы выставили достаточно
-высокий битрейт, чтобы избежать артефактов в исходном материале. (Для ретина
-экранов я обычно подходит ~6Mbit/s). Я рекомендую всегда записывать **не менее
-60 fps**, *особенно*
-когда записваете эффекты, переходы или любую анимацию.
+Your source video should be **high quality** and have a **high frames per second**. If you are recording a screencast, make sure you set the bitrate high enough to avoid artifacts in the source material. (For a retina screen I usually go to ~6Mbit/s). I recommend always recording **at least 60 fps**, *especially* when recording effects, transitions or any kind of animation.
 
-## Преобразование в веб-форматы
+## Converting to web formats
 
-Я использую [ffmpeg](https://www.ffmpeg.org/) для конвертации видео. Если у вас
-Mac с установленным [Homebrew](http://brew.sh/), вы можете установить ffmpeg
-так:
+I am using [ffmpeg](https://www.ffmpeg.org/) to convert videos. If you are on a Mac with [Homebrew](http://brew.sh/) set up, you can install ffmpeg with:
 
-```
-brew install --with-{libvpx,x265,openh264} ffmpeg
-```
+    brew install --with-{libvpx,x265,openh264} ffmpeg
+    
 
-Чтобы убедиться, что видео проигрываются и в мобильном Safari и в других
-браузерах, мы создадим две версии видео. Одна версия будет упакована в MPEG4
-контейнер (`.mp4`) используя кодек h264. Другая версия будет упакована в WebM
-контейнер (`.webm`) используя кодек VP8. Вы можете использовать следующий скрипт
-для автоматизации процесса:
+To make sure the videos can be played by both Safari mobile and other browsers, we are going to create two versions of the video. One version will be in an MPEG4 container (`.mp4`) using the h264 codec. The other version will be in a WebM container (`.webm`) using the VP8 codec. You can use the following script to automate the process:
 
-```
-#!/bin/bash
-BITRATE=${BITRATE:-500k}
+    #!/bin/bash
+    BITRATE=${BITRATE:-500k}
+    
+    ffmpeg -i $1 ${@:2} -c:v libx264 -profile:v main -level 4.0 -preset veryslow -tune animation -movflags +faststart -b:v ${BITRATE} -pix_fmt yuv420p -c:a null ${1%.*}_x264.mp4
+    ffmpeg -i $1 ${@:2} -c:v libvpx -b:v ${BITRATE} -c:a null ${1%.*}_vp8.webm
+    
 
-ffmpeg -i $1 ${@:2} -c:v libx264 -profile:v main -level 4.0 -preset veryslow -tune animation -movflags +faststart -b:v ${BITRATE} -pix_fmt yuv420p -c:a null ${1%.*}_x264.mp4
-ffmpeg -i $1 ${@:2} -c:v libvpx -b:v ${BITRATE} -c:a null ${1%.*}_vp8.webm
-```
+Notes about the script:
 
-Обратите внимание:
+* Usage: `BITRATE=500k ./transcode_video.sh <filename> [additional ffmpeg options]`
+* The script *will* strip out any audio.
+* You should change the `-tune` parameter to `film` if it’s not a screenrecording.
+* Details about the x264 encoder options can be found [here](https://trac.ffmpeg.org/wiki/Encode/H.264)
+* Details about the VP8 encoder options can be found [here](https://trac.ffmpeg.org/wiki/Encode/VP8)
+* You might want to play around with the bitrate for each format individually. VP8 tends to achieve the same quality with a smaller bitrate (and therefore smaller filesize) than h264.
 
-- Используется: `BITRATE=500k ./transcode_video.sh <filename> [дополнительные
-ffmpeg параметры]`
-- Скрипт *удалит* любое аудио.
-- Вы должны изменить параметр `-tune` на `film` если это не запись с экрана.
-- Описание параметров кодировщика x264 можете найти
-[здесь](https://trac.ffmpeg.org/wiki/Encode/H.264)
-- Описание параметров кодировщика VP8 можете найти
-[здесь](https://trac.ffmpeg.org/wiki/Encode/VP8)
-- Возможно, вам захочется поиграть с битрейтом для каждого формата в
-отдельности.VP8 имеет тенденцию к достижению такого же качества с меньшим
-битрейтом (и, следовательно, меньшим размером файла), чем h264.
+## Useful options
 
-## Полезные опции
+* `-r 15`: Resample to 15 fps. I use this when I am screencasting the DevTool console or a terminal.
+* `-vf 'scale=trunc(iw/4)*2:-2'`: Makes the video half as big. When using it make sure both width and height are a multiple of 2. (This is a requirement for h264).
+* `-vf 'scale=trunc(iw/8)*4:-2'`: Does the same thing as the previous option, except that it makes the video a quarter as big rather than half as big.
 
-- `-r 15`: Сокращает до 15 fps. Я использую это когда я записываю с экрана
-DevTool консоль или терминал.
-- `-vf 'scale=trunc(iw/4)*2:-2'`: Делает видео вдвое больше. Когда используете
-это, убедитесь, что и ширина и высота кратны двум (Это требование для h264).
-- `-vf 'scale=trunc(iw/8)*4:-2'`: Делает то же, что и предыдущий пункт, за
-исключением того, что делает видео вчетверо больше, а не вдвое.
+I’d recommend NOT using the original resolution for the video, as I expect no one to open the video on desktop in fullscreen. A width of roughly under 1000px seems like a good choice.
 
-Я бы порекомендовал не использовать исходное разрешение для видео, так как я
-думаю, что никто не будет открывать видео на десктопе на полный экран. Ширина
-чуть менее 1000px отличный выбор.
+## Hosting
 
-## Хостинг
+Video assets are not stored in the repository. Any kind of external hosting should be fine (like GCS or S3). Googlers can have access to a GCS bucket for WebFundamentals assets.
 
-Видео не хранятся в репозитории. Любой сторонний хостинг должен быть хорошим
-(как GCS или S3). Гуглеры могут получить доступ к GCS для WebFundamentals
-материалов.
+## Including
 
-## Добавление
+Include the video in your article using the following markup. The `autoplay` attribute can be removed if autoplay is not desired. I recommend keeping `controls` in for as long as iOS 9 is around, as it ignores `autoplay` and the user needs a way to start the video. I’d also recommend to [add a poster image](/web/fundamentals/media/video#include_a_poster_image), especially when autoplay is not enabled.
 
-Добавляйте видео в вашу статью, используя следующую разметку. Атрибут `autoplay`
-может быть удалён, если автозапуск не нужен. Я рекомендую оставить атрибут
-`controls`, поскольку iOS 9 ингорирует `autoplay`  и пользователю нужна
-возможность запустить видео. Я также рекомендую [добавить
-постер](/web/fundamentals/media/video#include_a_poster_image),
-особенно, когда автозапуск недоступен.
-
-```
-<video controls autoplay loop muted poster="[url to poster image]">
-  <source src="[url to .webm file]" type="video/webm; codecs=vp8">
-  <source src="[url to .mp4 file]" type="video/mp4; codecs=h264">
-</video>
-
-```
-
-
-
-Translated by
-{% include "web/_shared/contributors/dmitryskripunov.html" %}
+    <video controls autoplay loop muted poster="[url to poster image]">
+      <source src="[url to .webm file]" type="video/webm; codecs=vp8">
+      <source src="[url to .mp4 file]" type="video/mp4; codecs=h264">
+    </video>
