@@ -1,39 +1,32 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Ресурс лучше всего оптимизирован, если его вообще не нужно скачивать. Когда вы в последний раз проверяли ваши ресурсы? Вы должны делать это регулярно, чтобы убедиться, что каждый из них необходим в работе сайта.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: You should audit your resources periodically to ensure that each resource is helping deliver a better user experience.
 
-{# wf_updated_on: 2014-04-28 #}
-{# wf_published_on: 2014-03-31 #}
+{# wf_updated_on: 2018-08-17 #} {# wf_published_on: 2014-03-31 #} {# wf_blink_components: Blink>Network #}
 
-# Удаление ненужных ресурсов {: .page-title }
+# Eliminating Unnecessary Downloads {: .page-title }
 
 {% include "web/_shared/contributors/ilyagrigorik.html" %}
 
-
-
-Ресурс лучше всего оптимизирован, если его вообще не нужно скачивать. Когда вы в последний раз проверяли ваши ресурсы? Вы должны делать это регулярно, чтобы убедиться, что каждый из них необходим в работе сайта.
-
-
 ### TL;DR {: .hide-from-toc }
-- Проверьте все внешние и внутренние ресурсы сайта.
-- Оцените производительность и ценность каждого ресурса.
-- Решите, необходим ли этот ресурс на вашем сайте.
 
+* Inventory your own assets and third-party assets on your pages.
+* Measure the performance of each asset: its value and its technical performance.
+* Determine if the resources are providing sufficient value.
 
-Ресурс лучше всего оптимизирован, если его вообще не нужно скачивать. Идея кажется очевидной, но на практике многие забывают об этом. Чтобы производительность сайта всегда была высокой, постоянно ищите ненужные ресурсы, которые можно удалить. Вы можете обсудить ваши идеи с командой и вместе выявить ценность того или иного файла. Вот несколько примеров:
+The fastest and best-optimized resource is a resource not sent. You should eliminate unnecessary resources from your application. It’s a good practice to question, and periodically revisit, the implicit and explicit assumptions with your team. Here are a few examples:
 
-* Мы всегда добавляем на страницы ресурс X, но стоит ли тратить время на его скачивание и отображение? Как мы можем измерить его ценность?
-* Ресурс, особенно если он внешний, всегда работает одинаково эффективно? Он важен для процесса визуализации? Если да, может ли это быть слабым местом нашего сайта? Если ресурс станет недоступен, повлияет ли это на производительность страниц?
-* Для ресурса требуется соглашение об уровне услуг? К нему можно применить методы оптимизации, например сжатие, кеширование и т. д.?
+* You've always included resource X on your pages, but does the cost of downloading and displaying it offset the value it delivers to the user? Can you measure and prove its value?
+* Does the resource (especially if it's a third-party resource) deliver consistent performance? Is this resource in the critical path, or need to be? If the resource is in the critical path, could it be a single point of failure for the site? That is, if the resource is unavailable, does it affect performance and the user experience of your pages?
+* Does this resource need or have an SLA? Does this resource follow performance best practices: compression, caching, and so on?
 
-Страницы часто содержат ресурсы, которые не приносят пользы и даже мешают работе сайта. Это относится как к собственным, так и внешним файлам и виджетам:
+Too often, pages contain resources that are unnecessary, or worse, that hinder page performance without delivering much value to the visitor or to the site they're hosted on. This applies equally to first-party and third-party resources and widgets:
 
-* Сайт A разместил на главной странице слайд-шоу, чтобы пользователь мог просмотреть фотографии, просто нажимая на них. Все изображения загружаются вместе со страницей и пролистываются посетителем.
-    * **Вопрос.** Вы узнавали, сколько пользователей просматривают слайд-шоу? Возможно, большинство из них никогда этого не делало, поэтому большое количество данных скачивалось напрасно.
-* Сайт Б установил виджет внешнего ресурса, чтобы показывать информацию по теме, распространять информацию о себе в социальных сетях и т. д.
-    * **Вопрос.** Вы отслеживали, сколько посетителей воспользовались виджетом? Окупает ли он затраченные ресурсы?
+* Site A has decided to display a photo carousel on its homepage to allow the visitor to preview multiple photos with a quick click. All of the photos are loaded when the page is loaded, and the user advances through the photos. 
+    * **Question:** Have you measured how many users view multiple photos in the carousel? You might be incurring high overhead by downloading resources that most visitors never view.
+* Site B has decided to install a third-party widget to display related content, improve social engagement, or provide some other service. 
+    * **Question:** Have you tracked how many visitors use the widget or click-through on the content that the widget provides? Is the engagement that this widget generates enough to justify its overhead?
 
-Хотя удаление ненужных данных кажется чем-то банальным, на самом деле это не так. Для принятия решений вам потребуется провести внимательный анализ эффективности ресурса. Чтобы производительность вашего сайта всегда оставалась высокой, регулярно проверяйте, нужен ли вам тот или иной ресурс.
+Determining whether to eliminate unnecessary downloads often requires a lot of careful thinking and measurement. For best results, periodically inventory and revisit these questions for every asset on your pages.
 
+## Feedback {: #feedback }
 
-
+{% include "web/_shared/helpful.html" %}
