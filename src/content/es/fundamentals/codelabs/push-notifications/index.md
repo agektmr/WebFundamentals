@@ -1,670 +1,595 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: En este codelab, aprenderás a agregar notificaciones push a tu app web.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: In this codelab you'll how to add push notifications to your web app.
 
-{# wf_updated_on: 2017-10-06 #}
-{# wf_published_on: 2016-01-01 #}
+{# wf_auto_generated #} {# wf_updated_on: 2018-05-15 #} {# wf_published_on: 2016-01-01 #}
 
-
-# Agregado de notificaciones push a una app web {: .page-title }
+# Adding Push Notifications to a Web App {: .page-title }
 
 {% include "web/_shared/contributors/mattgaunt.html" %}
 
+## Overview
 
+Push messaging provides a simple and effective way to re-engage with your users and in this code lab you'll learn how to add push notifications to your web app.
 
-## Información general
+### What you'll learn
 
+* How to subscribe and unsubscribe a user for push messaging
+* How to handle incoming push messages
+* How to display a notification
+* How to respond to notification clicks
 
+### What you'll need
 
+* Chrome 52 or above
+* [Web Server for Chrome](https://chrome.google.com/webstore/detail/web-server-for-chrome/ofhbbkphhbklhfoeikjpcbhemlocgigb), or your own web server of choice
+* A text editor
+* Basic knowledge of HTML, CSS, JavaScript, and Chrome DevTools
+* The sample code, see Get setup
 
-Los mensajes push brindan una forma simple y efectiva de volver a interactuar con tus usuarios y en este codelab aprenderás a agregar notificaciones push a tu app web.
+## Get Setup
 
-### Lo que aprenderás
+### Download the sample code
 
-* Cómo suscribir y anular la suscripción de un usuario a mensajería push
-* Cómo manejar los mensajes push entrantes
-* Cómo mostrar una notificación
-* Cómo responder a clics de notificaciones
+You can get the sample code for this code by either downloading the zip here:
 
-### Qué necesitarás
+[Download source code](https://github.com/googlechrome/push-notifications/archive/master.zip)
 
-* Chrome 52 o superior
-*  [Servidor web para Chrome](https://chrome.google.com/webstore/detail/web-server-for-chrome/ofhbbkphhbklhfoeikjpcbhemlocgigb) o el servidor web de tu elección
-* Un editor de texto
-* Conocimiento básico de HTML, CSS, JavaScript y Chrome DevTools
-* El código de muestra, consulta Obtener configuración
-
-
-## Obtener configuración
-
-
-
-
-### Descargar el código de ejemplo
-
-Puedes obtener el código de muestra de este código descargando el zip aquí:
-
-[Vínculo](https://github.com/googlechrome/push-notifications/archive/master.zip)
-
-o clonando este repositorio de git:
+or by cloning this git repo:
 
     git clone https://github.com/GoogleChrome/push-notifications.git
+    
 
-Si descargaste la fuente como un zip, cuando lo descomprimas deberías obtener una carpeta raíz `push-notifications-master`.
+If you downloaded the source as a zip, unpacking it should give you a root folder `push-notifications-master`.
 
-### Instala y verifica el servidor web
+### Install and verify web server
 
-A pesar de que puedes usar tu propio servidor web, este codelab está diseñado para funcionar bien con Web Server de Chrome. Si aún no tienes la app instalada, puedes instalarla desde Chrome Web Store.
+While you're free to use your own web server, this codelab is designed to work well with the Chrome Web Server. If you don't have that app installed yet, you can install it from the Chrome Web Store.
 
-[Vínculo](https://chrome.google.com/webstore/detail/web-server-for-chrome/ofhbbkphhbklhfoeikjpcbhemlocgigb)
+[Install Web Server for Chrome](https://chrome.google.com/webstore/detail/web-server-for-chrome/ofhbbkphhbklhfoeikjpcbhemlocgigb)
 
-Después de instalar la app Web Server for Chrome, haz clic en el atajo Apps de la barra de marcadores:
+After installing the Web Server for Chrome app, click on the Apps shortcut on the bookmarks bar:
 
 ![a80b29d5e878df22.png](img/a80b29d5e878df22.png)
 
-En la ventana resultante, haz clic en el ícono de Web Server:
+In the ensuing window, click on the Web Server icon:
 
 ![dc07bbc9fcfe7c5b.png](img/dc07bbc9fcfe7c5b.png)
 
-A continuación, verás un diálogo que te permite configurar tu servidor web local:
+You'll see this dialog next, which allows you to configure your local web server:
 
 ![433870360ad308d4.png](img/433870360ad308d4.png)
 
-Haz clic en el botón __choose folder__ y selecciona la carpeta de la app. Esto te permitirá exhibir tu trabajo en progreso a través de la URL destacada en el diálogo del servidor web (en la sección __Web Server URL(s)__).
+Click the **choose folder** button, and select the app folder. This will enable you to serve your work in progress via the URL highlighted in the web server dialog (in the **Web Server URL(s)** section).
 
-En Options, marca el cuadro al lado de "Automatically show index.html", como se muestra a continuación:
+Under Options, check the box next to "Automatically show index.html", as shown below:
 
 ![39b4e0371e9703e6.png](img/39b4e0371e9703e6.png)
 
-Luego, detén y reinicia el servidor deslizando el activador denominado "Web Server: STARTED" hacia la izquierda y luego a la derecha.
+Then stop and restart the server by sliding the toggle labeled "Web Server: STARTED" to the left and then back to the right.
 
 ![daefd30e8a290df5.png](img/daefd30e8a290df5.png)
 
-Ahora visita tu sitio en tu propio navegador web (haciendo clic en la URL destacada de Web Server) o deberías ver una página como esta:
+Now visit your site in your web browser (by clicking on the highlighted Web Server URL) and you should see a page that looks like this:
 
 ![4525ec369fc2ae47.png](img/4525ec369fc2ae47.png)
 
-### Siempre actualiza el service worker
+### Always update the service worker
 
-Durante el desarrollo, es útil para garantizar que tu service worker esté siempre actualizado y tenga los últimos cambios.
+During development it's helpful to ensure your service worker is always up to date and has the latest changes.
 
-Para configurar esto en Chrome, abre DevTools (Clic derecho > Inspect) y dirígete al panel de __Application__, haz clic en la pestaña __Service Workers__ y marca la casilla de verificación __Update on Reload__. Cuando esta casilla de verificación está marcada, el service worker se actualiza forzosamente cada vez que se vuelve a cargar la página.
+To set this up in Chrome, open DevTools (Right Click > Inspect) and go to the **Application** panel, click the **Service Workers** tab and check the **Update on Reload** checkbox. When this checkbox is enabled the service worker is forcibly updated every time the page reloads.
 
 ![6b698d7c7bbf1bc0.png](img/6b698d7c7bbf1bc0.png)
 
+## Register a Service Worker
 
-## Registra un Service Worker
+In your `app` directory, notice that you have an empty file named `sw.js`. This file will be your service worker, for now it can stay empty and we'll be adding code to it later.
 
+First we need to register this file as our Service Worker.
 
+Our `app/index.html` page loads `scripts/main.js` and it's in this JavaScript file that we'll register our service worker.
 
+Add the following code to `scripts/main.js`:
 
-En tu directorio `app`, fíjate que tienes un archivo vacío llamado `sw.js`. Este archivo será tu service worker, por ahora puede quedar vacío y más tarde le agregaremos un código.
+    if ('serviceWorker' in navigator && 'PushManager' in window) {
+      console.log('Service Worker and Push is supported');
+    
+      navigator.serviceWorker.register('sw.js')
+      .then(function(swReg) {
+        console.log('Service Worker is registered', swReg);
+    
+        swRegistration = swReg;
+      })
+      .catch(function(error) {
+        console.error('Service Worker Error', error);
+      });
+    } else {
+      console.warn('Push messaging is not supported');
+      pushButton.textContent = 'Push Not Supported';
+    }
+    
 
-Primero, tenemos que registrar este archivo como nuestro Service Worker.
+This code checks if service workers and push messaging is supported by the current browser and if it is, it registers our `sw.js` file.
 
-Nuestra página `app/index.html` carga `scripts/main.js` y en el archivo de JavaScript registraremos nuestro service worker.
+#### Try it out
 
-Agrega el siguiente código a `scripts/main.js`:
+Check your changes by refreshing the app in the browser.
 
-```
-if ('serviceWorker' in navigator && 'PushManager' in window) {
-  console.log('Service Worker and Push is supported');
-
-  navigator.serviceWorker.register('sw.js')
-  .then(function(swReg) {
-    console.log('Service Worker is registered', swReg);
-
-    swRegistration = swReg;
-  })
-  .catch(function(error) {
-    console.error('Service Worker Error', error);
-  });
-} else {
-  console.warn('Push messaging is not supported');
-  pushButton.textContent = 'Push Not Supported';
-}
-```
-
-Este código comprueba si el actual navegador es compatible con los service workers y la mensajería push. Si son compatibles, registra nuestro archivo `sw.js`.
-
-#### Pruébalo
-
-Revisa tus cambios abriendo la URL __127.0.0.1:8887__ en el navegador.
-
-Abre Chrome DevTools para revisar la consola de `Service Worker is registered`, como aquí:
+Check the console in Chrome DevTools for `Service Worker is registered`, like so:
 
 ![de3ceca91043d278.png](img/de3ceca91043d278.png)
 
-### Obtén claves del servidor de la app
+### Get Application Server Keys
 
-Para trabajar con este code lab, tienes que generar claves del servidor de la app, cosa que podemos hacer con este sitio complementario:  [https://web-push-codelab.glitch.me/](https://web-push-codelab.glitch.me/)
+To work with this code lab you need to generate some application server keys which we can do with this companion site: <https://web-push-codelab.glitch.me/>
 
-Aquí puedes crear un par de claves pública y privada.
+Here you can generate a Public and Private key pair.
 
 ![a1304b99e7b981dd.png](img/a1304b99e7b981dd.png)
 
-Copia tu clave pública en `scripts/main.js`, reemplazando el valor `<Your Public Key>`:
+Copy your public key into `scripts/main.js` replacing the `<Your Public Key>` value:
 
-```
-const applicationServerPublicKey = '<Your Public Key>';
-```
+    const applicationServerPublicKey = '<Your Public Key>';
+    
 
-Note: Nunca debes poner tu clave privada en tu app web.
+Note: You should never put your private key in your web app!
 
+## Initialize State
 
-## Inicia el estado
+At the moment the web app's button is disabled and can't be clicked. This is because it's good practice to disable the push button by default and enable it once you know push is supported and can know if the user is currently subscribed or not.
 
+Let's create two functions in `scripts/main.js`, one called `initializeUI`, which will check if the user is currently subscribed, and one called `updateBtn` which will enable our button and change the text if the user is subscribed or not.
 
+We want our `initializeUI` function to look like this:
 
-
-En este momento, el botón de la app web está inhabilitado y no se le puede hacer clic. Esto es porque es bueno inhabilitar el botón push de manera predeterminada y habilitarlo cuando sepas que push es compatible y puedas saber si el usuario está suscripto o no.
-
-Creemos dos funciones en `scripts/main.js`, una llamada `initialiseUI`, que revisaremos si el usuario está suscripto actualmente, y una llamada `updateBtn`, que habilitará nuestro botón y cambiará el texto si el usuario está suscripto o no.
-
-Queremos que nuestra función `initialiseUI` se vea así:
-
-```
-function initialiseUI() {
-  // Set the initial subscription value
-  swRegistration.pushManager.getSubscription()
-  .then(function(subscription) {
-    isSubscribed = !(subscription === null);
-
-    if (isSubscribed) {
-      console.log('User IS subscribed.');
-    } else {
-      console.log('User is NOT subscribed.');
+    function initializeUI() {
+      // Set the initial subscription value
+      swRegistration.pushManager.getSubscription()
+      .then(function(subscription) {
+        isSubscribed = !(subscription === null);
+    
+        if (isSubscribed) {
+          console.log('User IS subscribed.');
+        } else {
+          console.log('User is NOT subscribed.');
+        }
+    
+        updateBtn();
+      });
     }
+    
 
-    updateBtn();
-  });
-}
-```
+Our new method uses the `swRegistration` from the previous step and calls `getSubscription()` on it's `pushManager`. `getSubscription()` is a method that returns a promise that resolves with the current subscription if there is one, otherwise it'll return `null`. With this we can check if the user is already subscribed or not, set some state and then call `updateBtn()` so the button can be enabled with some helpful text.
 
-Nuestro nuevo método usa `swRegistration` del paso anterior y llama a `getSubscription()` en su `pushManager`. `getSubscription()` es un método que muestra una promesa que se resuelve con la suscripción actual, si la hay, o devuelve `null`. Así, podemos revisar si el usuario ya está suscripto o no, establecer estados y llamar a `updateBtn()`, para que el botón se habilite con un texto útil.
+Add the following code to implement the `updateBtn()` function.
 
-Agrega el siguiente código para implementar la función `updateBtn()`.
+    function updateBtn() {
+      if (isSubscribed) {
+        pushButton.textContent = 'Disable Push Messaging';
+      } else {
+        pushButton.textContent = 'Enable Push Messaging';
+      }
+    
+      pushButton.disabled = false;
+    }
+    
 
-```
-function updateBtn() {
-  if (isSubscribed) {
-    pushButton.textContent = 'Disable Push Messaging';
-  } else {
-    pushButton.textContent = 'Enable Push Messaging';
-  }
+This function simply changes the text depending on the whether the user is subscribed or not and then enables the button.
 
-  pushButton.disabled = false;
-}
-```
+The last thing to do is call `initializeUI()` when our service worker is registered.
 
-Esta función sencillamente cambia el texto según si el usuario está suscripto o no, y luego habilita el botón.
+    navigator.serviceWorker.register('sw.js')
+    .then(function(swReg) {
+      console.log('Service Worker is registered', swReg);
+    
+      swRegistration = swReg;
+      initializeUI();
+    })
+    
 
-Lo último que hay que hacer es llamar a `initialiseUI()` cuando nuestro service worker está registrado.
+#### Try it out
 
-```
-navigator.serviceWorker.register('sw.js')
-.then(function(swReg) {
-  console.log('Service Worker is registered', swReg);
-
-  swRegistration = swReg;
-  initialiseUI();
-})
-```
-
-#### Pruébalo
-
-Abre tu app web y deberías ver que el botón ‘Enable Push Messaging' está habilitado (puedes hacerle clic) y deberías ver ‘User is NOT subscribed.' en la consola.
+Refresh your web app and you should see the ‘Enable Push Messaging' button is now enabled (you can click it) and you should see ‘User is NOT subscribed.' in the console.
 
 ![15f6375617c11974.png](img/15f6375617c11974.png)
 
-Cuando avanzamos por el resto del code lab, deberías ver que el texto del botón cambia cuando el usuario se suscribe/anula la suscripción.
+When we progress through the rest of the code lab you should see the button text change when the user subscribed / un-subscribed.
 
+## Subscribe the user
 
-## Suscribe al usuario
+At the moment our ‘Enable Push Messaging' button doesn't do too much, so let's fix that.
 
+Add a click listener to our button in the `initializeUI()` function, like so:
 
-
-
-Ahora, nuestro botón ‘Enable Push Messaging' no hace mucho, solucionémoslo.
-
-Agrega un receptor de clic a nuestro botón en la función `initialiseUI()`, así:
-
-```
-function initialiseUI() {
-  pushButton.addEventListener('click', function() {
-    pushButton.disabled = true;
-    if (isSubscribed) {
-      // TODO: Unsubscribe user
-    } else {
-      subscribeUser();
+    function initializeUI() {
+      pushButton.addEventListener('click', function() {
+        pushButton.disabled = true;
+        if (isSubscribed) {
+          // TODO: Unsubscribe user
+        } else {
+          subscribeUser();
+        }
+      });
+    
+      // Set the initial subscription value
+      swRegistration.pushManager.getSubscription()
+      .then(function(subscription) {
+        isSubscribed = !(subscription === null);
+    
+        updateSubscriptionOnServer(subscription);
+    
+        if (isSubscribed) {
+          console.log('User IS subscribed.');
+        } else {
+          console.log('User is NOT subscribed.');
+        }
+    
+        updateBtn();
+      });
     }
-  });
+    
 
-  // Set the initial subscription value
-  swRegistration.pushManager.getSubscription()
-  .then(function(subscription) {
-    isSubscribed = !(subscription === null);
+When the user clicks the push button, we first disable the button just to make sure the user can't click it a second time while we're subscribing to push as it can take some time.
 
-    updateSubscriptionOnServer(subscription);
+Then we call `subscribeUser()` when we know the user isn't currently subscribed, so copy and paste the following code into `scripts/main.js`.
 
-    if (isSubscribed) {
-      console.log('User IS subscribed.');
-    } else {
-      console.log('User is NOT subscribed.');
+    function subscribeUser() {
+      const applicationServerKey = urlB64ToUint8Array(applicationServerPublicKey);
+      swRegistration.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: applicationServerKey
+      })
+      .then(function(subscription) {
+        console.log('User is subscribed.');
+    
+        updateSubscriptionOnServer(subscription);
+    
+        isSubscribed = true;
+    
+        updateBtn();
+      })
+      .catch(function(err) {
+        console.log('Failed to subscribe the user: ', err);
+        updateBtn();
+      });
     }
+    
 
-    updateBtn();
-  });
-}
-```
+Lets step through what this code is doing and how it's subscribing the user for push messaging.
 
-Cuando el usuario hace clic en el botón push, primero inhabilitamos el botón para asegurarnos de que el usuario no pueda hacer clic por segunda vez mientras suscribimos a push, ya que puede llevar un tiempo.
+First we take the application server's public key, which is base 64 URL safe encoded, and we convert it to a `UInt8Array` as this is the expected input of the subscribe call. We've already given you the function `urlB64ToUint8Array` at the top of `scripts/main.js`.
 
-Entonces, llamamos a `subscribeUser()` cuando sabemos que el usuario no está suscripto, entonces copia y pega el siguiente código en `scripts/main.js`.
+Once we've converted the value, we call the `subscribe()` method on our service worker's `pushManager`, passing in our application server's public key and the value `userVisibleOnly: true`.
 
-```
-function subscribeUser() {
-  const applicationServerKey = urlB64ToUint8Array(applicationServerPublicKey);
-  swRegistration.pushManager.subscribe({
-    userVisibleOnly: true,
-    applicationServerKey: applicationServerKey
-  })
-  .then(function(subscription) {
-    console.log('User is subscribed:', subscription);
+    const applicationServerKey = urlB64ToUint8Array(applicationServerPublicKey);
+    swRegistration.pushManager.subscribe({
+      userVisibleOnly: true,
+      applicationServerKey: applicationServerKey
+    })
+    
 
-    updateSubscriptionOnServer(subscription);
+The `userVisibleOnly` parameter is basically an admission that you will show a notification every time a push is sent. At the time of writing this value is required and must be true.
 
-    isSubscribed = true;
+Calling `subscribe()` returns a promise which will resolve after the following steps:
 
-    updateBtn();
-  })
-  .catch(function(err) {
-    console.log('Failed to subscribe the user: ', err);
-    updateBtn();
-  });
-}
-```
+1. The user has granted permission to display notifications.
+2. The browser has sent a network request to a push service to get the details to generate a PushSubscription.
 
-Repasemos los pasos que este código está siguiendo y cómo está suscribiendo al usuario a mensajes push.
+The `subscribe()` promise will resolve with a `PushSubscription` if these steps were successful. If the user doesn't grant permission or if there is any problem subscribing the user, the promise will reject with an error. This gives us the following promise chain in our codelab:
 
-Primero, tomamos la clave pública del servidor de la app, que es una URL 64 base codificada, y la convertimos en `UInt8Array`, ya que es la entrada esperada de la llamada de suscripción. Ya te hemos brindado la función `urlB64ToUint8Array` en la primera parte de `scripts/main.js`.
+    swRegistration.pushManager.subscribe({
+      userVisibleOnly: true,
+      applicationServerKey: applicationServerKey
+    })
+    .then(function(subscription) {
+      console.log('User is subscribed.');
+    
+      updateSubscriptionOnServer(subscription);
+    
+      isSubscribed = true;
+    
+      updateBtn();
+    
+    })
+    .catch(function(err) {
+      console.log('Failed to subscribe the user: ', err);
+      updateBtn();
+    });
+    
 
-Una vez que has convertido el valor, llamamos al método `subscribe()` del `pushManager` de nuestros service workers, pasando la clave pública del servidor de la app y el valor `userVisibleOnly: true`.
+With this, we get a subscription and treat the user as subscribed or we catch the error and print it to the console. In both scenarios we call `updateBtn()` to ensure the button is re-enabled and has the appropriate text.
 
-```
-const applicationServerKey = urlB64ToUint8Array(applicationServerPublicKey);
-swRegistration.pushManager.subscribe({
-  userVisibleOnly: true,
-  applicationServerKey: applicationServerKey
-})
-```
+The method `updateSubscriptionOnServer` is a method where in a real application we would send our subscription to a backend, but for our codelab we are going to print the subscription in our UI which will help us later on. Add this method to `scripts/main.js`:
 
-El parámetro `userVisibleOnly` es, básicamente, una admisión para que muestres una notificación cada vez que se envía un push. Al momento de escribir, este valor es obligatorio y debe ser true.
+    function updateSubscriptionOnServer(subscription) {
+      // TODO: Send subscription to application server
+    
+      const subscriptionJson = document.querySelector('.js-subscription-json');
+      const subscriptionDetails =
+        document.querySelector('.js-subscription-details');
+    
+      if (subscription) {
+        subscriptionJson.textContent = JSON.stringify(subscription);
+        subscriptionDetails.classList.remove('is-invisible');
+      } else {
+        subscriptionDetails.classList.add('is-invisible');
+      }
+    }
+    
 
-Llamar a `subscribe()` devuelve una promesa que se resolverá después de los siguientes pasos:
+#### Try it out
 
-1. El usuario ha otorgado servicio para mostrar notificaciones.
-2. El navegador ha enviado una solicitud de red a un servicio push para obtener los detalles para generar una PushSubscription.
-
-La promesa `subscribe()` se resolverá con una `PushSubscription` si estos pasos fueron exitosos. Si el usuario no otorga permiso o si hay algún problema en la suscripción del usuario, la promesa se rechazará con un error. Esto nos brinda la siguiente cadena de promesa en nuestro codelab:
-
-```
-swRegistration.pushManager.subscribe({
-  userVisibleOnly: true,
-  applicationServerKey: applicationServerKey
-})
-.then(function(subscription) {
-  console.log('User is subscribed:', subscription);
-
-  updateSubscriptionOnServer(subscription);
-
-  isSubscribed = true;
-
-  updateBtn();
-
-})
-.catch(function(err) {
-  console.log('Failed to subscribe the user: ', err);
-  updateBtn();
-});
-```
-
-Con esto, obtenemos una suscripción y tratamos al usuario como suscripto o captamos el error y lo imprimimos en la consola. En ambos casos, llamamos a `updateBtn()` para asegurarnos de que el botón esté rehabilitado y tenga el texto correcto.
-
-El método `updateSubscriptionOnServer` es un método mediante el que en una app real enviaríamos nuestra suscripción a un backend, pero para nuestro codelab imprimiremos la suscripción en nuestra IU, que nos ayudará más adelante. Agrega este método a `scripts/main.js`:
-
-```
-function updateSubscriptionOnServer(subscription) {
-  // TODO: Send subscription to application server
-
-  const subscriptionJson = document.querySelector('.js-subscription-json');
-  const subscriptionDetails =
-    document.querySelector('.js-subscription-details');
-
-  if (subscription) {
-    subscriptionJson.textContent = JSON.stringify(subscription);
-    subscriptionDetails.classList.remove('is-invisible');
-  } else {
-    subscriptionDetails.classList.add('is-invisible');
-  }
-}
-```
-
-#### Pruébalo
-
-Si vuelves a tu app web e intentas hacer clic en el botón, deberías ver un aviso de permiso como este:
+If you go back to your web app and try clicking the button you should see a permission prompt like this:
 
 ![227cea0abe03a5b4.png](img/227cea0abe03a5b4.png)
 
-Si otorgas el permiso, deberías ver la impresión de consola `User is subscribed:` con la `PushSubscription`, el texto del botón cambiará a ‘Disable Push Messaging' y podrás ver la suscripción como JSON en la parte inferior de la página.
+If you grant the permission you should see the console print "User is subscribed.", the button's text will change to ‘Disable Push Messaging' and you'll be able to view the subscription as JSON at the bottom of the page.
 
 ![8fe2b1b110f87b34.png](img/8fe2b1b110f87b34.png)
 
+## Handle Permission Denied
 
-## Manejo del acceso denegado
+One thing that we haven't handled yet is what happens if the user blocks the permission request. This needs some unique consideration because if the user blocks the permission, our web app will not be able to re-show the permission prompt and will not be able to subscribe the user, so we need to at least disable the push button so the user knows it can't be used.
 
+The obvious place for us to handle this scenario is in the `updateBtn()` function. All we need to do is check the `Notification.permission` value, like so:
 
+    function updateBtn() {
+      if (Notification.permission === 'denied') {
+        pushButton.textContent = 'Push Messaging Blocked.';
+        pushButton.disabled = true;
+        updateSubscriptionOnServer(null);
+        return;
+      }
+    
+      if (isSubscribed) {
+        pushButton.textContent = 'Disable Push Messaging';
+      } else {
+        pushButton.textContent = 'Enable Push Messaging';
+      }
+    
+      pushButton.disabled = false;
+    }
+    
 
+We know that if the permission is `denied`, then the user can't be subscribed and there is nothing more we can do, so disabling the button for good is the best approach.
 
-Algo que aún no hemos manejado es qué sucede si el usuario bloquea la solicitud de permiso. Esto necesita consideraciones únicas porque, si el usuario bloquea el permiso, nuestra app web no podrá volver a mostrar el aviso de permiso ni podrá suscribir al usuario, así que necesitamos al menos inhabilitar un botón push para que el usuario sepa que se puede usar.
+#### Try it out
 
-El lugar obvio para que manejemos esta situación es la función `updateBtn()`. Lo único que tenemos que hacer es marcar el valor `Notification.permission`, de esta forma:
-
-```
-function updateBtn() {
-  if (Notification.permission === 'denied') {
-    pushButton.textContent = 'Push Messaging Blocked.';
-    pushButton.disabled = true;
-    updateSubscriptionOnServer(null);
-    return;
-  }
-
-  if (isSubscribed) {
-    pushButton.textContent = 'Disable Push Messaging';
-  } else {
-    pushButton.textContent = 'Enable Push Messaging';
-  }
-
-  pushButton.disabled = false;
-}
-```
-
-Sabemos que si el permiso está `denied`, no se puede suscribir al usuario y no podemos hacer nada más, por eso la mejor opción es inhabilitar el botón definitivamente.
-
-#### Pruébalo
-
-Como ya hemos otorgado permiso para nuestra app web en el paso anterior, tenemos que hacer clic en la __i__ que está en un círculo en la barra de URL y cambiar el permiso de notificaciones a *Use global default (Ask)* .
+Since we've already granted permission for our web app from the previous step we need to click the **i** in a circle in the URL bar and change the notifications permission to *Use global default (Ask)* .
 
 ![8775071d7fd66432.png](img/8775071d7fd66432.png)
 
-Después de cambiar esta configuración, actualiza la página y haz clic en el botón *Enable Push Messaging* y, esta vez, selecciona *Block* en el diálogo de permiso. El texto del botón ahora será *Push Messaging Blocked* y estará inhabilitado.
+After you've changed this setting, refresh the page and click the *Enable Push Messaging* button and this time select *Block* on the permission dialog. The button text will now be *Push Messaging Blocked* and be disabled.
 
 ![2b5314607196f4e1.png](img/2b5314607196f4e1.png)
 
-Con este cambio, ahora podemos suscribir al usuario y nos estamos ocupando de las posibles situaciones de permiso.
+With this change we can now subscribe the user and we're taking care of the possible permission scenarios.
 
+## Handle a Push Event
 
-## Manejo de un evento push
+Before we cover how to send a push message from your backend, we need to consider what will actually happen when a subscribed user receives a push message.
 
+When we trigger a push message, the browser receives the push message, figures out what service worker the push is for before waking up that service worker and dispatching a push event. We need to listen for this event and show a notification as a result.
 
+Add the following code to your `sw.js` file:
 
+    self.addEventListener('push', function(event) {
+      console.log('[Service Worker] Push Received.');
+      console.log(`[Service Worker] Push had this data: "${event.data.text()}"`);
+    
+      const title = 'Push Codelab';
+      const options = {
+        body: 'Yay it works.',
+        icon: 'images/icon.png',
+        badge: 'images/badge.png'
+      };
+    
+      event.waitUntil(self.registration.showNotification(title, options));
+    });
+    
 
-Antes de cubrir cómo enviar un mensaje push desde tu backend, tenemos que analizar qué sucederá cuando un usuario suscripto reciba un mensaje push.
+Let's step through this code. We are listening for push events in our service worker by adding an event listener to our service worker, which is this piece of code:
 
-Cuando lanzamos un mensaje push, el navegador recibe el mensaje push, descifra para qué service worker es el push antes de activar ese service worker y distribuir un evento push. Tenemos que escuchar este evento y mostrar una notificación como resultado.
+    self.addEventListener('push', ...... );
+    
 
-Agrega el siguiente código a tu archivo `sw.js`:
+Unless you've played with Web Workers before, `self` is probably new. `self` is referencing the service worker itself, so we are adding an event listener to our service worker.
 
-```
-self.addEventListener('push', function(event) {
-  console.log('[Service Worker] Push Received.');
-  console.log(`[Service Worker] Push had this data: "${event.data.text()}"`);
+When a push message is received, our event listener will be fired, and we create a notification by calling `showNotification()` on our registration. `showNotification()` expects a `title` and we can give it an `options` object. Here we are going to set a body message, icon and a badge in the options (the badge is only used on Android at the time of writing).
 
-  const title = 'Push Codelab';
-  const options = {
-    body: 'Yay it works.',
-    icon: 'images/icon.png',
-    badge: 'images/badge.png'
-  };
+    const title = 'Push Codelab';
+    const options = {
+      body: 'Yay it works.',
+      icon: 'images/icon.png',
+      badge: 'images/badge.png'
+    };
+    self.registration.showNotification(title, options);
+    
 
-  event.waitUntil(self.registration.showNotification(title, options));
-});
-```
+The last thing to cover in our push event is `event.waitUntil()`. This method takes a promise and the browser will keep your service worker alive and running until the promise passed in has resolved.
 
-Repasemos este código. Estamos escuchando eventos push en nuestro service worker agregando un receptor de eventos a nuestro service worker, que es la siguiente parte del código:
+To make the code above a little easier to understand we can re-write it like so:
 
-```
-self.addEventListener('push', ...... );
-```
+    const notificationPromise = self.registration.showNotification(title, options);
+    event.waitUntil(notificationPromise);
+    
 
-A menos que antes hayas usado trabajadores web, `self` probablemente será nuevo. `self` hace referencia al service worker, así que agregamos un receptor de eventos a nuestro service worker.
+Now that we've stepped through the push event, let's test out a push event.
 
-Cuando se reciba un mensaje push, se ejecutará nuestro receptor de eventos, y crearemos una notificación llamando a `showNotification()` en nuestro registro. `showNotification()` espera un `title` y podemos otorgar un objeto `options`. Aquí estableceremos un mensaje, ícono e insignia en las opciones (la insignia solo se usa en Android al momento de escribir).
+#### Try it out
 
-```
-const title = 'Push Codelab';
-const options = {
-  body: 'Yay it works.',
-  icon: 'images/icon.png',
-  badge: 'images/badge.png'
-};
-self.registration.showNotification(title, options);
-```
+With our push event in the service worker we can test what happens when a message is received by triggering a fake push event using DevTools.
 
-Lo último para cubrir nuestro evento push es `event.waitUntil()`. El método toma una promesa y el navegador mantendrá vivo tu service worker hasta que la promesa que se pasó se haya resuelto.
-
-Para que el código anterior sea un poco más fácil de comprender, podemos reescribirlo de la siguiente forma:
-
-```
-const notificationPromise = self.registration.showNotification(title, options);
-event.waitUntil(notificationPromise);
-```
-
-Ahora que hemos repasado el evento push, probemos un evento push.
-
-#### Pruébalo
-
-Con nuestro evento push en el service worker, podemos probar qué sucede cuando se recibe un mensaje disparando un evento push falso usando DevTools.
-
-En tu app web, suscríbete a los mensajes push, asegurándote de tener *User IS subscribed* en tu consola. Luego, dirígete al panel *Application* en DevTools bajo la pestaña *Service Workers* y haz clic en el vínculo *Push* bajo tu service worker.
+In your web app, subscribe to push messaging, making sure you have *User IS subscribed* in your console, then go to the *Application* panel in DevTools and under the *Service Workers* tab click on the *Push* link under your service worker.
 
 ![2b089bdf10a8a945.png](img/2b089bdf10a8a945.png)
 
-Cuando le haces clic debes ver una notificación como esta:
+Once you've clicked it you should see a notification like this:
 
 ![eee7f9133a97c1c4.png](img/eee7f9133a97c1c4.png)
 
-Note: Si este paso no funciona, intenta anular el registro de tu service worker, a través del vínculo *Unregister*  del panel de la app DevTools, espera que se detenga el service worker y vuelve a cargar la página.
+Note: If this step doesn't work, try unregistering your service work, via the *Unregister* link in the DevTools Application panel, wait for the service worker to be stopped, and then reload the page.
 
+## Notification click
 
-## Clic de notificación
+If you click on one of these notifications you'll notice nothing happens. We can handle notification clicks by listening for `notificationclick` events in your service worker.
 
+Start by adding a `notificationclick` listener in `sw.js` like so:
 
+    self.addEventListener('notificationclick', function(event) {
+      console.log('[Service Worker] Notification click Received.');
+    
+      event.notification.close();
+    
+      event.waitUntil(
+        clients.openWindow('https://developers.google.com/web/')
+      );
+    });
+    
 
+When the user clicks on the notification, the `notificationclick` event listener will be called.
 
-Si haces clic en una de estas notificaciones, notarás que no sucede nada. Podemos controlar los clics de notificación escuchando los eventos `notificationclick` de tu service worker.
+In this code lab we first close the notification that was clicked with:
 
-Comienza agregando un receptor `notificationclick` en `sw.js`, así:
+    event.notification.close();
+    
 
-```
-self.addEventListener('notificationclick', function(event) {
-  console.log('[Service Worker] Notification click Received.');
+Then we open a new window / tab loading the url ‘https://developers.google.com/web/' , feel free to change this :)
 
-  event.notification.close();
-
-  event.waitUntil(
     clients.openWindow('https://developers.google.com/web/')
-  );
-});
-```
+    
 
-Cuando el usuario hace clic en la notificación, se llamará al receptor de eventos `notificationclick`.
+We are calling `event.waitUntil()` again to ensure the browser doesn't terminate our service worker before our new window has been displayed.
 
-En este code lab, primero cerramos la notificación a la que se le hizo clic con lo siguiente:
+#### Try it out
 
-```
-event.notification.close();
-```
+Try triggering a push message in DevTools again and click on the notification. You'll now see the notification close and open a new tab.
 
-Luego, abrimos una ventana/pestaña nueva cargando la url developers.google.com/web/ , puedes cambiar esto :)
+## Sending push messages
 
-```
-clients.openWindow('https://developers.google.com/web/')
-```
+We've seen that our web app is capable of showing a notification using DevTools and looked at how to close the notification of a click. The next step is to send an actual push message.
 
-Estamos llamando a `event.waitUntil()` de nuevo para asegurarnos de que el navegador no finalice nuestro service worker antes de que se haya mostrado nuestra nueva ventana.
+Normally the process for this would be sending a subscription from a web page to a backend and the backend would then trigger a push message by making an API call to the endpoint in the subscription.
 
-#### Pruébalo
-
-Intenta disparar un mensaje push nuevamente en DevTools y haz clic en la notificación. Ahora verás la notificación, cierra y abre una pestaña nueva.
-
-
-## Envío de mensajes push
-
-
-
-
-Hemos visto que nuestra app web es capaz de mostrar una notificación usando DevTools y hemos visto cómo cerrar la notificación de un clic, el siguiente paso es enviar un mensajes push real.
-
-Normalmente, el proceso para esto sería enviar una suscripción de una página web a un backend y el backend dispararía un mensaje push haciendo que una API llame al terminal de la suscripción.
-
-Esto está fuera de alcance para este codelab, pero puedes usar el sitio complementario ([https://web-push-codelab.glitch.me/](https://web-push-codelab.glitch.me/)) para que este code lab dispare un mensaje push real. Copia y pega la suscripción en la parte inferior de la página:
+This is out of scope for this codelab, but you can use the companion site ( <https://web-push-codelab.glitch.me/>) for this codelab to trigger an actual push message. Copy and paste the subscription at the bottom of your page:
 
 ![cf0e71f76cb79cc4.png](img/cf0e71f76cb79cc4.png)
 
-Luego, pega esto en el sitio complementario, en el área de texto  *Subscription to Send To*  :
+Then paste this into the companion site in the *Subscription to Send To* text area:
 
 ![a12fbfdc08233592.png](img/a12fbfdc08233592.png)
 
-Luego, bajo  *Text to Send*  puedes agregar cualquier cadena que desees enviar con el mensaje push y hacer clic en el botón  *Send Push Message*  .
+Then under *Text to Send* you can add any string you want to send with the push message and finally click the *Send Push Message* button.
 
 ![2973c2b818ca9324.png](img/2973c2b818ca9324.png)
 
-Luego, deberías recibir un mensaje push y el texto que incluiste se imprimirá en la consola.
+You should then receive a push message and the text you included will be printed to the console.
 
 ![75b1fedbfb7e0b99.png](img/75b1fedbfb7e0b99.png)
 
-Deberías darte la oportunidad de probar el envío y recepción de datos, y de manipular notificaciones como resultado.
+This should give you a chance to test out sending and receiving data and manipulate notifications as a result.
 
-La app complementaria es en realidad solo un servidor de nodo que usa la  [biblioteca web-push](https://github.com/web-push-libs/web-push) para enviar mensajes. Vale la pena revisar las  [bibliotecas web-push de Github](https://github.com/web-push-libs/) para saber qué bibliotecas están disponibles para enviar mensajes push para ti (esto controla muchos de los detalles esenciales para disparar mensajes push).
+The companion app is actually just a node server that is using the [web-push library](https://github.com/web-push-libs/web-push) to send messages. It's worthwhile checking out the [web-push-libs org on Github](https://github.com/web-push-libs/) to see what libraries are available to send push messages for you (this handles a lot of the nitty gritty details to trigger push messages).
 
+You can see all the [code for the companion site here](https://glitch.com/edit/#!/web-push-codelab).
 
-## Anula la suscripción del usuario
+## Unsubscribe the user
 
+The one thing we are missing is the ability to unsubscribe the user from push. To do this we need to call `unsubscribe()` on a `PushSubscription`.
 
+Back in our `scripts/main.js` file, change the `pushButton`'s click listener in `initializeUI()` to the following:
 
+    pushButton.addEventListener('click', function() {
+      pushButton.disabled = true;
+      if (isSubscribed) {
+        unsubscribeUser();
+      } else {
+        subscribeUser();
+      }
+    });
+    
 
-Lo único que nos falta es la capacidad de anular la suscripción del usuario de push. Para hacer esto, necesitamos llamar a `unsubscribe()` en una `PushSubscription`.
+Notice we are now going to call a new function `unsubscribeUser()`. In this method we'll get the current subscription and called unsubscribe on it. Add the following code to `scripts/main.js`:
 
-En nuestro archivo `scripts/main.js`, cambia el receptor de clic de `pushButton` en `initialiseUI()` a lo siguiente:
-
-```
-pushButton.addEventListener('click', function() {
-  pushButton.disabled = true;
-  if (isSubscribed) {
-    unsubscribeUser();
-  } else {
-    subscribeUser();
-  }
-});
-```
-
-Nota que vamos a llamar a una nueva función `unsubscribeUser()`. En este método, obtendremos la suscripción actual y anularemos la suscripción. Agrega el siguiente código a `scripts/main.js`:
-
-```
-function unsubscribeUser() {
-  swRegistration.pushManager.getSubscription()
-  .then(function(subscription) {
-    if (subscription) {
-      return subscription.unsubscribe();
+    function unsubscribeUser() {
+      swRegistration.pushManager.getSubscription()
+      .then(function(subscription) {
+        if (subscription) {
+          return subscription.unsubscribe();
+        }
+      })
+      .catch(function(error) {
+        console.log('Error unsubscribing', error);
+      })
+      .then(function() {
+        updateSubscriptionOnServer(null);
+    
+        console.log('User is unsubscribed.');
+        isSubscribed = false;
+    
+        updateBtn();
+      });
     }
-  })
-  .catch(function(error) {
-    console.log('Error unsubscribing', error);
-  })
-  .then(function() {
-    updateSubscriptionOnServer(null);
+    
 
-    console.log('User is unsubscribed.');
-    isSubscribed = false;
+Let's step through this function.
 
-    updateBtn();
-  });
-}
-```
+First we get the current subscription by calling `getSubscription()`:
 
-Repasemos esta función.
+    swRegistration.pushManager.getSubscription()
+    
 
-Primero, obtenemos la suscripción actual, llamando a `getSubscription()`:
+This returns a promise that resolves with a `PushSubscription` if one exists, otherwise it returns `null`. If there is a subscription, we call `unsubscribe()` on it, which makes the `PushSubscription` invalid.
 
-```
-swRegistration.pushManager.getSubscription()
-```
+    swRegistration.pushManager.getSubscription()
+    .then(function(subscription) {
+      if (subscription) {
+        // TODO: Tell application server to delete subscription
+        return subscription.unsubscribe();
+      }
+    })
+    .catch(function(error) {
+      console.log('Error unsubscribing', error);
+    })
+    
 
-Esto devuelve una promesa que resuelve con una `PushSubscription`, si existe alguna, o devuelve `null`. Si hay una suscripción, llamamos a `unsubscribe()`, que hace que la `PushSubscription` no sea válida.
+Calling `unsubscribe()` returns a promise as it can take some time to complete, so we return that promise so the next `then()` in the chain waits for `unsubscribe()` to finish. We also add a catch handler in case calling `unsubscribe()` results in an error. After this we can update our UI.
 
-```
-swRegistration.pushManager.getSubscription()
-.then(function(subscription) {
-  if (subscription) {
-    // TODO: Tell application server to delete subscription
-    return subscription.unsubscribe();
-  }
-})
-.catch(function(error) {
-  console.log('Error unsubscribing', error);
-})
-```
+    .then(function() {
+      updateSubscriptionOnServer(null);
+    
+      console.log('User is unsubscribed.');
+      isSubscribed = false;
+    
+      updateBtn();
+    })
+    
 
-Llamar a `unsubscribe()` devuelve una promesa, ya que puede llevar un tiempo completarse, entonces devolvemos esa promesa para que el próximo `then()` de la cadena espere que `unsubscribe()` finalice. También agregamos un controlador de captura en caso de que llamar a `unsubscribe()` resulte en un error. Después de esto, podemos actualizar nuestra IU.
+#### Try it out
 
-```
-.then(function() {
-  updateSubscriptionOnServer(null);
-
-  console.log('User is unsubscribed.');
-  isSubscribed = false;
-
-  updateBtn();
-})
-```
-
-#### Pruébalo
-
-Deberías poder presionar  *Enable Push Messaging*  /  *Disable Push Messaging*   en tu app web y los registros mostrarán que el usuario se suscribe y anula la suscripción.
+You should be able to press the *Enable Push Messaging* / *Disable Push Messaging* in your web app and the logs will show the user being subscribed and unsubscribed.
 
 ![33dd89c437c17c97.png](img/33dd89c437c17c97.png)
 
+## Finished
 
-## Finalizado
+Congratulations on completing this codelab!
 
+This code lab has shown you how to get up and running with adding push to your web app. If you want to learn more about what web notifications can do, [check out theses docs](/web/fundamentals/engage-and-retain/push-notifications/).
 
+If you are looking to deploy push on your site, you may be interested in adding support for older / non-standards compliant browsers which use GCM, [learn more here](https://web-push-book.gauntface.com/chapter-06/01-non-standards-browsers/).
 
+### Further Reading
 
-¡Felicitaciones por completar este codelab!
+* [Web Push Notification](/web/fundamentals/engage-and-retain/push-notifications/) documentation on Web__Fundamentals__.
+* [Web Push Libraries](https://github.com/web-push-libs/) - Web Push libraries including Node.js, PHP, Java and Python.
 
-Este code lab te ha enseñado a desarrollar tus conocimiento para agregar push a tu app web. Si quieres conocer más sobre lo que pueden hacer las notificaciones web,  [consulta estos documentos](/web/fundamentals/push-notifications).
+#### Relevant blog posts
 
-Si buscas implementar push en tu sitio, te puede interesar agregar soporte para navegadores más viejos/no estándar compatibles que usen GCM,  [conoce más aquí](https://web-push-book.gauntface.com/chapter-06/01-non-standards-browsers/).
+* [Web Push Payload Encryption](/web/updates/2016/03/web-push-encryption)
+* [Application Server Keys and Web Push](/web/updates/2016/07/web-push-interop-wins)
+* [Notification Actions](/web/updates/2016/01/notification-actions)
+* [Icons, Close Events, Renotify Preferences and Timestamps](/web/updates/2016/03/notifications)
 
-### Consultas adicionales
+## Found an issue, or have feedback? {: .hide-from-toc }
 
-*  Documentación sobre [notificación web push](/web/fundamentals/push-notifications) en Web __Fundamentals__
-*  [Bibliotecas web push](https://github.com/web-push-libs/) - Bibliotecas web push que incluyen Node.js, PHP, Java y Python.
-
-#### Entradas de blogs relevantes
-
-*  [Encriptación de carga web push](/web/updates/2016/03/web-push-encryption)
-*  [Claves de servidor de la app y web push](/web/updates/2016/07/web-push-interop-wins)
-*  [Acciones de la notificación](/web/updates/2016/01/notification-actions)
-*  [Íconos, cerrar eventos, renotificar preferencias y marcas de tiempo](/web/updates/2016/03/notifications)
-
-
-
-
-
-## ¿Encontraste un problema o tienes comentarios? {: .hide-from-toc }
-Ayúdanos a que nuestros code labs sean mejores enviando un
-[problema](https://github.com/googlechrome/push-notifications/issues) hoy. ¡Gracias!
-
-{# wf_devsite_translation #}
+Help us make our code labs better by submitting an [issue](https://github.com/GoogleChromeLabs/web-push-codelab/issues) today. And thanks!
