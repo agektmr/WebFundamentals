@@ -1,123 +1,93 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: O editor de código é a sua principal ferramenta de desenvolvimento: você o usa para escrever e salvar linhas de código. Escreva código melhor e mais rápido conhecendo os atalhos do editor e instalando plug-ins importantes.
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Your code editor is your main development tool; you use it to write and save lines of code. Write better code faster by learning your editor's shortcuts and installing key plugins.
 
-{# wf_updated_on: 2015-04-13 #}
-{# wf_published_on: 2014-05-28 #}
+{# wf_updated_on: 2015-04-13 #} {# wf_published_on: 2014-05-28 #}
 
-# Configurar seu editor {: .page-title }
+# Set Up Your Editor {: .page-title }
 
-{% include "web/_shared/contributors/megginkearney.html" %}
-{% include "web/_shared/contributors/mattgaunt.html" %}
+{% include "web/_shared/contributors/megginkearney.html" %} {% include "web/_shared/contributors/mattgaunt.html" %}
 
-O editor de código é a sua principal ferramenta de desenvolvimento: você o usa para escrever e salvar linhas de código. Escreva código melhor e mais rápido conhecendo os atalhos do editor e instalando plug-ins importantes.
-
+Your code editor is your main development tool; you use it to write and save lines of code. Write better code faster by learning your editor's shortcuts and installing key plugins.
 
 ### TL;DR {: .hide-from-toc }
-- Escolha um editor que permita personalizar atalhos e tenha diversos plug-ins para ajudar você a escrever um código melhor.
-- Use o gerenciador de pacotes para facilitar a descoberta, a instalação e a atualização de plug-ins.
-- Instale plug-ins que ajudem a manter a sua alta produtividade durante o desenvolvimento. Comece com as recomendações deste guia.
 
+- Choose an editor that lets you customize shortcuts and has lots of plugins to help you write better code.
+- Make use of the package manager to make it easier to discover, install, and update plugins.
+- Install plugins that help keep you productive during development; start with the recommendations in this guide.
 
-## Instalar o editor de texto Sublime
+## Install Sublime text editor
 
-O [Sublime](http://www.sublimetext.com/){: .external } é um excelente editor de texto com um nível básico de
-funcionalidade sólido que torna escrever código uma atividade prazerosa. Você pode instalar um gerenciador
-de pacotes para facilitar a instalação de plug-ins e a adição de novas funcionalidades.
+[Sublime](http://www.sublimetext.com/){: .external } is a great editor with a solid base level of functionality which makes writing code a pleasure. You can install a package manager that makes it easy to install plugins and add new functionality.
 
-No momento há duas opções de download do Sublime Text, são elas: [versão 2](http://www.sublimetext.com/2) ou [versão 3](http://www.sublimetext.com/3). A versão 3 é bem estável e dará a você acesso aos pacotes não disponíveis no Sublime Text 2, no entanto, você pode achar a versão 2 mais confiável.
+There are currently two download options for Sublime Text, either [version 2](http://www.sublimetext.com/2) or [version 3](http://www.sublimetext.com/3). Version 3 is pretty stable and will give you access to packages not available in Sublime Text 2, however you may find version 2 more reliable.
 
-Observação: A <a href='http://robdodson.me/blog/2012/06/23/sublime-text-2-tips-and-shortcuts/'>postagem do blog</a> de Rob Dodson sobre como aprender a usar e amar o Sublime é uma ótima referência para extrair o máximo do seu editor. Os conceitos são aplicáveis a qualquer editor de textos, não apenas ao Sublime.
+Note: Rob Dodson's [blog post](http://robdodson.me/blog/2012/06/23/sublime-text-2-tips-and-shortcuts/) on how to get to know and love Sublime is a great reference for getting the most out of your editor. The concepts are relevant to any text editor, not just Sublime.
 
-## Por que usar um gerenciador de pacotes?
+## Why use a package manager?
 
-Os gerenciadores de pacote facilitam a descoberta, a instalação e a atualização de pacotes
-e plug-ins.
+Package managers make it easy to find, install, and keep packages & plugins up-to-date.
 
-<img src="imgs/package_control.png" class="center" alt="Imagem do controle de pacotes dos editores de texto Sublime"/>
+<img src="imgs/package_control.png" class="center" alt="Screenshot of Sublime Text Editors Package Control" />
 
-Você pode instalar um Gerenciador de pacotes para o Sublime seguindo estas instruções
-[https://packagecontrol.io/installation](https://packagecontrol.io/installation).
+You can install a Package Manager for Sublime by following these instructions <https://packagecontrol.io/installation>.
 
-Você só precisa fazer isso uma vez e, depois, dê uma olhada na nossa lista de
-plug-ins recomendados.
+You only need to do this once, after which see below for our recommended list of plugins.
 
-## Instalar plug-ins
+## Install plugins
 
-Os plug-ins ajudam a manter você com boa produtividade. Que coisas fazem você voltar
-a outras ferramentas para fazer?
+Plugins help you stay more productive. What are the things you keep having to go back out to other tools to do?
 
-Linting - tem um plug-in para isso. Exibir as mudanças que não foram confirmadas
-- tem plug-ins para isso. Integração com outras ferramentas, como o GitHub:
-tem plug-ins para isso.
+Linting - there's a plugin for that. Showing what changes haven't been committed
 
-Gerenciadores de pacote facilitam demais a descoberta, a instalação e a atualização de plug-ins:
+- there are plugins for that. Integration with other tools, such as GitHub, there are plugins for that.
 
-1. No editor Sublime Text, abra o gerenciador de pacotes (ctrl+shift+p).
-2. Insira "Install Package".
-3. Insira o nome do plug-in que está procurando (ou procure em
-    todos os plug-ins).
+Package managers make it very easy to find, install, and update plugins:
 
-Confira estas [listas de plug-ins populares do
-Sublime Text](https://packagecontrol.io/browse) Aqui estão os plug-ins que amamos e
-recomendamos que você instale para ajudar a acelerar o desenvolvimento:
+1. In the Sublime Text editor, open your package manager (ctrl+shift+p).
+2. Enter 'Install Package'.
+3. Enter the name of the plugin you are looking for (or else browse all plugins).
+
+Check out these [trending lists of Sublime Text plugins](https://packagecontrol.io/browse). Here are the plugins we love and recommend you install because they help you speed up your development:
 
 ### Autoprefixer
 
-Se quiser um jeito rápido de adicionar prefixos de provedor ao seu CSS, você pode fazê-lo com
-este plug-in muito útil.
+If you want a quick way to add vendor prefixes to your CSS, you can do so with this handy plugin.
 
-Escreva CSS, ignorando prefixos de provedor e, quando quiser adicioná-los, aperte
-`ctrl+shift+p` e digite `Autoprefix CSS`.
+Write CSS, ignoring vendor prefixes and when you want to add them, hit `ctrl+shift+p` and type `Autoprefix CSS`.
 
-[Abordamos como automatizar isso no seu processo
-de compilação](/web/tools/setup/setup-buildtools),
-dessa forma, seu CSS continua simples e você não precisa se lembrar de pressionar
-`ctrl+shift+p`.
+[We cover how you can automate this in your build process](/web/tools/setup/setup-buildtools), that way your CSS stays lean and you don't need to remember to hit `ctrl+shift+p`.
 
-<img src="imgs/sublime-autoprefixer.gif" alt="Exemplo de plug-in de prefixador automático do Sublime" />
+![Sublime Autoprefixer Plugin Example](imgs/sublime-autoprefixer.gif)
 
 ### ColorPicker
 
-Selecione qualquer cor da paleta e adicione-a ao CSS com `ctrl+shift+c`.
+Pick any color from the palette and add it to your CSS with `ctrl+shift+c`.
 
-<img src="imgs/sublime-color-picker.png" alt="Plug-in de seletor de cor do Sublime" />
+![Sublime Color Picker Plugin](imgs/sublime-color-picker.png)
 
 ### Emmet
 
-Adicione alguns atalhos de teclado úteis e fragmentos ao seu editor de texto. Confira
-o vídeo em [Emmet.io](http://emmet.io/){: .external } para ver uma introdução ao que ele pode fazer (um favorito
-pessoal é o comando "Toggle Comment").
+Add some useful keyboard shortcuts and snippets to your text editor. Check out the video on [Emmet.io](http://emmet.io/){: .external } for an intro into what it can do (a personal favorite is the 'Toggle Comment' command).
 
-<img src="imgs/emmet-io-example.gif" alt="Demonstração do plug-in Emmet.io" />
+![Demo of the Emmet.io Plugin](imgs/emmet-io-example.gif)
 
 ### HTML-CSS-JS prettify
 
-Esta extensão oferece um comando para formatar HTML, CSS e JS. Você ainda pode
-embelezar os arquivos sempre que salvar um.
+This extension gives you a command to format your HTML, CSS and JS. You can even prettify your files whenever your save a file.
 
-<img src="imgs/sublime-prettify.gif" alt="Gif do plug-in de embelezamento do Sublime" />
+![Gif of the Sublime Prettify Plugin](imgs/sublime-prettify.gif)
 
 ### Git Gutter
 
-Adicione um marcador na calha sempre que houver uma mudança em um arquivo.
+Add a marker in the gutter wherever there is a change made to a file.
 
-<img src="imgs/sublime-git-gutter.png" alt="Imagem do plug-in Git Gutter do Sublime" />
+![Screenshot of the Sublime Git Gutter Plugin](imgs/sublime-git-gutter.png)
 
 ### Gutter Color
 
-Observação: Isto só está disponível no Sublime Text 3
+Note: This is only available in Sublime Text 3
 
-O Gutter Color exibe uma amostra de cores pequena perto do CSS.
+Gutter Color shows you a small color sample next to your CSS.
 
-<img src="imgs/sublime-gutter-color.png" alt="Imagem do Gutter Color do Sublime" />
+![Sublime Gutter Color Screenshot](imgs/sublime-gutter-color.png)
 
-O plug-in requer ImageMagick. Se você for usuário do Mac OS X, recomendamos experimentar o
-instalador do [CactusLabs](http://cactuslab.com/imagemagick/){: .external } (talvez seja necessário
-reiniciar a máquina para fazê-lo funcionar).
-
-
-
-
-
-{# wf_devsite_translation #}
+The plugin requires ImageMagick. If you are on Mac OS X, we recommend trying the installer from [CactusLabs](http://cactuslab.com/imagemagick/){: .external } (you may need to restart your machine to get it working).
