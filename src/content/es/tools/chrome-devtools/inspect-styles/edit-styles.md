@@ -1,289 +1,227 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Usa el panel Styles en Chrome DevTools para inspeccionar y modificar los estilos de CSS asociados a un elemento.
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Use the Styles pane in Chrome DevTools to inspect and modify the CSS styles associated to an element.
 
-{# wf_updated_on: 2017-07-12 #}
-{# wf_published_on: 2015-04-13 #}
+{# wf_updated_on: 2018-07-27 #} {# wf_published_on: 2015-04-13 #} {# wf_blink_components: Platform>DevTools #}
 
-# Editar estilos {: .page-title }
+# Edit Styles {: .page-title }
 
-{% include "web/_shared/contributors/kaycebasques.html" %}
-{% include "web/_shared/contributors/megginkearney.html" %}
+{% include "web/_shared/contributors/kaycebasques.html" %} {% include "web/_shared/contributors/megginkearney.html" %}
 
-Usa el panel <strong>Styles</strong> para modificar los estilos de CSS
-asociados a un elemento.
+Warning: This page is deprecated. See [CSS Reference](/web/tools/chrome-devtools/css/reference).
 
-![panel Styles](imgs/styles-pane.png)
+Use the **Styles** pane to modify the CSS styles associated to an element.
 
+![Styles pane](imgs/styles-pane.png)
 
 ### TL;DR {: .hide-from-toc }
-- El panel Styles te permite cambiar tu CSS localmente en todas las maneras posibles: editar estilos actuales, agregar estilos nuevos, agregar reglas para los estilos.
-- Si deseas que los estilos se conserven (de manera tal que no se eliminen cuando se vuelve a cargar la página), necesitas conservarlos en tu espacio de trabajo de desarrollo.
 
+- The styles pane lets you change your CSS in as many ways as possible, locally, including editing existing styles, adding new styles, adding rules for styles.
+- If you want styles to persist (so they don't go away on a reload), you need to persist them to your development workspace.
 
-## Inspeccionar estilos aplicados a un elemento
+## Inspect styles applied to an element
 
-[Selecciona un elemento](edit-dom#inspect-an-element) para inspeccionar sus estilos.
-El subpanel **Styles** muestra las reglas de CSS que se aplican al elemento seleccionado, 
-de la prioridad más alta a la más baja:
+[Select an element](edit-dom#inspect-an-element) to inspect its styles. The **Styles** pane shows the CSS rules that apply to the selected element, from highest priority to lowest:
 
-* En la parte superior, se encuentra `element.style`. Estos estilos se aplican directamente al 
-  elemento con la propiedad de estilo (por ejemplo, 
-  `<p style="color:green">`) y otros se aplican en DevTools.
+- At the top is `element.style`. These are styles either applied directly to the element using the style property (for example, `<p style="color:green">`), or applied in DevTools.
 
-* Debajo de eso, se encuentran todas las reglas de CSS que coinciden con el elemento. Por ejemplo, en
-  la captura de pantalla que se muestra a continuación, el elemento seleccionado recibe `line-height:24px` de
-  una regla definida en `tools.css`.
+- Below that are any CSS rules that match the element. For example, in the screenshot below the selected element receives `line-height:24px` from a rule defined in `tools.css`.
 
-* Debajo de eso, se encuentran los estilos heredados, los cuales incluyen todas las reglas de estilo
-  heredables que coinciden con los antecesores del elemento seleccionado. Por ejemplo, en la captura de pantalla que se muestra
-  a continuación, el elemento seleccionado hereda `display:list-item` de
-  `user agent stylesheet`.
+- Below that are inherited styles, which include any inheritable style rules that match the selected element's ancestors. For example, in the screenshot below the selected element inherits `display:list-item` from `user agent stylesheet`.
 
-Las etiquetas en la imagen que se muestra a continuación corresponden a los elementos numerados debajo de ella.
+The labels on the image below correspond with the numbered items below it.
 
-![panel Annotated Styles](/web/tools/chrome-devtools/inspect-styles/imgs/styles-annotated.png)
+![Annotated Styles pane](/web/tools/chrome-devtools/inspect-styles/imgs/styles-annotated.png)
 
-1. Estilos asociados con un selector que coincide con el elemento.
-2. [Hojas de estilo usuario-agente](http://meiert.com/en/blog/20070922/user-agent-style-sheets/)
-   se etiquetan de manera clara y suelen ser reemplazadas por CSS en tu página web.
-3. Las reglas que han sido reemplazadas por las **reglas en cascada** se muestran con
-   texto tachado.
-4. Los estilos **heredados** se muestran como un grupo bajo el encabezado "Inherited
-   from `<NODE>`" . Haz clic en el nodo del DOM en el título para navegar hasta
-   su posición en la vista de árbol del DOM. (La [tabla de propiedades de CSS 2.1](http://www.w3.org/TR/CSS21/propidx.html) muestra las propiedades
-   que son heredables.)
-5. Las entradas de color gris son reglas que no están definidas sino que
-   **se computan en tiempo de ejecución**.
+1. Styles associated with a selector that matches the element.
+2. [User agent stylesheets](http://meiert.com/en/blog/20070922/user-agent-style-sheets/) are clearly labelled, and are often overridden by the CSS on your web page.
+3. Rules that have been overridden by **cascading rules** are shown with strikethrough text.
+4. **Inherited** styles are displayed as a group under the "Inherited from `<NODE>`" header. Click the DOM node in the header to navigate to its position in the DOM tree view. (The [CSS 2.1 properties table](http://www.w3.org/TR/CSS21/propidx.html) shows which properties are inheritable.)
+5. Grey colored entries are rules that are not defined but instead **computed at runtime**.
 
-Es esencial entender cómo funcionan la cascada y la herencia para
-depurar tus estilos. La cascada se relaciona con la manera en que se asigna importancia a las declaraciones de CSS
-para determinar las reglas que tienen precedencia cuando se superponen con otra regla. La herencia se relaciona con la manera en que los elementos HTML heredan propiedades de la
-CSS de los elementos que los contienen (antecesores). Para obtener más información,
-consulta [Documentación W3C sobre cascadas](http://www.w3.org/TR/CSS2/cascade.html).
+Understanding how cascading and inheritance works is essential to debugging your styles. The cascade relates to how CSS declarations are given weights to determine which rules should take precedence when they overlap with another rule. Inheritance relates to how HTML elements inherit CSS properties from their containing elements (ancestors). For more, see [W3C documentation on cascading](http://www.w3.org/TR/CSS2/cascade.html).
 
-## Inspeccionar elementos afectados por un selector
+## Inspect elements affected by a selector
 
-Desplaza tu mouse sobre un selector de CSS en el panel **Styles** para ver todos los
-elementos afectados por el selector. Por ejemplo, en la captura de pantalla a 
-continuación, el mouse se desplaza sobre el selector 
-`.wf-tools-guide__section-link a`. En la página en vivo puedes ver todos los 
-`<a>` elementos afectados por el selector. 
+Hover your mouse over a CSS selector in the **Styles** pane to view all elements that are affected by the selector. For example, in the screenshot below the mouse is hovering over the selector `.wf-tools-guide__section-link a`. In the live page you can see all of the `<a>` elements that are affected by the selector.
 
-![ver elementos afectados por el selector](imgs/selector-hover.png)
+![viewing elements affected by selector](imgs/selector-hover.png)
 
-**Nota**: esta función solo destaca elementos en la ventana de visualización; es posible 
-que otros elementos fuera de la ventana de visualización también estén afectados por el selector. 
+**Note**: this feature only highlights elements in the viewport; it's possible that other elements outside of the viewport are also affected by the selector.
 
-## Agregar, habilitar e inhabilitar clases de CSS {:#classes}
+## Add, enable, and disable CSS classes {:#classes}
 
-Haz clic en el botón **.cls** para ver todas las clases de CSS asociadas con el
-elemento seleccionado actualmente. Desde allí, puedes hacer lo siguiente:
+Warning: This page is deprecated. See [Toggle a class](/web/tools/chrome-devtools/css/reference#toggle-class).
 
-* habilitar o inhabilitar las clases asociadas actualmente al elemento;
-* agregar nuevas clases al elemento. 
+Click on the **.cls** button to view all of the CSS classes associated to the currently selected element. From there, you can:
 
-![panel classes](imgs/classes.png)
+- Enable or disable the classes currently associated to the element.
+- Add new classes to the element. 
 
-## Editar un nombre o valor de propiedad existente
+![classes pane](imgs/classes.png)
 
-Haz clic en el nombre o valor de una propiedad de CSS para editarlo. Mientras el nombre o el valor estén 
-destacados, presiona <kbd>Tab</kbd> para pasar a la propiedad, al nombre
-o al selector siguiente. Mantén presionada la tecla <kbd>Shift</kbd> y presiona <kbd>Tab</kbd> para moverte hacia atrás.
+## Edit an existing property name or value
 
-Cuando editas el valor numérico de una propiedad de CSS, auméntalo o disminúyelo con las 
-siguientes combinaciones de teclas:
+Warning: This page is deprecated. See [Change a declaration name or value](/web/tools/chrome-devtools/css/reference#change-declaration).
 
-* <kbd>Arriba</kbd> y <kbd>Abajo</kbd> para aplicar un aumento o una disminución de 1
-  o de .1, si el valor actual oscila entre  -1 y 1.
-* <kbd>Alt</kbd>+<kbd>Arriba</kbd> y <kbd>Alt</kbd>+<kbd>Abajo</kbd> para 
-  aplicar un aumento o una disminución de 0,1 al valor.
-* <kbd>Mayús</kbd>+<kbd>Arriba</kbd> para aplicar un aumento de 10 al valor y 
-  <kbd>Mayús</kbd> +<kbd>Abajo</kbd> para aplicar una disminución de 10 al valor.
-* <kbd>Mayús</kbd> + <kbd>Repág</kbd> (Windows, Linux) o 
-  <kbd>Mayús</kbd>+ <kbd>Función</kbd> + <kbd>Arriba</kbd> (Mac) para aplicar un aumento de 
-  100 al valor. <kbd>Mayús</kbd> + <kbd>Avpág</kbd> (Windows, Linux) o 
-  <kbd>Mayús</kbd>+ <kbd>Función</kbd>+<kbd>Abajo</kbd> (Mac) para aplicar una disminución 
-  de 100 al valor. 
+Click on a CSS property name or value to edit it. While a name or value is highlighted, press <kbd>Tab</kbd> to move forward to the next property, name, or selector. Hold <kbd>Shift</kbd> and press <kbd>Tab</kbd> to move backwards.
 
-## Agregar una nueva declaración de propiedad
+When editing a numeric CSS property value, increment and decrement with the following keyboard shortcuts:
 
-Haz clic en un espacio vacío dentro de una regla de CSS editable para crear una declaración nueva.
-Escríbela o pega la CSS en el subpanel **Styles**. Las propiedades y sus 
-valores se analizan e ingresan en los campos correctos.
+- <kbd>Up</kbd> and <kbd>Down</kbd> to increment and decrement the value by 1, or by .1 if the current value is between -1 and 1.
+- <kbd>Alt</kbd>+<kbd>Up</kbd> and <kbd>Alt</kbd>+<kbd>Down</kbd> to increment and decrement the value by 0.1.
+- <kbd>Shift</kbd>+<kbd>Up</kbd> to increment by 10 and <kbd>Shift</kbd>+<kbd>Down</kbd> to decrement by 10.
+- <kbd>Shift</kbd>+<kbd>Page Up</kbd> (Windows, Linux) or <kbd>Shift</kbd>+<kbd>Function</kbd>+<kbd>Up</kbd> (Mac) to increment the value by 100. <kbd>Shift</kbd>+<kbd>Page Down</kbd> (Windows, Linux) or <kbd>Shift</kbd>+<kbd>Function</kbd>+<kbd>Down</kbd> (Mac) to decrement the value by 100. 
 
-Note: para habilitar o inhabilitar una declaración de estilo, selecciona o desmarca la casilla de verificación al lado de ella.
+## Add a new property declaration
 
-## Agregar una regla de estilo
+Warning: This page is deprecated. See [Add a declaration to an element](/web/tools/chrome-devtools/css/reference#add-declaration).
 
-Haz clic en el botón **New Style Rule** 
-(![botón new style rule](imgs/new-style-rule.png){:.inline}) para agregar una 
-nueva regla de CSS. 
+Click an empty space within an editable CSS rule to create a new declaration. Type it out, or paste the CSS into the **Styles** pane. Properties and their values are parsed and entered into the correct fields.
 
-Mantén presionado el botón para elegir la hoja de estilo que se agregará. 
+Note: To enable or disable a style declaration, check or uncheck the checkbox next to it.
 
-## Agregar o eliminar estilos dinámicos (seudoclases) {:#pseudo-classes}
+## Add a style rule
 
-Puedes establecer selectores de seudoclases dinámicos (tales como`:active`, 
-`:focus`, `:hover` y `:visited`) en los elementos. 
+Warning: This page is deprecated. See [Add a style rule](/web/tools/chrome-devtools/css/reference#style-rule).
 
-Existen tres maneras de establecer estos estados dinámicos en un elemento:
+Click the **New Style Rule** (![new style rule button](imgs/new-style-rule.png){:.inline}) button to add a new CSS rule.
 
-* Haz clic con el botón secundario en un elemento dentro del panel **Elements** y selecciona
-  la seudoclase de destino del menú para habilitarla o deshabilitarla.
-  
-  ![hacer clic con el botón secundario en un elemento 
-  para habilitar el selector de seudoclase](imgs/pseudoclass-rightclick.png)
+Click and hold the button to choose which stylesheet the rule is added to.
 
-* Selecciona un elemento en el panel **Elements** , haz clic en el botón **:hov** 
-  en el panel **Styles** y usa las casillas de verificación para habilitar o inhabilitar los 
-  selectores  para el elemento seleccionado actualmente.
+## Add or remove dynamic styles (pseudo-classes) {:#pseudo-classes}
 
-  ![panel :hov](imgs/hov.png)
+Warning: This page is deprecated. See [Toggle a pseudo-class](/web/tools/chrome-devtools/css/reference#pseudo-class).
 
-## Agregar color de fondo o color a una regla de estilo
+You can manually set dynamic pseudo-class selectors (such as `:active`, `:focus`, `:hover`, and `:visited`) on elements.
 
-El panel **Styles** proporciona una combinación de teclas para agregar declaraciones de `color` y
-`background-color` a una regla de estilo.
+There are two ways to set these dynamic states on an element:
 
-En la parte inferior derecha de la regla de estilo aparece el ícono de tres puntos. Necesitas 
-desplazarte sobre la regla de estilo para verla.
+- Right-click on an element within the **Elements** panel and then select the target pseudo-class from the menu to enable or disable it.
+    
+    ![right-click on element 
+to enable pseudoclass selector](imgs/pseudoclass-rightclick.png)
 
-![ícono de tres puntos en la regla establecida](imgs/rule-set-three-dots-icon.png)
+- Select an element in the **Elements** panel, click the **:hov** button in the **Styles** pane, and use the checkboxes to enable or disable the selectors for the currently selected element.
+    
+    ![:hov pane](imgs/hov.png)
 
-Desplázate sobre este ícono a fin de revelar botones para agregar una declaración de `color` 
-(![agregar declaración de color](imgs/add-color.png){:.inline})
-o una declaración de `background-color` (![agregar declaración de color 
-de fondo](imgs/add-background-color.png){:.inline}). Haz clic en uno de estos botones
-para agregar la declaración a la regla de estilos. 
+## Add background-color or color to a style rule
 
-## Modificar colores con el Selector de colores {:#color-picker}
+Warning: This page is deprecated. See [Add a background-color declaration](/web/tools/chrome-devtools/css/reference#background-color) and [Add a color declaration](/web/tools/chrome-devtools/css/reference#color).
 
-Para abrir el **Selector de colores**, encuentra una declaración de CSS en el panel **Styles**  
-que defina un color (como `color: blue`). A la derecha del valor de la 
-declaración se encuentra un cuadrado pequeño de color. El color del cuadrado coincide con el 
-valor de la declaración. Haz clic en este pequeño cuadrado para abrir el **Selector de colores**.
+The **Styles** pane provides a shortcut for adding `color` and `background-color` declarations to a style rule.
 
-![abrir el selector de colores](imgs/open-color-picker.jpg)
+In the bottom-right of the style rule, there is a three-dot icon. You need to hover over the style rule in order to see it.
 
-Puedes interactuar con el **Selector de colores** de diferentes maneras:
+![three-dots icon in rule set](imgs/rule-set-three-dots-icon.png)
 
-1. **Cuentagotas**: consulta la sección [Cuentagotas](#eyedropper) para obtener más información.
-2. **Color actual**: una representación visual del **valor actual**.
-3. **Valor actual**: la representación hexadecimal, RGBA o HSL del 
-   **color actual**.
-4. **Paleta de colores**: para más información, consulta [Paleta de colores](#color-palettes).
+Hover over this icon to reveal buttons for adding a `color` declaration (![add color declaration](imgs/add-color.png){:.inline}) or a `background-color` declaration (![add background-color 
+declaration](imgs/add-background-color.png){:.inline}). Click on one of these buttons to add the declaration to the style rule.
 
-5. **Selector de tonos y sombras**.
-6. **Selector de matices**.
-7. **Selector de opacidad**.
-8. **Selector del valor del color**: haz clic para activar o desactivar RGBA, HSL y
-   hexadecimal.
-9. **Selector de la paleta de colores**: haz clic para seleccionar plantillas diferentes.
+## Modify colors with the Color Picker {:#color-picker}
 
-![selector de colores anotado](imgs/annotated-color-picker.jpg)
+Warning: This page is deprecated. See [Change colors with the Color Picker](/web/tools/chrome-devtools/css/reference#color-picker).
 
-[md]: https://www.google.com/design/spec/style/color.html
+To open the **Color Picker**, find a CSS declaration in the **Styles** pane that defines a color (such as `color: blue`). To the left of the declaration value there is a small, colored square. The color of the square matches the declaration value. Click on this little square to open the **Color Picker**.
 
-### Cuentagotas {:#eyedropper}
+![opening the color picker](imgs/open-color-picker.jpg)
 
-Haz clic en el botón **eyedropper** para habilitarlo
-(![cuentagotas habilitado](imgs/eyedropper-enabled.png){:.inline}), desplázate sobre un
-color en la página en vivo y luego haz clic para establecer el valor de la declaración
-seleccionada actualmente en el color por el que te desplazas.
+You can interact with the **Color Picker** in multiple ways:
 
-![el cuentagotas en acción](imgs/eyedropper.jpg)
+1. **Eyedropper**. See [Eyedropper](#eyedropper) for more information.
+2. **Current color**. A visual representation of the **current value**. 
+3. **Current value**. The hexadecimal, RGBA, or HSL representation of the **current color**. 
+4. **Color palette**. See [Color palettes](#color-palettes) for more information. 
+5. **Tint and shade selector**. 
+6. **Hue selector**. 
+7. **Opacity selector**.
+8. **Color value selector**. Click to toggle between RGBA, HSL, and hexadecimal. 
+9. **Color palette selector**. Click to select different templates.
 
-### Paletas de colores {:#color-palettes}
+![annotated color picker](imgs/annotated-color-picker.jpg)
 
-El **Selector de colores** proporciona las siguientes paletas de colores:
+### Eyedropper {:#eyedropper}
 
-* **Page Colors**: conjunto de colores generado automáticamente a partir de la 
-  CSS de la página.
-* **Material Design**: colección de colores que coincide con las 
-  [especificaciones de Material Design][md]. 
-* **Custom**: conjunto de colores que eliges. DevTools guarda la paleta 
-  personalizada, incluso entre páginas, hasta que la borres. 
+Click on the **eyedropper** button so that it is enabled (![enabled eyedropper](imgs/eyedropper-enabled.png){:.inline}), hover over a color on the live page, and then click to set the currently selected declaration value to the color that you're hovering over.
 
-#### Modificar una paleta de colores personalizada {:#custom-color-palette}
+![the eyedropper in action](imgs/eyedropper.jpg)
 
-Presiona el botón **plus sign** para agregar el color actual a la paleta.
-Mantén presionado un color para arrastrarlo a otra posición o arrástralo 
-al ícono de la **papelera** para borrarlo. Haz clic con el botón secundario en un color y selecciona
-**Remove color** para borrarlo. Selecciona **Remove all to the right** para borrar
-todos los colores a la derecha del color seleccionado actualmente. Haz clic con el botón secundario
-en cualquier lugar dentro de la región de la paleta de colores y selecciona **Clear template** para 
-borrar todos los colores de la plantilla.
+### Color palettes {:#color-palettes}
 
-## Ver y editar propiedades personalizadas de CSS (variables de CSS) {:#custom-properties}
+The **Color Picker** provides the following color palettes:
 
-Puedes ver y editar declaraciones que definen o usan [propiedades 
-personalizadas de CSS][intro] (conocidas informalmente como variables de CSS) al igual que cualquier otra 
-declaración. 
+- **Page Colors**. A set of colors automatically generated from the page's CSS.
+- **Material Design**. A collection of colors consistent with the [Material Design spec](https://www.google.com/design/spec/style/color.html). 
+- **Custom**. A set of any colors you choose. DevTools saves your custom palette, even across pages, until you delete it. 
 
-Las propiedades personalizadas suelen [definirse][def] en el selector `:root`.
- Para ver una propiedad personalizada definida en `:root`, inspecciona el elemento `html`.
+#### Modifying a custom color palette {:#custom-color-palette}
 
+Press the **plus sign** button to add the current color to the palette. Click and hold on a color to drag it to a different position, or drag it to the **trash can** icon to delete it. Right-click on a color and select **Remove color** to delete it. Select **Remove all to the right** to delete all of the colors to the right of the currently selected color. Right-click anywhere within the color palette region and select **Clear template** to delete all of the template's colors.
 
-![propiedad personalizada definida en :root](imgs/css-var-defined-on-root.png)
+## View and edit CSS custom properties (CSS variables) {:#custom-properties}
 
-Las propiedades personalizadas no necesariamente deben definirse en el selector `:root`; sin embargo,
-si la definiste en cualquier otro lugar, inspecciona el elemento en el que se definió
-para ver la definición.
+You can view and edit declarations that define or use [CSS custom properties](/web/updates/2016/02/css-variables-why-should-you-care) (informally known as CSS variables) just like any other declaration.
 
-Puedes ver y editar los valores de la declaración que usan propiedades personalizadas al igual
-que cualquier otro valor de una declaración. 
+Custom properties are usually [defined](https://drafts.csswg.org/css-variables/#defining-variables) in the `:root` selector. To view a custom property defined in `:root`, inspect the `html` element.
 
-Si ves un valor de una declaración como `var(--main-color)`, como en la captura de pantalla
-a continuación, significa que en la declaración se usan propiedades personalizadas. Estos
-valores se pueden editar como cualquier otro valor de una declaración. En la actualidad no existe
-manera de pasar a la definición de propiedad personalizada.
+![custom property defined on :root](imgs/css-var-defined-on-root.png)
 
-![usar una propiedad personalizada](imgs/css-var-in-use.png)
+Custom properties do not have to be defined on the `:root` selector, however. If you defined it elsewhere, inspect the element on which it was defined to view the definition.
 
-[intro]: /web/updates/2016/02/css-variables-why-should-you-care
-[def]: https://drafts.csswg.org/css-variables/#defining-variables
+You can view and edit declaration values that use custom properties just like any other declaration value.
 
-## Editar Sass, Less o Stylus
+If you see a declaration value like `var(--main-color)` as in the screenshot below, it means that the declaration is using custom properties. These values can be edited like any other declaration value. Currently there is no way to jump to the custom property definition.
 
-Si usas Sass, Less, Stylus o cualquier otro preprocesador de CSS, editar los archivos de salida de CSS generados en el editor Styles no te servirá ya que no se asignan a tu fuente original.
+![using a custom property](imgs/css-var-in-use.png)
 
-Con los mapas de origen de CSS, DevTools puede asignar automáticamente los archivos generados a los archivos de origen originales, que te permite editarlos en vivo en el panel Sources y ver los resultados sin tener que abandonar DevTools ni actualizar la página. 
+## Edit Sass, Less or Stylus
 
-### El flujo de trabajo del preprocesador
+If you are using Sass, Less, Stylus or any other CSS preprocessor, editing the generated CSS output files in the Styles editor won't help as they don't map to your original source.
 
-Cuando inspeccionas un elemento cuyos estilos son proporcionados por un archivo CSS generado, el panel Elements muestra un vínculo con el archivo de origen original, no el archivo CSS generado.
+With CSS source maps, DevTools can automatically map the generated files to the original source files, which lets you live-edit these in the Sources panel and view the results without having to leave DevTools or refresh the page.
 
-![panel Elements que muestra la hoja de estilo .scss](imgs/sass-debugging.png)
+### The preprocessor workflow
 
-Para pasar al archivo de origen:
+When you inspect an element whose styles are provided by a generated CSS file, the Elements panel displays a link to the original source file, not the generated CSS file.
 
-1. Haz clic en el vínculo para abrir el archivo de origen (editable) en el panel Sources.
-2. <kbd class="kbd">Ctrl</kbd> + **Clic** (o <kbd class="kbd">Cmd</kbd> + **clic**) en cualquier nombre o valor de propiedad de CSS para abrir el archivo de origen y pasar a la línea apropiada.
+![Elements panel showing .scss stylesheet](imgs/sass-debugging.png)
 
-![panel Sources que muestra el archivo .scss](imgs/sass-sources.png)
+To jump to the source file:
 
-Cuando guardas los cambios en un archivo del preprocesador de CSS en DevTools, el preprocesador de CSS debe regenerar los archivos de CSS. Luego, DevTools vuelve a cargar el archivo CSS recientemente generado.
+1. Click the link to open the (editable) source file in the Sources panel.
+2. <kbd class="kbd">Ctrl</kbd> + **Click** (or <kbd class="kbd">Cmd</kbd> + **click**) on any CSS property name or value to open the source file and jump to the appropriate line.
 
-### Habilitar/Inhabilitar mapas de origen y recarga automática de CSS
+![Sources panel showing .scss file](imgs/sass-sources.png)
 
-**Los mapas de origen de CSS están habilitados de manera predeterminada**. Puedes optar por habilitar la recarga automática de los archivos CSS generados. Para habilitar los mapas de origen de CSS y la recarga de CSS:
+When you save changes to a CSS preprocessor file in DevTools, the CSS preprocessor should re-generate the CSS files. Then DevTools then reloads the newly-generated CSS file.
 
-1. Abre DevTools Settings y haz clic en **General**.
-2. Activa **Enable CSS source maps** y **Auto-reload generated CSS**.
+### Enable/Disable CSS source maps & auto-reloading
 
-### Requisitos y trampas
+**CSS source maps are enabled by default**. You can choose to enable automatic reloading of generated CSS files. To enable CSS source maps and CSS reload:
 
-- DevTools recién detecta **los cambios realizados en un editor externo** cuando la pestaña Sources que contiene el archivo de origen asociado vuelve a estar a la vista.
-- **La edición manual de un archivo CSS** generado por Sass, Less u otro compilador romperá la asociación del mapa de origen hasta que se vuelva a cargar la página.
-- **¿Usas <a href="/web/tools/setup/setup-workflow">espacios de trabajo</a>?** Asegúrate de que el archivo CSS también esté asignado en el espacio de trabajo. Puedes verificarlo en el árbol de la derecha del panel Sources. Allí puedes ver si el archivo CSS proviene de tu carpeta local.
-- **Para que DevTools vuelva a cargar automáticamente los estilos** cuando cambies el archivo de origen, debes configurar el preprocesador para que regenere los archivos CSS cuando un archivo de origen cambia. De lo contrario, debes regenerar los archivos CSS manualmente y volver a cargar la página para ver los cambios.
-- **Debes acceder al sitio o a la app desde un servidor web** (en lugar de un **archivo://** URL) y el servidor debe proporcionar los archivos CSS, al igual que los mapas de origen (.css.map) y los archivos de origen (.scss, etc.).
-- Si _no_ usas la función Workspaces, el servidor web también debe proporcionar el encabezado `Last-Modified`.
+1. Open DevTools Settings and click **General**.
+2. Turn on **Enable CSS source maps** and **Auto-reload generated CSS**.
 
-Aprende cómo configurar mapas de origen en [Configurar preprocesadores de CSS y JS](/web/tools/setup/setup-preprocessors).
+### Requirements & Gotchas
 
+- **Changes made in an external editor** are not detected by DevTools until the Sources tab containing the associated source file regains focus.
+- **Manual editing of a CSS file** generated by the Sass/LESS/other compiler will break the source map association until the page is reloaded.
+- **Using [Workspaces](/web/tools/setup/setup-workflow)?** Make sure the generated CSS file is also mapped into the workspace. You can verify this by looking in Sources panel right-side tree, and seeing the CSS is served from your local folder.
+- **For DevTools to automatically reload styles** when you change the source file, your preprocessor must be set up to regenerate CSS files whenever a source file changes. Otherwise, you must regenerate CSS files manually and reload the page to see your changes.
+- **You must be accessing your site or app from a web server** (not a **file://** URL), and the server must serve the CSS files as well as the source maps (.css.map) and source files (.scss, etc.).
+- If you are *not* using the Workspaces feature, the web server must also supply the `Last-Modified` header.
 
+Learn how to setup source maps in [Setup CSS & JS Preprocessors](/web/tools/setup/setup-preprocessors).
 
+## Emulate print media {:#emulate-print-media}
 
-{# wf_devsite_translation #}
+Warning: This page is deprecated. See [View a page in print mode](/web/tools/chrome-devtools/css/reference#print-mode).
+
+To view a page in print mode:
+
+1. Open the **Main Menu**.
+2. Select **More Tools** > **Rendering Settings**. The Rendering Settings tab opens at the bottom of your DevTools window.
+3. Set **Emulate media** to **Print**.
+
+## Feedback {: #feedback }
+
+{% include "web/_shared/helpful.html" %}
