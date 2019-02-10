@@ -1,48 +1,42 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Documentación de referencia para la auditoría de Lighthouse "El sitio abre anclajes externos mediante rel="noopener"".
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Reference documentation for the "Opens External Anchors Using rel="noopener"" Lighthouse audit.
 
-{# wf_updated_on: 2016-11-30 #}
-{# wf_published_on: 2016-11-30 #}
+{# wf_updated_on: 2018-11-30 #} {# wf_published_on: 2016-11-30 #} {# wf_blink_components: N/A #}
 
-# El sitio abre anclajes externos mediante rel="noopener"  {: .page-title }
+# Links to cross-origin destinations are unsafe {: .page-title }
 
-## Por qué es importante la auditoría {: #why }
+## Overview {: #overview }
 
-Cuando tu página tiene un vínculo a otra página mediante `target="_blank"`, la página nueva
-se ejecuta en el mismo proceso que tu página. Si la página nueva ejecuta
-JavaScript pesado, el rendimiento de tu página también puede verse afectado.
+### Performance
 
-Además, `target="_blank"` también es una vulnerabilidad de la seguridad. La página nueva
-tiene acceso a tu objeto window por medio de `window.opener` y puede trasladar la página
-a otra URL usando `window.opener.location = newURL`.
+When you open another page using `target="_blank"`, the other page may run on the same process as your page, unless [Site Isolation](/web/updates/2018/07/site-isolation) is enabled. If the other page is running a lot of JavaScript, your page's performance may also suffer. See [The Performance Benefits of `rel=noopener`](https://jakearchibald.com/2016/performance-benefits-of-rel-noopener/){: .external rel="noopener" }.
 
-Consulta [Beneficios de rendimiento de rel=noopener][jake] para obtener más información.
+### Security
 
-[jake]: https://jakearchibald.com/2016/performance-benefits-of-rel-noopener/
+The other page can access your `window` object with the `window.opener` property. This exposes an [attack surface](https://en.wikipedia.org/wiki/Attack_surface){: .external rel="noopener" } because the other page can potentially redirect your page to a malicious URL. See [About rel=noopener](https://mathiasbynens.github.io/rel-noopener/){: .external rel="noopener" }.
 
-## Cómo aprobar la auditoría {: #how }
+## Recommendations {: #recommendations }
 
-Agrega `rel="noopener"` a cada uno de los vínculos que Lighthouse identificó en tu
-informe. Como regla general, siempre agrega `rel="noopener"` cuando abras un vínculo externo
-en una ventana o pestaña nuevas.
+Add `rel="noopener"` or `rel="noreferrer"` to each of the links that Lighthouse has identified in your report. In general, when you use `target="_blank"`, always add `rel="noopener"` or `rel="noreferrer"`.
 
-    <a href="https://examplepetstore.com" target="_blank" rel="noopener">...</a>
+    <a href="https://examplepetstore.com" target="_blank" rel="noopener">
+      Example Pet Store
+    </a>
+    
 
-{% include "web/tools/lighthouse/audits/implementation-heading.html" %}
+* `rel="noopener"` prevents the new page from being able to access the `window.opener` property and ensures it runs in a separate process.
+* `rel="noreferrer"` attribute has the same effect, but also prevents the `Referer` header from being sent to the new page. See [Link type "noreferrer"](https://html.spec.whatwg.org/multipage/links.html#link-type-noreferrer){: .external rel="noopener" }.
 
-Lighthouse usa el siguiente algoritmo para marcar los vínculos como candidatos para `rel="noopener"`:
+## More information {: #more-info }
 
+Lighthouse uses the following algorithm to flag links as `rel="noopener"` candidates:
 
-1. Junta todos los nodos `<a>` que contienen el atributo `target="_blank"`, pero que no
-   contienen el atributo `rel="noopener"`.
-1. Filtra los vínculos del mismo host.
+1. Gather all `<a>` nodes that contain the attribute `target="_blank"` and do not contain the attribute `rel="noopener"` or `rel="noreferrer"`.
+2. Filter out any same-host links.
 
-Como Lighthouse filtra los vínculos del mismo host, existe un caso límite
-que tendrías que conocer si estás trabajando en un sitio grande. Si tu página abre
-un vínculo a otra sección de tu sitio sin usar `rel="noopener"`, también se aplican las
-implicancias de rendimiento de esta auditoría. Sin embargo, no verás estos
-vínculos en los resultados de Lighthouse.
+Because Lighthouse filters out same-host links, there's an edge case that you might want to be aware of if you're working on a large site. If your page opens a link to another section of your site without using `rel="noopener"`, the performance implications of this audit still apply. However, you won't see these links in your Lighthouse results.
 
+[Audit source](https://github.com/GoogleChrome/lighthouse/blob/master/lighthouse-core/audits/dobetterweb/external-anchors-use-rel-noopener.js){: .external rel="noopener" }
 
-{# wf_devsite_translation #}
+## Feedback {: #feedback }
+
+{% include "web/_shared/helpful.html" %}
