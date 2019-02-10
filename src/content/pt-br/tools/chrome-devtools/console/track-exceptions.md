@@ -1,132 +1,96 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: O Chrome DevTools fornece ferramentas para ajudar a corrigir páginas da Web acionando exceções e erros de depuração no JavaScript.
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Chrome DevTools provides tools to help you fix web pages throwing exceptions and debug errors in your JavaScript.
 
-{# wf_updated_on: 2015-05-12 #}
-{# wf_published_on: 2015-04-13 #}
+{# wf_updated_on: 2018-07-27 #} {# wf_published_on: 2015-04-13 #} {# wf_blink_components: Platform>DevTools #}
 
-# Gestão de erros e exceções {: .page-title }
+# Exception and Error Handling {: .page-title }
 
-{% include "web/_shared/contributors/megginkearney.html" %}
-{% include "web/_shared/contributors/flaviocopes.html" %}
-O Chrome DevTools fornece ferramentas para ajudar a corrigir páginas da Web acionando exceções e erros de depuração no JavaScript.
+{% include "web/_shared/contributors/megginkearney.html" %} {% include "web/_shared/contributors/flaviocopes.html" %} Chrome DevTools provides tools to help you fix web pages throwing exceptions and debug errors in your JavaScript.
 
-Exceções de página e erros de JavaScript na verdade são muito úteis — se você conseguir chegar aos detalhes por trás delas. Quando uma página apresenta uma exceção ou um script produz um erro, o Console fornece informações confiáveis e específicas para ajudar a localizar e corrigir o problema. 
+Page exceptions and JavaScript errors are actually quite useful - if you can get to the details behind them. When a page throws an exception or a script produces an error, the Console provides specific, reliable information to help you locate and correct the problem.
 
-No Console, você pode controlar exceções e rastrear o caminho de execução que levou a elas, capturá-las explícita ou implicitamente (ou ignorá-las) e até configurar gerenciadores de erro para coletar e processar os dados da exceção automaticamente.
-
+In the Console you can track exceptions and trace the execution path that led to them, explicitly or implicitly catch them (or ignore them), and even set error handlers to automatically collect and process exception data.
 
 ### TL;DR {: .hide-from-toc }
-- Ative Pause on Exceptions para depurar o código quando a exceção for acionada.
-- Ative a pilha de chamadas JavaScript atual usando  <code>console.trace</code>.
-- Insira declarações no seu código e acione exceções usando  <code>console.assert()</code>.
-- Registre erros que acontecem no navegador usando  <code>window.onerror</code>.
 
+- Turn on Pause on Exceptions to debug the code context when the exception triggered.
+- Print current JavaScript call stack using `console.trace`.
+- Place assertions in your code and throw exceptions using `console.assert()`.
+- Log errors happening in the browser using `window.onerror`.
 
-## Controlar exceções
+## Track exceptions
 
-Quando acontecer um erro, abra o console do DevTools (`Ctrl+Shift+J`/`Cmd+Option+J`) para visualizar as mensagens de erro do JavaScript.
-Cada mensagem tem um link para o arquivo, além de o número da linha, para o qual você pode navegar.
+When something goes wrong, open the DevTools console (`Ctrl+Shift+J` / `Cmd+Option+J`) to view the JavaScript error messages. Each message has a link to the file name with the line number you can navigate to.
 
-Um exemplo de exceção:
-![Exemplo de exceção](images/track-exceptions-tracking-exceptions.jpg)
+An example of an exception: ![Exception example](images/track-exceptions-tracking-exceptions.jpg)
 
-### Visualizar rastreamento de pilha de exceções
+### View exception stack trace
 
-Nem sempre é óbvio qual caminho de execução levou a um erro.
-Pilhas de chamadas JavaScript completas acompanham exceções no console.
-Expanda estas mensagens do console para ver a estrutura das pilhas e navegue para os locais correspondentes no código:
+It's not always obvious which execution path lead to an error. Complete JavaScript call stacks accompany exceptions in the console. Expand these console messages to see the stack frames and navigate to the corresponding locations in the code:
 
-![Rastreamento de pilha de exceção](images/track-exceptions-exception-stack-trace.jpg)
+![Exception stack trace](images/track-exceptions-exception-stack-trace.jpg)
 
-### Pausar em exceções de JavaScript
+### Pause on JavaScript exceptions
 
-Na próxima vez em que uma exceção aparecer,
-pause a execução do JavaScript e verifique a pilha de chamadas,
-variáveis do escopo e o estado do seu aplicativo.
-Um botão de interrupção dos três estados no fim do painel Scripts permite alternar entre diferentes modos de gerenciamento de exceção: ![Botão de pausa](images/track-exceptions-pause-gray.png){:.inline}
+The next time an exception is thrown, pause JavaScript execution and inspect its call stack, scope variables, and state of your app. A tri-state stop button at the bottom of the Scripts panel enables you to switch among different exception handling modes: ![Pause button](images/track-exceptions-pause-gray.png){:.inline}
 
-Opte entre pausar em todas as exceções, somente em exceções não capturadas ou até ignore todas as exceções.
+Choose to either pause on all exceptions or only on the uncaught ones or you can ignore exceptions altogether.
 
-![Pausar execução](images/track-exceptions-pause-execution.jpg)
+![Pause execution](images/track-exceptions-pause-execution.jpg)
 
-## Gerar rastreamentos de pilha
+## Print stack traces
 
-Entenda melhor como sua página da web se comporta
-exibindo mensagens de erro no console.
-Torne os registros mais informativos incluindo rastreamentos de pilha associados. Há diversas formas de fazer isso.
+Better understand how your web page behaves by printing log messages to the console. Make the log entries more informative by including associated stack traces. There are several ways of doing that.
 
 ### Error.stack
-Cada objeto Error tem uma propriedade string chamada de pilha que contém o rastreamento de pilha:
 
-![Exemplo de Error.stack](images/track-exceptions-error-stack.jpg)
+Each Error object has a string property named stack that contains the stack trace:
+
+![Error.stack example](images/track-exceptions-error-stack.jpg)
 
 ### console.trace()
 
-Equipe seu código com chamadas de [`console.trace()`](./console-reference#consoletraceobject) que mostrem as pilhas de chamada JavaScript atuais:
+Instrument your code with [`console.trace()`](./console-reference#consoletraceobject) calls that print current JavaScript call stacks:
 
-![Exemplo de console.trace()](images/track-exceptions-console-trace.jpg)
+![console.trace() example](images/track-exceptions-console-trace.jpg)
 
 ### console.assert()
 
-Insira declarações no seu código JavaScript chamando [`console.assert()`](./console-reference#consoleassertexpression-object)
-com a condição do erro como o primeiro parâmetro.
-Quando esta expressão avalia como falso,
-você verá um registro correspondente no console:
+Place assertions in your JavaScript code by calling [`console.assert()`](./console-reference#consoleassertexpression-object) with the error condition as the first parameter. When this expression evaluates to false, you will see a corresponding console record:
 
-![Exemplo de console.assert()](images/track-exceptions-console-assert.jpg)
+![console.assert() example](images/track-exceptions-console-assert.jpg)
 
-## Como avaliar o rastreamento de pilha para encontrar acionadores
+## How to examine stack trace to find triggers
 
-Vejamos como usar as ferramentas que acabou de conhecer
-para encontrar a causa real de um erro.
-Veja uma página HTML simples que inclui dois scripts:
+Let's see how to use the tools you've just learned about, and find the real cause of an error. Here's a simple HTML page that includes two scripts:
 
-![Exemplo de código](images/track-exceptions-example-code.png)
+![Example code](images/track-exceptions-example-code.png)
 
-Quando o usuário clica na página,
-o parágrafo muda seu texto interno
-e a função `callLibMethod()` fornecida por `lib.js` é chamada.
+When the user clicks on the page, the paragraph changes its inner text, and the `callLibMethod()` function provided by `lib.js` is called.
 
-Esta função gera um `console.log`
-e, em seguida, chama `console.slog`,
-um método não fornecido pela API Console.
-Isto deve disparar um erro.
+This function prints a `console.log`, and then calls `console.slog`, a method not provided by the Console API. This should trigger an error.
 
-Quando a página está em execução e você clica nela,
-este erro é disparado:
+When the page is run and you click on it, this error is triggered:
 
-![Erro disparado](images/track-exceptions-example-error-triggered.png)
+![Error triggered](images/track-exceptions-example-error-triggered.png)
 
-Clique na seta para poder expandir a mensagem de erro:
+Click the arrow to can expand the error message:
 
-![Mensagem de erro expandida](images/track-exceptions-example-error-message-expanded.png)
+![Error message expanded](images/track-exceptions-example-error-message-expanded.png)
 
-O Console informa que o erro foi disparado em `lib.js`, linha 4,
-que foi chamado por `script.js` no retorno de chamada `addEventListener`,
-uma função anônima, na linha 3.
+The Console tells you the error was triggered in `lib.js`, line 4, which was called by `script.js` in the `addEventListener` callback, an anonymous function, in line 3.
 
-Este é um exemplo muito simples,
-mas mesmo a depuração de rastreamento de registros mais complicada segue o mesmo processo.
+This is a very simple example, but even the most complicated log trace debugging follows the same process.
 
-## Gerenciar exceções em tempo de execução usando window.onerror
+## Handle runtime exceptions using window.onerror
 
-O Chrome expõe a função do gerenciador de `window.onerror`,
-chamada sempre que um erro ocorre na execução do código JavaScript.
-Sempre que uma exceção JavaScript é apresentada no contexto da janela e
-não é capturada por um bloco try/catch,
-a função é invocada com a mensagem da exceção,
-o URL do arquivo em que a exceção foi acionada
-e o número da linha desse arquivo,
-passados como três argumentos, nessa ordem.
+Chrome exposes the `window.onerror` handler function, called whenever an error happens in the JavaScript code execution. Whenever a JavaScript exception is thrown in the window context and is not caught by a try/catch block, the function is invoked with the exception's message, the URL of the file where the exception was thrown, and the line number in that file, passed as three arguments in that order.
 
-Pode ser útil para você definir um gerenciador de erros para coletar informações sobre exceções não capturadas e relatá-las de volta ao seu servidor usando uma chamada de AJAX POST, por exemplo. Desta forma, você pode registrar todos os erros que acontecem no navegador do usuário e receber notificações deles.
+You may find it useful to set an error handler that would collect information about uncaught exceptions and report it back to your server using an AJAX POST call, for example. In this way, you can log all the errors happening in the user's browser, and be notified about them.
 
-Exemplo de uso de `window.onerror`:
+Example of using `window.onerror`:
 
-![Exemplo de gerenciador de window.onerror](images/runtime-exceptions-window-onerror.jpg)
+![Example of window.onerror handler](images/runtime-exceptions-window-onerror.jpg)
 
+## Feedback {: #feedback }
 
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
