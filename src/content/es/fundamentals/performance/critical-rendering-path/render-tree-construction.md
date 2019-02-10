@@ -1,98 +1,84 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: PENDIENTE
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: TODO
 
-{# wf_updated_on: 2017-07-12 #}
-{# wf_published_on: 2014-03-31 #}
+{# wf_updated_on: 2018-08-17 #} {# wf_published_on: 2014-03-31 #} {# wf_blink_components: Blink>Layout,Blink>Paint #}
 
-# Construcción, diseño y pintura del árbol de representación {: .page-title }
+# Render-tree Construction, Layout, and Paint {: .page-title }
 
 {% include "web/_shared/contributors/ilyagrigorik.html" %}
 
-Los árboles CSSOM y DOM se combinan en un árbol de representación. A continuación, este árbol se utiliza
-para computarizar el diseño de cada elemento visible y sirve como entrada del
-proceso de pintura que permite representar los píxeles en la pantalla. Para lograr un óptimo rendimiento de representación, es imprescindible optimizar cada uno de estos 
-pasos.
+The CSSOM and DOM trees are combined into a render tree, which is then used to compute the layout of each visible element and serves as an input to the paint process that renders the pixels to screen. Optimizing each of these steps is critical to achieving optimal rendering performance.
 
-En la sección anterior de la construcción del modelo de objeto, construimos los árboles DOM y
-CSSOM a partir de la entrada de HTML y CSS. Sin embargo, ambos
-son objetos independientes que capturan distintos aspectos del documento: uno
-describe el contenido y el otro describe las reglas de estilo que se
-deben aplicar al documento. ¿Cómo los combinamos y logramos que el navegador represente
-píxeles en la pantalla?
+In the previous section on constructing the object model, we built the DOM and the CSSOM trees based on the HTML and CSS input. However, both of these are independent objects that capture different aspects of the document: one describes the content, and the other describes the style rules that need to be applied to the document. How do we merge the two and get the browser to render pixels on the screen?
 
 ### TL;DR {: .hide-from-toc }
-- Los árboles DOM y CSSOM se combinan para formar el árbol de representación.
-- El árbol de representación solo contiene los nodos necesarios para representar la página.
-- El diseño computariza la posición y el tamaño exactos de cada objeto.
-- El último paso es la pintura, que recibe el árbol de representación final y representa los píxeles en la pantalla.
 
+* The DOM and CSSOM trees are combined to form the render tree.
+* Render tree contains only the nodes required to render the page.
+* Layout computes the exact position and size of each object.
+* The last step is paint, which takes in the final render tree and renders the pixels to the screen.
 
-Primero, el navegador combina el DOM y el CSSOM en un “árbol de representación”, que captura todo el contenido visible del DOM en la página y toda la información de estilo del CSSOM para cada nodo.
+First, the browser combines the DOM and CSSOM into a "render tree," which captures all the visible DOM content on the page and all the CSSOM style information for each node.
 
-<img src="images/render-tree-construction.png" alt="DOM y CSSOM se combinan para crear un árbol de representación." >
+<img src="images/render-tree-construction.png" alt="DOM and CSSOM are combined to create the render tree" />
 
-Para construir el árbol de representación, el navegador realiza algo parecido a lo siguiente:
+To construct the render tree, the browser roughly does the following:
 
-1. Comenzando por la raíz del árbol del DOM, atraviesa cada nodo visible.
+1. Starting at the root of the DOM tree, traverse each visible node.
+    
+    * Some nodes are not visible (for example, script tags, meta tags, and so on), and are omitted since they are not reflected in the rendered output.
+    * Some nodes are hidden via CSS and are also omitted from the render tree; for example, the span node\---in the example above\---is missing from the render tree because we have an explicit rule that sets the "display: none" property on it.
 
-    * Algunos nodos no son visibles (por ejemplo, las etiquetas de secuencias de comandos, las metaetiquetas, etc.) y se omiten ya que no se reflejan en la salida representada.
-    * Algunos nodos se ocultan a través de CSS y también se omiten del árbol de representación. Por ejemplo, el nodo span---del ejemplo anterior---no aparece en el árbol de representación porque hay una regla explícita que define la propiedad “display: none” en el nodo.
+2. For each visible node, find the appropriate matching CSSOM rules and apply them.
 
-1. Para cada nodo visible, encuentra las adecuadas reglas de CSSOM y aplícalas.
-1. Emite nodos visibles con contenido y sus estilos computarizados.
+3. Emit visible nodes with content and their computed styles.
 
-Note: Como nota al margen, observa que `visibility: hidden` es diferente de `display: none`. El primero provoca que el elemento sea invisible, pero el elemento sigue ocupando espacio en el diseño (es decir, se representa como un cuadro vacío). El segundo (`display: none`) quita completamente el elemento del árbol de representación; el elemento es invisible y no forma parte del diseño.
+Note: As a brief aside, note that `visibility: hidden` is different from `display: none`. The former makes the element invisible, but the element still occupies space in the layout (that is, it's rendered as an empty box), whereas the latter (`display: none`) removes the element entirely from the render tree such that the element is invisible and is not part of the layout.
 
-La salida final es una representación con el contenido y la información de estilo de todo el contenido visible en pantalla.  **Una vez preparado el árbol de representación, podemos continuar con la etapa de “diseño”.**
+The final output is a render that contains both the content and style information of all the visible content on the screen. **With the render tree in place, we can proceed to the "layout" stage.**
 
-Hasta ahora, hemos calculado los nodos que deben ser visibles y sus estilos computarizados, pero no hemos calculado la posición y el tamaño exactos dentro de la [ventana de visualización](/web/fundamentals/design-and-ux/responsive/#set-the-viewport) del dispositivo.---Esta es la etapa de “diseño”, también llamada “reprocesamiento”.
+Up to this point we've calculated which nodes should be visible and their computed styles, but we have not calculated their exact position and size within the [viewport](/web/fundamentals/design-and-ux/responsive/#set-the-viewport) of the device\---that's the "layout" stage, also known as "reflow."
 
-Para conocer la posición y el tamaño exactos de cada objeto de la página, el navegador comienza su camino por la raíz del árbol de representación. Veamos un ejemplo simple y práctico:
+To figure out the exact size and position of each object on the page, the browser begins at the root of the render tree and traverses it. Let's consider a simple, hands-on example:
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/performance/critical-rendering-path/_code/nested.html" region_tag="full" adjust_indentation="auto" %}
 </pre>
 
-[Pruébalo](https://googlesamples.github.io/web-fundamentals/fundamentals/performance/critical-rendering-path/nested.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/performance/critical-rendering-path/nested.html){: target="_blank" .external }
 
-El cuerpo de la página anterior tiene dos div anidados: el primer div (primario) configura el tamaño del nodo para que sea un 50% de la longitud de la ventana de visualización y el segundo div---(contenido en el primario)---configura el ancho para que sea el 50% de la longitud del primario (es decir, el 25% de la longitud de la ventana de visualización).
+The body of the above page contains two nested div's: the first (parent) div sets the display size of the node to 50% of the viewport width, and the second div\---contained by the parent\---sets its width to be 50% of its parent; that is, 25% of the viewport width.
 
-<img src="images/layout-viewport.png" alt="Calcular la información del diseño" >
+<img src="images/layout-viewport.png" alt="Calculating layout information" />
 
-El resultado del proceso de diseño es un “modelo de cuadro”, que precisamente captura la posición y el tamaño exactos de cada elemento en la ventana de visualización: todas las mediciones relativas se convierten a píxeles absolutos en la pantalla.
+The output of the layout process is a "box model," which precisely captures the exact position and size of each element within the viewport: all of the relative measurements are converted to absolute pixels on the screen.
 
-Por último, ahora que conocemos los nodos visibles, y su geografía y sus estilos computarizados, podemos pasar esta información a la etapa final, que convierte cada nodo del árbol de representación en píxeles reales en pantalla. Este paso se conoce normalmente como “pintura” o “rasterización”.
+Finally, now that we know which nodes are visible, and their computed styles and geometry, we can pass this information to the final stage, which converts each node in the render tree to actual pixels on the screen. This step is often referred to as "painting" or "rasterizing."
 
-Puede demorar porque el navegador tiene que realizar bastante trabajo. Sin embargo, Chrome DevTools puede proporcionar un poco de información sobre las tres etapas descritas anteriormente. Analicemos la etapa de diseño para nuestro ejemplo de “hello world” original:
+This can take some time because the browser has to do quite a bit of work. However, Chrome DevTools can provide some insight into all three of the stages described above. Let's examine the layout stage for our original "hello world" example:
 
-<img src="images/layout-timeline.png" alt="Medir el diseño en DevTools" >
+<img src="images/layout-timeline.png" alt="Measuring layout in DevTools" />
 
-* El evento “Layout” captura la construcción, la posición y el cálculo de tamaño del árbol de representación en la línea temporal.
-* Cuando finaliza, el navegador produce los eventos “Paint Setup” y “Paint”, que convierten al árbol de representación en píxeles en la pantalla.
+* The "Layout" event captures the render tree construction, position, and size calculation in the Timeline.
+* When layout is complete, the browser issues "Paint Setup" and "Paint" events, which convert the render tree to pixels on the screen.
 
-El tiempo necesario para realizar la construcción, el diseño y la pintura del árbol de representación varía según el tamaño del documento, los estilos aplicados y el dispositivo utilizado: mientras más grande sea el documento, más trabajo deberá realizar el navegador; mientras más complicados sean los estilos, más tiempo demorará la pintura (por ejemplo, es “barato” pintar un color sólido, pero una sombra paralela es “costosa” de computarizar y representar).
+The time required to perform render tree construction, layout and paint varies based on the size of the document, the applied styles, and the device it is running on: the larger the document, the more work the browser has; the more complicated the styles, the more time taken for painting also (for example, a solid color is "cheap" to paint, while a drop shadow is "expensive" to compute and render).
 
-Finalmente, la página es visible en la ventana de visualización:
+The page is finally visible in the viewport:
 
-<img src="images/device-dom-small.png" alt="Página Hola mundo representada" >
+<img src="images/device-dom-small.png" alt="Rendered Hello World page" />
 
-A continuación, se describe un resumen de los pasos del navegador:
+Here's a quick recap of the browser's steps:
 
-1. Procesó el lenguaje de marcado HTML y construyó el árbol de DOM.
-1. Procesó el lenguaje de marcado CSS y construyó el árbol de CSSOM.
-1. Combinó el DOM y el CSSOM en un árbol de representación.
-1. Ejecutó diseño en el árbol de representación para calcular la geometría de cada nodo.
-1. Pintó cada nodo en la pantalla.
+1. Process HTML markup and build the DOM tree.
+2. Process CSS markup and build the CSSOM tree.
+3. Combine the DOM and CSSOM into a render tree.
+4. Run layout on the render tree to compute geometry of each node.
+5. Paint the individual nodes to the screen.
 
-Es posible que nuestra página de demostración parezca simple, pero requiere bastante trabajo. Si el DOM o el CSSOM se modifican, deberás repetir el proceso para conocer los píxeles que se deben representar nuevamente en la pantalla.
+Our demo page may look simple, but it requires quite a bit of work. If either the DOM or CSSOM were modified, you would have to repeat the process in order to figure out which pixels would need to be re-rendered on the screen.
 
-**_Optimizar la ruta de acceso de representación crítica_ es el proceso mediante el cual se minimiza la cantidad total de tiempo utilizado en los pasos 1 a 5 de la secuencia anterior.** Permite representar contenido en la pantalla lo más rápido posible y también disminuye la cantidad de tiempo entre actualizaciones de la pantalla tras la representación inicial; es decir, permite alcanzar mayores frecuencias de actualización para el contenido interactivo.
+***Optimizing the critical rendering path* is the process of minimizing the total amount of time spent performing steps 1 through 5 in the above sequence.** Doing so renders content to the screen as quickly as possible and also reduces the amount of time between screen updates after the initial render; that is, achieve higher refresh rates for interactive content.
 
-<a href="render-blocking-css" class="gc-analytics-event"
-    data-category="CRP" data-label="Next / Render-Blocking CSS">
-  <button>A continuación: Bloqueo de representación de CSS</button>
-</a>
+## Feedback {: #feedback }
 
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
