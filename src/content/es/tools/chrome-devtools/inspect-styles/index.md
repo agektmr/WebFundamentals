@@ -1,121 +1,84 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Inspecciona y edita el código HTML y la CSS de las páginas.
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Inspect and edit the HTML and CSS of your pages.
 
-{# wf_updated_on: 2016-01-28 #}
-{# wf_published_on: 2015-04-13 #}
+{# wf_updated_on: 2018-07-27 #} {# wf_published_on: 2015-04-13 #} {# wf_blink_components: Platform>DevTools #}
 
-# Inspecciona y edita páginas y estilos {: .page-title }
+# Inspect and Edit Pages and Styles {: .page-title }
 
-{% include "web/_shared/contributors/megginkearney.html" %}
-{% include "web/_shared/contributors/kaycebasques.html" %}
+{% include "web/_shared/contributors/megginkearney.html" %} {% include "web/_shared/contributors/kaycebasques.html" %}
 
-Inspecciona y edita en tiempo real el código HTML y la CSS de una página con 
-el panel Elements de Chrome DevTools.
+Inspect and live-edit the HTML and CSS of a page using the Chrome DevTools Elements panel.
 
-![panel Elements de Chrome DevTools](imgs/elements-panel.png)
-
+![Chrome DevTools Elements panel](imgs/elements-panel.png)
 
 ### TL;DR {: .hide-from-toc }
-- Inspecciona y edita sobre la marcha cualquier elemento del árbol del DOM en el panel Elements.
-- Visualiza y cambia las reglas de CSS que se aplican a cualquier elemento seleccionado en el subpanel Styles.
-- Visualiza y edita el modelo de cuadro de un elemento seleccionado en el subpanel Computed.
-- Visualiza los cambios realizados en tu página localmente en el panel Sources.
 
+* Inspect and edit on the fly any element in the DOM tree in the Elements panel.
+* View and change the CSS rules applied to any selected element in the Styles pane.
+* View and edit a selected element's box model in the Computed pane.
+* View any changes made to your page locally in the Sources panel.
 
-## Edita en tiempo real un nodo del DOM
+## Live-edit a DOM node
 
-Para editar en tiempo real un nodo del DOM, simplemente haz doble clic en el 
-[elemento seleccionado](#inspect-an-element) y realiza los cambios:
+To live-edit a DOM node, simply double-click a [selected element](#inspect-an-element) and make changes:
 
 <video src="animations/edit-element-name.mp4" style="max-width:100%;"
        loop muted autoplay controls></video>
 
-En la vista del árbol del DOM, se muestra el estado actual del árbol; es posible que, por diferentes motivos, no coincida con el 
-código HTML que se cargó originalmente. Por ejemplo, 
-puedes modificar el árbol del DOM con JavaScript; el motor del navegador puede intentar 
-corregir un lenguaje de marcado de un autor no válido y generar un DOM inesperado.
+The DOM tree view shows the current state of the tree; it may not match the HTML that was originally loaded for different reasons. For example, you can modify the DOM tree using JavaScript; the browser engine can try to correct invalid author markup and produce an unexpected DOM.
 
-## Edita un estilo en tiempo real
+## Live-edit a style
 
-Puedes editar en tiempo real nombres y valores de propiedades en el subpanel **Styles**. Todos
-los estilos se pueden editar, a excepción de los que están atenuados (como sucede
-con las hojas de estilo del usuario-agente).
+Live-edit style property names and values in the **Styles** pane. All styles are editable, except the ones that are greyed out (as is the case with user agent stylesheets).
 
-Para editar un nombre o un valor, haz clic, realiza los cambios y presiona
-<kbd class="kbd">Tab</kbd> o <kbd class="kbd">Entrar</kbd> para guardar el cambio.
+To edit a name or value, click on it, make your changes, and press
+<kbd class="kbd">Tab</kbd> or <kbd class="kbd">Enter</kbd> to save the change.
 
-![editar nombre de la propiedad](imgs/edit-property-name.png)
+![edit property name](imgs/edit-property-name.png)
 
-De manera predeterminada, las modificaciones en la CSS no son permanentes y los cambios se pierden 
-cuando vuelves a cargar la página. Configura la [autoría 
-persistente](/web/tools/setup/setup-workflow) si deseas que los cambios persistan cada vez que 
-se cargue la página. 
+By default, your CSS modifications are not permanent, changes are lost when you reload the page. Set up [persistent authoring](/web/tools/setup/setup-workflow) if you want to persist your changes between page loads.
 
-## Examina y edita parámetros de modelos de cuadros
+## Examine and edit box model parameters
 
-Examina y edita los parámetros del modelo de cuadro del elemento actual con el 
-**subpanel Computed**. Todos los valores del modelo de cuadro se pueden editar; simplemente debes hacer clic 
-en ellos.
+Examine and edit the current element's box model parameters using the **Computed pane**. All values in the box model are editable, just click on them.
 
-![subpanel Computed](imgs/computed-pane.png)
+![Computed pane](imgs/computed-pane.png)
 
-Los rectángulos concéntricos contienen los valores **top**, **bottom**, **left**y **right**
-para las propiedades **padding**, **border** y **margin**
-del elemento actual. 
+The concentric rectangles contain the **top**, **bottom**, **left**, **right** values for the current element's **padding**, **border**, and **margin** properties.
 
-Para los elementos con una posición no estática, también se muestra un rectángulo de **posición**, 
-que contiene los valores de las propiedades **top**, 
-**right**, **bottom** y **left**.
+For non-statically positioned elements, a **position** rectangle is also displayed, containing the values of the **top**, **right**, **bottom**, and **left** properties.
 
-![elemento computarizado no estático](imgs/computed-non-static.png)
+![non-static computed element](imgs/computed-non-static.png)
 
-En los elementos `position: fixed` y `position: absolute`, el campo 
-central contiene las dimensiones de los píxeles reales **offsetWidth × offsetHeight** 
-del elemento seleccionado. Todos los valores se pueden modificar haciendo doble clic en 
-ellos, como los valores de las propiedades en el subpanel Styles. No se garantiza, sin embargo, que los 
-cambios tengan efecto, ya que esto depende de las características específicas 
-de posicionamiento del elemento concreto.
+For `position: fixed` and `position: absolute` elements, the central field contains the actual **offsetWidth × offsetHeight** pixel dimensions of the selected element. All values can be modified by double-clicking them, like property values in the Styles pane. The changes are not, however, guaranteed to take effect, as this is subject to the concrete element positioning specifics.
 
-![elemento computarizado fijo](imgs/computed-fixed.png)
+![fixed computed element](imgs/computed-fixed.png)
 
-## Visualiza cambios locales
+## View local changes
 
 <video src="animations/revisions.mp4" style="max-width:100%;"
        autoplay loop muted controls></video>
 
-Para ver el historial de las ediciones en tiempo real efectuadas en la página, realiza lo siguiente:
+To view a history of live-edits made to your page:
 
-1. En el subpanel **Styles**, haz clic en el archivo que modificaste. DevTools
-   te dirige al panel **Sources**.
-1. Haz clic con el botón secundario en el archivo.
-1. Selecciona **Local modifications**.
+1. In the **Styles** pane, click on the file that you modified. DevTools takes you to the **Sources** panel.
+2. Right-click on the file. 
+3. Select **Local modifications**.
 
-Para explorar los cambios realizados, sigue estos pasos:
+To explore the changes made:
 
-* Expande los nombres de los archivos de nivel superior para ver la hora 
-  ![hora de la modificación](imgs/image_25.png){:.inline} 
-  en que se realizó una modificación.
-* Expande los elementos de segundo nivel para ver una 
-  [diferencia](https://en.wikipedia.org/wiki/Diff) (antes y después) 
-  que corresponda a la modificación. Una línea con fondo rosa indica 
-  una eliminación, mientras que una con fondo verde indica una adición.
+* Expand top-level file names to view the time ![time modification occurred](imgs/image_25.png){:.inline} a modification occurred.
+* Expand second-level items to view a [diff](https://en.wikipedia.org/wiki/Diff) (before and after) corresponding to the modification. A line with a pink background signifies a removal while a line with a green background signifies an addition.
 
-## Deshaz los cambios
+## Undo changes
 
-Si no [configuraste la autoría persistente](/web/tools/setup/setup-workflow), 
-cada vez que vuelves a cargar una página, todos los cambios en tiempo real se pierden.
+If you haven't [set up persistent authoring](/web/tools/setup/setup-workflow), any time you reload the page, all live-edits are lost.
 
-Suponiendo que configuraste la autoría persistente, esto es lo que debes hacer para deshacer los cambios:
+Assuming you've set up persistent authoring, to undo changes:
 
-* Usa <kbd class="kbd">Ctrl</kbd>+<kbd class="kbd">Z</kbd> (Windows) o 
-  <kbd class="kbd">Cmd</kbd>+<kbd class="kbd">Z</kbd> (Mac) para deshacer 
-  rápidamente los cambios menores del DOM o los estilos mediante el panel Elements.
+* Use <kbd class="kbd">Ctrl</kbd>+<kbd class="kbd">Z</kbd> (Windows) or <kbd class="kbd">Cmd</kbd>+<kbd class="kbd">Z</kbd> (Mac) to quickly undo minor changes to the DOM or styles via the Elements panel.
 
-* Para deshacer todas las modificaciones realizadas en un archivo, abre el panel **Sources** 
-  y selecciona **revert** junto al nombre del archivo.
+* To undo all local modifications made to a file, open the **Sources** panel and select **revert** next to the filename.
 
-[inspect]: /web/tools/chrome-devtools/debug/command-line/command-line-reference#inspect
+## Feedback {: #feedback }
 
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
