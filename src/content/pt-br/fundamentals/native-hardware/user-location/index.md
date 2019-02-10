@@ -1,177 +1,141 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: A maioria dos navegadores e dispositivos tem acesso à localização geográfica do usuário. Saiba como trabalhar com a localização do usuário em seu site e aplicativos.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Most browsers and devices have access to the user's geographic location. Learn how to work with the user's location in your site and apps.
 
-{# wf_updated_on: 2016-08-22 #}
-{# wf_published_on: 2014-01-01 #}
+{# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2014-01-01 #} {# wf_blink_components: Blink>Location #}
 
-# Localização do usuário {: .page-title }
+# User Location {: .page-title }
 
 {% include "web/_shared/contributors/paulkinlan.html" %}
 
-A Geolocation API permite descobrir a localização do usuário, mas somente com o consentimento dele. Você pode usar esse recurso, por exemplo, para guiar um usuário ao destino e marcar com geolocalização conteúdos criados pelo usuário, como marcar o local em que uma foto foi tirada.
+The Geolocation API lets you discover, with the user's consent, the user's location. You can use this functionality for things like guiding a user to their destination and geo-tagging user-created content; for example, marking where a photo was taken.
 
-A Geolocation API também permite ver onde o usuário está e acompanhar seus
-movimentos, sempre com a permissão do usuário (e somente enquanto a página estiver aberta). Assim, 
-é possível criar diversos casos de uso interessantes, como integrar com sistemas de back-end para preparar uma ordem de coleta se o usuário estiver por perto.
+The Geolocation API also lets you see where the user is and keep tabs on them as they move around, always with the user's consent (and only while the page is open). This creates a lot of interesting use cases, such as integrating with backend systems to prepare an order for collection if the user is close by.
 
-Você precisa saber de algumas coisas quando usar a Geolocation API. Esse guia explica em detalhes os casos de uso e as soluções mais comuns.
+You need to be aware of many things when using the Geolocation API. This guide walks you through the common use cases and solutions.
 
-Observação: a partir do Chrome 50, a [Geolocation API só funciona com contextos protegidos (HTTPS)](/web/updates/2016/04/geolocation-on-secure-contexts-only). Se seu site está hospedado em origem desprotegida (como `HTTP`), todas as solicitações de localização ao usuário **não** funcionarão.
+Note: As of Chrome 50, the [Geolocation API only works on secure contexts (HTTPS)](/web/updates/2016/04/geolocation-on-secure-contexts-only). If your site is hosted on a non-secure origin (such as `HTTP`), any requests for the user's location **no longer** function.
 
 ### TL;DR {: .hide-from-toc }
 
-* Use a geolocalização quando ela beneficia o usuário.
-* Peça autorização em resposta clara a um gesto do usuário. 
-* Use a detecção de recursos caso o navegador do usuário não ofereça suporte a geolocalização.
-* Não só aprenda a implementar a geolocalização, aprenda a usar a geolocalização da melhor maneira possível.
-* Teste a geolocalização no seu site.
+* Use geolocation when it benefits the user.
+* Ask for permission as a clear response to a user gesture. 
+* Use feature detection in case a user's browser doesn't support geolocation.
+* Don't just learn how to implement geolocation; learn the best way to use geolocation.
+* Test geolocation with your site.
 
-## Quando usar geolocalização
+## When to use geolocation
 
-*  Descubra em que ponto o usuário estará mais próximo de um local físico específico para personalizar 
-   a experiência dele.
-*  Personalize informações (como notícias) de acordo com a localização do usuário.
-*  Mostre a posição de um usuário no mapa.
-*  Marque os dados criados dentro do aplicativo com a localização do usuário 
-   (ou seja, marque uma imagem com geolocalização).
+* Find where the user is closest to a specific physical location to tailor the user experience.
+* Tailor information (such as news) to the user's location.
+* Show the position of a user on a map.
+* Tag data created inside your application with the user's location (that is, geo-tag a picture).
 
-## Peça autorização com consciência
+## Ask permission responsibly
 
-Estudos recentes com usuários [mostraram](http://static.googleusercontent.com/media/www.google.com/en/us/intl/ALL_ALL/think/multiscreen/pdf/multi-screen-moblie-whitepaper_research-studies.pdf)
-que os usuários desconfiam de sites que simplesmente solicitam que mostrem sua
-localização durante o carregamento da página. Então, quais são as práticas recomendadas?
+Recent user studies [have shown](http://static.googleusercontent.com/media/www.google.com/en/us/intl/ALL_ALL/think/multiscreen/pdf/multi-screen-moblie-whitepaper_research-studies.pdf) that users are distrustful of sites that simply prompt the user to give away their position on page load. So what are the best practices?
 
-### Presuma que os usuários não fornecerão sua localização
+### Assume users will not give you their location
 
-Muitos dos usuários não querem fornecer sua
-localização e, por isso, você precisa adotar um estilo de desenvolvimento defensivo.
+Many of your users won't want to give you their location, so you need to adopt a defensive development style.
 
-1. Resolva todos os erros da Geolocation API para poder adaptar seu
-    site a essa condição.
-2. Seja claro e explícito sobre sua necessidade da localização.
-3. Use uma solução reserva se necessário.
+1. Handle all errors out of the geolocation API so that you can adapt your site to this condition.
+2. Be clear and explicit about your need for the location.
+3. Use a fallback solution if needed.
 
-### Use uma solução reserva se a geolocalização for necessária
+### Use a fallback if geolocation is required
 
-Recomendamos que seu site ou aplicativo não exija
-acesso à localização atual do usuário. Porém, se seu site ou aplicativo
-precisar da localização atual do usuário, há soluções alternativas que permitem que você tenha
-uma ideia bem aproximada de onde a pessoa está no momento.
+We recommend that your site or application not require access to the user's current location. However, if your site or application requires the user's current location, there are third-party solutions that allow you to obtain a best guess of where the person currently is.
 
-Essas soluções geralmente funcionam analisando o endereço IP do usuário e mapeando-o
-para o endereço físico registrado com o banco de dados RIPE. Muitas vezes,
-essas localizações não são muito precisas e normalmente fornecem a posição da 
-central de telecomunicação ou da torre de sinal de celular mais próxima do usuário. Em muitos
-casos, eles podem ainda não ser tão precisos, especialmente se o usuário estiver em uma VPN
-ou algum outro serviço de proxy.
+These solutions often work by looking at the user's IP address and mapping that to the physical addresses registered with the RIPE database. These locations are often not very accurate, normally giving you the position of the telecommunications hub or cell phone tower that is nearest to the user. In many cases, they might not even be that accurate, especially if the user is on VPN or some other proxy service.
 
-### Sempre solicite acesso à localização por um gesto do usuário
+### Always request access to location on a user gesture
 
-Confirme que os usuários entendam por que você está pedindo acesso à sua localização e que
-benefícios o seu acesso produz para ele. Solicitar a localização imediatamente na página inicial conforme 
-o site carrega resulta em uma experiência desagradável para o usuário.
+Make sure that users understand why you’re asking for their location, and what the benefit to them will be. Asking for it immediately on the homepage as the site loads results in a poor user experience.
 
 <div class="attempt-left">
   <figure>
     <img src="images/sw-navigation-good.png">
     <figcaption class="success">
-      <b>CERTO</b>: Sempre solicitar acesso à localização em resposta a um gesto do usuário.
+      <b>DO</b>: Always request access to location on a user gesture.
      </figcaption>
   </figure>
 </div>
+
 <div class="attempt-right">
   <figure id="fig1">
     <img src="images/sw-navigation-bad.png">
     <figcaption class="warning">
-      <b>ERRADO</b>: Solicitar a localização na página inicial, durante o carregamento da página, o que gera uma experiência desagradável.
+      <b>DON'T</b>: Ask for it on the homepage, as the site loads; this results in a poor user experience.
     </figcaption>
   </figure>
 </div>
 
 <div style="clear:both;"></div>
 
-Em vez disso, disponibilize ao usuário uma ação ou indicação de que
-usar um recurso exigirá acesso à sua localização. A partir daí, o usuário associa com mais facilidade a solicitação de acesso do sistema com a ação
-que acabou de ser iniciada.
+Instead, give the user a clear call to action or an indication that an operation will require access to their location. The user can then more easily associate the system prompt for access with the action just initiated.
 
-### Dê uma indicação clara de que uma ação dará origem a uma solicitação de localização do usuário
+### Give a clear indication that an action will request their location
 
-[Em um estudo realizado pela equipe dos Anúncios do Google](http://static.googleusercontent.com/media/www.google.com/en/us/intl/ALL_ALL/think/multiscreen/pdf/multi-screen-moblie-whitepaper_research-studies.pdf),
-quando um usuário recebeu uma solicitação para reservar um quarto de hotel em Boston para uma conferência
-em um site de reserva de hotéis, recebeu também uma solicitação de compartilhamento da sua localização de GPS
-imediatamente depois de tocar na ação "Buscar e reservar" na página inicial.
+[In a study by the Google Ads team](http://static.googleusercontent.com/media/www.google.com/en/us/intl/ALL_ALL/think/multiscreen/pdf/multi-screen-moblie-whitepaper_research-studies.pdf), when a user was asked to book a hotel room in Boston for an upcoming conference on one particular hotels site, they were prompted to share their GPS location immediately after tapping the "Find and Book" call to action on the homepage.
 
-Em alguns casos, o usuário fica frustrado porque tem dificuldade de entender por que
-são exibidos hotéis em São Francisco quando ele quer reservar um quarto em
-Boston.
+In some cases, the user became frustrated because they didn't understand why they were being shown hotels in San Francisco when they wanted to book a room in Boston.
 
-Uma experiência melhor é garantir que os usuários compreendam porque você está solicitando
-a localização deles. Adicione um indicador bem conhecido que seja comum dentre
-os dispositivos, como um localizador de cobertura ou uma indicação explícita para uma ação como 
-"Encontrar nas proximidades".
+A better experience is to make sure users understand why you’re asking them for their location. Add a well-known signifier that is common across devices, such as a range finder, or an explicit call to action such as “Find Near Me.”
 
 <div class="attempt-left">
   <figure>
     <img src="images/indication.png">
     <figcaption>
-      Use um localizador de cobertura
-    </figcaption>
+      Use a range finder
+     </figcaption>
   </figure>
 </div>
+
 <div class="attempt-right">
   <figure id="fig1">
     <img src="images/nearme.png">
     <figcaption>
-      Uma indicação para ação específica para encontrar locais nas proximidades  
+      A specific call to action to find near me  
     </figcaption>
   </figure>
 </div>
 
 <div style="clear:both;"></div>
 
-### Gentilmente solicite ao usuário permissão para acessar sua localização
+### Gently nudge users to grant permission to their location
 
-Você não tem acesso a nada que os usuários fazem. Você sabe exatamente
-quando o usuário não permite acesso à sua localização, mas não sabe
-quando ele concede o acesso e só passa a saber que obteve acesso quando os resultados
-aparecem.
+You don't have access to anything users are doing. You know exactly when users disallow access to their locations but you don't know when they grant you access; you only know you obtained access when results appear.
 
-É uma boa ideia "convidar" o usuário para a ação se você precisar que ele
-realize a ação.
+It's good practice to "nudge" users into action if you need them to complete the action.
 
-Recomendamos: 
+We recommend:
 
-1.  Configure um cronômetro que será acionado após um breve período — 5 segundos é
-    um bom valor.
-2.  Se receber uma mensagem de erro, mostre uma mensagem ao usuário.
-3.  Se obtiver uma resposta positiva, desative o cronômetro e processe os resultados.
-4.  Se após estourar o tempo você não obtiver uma resposta positiva, exiba uma
-    notificação para o usuário.
-5.  Se a resposta chegar depois e a notificação ainda estiver presente,
-    remova-a da tela.
+1. Set up a timer that triggers after a short period; 5 seconds is a good value.
+2. If you get an error message, show a message to the user.
+3. If you get a positive response, disable the timer and process the results.
+4. If, after the timeout, you haven't gotten a positive response, show a notification to the user.
+5. If the response comes in later and the notification is still present, remove it from the screen.
 
 <div style="clear:both;"></div>
 
     button.onclick = function() {
       var startPos;
-      var element = document.getElementById("nudge");
-
+      var nudge = document.getElementById("nudge");
+    
       var showNudgeBanner = function() {
         nudge.style.display = "block";
       };
-
+    
       var hideNudgeBanner = function() {
         nudge.style.display = "none";
       };
-
+    
       var nudgeTimeoutId = setTimeout(showNudgeBanner, 5000);
-
+    
       var geoSuccess = function(position) {
         hideNudgeBanner();
         // We have the location, don't display banner
         clearTimeout(nudgeTimeoutId); 
-
+    
         // Do magic with location
         startPos = position;
         document.getElementById('startLat').innerHTML = startPos.coords.latitude;
@@ -183,18 +147,18 @@ Recomendamos:
             // The user didn't accept the callout
             showNudgeBanner();
             break;
+        }
       };
-
+    
       navigator.geolocation.getCurrentPosition(geoSuccess, geoError);
     };
+    
 
-## Compatibilidade de navegadores
+## Browser support
 
-Atualmente, a maioria dos navegadores oferecem suporte à Geolocation API, mas é sempre
-bom verificar a compatibilidade antes de fazer qualquer coisa.
+The majority of browsers now support the Geolocation API but it's a good practice to always check for support before you do anything.
 
-Você pode verificar facilmente a compatibilidade testando a presença do
-objeto geolocation:
+You can easily check for compatibility by testing for the presence of the geolocation object:
 
     // check for Geolocation support
     if (navigator.geolocation) {
@@ -203,13 +167,11 @@ objeto geolocation:
     else {
       console.log('Geolocation is not supported for this Browser/OS.');
     }
+    
 
+## Determining the user's current location
 
-## Determinando a localização atual do usuário
-
-A Geolocation API oferece um método simples acionado uma única vez para obter a localização
-do usuário: `getCurrentPosition()`. Chamar este método informa
-assincronamente a localização atual do usuário.
+The Geolocation API offers a simple, "one-shot" method to obtain the user's location: `getCurrentPosition()`. A call to this method asynchronously reports on the user's current location.
 
     window.onload = function() {
       var startPos;
@@ -220,64 +182,40 @@ assincronamente a localização atual do usuário.
       };
       navigator.geolocation.getCurrentPosition(geoSuccess);
     };
+    
 
+If this is the first time that an application on this domain has requested permissions, the browser typically checks for user consent. Depending on the browser, there may also be preferences to always allow&mdash;or disallow&mdash;permission lookups, in which case the confirmation process is bypassed.
 
-Se essa é a primeira vez que um aplicativo deste domínio solicita
-permissões, o navegador geralmente solicita a permissão do usuário. Dependendo do
-navegador, também pode haver preferências para sempre permitir &mdash; ou nunca permitir &mdash; pedidos de permissão. Nesse caso, o processo de confirmação será ignorado.
+Depending on the location device your browser is using, the position object might actually contain a lot more than just latitude and longitude; for example, it might include an altitude or a direction. You can't tell what extra information that location system uses until it actually returns the data.
 
-Dependendo do dispositivo de localização que seu navegador usa, o objeto de posição
-pode realmente conter muito mais do que apenas latitude e longitude, podendo incluir, por
-exemplo, uma altitude ou uma direção. Não é possível prever
-quais outras informações esse sistema de localização usará até que ele retorne
-os dados.
+## Watching the user's location
 
-## Acompanhando a localização do usuário
+The Geolocation API allows you to obtain the user's location (with user consent) with a single call to `getCurrentPosition()`.
 
-A Geolocation API permite que você obtenha a localização do usuário (com a permissão
-dele) com uma única chamada para `getCurrentPosition()`.  
+If you want to continually monitor the user's location, use the Geolocation API method, `watchPosition()`. It operates in a similar way to `getCurrentPosition()`, but it fires multiple times as the positioning software:
 
-Se quiser monitorar continuamente a localização do usuário, use o método
-`watchPosition()` da Geolocation API. Ele funciona de forma bem parecida com o
-`getCurrentPosition()`, mas é acionado diversas vezes à medida que o software
-de posicionamento:
+1. Gets a more accurate lock on the user.
+2. Determines that the user's position is changing.
+    
+    var watchId = navigator.geolocation.watchPosition(function(position) { document.getElementById('currentLat').innerHTML = position.coords.latitude; document.getElementById('currentLon').innerHTML = position.coords.longitude; });
 
-1. Detecta com mais precisão a posição do usuário.
-2. Determina que a posição do usuário está mudando.
- 
+### When to use geolocation to watch the user's location
 
-    var watchId = navigator.geolocation.watchPosition(function(position) {
-      document.getElementById('currentLat').innerHTML = position.coords.latitude;
-      document.getElementById('currentLon').innerHTML = position.coords.longitude;
-    });
+* You want to obtain a more precise lock on the user location.
+* Your application needs to update the user interface based on new location information.
+* Your application needs to update business logic when the user enters a certain defined zone.
 
-### Quando usar a geolocalização para acompanhar a localização do usuário
+## Best practices when using geolocation
 
-*  Para obter uma detecção mais precisa da localização do usuário.
-*  Seu aplicativo precisa atualizar a interface do usuário com base na nova informação de 
- localização.
-*  Seu aplicativo precisa atualizar a lógica de negócios quando o usuário entrar em determinada
-   zona definida.
+### Always clear up and conserve battery
 
+Watching for changes to a geolocation is not a free operation. While operating systems might be introducing platform features to let applications hook in to the geo subsystem, you, as a web developer, have no idea what support the user's device has for monitoring the user's location, and, while you're watching a position, you are engaging the device in a lot of extra processing.
 
-## Práticas recomendadas ao uso da geolocalização
+After you no longer need to track the user's position, call `clearWatch` to turn off the geolocation systems.
 
-### Sempre carregue e conserve a bateria
+### Handle errors gracefully
 
-Verificar as mudanças de uma geolocalização não é uma operação gratuita. Embora
-os sistemas operacionais talvez estejam absorvendo recursos de plataforma para permitir que os aplicativos
-se conectem ao subsistema geográfico, você, como desenvolvedor web, não faz ideia de que tipo de suporte
-o dispositivo do usuário tem para monitorar a localização do usuário e, enquanto você observa
-uma posição, está envolvendo o dispositivo em mais inúmeros processamentos.
-
-Quando não precisar mais acompanhar a posição do usuário, chame `clearWatch` para desativar
-os sistemas de geolocalização.
-
-###  Trate dos erros de forma suave
-
-Infelizmente, nem todas as pesquisas de localização têm êxito. Talvez um GPS não
-possa ser localizado ou o usuário tenha desabilitado repentinamente as pesquisas de localização. No caso de
-erro, um segundo argumento (opcional) a `getCurrentPosition()` é chamado para que você possa notificar o usuário dentro do retorno de chamada:
+Unfortunately, not all location lookups are successful. Perhaps a GPS could not be located or the user has suddenly disabled location lookups. In the event of an error, a second, optional argument to `getCurrentPosition()` is called so that you can notify the user inside the callback:
 
     window.onload = function() {
       var startPos;
@@ -296,24 +234,20 @@ erro, um segundo argumento (opcional) a `getCurrentPosition()` é chamado para q
       };
       navigator.geolocation.getCurrentPosition(geoSuccess, geoError);
     };
+    
 
+### Reduce the need to start geolocation hardware
 
-### Reduza a necessidade de ativar hardware de geolocalização
+For many use cases, you don't need the user's most up-to-date location; you just need a rough estimate.
 
-Para muitos casos de uso, você não precisa da localização mais atual do usuário,
-basta ter uma estimativa aproximada.
-
-Use a propriedade opcional `maximumAge` para dizer ao navegador para usar um resultado de
-geolocalização obtido recentemente. Isso não só retorna mais rápido se o usuário já tiver
-solicitado os dados, mas também impede o navegador de ativar
-a interface dos hardwares de geolocalização, como triangulação de Wi-Fi ou o GPS.
+Use the `maximumAge` optional property to tell the browser to use a recently obtained geolocation result. This not only returns more quickly if the user has requested the data before, but it also prevents the browser from starting its geolocation hardware interfaces such as Wifi triangulation or the GPS.
 
     window.onload = function() {
       var startPos;
       var geoOptions = {
         maximumAge: 5 * 60 * 1000,
       }
-
+    
       var geoSuccess = function(position) {
         startPos = position;
         document.getElementById('startLat').innerHTML = startPos.coords.latitude;
@@ -327,22 +261,21 @@ a interface dos hardwares de geolocalização, como triangulação de Wi-Fi ou o
         //   2: position unavailable (error response from location provider)
         //   3: timed out
       };
-
+    
       navigator.geolocation.getCurrentPosition(geoSuccess, geoError, geoOptions);
     };
+    
 
+### Don't keep the user waiting, set a timeout
 
-### Não deixe o usuário esperando, defina um tempo limite
-
-A menos que você defina um tempo limite, sua solicitação para obter a posição atual pode nunca ser retornada.
-
+Unless you set a timeout, your request for the current position might never return.
 
     window.onload = function() {
       var startPos;
       var geoOptions = {
          timeout: 10 * 1000
       }
-
+    
       var geoSuccess = function(position) {
         startPos = position;
         document.getElementById('startLat').innerHTML = startPos.coords.latitude;
@@ -356,27 +289,23 @@ A menos que você defina um tempo limite, sua solicitação para obter a posiç�
         //   2: position unavailable (error response from location provider)
         //   3: timed out
       };
-
+    
       navigator.geolocation.getCurrentPosition(geoSuccess, geoError, geoOptions);
     };
+    
 
+### Prefer a coarse location over a fine-grained location
 
-### Dê preferência a uma localização aproximada no lugar da localização exata
+If you want to find the nearest store to a user, it's unlikely that you need 1-meter precision. The API is designed to give a coarse location that returns as quickly as possible.
 
-Se quiser encontrar a loja mais próxima de um usuário, é improvável que você precise de
-precisão de 1 metro. A API é projetada para fornecer uma localização 
-geral que é retornada o mais rapidamente possível.
-
-Mas, se você precisa de um alto nível de precisão, é possível neutralizar a configuração padrão
-com a opção `enableHighAccuracy`. Use esse recurso com sabedoria: ele é mais
-lento de processar e consome mais bateria.
+If you do need a high level of precision, it's possible to override the default setting with the `enableHighAccuracy` option. Use this sparingly: it's slower to resolve and uses more battery.
 
     window.onload = function() {
       var startPos;
       var geoOptions = {
         enableHighAccuracy: true
       }
-
+    
       var geoSuccess = function(position) {
         startPos = position;
         document.getElementById('startLat').innerHTML = startPos.coords.latitude;
@@ -390,12 +319,12 @@ lento de processar e consome mais bateria.
         //   2: position unavailable (error response from location provider)
         //   3: timed out
       };
-
+    
       navigator.geolocation.getCurrentPosition(geoSuccess, geoError, geoOptions);
     };
+    
 
-
-## Emular geolocalização com o Chrome DevTools {: #devtools }
+## Emulate geolocation with Chrome DevTools {: #devtools }
 
 <div class="attempt-right">
   <figure id="fig1">
@@ -403,22 +332,19 @@ lento de processar e consome mais bateria.
   </figure>
 </div>
 
-Depois de colocar a geolocalização para funcionar, pode ser uma boa ideia:
+Once you've got geolocation set up, you'll want to:
 
-* Testar como o aplicativo funciona em diferentes geolocalizações.
-* Verificar se o aplicativo simplifica seus recursos de forma harmoniosa quando a geolocalização não está disponível.
+* Test out how your app works in different geolocations.
+* Verify that your app degrades gracefully when geolocation is not available.
 
-Você pode fazer ambos no Chrome DevTools.
+You can do both from Chrome DevTools.
 
-[Abra o Chrome DevTools](/web/tools/chrome-devtools/#open) e, depois,
-a [gaveta Console](/web/tools/chrome-devtools/console/#open_as_drawer).
+[Open Chrome DevTools](/web/tools/chrome-devtools/#open) and then [open the Console Drawer](/web/tools/chrome-devtools/console/#open_as_drawer).
 
-[Abra o menu da gaveta Console](/web/tools/chrome-devtools/settings#drawer-tabs)
-e clique na opção **Sensors** para abrir a gaveta "Sensors".
+[Open the Console Drawer menu](/web/tools/chrome-devtools/settings#drawer-tabs) and click the **Sensors** option to show the Sensors Drawer.
 
-Aí, você pode neutralizar a localização como uma cidade grande pré-configurada,
-inserir um local personalizado ou desativar a geolocalização configurando a neutralização
-como **Location unavailable**.
+From here you can override the location to a preset major city, enter a custom location, or disable geolocation by setting the override to **Location unavailable**.
 
+## Feedback {: #feedback }
 
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
