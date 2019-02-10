@@ -1,12 +1,5 @@
-{% comment %}
-Файл с общими ссылками - НЕ добавляйте в этот файл ничего, кроме ссылок!
+{% comment %} Common Links File - Do NOT add anything except link references to the file!
 
-Ссылки должны быть добавлены в алфавитном порядке, используя полные пути
-Например:
-[linkId]: /path/to/link "название ссылки"
-
-{# wf_auto_generated #}
+Links must be added in alphabetical order, using fully qualified paths For example: {# wf_auto_generated #}
 
 {% endcomment %}
-
-[service-worker-primer]: /web/fundamentals/getting-started/primers/service-workers "Service Workers: Введение"
