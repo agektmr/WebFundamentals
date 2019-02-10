@@ -1,11 +1,8 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Conheça as maneiras mais simples de adicionar vídeos ao seu site e garanta a melhor experiência possível para os usuários em qualquer dispositivo.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Learn about the simplest ways to add video to your site and ensure users get the best possible experience on any device.
 
-{# wf_updated_on: 2017-07-12 #}
-{# wf_published_on: 2014-04-15 #}
+{# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2014-04-15 #} {# wf_blink_components: Blink>Media #}
 
-# Vídeo {: .page-title }
+# Video {: .page-title }
 
 {% include "web/_shared/contributors/samdutton.html" %}
 
@@ -15,714 +12,783 @@ description: Conheça as maneiras mais simples de adicionar vídeos ao seu site 
   </iframe>
 </div>
 
-Os usuários gostam de vídeos — eles podem ser divertidos e informativos. Em dispositivos móveis, os vídeos podem
-ser uma maneira mais fácil de consumir informações. No entanto, vídeos gastam largura de banda e nem
-sempre têm a mesma aparência em todas as plataformas. Os usuários não gostam de esperar o
-carregamento de vídeos nem de não obter uma resposta quando tentam reproduzir um vídeo. Continue lendo para conhecer as maneiras
-mais simples de adicionar vídeos ao seu site e garanta a melhor experiência
-possível para os usuários em qualquer dispositivo.
+Users like videos; videos can be fun and informative. On mobile devices, videos can be an easier way to consume information. But videos take bandwidth and they don't always work the same across every platform. Users don't like waiting for videos to load; they don't like it when they press play and nothing happens. Read on to find the simplest way to add video to your site and ensure users get the best possible experience on any device.
 
-
-## Adicione um vídeo 
+## Add a video
 
 ### TL;DR {: .hide-from-toc }
-- Use o elemento `video` para carregar, decodificar e reproduzir vídeos no seu site.
-- Produza vídeos em vários formatos para abranger diversas plataformas móveis.
-- Dimensione os vídeos corretamente e garanta que eles não ultrapassem seus contêineres.
-- A acessibilidade é importante. Adicione o elemento `track` como filho do elemento `video`.
 
+* Use the `video` element to load, decode, and play video on your site.
+* Produce video in multiple formats to cover a range of mobile platforms.
+* Size videos correctly; ensure they don't overflow their containers.
+* Accessibility matters; add the `track` element as a child of the `video` element.
 
-### Adicione o elemento video
+### Add the video element
 
-Adicione o elemento `video` para carregar, decodificar e reproduzir vídeos no seu site:
+Add the `video` element to load, decode, and play video in your site:<video controls> <source src="https://storage.googleapis.com/webfundamentals-assets/videos/chrome.webm" type="video/webm"> <source src="https://storage.googleapis.com/webfundamentals-assets/videos/chrome.mp4" type="video/mp4"> 
 
-<video controls>
-  <source src="https://storage.googleapis.com/webfundamentals-assets/videos/chrome.webm" type="video/webm">
-  <source src="https://storage.googleapis.com/webfundamentals-assets/videos/chrome.mp4" type="video/mp4">
-  <p>Este navegador não oferece suporte para o elemento video.</p>
-</video>
-
+This browser does not support the video element.</video> 
 
     <video src="chrome.webm" type="video/webm">
         <p>Your browser does not support the video element.</p>
     </video>
     
 
-### Especifique vários formatos de arquivo
+### Specify multiple file formats
 
-Nem todos os navegadores oferecem suporte para os mesmos formatos de vídeo. O elemento `<source>` permite que 
-você especifique vários formatos como garantia caso o navegador do usuário 
-não ofereça suporte a um deles. Por exemplo:
+Not all browsers support the same video formats. The `<source>` element lets you specify multiple formats as a fallback in case the user's browser doesn't support one of them.
 
-Por exemplo:
+For example:
 
-<pre class="prettyprint">
-{% includecode content_path="web/fundamentals/media/_code/video-main.html" region_tag="sourcetypes" adjust_indentation="auto" %}
+<pre class="prettyprint">{% includecode content_path="web/fundamentals/media/_code/video-main.html" region_tag="sourcetypes" adjust_indentation="auto" %}
 </pre>
 
-[Experimente](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/media/video-main.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/media/video-main.html){: target="_blank" .external }
 
-Quando o navegador analisa as tags `<source>`, ele usa o atributo opcional `type`
-para decidir qual arquivo baixar e reproduzir. Se o navegador oferecer
-suporte a `WebM`, reproduzirá chrome.webm. Caso contrário, ele verificará se é possível
-reproduzir vídeos MPEG-4
+When the browser parses the `<source>` tags, it uses the optional `type` attribute to help decide which file to download and play. If the browser supports `WebM`, it plays chrome.webm; if not, it checks whether it can play MPEG-4 videos.
 
-Confira [A Digital Media Primer for Geeks](//www.xiph.org/video/vid1.shtml)
-para saber mais sobre como arquivos de vídeo e áudio funcionam na Web.
+Check out [A Digital Media Primer for Geeks](//www.xiph.org/video/vid1.shtml) to find out more about how video and audio work on the web.
 
-Essa abordagem apresenta diversas vantagens em relação à apresentação de diferentes scripts HTML ou
-no lado do servidor, especialmente para dispositivos móveis:
+This approach has several advantages over serving different HTML or server-side scripting, especially on mobile:
 
-* Os desenvolvedores podem listar formatos em ordem de preferência.
-* A troca nativa do lado do cliente reduz a latência. Apenas uma solicitação é feita para
- obter o conteúdo.
-* Permitir que o navegador escolha um formato é mais simples, rápido e potencialmente
-  mais confiável do que usar um banco de dados de suporte no lado do servidor com detecção de user-agent.
-* Especificar o tipo da fonte de cada arquivo melhora o desempenho da rede; o navegador pode selecionar uma
-  fonte de vídeo sem precisar fazer download de parte do vídeo para identificar o formato.
+* Developers can list formats in order of preference.
+* Native client-side switching reduces latency; only one request is made to get content.
+* Letting the browser choose a format is simpler, quicker, and potentially more reliable than using a server-side support database with user-agent detection.
+* Specifying each file source's type improves network performance; the browser can select a video source without having to download part of the video to "sniff" the format.
 
-Todos esses fatores são extremamente importantes em contextos de dispositivos móveis, nos quais a largura de banda
-e a latência são escassas e a paciência do usuário provavelmente é limitada.
-Não incluir um atributo type pode afetar o desempenho quando há
-várias fontes com tipos incompatíveis.
+All of these points are especially important in mobile contexts, where bandwidth and latency are at a premium and the user's patience is likely to be limited. Not including a type attribute can affect performance when there are multiple sources with unsupported types.
 
-Usando as ferramentas de desenvolvedor do seu navegador móvel, compare a atividade de rede [com atributos type](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/media/video-main.html){: target="_blank" .external } e [sem atributos type](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/media/notype.html){: target="_blank" .external }.
+Using your mobile browser developer tools, compare network activity [with type attributes](https://googlesamples.github.io/web-fundamentals/fundamentals/media/video-main.html) and [without type attributes](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/responsive/notype.html).
 
-Além disso, verifique os cabeçalhos de resposta nas ferramentas de desenvolvedor do navegador para 
-[garantir que o servidor reporte o tipo MIME certo](//developer.mozilla.org/en/docs/Properly_Configuring_Server_MIME_Types);
-caso contrário, as verificações de tipo de fonte de vídeos não funcionarão.
+Also check the response headers in your browser developer tools to [ensure your server reports the right MIME type](//developer.mozilla.org/en/docs/Properly_Configuring_Server_MIME_Types); otherwise video source type checks won't work.
 
-### Especifique horários de início e término
+### Specify start and end times
 
-Economize largura de banda e deixe seu site mais responsivo: use a Media
-Fragments API para adicionar horários de início e de término ao elemento video.
+Save bandwidth and make your site feel more responsive: use the Media Fragments API to add start and end times to the video element.<video controls> <source src="https://storage.googleapis.com/webfundamentals-assets/videos/chrome.webm#t=5,10" type="video/webm"> <source src="https://storage.googleapis.com/webfundamentals-assets/videos/chrome.mp4#t=5,10" type="video/mp4"> 
 
-<video controls>
-  <source src="https://storage.googleapis.com/webfundamentals-assets/videos/chrome.webm#t=5,10" type="video/webm">
-  <source src="https://storage.googleapis.com/webfundamentals-assets/videos/chrome.mp4#t=5,10" type="video/mp4">
-  <p>Este navegador não oferece suporte para o elemento video.</p>
-</video>
+This browser does not support the video element.</video> 
 
-Para adicionar um fragmento de mídia, basta incluir `#t=[start_time][,end_time]` no
-URL da mídia. Por exemplo, para reproduzir o vídeo entre os segundos 5 e 10,
-especifique:
-
+To add a media fragment, you simply add `#t=[start_time][,end_time]` to the media URL. For example, to play the video between seconds 5 through 10, specify:
 
     <source src="video/chrome.webm#t=5,10" type="video/webm">
     
 
-Você também pode usar a Media Fragments API para apresentar diversas visualizações no mesmo
-vídeo &ndash; como pontos de sinalização em um DVD &ndash; sem precisar codificar e
-enviar vários arquivos.
+You can also use the Media Fragments API to deliver multiple views on the same video&ndash;like cue points in a DVD&ndash;without having to encode and serve multiple files.
 
+Caution: Most platforms except iOS support the Media Fragments API. Also, make sure that your server supports Range Requests. By default, most servers enable Range Requests, but some hosting services may turn them off.
 
-Warning: A maioria das plataformas oferece suporte à Media Fragments API, exceto o iOS. Certifique-se também de que seu servidor ofereça suporte a solicitações de Range. Por padrão, a maioria dos servidores aceita solicitações de Range, mas alguns serviços de hospedagem podem desativá-las.
+Using your browser developer tools, check for `Accept-Ranges: bytes` in the response headers:
 
-Usando as ferramentas de desenvolvedor do navegador, verifique se `Accept-Ranges: bytes` está presente
-nos cabeçalhos de resposta:
+<img class="center" alt="Chrome DevTools screenshot: Accept-Ranges: bytes"
+src="images/Accept-Ranges-Chrome-Dev-Tools.png" />
 
-<img class="center" alt="Captura de tela do Chrome DevTools: Accept-Ranges: bytes" src="images/Accept-Ranges-Chrome-Dev-Tools.png">
+### Include a poster image
 
-### Inclua uma imagem de pôster
-
-Adicione um atributo poster ao elemento `video` para que seus usuários tenham uma ideia do
-conteúdo assim que o elemento for carregado, sem precisar fazer o download do
-vídeo ou iniciar a reprodução.
-
+Add a poster attribute to the `video` element so that your users have an idea of the content as soon as the element loads, without needing to download video or start playback.
 
     <video poster="poster.jpg" ...>
       ...
     </video>
     
 
-Um pôster também pode ser um plano B se o `src` do vídeo for inválido ou se nenhum dos
-formatos de vídeo fornecidos for compatível. A única desvantagem de imagens de pôster é
-uma solicitação de arquivo adicional, que consome mais largura de banda e exige
-renderização. Para saber mais, consulte [Otimização de imagens](/web/fundamentals/performance/optimizing-content-efficiency/image-optimization).
+A poster can also be a fallback if the video `src` is broken or if none of the video formats supplied are supported. The only downside to poster images is an additional file request, which consumes some bandwidth and requires rendering. For more information see [Image Optimization](/web/fundamentals/performance/optimizing-content-efficiency/image-optimization).
 
-Veja uma comparação lado a lado de vídeos com e sem uma imagem de pôster &ndash; deixamos a imagem em escala de cinza para provar que ela não faz parte do vídeo:
+Here's a side-by-side comparison of videos without and with a poster image&ndash;we've made the poster image grayscale to prove it's not the video:
 
 <div class="attempt-left">
-  <figure>
-    <img alt="Captura de tela do Android Chrome, retrato: sem pôster" src="images/Chrome-Android-video-no-poster.png">
-    <figcaption>
-      Captura de tela do Android Chrome, retrato: sem pôster
-     </figcaption>
-  </figure>
+  <figure> <img alt="Android Chrome screenshot, portrait: no poster"
+    src="images/Chrome-Android-video-no-poster.png" /> <figcaption> Android Chrome screenshot, portrait: no poster </figcaption> </figure>
 </div>
+
 <div class="attempt-right">
-  <figure>
-    <img alt="Captura de tela do Android Chrome, retrato: com pôster" src="images/Chrome-Android-video-poster.png">
-    <figcaption>
-      Captura de tela do Android Chrome, retrato: com pôster
-     </figcaption>
-  </figure>
+  <figure> <img alt="Android Chrome screenshot, portrait: with poster"
+    src="images/Chrome-Android-video-poster.png" /> <figcaption> Android Chrome screenshot, portrait: with poster </figcaption> </figure>
 </div>
 
-<div style="clear:both;"></div>
+<div style="clear:both;">
+</div>
 
+## Provide alternatives for legacy platforms
 
-## Forneça alternativas para plataformas legadas 
+Not all video formats are supported on all platforms. Check which formats are supported on the major platforms and make sure your video works in each of these.
 
-Nem todos os formatos de vídeo são compatíveis com todas as plataformas. Verifique quais formatos
-são compatíveis com as principais plataformas e certifique-se de que seu vídeo funcione em
-todas elas.
+### Check which formats are supported {: #check-formats }
 
-
-### Verifique quais formatos são compatíveis {: #check-formats }
-
-Use `canPlayType()` para descobrir quais formatos de vídeo são compatíveis. O método
-comporta um argumento de string que consiste em um `mime-type` e codecs opcionais e
-retorna um dos seguintes valores:
+Use `canPlayType()` to find out which video formats are supported. The method takes a string argument consisting of a `mime-type` and optional codecs and returns one of the following values:
 
 <table class="responsive">
-  <thead>
-    <tr>
-      <th colspan="2">Valor de retorno e descrição</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td data-th="Return value">(string vazia)</td>
-      <td data-th="Description">O contêiner e/ou codec não é compatível.</td>
-    </tr>
-    <tr>
-      <td data-th="Return value"><code>maybe</code></td>
-      <td data-th="Description">
-        O contêiner e o(s) codec(s) podem ser compatíveis, mas o navegador
-        precisará fazer o download de parte do vídeo para verificar.
-      </td>
-    </tr>
-    <tr>
-      <td data-th="Return value"><code>probably</code></td>
-      <td data-th="Description">O formato parece ser compatível.
-      </td>
-    </tr>
-  </tbody>
+  <tr>
+    <th colspan="2">
+      Return value and Description
+    </th>
+  </tr>
+  
+  <tr>
+    <td data-th="Return value">
+      (empty string)
+    </td>
+    
+    <td data-th="Description">
+      The container and/or codec isn't supported.
+    </td>
+  </tr>
+  
+  <tr>
+    <td data-th="Return value">
+      <code>maybe</code>
+    </td>
+    
+    <td data-th="Description">
+      The container and codec(s) might be supported, but the browser will need to download some video to check.
+    </td>
+  </tr>
+  
+  <tr>
+    <td data-th="Return value">
+      <code>probably</code>
+    </td>
+    
+    <td data-th="Description">
+      The format appears to be supported.
+    </td>
+  </tr>
 </table>
 
-Veja alguns exemplos de argumentos `canPlayType()` e de valores de retornos para
-execução no Chrome:
+Here are some examples of `canPlayType()` arguments and return values when run in Chrome:
 
 <table class="responsive">
-  <thead>
-    <tr>
-      <th colspan="2">Tipo e resposta</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td data-th="Type"><code>video/xyz</code></td>
-      <td data-th="Response">(string vazia)</td>
-    </tr>
-    <tr>
-      <td data-th="Type"><code>video/xyz; codecs="avc1.42E01E, mp4a.40.2"</code></td>
-      <td data-th="Response">(string vazia)</td>
-    </tr>
-    <tr>
-      <td data-th="Type"><code>video/xyz; codecs="nonsense, noise"</code></td>
-      <td data-th="Response">(string vazia)</td>
-    </tr>
-    <tr>
-      <td data-th="Type"><code>video/mp4; codecs="avc1.42E01E, mp4a.40.2"</code></td>
-      <td data-th="Response"><code>probably</code></td>
-    </tr>
-    <tr>
-      <td data-th="Type"><code>video/webm</code></td>
-      <td data-th="Response"><code>maybe</code></td>
-    </tr>
-    <tr>
-      <td data-th="Type"><code>video/webm; codecs="vp8, vorbis"</code></td>
-      <td data-th="Response"><code>probably</code></td>
-    </tr>
-  </tbody>
+  <tr>
+    <th colspan="2">
+      Type and Response
+    </th>
+  </tr>
+  
+  <tr>
+    <td data-th="Type">
+      <code>video/xyz</code>
+    </td>
+    
+    <td data-th="Response">
+      (empty string)
+    </td>
+  </tr>
+  
+  <tr>
+    <td data-th="Type">
+      <code>video/xyz; codecs="avc1.42E01E, mp4a.40.2"</code>
+    </td>
+    
+    <td data-th="Response">
+      (empty string)
+    </td>
+  </tr>
+  
+  <tr>
+    <td data-th="Type">
+      <code>video/xyz; codecs="nonsense, noise"</code>
+    </td>
+    
+    <td data-th="Response">
+      (empty string)
+    </td>
+  </tr>
+  
+  <tr>
+    <td data-th="Type">
+      <code>video/mp4; codecs="avc1.42E01E, mp4a.40.2"</code>
+    </td>
+    
+    <td data-th="Response">
+      <code>probably</code>
+    </td>
+  </tr>
+  
+  <tr>
+    <td data-th="Type">
+      <code>video/webm</code>
+    </td>
+    
+    <td data-th="Response">
+      <code>maybe</code>
+    </td>
+  </tr>
+  
+  <tr>
+    <td data-th="Type">
+      <code>video/webm; codecs="vp8, vorbis"</code>
+    </td>
+    
+    <td data-th="Response">
+      <code>probably</code>
+    </td>
+  </tr>
 </table>
 
+### Produce video in multiple formats
 
-### Produza vídeos em vários formatos
+There are lots of tools to help save the same video in different formats:
 
-Existem muitas ferramentas que ajudam a salvar o mesmo vídeo em diferentes formatos:
+* Desktop tools: [FFmpeg](//ffmpeg.org/)
+* GUI applications: [Miro](http://www.mirovideoconverter.com/), [HandBrake](//handbrake.fr/), [VLC](//www.videolan.org/)
+* Online encoding/transcoding services: [Zencoder](//en.wikipedia.org/wiki/Zencoder), [Amazon Elastic Encoder](//aws.amazon.com/elastictranscoder)
 
-* Ferramentas para computador: [FFmpeg](//ffmpeg.org/)
-* Aplicativos de GUI: [Miro](http://www.mirovideoconverter.com/),
-  [HandBrake](//handbrake.fr/), [VLC](//www.videolan.org/)
-* Serviços de codificação/transcodificação on-line:
-  [Zencoder](//en.wikipedia.org/wiki/Zencoder),
-  [Amazon Elastic Encoder](//aws.amazon.com/elastictranscoder)
+### Check which format was used
 
-### Verifique o formato usado
+Want to know which video format was actually chosen by the browser?
 
-Quer saber qual formato de vídeo foi escolhido pelo navegador?
+In JavaScript, use the video's `currentSrc` property to return the source used.
 
-Em JavaScript, use a propriedade `currentSrc` do vídeo para retornar a fonte usada.
+## Size videos correctly
 
-
-
-## Dimensione vídeos corretamente 
-
-Quando se trata de deixar os usuários felizes, o tamanho do arquivo é importante.
-
+When it comes to keeping your users happy, file size is important.
 
 ### TL;DR {: .hide-from-toc }
-- Não exiba vídeos com frames de tamanho maior ou qualidade superior do que a plataforma pode suportar.
-- Não crie vídeos maiores do que deveria.
-- Vídeos longos causam oscilações no download e na busca e alguns navegadores podem precisar aguardar até que o vídeo seja baixado para iniciar a reprodução.
 
+* Don't serve videos with a larger frame size or higher quality than the platform can handle.
+* Don't make your videos any longer than they need be.
+* Long videos can cause hiccups with download and seeking; some browsers may have to wait until the video downloads before beginning playback.
 
-### Verifique o tamanho do vídeo
+### Check video size
 
-O tamanho real do frame do vídeo, conforme for codificado, pode ser diferente das dimensões
-do elemento video (assim como uma imagem pode não ser exibida com suas dimensões
-reais).
+The actual video frame size, as encoded, might be different from the video element dimensions (just as an image might not be displayed using its actual dimensions).
 
-Para verificar o tamanho codificado de um vídeo, use as propriedades `videoWidth`
-e `videoHeight` do elemento video. `width` e `height` retornam as dimensões do
-elemento video, que pode ter sido dimensionado usando CSS ou os atributos width e
-height em linha.
+To check the encoded size of a video, use the video element `videoWidth` and `videoHeight` properties. `width` and `height` return the dimensions of the video element, which may have been sized using CSS or inline width and height attributes.
 
-### Garanta que os vídeos não ultrapassem os contêineres
+### Ensure videos don't overflow containers
 
-Quando elementos de vídeo são grandes demais para a janela de visualização, eles podem ultrapassar o
-contêiner, impossibilitando que os usuários vejam o conteúdo ou usem
-os controles.
+When video elements are too big for the viewport, they may overflow their container, making it impossible for the user to see the content or use the controls.
 
 <div class="attempt-left">
-  <figure>
-    <img alt="Captura de tela do Android Chrome, retrato: elemento video sem estilo ultrapassa a janela de visualização" src="images/Chrome-Android-portrait-video-unstyled.png">
-    <figcaption>
-      Captura de tela do Android Chrome, retrato: elemento video sem estilo ultrapassa a janela de visualização
-    </figcaption>
-  </figure>
+  <figure> <img alt="Android Chrome screenshot, portrait: unstyled video element overflows
+    viewport" src="images/Chrome-Android-portrait-video-unstyled.png" /> <figcaption> Android Chrome screenshot, portrait: unstyled video element overflows viewport </figcaption> </figure>
 </div>
+
 <div class="attempt-right">
-  <figure>
-    <img alt="Captura de tela do Android Chrome, paisagem: elemento video sem estilo ultrapassa a janela de visualização" src="images/Chrome-Android-landscape-video-unstyled.png">
-    <figcaption>
-      Captura de tela do Android Chrome, paisagem: elemento video sem estilo ultrapassa a janela de visualização
-    </figcaption>
-  </figure>
+  <figure> <img alt="Android Chrome screenshot, landscape: unstyled video element overflows
+    viewport" src="images/Chrome-Android-landscape-video-unstyled.png" /> <figcaption> Android Chrome screenshot, landscape: unstyled video element overflows viewport </figcaption> </figure>
 </div>
 
-<div style="clear:both;"></div>
+<div style="clear:both;">
+</div>
 
-Você pode controlar as dimensões do vídeo usando JavaScript ou CSS. Bibliotecas JavaScript
-e plug-ins como o [FitVids](http://fitvidsjs.com/) permitem manter
-um tamanho e uma taxa de proporção apropriados, mesmo para vídeos Flash do YouTube e
-de outras fontes.
+You can control video dimensions using JavaScript or CSS. JavaScript libraries and plugins such as [FitVids](http://fitvidsjs.com/) make it possible to maintain appropriate size and aspect ratio, even for Flash videos from YouTube and other sources.
 
-Use [consultas de mídia CSS](/web/fundamentals/design-and-ux/responsive/#css-media-queries) para especificar o tamanho de elementos dependendo das dimensões da janela de visualização; `max-width: 100%` é muito útil.
+Use [CSS media queries](/web/fundamentals/design-and-ux/responsive/#css-media-queries) to specify the size of elements depending on the viewport dimensions; `max-
+width: 100%` is your friend.
 
-Para conteúdo de mídia em iframes (como vídeos do YouTube), experimente uma abordagem
-responsiva (como a [proposta por John Surdakowski](http://avexdesigns.com/responsive-youtube-embed/)).
+For media content in iframes (such as YouTube videos), try a responsive approach (like the one [proposed by John Surdakowski](http://avexdesigns.com/responsive-youtube-embed/)).
 
-
-Warning: Não force dimensionamento de elementos que resulte em uma taxa de proporção diferente da do vídeo original. Elementos comprimidos ou esticados ficam feios.
+Caution: Don't force element sizing that results in an aspect ratio different from the original video. Squashed or stretched looks bad.
 
 **CSS:**
 
-<pre class="prettyprint">
-{% includecode content_path="web/fundamentals/media/_code/responsive_embed.html" region_tag="styling" adjust_indentation="auto" %}
+<pre class="prettyprint">{% includecode content_path="web/fundamentals/media/_code/responsive_embed.html" region_tag="styling" adjust_indentation="auto" %}
 </pre>
 
 **HTML:**
 
-<pre class="prettyprint">
-{% includecode content_path="web/fundamentals/media/_code/responsive_embed.html" region_tag="markup" adjust_indentation="auto" %}
+<pre class="prettyprint">{% includecode content_path="web/fundamentals/media/_code/responsive_embed.html" region_tag="markup" adjust_indentation="auto" %}
 </pre>
 
-[Experimente](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/media/responsive_embed.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/media/responsive_embed.html)
 
-Compare o [exemplo responsivo](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/media/responsive_embed.html){: target="_blank" .external }
-à [versão não responsiva](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/media/unyt.html){: target="_blank" .external }.
+Compare the [responsive sample](https://googlesamples.github.io/web-fundamentals/fundamentals/media/responsive_embed.html) to the [unresponsive version](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/responsive/unyt.html).
 
+## Customize the video player
 
-## Personalize o reprodutor de vídeos
+Different platforms display video differently. Mobile solutions need to consider device orientation. Use the Fullscreen API to control the fullscreen view of video content.
 
-Diferentes plataformas exibem vídeos de forma diferente. Soluções para dispositivos móveis precisam
-considerar a orientação do dispositivo. Use a Fullscreen API para controlar a visualização
-em tela cheia do conteúdo de vídeo.
+### How device orientation works across devices
 
+Device orientation isn't an issue for desktop monitors or laptops, but it's hugely important when considering web page design for mobile and tablets.
 
-### Como a orientação funciona em diferentes dispositivos
-
-A orientação do dispositivo não é um problema para monitores de desktop ou laptops, mas é
-extremamente importante ao considerar o design de uma página da Web para celulares e tablets.
-
-O Safari do iPhone troca entre as orientações de retrato e paisagem
-de forma adequada:
+Safari on iPhone does a good job of switching between portrait and landscape orientation:
 
 <div class="attempt-left">
-  <figure>
-    <img  alt="Captura de tela de um vídeo reproduzido no Safari do iPhone, retrato" src="images/iPhone-video-playing-portrait.png">
-    <figcaption>Captura de tela de um vídeo reproduzido no Safari do iPhone, retrato</figcaption>
-  </figure>
+  <figure> <img  alt="Screenshot of video playing in Safari on iPhone, portrait"
+    src="images/iPhone-video-playing-portrait.png" /> <figcaption>Screenshot of video playing in Safari on iPhone, portrait</figcaption> </figure>
 </div>
+
 <div class="attempt-right">
-  <figure>
-    <img alt="Captura de tela de um vídeo reproduzido no Safari do iPhone, paisagem" src="images/iPhone-video-playing-landscape.png">
-    <figcaption>Captura de tela de um vídeo reproduzido no Safari do iPhone, paisagem</figcaption>
-  </figure>
+  <figure> <img alt="Screenshot of video playing in Safari on iPhone, landscape"
+    src="images/iPhone-video-playing-landscape.png" /> <figcaption>Screenshot of video playing in Safari on iPhone, landscape</figcaption> </figure>
 </div>
 
-<div style="clear:both;"></div>
+<div style="clear:both;">
+</div>
 
-A orientação do dispositivo pode ser problemática em um iPad ou no Chrome do Android.
-Por exemplo, sem qualquer personalização, um vídeo reproduzido em um iPad na orientação
-paisagem tem a seguinte aparência:
+Device orientation on an iPad and Chrome on Android can be problematic. For example, without any customization a video playing on an iPad in landscape orientation looks like this:
 
-<img alt="Captura de tela de um vídeo reproduzido no Safari no iPad Retina, paisagem"
-src="images/iPad-Retina-landscape-video-playing.png">
+<img alt="Screenshot of video playing in Safari on iPad Retina, landscape"
+src="images/iPad-Retina-landscape-video-playing.png" />
 
-Definir `width: 100%` ou `max-width: 100%` para o vídeo com CSS pode solucionar
-muitos problemas de layout relacionados à orientação do dispositivo. Considere também
-alternativas para o modo de tela inteira.
+Setting the video `width: 100%` or `max-width: 100%` with CSS can resolve many device orientation layout problems. You may also want to consider fullscreen alternatives.
 
-## Exibição em linha ou em tela inteira
+## Inline or fullscreen display
 
-<img class="attempt-right" alt="Captura de tela de um elemento video no iPhone, retrato" src="images/iPhone-video-with-poster.png">
+<img class="attempt-right" alt="Screenshot of video element on iPhone, portrait"
+src="images/iPhone-video-with-poster.png" />
 
-Diferentes plataformas exibem vídeos de forma diferente. O Safari em um iPhone exibe um elemento
-video em linha em uma página da Web, mas reproduz o vídeo no modo de tela inteira:
+Different platforms display video differently. Safari on an iPhone displays a video element inline on a web page, but plays video back in fullscreen mode:
 
-<div style="clear:both;"></div>
+<div style="clear:both;">
+</div>
 
-<img class="attempt-right" alt="Captura de tela de um vídeo reproduzido no Chrome do Android, retrato" src="images/Chrome-Android-video-playing-portrait-3x5.png">
+<img class="attempt-right" alt="Screenshot of video playing in Chrome on Android,
+portrait" src="images/Chrome-Android-video-playing-portrait-3x5.png" />
 
-No Android, os usuários podem solicitar o modo de tela inteira clicando no
-ícone do recurso. No entanto, o padrão é reproduzir o vídeo em linha:
+On Android, users can request request fullscreen mode by clicking the fullscreen icon. But the default is to play video inline:
 
-<div style="clear:both;"></div>
+<div style="clear:both;">
+</div>
 
-<img class="attempt-right" alt="Captura de tela de um vídeo reproduzido no Safari no iPad Retina, paisagem" src="images/iPad-Retina-landscape-video-playing.png">
+<img class="attempt-right" alt="Screenshot of video playing in Safari on iPad
+Retina, landscape" src="images/iPad-Retina-landscape-video-playing.png" />
 
-O Safari do iPad reproduz vídeos em linha:
+Safari on an iPad plays video inline:
 
-<div style="clear:both;"></div>
+<div style="clear:both;">
+</div>
 
-### Controle do modo de tela inteira do conteúdo
+### Control fullscreening of content
 
-Para plataformas que não forçam a reprodução de vídeos em tela inteira, a Fullscreen API
-tem [amplo suporte](http://caniuse.com/#feat=fullscreen). Use essa API para controlar
-o modo de tela inteira do conteúdo ou da página.
+For platforms that do not force fullscreen video playback, the Fullscreen API is [widely supported](http://caniuse.com/#feat=fullscreen). Use this API to control fullscreening of content, or the page.
 
-Para colocar um elemento, como um vídeo, no modo de tela inteira:
+To full screen an element, like a video:
 
     elem.requestFullScreen();
     
 
-Para colocar todo o documento no modo de tela inteira:
+To full screen the entire document:
 
     document.body.requestFullScreen();
     
 
-Você também pode escutar mudanças no estado de tela inteira:
+You can also listen for fullscreen state changes:
 
     video.addEventListener("fullscreenchange", handler);
     
 
-Também é possível verificar se o elemento está no modo de tela inteira no momento:
+Or, check to see if the element is currently in fullscreen mode:
 
     console.log("In full screen mode: ", video.displayingFullscreen);
     
 
-Você também pode usar a pseudoclasse `:fullscreen` do CSS para alterar a maneira com a qual
-os elementos são exibidos no modo de tela inteira.
+You can also use the CSS `:fullscreen` pseudo-class to change the way elements are displayed in fullscreen mode.<video autoplay muted loop class="attempt-right"> <source src="https://storage.googleapis.com/webfundamentals-assets/videos/fullscreen.webm" type="video/webm"> <source src="https://storage.googleapis.com/webfundamentals-assets/videos/fullscreen.mp4" type="video/mp4"> 
 
-<video autoplay muted loop class="attempt-right">
-  <source src="https://storage.googleapis.com/webfundamentals-assets/videos/fullscreen.webm" type="video/webm">
-  <source src="https://storage.googleapis.com/webfundamentals-assets/videos/fullscreen.mp4" type="video/mp4">
-  <p>Este navegador não oferece suporte para o elemento video.</p>
-</video>
+This browser does not support the video element.</video> 
 
-Em dispositivos compatíveis com a Fullscreen API, considere usar imagens
-de miniatura como marcadores para vídeos:
+On devices that support the Fullscreen API, consider using thumbnail images as placeholders for video:
 
-Para ver esse recurso em ação, confira [esta demonstração](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/media/fullscreen.html){: target="_blank" .external }.
+To see this in action, check out the [demo](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/responsive/fullscreen.html).
 
-Dogfood: `requestFullScreen()` pode ter prefixo de fornecedor e pode exigir códigos adicionais para ser totalmente compatível entre navegadores.
+Dogfood: `requestFullScreen()` may be vendor prefixed and may require extra code for full cross browser compatibility.
 
-<div style="clear:both;"></div>
+<div style="clear:both;">
+</div>
 
+## Accessibility matters
 
+Accessibility isn't a feature. Users who can't hear or see won't be able to experience a video at all without captions or descriptions. The time it takes to add these to your video is much less than the bad experience you're delivering to users. Provide at least a base experience for all users.
 
+### Include captions to improve accessibility
 
-## A acessibilidade é importante
+<img class="attempt-right" alt="Screenshot showing captions displayed using the
+track element in Chrome on Android" src="images/Chrome-Android-track-landscape-5x3.jpg" />
 
-A acessibilidade não é um recurso. Usuários que não conseguem ouvir nem enxergar não terão a experiência do vídeo sem legendas ou descrições. O tempo necessário para adicionar esses elementos é muito menor do que a experiência ruim apresentada aos usuários. Forneça pelo menos uma experiência básica para todos os usuários.
+To make media more accessible on mobile, include captions or descriptions using the track element.
 
+<div style="clear:both;">
+</div>
 
-### Inclua legendas para melhorar a acessibilidade
+### Add track element
 
-<img class="attempt-right" alt="Captura de tela mostrando legendas exibidas usando o elemento track no Chrome no Android" src="images/Chrome-Android-track-landscape-5x3.jpg">
+It's very easy to add captions to your video&ndash;simply add a track element as a child of the video element:
 
-Para que mídias sejam mais acessíveis em dispositivos móveis, inclua legendas ou descrições
-usando o elemento track.
-
-<div style="clear:both;"></div>
-
-### Adicione o elemento track
-
-É muito fácil adicionar legendas ao seu vídeo &ndash; basta incluir um elemento
-track como filho do elemento video:
-
-<pre class="prettyprint">
-{% includecode content_path="web/fundamentals/media/_code/track.html" region_tag="track" adjust_indentation="auto" %}
+<pre class="prettyprint">{% includecode content_path="web/fundamentals/media/_code/track.html" region_tag="track" adjust_indentation="auto" %}
 </pre>
 
-[Experimente](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/media/track.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/media/track.html)
 
-O atributo `src` do elemento track fornece o local do arquivo da faixa.
+The track element `src` attribute gives the location of the track file.
 
-## Defina legendas no arquivo da faixa
+### Define captions in track file
 
-Um arquivo de faixa consiste em "deixas" cronometradas em formato WebVTT:
+A track file consists of timed "cues" in WebVTT format:
 
     WEBVTT
-
+    
     00:00.000 --> 00:04.000
     Man sitting on a tree branch, using a laptop.
-
+    
     00:05.000 --> 00:08.000
     The branch breaks, and he starts to fall.
-
+    
     ...
+    
 
-Dogfood: O elemento track é compatível com o Google Chrome para Android, o iOS Safari e todos os navegadores atuais para computador, exceto o Firefox (consulte [caniuse.com/track](http://caniuse.com/track)). Há também vários polyfills disponíveis. Recomendamos o [Captionator](http://captionatorjs.com/){: .external }
+## Quick Reference
 
+### Video element attributes
 
-
-
-## Referência rápida
-
-### Atributos do elemento video
-
-Para obter uma lista completa dos atributos do elemento video e suas definições, consulte 
-[as especificações do elemento video](//www.w3.org/TR/html5/embedded-content-0.html#the-video-element).
+For the complete list of video element attributes and their definitions, see [the video element spec](//www.w3.org/TR/html5/embedded-content-0.html#the-video-element).
 
 <table>
-  <thead>
-    <tr>
-      <th>Atributo</th>
-      <th>Disponibilidade</th>
-      <th>Descrição</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td data-th="Attribute"><code>src</code></td>
-      <td data-th="Availability">Todos os navegadores.</td>
-      <td data-th="Description">Endereço (URL) do vídeo.</td>
-    </tr>
-    <tr>
-      <td data-th="Attribute"><code>poster</code></td>
-      <td data-th="Availability">Todos os navegadores.</td>
-      <td data-th="Description">Endereço (URL) de um arquivo de imagem que o navegador pode mostrar assim que o elemento video for exibido sem baixar o conteúdo do vídeo.</td>
-    </tr>
-    <tr>
-      <td data-th="Attribute"><code>preload</code></td>
-      <td data-th="Availability">Todos os dispositivos móveis ignoram o pré-carregamento.</td>
-      <td data-th="Description">Indica ao navegador que pré-carregar metadados (ou parte do vídeo) antes da reprodução é útil. As opções são none, metadata ou auto (consulte a seção <a href="#preload">Pré-carregamento</a> para obter detalhes). </td>
-    </tr>
-    <tr>
-      <td data-th="Attribute"><code>autoplay</code></td>
-      <td data-th="Availability">Sem suporte no iPhone ou Android; com suporte em todos os navegadores de computador, no iPad, no Firefox e no Opera para Android.</td>
-      <td data-th="Description">Inicia o download e a reprodução assim que possível (consulte a seção <a href="#autoplay">Reprodução automática</a> para obter detalhes).</td>
-    </tr>
-    <tr>
-      <td data-th="Attribute"><code>loop</code></td>
-      <td data-th="Availability">Todos os navegadores.</td>
-      <td data-th="Description">Repete o vídeo.</td>
-    </tr>
-    <tr>
-      <td data-th="Attribute"><code>controls</code></td>
-      <td data-th="Availability">Todos os navegadores.</td>
-      <td data-th="Description">Mostra os controles padrão de vídeo (reproduzir, pausar etc.).</td>
-    </tr>
-  </tbody>
+  <tr>
+    <th>
+      Attribute
+    </th>
+    
+    <th>
+      Description
+    </th>
+  </tr>
+  
+  <tr>
+    <td data-th="Attribute">
+      <code>src</code>
+    </td>
+    
+    <td data-th="Description">
+      Address (URL) of the video.
+    </td>
+  </tr>
+  
+  <tr>
+    <td data-th="Attribute">
+      <code>poster</code>
+    </td>
+    
+    <td data-th="Description">
+      Address (URL) of an image file that the browser can show as soon as the video element is displayed without downloading video content.
+    </td>
+  </tr>
+  
+  <tr>
+    <td data-th="Attribute">
+      <code>preload</code>
+    </td>
+    
+    <td data-th="Description">
+      Hints to the browser that preloading metadata (or some video) in advance of playback is worthwhile. Options are none, metadata, or auto (see <a href="#preload">Preload</a> section for details).
+    </td>
+  </tr>
+  
+  <tr>
+    <td data-th="Attribute">
+      <code>autoplay</code>
+    </td>
+    
+    <td data-th="Description">
+      Start download and playback as soon as possible (see <a href="#autoplay">Autoplay</a> section for details).
+    </td>
+  </tr>
+  
+  <tr>
+    <td data-th="Attribute">
+      <code>loop</code>
+    </td>
+    
+    <td data-th="Description">
+      Loop the video.
+    </td>
+  </tr>
+  
+  <tr>
+    <td data-th="Attribute">
+      <code>controls</code>
+    </td>
+    
+    <td data-th="Description">
+      Show the default video controls (play, pause, etc.).
+    </td>
+  </tr>
 </table>
 
-### Reprodução automática {: #autoplay }
+### Autoplay {: #autoplay }
 
-Em computadores, `autoplay` instrui o navegador a baixar e reproduzir o vídeo imediatamente. No iOS e no Chrome para Android, o `autoplay` não funciona; os usuários devem tocar na tela para reproduzir o vídeo.
+On desktop, `autoplay` tells the browser to download and play the video immediately. On mobile, don't assume `autoplay` will always work. See the [WebKit blog](https://webkit.org/blog/6784/new-video-policies-for-ios/), for instance.
 
-Mesmo em plataformas nas quais a reprodução automática é possível, você deve considerar se
-é uma boa ideia ativar esse recurso:
+Even on platforms where autoplay is possible, you need to consider whether it's a good idea to enable it:
 
-* O uso de dados pode ser caro.
-* Fazer com que mídias sejam baixadas e reproduzidas sem pedir permissão do usuário pode
-  monopolizar a largura de banda e a CPU de forma inesperada e atrasar a renderização da página.
-* Os usuários podem estar em um contexto no qual a reprodução de vídeo ou áudio seja intrusiva.
+* Data usage can be expensive.
+* Causing media to download and playback to begin without asking first, can unexpectedly hog bandwidth and CPU, and thereby delay page rendering.
+* Users may be in a context where playing video or audio is intrusive.
 
-O comportamento de reprodução automática pode ser configurado no Android WebView pela
-[WebSettings API](//developer.android.com/reference/android/webkit/WebSettings.html#setMediaPlaybackRequiresUserGesture(boolean)).
-O valor padrão é true, mas um aplicativo WebView pode optar por desativar o recurso.
+Autoplay behavior is configurable in the Android WebView via the [WebSettings API](//developer.android.com/reference/android/webkit/WebSettings.html#setMediaPlaybackRequiresUserGesture(boolean)). It defaults to true but a WebView app can choose to disable it.
 
-### Pré-carregamento {: #preload }
+### Preload {: #preload }
 
-O atributo `preload` indica ao navegador a quantidade de
-informações ou conteúdo deve ser pré-carregada.
+The `preload` attribute provides a hint to the browser as to how much information or content to preload.
 
 <table class="responsive">
-  <thead>
-    <tr>
-      <th colspan="2">Valor &amp; descrição</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td data-th="Value"><code>none</code></td>
-      <td data-th="Description">O usuário pode não assistir ao vídeo &ndash; não pré-carregar conteúdo.</td>
-    </tr>
-    <tr>
-      <td data-th="Value"><code>metadata</code></td>
-      <td data-th="Description">Metadados (duração, dimensões, faixas de texto) devem ser pré-carregados, mas com quantidade mínima de vídeo.</td>
-    </tr>
-    <tr>
-      <td data-th="Value"><code>auto</code></td>
-      <td data-th="Description">Baixar o vídeo completo imediatamente é desejável.</td>
-    </tr>
-  </tbody>
+  <tr>
+    <th colspan="2">
+      Value & Description
+    </th>
+  </tr>
+  
+  <tr>
+    <td data-th="Value">
+      <code>none</code>
+    </td>
+    
+    <td data-th="Description">
+      The user may not even watch the video&ndash;don't preload anything.
+    </td>
+  </tr>
+  
+  <tr>
+    <td data-th="Value">
+      <code>metadata</code>
+    </td>
+    
+    <td data-th="Description">
+      Metadata (duration, dimensions, text tracks) should be preloaded, but with minimal video.
+    </td>
+  </tr>
+  
+  <tr>
+    <td data-th="Value">
+      <code>auto</code>
+    </td>
+    
+    <td data-th="Description">
+      Downloading the entire video right away is considered desirable.
+    </td>
+  </tr>
 </table>
 
-O atributo `preload` tem diferentes efeitos em diferentes plataformas.
-Por exemplo, o Chrome tem um buffer de 25 segundos de vídeo em computadores, mas nenhum no iOS ou no
-Android. Isso significa que, em dispositivos móveis, pode haver atrasos no início da reprodução
-que não estão presentes em computadores. 
-Consulte [a página de teste de Steve Souders](//stevesouders.com/tests/mediaevents.php)
-para obter os detalhes completos.
+The `preload` attribute has different effects on different platforms. For example, Chrome buffers 25 seconds of video on desktop but none on iOS or Android. This means that on mobile, there may be playback startup delays that don't happen on desktop. See [Steve Souders' blog](https://www.stevesouders.com/blog/2013/04/12/html5-video-preload/) for full details.
 
 ### JavaScript
 
-[Este artigo do HTML5 Rocks sobre vídeos](//www.html5rocks.com/en/tutorials/video/basics/#toc-javascript)
-resume muito bem as propriedades, os métodos e os eventos JavaScript
-que podem ser usados para controlar a reprodução de vídeos. Nós incluímos esse conteúdo aqui,
-atualizando-o com preocupações específicas a dispositivos móveis quando relevante.
+[The HTML5 Rocks Video article](//www.html5rocks.com/en/tutorials/video/basics/#toc-javascript) does a great job of summarizing the JavaScript properties, methods, and events that can be used to control video playback.
 
-#### Propriedades
+#### Properties
 
 <table class="responsive">
-  <thead>
-    <tr>
-    <th colspan="2">Propriedade &amp; descrição</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td data-th="Property"><code>currentTime</code></td>
-      <td data-th="Description">Obtém ou define a posição da reprodução em segundos.</td>
-    </tr>
-    <tr>
-      <td data-th="Property"><code>volume</code></td>
-      <td data-th="Description">Obtém ou define o nível de volume do vídeo.</td>
-    </tr>
-    <tr>
-      <td data-th="Property"><code>muted</code></td>
-      <td data-th="Description">Obtém ou define a desativação do áudio.</td>
-    </tr>
-    <tr>
-      <td data-th="Property"><code>playbackRate</code></td>
-      <td data-th="Description">Obtém ou define a taxa de reprodução; 1 é a velocidade de reprodução normal.</td>
-    </tr>
-    <tr>
-      <td data-th="Property"><code>buffered</code></td>
-      <td data-th="Description">Informações sobre a quantidade do vídeo está em buffer e pronta para ser reproduzida.</td>
-    </tr>
-    <tr>
-      <td data-th="Property"><code>currentSrc</code></td>
-      <td data-th="Description">O endereço do vídeo sendo reproduzido.</td>
-    </tr>
-    <tr>
-      <td data-th="Property"><code>videoWidth</code></td>
-      <td data-th="Description">A largura do vídeo em pixels (que pode ser diferente da largura do elemento video).</td>
-    </tr>
-    <tr>
-      <td data-th="Property"><code>videoHeight</code></td>
-      <td data-th="Description">A altura do vídeo em pixels (que pode ser diferente da altura do elemento video).</td>
-    </tr>
-  </tbody>
-</table>
-
-`playbackRate` ([veja a demonstração](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/media/scripted.html){: target="_blank" .external }) ou `volume` não são suportados em dispositivos móveis.
-
-#### Métodos
-
-<table class="responsive">
-  <thead>
-    <tr>
-    <th colspan="2">Método &amp; descrição</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td data-th="Method"><code>load()</code></td>
-      <td data-th="Description">Carrega ou recarrega uma origem de vídeo sem iniciar a reprodução: por exemplo, quando o src do vídeo é alterado usando JavaScript.</td>
-    </tr>
-    <tr>
-      <td data-th="Method"><code>play()</code></td>
-      <td data-th="Description">Reproduz o vídeo do local atual.</td>
-    </tr>
-    <tr>
-      <td data-th="Method"><code>pause()</code></td>
-      <td data-th="Description">Pausa o vídeo no local atual.</td>
-    </tr>
-    <tr>
-      <td data-th="Method"><code>canPlayType('format')</code></td>
-      <td data-th="Description">Descobre quais formatos são compatíveis (consulte <a href="#check-formats">Verificar quais formatos são compatíveis</a>).</td>
-    </tr>
-  </tbody>
-</table>
-
-Em dispositivos móveis (exceto no Opera do Android), `play()` e `pause()` não funcionam
-a não ser que sejam chamados em resposta a uma ação do usuário, como o clique em um botão: confira 
-a [demonstração](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/media/scripted.html){: target="_blank" .external }.
-(Da mesma forma, não é possível iniciar a reprodução de conteúdo como vídeos
-incorporados do YouTube.)
-
-#### Eventos
-
-Esses são apenas um subconjunto dos eventos de mídia que podem ser acionados. Consulte a
-página [Eventos de mídia](//developer.mozilla.org/docs/Web/Guide/Events/Media_events)
-na Mozilla Developer Network para obter uma lista completa.
-
-<table class="responsive">
-  <thead>
   <tr>
-    <th colspan="2">Evento &amp; descrição</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td data-th="Event"><code>canplaythrough</code></td>
-      <td data-th="Description">Acionado quando dados suficientes estão disponíveis de forma que o navegador acredite que possa reproduzir o vídeo por completo sem interrupções.</td>
-    </tr>
-    <tr>
-      <td data-th="Event"><code>ended</code></td>
-      <td data-th="Description">Acionado quando o vídeo termina de ser reproduzido.</td>
-    </tr>
-    <tr>
-      <td data-th="Event"><code>error</code></td>
-      <td data-th="Description">Acionado se um erro ocorre.</td>
-    </tr>
-    <tr>
-      <td data-th="Event"><code>playing</code></td>
-      <td data-th="Description">Acionado quando um vídeo começa a ser reproduzido pela primeira vez após ser pausado ou reiniciado.</td>
-    </tr>
-    <tr>
-      <td data-th="Event"><code>progress</code></td>
-      <td data-th="Description">Acionado periodicamente para indicar o progresso do download.</td>
-    </tr>
-    <tr>
-      <td data-th="Event"><code>waiting</code></td>
-      <td data-th="Description">Acionado quando uma ação é atrasada aguardando a conclusão de outra ação.</td>
-    </tr>
-    <tr>
-      <td data-th="Event"><code>loadedmetadata</code></td>
-      <td data-th="Description">Acionado quando o navegador termina de carregar os metadados do vídeo: duração, dimensões e faixas de texto.</td>
-    </tr>
-  </tbody>
+    <th colspan="2">
+      Property & Description
+    </th>
+  </tr>
+  
+  <tr>
+    <td data-th="Property">
+      <code>currentTime</code>
+    </td>
+    
+    <td data-th="Description">
+      Get or set playback position in seconds.
+    </td>
+  </tr>
+  
+  <tr>
+    <td data-th="Property">
+      <code>volume</code>
+    </td>
+    
+    <td data-th="Description">
+      Get or set current volume level for the video.
+    </td>
+  </tr>
+  
+  <tr>
+    <td data-th="Property">
+      <code>muted</code>
+    </td>
+    
+    <td data-th="Description">
+      Get or set audio muting.
+    </td>
+  </tr>
+  
+  <tr>
+    <td data-th="Property">
+      <code>playbackRate</code>
+    </td>
+    
+    <td data-th="Description">
+      Get or set playback rate; 1 is normal speed forward.
+    </td>
+  </tr>
+  
+  <tr>
+    <td data-th="Property">
+      <code>buffered</code>
+    </td>
+    
+    <td data-th="Description">
+      Information about how much of the video has been buffered and is ready to play.
+    </td>
+  </tr>
+  
+  <tr>
+    <td data-th="Property">
+      <code>currentSrc</code>
+    </td>
+    
+    <td data-th="Description">
+      The address of the video being played.
+    </td>
+  </tr>
+  
+  <tr>
+    <td data-th="Property">
+      <code>videoWidth</code>
+    </td>
+    
+    <td data-th="Description">
+      Width of the video in pixels (which may be different from the video element width).
+    </td>
+  </tr>
+  
+  <tr>
+    <td data-th="Property">
+      <code>videoHeight</code>
+    </td>
+    
+    <td data-th="Description">
+      Height of the video in pixels (which may be different from the video element height).
+    </td>
+  </tr>
 </table>
 
+#### Methods
 
+<table class="responsive">
+  <tr>
+    <th colspan="2">
+      Method & Description
+    </th>
+  </tr>
+  
+  <tr>
+    <td data-th="Method">
+      <code>load()</code>
+    </td>
+    
+    <td data-th="Description">
+      Load or reload a video source without initiating playback: for example, when the video src is changed using JavaScript.
+    </td>
+  </tr>
+  
+  <tr>
+    <td data-th="Method">
+      <code>play()</code>
+    </td>
+    
+    <td data-th="Description">
+      Play the video from its current location.
+    </td>
+  </tr>
+  
+  <tr>
+    <td data-th="Method">
+      <code>pause()</code>
+    </td>
+    
+    <td data-th="Description">
+      Pause the video at its current location.
+    </td>
+  </tr>
+  
+  <tr>
+    <td data-th="Method">
+      <code>canPlayType('format')</code>
+    </td>
+    
+    <td data-th="Description">
+      Find out which formats are supported (see <a href="#check-formats"> Check which formats are supported</a>).
+    </td>
+  </tr>
+</table>
 
+On mobile `play()` and `pause()` don't work unless called in response to user action such as clicking a button: see the [demo](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/responsive/scripted.html). (Likewise, you can't initiate playback for content such as embedded YouTube videos.)
 
-{# wf_devsite_translation #}
+#### Events
+
+These are only a subset of the media events that may be fired. Refer to the [Media events](//developer.mozilla.org/docs/Web/Guide/Events/Media_events) page on the Mozilla Developer Network for a complete listing.
+
+<table class="responsive">
+  <tr>
+    <th colspan="2">
+      Event & Description
+    </th>
+  </tr>
+  
+  <tr>
+    <td data-th="Event">
+      <code>canplaythrough</code>
+    </td>
+    
+    <td data-th="Description">
+      Fired when enough data is available that the browser believes it can play the video completely without interruption.
+    </td>
+  </tr>
+  
+  <tr>
+    <td data-th="Event">
+      <code>ended</code>
+    </td>
+    
+    <td data-th="Description">
+      Fired when video has finished playing.
+    </td>
+  </tr>
+  
+  <tr>
+    <td data-th="Event">
+      <code>error</code>
+    </td>
+    
+    <td data-th="Description">
+      Fired if an error occurs (see <a href="https://googlechrome.github.io/samples/media/error-message.html">demo</a>).
+    </td>
+  </tr>
+  
+  <tr>
+    <td data-th="Event">
+      <code>playing</code>
+    </td>
+    
+    <td data-th="Description">
+      Fired when video starts playing for the first time, after being paused, or when restarting.
+    </td>
+  </tr>
+  
+  <tr>
+    <td data-th="Event">
+      <code>progress</code>
+    </td>
+    
+    <td data-th="Description">
+      Fired periodically to indicate download progress.
+    </td>
+  </tr>
+  
+  <tr>
+    <td data-th="Event">
+      <code>waiting</code>
+    </td>
+    
+    <td data-th="Description">
+      Fired when an action is delayed pending completion of another action.
+    </td>
+  </tr>
+  
+  <tr>
+    <td data-th="Event">
+      <code>loadedmetadata</code>
+    </td>
+    
+    <td data-th="Description">
+      Fired when browser finishes loading metadata for video: duration, dimensions, and text tracks.
+    </td>
+  </tr>
+</table>
+
+## Feedback {: #feedback }
+
+{% include "web/_shared/helpful.html" %}
