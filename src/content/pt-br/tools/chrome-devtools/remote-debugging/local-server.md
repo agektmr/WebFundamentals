@@ -1,129 +1,75 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Hospede um site em um servidor Web da máquina de desenvolvimento e acesse o conteúdo com um dispositivo Android.
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Host a site on a development machine web server, and then access the content from an Android device.
 
-{# wf_updated_on: 2016-04-07 #}
-{# wf_published_on: 2015-04-13 #}
+{# wf_updated_on: 2018-07-27 #} {# wf_published_on: 2015-04-13 #} {# wf_blink_components: Platform>DevTools #}
 
-# Acessar servidores locais {: .page-title }
+# Access Local Servers {: .page-title }
 
-{% include "web/_shared/contributors/kaycebasques.html" %}
-{% include "web/_shared/contributors/megginkearney.html" %}
+{% include "web/_shared/contributors/kaycebasques.html" %} {% include "web/_shared/contributors/megginkearney.html" %}
 
-Hospede um site em um servidor Web da máquina de desenvolvimento e 
-acesse o conteúdo com um dispositivo Android.
+Host a site on a development machine web server, then access the content from an Android device.
 
-Com um cabo USB e o Chrome DevTools, você pode executar um site em uma máquina de
-desenvolvimento e visualizá-lo em um dispositivo Android. 
-
+With a USB cable and Chrome DevTools, you can run a site from a development machine and then view the site on an Android device.
 
 ### TL;DR {: .hide-from-toc }
-- O encaminhamento de portas permite visualizar conteúdo do servidor Web da sua máquina de desenvolvimento no seu dispositivo Android.
-- Se o servidor Web estiver usando um domínio personalizado, é possível configurar o dispositivo Android para acessar o conteúdo nesse domínio com o mapeamento de domínio personalizado.
 
+- Port forwarding enables you to view content from your development machine's web server on your Android device.
+- If your web server is using a custom domain, you can set up your Android device to access the content at that domain with custom domain mapping.
 
-## Configurar o encaminhamento de portas {:#port-forwarding}
+## Set up port forwarding {:#port-forwarding}
 
-O encaminhamento de portas permite que seu dispositivo Android acesse o conteúdo
-hospedado no servidor Web da máquina de desenvolvimento. O encaminhamento de portas funciona
-com a criação de uma porta TCP de escuta no dispositivo Android, que mapeia uma porta TCP
-na máquina de desenvolvimento. O tráfego entre as portas ocorre por conexão
-USB entre o dispositivo Android e a máquina de desenvolvimento, assim,
-a conexão não depende da configuração de rede.
+Port forwarding enables your Android device to access content that's being hosted on your development machine's web server. Port forwarding works by creating a listening TCP port on your Android device that maps to a TCP port on your development machine. Traffic between the ports travel through the USB connection between your Android device and development machine, so the connection doesn't depend on your network configuration.
 
-Para ativar o encaminhamento de portas:
+To enable port forwarding:
 
-1. Configure a [depuração remota](.) entre a máquina de desenvolvimento
-   e o dispositivo Android. Quando terminar, você verá o dispositivo
-   Android no menu à esquerda da caixa de diálogo **Inspect Devices**, além de 
-   um indicador de status **Connected**.
-1. Na caixa de diálogo **Inspect Devices** do DevTools, ative **Port forwarding**.
-1. Clique em **Add rule**.
+1. Set up [remote debugging](.) between your development machine and your Android device. When you're finished, you should see your Android device in the left-hand menu of the **Inspect Devices** dialog and a **Connected** status indicator. 
+2. In the **Inspect Devices** dialog in DevTools, enable **Port forwarding**.
+3. Click **Add rule**. ![adding a port forwarding rule](imgs/add-rule.png)
+4. In the **Device port** textfield on the left, enter the `localhost` port number from which you want to be able to access the site on your Android device. For example, if you wanted to access the site from `localhost:5000` you would enter `5000`.
+5. In the **Local address** textfield on the right, enter the IP address or hostname on which your site is running on your development machine's web server, followed by the port number. For example, if your site is running on `localhost:7331` you would enter `localhost:7331`. 
+6. Click **Add**.
 
-   ![adicionar uma regra ao encaminhamento de portas](imgs/add-rule.png)
-1. No campo de texto **Device port** à esquerda, insira o número da porta `localhost` 
-   pela qual você quer poder acessar o site no dispositivo 
-   Android. Por exemplo, se quiser acessar o site por `localhost:5000`, 
-  você digitaria `5000`.
-1. No campo de texto **Local address** à direita, digite o endereço IP ou 
-   nome do host em que o site está sendo executado no servidor da web da máquina
-de desenvolvimento, seguido do número da porta. Por exemplo, se seu site estiver em execução 
-   em `localhost:7331`, você digitaria `localhost:7331`. 
-1. Clique em **Add**.
+Port forwarding is now set up. You can see a status indicator of the port forward on the device's tab within the **Inspect Devices** dialog.
 
-Agora o encaminhamento de portas está configurado. Você pode ver um indicador de status do encaminhamento
-de portas na guia do dispositivo dentro da caixa de diálogo **Inspect Devices**.
+![port forwarding status](imgs/port-forwarding-status.png)
 
-![status de encaminhamento de portas](imgs/port-forwarding-status.png)
+To view the content, open up Chrome on your Android device and go to the `localhost` port that you specified in the **Device port** field. For example, if you entered `5000` in the field, then you would go to `localhost:5000`.
 
-Para visualizar o conteúdo, abra o Chrome no dispositivo Android e acesse 
-a porta `localhost` especificada no campo **Device port**. Por 
-exemplo, se digitou `5000` no campo, você deve ir para 
-`localhost:5000`. 
+## Map to custom local domains {:#custom-domains}
 
-## Mapear domínios locais personalizados {:#custom-domains}
+Custom domain mapping enables you to view content on an Android device from a web server on your development machine that is using a custom domain.
 
-O mapeamento de domínios personalizados permite que você visualize conteúdo em um dispositivo Android
-de um servidor Web na sua máquina de desenvolvimento que está usando um domínio personalizado.
+For example, suppose that your site uses a third-party JavaScript library that only works on the whitelisted domain `chrome.devtools`. So, you create an entry in your `hosts` file on your development machine to map this domain to `localhost` (i.e. `127.0.0.1 chrome.devtools`). After setting up custom domain mapping and port forwarding, you'll be able to view the site on your Android device at the URL `chrome.devtools`.
 
-Por exemplo, suponha que seu site use uma biblioteca JavaScript de terceiros
-que funcione apenas no domínio `chrome.devtools` colocado na lista de permissões. Assim, você cria
-uma entrada no arquivo `hosts` da máquina de desenvolvimento para mapear este domínio 
-para `localhost` (ou seja, `127.0.0.1 chrome.devtools`). Depois de configurar o mapeamento do domínio
-personalizado e o encaminhamento de portas, você poderá visualizar o site no
-dispositivo Android no URL `chrome.devtools`. 
+### Set up port forwarding to proxy server
 
-### Configurar o encaminhamento de portas para o servidor proxy
+To map a custom domain you must run a proxy server on your development machine. Examples of proxy servers are [Charles](http://www.charlesproxy.com/), [Squid](http://www.squid-cache.org/), and [Fiddler](http://www.telerik.com/fiddler).
 
-Para mapear um domínio personalizado, você deve executar um servidor proxy na máquina de 
-desenvolvimento. Exemplos de servidores proxy: [Charles][charles], [Squid][squid] 
-e [Fiddler][fiddler].
+To set up port forwarding to a proxy:
 
-Para configurar o encaminhamento de portas para um proxy:
+1. Run the proxy server and note the port that it's using. **Note**: The proxy server and your web server must run on different ports. 
+2. Set up [port forwarding](#port-forwarding) to your Android device. For the **local address** field, enter `localhost:` followed by the port that your proxy server is running on. For example, if it's running on port `8000`, then you would enter `localhost:8000`. In the **device port** field enter the number that you want your Android device to listen on, such as `3333`.
 
-1. Execute o servidor proxy e anote a porta que ele usar. **Observação**: o 
-   servidor proxy e o seu servidor Web devem ser executados em portas diferentes.
-1. Configure o [encaminhamento de portas](#port-forwarding) no seu dispositivo Android. Para o
-   campo **local address**, insira `localhost:` seguido da porta em que
-   o servidor proxy está em execução. Por exemplo, se estiver em execução na porta `8000`,
-   você deve digitar `localhost:8000`. No campo **device port**, insira 
-   o número no que deseja que seu dispositivo detecte, como `3333`.
+### Configure proxy settings on your device
 
-[charles]: http://www.charlesproxy.com/
-[squid]: http://www.squid-cache.org/
-[fiddler]: http://www.telerik.com/fiddler
+Next, you need to configure your Android device to communicate with the proxy server.
 
-### Definir configurações de proxy no seu dispositivo
+1. On your Android device go to **Settings** > **Wi-Fi**.
+2. Long-press the name of the network that you are currently connected to. **Note**: Proxy settings apply per network.
+3. Tap **Modify network**.
+4. Tap **Advanced options**. The proxy settings display. 
+5. Tap the **Proxy** menu and select **Manual**.
+6. For the **Proxy hostname** field, enter `localhost`.
+7. For the **Proxy port** field, enter the port number that you entered for **device port** in the previous section. 
+8. Tap **Save**.
 
-Em seguida, você precisa configurar seu dispositivo Android para se comunicar com o 
-servidor proxy. 
+With these settings, your device forwards all of its requests to the proxy on your development machine. The proxy makes requests on behalf of your device, so requests to your customized local domain are properly resolved.
 
-1. No dispositivo Android, acesse **Settings** > **Wi-Fi**.
-1. Mantenha pressionado o nome da rede em que você está conectado.
-   **Observação**: As configurações de proxy se aplicam por rede.
-3. Toque em **Modify network**.
-4. Toque em **Advanced options**. As configurações de proxy serão exibidas. 
-5. Toque no menu **Proxy** e selecione **Manual**.
-6. No campo **Proxy hostname**, insira `localhost`.
-7. No campo **Proxy port**, digite o número da porta que digitou em
-   **device port** na seção anterior.
-8. Toque em **Save**.
+Now you can access custom domains on your Android device Android just as you would on the development machine.
 
-Com essas configurações, seu dispositivo encaminhará todas as solicitações ao proxy da 
-sua máquina de desenvolvimento. O proxy faz solicitações em nome do dispositivo, 
-assim, solicitações do seu domínio local personalizado são resolvidas corretamente.
+If your web server is running off of a non-standard port, remember to specify the port when requesting the content from your Android device. For example, if your web server is using the custom domain `chrome.devtools` on port `7331`, when you view the site from your Android device you should be using the URL `chrome.devtools:7331`.
 
-Agora você pode acessar domínios personalizados no dispositivo Android da mesma forma que 
-na máquina de desenvolvimento. 
+**Tip**: To resume normal browsing, remember to revert the proxy settings on your Android device after you disconnect from the development machine.
 
-Se o servidor web estiver não estiver em execução em uma porta não padrão,
-lembre-se de especificar a porta ao solicitar o conteúdo pelo dispositivo
-Android. Por exemplo, se o servidor da web estiver usando o domínio personalizado 
-`chrome.devtools` na porta `7331`, quando você visualizar o site pelo dispositivo
-Android, deverá usar o URL `chrome.devtools:7331`. 
+## Feedback {: #feedback }
 
-**Dica**: Para retomar a navegação normal, lembre-se de reverter as configurações de proxy no 
-dispositivo Android depois de desconectar da máquina de desenvolvimento.
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
