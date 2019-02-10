@@ -1,32 +1,29 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Уход от симметрии создает контраст и делает проекты более привлекательными. Узнайте, когда и как применять асимметрию в своих проектах
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Breaking symmetry provides contrast and appeal to your projects. Learn when and how to apply this to your projects.
 
+{# wf_blink_components: Blink>Animation #} {# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2014-08-08 #}
 
-{# wf_updated_on: 2014-10-20 #}
-{# wf_published_on: 2014-08-08 #}
-
-# Асимметричное время анимации {: .page-title }
+# Asymmetric animation timing {: .page-title }
 
 {% include "web/_shared/contributors/paullewis.html" %}
 
-
-Асимметрия в продолжительности анимации улучшает восприятие пользователей, делая ваши приложения более индивидуальными. При этом они быстрее реагируют на действия пользователей. Она также делает ощущение более контрастным, из-за чего интерфейс становится визуально более привлекательным
+Asymmetric animation timing improves the user experience by allowing you to express personality while at the same time respond quickly to user interactions. It also provides contrast to the feel, which makes the interface more visually appealing.
 
 ### TL;DR {: .hide-from-toc }
-- Чтобы придать своей работе индивидуальности и выделить ее, используйте анимацию, асимметричную по времени.
-- Всегда отдавайте приоритет действиям пользователей. Реагируя на нажатия, используйте более короткую продолжительность, а более длительные варианты оставьте для других случаев.
 
+* Use asymmetric animation timing to add personality and contrast to your work.
+* Always favor the user's interaction; use shorter durations when responding to taps or clicks, and reserve longer durations for times when you aren't.
 
-Как и в отношении большинства "правил" анимации, следует попробовать разные варианты, чтобы понять, что подходит для конкретного приложения. Но когда дело доходит до восприятия пользователями, следует помнить – пользователи очень нетерпеливы. Железное правило заключается в том, что нужно **всегда быстро реагировать на действия пользователей**. С учетом этого, нужно сказать, что по большей части действия пользователей являются асимметричными, поэтому такой же может быть и анимация.
+Like most "rules" of animation, you should experiment to find out what works for your application, but when it comes to the user experience, users are notoriously impatient. The rule of thumb is to **always respond to a user interaction quickly**. That said, most of the time the user's action is asymmetric, and therefore the animation can be, too.
 
-Например, когда пользователь выводит на экран боковую панель навигации, ее следует открыть как можно быстрее (продолжительность должна составлять примерно 100 мс). Когда же пользователь закрывает меню, уводить это представление с экрана можно немного медленнее, скажем, приблизительно за 300 мс.
+For example, when a user taps to display a sidebar navigation, you should display it as quickly as possible, with a duration of around 100ms. When the user dismisses the menu, however, you can afford to animate the view out a little more slowly, say, around the 300ms mark.
 
-В отличие от этой ситуации, когда на экран выводится модальное представление, обычно это делается для отображения сообщения об ошибке или другой важной информации. В подобных случаях представление рекомендуется открывать немного медленнее, опять же в течение примерно 300 мс, а вот его закрытие, которое вызывается пользователем, должно происходить очень быстро.
+By contrast, when you bring on a modal view, this is normally to display an error or some other critical message. In such cases, you will want to bring on the view a little more slowly, again around the 300ms mark, but dismissal, which the user triggers, should happen very quickly.
 
-Отсюда следует общее железное правило:
+The general rule of thumb, then, is the following:
 
-* Анимация пользовательского интерфейса, связанная с такими действиями пользователей, как переключение представлений или отображение элемента, должна быть быстрой при выводе на экран (короткая продолжительность) и медленной при уводе с экрана (более длительная продолжительность).
-* Анимация пользовательского интерфейса, связанная кодом приложения, например, вывод на экран сообщения об ошибках или модальных представлений, должна быть медленной при выводе на экран (более длительная продолжительность), но быстрой при уводе с экрана (короткая продолжительность).
+* For UI animations triggered by a user’s interaction, such as view transitions or showing an element, have a fast intro (short duration), but a slow outro (longer duration).
+* For UI animations triggered by your code, such as errors or modal views, have a slower intro (longer duration), but a fast outro (short duration).
 
+## Feedback {: #feedback }
 
+{% include "web/_shared/helpful.html" %}
