@@ -1,638 +1,464 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Mide el rendimiento de la red de tu app web mediante el panel de red de Chrome DevTools.
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Measure the network performance of your web application using the Chrome DevTools Network panel.
 
-{# wf_updated_on: 2019-02-06 #}
-{# wf_published_on: 2015-04-13 #}
-{# wf_blink_components: Platform>DevTools #}
+{# wf_updated_on: 2018-07-27 #} {# wf_published_on: 2015-04-13 #} {# wf_blink_components: Platform>DevTools #}
 
-# Cómo medir los tiempos de carga de los recursos {: .page-title }
+# Measure Resource Loading Times {: .page-title }
 
-{% include "web/_shared/contributors/kaycebasques.html" %}
-{% include "web/_shared/contributors/megginkearney.html" %}
+{% include "web/_shared/contributors/kaycebasques.html" %} {% include "web/_shared/contributors/megginkearney.html" %}
 
+Warning: This page is deprecated. At the top of each section, there's a link to an up-to-date page where you can find similar information.
 
-Warning: Esta página es obsoleta. En la parte superior de la sección, hay un
-vínculo a una página actualizada donde puedes encontrar información similar.
+Measure the network performance of your site using the
+<strong>Network</strong> panel.
 
-Mide el rendimiento de red de tu sitio con el panel de
-<strong>Network</strong>.
-
-
-El panel de **Network** registra información sobre cada operación de red en
-una página, incluidos detalles de sincronización, encabezados de solicitud y respuesta
-HTML, cookies y mucho más.
-
+The **Network** panel records information about each network operation on a page, including detailed timing data, HTTP request and response headers, cookies, and more.
 
 ### TL;DR {: .hide-from-toc }
-- Usa el panel de Network para registrar y analizar la actividad de la red.
-- Visualiza información de carga de manera global o por recursos individuales.
-- Filtra y ordena la manera en que se muestran los recursos.
-- Guarda, copia y borra grabaciones de red.
-- Personaliza el panel de Network según tus necesidades.
 
-## Descripción general del panel de Network
+* Use the Network panel to record and analyze network activity.
+* View load information in aggregate or for individual resources.
+* Filter and sort how resources are displayed.
+* Save, copy, and clear network recordings.
+* Customize the Network panel to your needs.
+
+## Network panel overview
 
 <aside class="warning">
-  <b>Warning:</b> Esta página es obsoleta. Consulta las siguientes secciones para obtener información
-  actualizada:
+  <b>Warning:</b> This page is deprecated. See following sections for up-to-date
+  information:
   <ul>
-    <li><a href="reference#controls">Controles del panel</a></li>
-    <li><a href="reference#filters">Filtros del panel</a></li>
-    <li><a href="reference#overview">Descripción general del panel</a></li>
-    <li><a href="reference#requests">Solicitudes del panel</a></li>
-    <li><a href="reference#summary">Resumen del panel</a></li>
+    <li><a href="reference#controls">Controls pane</a></li>
+    <li><a href="reference#filters">Filters pane</a></li>
+    <li><a href="reference#overview">Overview pane</a></li>
+    <li><a href="reference#requests">Requests pane</a></li>
+    <li><a href="reference#summary">Summary pane</a></li>
   </ul>
 </aside>
 
-El panel de Network incluye cinco subpaneles:
+The Network panel consists of five panes:
 
-1. **Controls**: Usa estas opciones para controlar la visualización y el funcionamiento
-   del panel de **Network**.
-2. **Filters**: Usa estas opciones para controlar los recursos que se muestran en
-   **Requests Table**. Sugerencia: Mantén presionado <kbd>Cmd</kbd> (Mac) o <kbd>Ctrl</kbd>
-   (Windows/Linux) y, luego, haz clic en un filtro para seleccionar varios
-   al mismo tiempo.
-3. **Overview**: En este gráfico, se muestra una línea de tiempo del momento en que se mostraron los recursos.
-   Si ves varias barras apiladas verticalmente, significa que esos recursos
-   se recuperaron de forma simultánea.
-4. **Requests Table**. En esta tabla, se enumeran todos los recursos recuperados.
-   De manera predeterminada, la tabla está organizada cronológicamente, y los recursos más
-   recientes aparecen en la parte superior.
-   Si haces clic en el nombre de un recurso, se muestra más información sobre él.
-   Sugerencia: Haz clic con el botón derecho en cualquiera de los encabezados de la tabla, a excepción de **Timeline**, para
-   agregar o quitar columnas de información.
-5. **Summary**: A simple vista, este panel indica la cantidad total de solicitudes,
-    la cantidad de datos transferidos y los tiempos de carga.
+1. **Controls**. Use these options to control how the **Network** panel looks and functions.
+2. **Filters**. Use these options to control which resources are displayed in the **Requests Table**. Tip: hold <kbd>Cmd</kbd> (Mac) or <kbd>Ctrl</kbd> (Window/Linux), and then click on a filter to select multiple filters at the same time.
+3. **Overview**. This graph shows a timeline of when resources were retrieved. If you see multiple bars stacked vertically, it means that those resources were retrieved simultaneously.
+4. **Requests Table**. This table lists out every resource that was retrieved. By default, this table is sorted chronologically, with the earliest resources at the top. Clicking on the name of a resource yields more information about it. Tip: right-click on any of the table headers except **Timeline** to add or remove columns of information.
+5. **Summary**. At a glance this pane tells you the total number of requests, amount of data transferred, and load times.
 
-![subpaneles del panel network](imgs/panes.png)
+![network panel panes](imgs/panes.png)
 
-El subpanel **Requests Table** muestra las siguientes columnas de manera predeterminada. Puedes
-[agregar o quitar columnas](#add-and-remove-table-columns).
+The **Requests Table** displays the following columns by default. You can [add and remove columns](#add-and-remove-table-columns).
 
-* **Name**: Indica el nombre del recurso.
-* **Status**: Indica el código de estado HTTP.
-* **Type**: Indica el tipo de MIME del recurso solicitado.
-* **Initiator**: Indica qué objeto o proceso inició la solicitud. Puede
-  tener uno de los siguientes valores:
-  * **Parser**: Es el analizador HTML de Chrome que inicia la solicitud.
-  * **Redirect**: Es el redireccionamiento HTTP que inició la solicitud.
-  * **Script**: Es la secuencia de comandos que inicia la solicitud.
-  * **Other**: Es algún otro proceso o acción que inicia la solicitud,
-    como la navegación del usuario hacia una página a través de un vínculo o del ingreso de una
-    URL en la barra de direcciones.
-* **Size**: Es el tamaño combinado de los encabezados de la respuesta (generalmente,
-  algunos cientos de bytes), más el cuerpo de la respuesta, tal como la proporcionó el servidor.
-* **Time**: Es la duración total, desde el inicio de la solicitud hasta la
-  recepción del último byte de la respuesta.
-* **Timeline**: En esta columna, se muestra una cascada visual con todas las
-  solicitudes de la red. Cuando se hace clic en el encabezado de esta columna, se muestra un menú de
-  campos de ordenamiento adicionales.
+* **Name**. The name of the resource.
+* **Status**. The HTTP status code.
+* **Type**. The MIME type of the requested resource.
+* **Initiator**. The object or process that initiated the request. It can have one of the following values: 
+    * **Parser**. Chrome's HTML parser initiated the request.
+    * **Redirect**. An HTTP redirect initiated the request.
+    * **Script**. A script initiated the request.
+    * **Other**. Some other process or action initiated the request, such as the user navigating to a page via a link, or by entering a URL in the address bar.
+* **Size**. The combined size of the response headers (usually a few hundred bytes) plus the response body, as delivered by the server.
+* **Time**. The total duration, from the start of the request to the receipt of the final byte in the response.
+* **Timeline**. The Timeline column displays a visual waterfall of all network requests. Clicking the header of this column reveals a menu of additional sorting fields.
 
-## Cómo registrar la actividad de red
+## Record network activity
 
 <aside class="warning">
-  <b>Warning:</b> Esta página es obsoleta. Consulta
-  <a href="reference#record">cómo iniciar o detener grabaciones</a>
-  para obtener información actualizada.
+  <b>Warning:</b> This page is deprecated. See
+  <a href="reference#record">Start or stop recording</a>
+  for up-to-date information.
 </aside>
 
-Cuando el panel de **Network** está abierto, DevTools registrar toda la actividad de la red
-de manera predeterminada. Para ello, vuelve a cargar una página mientras el panel está abierto, o espera
-la actividad de red de la página cargada actualmente.
+When the **Network** panel is open, DevTools records all network activity by default. To record, just reload a page while the panel is open, or wait for network activity on the currently loaded page.
 
-Puedes distinguir si DevTools está registrando o no mediante el botón
-**record**. Cuando el botón está en rojo
-(![botón record activado](imgs/record-on.png){:.inline}), significa que hay una grabación activa en DevTools.
-Cuando es gris (![botón record desactivado](imgs/record-off.png){:.inline}), significa que no hay grabaciones
-activas en DevTools. Haz clic en este botón para comenzar o para detener la grabación, o presiona
-la combinación de teclas <kbd>Cmd/Ctrl</kbd>+<kbd>e</kbd>.
+You can tell whether or not DevTools is recording via the **record** button. When it's red (![record button on](imgs/record-on.png){:.inline}), DevTools is recording. When it's grey (![record button off](imgs/record-off.png){:.inline}), DevTools is not recording. Click this button to start or stop recording, or press the keyboard shortcut <kbd>Cmd/Ctrl</kbd>+<kbd>e</kbd>.
 
-## Cómo obtener capturas de pantalla durante la grabación {:#filmstrip}
+## Capture screenshots during recording {:#filmstrip}
 
 <aside class="warning">
-  <b>Warning:</b> Esta página es obsoleta. Consulta
-  <a href="reference#screenshots">cómo tomar capturas de pantalla durante la grabación</a>
-  para obtener información actualizada.
+  <b>Warning:</b> This page is deprecated. See
+  <a href="reference#screenshots">Capture screenshots during recording</a>
+  for up-to-date information.
 </aside>
 
-El panel de **Network** puede tomar capturas de pantalla durante la carga de una página. Esta función
-se denomina **Filmstrip**.
+The **Network** panel can capture screenshots during a page load. This feature is known as the **Filmstrip**.
 
-Haz clic en el ícono de **Camera** para habilitar Filmstrip. Si el ícono está gris,
-significa que la función está inhabilitada  (![Filmstrip
-inhabilitada](imgs/filmstrip-disabled.png){:.inline}). Si está en azul, significa que está
-habilitada (![Filmstrip habilitada](imgs/filmstrip-enabled.png){:.inline}).
+Click on the **camera** icon to enable the Filmstrip. When the icon is grey, the Filmstrip is disabled (![filmstrip
+disabled](imgs/filmstrip-disabled.png){:.inline}). When the icon is blue, it is enabled (![filmstrip enabled](imgs/filmstrip-enabled.png){:.inline}).
 
-Vuelve a cargar la página para tomar capturas de pantalla. Las capturas de pantalla se muestran
-arriba de **Overview**.
+Reload the page to capture the screenshots. The screenshots are displayed above the **Overview**.
 
-![grabación con tira de imágenes](imgs/filmstrip.png)
+![recording with filmstrip](imgs/filmstrip.png)
 
-Cuando te desplazas sobre una captura de pantalla, **Timeline** muestra una línea vertical amarilla
-que indica cuándo se capturó el fotograma.
+When you hover over a screenshot, the **Timeline** displays a vertical yellow line indicating when the frame was captured.
 
-![superposición del filmstrip en la línea de tiempo](imgs/filmstrip-timeline-overlay.png)
+![filmstrip overlay on timeline](imgs/filmstrip-timeline-overlay.png)
 
-Haz doble clic en una captura de pantalla para ver una versión acercada de ella. Con
-la captura de pantalla acercada, usa las flechas izquierda y derecha del teclado para
-navegar entre los elementos.
+Double-click on a screenshot to view a zoomed version of the screenshot. While a screenshot is zoomed, use the left and right arrows of your keyboard to navigate between screenshots.
 
-![captura de pantalla del filmstrip acercada](imgs/filmstrip-zoom.png)
+![zoomed filmstrip screenshot](imgs/filmstrip-zoom.png)
 
-## Cómo ver DOMContentLoaded y cargar información del evento
+## View DOMContentLoaded and load event information
 
 <aside class="warning">
-  <b>Warning:</b> Esta página es obsoleta. Consulta
-  <a href="reference#load">cómo ver eventos de carga</a>
-  para obtener información actualizada.
+  <b>Warning:</b> This page is deprecated. See
+  <a href="reference#load">View load events</a>
+  for up-to-date information.
 </aside>
 
-El panel de **Network** destaca dos eventos:
-[`DOMContentLoaded`](https://developer.mozilla.org/en-US/docs/Web/Events/DOMContentLoaded) y
-[`load`](https://developer.mozilla.org/en-US/docs/Web/Events/load).
+The **Network** panel highlights two events: [`DOMContentLoaded`](https://developer.mozilla.org/en-US/docs/Web/Events/DOMContentLoaded) and [`load`](https://developer.mozilla.org/en-US/docs/Web/Events/load).
 
-`DOMContentLoaded` se dispara cuando se analiza el lenguaje de marcado inicial
-de una página. Se muestra en dos lugares del panel de **Network**:
+`DOMContentLoaded` is fired when the initial markup of a page has been parsed. It is displayed in two places on the **Network** panel:
 
-1. La barra vertical azul del panel de **Overview** representa el evento.
-2. En el panel de **Summary**, puedes ver la hora exacta del evento.
+1. The blue vertical bar in the **Overview** pane signifies the event.
+2. In the **Summary** pane you can see the exact time of the event.
 
-![Evento DOMContentLoaded en el panel de Network](imgs/domcontentloaded.png)
+![DOMContentLoaded event on network panel](imgs/domcontentloaded.png)
 
-`load` se dispara cuando se carga una página por completo. Se muestra en tres lugares:
+`load` is fired when a page has fully loaded. It is displayed in three places:
 
-1. La barra vertical roja del panel de **Overview** representa el evento.
-2. La barra vertical roja de **Requests Table** también representa el evento.
-3. En el panel de **Summary**, puedes ver la hora exacta del evento.
+1. The red vertical bar in the **Overview** pane signifies the event.
+2. The red vertical bar in the **Requests Table** signifies the event, too.
+3. In the **Summary** pane you can see the exact time of the event.
 
-![cargar evento en el panel de Network](imgs/load.png)
+![load event on network panel](imgs/load.png)
 
-## Cómo ver detalles de un solo recurso
+## View details for a single resource
 
 <aside class="warning">
-  <b>Warning:</b> Esta página es obsoleta. Consulta
-  <a href="reference#details">cómo ver detalles</a>
-  para obtener información actualizada.
+  <b>Warning:</b> This page is deprecated. See
+  <a href="reference#details">View details</a>
+  for up-to-date information.
 </aside>
 
-Haz clic en el nombre de un recurso (debajo la columna **Name** de **Requests Table**)
-para ver más información sobre él.
+Click on a resource name (under the **Name** column of the **Requests Table**) to view more information about that resource.
 
-Las pestañas disponibles cambian según el tipo de recurso seleccionado,
-pero las cuatro pestañas que se incluyen a continuación son las más comunes.
+The tabs available change depending on what type of resource you've selected, but the four tabs below are most common:
 
-* **Headers**: Son los encabezados HTTP asociados con el recurso.
-* **Preview**: Son las vistas previas de los recursos JSON de imagen y texto.
-* **Response**: Son los datos de la respuesta HTTP (si existen).
-* **Timing**: Es un detalle granular del ciclo de vida de la solicitud del
-  recurso.
+* **Headers**. HTTP headers associated with the resource.
+* **Preview**. Previews of JSON, image, and text resources.
+* **Response**. HTTP response data (if any).
+* **Timing**. A granular breakdown of the request lifecycle for the resource.
 
-![ver detalles de un solo recurso](imgs/network-headers.png)
+![viewing details for a single resource](imgs/network-headers.png)
 
-### Cómo ver la sincronización de la red
+### View network timing
 
 <aside class="warning">
-  <b>Warning:</b> Esta página es obsoleta. Consulta
-  <a href="reference#timing">la pestaña Timing</a>
-  para obtener información actualizada.
+  <b>Warning:</b> This page is deprecated. See
+  <a href="reference#timing">Timing tab</a>
+  for up-to-date information.
 </aside>
 
-Haz clic en la pestaña **Timing** para ver un desglose detallado del ciclo de vida de la
-solicitud de un solo recurso.
+Click the **Timing** tab to view a granular breakdown of the request lifecycle for a single resource.
 
-El ciclo de vida muestra el tiempo dedicado a las siguientes categorías:
+The lifecycle shows how much time is spent in the following categories:
 
 <!-- the screenshot above and list below are redundant, but we include
      the text for SEO -->
 
-* En cola
-* Detenida
-* Si corresponde: consulta de DNS, conexión inicial, protocolo de enlace de SSL
-* Solicitud enviada
-* Esperando (tiempo hasta el primer byte (TTFB))
-* Descarga de contenido
+* Queuing
+* Stalled
+* If applicable: DNS lookup, initial connection, SSL handshake
+* Request sent
+* Waiting (Time to first byte (TTFB))
+* Content Download
 
-![pestaña Timing](imgs/timing-tab.png)
+![timing tab](imgs/timing-tab.png)
 
-Si desplazas el mouse sobre un
-recurso dentro del gráfico de **Timeline**, también puedes ver esta información.
+You can also view this same information by hovering your mouse over a resource within the **Timeline** graph.
 
-![datos de sincronización de un recurso en la línea de tiempo](imgs/timeline-view-hover.png)
+![timing data for one resource in timeline](imgs/timeline-view-hover.png)
 
 {# include shared/related_guides.liquid inline=true list=page.related-guides.timing #}
 
-Guías relacionadas:
+Related Guides:
 
-* [Cómo entender Resource Timing](understanding-resource-timing)
+* [Understanding Resource Timing](understanding-resource-timing)
 
-### Cómo ver encabezados HTTP
+### View HTTP headers
 
 <aside class="warning">
-  <b>Warning:</b> Esta página es obsoleta. Consulta
-  <a href="reference#headers">la pestaña Headers</a>
-  para obtener información actualizada.
+  <b>Warning:</b> This page is deprecated. See
+  <a href="reference#headers">Headers tab</a>
+  for up-to-date information.
 </aside>
 
-Haz clic en **Headers** para ver los encabezados de ese recurso.
+Clicking the **Headers** shows the headers for that resource.
 
-La pestaña **Headers** muestra la URL de la solicitud de recursos, el método HTTP y el código de estado
-de respuesta. Además, enumera los encabezados de respuesta y solicitud HTTP
-y sus valores, así como cualquier parámetro de cadena de búsqueda.
+The **Headers** tab displays the resource's request URL, HTTP method, and response status code. Additionally, it lists the HTTP response and request headers and their values, and any query string parameters.
 
-![Encabezados HTTP de un único recurso](imgs/network-headers.png)
+![HTTP headers for a single resource](imgs/network-headers.png)
 
-Puedes ver encabezados de respuesta, encabezados de solicitudes o parámetros de cadenas de búsqueda
-en formato fuente o analizado haciendo clic en el vínculo `view source` o `view parsed`
-junto a cada sección.
+You can view response headers, request headers, or query string parameters in source or parsed format by clicking the `view source` or `view parsed` link next to each section.
 
-![ver fuente del encabezado](imgs/view-header-source.png)
+![view header source](imgs/view-header-source.png)
 
-También puedes ver los parámetros de cadena de búsqueda en formato URL codificado o decodificado haciendo
-clic en el vínculo `view URL encoded` o `view decoded` junto a esa sección.
+You can also view query string parameters in URL-encoded or decoded format by clicking the `view URL encoded` or `view decoded` link next to that section.
 
-![ver URL codificada](imgs/view-url-encoded.png)
+![view URL encoded](imgs/view-url-encoded.png)
 
-### Cómo obtener una vista previa de un recurso
+### Preview a resource
 
 <aside class="warning">
-  <b>Warning:</b> Esta página es obsoleta. Consulta
-  <a href="reference#preview">la pestaña Preview</a>
-  para obtener información actualizada.
+  <b>Warning:</b> This page is deprecated. See
+  <a href="reference#preview">Preview tab</a>
+  for up-to-date information.
 </aside>
 
-Haz clic en la pestaña **Preview** para obtener una vista previa de ese recurso. La pestaña **Preview**
-puede mostrar (o no) cualquier información útil, según el tipo de
-recurso seleccionado.
+Click the **Preview** tab to view a preview of that resource. The **Preview** tab may or may not display any useful information, depending on the type of resource you've selected.
 
-![vista previa del recurso de imagen](imgs/preview-png.png)
+![image resource preview](imgs/preview-png.png)
 
-### Ver contenido de la respuesta HTTP
+### View HTTP response content
 
 <aside class="warning">
-  <b>Warning:</b> Esta página es obsoleta. Consulta
-  <a href="reference#response">la pestaña Response</a>
-  para obtener información actualizada.
+  <b>Warning:</b> This page is deprecated. See
+  <a href="reference#response">Response tab</a>
+  for up-to-date information.
 </aside>
 
-Haz clic en la pestaña **Response** para ver el
-contenido de la respuesta HTTP sin formato del recurso. La pestaña **Response** puede contener (o no) información útil,
-según el tipo de recurso seleccionado.
+Click the **Response** tab to view the resource's unformatted HTTP response content. The **Response** tab may or may not contain any useful information, depending on the type of resource you've selected.
 
-![Datos de respuesta del recurso JSON](imgs/response-json.png)
+![JSON resource response data](imgs/response-json.png)
 
-### Cómo ver cookies
+### View cookies
 
 <aside class="warning">
-  <b>Warning:</b> Esta página es obsoleta. Consulta
-  <a href="reference#cookies">la pestaña Cookies</a>
-  para obtener información actualizada.
+  <b>Warning:</b> This page is deprecated. See
+  <a href="reference#cookies">Cookies tab</a>
+  for up-to-date information.
 </aside>
 
-Haz clic en la pestaña **Cookies** para ver una tabla de cookies
-transmitidas en los encabezados de respuesta y solicitud HTTP del recurso. Esta pestaña solo está disponible
-cuando se transmiten cookies.
+Click the **Cookies** tab to view a table of cookies transmitted in the resource's HTTP request and response headers. This tab is only available when cookies are transmitted.
 
-A continuación, se incluye una descripción de cada columna de la tabla:
+Below is a description of each of the columns in the table:
 
-* **Name**: Indica el nombre de la cookie.
-* **Value**: Indica el valor de la cookie.
-* **Domain**: Indica el dominio al que pertenece la cookie.
-* **Path**: Indica la ruta de acceso URL de la que provino la cookie.
-* **Expires / Max-Age**: Indica el valor de las propiedades de vida útil o duración
-  de la cookie.
-* **Size**: Indica el tamaño de la cookie en bytes.
-* **HTTP**: Indica que la cookie debe fijarse únicamente a través del navegador en
-  la solicitud HTTP. También señala que no se puede tener acceso a la cookie con JavaScript.
-* **Secure**: La presencia de este atributo indica que la cookie solo
-  se debe transmitir mediante una conexión segura.
+* **Name**. The cookie's name.
+* **Value**. The cookie's value.
+* **Domain**. The domain the cookie belongs to.
+* **Path**. The URL path the cookie came from.
+* **Expires / Max-Age**. The value of the cookie's expires or max-age properties.
+* **Size**. The size of the cookie in bytes.
+* **HTTP**. Indicates that the cookie should only be set by the browser in the HTTP request, and cannot be accessed with JavaScript.
+* **Secure**. The presence of this attribute indicates that the cookie should only be transmitted over a secure connection.
 
-![cookies de recursos](imgs/cookies.png)
+![resource cookies](imgs/cookies.png)
 
-### Cómo ver marcos de WebSocket
+### View WebSocket frames
 
 <aside class="warning">
-  <b>Warning:</b> Esta página es obsoleta. Consulta
-  <a href="reference#frames">la pestaña Frames</a>
-  para obtener información actualizada.
+  <b>Warning:</b> This page is deprecated. See
+  <a href="reference#frames">Frames tab</a>
+  for up-to-date information.
 </aside>
 
-Haz clic en la pestaña **Frames** para ver
-la información de conexión de [`WebSocket`](https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API).
- Esta pestaña solo está visible cuando el recurso seleccionado
-inicia una conexión `WebSocket`.
+Click the **Frames** tab to view [`WebSocket`](https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API) connection information. This tab is only visible when the selected resource initiated a `WebSocket` connection.
 
-![pestaña Frames de websocket](imgs/websocket-frames.png)
+![websocket frames tab](imgs/websocket-frames.png)
 
-La siguiente lista describe cada columna de la tabla de la pestaña **Frames**:
+The list below describes each of the columns in the table on the **Frames** tab:
 
+* **Data**. The message payload. If the message is plain text, it's displayed here. For binary opcodes, this field displays the opcode's name and code. The following opcodes are supported: 
+    * Continuation Frame
+    * Binary Frame
+    * Connection Close Frame
+    * Ping Frame
+    * Pong Frame
+* **Length**. The length of the message payload in bytes.
+* **Time**. The time stamp when the message was created.
 
-* **Data**: Indica la carga del mensaje. Si el mensaje es texto sin formato, se
-  muestra aquí. Para los códigos de operación binarios, en este campo se
-  muestran el nombre y el código correspondientes. Se admiten los siguientes códigos de operación:
-  * Continuation Frame
-  * Binary Frame
-  * Connection Close Frame
-  * Ping Frame
-  * Pong Frame
-* **Length**. Indica la extensión de la carga del mensaje en bytes.
-* **Time**: Indica la marca de tiempo del momento en que se creó el mensaje.
+Messages are color-coded according to their type:
 
-Los mensajes están codificados por color según el tipo al que pertenecen:
+* Outgoing text messages are color-coded light-green.
+* Incoming text messages are white.
+* WebSocket opcodes are light-yellow.
+* Errors are light-red.
 
-* Los mensajes de texto salientes son de color verde claro.
-* Los entrantes son de color blanco.
-* Los códigos de operaciones de WebSocket son de color amarillo claro.
-* Los errores se muestran de color rojo claro.
+**Notes about current implementation:**
 
-**Notas sobre la implementación actual:**
+* To refresh the **Frames** table after new messages arrive, click the resource name on the left.
+* Only the last 100 `WebSocket` messages are preserved by the **Frames** table.
 
-* Para actualizar la tabla **Frames** después de la llegada de mensajes nuevos, haz clic en
-  el nombre del recurso a la izquierda.
-* En la tabla **Frames**, solo se conservan los últimos 100 mensajes de `WebSocket`.
-
-## Cómo ver iniciadores de recursos y dependencias {:#initiators-dependencies}
+## View resource initiators and dependencies {:#initiators-dependencies}
 
 <aside class="warning">
-  <b>Warning:</b> Esta página es obsoleta. Consulta
-  <a href="reference#initiators-dependencies">cómo ver iniciadores y
-  dependencias</a> para obtener información actualizada.
+  <b>Warning:</b> This page is deprecated. See
+  <a href="reference#initiators-dependencies">View initiators and
+  dependencies</a> for up-to-date information.
 </aside>
 
-Mantén presionado <kbd>Shift</kbd> y desplázate sobre un recurso para ver sus iniciadores
-y dependencias. En esta sección, se usa el término **objetivo** para referirse al recurso sobre el que te
-desplazas.
+Hold <kbd>Shift</kbd> and hover over a resource to view its initiators and dependencies. This section refers to the resource that you are hovering over as the **target**.
 
-El primer recurso de color verde sobre el objetivo es el iniciador
-de este. Si hay sobre este un segundo recurso de color verde,
-será el iniciador del iniciador. Cualquier recurso por debajo del objetivo
-que esté de color rojo será una dependencia del objetivo.
+The first resource above the target that is color-coded green is the initiator of the target. If there is a second resource above that which is color-coded green, that's the initiator of the initiator. Any resources below the target that are color-coded red are dependencies of the target.
 
-En la captura de pantalla que figura a continuación, el objetivo es `dn/`. El iniciador del objetivo es
-la secuencia de comandos que comienza con `rs=AA2Y`. El iniciador del iniciador
-(`rs=AA2Y`) es `google.com`. Por último, `dn.js` es una dependencia del
-objetivo (`dn/`).
+In the screenshot below, the target is `dn/`. The initiator of the target is the script beginning with `rs=AA2Y`. The initiator of the initiator (`rs=AA2Y`) is `google.com`. Last, `dn.js` is a dependency of the target (`dn/`).
 
-![ver iniciadores de recursos y
-dependencias](imgs/initiators-dependencies.png)
+![viewing resource initiators and
+dependencies](imgs/initiators-dependencies.png)
 
-Recuerda que en el caso de las páginas con muchos recursos, es posible que
-no puedas ver todos los iniciadores o dependencias.
+Keep in mind that for pages with lots of resources it's possible that you may not be able to see all of the initiators or dependencies.
 
-## Cómo clasificar solicitudes
+## Sort requests
 
 <aside class="warning">
-  <b>Warning:</b> Esta página es obsoleta. Consulta
-  <a href="reference#sort-by-activity">cómo ordenar por fase de actividad</a>
-  para obtener información actualizada.
+  <b>Warning:</b> This page is deprecated. See
+  <a href="reference#sort-by-activity">Sort by activity phase</a>
+  for up-to-date information.
 </aside>
 
-De manera predeterminada, los recursos de **Requests Table** se clasifican por el tiempo de
-inicio de cada solicitud, comenzando con la más temprana en la parte superior.
+By default, the resources in the **Requests Table** are sorted by the start time of each request, starting with the earliest requests at the top.
 
-Haz clic en el encabezado de una columna para ordenar la tabla por el valor de cada recurso
-para ese encabezado. Haz clic en el mismo encabezado otra vez para cambiar el orden a
-ascendente o descendente.
+Click on the header of a column to sort the table by each resource's value for that header. Click the same header again to change the sort order to ascending or descending.
 
-La columna **Timeline** es diferente a las demás. Cuando se hace clic en ella, muestra
-un menú de campos de ordenamiento.
+The **Timeline** column is unique from the others. When clicked, it displays a menu of sort fields:
 
-* **Timeline**: Aplica el ordenamiento por el tiempo de inicio de cada solicitud de la red. Este es el ordenamiento
-  predeterminado, y equivale a aplicar ordenamiento con la opción **Start Time**.
-* **Start Time**: Aplica el ordenamiento por el tiempo de inicio de cada solicitud de la red (equivale a
-  aplicar ordenamiento por la opción **Timeline**).
-* **Response Time**: Aplica el ordenamiento por el tiempo de respuesta de cada solicitud.
-* **End Time**: Aplica el ordenamiento por momento de compleción de cada solicitud.
-* **Duration**: Aplica el ordenamiento por el tiempo total de cada solicitud. Selecciona este
-  filtro para determinar cuáles son los recursos que tardan más tiempo en cargarse.
-* **Latency**: Aplica el ordenamiento por el tiempo que pasa desde el inicio de la solicitud y el
-  comienzo de la respuesta. Selecciona este filtro para determinar qué recurso
-  tarda más en mostrar el primer byte (TTFB).
+* **Timeline**. Sorts by the start time of each network request. This is the default sort, and is the same as sorting by the **Start Time** option.
+* **Start Time**. Sorts by the start time of each network request (same as sorting by the **Timeline** option).
+* **Response Time**. Sorts by each request's response time.
+* **End Time**. Sorts by the time when each request completed.
+* **Duration**. Sorts by the total time of each request. Select this filter to determine which resource takes the longest time to load.
+* **Latency**. Sorts by the time between the start of the request and the beginning of the response. Select this filter to determine which resource takes the longest time to first byte (TTFB).
 
-![Campos de orden de línea de tiempo](imgs/timeline-sort-fields.png)
+![Timeline sort fields](imgs/timeline-sort-fields.png)
 
-## Cómo filtrar solicitudes
+## Filter requests
 
 <aside class="warning">
-  <b>Warning:</b> Esta página es obsoleta. Consulta
-  <a href="reference#filters">el panel Filters</a>
-  para obtener información actualizada.
+  <b>Warning:</b> This page is deprecated. See
+  <a href="reference#filters">Filters panel</a>
+  for up-to-date information.
 </aside>
 
-El panel **Network** provee numerosas formas de filtrar los recursos que
-se muestran. Haz clic en el botón **filters**
-(![botón filters](imgs/filters.png){:.inline})
-para ocultar o mostrar el panel **Filters**.
+The **Network** panel provides numerous ways to filter which resources are displayed. Click the **filters** button (![filters button](imgs/filters.png){:.inline}) to hide or display the **Filters** pane.
 
-Usa los botones de tipo de contenido para mostrar solamente los recursos del tipo de contenido
-seleccionado.
+Use the content type buttons to only display resources of the selected content type.
 
-Note: Mantén presionado <kbd>Cmd</kbd> (Mac) o <kbd>Ctrl</kbd> (Windows/Linux) y, luego, haz clic para habilitar múltiples filtros simultáneamente.
+Note: Hold <kbd>Cmd</kbd> (Mac) or <kbd>Ctrl</kbd> (Windows/Linux) and then click to enable multiple filters simultaneously.
 
-![múltiples filtros de tipo de contenido seleccionados
-simultáneamente](imgs/multiple-content-type-filters.png)
+![multiple content type filters selected
+simultaneously](imgs/multiple-content-type-filters.png)
 
-El campo de texto **filter** es engañosamente potente. Si ingresas una string
-arbitraria en este campo, el panel **Network** solo mostrará los recursos cuyos
-nombres de archivo coincidan con la string especificada.
+The **filter** text field is deceptively powerful. If you enter an arbitrary string in it, the **Network** panel only displays the resources whose filenames match the given string.
 
-![filtrado de nombres de recursos](imgs/resource-name-filtering.png)
+![resource name filtering](imgs/resource-name-filtering.png)
 
-El campo de texto **filter** también admite diversas palabras clave que te permiten
-clasificar recursos por diferentes propiedades, como el tamaño de archivo usando la palabra clave `larger-than`.
+The **filter** text field also supports various keywords that let you sort resources by various properties, such as file size using the `larger-than` keyword.
 
+The list below describes all of the keywords.
 
-La siguiente lista describe todas las palabras clave.
+* `domain`. Only display resources from the specified domain. You can use a wildcard character (`*`) to include multiple domains. For example, `*.com` displays resources from all domain names ending in `.com`. DevTools populates the autocomplete dropdown menu with all of the domains it has encountered.
+* `has-response-header`. Show the resources that contain the specified HTTP response header. DevTools populates the autocomplete dropdown with all of the response headers that it has encountered.
+* `is`. Use `is:running` to find `WebSocket` resources.
+* `larger-than`. Show resources that are larger than the specified size, in bytes. Setting a value of `1000` is equivalent to setting a value of `1k`.
+* `method`. Show resources that were retrieved over a specified HTTP method type. DevTools populates the dropdown with all of the HTTP methods it has encountered.
+* `mime-type`. Show resources of a specified MIME type. DevTools populates the dropdown with all MIME types it has encountered.
+* `mixed-content`. Show all mixed content resources (`mixed-content:all`) or just the ones that are currently displayed (`mixed-content:displayed`).
+* `scheme`. Show resources retrieved over unprotected HTTP (`scheme:http`) or protected HTTPS (`scheme:https`).
+* `set-cookie-domain`. Show the resources that have a `Set-Cookie` header with a `Domain` attribute that matches the specified value. DevTools populates the autocomplete with all of the cookie domains that it has encountered.
+* `set-cookie-name`. Show the resources that have a `Set-Cookie` header with a name that matches the specified value. DevTools populates the autocomplete with all of the cookie names that it has encountered.
+* `set-cookie-value`. Show the resources that have a `Set-Cookie` header with a value that matches the specified value. DevTools populates the autocomplete with all of the cookie values that it has encountered.
+* `status-code`. Only show resources whose HTTP status code match the specified code. DevTools populates the autocomplete dropdown menu with all of the status codes it has encountered.
 
-* `domain`: Solo muestra recursos del dominio especificado. Puedes usar
-  un carácter comodín (`*`) para incluir varios dominios. Por ejemplo, `*.com`
-  muestra recursos de todos los nombres de dominio que terminan en `.com`. DevTools
-  propaga el menú desplegable de autocompletar con todos los dominios
-  que encuentra.
-* `has-response-header`: Muestra los recursos que contienen el encabezado de respuesta
-  HTTP especificado. DevTools propaga el menú desplegable de autocompletar con
-  todos los encabezados de respuesta que encuentra.
-* `is`: Usa `is:running` para buscar recursos `WebSocket`.
-* `larger-than`: Muestra recursos de tamaño superior al especificado,
-  en bytes. Establecer un valor de `1000` equivale a fijar un valor de `1k`.
-* `method`: Muestra recursos recuperados con un tipo de método HTTP
-  especificado. DevTools completa el menú desplegable de autocompletar con todos los métodos HTTP
-  que encuentra.
-* `mime-type`: Muestra recursos de un tipo de MIME especificado. DevTools completa
-  el menú desplegable de autocompletar con todos los tipos de MIME que encuentra.
-* `mixed-content`: Muestra todos los recursos de contenido mixto (`mixed-content:all`) o
-  solo los que se visualizan en el momento (`mixed-content:displayed`).
-* `scheme`: Muestra los recursos recuperados a través de una conexión HTTP no protegida (`scheme:http`)
-  o HTTPS protegida (`scheme:https`).
-* `set-cookie-domain`: Muestra los recursos que tienen un encabezado `Set-Cookie`
-  con un atributo `Domain` que coincide con el valor especificado. DevTools
-  propaga el menú desplegable de autocompletar con todos los dominios de cookies que
-  encuentra.
-* `set-cookie-name`: Muestra los recursos que tienen un encabezado `Set-Cookie`
-  con un nombre que coincide con el valor especificado. DevTools propaga
-  el menú desplegable de autocompletar con todos los nombres de las cookies que encuentra.
-* `set-cookie-value`: Muestra los recursos que tienen un encabezado `Set-Cookie`
-  con un valor que coincide con el valor especificado. DevTools propaga
-  el menú desplegable de autocompletar con todos los valores de las cookies que encuentra.
-* `status-code`: Solo muestra los recursos cuyo código de estado HTTP coincide con el
-  código especificado. DevTools completa el menú desplegable de autocompletar con todos
-  los códigos de estado encontrados.
+![filtering by file size](imgs/larger-than.png)
 
-![filtrado por tamaño de archivo](imgs/larger-than.png)
+Some of the keywords above mention an autocomplete dropdown menu. To trigger the autocomplete menu, type in the keyword followed by a colon. For example, in the screenshot below typing `domain:` triggered the autocomplete dropdown.
 
-Algunas de las palabras clave anteriores mencionan un menú desplegable de autocompletar. Para desencadenar
-el menú de autocompletar, escribe la palabra clave seguida por dos puntos. Por ejemplo,
-en la siguiente captura de pantalla, al escribir `domain:` se activó el menú desplegable de autocompletar.
+![filter text field autocomplete](imgs/filter-autocomplete.png)
 
-![filtrar autocompletar campo de texto](imgs/filter-autocomplete.png)
-
-## Cómo copiar, guardar y borrar información de la red
+## Copy, save, and clear network information
 
 <aside class="warning">
-  <b>Warning:</b> Esta página es obsoleta. Consulta las siguientes secciones para obtener información
-  actualizada:
+  <b>Warning:</b> This page is deprecated. See following sections for up-to-date
+  information:
   <ul>
-    <li><a href="reference#copy">Cómo copiar una o todas las solicitudes</a></li>
-    <li><a href="reference#save-as-har">Cómo guardar como HAR con contenido</a></li>
-    <li><a href="reference#clear-cache">Cómo borrar la caché del navegador</a></li>
-    <li><a href="reference#clear-cookies">Cómo borrar las cookies del navegador</a></li>
+    <li><a href="reference#copy">Copy one or all requests</a></li>
+    <li><a href="reference#save-as-har">Save as HAR with content</a></li>
+    <li><a href="reference#clear-cache">Clear browser cache</a></li>
+    <li><a href="reference#clear-cookies">Clear browser cookies</a></li>
   </ul>
 </aside>
 
-Haz clic con el botón derecho dentro de **Requests Table** para copiar, guardar, o
-borrar información de la red. Algunas de las opciones dependen del contexto. Por lo tanto,
-si deseas trabajar en un único recurso, debes hacer clic con el botón derecho del mouse en la
-fila de ese recurso. En la siguiente lista, se describe cada una de las opciones.
+Right-click within the **Requests Table** to copy, save, or delete network information. Some of the options are context-sensitive, so if you want to operate on a single resource, you need to right-click on that resource's row. The list below describes each of the options.
 
-* **Copy Response**: Envía una copia de la respuesta HTTP del recurso seleccionado al
-  portapapeles del sistema.
-* **Copy as cURL**: Copia la solicitud de red del recurso seleccionado como una
-  cadena de comandos [cURL](http://curl.haxx.se/){: .external } al portapapeles del sistema.
-  Consulta [cómo copiar solicitudes como comandos cURL](#copy-requests-as-curl-commands).
-* **Copy All as HAR**: Copia todos los recursos al portapapeles del sistema como
-  datos [HAR](https://en.wikipedia.org/wiki/.har){: .external } .
-  Un archivo HAR contiene una estructura de datos JSON que describe la
-  "cascada" de la red. Varias [herramientas](https://ericduran.github.io/chromeHAR/){: .external }
-  [de terceros](https://code.google.com/p/harviewer/){: .external } pueden reconstruir la cascada de red
-  de los datos del archivo HAR. Consulta
-  [Herramienta potente para el rendimiento web: HTTP Archive
-  (HAR)](https://www.igvita.com/2012/08/28/web-performance-power-tool-http-archive-har/)
-  para obtener más información.
-* **Save as HAR with Content**: Guarda todos los datos de la red en un
-  archivo HAR, junto con la página de cada recurso. Los recursos binarios, incluidas las imágenes,
-  se codifican como texto Base64.
-* **Clear Browser Cache**: Borra la caché del navegador.
-  **Sugerencia**: También puedes habilitar o inhabilitar la caché del navegador desde el panel lateral
-  [**Network Conditions**][nc].
-* **Clear Browser Cookies**: Borra las cookies del navegador.
-* **Open in Sources Panel**: Abre el recurso seleccionado en el panel
-  **Sources**.
-* **Open Link in New Tab**: Abre el recurso seleccionado en una pestaña nueva. También
-  puedes hacer doble clic en el nombre del recurso de la tabla Network.
-* **Copy Link Address**: Envía una copia de la URL del recurso al portapapeles del sistema.
-* **Save**: Guarda el recurso de texto seleccionado. Solo se muestra en los recursos de
-  texto.
-* **Replay XHR**: Vuelve a enviar el elemento `XMLHTTPRequest` seleccionado. Solo se muestra en los recursos XHR.
+* **Copy Response**. Copies the HTTP response of the selected resource to the system clipboard.
+* **Copy as cURL**. Copies the network request of the selected resource as a [cURL](http://curl.haxx.se/){: .external } command string to the system clipboard. See [Copying requests as cURL commands](#copy-requests-as-curl-commands).
+* **Copy All as HAR**. Copies all resources to the system clipboard as [HAR](https://en.wikipedia.org/wiki/.har){: .external } data. A HAR file contains a JSON data structure that describes the network "waterfall". Several [third-party](https://ericduran.github.io/chromeHAR/){: .external } [tools](https://code.google.com/p/harviewer/){: .external } can reconstruct the network waterfall from the data in the HAR file. See [Web Performance Power Tool: HTTP Archive (HAR)](https://www.igvita.com/2012/08/28/web-performance-power-tool-http-archive-har/) for more information.
+* **Save as HAR with Content**. Saves all network data to an HAR file along with each page resource. Binary resources, including images, are encoded as Base64-encoded text.
+* **Clear Browser Cache**. Clear the browser cache. **Tip**: You can also enable or disable the browser cache from the [**Network Conditions**](/web/tools/chrome-devtools/profile/network-performance/network-conditions#network-conditions) drawer.
+* **Clear Browser Cookies**. Clear the browser's cookies.
+* **Open in Sources Panel**. Open the selected resource in the **Sources** panel.
+* **Open Link in New Tab**. Opens the selected resource in a new tab. You can also double-click the resource name in the Network table.
+* **Copy Link Address**. Copies the resource URL to the system clipboard.
+* **Save**. Save the selected text resource. Only displayed on text resources.
+* **Replay XHR**. Re-send the selected `XMLHTTPRequest`. Only displayed on XHR resources.
 
+![copy and save context menu](imgs/copy-save-menu.png)
 
-![copiar y guardar menú contextual](imgs/copy-save-menu.png)
-
-[nc]: /web/tools/chrome-devtools/profile/network-performance/network-conditions#network-conditions
-
-### Cómo copiar una o todas las solicitudes como comandos cURL {: #curl }
+### Copy one or all requests as cURL commands {: #curl }
 
 <aside class="warning">
-  <b>Warning:</b> Esta página es obsoleta. Consulta
-  <a href="reference#copy">cómo copiar una o todas las solicitudes</a>
-  para obtener información actualizada.
+  <b>Warning:</b> This page is deprecated. See
+  <a href="reference#copy">Copy one or all requests</a>
+  for up-to-date information.
 </aside>
 
-[cURL](http://curl.haxx.se/){: .external } es una herramienta de la línea de comandos para hacer transacciones
-HTTP.
+[cURL](http://curl.haxx.se/){: .external } is a command line tool for making HTTP transactions.
 
-Haz clic con el botón derecho del mouse en Requests Table, desplázate sobre
-**Copy** y, luego, selecciona **Copy as cURL** para copiar una cadena de solicitudes
-cURL para todos los recursos detectados por el panel Network.
+Right-click on a resource within the Requests Table, hover over **Copy** and then select **Copy as cURL** to copy a string of cURL requests for all resources that have been detected by the Network panel.
 
-![Comando Copy single request as cURL](imgs/copy-as-curl.png)
+![Copy single request as cURL command](imgs/copy-as-curl.png)
 
-Selecciona **Copy as cURL** para copiar una cadena de solicitudes cURL para todos
-los recursos detectados por el panel Network.
+Select **Copy All as cURL** to copy a string of cURL requests for all resources that have been detected by the Network panel.
 
-Cuando copias todo, se ignora el filtrado (p. ej., si filtras el panel Network
-para que solo muestre los recursos CSS y luego presionas **Copy All as cURL**, obtendrás
-todos los recursos detectados, no solo los CSS).
+When you copy all, filtering is ignored (e.g. if you filter the Network panel to only display CSS resources and then press **Copy All as cURL**, you'll get all the detected resources, not just the CSS).
 
-## Cómo personalizar el panel Network
+## Customize the Network panel
 
 <aside class="warning">
-  <b>Warning:</b> Esta página es obsoleta. Consulta
-  <a href="reference#request-rows">cómo usar filas de solicitudes grandes o pequeñas</a>
-  para obtener información actualizada.
+  <b>Warning:</b> This page is deprecated. See
+  <a href="reference#request-rows">Use large or small requests rows</a>
+  for up-to-date information.
 </aside>
 
-De manera predeterminada, **Requests Table** muestra los recursos con filas pequeñas. Haz clic en
-el botón **Use large resource rows**
-(![botón large resource rows](imgs/large-resource-rows-button.png){:.inline})
-para aumentar el tamaño de cada fila.
+By default the **Requests Table** displays resources with small rows. Click the **Use large resource rows** button (![large resource rows button](imgs/large-resource-rows-button.png){:.inline}) to increase the size of each row.
 
-Las filas grandes permiten que en algunas columnas se muestren dos campos de texto: uno
-principal y otro secundario. El encabezado de la columna indica el significado del
-campo secundario.
+Large rows enable some columns to display two text fields: a primary field and a secondary field. The column header indicates the meaning of the secondary field.
 
-![amplias filas de recursos](imgs/large-resource-rows.png)
+![large resource rows](imgs/large-resource-rows.png)
 
-### Cómo agregar y quitar columnas de tablas
+### Add and remove table columns
 
 <aside class="warning">
-  <b>Warning:</b> Esta página es obsoleta. Consulta las siguientes secciones para obtener información
-  actualizada:
+  <b>Warning:</b> This page is deprecated. See following sections for up-to-date
+  information:
   <ul>
-    <li><a href="reference#columns">Cómo mostrar u ocultar columnas</a></li>
-    <li><a href="reference#custom-columns">Cómo agregar columnas personalizadas</a></li>
+    <li><a href="reference#columns">Show or hide columns</a></li>
+    <li><a href="reference#custom-columns">Add custom columns</a></li>
   </ul>
 </aside>
 
-Haz clic con el botón secundario en cualquiera de los encabezados de **Requests Table** para agregar o quitar
-columnas.
+Right-click on any of the headers in the **Requests Table** to add or remove columns.
 
-![Agregar o quitar columnas](imgs/add-remove-columns.png)
+![Add or remove columns](imgs/add-remove-columns.png)
 
-### Cómo conservar el registro de red en la navegación
+### Preserve the network log upon navigation
 
 <aside class="warning">
-  <b>Warning:</b> Esta página es obsoleta. Consulta
-  <a href="reference#preserve-log">cómo conservar registros</a>
-  para obtener información actualizada.
+  <b>Warning:</b> This page is deprecated. See
+  <a href="reference#preserve-log">Preserve log</a>
+  for up-to-date information.
 </aside>
 
-De manera predeterminada, la actividad de red se descarta cuando
-vuelves a cargar la página actual o bien cuando cargas otra página.
-Habilita la casilla de verificación **Preserve log** para guardar el registro de la red en estas
-situaciones. Los nuevos registros se agregan al final de **Requests Table**.
+By default, the network activity recording is discarded whenever you reload the current page or load a different page. Enable the **Preserve log** checkbox to save the network log across these scenarios. New records are appended to the bottom of the **Requests Table**.
 
-## Recursos adicionales
+## Additional resources
 
-Para obtener más información sobre cómo optimizar el rendimiento de red de tu app, consulta estos recursos:
+To learn more optimizing the network performance of your application, see the following resources:
 
-* Usa [PageSpeed
-  Insights](/speed/pagespeed/insights) para identificar
-  recomendaciones de rendimiento que se pueden aplicar a tu sitio, y
-  [Herramientas de optimización de
-  PageSpeed](/speed/pagespeed/optimization) para
-  automatizar el proceso de aplicación de esas prácticas.
-* En [Redes de alto rendimiento de Google
-  Chrome](https://www.igvita.com/posa/high-performance-networking-in-google-chrome/)
-  se tratan los aspectos internos de Chrome y la manera en que puedes aprovecharlos
-  a fin de lograr que tu sitio sea más rápido.
-* En [Cómo funciona la compresión
-  gzip](/speed/articles/gzip) se brinda
-  una descripción general de la compresión gzip y se explica la razón por la cual es recomendable.
-* En [Recomendaciones de rendimiento
-  web](/speed/docs/best-practices/rules_intro)
-  se ofrecen sugerencias adicionales para optimizar el rendimiento de red de tu página
-  o aplicación web.
+* Use [PageSpeed Insights](/speed/pagespeed/insights) to identify performance best practices that can be applied to your site, and [PageSpeed optimization tools](/speed/pagespeed/optimization) to automate the process of applying those best practices.
+* [High Performance Networking in Google Chrome](https://www.igvita.com/posa/high-performance-networking-in-google-chrome/) discusses Chrome network internals and how you can take advantage of them to make your site faster.
+* [How gzip compression works](/speed/articles/gzip) provides a high-level overview gzip compression and why it's a good idea.
+* [Web Performance Best Practices](/speed/docs/best-practices/rules_intro) provides additional tips for optimizing the network performance of your web page or application.
 
-## Comentarios {: #feedback }
+## Feedback {: #feedback }
 
 {% include "web/_shared/helpful.html" %}
