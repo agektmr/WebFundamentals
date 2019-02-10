@@ -1,107 +1,108 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: É importante entender como é usar o seu aplicativo ou site quando a conectividade é ruim ou pouco confiável e considerar isso quando for programar. Há diversas ferramentas que podem ajudar.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: It's important to understand what using your app or site feels like when connectivity is poor or unreliable, and build accordingly. A range of tools can help you.
 
-{# wf_updated_on: 2016-08-29 #}
-{# wf_published_on: 2016-05-09 #}
+{# wf_updated_on: 2018-08-17 #} {# wf_published_on: 2016-05-09 #} {# wf_blink_components: Platform>DevTools #}
 
-# Compreender baixa largura de banda e alta latência {: .page-title }
+# Understanding Low Bandwidth and High Latency {: .page-title }
 
 {% include "web/_shared/contributors/samdutton.html" %}
 
-É importante entender como é usar o seu aplicativo ou site quando a conectividade é ruim ou pouco confiável e considerar isso quando for programar. Há diversas ferramentas que podem ajudar.
+It's important to understand what using your app or site feels like when connectivity is poor or unreliable, and build accordingly. A range of tools can help you.
 
-## Testar com baixa largura de banda e alta latência {: #testing }
+## Test with low bandwidth and high latency {: #testing }
 
-Uma <a href="http://adwords.blogspot.co.uk/2015/05/building-for-next-moment.html">proporção crescente</a> de pessoas usa a Web em dispositivos móveis. Mesmo em casa, <a href="https://www.washingtonpost.com/news/the-switch/wp/2016/04/18/new-data-americans-are-abandoning-wired-home-internet/">muitas pessoas estão mudando da banda larga fixa para os dispositivos móveis</a>.
+An [ increasing proportion](http://adwords.blogspot.co.uk/2015/05/building-for-next-moment.html) of people experience the web on mobile devices. Even at home, [ many people are abandoning fixed broadband for mobile](https://www.washingtonpost.com/news/the-switch/wp/2016/04/18/new-data-americans-are-abandoning-wired-home-internet/).
 
-Nesse contexto, é importante entender como o aplicativo ou site se comporta quando a conectividade é insuficiente ou pouco confiável. Uma variedade de ferramentas de software pode ajudar a [emular e simular](https://stackoverflow.com/questions/1584617/simulator-or-emulator-what-is-the-difference) banda larga baixa e [latência](https://www.igvita.com/2012/07/19/latency-the-new-web-performance-bottleneck/) alta.
+In this context, it's important to understand what using your app or site feels like when connectivity is poor or unreliable. A range of software tools can help you [emulate and simulate](https://stackoverflow.com/questions/1584617/simulator-or-emulator-what-is-the-difference) low bandwidth and high [latency](https://www.igvita.com/2012/07/19/latency-the-new-web-performance-bottleneck/).
 
-### Emule limitações de rede
+### Emulate network throttling
 
-Ao criar ou atualizar um site, você deve verificar o desempenho para que seja adequado em diversas condições de conectividade. Várias ferramentas podem ajudar.
+When building or updating a site, you must ensure adequate performance in a variety of connectivity conditions. Several tools can help.
 
-#### Ferramentas de navegador
+#### Browser tools
 
-O [Chrome DevTools](/web/tools/chrome-devtools/network-performance/network-conditions) permite testar o site com diversas velocidades de upload/download e [tempos de ida e volta](https://www.igvita.com/2012/07/19/latency-the-new-web-performance-bottleneck/) usando configurações predefinidas ou personalizadas no painel Network do Chrome DevTools:
+[Chrome DevTools](/web/tools/chrome-devtools) lets you test your site with a variety of upload/download speeds and [round-trip times](https://www.igvita.com/2012/07/19/latency-the-new-web-performance-bottleneck/), using presets or custom settings from the Network panel. See [Get Started with Analyze Network Performance](/web/tools/chrome-devtools/network-performance) to learn the basics.
 
-![Limitações no Chrome DevTools](images/chrome-devtools-throttling.png)
+![Chrome DevTools throttling](images/chrome-devtools-throttling.png)
 
-#### Ferramentas de sistema
+#### System tools
 
-O Network Link Conditioner é um painel de preferências disponível no Mac quando você instala o [Hardware IO Tools](https://developer.apple.com/downloads/?q=Hardware%20IO%20Tools) para Xcode:
+Network Link Conditioner is a preference panel available on Mac if you install [Hardware IO Tools](https://developer.apple.com/downloads/?q=Hardware%20IO%20Tools) for Xcode:
 
-![Painel de controle do Mac Network Link Conditioner](images/network-link-conditioner-control-panel.png)
+![Mac Network Link Conditioner control panel](images/network-link-conditioner-control-panel.png)
 
-![Configurações do Mac Network Link Conditioner settings](images/network-link-conditioner-settings.png)
+![Mac Network Link Conditioner settings](images/network-link-conditioner-settings.png)
 
-![Configurações personalizadas do Mac Network Link Conditioner](images/network-link-conditioner-custom.png)
+![Mac Network Link Conditioner custom settings](images/network-link-conditioner-custom.png)
 
-#### Emulação de dispositivos
+#### Device emulation
 
-O [Android Emulator](http://developer.android.com/tools/devices/emulator.html#netspeed) permite simular várias condições de rede durante a execução de aplicativos (incluindo navegadores da Web e apps da Web híbridos) no Android:
+[Android Emulator](http://developer.android.com/tools/devices/emulator.html#netspeed) allows you to simulate various network conditions while running apps (including web browsers and hybrid web apps) on Android:
 
 ![Android Emulator](images/android-emulator.png)
 
-![Configurações do Android Emulator](images/android-emulator-settings.png)
+![Android Emulator settings](images/android-emulator-settings.png)
 
-No iPhone, o Network Link Conditioner pode ser usado para simular condições de rede desfavoráveis (veja acima).
+For iPhone, Network Link Conditioner can be used to simulate impaired network conditions (see above).
 
-### Teste em locais e redes diferentes
+### Test from different locations and networks
 
-Os problemas de desempenho dependem da localização do servidor e do tipo de rede.
+Connectivity performance depends on server location as well as network type.
 
-[WebPagetest](https://webpagetest.org) é um serviço on-line que permite a execução de diversos teste de desempenho em seu site, usando várias redes e localizações de host. Por exemplo, você pode experimentar nosso site a partir de um servidor na Índia em uma rede 2G ou usando cabo em uma cidade dos EUA.
+[WebPagetest](https://webpagetest.org) is an online service that enables a set of performance tests to be run for your site using a variety of networks and host locations. For example, you can try out your site from a server in India on a 2G network, or over cable from a city in the US.
 
-![Configurações do WebPagetest](images/webpagetest.png)
+![WebPagetest settings](images/webpagetest.png)
 
-Selecione uma localização e, nas configurações avançadas, selecione um tipo de conexão. Você pode até automatizar os testes usando [scripts](https://sites.google.com/a/webpagetest.org/docs/using-webpagetest/scripting) (por exemplo, para fazer login em um site) ou usando suas [APIs RESTful](https://sites.google.com/a/webpagetest.org/docs/advanced-features/webpagetest-restful-apis). Isso ajuda a incluir testes de conectividade nos processos de compilação ou no registro de desempenho.
+Select a location and, from advanced settings, select a connection type. You can even automate testing using [scripts](https://sites.google.com/a/webpagetest.org/docs/using-webpagetest/scripting) (for example, to log in to a site) or using their [RESTful APIs](https://sites.google.com/a/webpagetest.org/docs/advanced-features/webpagetest-restful-apis). This helps you to include connectivity testing into build processes or performance logging.
 
-[Fiddler](http://www.telerik.com/fiddler) é compatível com o uso de proxy global por meio do [GeoEdge](http://www.geoedge.com/faq) e suas regras personalizadas podem ser usadas para simular velocidades de modem:
+[Fiddler](http://www.telerik.com/fiddler) supports Global proxying via [GeoEdge](http://www.geoedge.com/faq), and its custom rules can be used to simulate modem speeds:
 
-![Proxy Fiddler](images/fiddler.png)
+![Fiddler proxy](images/fiddler.png)
 
-### Teste em redes desfavoráveis
+### Test on an impaired network
 
-Os proxies de software e hardware permitem que você emule condições de redes móveis problemáticas, como limitação de largura de banda, atraso de pacotes e perda aleatória de pacotes. Um proxy ou rede desfavorável compartilhado pode permitir que uma equipe de desenvolvedores incorpore testes de rede do mundo real em seu fluxo de trabalho.
+Software and hardware proxies enable you to emulate problematic mobile network conditions, such as bandwidth throttling, packet delay, and random packet loss. A shared proxy or impaired network can enable a team of developers to incorporate real-world network testing in their workflow.
 
-O [Augmented Traffic Control](http://facebook.github.io/augmented-traffic-control/) (ATC) do Facebook é um conjunto de aplicativos licenciados do BSD que pode ser usado para modelar tráfego e simular condições desfavoráveis de rede:
+Facebook's [Augmented Traffic Control](http://facebook.github.io/augmented-traffic-control/) (ATC) is a BSD-licensed set of applications that can be used to shape traffic and emulate impaired network conditions:
 
-![Augmented Traffic Control do Facebook](images/augmented-traffic-control.png)
+![Facebook's Augmented Traffic Control](images/augmented-traffic-control.png)
 
-> O Facebook instituiu as [terças-feiras 2G](https://code.facebook.com/posts/1556407321275493/building-for-emerging-markets-the-story-behind-2g-tuesdays/) para ajudar a entender como as pessoas usam seu produto com 2G. Nas terças-feiras, um pop-up notifica os funcionários sobre a opção de simular uma conexão 2G.
+> Facebook even instituted [2G Tuesdays](https://code.facebook.com/posts/1556407321275493/building-for-emerging-markets-the-story-behind-2g-tuesdays/) to help understand how people on 2G use their product. On Tuesdays, employees get a pop-up that gives them the option to simulate a 2G connection.
 
-O proxy HTTP/HTTPS [Charles](https://www.charlesproxy.com/){: .external } HTTP/HTTPS pode ser usado para [ajustar largura de banda e latência](http://www.charlesproxy.com/documentation/proxying/throttling/). O Charles é um software comercial, mas há uma versão de avaliação gratuita.
+The [Charles](https://www.charlesproxy.com/){: .external } HTTP/HTTPS proxy can be used to [adjust bandwidth and latency](http://www.charlesproxy.com/documentation/proxying/throttling/). Charles is commercial software, but a free trial is available.
 
-![Configurações de largura de banda e latência de proxy do Charles](images/charles.png)
+![Charles proxy bandwidth and latency settings](images/charles.png)
 
-Você pode obter mais informações sobre o Charles em [codewithchris.com](http://codewithchris.com/tutorial-using-charles-proxy-with-your-ios-development-and-http-debugging/).
+More information about Charles is available from [codewithchris.com](http://codewithchris.com/tutorial-using-charles-proxy-with-your-ios-development-and-http-debugging/).
 
-## Considere conectividade pouco confiável e "lie-fi" {: #lie-fi }
+## Handle unreliable connectivity and "lie-fi" {: #lie-fi }
 
-### O que é lie-fi?
+### What is lie-fi?
 
-O termo <a href="http://www.urbandictionary.com/define.php?term=lie-fi">lie-fi</a> foi criado em 2008 (quando os telefones tinham <a href="https://www.mobilegazette.com/2008-phones-wallchart.htm" title="Images of phones from 2008">esta</a> aparência) e significa uma conectividade que não é o que parece ser. O navegador se comporta como se tivesse conectividade quando, por algum motivo, não tem.
+The term [lie-fi](http://www.urbandictionary.com/define.php?term=lie-fi) dates back to at least 2008 (when phones looked like
+<a href="https://www.mobilegazette.com/2008-phones-wallchart.htm"
+title="Images of phones from 2008">this</a>), and refers to connectivity that isn't what it seems. Your browser behaves as if it has connectivity when, for whatever reason, it doesn't.
 
-A interpretação incorreta da conectividade pode resultar em uma experiência ineficiente, pois o navegador (ou o JavaScript) persiste na tentativa de recuperar resultados em vez de desistir e optar por um fallback razoável. Na verdade, o lie-fi pode ser pior que o off-line. Se o dispositivo estiver definitivamente off-line, o JavaScript poderá pelo menos executar ações adequadas para contornar a situação.
+Misinterpreted connectivity can result in a poor experience as the browser (or JavaScript) persists in trying to retrieve resources rather than giving up and choosing a sensible fallback. Lie-fi can actually be worse than offline; at least if a device is definitely offline, your JavaScript can take appropriate evasive action.
 
-É provável que o lie-fi se torne um problema maior conforme as pessoas mudam da banda larga fixa para os dispositivos móveis. [Dados recentes do censo americano](https://www.ntia.doc.gov/blog/2016/evolving-technologies-change-nature-internet-use) mostram um [abandono da banda larga fixa](https://www.washingtonpost.com/news/the-switch/wp/2016/04/18/new-data-americans-are-abandoning-wired-home-internet/). O gráfico a seguir mostra o uso doméstico da Internet móvel em 2015 com o de 2013:
+Lie-fi is likely to become a bigger problem as more people move to mobile and away from fixed broadband. Recent [US Census data](https://www.ntia.doc.gov/blog/2016/evolving-technologies-change-nature-internet-use) shows a [move away from fixed broadband](https://www.washingtonpost.com/news/the-switch/wp/2016/04/18/new-data-americans-are-abandoning-wired-home-internet/). The following chart shows the use of mobile internet at home in 2015 compared with 2013:
 
-<img src="images/home-broadband.png" class="center" alt="Gráfico de dados do censo americano, mostrando a mudança da banda larga fixa para os dispositivos móveis, particularmente em lares de baixa renda">
+<img src="images/home-broadband.png" class="center" alt="Chart from US census data
+showing the move to mobile away from fixed broadband, particularly in lower-income households" />
 
-### Use tempos limite para lidar com conectividade intermitente
+### Use timeouts to handle intermittent connectivity
 
-Anteriormente, [métodos de hacker usando XHR](http://stackoverflow.com/questions/189430/detect-that-the-internet-connection-is-offline) eram utilizados para testar a presença de conectividade intermitente. No entanto, o Service Worker oferece métodos mais confiáveis para definir tempos limite de rede. Jeff Posnick explica como fazer isso usando tempos limite do [sw-toolbox](https://github.com/GoogleChrome/sw-toolbox) em sua palestra [Carga instantânea com Service Workers](https://youtu.be/jCKZDTtUA2A?t=19m58s):
+In the past, [hacky methods using XHR](http://stackoverflow.com/questions/189430/detect-that-the-internet-connection-is-offline) have been used to test for intermittent connectivity, but service worker enables more reliable methods to set network timeouts. This can be achieved using [Workbox](/web/tools/workbox/) with only a few lines of code:
 
-
-    toolbox.router.get(
+    workboxSW.router.registerRoute(
       '/path/to/image',
-      toolbox.networkFirst,
-      {networkTimeoutSeconds: 3}
+      workboxSW.strategies.networkFirst({networkTimeoutSeconds: 3})
     );
     
 
-Uma [opção de tempo limite](https://github.com/whatwg/fetch/issues/20) também está planejada para a [Fetch API](https://developer.mozilla.org/en-US/docs/Web/API/GlobalFetch/fetch), e a [Streams API](https://www.w3.org/TR/streams-api/) pode ajudar otimizando a entrega de conteúdo e evitando solicitações monolíticas. Jake Archibald dá mais detalhes sobre como lidar com o lie-fi em [Otimização de carga de páginas](https://youtu.be/d5_6yHixpsQ?t=6m42s).
+You can learn more about Workbox in Jeff Posnick's Chrome Dev Summit talk, [Workbox: Flexible PWA Libraries](https://www.youtube.com/watch?v=DtuJ55tmjps).
 
+[Timeout functionality](/web/updates/2017/09/abortable-fetch) is also being developed for the [Fetch API](https://developer.mozilla.org/en-US/docs/Web/API/GlobalFetch/fetch), and the [Streams API](https://www.w3.org/TR/streams-api/) should help by optimizing content delivery and avoiding monolithic requests. Jake Archibald gives more details about tackling lie-fi in [Supercharging page load](https://youtu.be/d5_6yHixpsQ?t=6m42s).
 
-{# wf_devsite_translation #}
+## Feedback {: #feedback }
+
+{% include "web/_shared/helpful.html" %}
