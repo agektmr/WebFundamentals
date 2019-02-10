@@ -1,35 +1,26 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Documentación de referencia para la auditoría de Lighthouse "Contenido dimensionado correctamente para la ventana de visualización".
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Reference documentation for the "Content Sized Correctly for Viewport" Lighthouse audit.
 
-{# wf_updated_on: 2016-10-04 #}
-{# wf_published_on: 2016-10-04 #}
+{# wf_updated_on: 2018-07-23 #} {# wf_published_on: 2016-10-04 #} {# wf_blink_components: N/A #}
 
-# Contenido dimensionado correctamente para la ventana de visualización  {: .page-title }
+# Content Sized Correctly for Viewport {: .page-title }
 
-## Por qué es importante la auditoría {: #why }
+## Overview {: #overview }
 
-Esta auditoría comprueba que el ancho del contenido en tu página sea equivalente
-al ancho de la ventana de visualización. Cuando el ancho del contenido es menor o mayor que
-el ancho de la ventana de visualización, suele ser una señal de que la página no está optimizada para
-pantallas de dispositivos móviles.
+This audit checks that the width of the content on your page is equal to the width of the viewport. When content width is smaller or larger than viewport width, that's often a cue that the page is not optimized for mobile screens.
 
-## Cómo aprobar la auditoría {: #how }
+## Recommendations {: #recommendations }
 
-Esta auditoría es una forma indirecta de determinar si tu página está optimizada para
-dispositivos móviles. Si tu sitio no está optimizado y deseas que lo esté, primero consulta
-[Conceptos básicos de diseño web adaptable](/web/fundamentals/design-and-ux/responsive/).
+This audit is a roundabout way of determining if your page is optimized for mobile devices. If your site is not optimized and you want it to be, then see [Responsive Web Design Basics](/web/fundamentals/design-and-ux/responsive/) to get started.
 
+You can ignore this audit if:
 
-Puedes ignorar esta auditoría si:
+* Your site does not need to be optimized for mobile screens.
+* The content width of your page is intentionally smaller or larger than the viewport width.
 
-* Tu sitio no necesita ser optimizado para pantallas de dispositivos móviles.
-* El ancho del contenido de tu página es intencionalmente menor o mayor que el
-  ancho de la ventana de visualización.
+## More information {: #more-info }
 
-{% include "web/tools/lighthouse/audits/implementation-heading.html" %}
+The audit passes if `window.innerWidth === window.outerWidth`.
 
-Se aprueba la auditoría si `window.innerWidth === window.outerWidth`.
+## Feedback {: #feedback }
 
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
