@@ -1,57 +1,51 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Animações devem ter um bom desempenho, caso contrário, afetarão negativamente a experiência do usuário.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Animations must perform well, otherwise they will negatively impact the user experience.
 
-{# wf_updated_on: 2016-08-23 #}
-{# wf_published_on: 2014-08-08 #}
+{# wf_blink_components: Blink>Animation #} {# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2014-08-08 #}
 
-# Animações e desempenho {: .page-title }
+# Animations and Performance {: .page-title }
 
-{% include "web/_shared/contributors/paullewis.html" %}
-{% include "web/_shared/contributors/samthorogood.html" %}
+{% include "web/_shared/contributors/paullewis.html" %} {% include "web/_shared/contributors/samthorogood.html" %}
 
-Mantenha 60 fps sempre que você estiver animando, pois um valor inferior resultará em saltos ou tremidas que serão observados pelos seus usuários e afetarão negativamente a experiência.
+Maintain 60fps whenever you are animating, because any less results in stutters or stalls that will be noticeable to your users and negatively impact their experiences.
 
 ### TL;DR {: .hide-from-toc }
-* Tome cuidado para que suas animações não causem problemas de desempenho; conheça o impacto da animação de uma determinada propriedade CSS.
-* Animar propriedades que mudam a geometria da página (layout) ou causam pinturas são particularmente caras.
-* Sempre que possível, opte pela mudança de transformações e opacidade.
-* Use  <code>will-change</code> para garantir que o navegador saiba o que você planeja animar.
 
+* Take care that your animations don’t cause performance issues; ensure that you know the impact of animating a given CSS property.
+* Animating properties that change the geometry of the page (layout) or cause painting are particularly expensive.
+* Where you can, stick to changing transforms and opacity.
+* Use `will-change` to ensure that the browser knows what you plan to animate.
 
-Animar propriedades não é gratuito e algumas propriedades são mais baratas do que outras. Por exemplo, animar a `width` e a `height` de um elemento muda sua geometria e pode fazer com que outros elementos da página se movam ou mudem de tamanho. Esse processo é chamado de *layout* (ou *refluxo* em navegadores baseados em Gecko, como o Firefox) e pode ser caro se sua página tiver muitos elementos. Sempre que o layout for acionado, a página ou parte dela normalmente precisará ser pintada, o que é geralmente mais caro do que a própria operação de layout.
+Animating properties is not free, and some properties are cheaper to animate than others. For example, animating the `width` and `height` of an element changes its geometry and may cause other elements on the page to move or change size. This process is called *layout* (or *reflow* in Gecko-based browsers like Firefox), and can be expensive if your page has a lot of elements. Whenever layout is triggered, the page or part of it will normally need to be painted, which is typically even more expensive than the layout operation itself.
 
-Sempre que possível, evite animar propriedades que acionam layout ou pintura. Para a maioria dos navegadores modernos, isso significa limitar animações para `opacity` ou `transform`. Ambas podem ser altamente otimizadas pelo navegador, não importando se a animação é gerenciada por JavaScript ou CSS.
+Where you can, you should avoid animating properties that trigger layout or paint. For most modern browsers, this means limiting animations to `opacity` or `transform`, both of which the browser can highly optimize; it doesn’t matter if the animation is handled by JavaScript or CSS.
 
-Para obter uma lista completa dos trabalhos acionados por propriedades CSS individuais, consulte [Acionadores CSS](http://csstriggers.com). Encontre um guia completo sobre como criar [Animações de alto desempenho no HTML5 Rocks](http://www.html5rocks.com/en/tutorials/speed/high-performance-animations/).
+For a full list of the work triggered by individual CSS properties, see [CSS Triggers](http://csstriggers.com). You can find a full guide on creating [High Performance Animations on HTML5 Rocks](http://www.html5rocks.com/en/tutorials/speed/high-performance-animations/).
 
-### Usando a propriedade will-change
+### Using the will-change property
 
-Use [`will-change`](https://dev.w3.org/csswg/css-will-change/) para garantir que o navegador saiba que você pretende alterar a propriedade de um elemento. Isso permite que o navegador realize as otimizações mais adequadas antes de fazer a alteração. Não utilize `will-change` excessivamente, pois isso pode fazer com que o navegador desperdice recursos, o que, por sua vez, causa ainda mais problemas de desempenho.
+Use the [`will-change`](https://dev.w3.org/csswg/css-will-change/) to ensure the browser knows that you intend to change an element’s property. This allows the browser to put the most appropriate optimizations in place ahead of when you make the change. Don't overuse `will-change`, however, because doing so can cause the browser to waste resources, which in turn causes even more performance issues.
 
-A regra geral é que, se a animação puder ser acionada nos próximos 200 ms, seja pela interação de um usuário ou por causa do estado do seu aplicativo, ter `will-change` em elementos de animação é uma boa escolha. Para a maioria dos casos, qualquer elemento na visualização atual do aplicativo que você pretende animar deve ter `will-change` ativado para qualquer propriedade a ser alterada. No caso do exemplo de caixa que usamos nos guias anteriores, ao adicionar `will-change` para transformações e opacidade, teremos o seguinte resultado:
-
+The general rule of thumb is that if the animation might be triggered in the next 200ms, either by a user’s interaction or because of your application’s state, then having `will-change` on animating elements is a good idea. For most cases, then, any element in your app’s current view that you intend to animate should have `will-change` enabled for whichever properties you plan to change. In the case of the box sample we’ve been using throughout the previous guides, adding `will-change` for transforms and opacity looks like this:
 
     .box {
       will-change: transform, opacity;
     }
     
 
-Já os navegadores compatíveis, [atualmente o Chrome, o Firefox e o Opera](http://caniuse.com/#feat=will-change), farão as otimizações adequadas em segundo plano para oferecer suporte a alteração ou animação dessas propriedades.
+Now the browsers that support it, [currently Chrome, Firefox, and Opera](http://caniuse.com/#feat=will-change), will make the appropriate optimizations under the hood to support changing or animating those properties.
 
-## Desempenho do CSS vs JavaScript
+## CSS vs JavaScript performance
 
-Há muitos encadeamentos de páginas e comentários na Web que discutem os méritos relativos das animações CSS e JavaScript de uma perspectiva de desempenho. Alguns conceitos que devem ser considerados:
+There are many pages and comments threads around the web that discuss the relative merits of CSS and JavaScript animations from a performance perspective. Here are a few points to keep in mind:
 
-* Animações baseadas em CSS e animações da Web com suporte nativo geralmente são gerenciadas em um encadeamento conhecido como "encadeamento de composição". Isso é diferente do "encadeamento principal" do navegador, no qual o estilo, o layout, a pintura e o JavaScript são executados. Isso significa que, se o navegador estiver executando algumas tarefas caras no encadeamento principal, essas animações podem continuar sem interrupções.
+* CSS-based animations, and Web Animations where supported natively, are typically handled on a thread known as the "compositor thread". This is different from the browser's "main thread", where styling, layout, painting, and JavaScript are executed. This means that if the browser is running some expensive tasks on the main thread, these animations can keep going without being interrupted.
 
-* Outras alterações em transformações e opacidade podem, em muitos casos, também ser gerenciadas pelo encadeamento de composição.
+* Other changes to transforms and opacity can, in many cases, also be handled by the compositor thread.
 
-* Se qualquer animação acionar uma pintura, um layout ou ambos, o "encadeamento principal" será solicitado. Isso vale para animações baseadas em CSS e JavaScript e a sobrecarga do layout ou pintura provavelmente minimizará qualquer trabalho associado à execução do CSS ou JavaScript, tornando a questão discutível.
+* If any animation triggers paint, layout, or both, the "main thread" will be required to do work. This is true for both CSS- and JavaScript-based animations, and the overhead of layout or paint will likely dwarf any work associated with CSS or JavaScript execution, rendering the question moot.
 
-Para saber mais sobre quais trabalhos são acionados ao animar determinada propriedade, consulte [Acionadores CSS](http://csstriggers.com).
+For more information about which work is triggered by animating a given property, see [CSS Triggers](http://csstriggers.com).
 
+## Feedback {: #feedback }
 
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
