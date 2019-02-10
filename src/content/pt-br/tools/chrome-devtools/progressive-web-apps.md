@@ -1,204 +1,129 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Use o painel Application para inspecionar, modificar e depurar manifestos, service workers e caches de service worker de aplicativos da Web.
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Use the Application panel to inspect, modify, and debug web app manifests, service workers, and service worker caches.
 
-{# wf_updated_on: 2017-10-06 #}
-{# wf_published_on: 2016-07-25 #}
+{# wf_updated_on: 2018-11-20 #} {# wf_published_on: 2016-07-25 #} {# wf_blink_components: Platform>DevTools #}
 
-# Depurar Progressive Web Apps {: .page-title }
+# Debug Progressive Web Apps {: .page-title }
 
 {% include "web/_shared/contributors/kaycebasques.html" %}
 
-Use o painel <strong>Application</strong> para inspecionar, modificar
-e depurar manifestos, service workers e caches de service worker de aplicativos da Web.
+Use the **Application** panel to inspect, modify, and debug web app manifests, service workers, and service worker caches.
 
-Guias relacionados: 
+Related Guides:
 
 * [Progressive Web Apps](/web/progressive-web-apps)
 
-Este guia discute apenas os recursos de Progressive Web App do painel
-**Application**. Se você está buscando ajuda sobre outros painéis, consulte
-a última seção deste guia, [Outros guias do painel
-Application](#other).
-
+This guide only discusses the Progressive Web App features of the **Application** panel. If you're looking for help on the other panes, check out the last section of this guide, [Other Application panel guides](#other).
 
 ### TL;DR {: .hide-from-toc }
-- "Use o painel <strong>App Manifest</strong> para inspecionar o manifesto do seu aplicativo da Web e ativar eventos de adição à tela inicial.
-- Use o painel <strong>Service Worker</strong> para obter uma série de tarefas relacionadas a service worker, como descadastrar ou atualizar um serviço, emular eventos de push, ficar off-line ou interromper um service worker.
-- Visualize o cache do seu service worker no painel <strong>Cache Storage</strong>.
-- Cancele o registro de um service worker e apague todo o armazenamento e os caches com um único clique no painel <strong>Clear Storage</strong>.
 
+* Use the **Manifest** pane to inspect your web app manifest and trigger Add to Homescreen events.
+* Use the **Service Workers** pane for a whole range of service-worker-related tasks, like unregistering or updating a service, emulating push events, going offline, or stopping a service worker.
+* View your service worker cache from the **Cache Storage** pane.
+* Unregister a service worker and clear all storage and caches with a single button click from the **Clear storage** pane.
 
-## O manifesto do aplicativo da Web {:#manifest}
+## Web app manifest {:#manifest}
 
-Se quiser que seus usuários possam adicionar seu aplicativo às telas inicias de seus dispositivos móveis,
-você precisa de um manifesto de aplicativo da Web. Esse manifesto define como o aplicativo é exibido na
-tela inicial, para onde direcionar o usuário quando ele é iniciado da tela inicial e qual é a aparência
-do aplicativo quando ele é iniciado.
+If you want your users to be able to add your app to their mobile homescreens, you need a web app manifest. The manifest defines how the app appears on the homescreen, where to direct the user when launching from homescreen, and what the app looks like on launch.
 
-Guias relacionados:
+Related Guides:
 
-* [Melhore a experiência do usuário com um manifesto de
- aplicativo da Web](/web/fundamentals/web-app-manifest)
-* [Como usar banners de
-  instalação de aplicativo](/web/fundamentals/app-install-banners)
+* [Improve user experiences with a Web App Manifest](/web/fundamentals/web-app-manifest)
+* [Using App Install Banners](/web/fundamentals/app-install-banners)
 
-Quando seu manifesto estiver configurado, você pode usar o painel **Manifest** do painel
-**Application** para inspecioná-lo.
+Once you've got your manifest set up, you can use the **Manifest** pane of the **Application** panel to inspect it.
 
-![manifest pane][manifest]
+![manifest pane](images/manifest.png)
 
-* Para ver o código do manifesto, clique no link abaixo do rótulo **App Manifest**
-  (`https://airhorner.com/manifest.json` na imagem acima).
-* Pressione o botão **Add to homescreen** para simular um evento de adição
-  à tela inicial. Confira a próxima seção para saber mais.
-* As seções **Identidade** e **Apresentação** apenas exibem campos do
-  código do manifesto em uma vista mais simplista.
-* A seção **Icons** exibe todos os ícones especificados.
+* To look at the manifest source, click the link below **App Manifest** label (`https://airhorner.com/manifest.json` in the screenshot above).
+* Press the **Add to homescreen** button to simulate an Add to Homescreen event. Check out the next section for more information.
+* The **Identity** and **Presentation** sections just display fields from the manifest source in a more user-friendly display.
+* The **Icons** section displays every icon that you've specified.
 
-[manifest]: images/manifest.png
+### Simulate Add to Homescreen events {:#add-to-homescreen}
 
-### Simule eventos de adição à tela inicial {:#add-to-homescreen}
+A web app can only be added to a homescreen when the site is visited at least twice, with at least five minutes between visits. While developing or debugging your Add to Homescreen workflow, this criteria can be inconvenient. The **Add to homescreen** button on the **App Manifest** pane lets you simulate Add to Homescreen events whenever you want.
 
-Um aplicativo da Web só pode ser adicionado a uma tela inicial quando o site é acessado pelo
-menos duas vezes, com no mínimo 5 minutos separando os acessos. Durante o desenvolvimento ou
-a depuração do fluxo de adição à tela inicial, este critério pode ser inconveniente.
-O botão **Add to homescreen** no painel **App Manifest** permite
-simular eventos de adição à tela inicial sempre que você quiser.
+You can test out this feature with the [Google I/O 2016 progressive web app](https://events.google.com/io2016/){: .external }, which has proper support for Add to Homescreen. Clicking on **Add to Homescreen** while the app is open prompts Chrome to display the "add this site to your shelf" banner, which is the desktop equivalent of the "add to homescreen" banner for mobile devices.
 
-É possível testar este recurso com o [Progressive Web App da Google I/O
-2016](https://events.google.com/io2016/){: .external }, que oferece suporte adequado para adição à
-tela inicial. Clicar em **Add to Homescreen** com o aplicativo aberto induz
-o Chrome a exibir o banner "add this site to your shelf", que é o
-equivalente dos dispositivos móveis para o banner "add to homescreen" dos computadores.
+![add to desktop shelf](images/io.png)
 
-![add to desktop shelf][shelf]
+**Tip**: Keep the **Console** drawer open while simulating Add to Homescreen events. The Console tells you if your manifest has any issues and logs other information about the Add to Homescreen lifecycle.
 
-**Dica**: Mantenha a gaveta **Console** aberta ao simular eventos de Adição
-à tela inicial. O Console informa se o manifesto tem problemas e registra outras
-informações sobre o ciclo de vida da adição à tela inicial.
+The **Add to Homescreen** feature cannot yet simulate the workflow for mobile devices. Notice how the "add to shelf" prompt was triggered in the screenshot above, even though DevTools is in Device Mode. However, if you can successfully add your app to your desktop shelf, then it'll work for mobile, too.
 
-O recurso **Add to Homescreen** ainda não pode simular o fluxo de trabalho para dispositivos
-móveis. Observe como a mensagem "adicionar à prateleira" foi acionada na
-imagem acima, mesmo com o DevTools no Device Mode. Entretanto, se conseguir adicionar
-seu aplicativo à prateleira do computador, ele também funcionará
-para dispositivos móveis.
-
-Se quiser testar nossa experiência móvel genuína, você pode
-conectar um dispositivo móvel real ao DevTools por [depuração remota][remote
-debugging] e, em seguida, clicar no botão **Add to Homescreen** (no DevTools)
-para acionar a mensagem "adicionar à tela inicial" no dispositivo móvel conectado.
-
-[shelf]: images/io.png
-[remote debugging]: /web/tools/chrome-devtools/debug/remote-debugging/remote-debugging
+If you want to test out the genuine mobile experience, you can connect a real mobile device to DevTools via [remote debugging](/web/tools/chrome-devtools/debug/remote-debugging/remote-debugging), and then click the **Add to Homescreen** button (on DevTools) to trigger the "add to homescreen" prompt on the connected mobile device.
 
 ## Service workers {:#service-workers}
 
-Os service workers são uma tecnologia fundamental para o futuro da plataforma Web. Eles
-são scripts que o navegador executa em segundo plano, separado de uma página da Web.
-Esses scripts permitem acessar recursos que não precisam de uma página da Web nem de interação
-do usuário, como notificações por push, sincronização em segundo plano e experiências off-line.
+Service workers are a fundamental technology in the future web platform. They are scripts that the browser runs in the background, separate from a web page. These scripts enable you to access features that don't need a web page or user interaction, like push notifications, background sync, and offline experiences.
 
-Guias relacionados:
+Related Guides:
 
-* [Introdução aos service workers](/web/fundamentals/primers/service-worker)
-* [Notificações push: Pertinentes, relevantes e
-  precisas](/web/fundamentals/push-notifications)
+* [Intro to Service Workers](/web/fundamentals/primers/service-worker)
+* [Push Notifications: Timely, Relevant, and Precise](/web/fundamentals/push-notifications)
 
-O painel **Service Workers** na seção **Application** é o lugar no
-DevTools para inspecionar e depurar service workers.
+The **Service Workers** pane in the **Application** panel is the main place in DevTools to inspect and debug service workers.
 
-![painel service worker][sw]
+![service worker pane](images/sw.png)
 
-* Se um service worker estiver instalado na página aberta no momento, você o verá
-   listado neste painel. Por exemplo, na imagem acima, há um service
-  worker instalado para o escopo de `https://events.google.com/io2016/`.
-* A caixa de seleção **Offline** coloca o DevTools em modo off-line. Isto
-  é equivalente ao modo off-line disponível no painel **Network** ou
-  à opção `Go offline` do [Menu de comando][cm].
-* A caixa de seleção **Update on reload** força o service worker a
-  atualizar a cada carregamento da página.
-* A caixa de seleção **Bypass for network** ignora o service worker e força o
-  navegador a acessar a rede para obter os recursos solicitados.
-* O botão **Update** realize uma atualização pontual do service worker
-  especificado.
-* O botão **Push** emula uma notificação por push sem conteúdo (também conhecido
-  como um [interruptor][tickle]).
-* O botão **Sync** emula um evento de sincronização em segundo plano.
-* O botão **Unregister** cancelar o registro do service worker especificado. Confira
-  [Apagar armazenamento](#clear-storage) para saber como cancelar o registro de um service worker e
-  apagar o armazenamento e os caches com um único clique.
-* A linha **Source** informa quando o service worker em execução no momento foi
-  instalado. O link é o nome do arquivo de origem do service worker. Clicar
-  no link envia você ao código do service worker.
-* A linha **Status** informa o status do service worker. O número nesta
-  linha (`#1` na imagem acima) indica quantas vezes o service
-  worker foi atualizado. Se você marcar a caixa de seleção **update on reload**,
-  perceberá que o número aumenta a cada carregamento da página. Perto do
-  status, você verá um botão de **iniciar** (se o service worker for interrompido) ou um
-  botão de **parar** (se o service worker estiver em execução). Os service workers são
-  projetados para serem interrompidos e iniciados pelo navegador a qualquer momento. Interromper
-  explicitamente seu service worker usando o botão **stop** pode simular esse comportamento.
-  Interromper seu service worker é uma ótima maneira de testar como o
-  código se comporta quando o service worker é reiniciado. Com frequência,
-  essa estratégia revela bugs causados por conceitos incorretos sobre o estado de persistência global.
-* A linha **Clients** diz a origem a que o service worker está
-  direcionado. O botão **focus**, na maioria das vezes, é útil quando se marca a
-  caixa de seleção **show all**. Quando essa caixa está marcada, todos os service
-  workers registrados são listados. Se você clicar no botão **focus** ao lado de um service
-  worker que está sendo executado em outra guia, o Chrome muda o foco para essa guia.
+* If a service worker is installed to the currently open page, then you'll see it listed on this pane. For example, in the screenshot above there's a service worker installed for the scope of `https://events.google.com/io2016/`.
+* The **Offline** checkbox puts DevTools into offline mode. This is equivalent to the offline mode available from the **Network** panel, or the `Go offline` option in the [Command Menu](/web/tools/chrome-devtools/ui#command-menu).
+* The **Update on reload** checkbox forces the service worker to update on every page load.
+* The **Bypass for network** checkbox bypasses the service worker and forces the browser to go to the network for requested resources.
+* The **Update** button performs a one-time update of the specified service worker.
+* The **Push** button emulates a push notification without a payload (also known as a [tickle](/web/fundamentals/push-notifications/how-push-works)).
+* The **Sync** button emulates a background sync event.
+* The **Unregister** button unregisters the specified service worker. Check out [Clear storage](#clear-storage) for a way to unregister a service worker and wipe storage and caches with a single button click.
+* The **Source** line tells you when the currently running service worker was installed. The link is the name of the service worker's source file. Clicking on the link sends you to the service worker's source.
+* The **Status** line tells you the status of the service worker. The number on this line (`#1` in the screenshot above) indicates how many times the service worker has been updated. If you enable the **update on reload** checkbox you'll notice that the number increments on every page load. Next to the status you'll see a **start** button (if the service worker is stopped) or a **stop** button (if the service worker is running). Service workers are designed to be stopped and started by the browser at any time. Explicitly stopping your service worker using the **stop** button can simulate that. Stopping your service worker is a great way to test how your code behaves when the service worker starts back up again. It frequently reveals bugs due to faulty assumptions about persistent global state.
+* The **Clients** line tells you the origin that the service worker is scoped to. The **focus** button is mostly useful when you've enabled the **show all** checkbox. When that checkbox is enabled, all registered service workers are listed. If you click on the **focus** button next to a service worker that is running in a different tab, Chrome focuses on that tab.
 
-Se o service worker causar erros, um novo rótulo chamado **Errors** será
-exibido.
+If the service worker causes any errors, a new label called **Errors** shows up.
 
-![service worker com erros][errors]
+![service worker with errors](images/sw-error.png)
 
-[sw]: images/sw.png
-[cm]: /web/tools/chrome-devtools/settings#command-menu
-[tickle]: /web/fundamentals/push-notifications/how-push-works
-[errors]: images/sw-error.png
+## Service worker caches {:#caches}
 
-## Caches do service worker {:#caches}
+The **Cache Storage** pane provides a read-only list of resources that have been cached using the (service worker) [Cache API](https://developer.mozilla.org/en-US/docs/Web/API/Cache).
 
-O painel **Cache Storage** fornece uma lista somente leitura dos recursos que foram
-armazenados em cache usando a [Cache API][sw-cache] (do service worker).
+![service worker cache pane](images/sw-cache.png)
 
-![painel de cache do service worker][sw-cache-pane]
+Note that the first time you open a cache and add a resource to it, DevTools might not detect the change. Reload the page and you should see the cache.
 
-Observe que, quando abrir um cache pela primeira vez e adicionar um recurso a ele, o DevTools
-poderá não detectar a alteração. Recarregue a página para visualizar o cache.
+If you've got two or more caches open, you'll see them listed below the **Cache Storage** dropdown.
 
-Se tiver dois ou mais caches abertos, você os verá listados abaixo da lista suspensa
-**Cache Storage**.
+![multiple service worker caches](images/multiple-caches.png)
 
-![vários caches de service worker][multiple-caches]
+## Quota usage {:#opaque-responses}
 
-[sw-cache]: https://developer.mozilla.org/en-US/docs/Web/API/Cache
-[sw-cache-pane]: images/sw-cache.png
-[multiple-caches]: images/multiple-caches.png
+Some responses within the Cache Storage pane may be flagged as being "[opaque](/web/fundamentals/glossary#opaque-response)". This refers to a response retrieved from a different origin, like from a [CDN](/web/fundamentals/glossary#CDN) or remote API, when [CORS](https://fetch.spec.whatwg.org/#http-cors-protocol) is not enabled.
 
-## Apagar armazenamento {:#clear-storage}
+In order to avoid leakage of cross-domain information, there's significant padding added to the size of an opaque response used for calculating storage quota limits (i.e. whether a `QuotaExceeded` exception is thrown) and reported by the [`navigator.storage` API](/web/updates/2017/08/estimating-available-storage-space).
 
-O painel **Clear Storage** é um recurso muito útil ao
-desenvolver Progressive Web Apps. Este painel permite cancelar o registro de service workers
-e apagar todos os caches e todo o armazenamento clicando em um único botão. Confira a
-seção abaixo para saber mais.
+The details of this padding vary from browser to browser, but for Google Chrome, this means that the *minimum* size that any single cached opaque response contributes to the overall storage usage is [approximately 7 megabytes](https://bugs.chromium.org/p/chromium/issues/detail?id=796060#c17). You should keep this in mind when determining how many opaque responses you want to cache, since you could easily exceeded storage quota limitations much sooner than you'd otherwise expect based on the actual size of the opaque resources.
 
-Guias relacionados:
+Related Guides:
 
-* [Apagar
-  armazenamento](/web/tools/chrome-devtools/iterate/manage-data/local-storage#clear-storage)
+* [Stack Overflow: What limitations apply to opaque responses?](https://stackoverflow.com/q/39109789/385997)
+* [Workbox: Understanding Storage Quota](/web/tools/workbox/guides/storage-quota#beware_of_opaque_responses)
 
-## Outros guias do painel Application {:#other}
+## Clear storage {:#clear-storage}
 
-Confira os guias abaixo para receber mais ajuda sobre outras seções do
-painel **Application**.
+The **Clear Storage** pane is a very useful feature when developing progressive web apps. This pane lets you unregister service workers and clear all caches and storage with a single button click. Check out the section below to learn more.
 
-Guias relacionados:
+Related Guides:
 
-* [Inspecionar recursos da página](/web/tools/chrome-devtools/iterate/manage-data/page-resources)
-* [Inspecionar e
-  gerenciar armazenamento local e caches](/web/tools/chrome-devtools/iterate/manage-data/local-storage)
+* [Clear Storage](/web/tools/chrome-devtools/iterate/manage-data/local-storage#clear-storage)
 
+## Other Application panel guides {:#other}
 
-{# wf_devsite_translation #}
+Check out the guides below for more help on the other panes of the **Application** panel.
+
+Related Guides:
+
+* [Inspect page resources](/web/tools/chrome-devtools/iterate/manage-data/page-resources)
+* [Inspect and manage local storage and caches](/web/tools/chrome-devtools/iterate/manage-data/local-storage)
+
+## Feedback {: #feedback }
+
+{% include "web/_shared/helpful.html" %}
