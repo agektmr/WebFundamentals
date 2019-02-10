@@ -1,123 +1,93 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: El editor de código es tu principal herramienta de programación; se usa para escribir y guardar líneas de código. Escribe código más eficaz y de manera más rápida aprendiendo las combinaciones de teclas de tu editor e instalando complementos claves.
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Your code editor is your main development tool; you use it to write and save lines of code. Write better code faster by learning your editor's shortcuts and installing key plugins.
 
-{# wf_updated_on: 2017-07-12 #}
-{# wf_published_on: 2014-05-28 #}
+{# wf_updated_on: 2015-04-13 #} {# wf_published_on: 2014-05-28 #}
 
-# Configura tu editor {: .page-title }
+# Set Up Your Editor {: .page-title }
 
-{% include "web/_shared/contributors/megginkearney.html" %}
-{% include "web/_shared/contributors/mattgaunt.html" %}
+{% include "web/_shared/contributors/megginkearney.html" %} {% include "web/_shared/contributors/mattgaunt.html" %}
 
-El editor de código es tu principal herramienta de programación; se usa para escribir y guardar líneas de código. Escribe código más eficaz y de manera más rápida aprendiendo las combinaciones de teclas de tu editor e instalando complementos claves.
-
+Your code editor is your main development tool; you use it to write and save lines of code. Write better code faster by learning your editor's shortcuts and installing key plugins.
 
 ### TL;DR {: .hide-from-toc }
-- Elige un editor que te permita personalizar las combinaciones de teclas y cuente con muchísimos complementos para que puedas escribir mejor código.
-- Aprovecha el administrador de paquetes para facilitar la detección, instalación y actualización de los complementos.
-- Instala complementos que te ayuden a sostener la productividad durante la programación. Comienza con las recomendaciones de esta guía.
 
+- Choose an editor that lets you customize shortcuts and has lots of plugins to help you write better code.
+- Make use of the package manager to make it easier to discover, install, and update plugins.
+- Install plugins that help keep you productive during development; start with the recommendations in this guide.
 
-## Instalar el editor de texto Sublime
+## Install Sublime text editor
 
-[Sublime](http://www.sublimetext.com/){: .external } es un gran editor, equipado con una base sólida
-de funcionalidad que transforma la redacción de código en una actividad placentera. Puedes instalar un administrador
-de paquetes que facilita la instalación de complementos y la adición de funcionalidad nueva.
+[Sublime](http://www.sublimetext.com/){: .external } is a great editor with a solid base level of functionality which makes writing code a pleasure. You can install a package manager that makes it easy to install plugins and add new functionality.
 
-Actualmente, se ofrecen dos opciones de descarga para Sublime Text: la [versión 2](http://www.sublimetext.com/2) o la [versión 3](http://www.sublimetext.com/3). La versión 3 es bastante estable y te brindará acceso a los paquetes que no están disponibles en Sublime Text 2; no obstante, la versión 2 puede ser más confiable.
+There are currently two download options for Sublime Text, either [version 2](http://www.sublimetext.com/2) or [version 3](http://www.sublimetext.com/3). Version 3 is pretty stable and will give you access to packages not available in Sublime Text 2, however you may find version 2 more reliable.
 
-Note: La <a href='http://robdodson.me/blog/2012/06/23/sublime-text-2-tips-and-shortcuts/'>entrada del blog</a> de Rob Dodson sobre cómo familiarizarse con Sublime y apreciarlo es una gran referencia para aprovechar tu editor al máximo. Los conceptos son relevantes para cualquier editor de texto, no solo Sublime.
+Note: Rob Dodson's [blog post](http://robdodson.me/blog/2012/06/23/sublime-text-2-tips-and-shortcuts/) on how to get to know and love Sublime is a great reference for getting the most out of your editor. The concepts are relevant to any text editor, not just Sublime.
 
-## ¿Por qué usar un administrador de paquetes?
+## Why use a package manager?
 
-Los administradores de paquetes simplifican la detección, instalación y actualización de los paquetes y
-los complementos.
+Package managers make it easy to find, install, and keep packages & plugins up-to-date.
 
-<img src="imgs/package_control.png" class="center" alt="Captura de pantalla de Package Control de los editores Sublime Text"/>
+<img src="imgs/package_control.png" class="center" alt="Screenshot of Sublime Text Editors Package Control" />
 
-Si deseas instalar un administrador de paquetes para Sublime, sigue estas instrucciones:
-[https://packagecontrol.io/installation](https://packagecontrol.io/installation).
+You can install a Package Manager for Sublime by following these instructions <https://packagecontrol.io/installation>.
 
-Solo debes hacer esto una vez; luego consulta, a continuación, nuestra lista de complementos
-recomendados.
+You only need to do this once, after which see below for our recommended list of plugins.
 
-## Instalar complementos
+## Install plugins
 
-Los complementos te ayudan a ser más productivo. ¿Cuáles son las tareas por las cuales
-aún tienes que recurrir a otras herramientas?
+Plugins help you stay more productive. What are the things you keep having to go back out to other tools to do?
 
-Aplicación de lint: existe un complemento para realizarla. Se muestran los cambios que no se guardaron:
-- Existen complementos para ello. Integración con otras herramientas, como GitHub;
-existen complementos para realizarla.
+Linting - there's a plugin for that. Showing what changes haven't been committed
 
-Los administradores de paquetes simplifican mucho la detección, instalación y actualización de los complementos:
+- there are plugins for that. Integration with other tools, such as GitHub, there are plugins for that.
 
-1. En el editor Sublime Text, abre el administrador de paquetes (Ctrl + Mayús + P).
-2. Escribe “Install Package”.
-3. Escribe el nombre del complemento que buscas (o explora todos los
-   complementos).
+Package managers make it very easy to find, install, and update plugins:
 
-Consulta estas [listas de tendencias de los complementos de Sublime
-Text](https://packagecontrol.io/browse). Estos son los complementos que más nos gustan, y
-te recomendamos que los instales porque pueden ayudarte a acelerar la programación.
+1. In the Sublime Text editor, open your package manager (ctrl+shift+p).
+2. Enter 'Install Package'.
+3. Enter the name of the plugin you are looking for (or else browse all plugins).
+
+Check out these [trending lists of Sublime Text plugins](https://packagecontrol.io/browse). Here are the plugins we love and recommend you install because they help you speed up your development:
 
 ### Autoprefixer
 
-Si deseas contar con un método rápido para agregar prefijos de proveedores a tu CSS, puedes hacerlo
-con este complemento práctico.
+If you want a quick way to add vendor prefixes to your CSS, you can do so with this handy plugin.
 
-Escribe CSS e ignora los prefijos de proveedores. Cuando desees agregarlos, presiona
-`ctrl+shift+p` y escribe `Autoprefix CSS`.
+Write CSS, ignoring vendor prefixes and when you want to add them, hit `ctrl+shift+p` and type `Autoprefix CSS`.
 
-[Se trata la manera en que puedes automatizar esto en el proceso de
-compilación](/web/tools/setup/setup-buildtools);
-así, tu CSS conserva su eficiencia y no es necesario que recuerdes presionar
-`ctrl+shift+p`.
+[We cover how you can automate this in your build process](/web/tools/setup/setup-buildtools), that way your CSS stays lean and you don't need to remember to hit `ctrl+shift+p`.
 
-<img src="imgs/sublime-autoprefixer.gif" alt="Ejemplo del complemento Autoprefixer de Sublime" />
+![Sublime Autoprefixer Plugin Example](imgs/sublime-autoprefixer.gif)
 
 ### ColorPicker
 
-Selecciona cualquier color de la paleta y agrégalo a la CSS con `ctrl+shift+c`.
+Pick any color from the palette and add it to your CSS with `ctrl+shift+c`.
 
-<img src="imgs/sublime-color-picker.png" alt="Complemento ColorPicker de Sublime" />
+![Sublime Color Picker Plugin](imgs/sublime-color-picker.png)
 
 ### Emmet
 
-Agrega algunas combinaciones de teclas y fragmentos útiles al editor de texto. Mira el
-video sobre [Emmet.io](http://emmet.io/){: .external } para acceder a una presentación de lo que puede hacer (uno de
-mis favoritos es el comando “Toggle Comment”).
+Add some useful keyboard shortcuts and snippets to your text editor. Check out the video on [Emmet.io](http://emmet.io/){: .external } for an intro into what it can do (a personal favorite is the 'Toggle Comment' command).
 
-<img src="imgs/emmet-io-example.gif" alt="Demostración del complemento Emmet.io" />
+![Demo of the Emmet.io Plugin](imgs/emmet-io-example.gif)
 
-### Mejorar el aspecto de HTML-CSS-JS
+### HTML-CSS-JS prettify
 
-Esta extensión te brinda un comando para dar formato a tus elementos HTML, CSS y JS. Puedes, incluso,
-mejorar el aspecto de los archivos al guardarlos.
+This extension gives you a command to format your HTML, CSS and JS. You can even prettify your files whenever your save a file.
 
-<img src="imgs/sublime-prettify.gif" alt="Gif del complemento Prettify de Sublime" />
+![Gif of the Sublime Prettify Plugin](imgs/sublime-prettify.gif)
 
 ### Git Gutter
 
-Agrega un marcador al medianil cuando se realice un cambio en el archivo.
+Add a marker in the gutter wherever there is a change made to a file.
 
-<img src="imgs/sublime-git-gutter.png" alt="Captura de pantalla del complemento Git Gutter de Sublime" />
+![Screenshot of the Sublime Git Gutter Plugin](imgs/sublime-git-gutter.png)
 
 ### Gutter Color
 
-Note: Solo está disponible en Sublime Text 3.
+Note: This is only available in Sublime Text 3
 
-Gutter Color exhibe una muestra pequeña del color junto a tu CSS.
+Gutter Color shows you a small color sample next to your CSS.
 
-<img src="imgs/sublime-gutter-color.png" alt="Captura de pantalla de Gutter Color de Sublime" />
+![Sublime Gutter Color Screenshot](imgs/sublime-gutter-color.png)
 
-Este complemento requiere ImageMagick. Si usas Mac OS X, te recomendamos probar el
-instalador de [CactusLabs](http://cactuslab.com/imagemagick/){: .external } (es posible que
-debas reiniciar tu equipo para que funcione).
-
-
-
-
-
-{# wf_devsite_translation #}
+The plugin requires ImageMagick. If you are on Mac OS X, we recommend trying the installer from [CactusLabs](http://cactuslab.com/imagemagick/){: .external } (you may need to restart your machine to get it working).
