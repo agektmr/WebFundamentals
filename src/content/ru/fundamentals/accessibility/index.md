@@ -1,395 +1,217 @@
-project_path: /web/fundamentals/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Улучшение доступности для веб-страниц
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Improving accessibility for web pages
 
-{# wf_updated_on: 2017-07-19 #}
-{# wf_published_on: 2016-06-26 #}
+{# wf_blink_components: Blink>Accessibility #} {# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2016-06-26 #}
 
-# Доступность {: .page-title }
+# Accessibility {: .page-title }
 
-{% include "web/_shared/contributors/megginkearney.html" %}
-{% include "web/_shared/contributors/dgash.html" %}
-{% include "web/_shared/contributors/aliceboxhall.html" %}
-{% include "web/_shared/contributors/robdodson.html" %}
+{% include "web/_shared/contributors/megginkearney.html" %} {% include "web/_shared/contributors/dgash.html" %} {% include "web/_shared/contributors/aliceboxhall.html" %} {% include "web/_shared/contributors/robdodson.html" %}
 
-Этот набор документов – текстовая версия части материала, представленного в
-[Курсе Udacity по
-доступности](https://www.udacity.com/course/web-accessibility--ud891){: .external }.
-Это не расшифровка видеокурса, а, скорее, более лаконичное изложение
-принципов и приемов обеспечения доступности на основе  оригинальных
-материалов курса.
+This document set is a text-based version of part of the content covered in the [Udacity course on Accessibility](https://www.udacity.com/course/web-accessibility--ud891){: .external }. Rather than a direct transcription of the video course, it is meant to be a more concise treatment of accessibility principles and practices, using the course's original content as a base.
 
 ### TL;DR {: .hide-from-toc }
 
-Из этой статьи вы узнаете:
-- что такое доступность и как она применяется к веб-разработке;
-- как сделать веб-сайты доступными и полезными для всех;
-- как обеспечить базовую доступность с минимальным влиянием на разработку;
-- какие возможности HTML вам доступны, и как использовать их для улучшения доступности;
-- продвинутые техники для обеспечения максимальной дотсупности.
+- Learn what accessibility means and how it applies to web development.
+- Learn how to make web sites accessible and usable for everyone.
+- Learn how to include basic accessibility with minimal development impact.
+- Learn what HTML features are available and how to use them to improve accessibility.
+- Learn about advanced accessibility techniques for creating polished accessibility experiences.
 
-Понимание доступности, её охвата и влияния может повысить вашу квалификацию
-веб-разработчика. Это руководство предназначено помочь вам понять, как сделать
-свой сайт доступней и полезней для всех.
+Understanding accessibility, its scope, and its impact can make you a better web developer. This guide is intended to help you understand how you can make your websites accessible and usable for everyone.
 
-Слово "доступность" бывает сложно написать без ошибок, но реализовать ее не
-так сложно. В этом руководстве вам будут представлены некоторые простые
-решения, которые помогут улучшить доступность с минимальными усилиями, будет
-показано, как использовать встроенный функционал HTML для создания более
-доступных и надежных интерфейсов, а также, как использовать некоторые
-продвинутые техники для обеспечения максимальной доступности.
+"Accessibility" can be difficult to spell, but it doesn't have to be difficult to accomplish. In this guide, you will see how to get some easy wins to help improve accessibility with minimal effort, how you can use what's built in to HTML to create more accessible and robust interfaces, and how to leverage some advanced techniques for creating polished accessible experiences.
 
-Вы также узнаете, что многие из этих техник помогут вам создавать интерфейсы,
-более приятные и простые в использовании для *всех* пользователей, а не только
-для людей с ограниченными возможностями.
+You'll also find that many of these techniques will help you create interfaces that are more pleasant and easy to use for *all* users, not just for those with disabilities.
 
-Разумеется, множество разработчиков имеют лишь туманное представление о том,
-что значит доступность (что-то связанное с государственными контрактами,
-контрольными списками, и устройствами чтения с экрана, так?), и вокруг этого
-понятия витает множество заблуждений. Например, многие разработчики считают,
-что решение проблемы доступности заставит их выбирать между созданием
-восхитительного и привлекательного интерфейса и чем-то неудобным и уродливым,
-но доступным.
+Of course, many developers have only a hazy understanding of what accessibility means &mdash; something to do with government contracts, checklists, and screen readers, right? &mdash; and there are plenty of misconceptions floating around. For example, many developers feel that addressing accessibility will force them to choose between creating a delightful and attractive experience, and one that is clunky and ugly but accessible.
 
-Это, конечно, не совсем так, так что давайте проясним это, прежде чем займёмся
-чем-то еще. Что мы подразумеваем под доступностью, и чему мы здесь будем учиться?
+That is, of course, not the case at all, so let's clear that up before we get into anything else. What do we mean by accessibility, and what are we here to learn about?
 
-## Что такое доступность?
+## What is accessibility?
 
-В широком смысле, когда мы говорим, что сайт доступен, мы имеем ввиду, что
-контент сайта доступен и его функционалом может воспользоваться буквально *кто
-угодно*. Как разработчикам вам легко принять, что все пользователи могут видеть
-и могут использовать клавиатуру, или мышь, или сенсорный экран, и могут
-взаимодействовать с вашей страницей так же, как и вы. Это может привести к тому,
-что все работает хорошо для одних людей, но создает проблемы, которые
-варьируются от простых раздражений до блокирующих работу, для других.
+Broadly speaking, when we say a site is accessible, we mean that the site's content is available, and its functionality can be operated, by literally *anyone*. As developers, it's easy to assume that all users can see and use a keyboard, mouse, or touch screen, and can interact with your page content the same way you do. This can lead to an experience that works well for some people, but creates issues that range from simple annoyances to show-stoppers for others.
 
-Доступность относится к пользователям, которые могут выходить за рамки узкого
-понятия "типичный" пользователь, к пользователяим, которые могут иметь доступ или
-взаимодействовать с вещами не так, как вы ожидаете. В частности, это касается
-пользователей, у которых имеются некоторые нарушения или инвалидность — и имейте
-в виду, что это всё может быть нефизическим или временным.
+Accessibility, then, refers to the experience of users who might be outside the narrow range of the "typical" user, who might access or interact with things differently than you expect. Specifically, it concerns users who are experiencing some type of impairment or disability &mdash; and bear in mind that that experience might be non-physical or temporary.
 
-Например, хотя мы и склонны сосредотачивать наше обсуждение доступности на
-пользователях с физическими нарушениями, всем нам знаком опыт
-использования интерфейса недоступного для нас по другим причинам. У вас
-когда-нибудь были проблемы с использованием сайта на мобильном телефоне, или вы
-видели сообщение "Этот контент недоступен в вашем регионе", или вы не могли
-найти знакомое меню на планшете? Все это проблемы доступности.
+For example, although we tend to center our discussion of accessibility on users with physical impairments, we can all relate to the experience of using an interface that is not accessible to us for other reasons. Have you ever had a problem using a desktop site on a mobile phone, or seen the message "This content is not available in your area", or been unable to find a familiar menu on a tablet? Those are all accessibility issues.
 
-Как станет ясно в дальнейшем, когда вы решаете проблемы доступности в этом, более
-широком, более глобальном смысле, это почти всегда улучшает пользовательский
-опыт для всех. Давайте взглянем на пример:
+As you learn more, you'll find that addressing accessibility issues in this broader, more general sense almost always improves the user experience for everyone. Let's look at an example:
 
 ![a form with poor accessibility](imgs/pooraccess.jpg)
 
-У этой формы несколько проблем с доступностью.
+This form has several accessibility issues.
 
-- Текст должен быть более контрастным, его сложно читать пользователям с плохим
-  зрением.
-- Расположение названий полей слева, а самих полей справа затрудняет ассоциацию
-  их друг с другом, для многих людей, и делает практически невозможной для тех,
-  кому требуется увеличение масштаба для использования страницы; представьте, что
-  глядя на это на телефоне вам приходится панорамно передвигаться по странице,
-  чтобы связать поля с названиеми.
-- Надпись "Запомнить данные?" не связана с переключателем, так что вы должны
-  коснуться или кликнуть только на маленький квадратик, вместо того, чтобы просто
-  кликнуть на надпись; кроме того, у пользователей, использующих устройства чтения с
-  экрана, могут быть проблемы с ассоциацией надписи и переключателя.
+- The text is low contrast, which is hard for low-vision users to read.
+- Having labels on the left and fields on the right makes it hard for many people to associate them, and almost impossible for someone who needs to zoom in to use the page; imagine looking at this on a phone and having to pan around to figure out what goes with what.
+- The "Remember details?" label isn't associated with the checkbox, so you have to tap or click only on the tiny square rather than just clicking the label; also, someone using a screen reader would have trouble figuring out the association.
 
-Теперь давайте взмахнем нашей волшебной палочкой доступности и посмотрим на эту
-форму с уже исправленными проблемами.
-Мы сделаем текст темнее, изменим дизайн так, чтобы названия полей
-стали ближе к самим полям, и исправим надпись, связанную с переключателем так,
-чтобы переключать его можно было нажатием на саму надпись.
+Now let's wave our accessibility wand and see the form with those issues fixed. We're going to make the text darker, modify the design so that the labels are close to the things they're labeling, and fix the label to be associated with the checkbox so you can toggle it by clicking the label as well.
 
 ![a form with improved accessibility](imgs/betteraccess.jpg)
 
-Какой формой вы бы предпочли пользоваться? Если вы сказали "доступной версией",
-значит вы на пути понимания основных предпосылок этого руководства. Часто,
-что-то, что полностью блокирует несколько пользователей, так же представляет неудобство
-для многих других, так что решая проблемы доступности вы улучшаете интерфейс для
-всех.
+Which would you rather use? If you said "the accessible version", you're on your way to understanding a main premise of this guide. Often, something that's a complete blocker for a few users is also a pain point for many others, so by fixing the accessibility issue you improve the experience for everyone.
 
-## Рекомендации по доступности контента
+## Web Content Accessibility Guidelines
 
-В этом руководстве мы будем ссылаться на [Рекомендации по доступности контента
-(РПДК) 2.0](https://www.w3.org/TR/WCAG20/){: .external }, набор инструкций и
-практик собранных экспертами по доступности, чтобы решить что значит
-"доступность" методическим путем.
+Throughout this guide we'll refer to the [Web Content Accessibility Guidelines (WCAG) 2.0](https://www.w3.org/TR/WCAG20/){: .external }, a set of guidelines and best practices put together by accessibility experts to address what "accessibility" means in a methodical way.
 
-РПДК организована вокруг четырёх принципов, часто обозначаемых акронимом *ВУПН*:
+WCAG is organized around four principles often called by the acronym *POUR*:
 
-- **Воспринимаемый**: Могут ли пользователи воспринимать контент? Необходимо
-помнить, что только потому, что что-то воспринимается только одним чувством,
-таким как зрение, не значит что все пользователи могут воспринимать это.
+- **Perceivable**: Can users perceive the content? This helps us keep in mind that just because something is perceivable with one sense, such as sight, that doesn't mean that all users can perceive it.
 
-- **Управляемый**: Могут ли пользователи использовать компоненты
-пользовательского интерфейса и перемещаться по содержимому? Например, что-то что
-требует взаимодействия при наведения не может управляться кем-то, кто не может
-использовать мышь или сенсорный экран.
+- **Operable**: Can users use UI components and navigate the content? For example, something that requires a hover interaction cannot be operated by someone who can't use a mouse or touch screen.
 
-- **Понятный**: Могут ли пользователи понять содержимое? Могут ли пользователи
-понять интерфейс  и достаточно ли он последователен, чтобы избежать путаницы?
+- **Understandable**: Can users understand the content? Can users understand the interface and is it consistent enough to avoid confusion?
 
-- **Надежный**: Может ли контент использоваться различными агентами
-пользователей (браузерами)? Он работает с ассистивной технологией?
+- **Robust**: Can the content be consumed by a wide variety of user agents (browsers)? Does it work with assistive technology?
 
-Хотя РПДК обеспечивает всесторонний обзор того, что значит доступный контент,
-это так же может быть немного подавляюще. Чтобы помочь смягчить это,
-[WebAIM](http://webaim.org/){: .external } (Web Accessibility in Mind) группа
-переработала руководства РПДК в простой перечень, специально предназначенный для
-веб-контента.
+While WCAG provides a comprehensive overview of what it means for content to be accessible, it can also be a bit overwhelming. To help mitigate this, the [WebAIM](http://webaim.org/){: .external } (Web Accessibility in Mind) group has distilled the WCAG guidelines into an easy-to-follow checklist, targeted specifically for web content.
 
-[WebAIM перечень](http://webaim.org/standards/wcag/checklist){: .external }
-может дать вам короткое, высокоуровневое резюме того, что вам нужно реализовать,
-а также ссылаться на базовую спецификацию РПДК, если вам требуется расширенное
-определение.
+The [WebAIM checklist](http://webaim.org/standards/wcag/checklist){: .external } can give you a short, high-level summary of what you need to implement, while also linking to the underlying WCAG specification if you need an expanded definition.
 
-С этим инструментом в руках, вы можете наметить направление вашей работы по
-доступности и быть уверенным, что если ваш проект соответствует описанным
-критериям, ваши пользователи будут иметь положительный опыт доступа к вашему
-контенту.
+With this tool in hand, you can chart a direction for your accessibility work and be confident that, as long as your project meets the outlined criteria, your users should have a positive experience accessing your content.
 
-## Понимание разнообразия пользователей
+## Understanding users' diversity
 
-При изучении доступности может помочь понимание разнообразия пользователей в
-мире и видов специальных возможностей, которые их затрагивают. Для объяснения
-дальнейшего, ниже представлено интервью с Victor Tsaran -
-полностью слепым Technical Program Manager в Google.
+When learning about accessibility, it helps to have an understanding of the diverse range of users in the world and the kinds of accessibility topics that affect them. To explain further, here's an informative question/answer session with Victor Tsaran, a Technical Program Manager at Google, who is totally blind.
 
 <figure class="attempt-right">
-  <img src="imgs/victor_tsaran.jpg" alt="Victor Tsaran">
+  <img src="imgs/victor_tsaran.jpg" alt="Victor Tsaran">    
   <figcaption>Victor Tsaran</figcaption>
 </figure>
 
-<hr>
+<hr />
 
-> *Над чем вы работаете в Google?*
+> *What do you work on at Google?*
 
-В Google моя работа состоит в том, чтобы помочь гарантировать, что наши
-продукты работают для всех наших разнообразных пользователей, независимо от
-нарушений или способностей.
+Here at Google my job is to help ensure that our products work for all of our diverse users, regardless of impairment or ability.
 
-> *Какие нарушения бывают у пользователей?*
+> *What kinds of impairments do users have?*
 
-Когда мы говорим о видах нарушений, которые могут привести кого-нибудь к
-сложностям в доступе к нашему контенту, большинство людей сразу же представят
-слепого пользователя, типа меня. И это правда, такое нарушение действительно
-может сделать разочаровывающим или даже невозможным использование множества
-веб-сайтов.
+When we think about the kinds of impairments which would make it difficult for someone to access our content, many people will immediately picture a blind user like me. And it's true, this impairment can really make it frustrating or even impossible to use a lot of web sites.
 
-Много современных веб-технологий имеют печальный побочный эффект создания
-сайтов, которые не работают хорошо с инструментами, используемыми слепыми
-пользователя для доступа к вебу. Тем не менее, доступность на самом деле больше,
-чем это. Мы считаем полезным думать о нарушениях, попадающих в четыре больших
-корзины: зрительные, двигательные, слуховые и когнитивные.
+A lot of modern web techniques have the unfortunate side effect of creating sites which don't work well with the tools used by blind users to access the web. However, there is actually more to accessibility than that. We find it useful think of impairments falling into four broad buckets: visual, motor, hearing, and cognitive.
 
-> *Давайте пройдемся по ним по очереди. Можете привести пару примеров зрительных
-нарушений?*
+> *Let's go through those one at a time. Can you give some examples of visual impairments?*
 
-Зрительные нарушения могут быть разделены на две категории: Пользователи без
-зрения, как я, могут использовать устройства чтения с экрана, шрифт Брайля, или
-их комбинацию.
+Visual impairments can be split into a few categories: Users with no vision, like me, might use a screen reader, braille, or combination of the two.
 
 <figure class="attempt-right">
-  <img src="imgs/braille-reader.png" alt="A braille reader">
-  <figcaption>Устройство чтения Брайля</figcaption>
+  <img src="imgs/braille-reader.png" alt="A braille reader">    
+  <figcaption>A braille reader</figcaption>
 </figure>
 
-На самом деле, полное отстутсвие зрения встречается довольно редко, но все же, есть
-хороший шанс, что вы знакомы или встречали хотя бы одного человека, который не
-может видеть вообще. При этом существует огромное количество тех, кого мы называем
-слабовидящие пользователи.
+Now, it's actually pretty unusual to have literally no vision, but still, there's a good chance you know or have met at least one person who can't see at all. However there are also a much larger number of what we call low-vision users.
 
-Это широкий диапазон, от кого-то, вроде моей жены, у кого нет роговиц, так что,
-хотя она в принципе различает очертания вещей, читает она с трудом, и юридически
-считатется слепой, до тех, у кого просто может быть плохое зрение и им нужно
-носить очень сильные очки.
+This is a broad range, from someone like my wife, who doesn't have any corneas &mdash; so while she can basically see things she has a hard time reading print and is considered legally blind &mdash; to someone who might have just poor vision and needs to wear very strong prescription glasses.
 
-Это действительно огромный диапазон, так что, естесственно, существует большой
-выбор приспособлений, которые люди в этой категории используют: кто-то
-использует устройства чтения с экрана или дисплей Брайля (Я даже слышал об одной
-женщине, которая читает шрифт Брайля с экрана, потому что его легче увидеть, чем
-обычный текст), или они могут использовать технологию "текст-в-речь" без
-полноценного использования устройств чтения с экрана, или они могут использовать
-экранную лупу, для увеличения части экрана, или они могут просто использовать
-браузерное увеличение, чтобы сделать шрифт больше. Они так же могут использовать
-режим высокой контрастности, как режим операционной системы, как расширение для
-браузера, или как высоконтрастную тему для веб-сайта.
+There's a huge range, and so naturally there's a big range of accommodations that people in this category use: some do use a screen reader or a braille display (I've even heard of one woman who reads braille displayed on-screen because it's easier to see than printed text), or they might use text-to-speech technology without the full screen reader functionality, or they might use a screen magnifier which zooms in on part of the screen, or they might just use their browser zoom to make all the fonts bigger. They might also use high-contrast options like an operating system high-contrast mode, a high-contrast browser extension or a high-contrast theme for a website.
 
 <figure class="attempt-right">
-  <img src="imgs/high-contrast.png" alt="High-contrast mode">
-  <figcaption>Режим высокой контрастности</figcaption>
+  <img src="imgs/high-contrast.png" alt="High-contrast mode">   
+  <figcaption>High-contrast mode</figcaption>
 </figure>
 
-Множество пользователей пользуются комбинацией этих решений, как моя подруга
-Laura, которая использует комбинацию высоконтрастного режима, браузерного
-масштабирования и "текст-в-речь".
+A lot of users even use a combination of these, like my friend Laura who uses a combination of high-contrast mode, browser zoom and text-to-speech.
 
-Ощущение слабого зрения знакомо множеству людей. Во-первых, у всех нас
-ухудшается зрение по мере старения, так что даже если у вас самих нет проблем
-со зрением, вы могли слышать о подобных проблемах от своих
-родителей. Но многим знакомо неприятное ощущуние, когда достаешь ноутбук у залитого
-солнцем окна и неожиданно понимаешь, что ничего не можешь прочитать! Или
-кто-то, кто перенес лазерную операцию или, может быть просто хочет прочитать
-что-то на другом конце комнаты, возможно, воспользуется одним из
-приспособлений, о которых я упоминал. Поэтому я думаю, что разработчикам
-довольно легко сопереживать пользователям со слабым зрением.
+Low vision is something a lot of people can relate to. For a start, we all experience deteriorating vision as we age, so even if you haven't experienced it there's a good chance you've heard your parents complain about it. But a lot of people experience the frustration of taking their laptop out by a sunny window only to find they suddenly can't read anything! Or anyone who's had laser surgery or maybe just has to read something from across the room might have used one of those accommodations I mentioned. So I think it's pretty easy for developers to have some empathy for low-vision users.
 
-О, и нельзя не упомянуть людей с нарушениями восприятия цвета – около
-9% мужчин имеют некую форму нарушения цветового восприятия! Плюс около 1%
-женщин. Они могут испытывать проблемы с различением красного от зеленого
-или желтого от синего. Подумайте об этом в следующий раз, при проектировании
-валидации формы.
+Oh, and I shouldn't forget to mention people with poor color vision &mdash; about 9% of males have some form of color vision deficiency! Plus about 1% of females. They may have trouble distinguishing red and green, or yellow and blue. Think about that the next time you design form validation.
 
-> *А как насчет нарушений моторики?*
+> *What about motor impairments?*
 
-Да, нарушения моторики или нарушения ловкости. Эта группа варьируется от тех,
-кто предпочел бы не использовать мышь, так как у них, возможно, какой-то вид RSI
-или что-то вроде и такое использование болезненно, до кого-то, кто может быть
-физически парализован и ограничен в движении определённых частей тела.
+Yes, motor impairments, or dexterity impairments. This group ranges all the way from those who would prefer not to use a mouse, because perhaps they've had some RSI or something and find it painful, to someone who may be physically paralyzed and have limited range of motion for certain parts of their body.
 
 <figure class="attempt-right">
-  <img src="imgs/eye-tracking.png" alt="A person using an eye tracking device">
-  <figcaption>Устройство отслеживания глаз</figcaption>
+  <img src="imgs/eye-tracking.png" alt="A person using an eye tracking device"> 
+  <figcaption>An eye tracking device</figcaption>
 </figure>
 
-Ограниченные в движении пользователи могут пользоваться
-клавиатурой, переключателем, голосовым управление, или даже устройством,
-отслеживающим глаза, для взаимодействия с их компьютером.
+Motor impaired users may use a keyboard, switch device, voice control, or even an eye-tracking device to interact with their computer.
 
-Подобно нарушениям зрения, подвижность также может быть временной или
-ситуативной: может быть вы сломали запястье, на той руке, которой держите мышь.
-Может быть трекпад сломан на вашем ноутбуке или вы просто едете на шатающемся
-поезде.
-Существует множество ситуаций где подвижность пользователя затруднена и,
-убедившись, что мы обслуживаем их, мы улучшаем опыт в целом: как для людей с
-постоянными нарушениями, так и для тех, кто временно не может пользоваться
-интерфейсами на основе указателя.
+Similar to vision impairments, mobility can also be a temporary or situational issue: Maybe you have a broken wrist on your mouse hand. Maybe the trackpad is broken on your laptop, or you're just riding on a shaky train. There can be a lot of situations where a user's mobility is impeded, and by making sure we cater for them we improve the experience overall, both for anyone with a permanent impairment but also for anyone who temporarily finds that they can't use a pointer-based UI.
 
-> *Отлично, давайте поговорим о нарушениях слуха.*
+> *Great, let's talk about hearing impairments.*
 
-Эта группа может варьироваться от глухих до слабослышащих. И так же, как и
-зрение, наш слух ухудшается с возрастом. Многие из нас используют общие средства
-для помощи, такие как слуховые аппараты.
+This group can range from the profoundly deaf through to hard-of-hearing. And much like eyesight, our hearing tends to degrade with age. Many of us use common affordances like hearing aids to help us.
 
 <figure class="attempt-right">
-<img src="imgs/screen-captions.png" alt="A television with captions at the bottom">
-  <figcaption>Субтитры</figcaption>
+  <img src="imgs/screen-captions.png" alt="A television with captions at the bottom">   
+  <figcaption>Screen captions</figcaption>
 </figure>
 
-Для слабослышащих пользователей, мы должны быть уверены, что мы не полагаемся на
-звук, поэтому обязательно используйте такие вещи как субтитры и транскрипции, и
-предоставляйте какую-то альтернативу, если звук является частью интерфейса.
+For hearing-impaired users we need to make sure that we're not relying on sound, so making sure to use things like video captions and transcripts, and providing some kind of alternative, if sound is part of the interface.
 
-И также, как было со зрительными и двигательными нарушениями, очень просто
-представить что кто-то, чьи уши работают нормально также выиграет от этих
-улучшений. Много моих друзей говорят, что им нравится, когда у видео есть
-субтитры и транскрипции, потому что это значит, что если они находятся в
-открытом офисе и не принесли свои наушники, они все равно смогут смотреть видео!
+And like we saw with vision and motor impairments, it's really easy to imagine a situation where someone whose ears work fine would benefit from these accommodations as well. A lot of my friends say they love it when videos have captions and transcripts because it means that if they're in an open plan office and didn't bring their headphones, they can still watch the video!
 
-> *Хорошо, можете рассказать немного о когнитивных нарушениях?*
+> *All right, can you tell us a bit about cognitive impairments?*
 
-Существует целый ряд когнитивных состояний, таких как СДВГ, дислексия и аутизм,
-которые могут значить, что люди хотят или нуждаются в других способах доступа к информации-другому. Приспособления для этих групп, естественно, чрезвычайно
-разнообразны, но мы определенно нашли некоторое пересечение с другими областями,
-такими как использование функции масштабирования, чтобы сделать чтение и
-концентрацию легче. Также, эти пользователи могут обнаружить, что действительно
-минималистичный дизайн воспринимается лучше всего, потому что это сводит к
-минимуму отвлечение и когнитивную нагрузку.
+There's a range of cognitive conditions like ADD, Dyslexia, and Autism, which can mean that people want or need to access things differently. The accommodations for these groups are naturally extremely diverse, but we definitely find some overlap with other areas, like using zoom functionality to make reading or concentrating easier. Also, these users may find that really minimal design works best because it minimizes distraction and cognitive load.
 
-Я думаю стресс умственной перегрузки может коснуться каждого, так что это
-очевидно что, если мы создаём что-то, что работает хорошо для кого-то с
-когнитивным расстройством, мы создаем что-то, что будет приятным для всех.
+I think everyone can relate to the stress of cognitive overload, so it's obvious that if we create something that works well for someone with a cognitive impairment, we're going to be creating something which is going to be a pleasant experience for everyone.
 
-> *Итак, как бы вы резюмировали, как вы думаете о доступности?*
+> *So, how would you summarize how you think about accessibility?*
 
-Если вы посмотрите на широкий спектр возможностей и инвалидностей, которые могут
-быть у людей, вы увидите, что проектирование и создание продуктов только
-для людей с превосходным зрением, слухом, подвижностью и восприятием окажется
-невероятно узким. Это почти самоуничтожение, так как мы создаем более стрессовые
-и менее удобные интерфейсы для всех, а для некоторых пользователей создаем опыт,
-который на самом деле полностью исключает их.
+When you look at the broad range of abilities and disabilities that people might have, you can see that designing and building products only for people who have perfect vision, hearing, dexterity, and cognition seems incredibly narrow. It's almost self-defeating, because we're creating a more stressful and less usable experience for everyone, and for some users creating an experience which actually excludes them altogether.
 
-<hr>
+<hr />
 
-В этом интервью Виктор определил ряд нарушений и разместил их в четыре широких
-категории: *зрительные*, *двигательные*, *слуховые*, и *когнитивные*. Он также
-указал, что каждый тип нарушений может быть *ситуационным*, *временным*, или
-*постоянным*.
+In this interview, Victor identified a range of impairments, and placed them into four broad categories: *visual*, *motor*, *hearing*, and *cognitive*. He also pointed out that each type of impairment might be *situational*, *temporary*, or *permanent*.
 
-Давайте взглянем на несколько примеров нарушений доступа из реальной жизни и
-посмотрим как они попадают в эти категории и типы. Обратите внимание что
-некоторые нарушения могут попадать больше чем в одну категорию или тип.
+Let's take a look at some real-world examples of access impairments and see where they fall within those categories and types. Note that some impairments may fall into more than one category or type.
 
 <table>
   <tr>
     <th></th>
-    <th>Ситуативные</th>
-    <th>Временные</th>
-    <th>Постоянные</th>
+    <th>Situational</th>
+    <th>Temporary</th>
+    <th>Permanent</th>
   </tr>
   <tr>
-    <th>Зрительные</th>
+    <th>Visual</th>
     <td></td>
-    <td>сотрясение мозга</td>
-    <td>слепота</td>
+    <td>concussion</td>
+    <td>blindness</td>
   </tr>
   <tr>
-    <th>Двигательные</th>
-    <td>ребенок на руках</td>
-    <td>сломанная рука, RSI*</td>
+    <th>Motor</th>
+    <td>holding a baby</td>
+    <td>broken arm, RSI*</td>
     <td>RSI*</td>
   </tr>
   <tr>
-    <th>Слуховые</th>
-    <td>шумный офис</td>
+    <th>Hearing</th>
+    <td>noisy office</td>
     <td></td>
     <td></td>
   </tr>
   <tr>
-    <th>Когнитивные</th>
+    <th>Cognitive</th>
     <td></td>
-    <td>сотрясение мозга</td>
+    <td>concussion</td>
     <td></td>
   </tr>
 </table>
 
-*Repetitive Strain Injury*: напрмер, кистевой туннельный синдром, теннисный
-локоть, курковый палец
+*Repetitive Strain Injury: e.g., carpal tunnel syndrome, tennis elbow, trigger finger
 
-## Следующие шаги
+## Next steps
 
-Мы изучили уже довольно много! Вы прочитали
+We've covered quite a bit of ground already! You have read about
 
-- о том, что такое доступность и почему она важна для всех
-- о РПДК и WebAIM перечне доступности
-- о различных типах нарушений, которые вы должны учитывать
+- what accessibility is and why it matters for everyone
+- the WCAG and the WebAIM accessibility checklist
+- different types of impairments you should consider
 
-В оставшейся части руководства мы окунемся в практические аспекты создания
-доступных веб-сайтов. Мы организуем эту работу вокруг трех основных предметных
-областей:
+For the rest of the guide, we'll dive into the practical aspects of creating accessible web sites. We'll organize this effort around three main subject areas:
 
-- [**Фокус**](/web/fundamentals/accessibility/focus): Мы посмотрим как создавать
-вещи, которыми можно управлять с клавиатуры вместо мыши. Это конечно важно для
-пользователей с нарушениями моторики, но это также гарантирует, что ваш
-интерфейс хорошо работает для всех пользователей.
+- [**Focus**](/web/fundamentals/accessibility/focus): We'll look at how to build things that can be operated with a keyboard instead of a mouse. This is important for users with motor impairments, of course, but it also ensures that your UI is in good shape for all users.
 
-- [**Семантика**](/web/fundamentals/accessibility/semantics-builtin): Мы
-позаботимся о том, чтобы наш интерфейс надежно работал с различными
-вспомогательными технологиями.
+- [**Semantics**](/web/fundamentals/accessibility/semantics-builtin): We'll make sure that we express our user interface in a robust way that works with a variety of assistive technologies.
 
-- [**Стилизация**](/web/fundamentals/accessibility/accessible-styles): Мы
-рассмотрим дизайн и некоторые приемы, позволяющие сделать визуальные элементы
-интерфейса максимально гибкими и удобными.
+- [**Styling**](/web/fundamentals/accessibility/accessible-styles): We'll consider visual design and look at some techniques for making the visual elements of the interface as flexible and usable as possible.
 
-Каждая из этих тем может занять целый курс, так что мы не будем рассматривать
-каждый аспект создания доступных веб-сайтов. Однако, мы дадим вам достаточно
-информации, чтобы начать, и укажем вам на несколько хороших мест, где вы сможете
-узнать больше о каждой теме.
+Each of those subjects could fill a whole course, so we won't cover every aspect of creating accessible web sites. However, we'll give you enough information to get started, and point you to some good places where you can learn more about each topic.
 
+## Feedback {: #feedback }
 
-
-Translated by
-{% include "web/_shared/contributors/dmitryskripunov.html" %}
+{% include "web/_shared/helpful.html" %}
