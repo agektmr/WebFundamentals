@@ -1,11 +1,8 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Cada vez más dispositivos cuentan con pantallas táctiles, desde teléfonos hasta pantallas de escritorio. Cuando los usuarios tocan la pantalla, tu app debería responder de forma intuitiva y atractiva.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Touchscreens are available on more and more devices, from phones up to desktop screens. Your app should respond to their touch in intuitive and beautiful ways.
 
-{# wf_updated_on: 2017-07-12 #}
-{# wf_published_on: 2014-01-01 #}
+{# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2014-01-01 #} {# wf_blink_components: Blink>Input #}
 
-# Haz que tu sitio sea táctil {: .page-title }
+# Add Touch to Your Site {: .page-title }
 
 {% include "web/_shared/contributors/mattgaunt.html" %}
 
@@ -15,503 +12,391 @@ description: Cada vez más dispositivos cuentan con pantallas táctiles, desde t
   </iframe>
 </div>
 
-Cada vez más dispositivos cuentan con pantallas táctiles, desde teléfonos hasta
-pantallas de escritorio. Cuando los usuarios elijen interactuar con tu IU y la tocan, tu app
-debería responder de forma intuitiva.
+Touchscreens are available on more and more devices, ranging from phones to desktop screens. When your users choose to interact with your UI, your app should respond to their touch in intuitive ways.
 
 <div class="clearfix"></div>
 
-## Responder a estados de elementos
+## Respond to element states
 
-¿Alguna vez tocaste o hiciste clic en un elemento de una página web y te preguntaste
-si el sitio realmente lo detectó?
+Have you ever touched or clicked an element on a web page and questioned whether the site actually detected it?
 
-Si simplemente cambia el color de un elemento cuando el usuario lo toca o interactúa con partes
-de tu IU, se brinda la tranquilidad básica de que tu sitio funciona. Esto no solo
-reduce la frustración, también puede transmitir un estilo ágil y adaptable.
+Simply altering the color of an element as users touch or interact with parts of your UI gives a basic reassurance that your site is working. Not only does this alleviate frustration, it can also give a snappy and responsive feel.
 
-Los elementos del DOM pueden heredar cualquiera de los siguientes estados: default, focus, hover
-y active. Para cambiar nuestra IU en cada uno de estos estados, necesitamos aplicar estilos
-a las seudoclases `:hover`, `:focus` y `:active`, como se muestra a continuación:
+DOM elements can inherit any of the following states: default, focus, hover and active. To change our UI for each of these states, we need to apply styles to the following pseudo classes `:hover`, `:focus` and `:active` as shown below:
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/design-and-ux/input/touch/_code/states-example.html" region_tag="btnstates" adjust_indentation="auto" %}
 </pre>
 
-[Pruébalo](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/input/touch/states-example.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/input/touch/states-example.html){: target="_blank" .external }
 
-![Imagen que muestra distintos colores para los estados de los
-botones](images/button-states.png)
+![Image illustrating different colors for button
+states](images/button-states.png)
 
-En la mayoría de los navegadores móviles, los estados *hover* y/o *focus* se aplicarán a un elemento
-después de presionarlo.
+On most mobile browsers *hover* and/or *focus* states will apply to an element after it's been tapped.
 
-Piensa detenidamente qué estilos usarás y cómo los verán los usuarios después de
-que toquen sobre ellos.
+Consider carefully what styles you set and how they will look to the user after they finish their touch.
 
-Note: Los botones y las etiquetas de anclaje pueden tener distintos comportamientos
-en diferentes navegadores. Por lo tanto, ten en cuenta que **hover**
-permanecerá en algunos casos y **focus**, en otros.
+Note: Anchor tags and buttons may have different behavior in different browsers, so assume in some cases **hover** will remain and in others **focus** will remain.
 
-### Suprimir estilos predeterminados de navegadores
+### Suppressing default browser styles
 
-Después de agregar estilos para los diferentes estados, notarás que la mayoría de los navegadores
-implementan su propio estilo cuando responden a la interacción del usuario. Esto se debe principalmente
-a que cuando se lanzaron los primeros dispositivos móviles, muchos sitios no
-tenían estilos para el estado `:active`. Por lo tanto, muchos navegadores agregaron
-color o estilo adicional de resaltado para mostrar una respuesta al usuario.
+Once you add styles for the different states, you'll notice that most browsers implement their own styles in response to a user’s touch. This is largely because when mobile devices first launched, a number of sites didn’t have styling for the `:active` state. As a result, many browsers added additional highlight color or style to give the user feedback.
 
-La mayoría de los navegadores usan la propiedad `outline` de CSS para mostrar un anillo al rededor de un
-elemento cuando este elemento tiene el foco. Puedes suprimirlo de la siguiente manera:
+Most browsers use the `outline` CSS property to display a ring around an element when an element is focused. You can suppress it with:
 
     .btn:focus {
       outline: 0;
-
+    
       // Add replacement focus styling here (i.e. border)
     }
+    
 
-Safari y Chrome agregan un color de resalte cuando se presiona un elemento. Puede evitarse con la propiedad
-`-webkit-tap-highlight-color` de CSS:
+Safari and Chrome add a tap highlight color which can be prevented with the `-webkit-tap-highlight-color` CSS property:
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/design-and-ux/input/touch/_code/states-example.html" region_tag="webkit-specific" adjust_indentation="auto" %}
 </pre>
 
-[Pruébalo](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/input/touch/states-example.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/input/touch/states-example.html){: target="_blank" .external }
 
-Internet Explorer tiene un comportamiento similar en Windows Phone, pero se suprime
-por medio de una metaetiqueta:
+Internet Explorer on Windows Phone has a similar behavior, but is suppressed via a meta tag:
 
     <meta name="msapplication-tap-highlight" content="no">
+    
 
-Firefox tiene dos efectos secundarios que se deben controlar.
+Firefox has two side effects to handle.
 
-La seudoclase `-moz-focus-inner`, que agrega un contorno a
-los elementos táctiles, y que puede quitarse con la configuración `border: 0`.
+The `-moz-focus-inner` pseudo class, which adds an outline on touchable elements, you can remove by setting `border: 0`.
 
-Si usas un elemento `<button>` en Firefox, se le aplica un
-degradado, que puede quitarse con la configuración `background-image: none`.
+If you are using a `<button>` element on Firefox, you get a gradient applied, which you can remove by setting `background-image: none`.
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/design-and-ux/input/touch/_code/states-example.html" region_tag="ff-specific" adjust_indentation="auto" %}
 </pre>
 
-[Pruébalo](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/input/touch/states-example.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/input/touch/states-example.html){: target="_blank" .external }
 
-Warning: ¡Solo debes suprimir los estilos predeterminados que se mencionan anteriormente si cuentas con
-seudoclases para `:hover`, `:active` y `:focus`!
+Caution: Only suppress the default styles mentioned above if you have pseudo classes for `:hover`, `:active` and `:focus`!
 
-### Deshabilitar user-select
+### Disabling user-select
 
-Cuando creas tu IU, es posible que desees permitirles a los usuarios
-interactuar con tus elementos, pero necesites suprimir el comportamiento predeterminado
-de seleccionar texto al mantener presionado o al desplazar un mouse por tu IU.
+When you're creating your UI there may be scenarios where you want users to interact with your elements but you want to suppress the default behavior of selecting text on long press or dragging a mouse over your UI.
 
-Puedes hacerlo con la propiedad `user-select` de CSS, pero ten en cuenta
-que si lo haces en contenido, puede ser **extremadamente** exasperante
-para los usuarios que *quieran* seleccionar el texto del elemento.
-Por lo tanto, asegúrate de usarlo con precaución y moderación.
+You can do this with the `user-select` CSS property, but beware that doing this on content can be **extremely** infuriating for users if they *want* to select the text in the element. So make sure you use it with caution and sparingly.
 
     user-select: none;
+    
 
-## Implementar gestos personalizados
+## Implement custom gestures
 
-Si tienes una idea para implementar interacciones y gestos personalizados en tu sitio, existen
-dos temas a tener en cuenta:
+If you have an idea for custom interactions and gestures for your site, there are two topics to keep in mind:
 
-1. Cómo admitir todos los navegadores.
-1. Cómo mantener un índice de fotogramas alto.
+1. How to support all browsers.
+2. How to keep your frame rate high.
 
-En este artículo, trataremos precisamente estos temas, veremos las API que necesitamos
-admitir para todos los navegadores y también cómo usar estos eventos
-de manera eficiente.
+In this article, we'll look at exactly these topics covering the API's we need to support to hit all browsers and then cover how we use these events efficiently.
 
-Según lo que desees que haga tu gesto, probablemente quieras
-que los usuarios interactúen con un elemento a la vez *o* quieras que puedan
-interactuar con varios elementos al mismo tiempo.
+Depending on what you would like your gesture to do, you likely want the user to interact with one element at a time *or* you'll want them to be able to interact with multiple elements at the same time.
 
-Warning: No te olvides de que algunos usuarios querrán entrada de teclado, y los usuarios
-que utilicen tecnología de asistencia en dispositivos con pantallas táctiles tal vez no puedan
-hacer los gestos porque los intercepta / consume la tecnología de
-asistencia.
+Caution: Don't forget that some users will want keyboard input and users running assistive technology on a touchscreen device may not be able to perform gestures because they're intercepted / consumed by the assistive technology.
 
-Veremos dos ejemplos en este artículo, los cuales demuestran la
-compatibilidad para todos los navegadores y cómo mantener el índice de fotogramas alto.
+We are going to look at two examples in this article, both demonstrating support for all browsers and how to keep the frame rate high.
 
-![GIF de ejemplo de entrada táctil en un documento](images/touch-document-level.gif){: .attempt-right }
+![Example GIF of touch on document](images/touch-document-level.gif){: .attempt-right }
 
-El primer ejemplo permitirá al usuario interactuar con un elemento. En este
-caso, tal vez quieras que se le otorguen todos los eventos táctiles a ese elemento, siempre que
-el gesto tenga origen en el mismo elemento. Por ejemplo, mover un
-dedo fuera del elemento deslizable aún puede controlar el elemento.
+The first example will allow the user to interact with one element. In this case you might want all touch events to be given to that one element, as long as the gesture initially started on the element itself. For example, moving a finger off the swipe-able element can still control the element.
 
-Esto resulta útil ya que le proporciona mucha flexibilidad al usuario, pero
-impone una restricción sobre la forma en la que el usuario puede interactuar con tu IU.
+This is useful as it provides a great deal of flexibility for the user, but enforces a restriction on how the user can interact with your UI.
 
 <div class="clearfix"></div>
 
-![GIF de ejemplo de entrada táctil en un elemento](images/touch-element-level.gif){: .attempt-right }
+![Example GIF of touch on element](images/touch-element-level.gif){: .attempt-right }
 
-Sin embargo, si esperas que los usuarios interactúen con varios elementos a la
-vez (con función multitáctil), deberías limitar la función táctil al elemento
-específico.
+If, however, you expect users to interact with multiple elements at the same time (using multi-touch), you should restrict the touch to the specific element.
 
-Esto brinda mayor flexibilidad a los usuarios, pero complica la lógica para manipular
-la IU y es menos resistente a los errores de los usuarios.
+This is more flexible for users, but complicates the logic for manipulating the UI and is less resilient to user error.
 
 <div class="clearfix"></div>
 
-### Agregar receptores de eventos
+### Add event listeners
 
-En Chrome (a partir de la versión 55), Internet Explorer y Edge,
-se recomienda usar `PointerEvents` como método para implementar gestos personalizados.
+In Chrome (version 55 and later), Internet Explorer & Edge, `PointerEvents` are the recommended approach for implementing custom gestures.
 
-En otros navegadores, lo correcto es utilizar `TouchEvents` y `MouseEvents`.
+In other browsers `TouchEvents` and `MouseEvents` are the correct approach.
 
-La mayor función de `PointerEvents` es que combina varios tipos de entrada,
-incluidos los eventos de mouse, lápiz o táctiles, en un grupo de
-callbacks. Los eventos que se deben recibir son `pointerdown`, `pointermove`,
-`pointerup` y `pointercancel`.
+The great feature of `PointerEvents` is that it merges multiple types of input, including mouse, touch and pen events, into one set of callbacks. The events to listen for are `pointerdown`, `pointermove`, `pointerup` and `pointercancel`.
 
-Los equivalentes para otros navegadores son `touchstart`, `touchmove`,
-`touchend` y `touchcancel` para eventos táctiles; y si quisieras implementar
-los mismos gestos para la entrada de mouse, necesitarías implementar `mousedown`,
-`mousemove` y `mouseup`.
+The equivalents in other browsers are `touchstart`, `touchmove`, `touchend` and `touchcancel` for touch events and if you wanted to implement the same gesture for mouse input you'd need to implement `mousedown`, `mousemove`, and `mouseup`.
 
-Si tienes preguntas sobre qué eventos debes usar, mira esta tabla de
-[eventos táctiles, de mouse y puntero](#touch-mouse-and-pointer-events).
+If you have questions about which events to use, check out this table of [Touch, mouse and pointer events](#touch-mouse-and-pointer-events)).
 
-Para usar estos eventos, se requiere llamar al método `addEventListener()` en un elemento de
-DOM, con el nombre de un evento, una función callback y un booleano.
-El booleano determina si deberías detectar el evento antes o después
-de que otros elementos hayan tenido la oportunidad de detectar e interpretar los
-eventos. (`true` significa que quieres al evento antes que otros elementos).
+Using these events requires calling the `addEventListener()` method on a DOM element, along with the name of an event, a callback function and a boolean. The boolean determines whether you should catch the event before or after other elements have had the opportunity to catch and interpret the events. (`true` means you want the event before other elements.)
 
-El siguiente es un ejemplo de recepción para el comienzo de una interacción.
+Here's an example of listening for the start of an interaction.
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/design-and-ux/input/touch/_code/touch-demo-1.html" region_tag="addlisteners" adjust_indentation="auto" %}
 </pre>
 
-[Pruébalo](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/input/touch/touch-demo-1.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/input/touch/touch-demo-1.html){: target="_blank" .external }
 
-Note: Debido al diseño de la API, PointerEvents solo necesita un único evento
-`pointerdown` para controlar los eventos de mouse y táctiles.
+Note: Because of the design of the API, PointerEvents only need a single `pointerdown` event to handle both mouse and touch events.
 
-#### Controlar la interacción para un único elemento
+#### Handle single-element interaction
 
-En el breve fragmento de código que se muestra anteriormente, solo se añadió el receptor de eventos de inicio
-para eventos de mouse. La razón de esto es que los eventos de mouse solo se desencadenarán
-cuando el cursor se desplace *sobre* el elemento al que se agrega el receptor de eventos.
+In the short snippet of code above we only added the starting event listener for mouse events. The reason for this is that mouse events will only trigger when the cursor is hovering *over* the element the event listener is added to.
 
-TouchEvents realizará el seguimiento de un gesto tras su comienzo independientemente del lugar donde ocurrió
-la respuesta táctil y PointerEvents realizará el seguimiento de eventos independientemente del lugar donde ocurrió
-la respuesta táctil. Llamamos a `setPointerCapture` en un elemento DOM.
+`TouchEvents` will track a gesture after it's started regardless of where the touch occurs and `PointerEvents` will track events regardless of where the touch occurs after we call `setPointerCapture` on a DOM element.
 
-Para los eventos de finalización y movimientos de mouse, se agregan los receptores de eventos *en* el
-método de inicio para el gesto y se agregan los receptores al documento, lo que significa que puedes
-seguir el cursor hasta que el gesto se complete.
+For mouse move and end events we add the event listeners *in* the gesture start method and add the listeners to the document, meaning it can track the cursor until the gesture is complete.
 
-Estos son los pasos para implementarlo:
+The steps taken to implement this are:
 
-1. Agrega todos los receptores de TouchEvent y PointerEvent. Para MouseEvents, agrega **únicamente**
-   el evento de inicio.
-1. En el callback del gesto de inicio, enlaza los eventos de movimiento y finalización al
-   documento. De esta forma, se recibirán todos los eventos del mouse, tanto si
-   el evento ocurrió en el elemento original o no. Para PointerEvents, debemos
-   llamar a `setPointerCapture()` en el elemento original para recibir
-   el resto de los eventos. A continuación, se debe gestionar el inicio del gesto.
-1. Gestiona los eventos de movimiento.
-1. En el evento de finalización, quita del documento los receptores de movimiento y finalización del mouse,
-y   finaliza el gesto.
+1. Add all TouchEvent and PointerEvent listeners. For MouseEvents add **only** the start event.
+2. Inside the start gesture callback, bind the mouse move and end events to the document. This way all mouse events are received regardless of whether the event occurs on the original element or not. For PointerEvents we need to call `setPointerCapture()` on our original element to receive all further events. Then handle the start of the gesture.
+3. Handle the move events.
+4. On the end event, remove the mouse move and end listeners from the document and end the gesture.
 
-A continuación, encontrarás un fragmento de nuestro método `handleGestureStart()`, que agrega los eventos de movimiento y
-finalización al documento:
+Below is a snippet of our `handleGestureStart()` method which adds the move and end events to the document:
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/design-and-ux/input/touch/_code/touch-demo-1.html" region_tag="handle-start-gesture" adjust_indentation="auto" %}
 </pre>
 
-[Pruébalo](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/input/touch/touch-demo-1.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/input/touch/touch-demo-1.html){: target="_blank" .external }
 
-El callback de finalización que agregamos es `handleGestureEnd()`, que quita los receptores de movimiento y
-finalización del documento, y libera la captura del puntero
-cuando finaliza el gesto:
+The end callback we add is `handleGestureEnd()`, which removes the move and end event listeners from the document and releases the pointer capture when the gesture has finished like so:
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/design-and-ux/input/touch/_code/touch-demo-1.html" region_tag="handle-end-gesture" adjust_indentation="auto" %}
 </pre>
 
-[Pruébalo](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/input/touch/touch-demo-1.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/input/touch/touch-demo-1.html){: target="_blank" .external }
 
 <div class="attempt-left">
-  <p>Utilizando este patrón para agregar el evento de movimiento al documento, si el
-  usuario comienza a interactuar con un elemento y traslada el gesto fuera del
-  elemento, seguiremos recibiendo movimientos del mouse en cualquier lugar
-  de la página porque los eventos se reciben del documento.</p>
+  <p>By following this pattern of adding the move event to the document, if the
+  user starts interacting with an element and moves their gesture outside of
+  the element, we'll continue to get mouse movements regardless of where they
+  are on the page, because the events are being received from the document.</p>
 
-  <p>En este diagrama, se muestra el comportamiento de los eventos táctiles si agregamos los
-  eventos de movimiento y finalización al documento cuando comienza un gesto.</p>
+  <p>This diagram shows what the touch events are doing as we add the
+  move and end events to the document once a gesture begins.</p>
 </div>
 
-![Ejemplo de enlace de eventos táctiles al documento en
-`touchstart`](images/scroll-bottleneck.gif)
+![Illustrating binding touch events to document in
+<code>touchstart</code>](images/scroll-bottleneck.gif)
 
 <div class="clearfix"></div>
 
-### Responder a las acciones táctiles con eficiencia
+### Responding to touch efficiently
 
-Ahora que ya solucionamos los eventos de inicio y finalización, estamos en condiciones
-de responder a los eventos táctiles.
+Now that we have the start and end events taken care of we can actually respond to the touch events.
 
-En cualquier evento de inicio y movimiento, puedes extraer fácilmente `x` e `y`
-de un evento.
+For any of the start and move events, you can easily extract `x` and `y` from an event.
 
-En el siguiente ejemplo, para verificar si el evento es de un `TouchEvent`, se
-verifica si existe `targetTouches`. Si es así, se extrae
-`clientX` y `clientY` de la primera acción táctil.
-Si el evento es un `PointerEvent` o `MouseEvent`, se extrae `clientX` y
-`clientY` directamente del evento.
+The following example checks whether the event is from a `TouchEvent` by checking if `targetTouches` exists. If it does, then it extracts the `clientX` and `clientY` from the first touch. If the event is a `PointerEvent` or `MouseEvent` it extracts `clientX` and `clientY` directly from the event itself.
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/design-and-ux/input/touch/_code/touch-demo-2.html" region_tag="extract-xy" adjust_indentation="auto" %}
 </pre>
 
-[Pruébalo](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/input/touch/touch-demo-2.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/input/touch/touch-demo-2.html){: target="_blank" .external }
 
-Un `TouchEvent` tiene tres listas con datos de acciones táctiles:
+A `TouchEvent` has three lists containing touch data:
 
-* `touches`: lista de todas las acciones táctiles actuales en la pantalla, independientemente del elemento DOM
-en las que se encuentren.
-* `targetTouches`: lista de las acciones táctiles actuales en el elemento DOM al que está enlazado
-el evento.
-* `changedTouches`: lista de las acciones táctiles que se modificaron y provocaron la ejecución del
-evento.
+* `touches`: list of all current touches on the screen, regardless of DOM element they are on.
+* `targetTouches`: list of touches currently on the DOM element the event is bound to.
+* `changedTouches`: list of touches which changed resulting in the event being fired.
 
-En la mayoría de los casos, `targetTouches` te brinda toda la información que necesitas. Para
-obtener más información sobre estas listas, consulta [las listas de acciones táctiles](#touch-lists).
+In most cases, `targetTouches` gives you everything you need and want. (For more info on these lists see [Touch lists](#touch-lists)).
 
-#### Usar requestAnimationFrame
+#### Use requestAnimationFrame
 
-Como los callbacks de eventos se ejecutan en el subproceso principal, es buena idea ejecutar
-la mínima cantidad de código en los callbacks de nuestros eventos para que nuestro índice
-de fotogramas sea alto y evitar un rendimiento malo.
+Since the event callbacks are fired on the main thread, we want to run as little code as possible in the callbacks for our events, keeping our frame rate high and preventing jank.
 
-Usando `requestAnimationFrame()`, podemos actualizar la IU justo
-antes de que el navegador intente dibujar un fotograma. Además, nos ayudará a quitar actividades de
-nuestros callbacks de eventos.
+Using `requestAnimationFrame()` we have an opportunity to update the UI just before the browser is intending to draw a frame and will help us move some work out of our event callbacks.
 
-Si no conoces `requestAnimationFrame()`,
-[aquí podrás encontrar](/web/fundamentals/performance/rendering/optimize-javascript-execution#use-requestanimationframe-for-visual-changes) más información.
+If you are unfamiliar with `requestAnimationFrame()`, you can [learn more here](/web/fundamentals/performance/rendering/optimize-javascript-execution#use-requestanimationframe-for-visual-changes).
 
-Una implementación muy utilizada es guardar las coordenadas `x` e `y` de los eventos
-de inicio y movimiento, y solicitar un fotograma de animación dentro del callback
-del evento de movimiento.
+A typical implementation is to save the `x` and `y` coordinates from the start and move events and request an animation frame inside the move event callback.
 
-En nuestra demostración, almacenamos la posición inicial de la acción táctil en `handleGestureStart()` (busca `initialTouchPos`):
+In our demo, we store the initial touch position in `handleGestureStart()` (look for `initialTouchPos`):
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/design-and-ux/input/touch/_code/touch-demo-1.html" region_tag="handle-start-gesture" adjust_indentation="auto" %}
 </pre>
 
-El método `handleGestureMove()` guarda la posición de su evento
-antes de solicitar un fotograma de animación si es necesario y pasa nuestra función
-`onAnimFrame()` como callback:
+The `handleGestureMove()` method stores the position of it's event before requesting an animation frame if we need to, passing in our `onAnimFrame()` function as the callback:
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/design-and-ux/input/touch/_code/touch-demo-1.html" region_tag="handle-move" adjust_indentation="auto" %}
 </pre>
 
-El valor `onAnimFrame` es una función que, cuando se la llama, cambia nuestra IU
-para moverla. Cuando pasamos esta función a `requestAnimationFrame()`, le solicitamos
-al navegador que la llame justo antes de actualizar la página
-(es decir, realizar cualquier cambio en la página).
+The `onAnimFrame` value is a function that when called, changes our UI to move it around. By passing this function into `requestAnimationFrame()`, we tell the browser to call it just before it's about to update the page (i.e. paint any changes to the page).
 
-En el callback `handleGestureMove()`, primero verificamos si `rafPending` es false
-(indicará si `requestAnimationFrame()` llamó a `onAnimFrame()`
-desde el último evento de movimiento). Esto significa que habrá un solo elemento `requestAnimationFrame()`
-en espera de ejecución a la vez.
+In the `handleGestureMove()` callback we initially check if `rafPending` is false, which indicates if `onAnimFrame()` has been called by `requestAnimationFrame()` since the last move event. This means we only have one `requestAnimationFrame()` waiting to run at any one time.
 
-Cuando se ejecuta nuestro callback `onAnimFrame()`, configuramos la propiedad transform de los
-elementos que queremos mover antes de actualizar `rafPending` a `false`. De esta forma, permitimos
-que el próximo evento táctil solicite un nuevo fotograma de animación.
+When our `onAnimFrame()` callback is executed, we set the transform on any elements we want to move before updating `rafPending` to `false`, allowing the the next touch event to request a new animation frame.
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/design-and-ux/input/touch/_code/touch-demo-1.html" region_tag="on-anim-frame" adjust_indentation="auto" %}
 </pre>
 
-### Controlar gestos con acciones táctiles
+### Control gestures using touch actions
 
-La propiedad `touch-action` de CSS te permite controlar el comportamiento
-táctil predeterminado de un elemento. En nuestros ejemplos, usamos `touch-action: none` para
-evitar que el navegador utilice la acción táctil del usuario. En consecuencia, podemos
-interceptar todos los eventos táctiles.
+The CSS property `touch-action` allows you to control the default touch behavior of an element. In our examples, we use `touch-action: none` to prevent the browser from doing anything with a users' touch, allowing us to intercept all of the touch events.
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/design-and-ux/input/touch/_code/touch-demo-1.html" region_tag="touch-action-example" adjust_indentation="auto" %}
 </pre>
 
-`touch-action: none` es una opción de último recurso ya que no le permite
-al navegador utilizar sus comportamientos predeterminados. En muchos casos, es mejor usar alguna
-de las opciones que se describen más adelante.
+Using `touch-action: none` is somewhat a nuclear option as it prevents all the default browser behaviors. In many cases one of the options below is a better solution.
 
-`touch-action` te permite inhabilitar gestos implementados por un navegador.
-Por ejemplo, IE10+ admite el gesto de presionar dos veces para hacer zoom. Si estableces una
-acción táctil de `manipulation`, evitas el comportamiento predeterminado que esté asociado a la acción de
-presionar dos veces.
+`touch-action` allows you to disable gestures implemented by a browser. For example, IE10+ supports a double-tap to zoom gesture. By setting a touch-action of `manipulation` you prevent the default double-tap behavior.
 
-De esta forma, puedes implementar tú mismo el gesto de presionar dos veces.
+This allows you to implement a double-tap gesture yourself.
 
-A continuación, encontrarás una lista con valores muy utilizados de acciones táctiles:
+Below is a list of commonly used touch-action values:
 
 <table class="responsive">
   <thead>
     <tr>
-      <th colspan="2">Parámetros de acciones táctiles</th>
+      <th colspan="2">Touch Action Parameters</th>
     </tr>
   </thead>
   <tbody>
     <tr>
       <td data-th="Property"><code>touch-action: none</code></td>
-      <td data-th="Description">El navegador no controlará ninguna
-      interacción táctil.</td>
+      <td data-th="Description">No touch interactions will be handled by
+      the browser.</td>
     </tr>
     <tr>
       <td data-th="Property"><code>touch-action: pinch-zoom</code></td>
-      <td data-th="Description">Inhabilita todas las interacciones del navegador, como
-      `touch-action: none`, excepto `pinch-zoom`, que la controlará el
-      navegador.</td>
+      <td data-th="Description">Disables all browser interactions like
+      `touch-action: none` apart from `pinch-zoom`, which is still handled by
+      the browser.</td>
     </tr>
     <tr>
       <td data-th="Property"><code>touch-action: pan-y pinch-zoom</code></td>
-      <td data-th="Description">Gestiona desplazamientos horizontales en JavaScript sin
-      inhabilitar los desplazamientos verticales ni la acción de pellizcar para hacer zoom (p. ej., en carreteles de imágenes).</td>
+      <td data-th="Description">Handle horizontal scrolls in JavaScript without
+      disabling vertical scrolling or pinch-zooming (eg. image carousels).</td>
     </tr>
     <tr>
       <td data-th="Property"><code>touch-action: manipulation</code></td>
-      <td data-th="Description">Inhabilita el gesto de presionar dos veces, que evita demoras
-      en el navegador. Permite que el navegador controle los desplazamientos y la acción de pellizcar para hacer
-      zoom.</td>
+      <td data-th="Description">Disables double-tap gesture which avoids any
+      click delay by the browser. Leaves scrolling and pinch-zoom up to the
+      browser.</td>
     </tr>
   </tbody>
 </table>
 
-## Admitir versiones anteriores de IE
+## Supporting older versions of IE
 
-Si deseas admitir IE10, deberás gestionar versiones de
-`PointerEvents` con prefijos del proveedor.
+If you want to support IE10, you'll need to handle vendor prefixed versions of `PointerEvents`.
 
+To check for support of `PointerEvents` you'd typically look for `window.PointerEvent`, but in IE10, you'd look for `window.navigator.msPointerEnabled`.
 
-Para corroborar la compatibilidad de `PointerEvents`, normalmente buscarías
-`window.PointerEvent`, pero en IE10, debes buscar
-`window.navigator.msPointerEnabled`.
+The event names with vendor prefixes are: 'MSPointerDown', 'MSPointerUp' and 'MSPointerMove'.
 
-Los nombres de los eventos con prefijos del proveedor son 'MSPointerDown', 'MSPointerUp' and
-'MSPointerMove'.
-
-En el siguiente ejemplo, se explica cómo corroborar la compatibilidad y cambiar
-el nombre de los eventos.
+The example below shows you how to check for support and switch the event names.
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/design-and-ux/input/touch/_code/touch-demo-1.html" region_tag="pointereventsupport" adjust_indentation="auto" %}
 </pre>
 
-Para obtener más información, consulta este [artículo sobre actualizaciones de
-Microsoft](https://msdn.microsoft.com/en-us/library/dn304886(v=vs.85).aspx).
+For more information, checkout this [updates article from Microsoft](https://msdn.microsoft.com/en-us/library/dn304886(v=vs.85).aspx).
 
-## Referencia
+## Reference
 
-### Seudoclases para estados de acciones táctiles
+### Pseudo classes for touch states
 
 <table>
   <thead>
     <tr>
-      <th>Clase</th>
-      <th>Ejemplo</th>
-      <th>Descripción</th>
+      <th>Class</th>
+      <th>Example</th>
+      <th>Description</th>
     </tr>
   </thead>
   <tbody>
     <tr>
       <td data-th="Class">:hover</td>
-      <td data-th="Example"><img alt="Botón presionado" src="images/btn-hover-state.png"></td>
+      <td data-th="Example"><img alt="Button in Pressed State" src="images/btn-hover-state.png"></td>
       <td data-th="Description">
-        Se ejecuta cuando el cursor se coloca encima de un elemento.
-        Es útil cambiar la IU cuando esto ocurre para incentivar a los usuarios a interactuar con
-        los elementos.
+        Entered when a cursor is placed over an element.
+        Changes in the UI on hover are helpful to encourage users to interact
+        with elements.
       </td>
     </tr>
     <tr>
       <td data-th="Class">:focus</td>
       <td data-th="Example">
-        <img alt="Botón con foco" src="images/btn-focus-state.png">
+        <img alt="Button with Focus State" src="images/btn-focus-state.png">
       </td>
       <td data-th="Description">
-        Se ejecuta cuando el usuario pasa de un elemento a otro en la página. Este estado
-        le permite al usuario saber con qué elemento está
-        interactuando; también le permite al usuario navegar fácilmente por la IU con un teclado.
+        Entered when the user tabs through elements on a page. The focus state
+        allows the user to know what element they are currently interacting
+        with; also allows users to navigate your UI easily using a keyboard.
       </td>
     </tr>
     <tr>
       <td data-th="Class">:active</td>
       <td data-th="Example">
-        <img alt="Botón presionado" src="images/btn-pressed-state.png">
+        <img alt="Button in Pressed State" src="images/btn-pressed-state.png">
       </td>
       <td data-th="Description">
-        Se ejecuta cuando se selecciona el elemento (por
-        ejemplo, cuando el usuario hace clic en un elemento o lo toca).
+        Entered when an element is being selected, for
+        example, when a user is clicking or touching an element.
       </td>
     </tr>
   </tbody>
 </table>
 
+The definitive touch events reference can be found here: [w3 Touch Events](http://www.w3.org/TR/touch-events/).
 
-En
-[Touch Events de w3](http://www.w3.org/TR/touch-events/), encontrarás la referencia completa de los eventos táctiles.
+### Touch, mouse, and pointer events
 
-### Eventos táctiles, de mouse y de punteros
-
-Estos eventos son la base para agregar nuevos gestos a tu
-app:
+These events are the building blocks for adding new gestures into your application:
 
 <table class="responsive">
   <thead>
     <tr>
-      <th colspan="2">Eventos táctiles, de mouse y de punteros</th>
+      <th colspan="2">Touch, Mouse, Pointer Events</th>
     </tr>
   </thead>
   <tbody>
     <tr>
       <td data-th="Event Names">
         <code>touchstart</code>,
-        <code>mousedown</code> y
+        <code>mousedown</code>,
         <code>pointerdown</code>
       </td>
       <td data-th="Description">
-        Se llama cuando un dedo toca por primera vez un elemento o cuando el
-        usuario hace clic con el mouse.
+        This is called when a finger first touches an element or when the
+        user clicks down on the mouse.
       </td>
     </tr>
     <tr>
       <td data-th="Event Names">
         <code>touchmove</code>,
-        <code>mousemove</code> y
+        <code>mousemove</code>,
         <code>pointermove</code>
       </td>
       <td data-th="Description">
-        Se llama cuando el usuario mueve el dedo por la pantalla o
-        arrastra con el mouse.
+        This is called when the user moves their finger across the screen or
+        drags with the mouse.
       </td>
     </tr>
     <tr>
       <td data-th="Event Names">
         <code>touchend</code>,
-        <code>mouseup</code> y
+        <code>mouseup</code>,
         <code>pointerup</code>
       </td>
       <td data-th="Description">
-        Se llama cuando el usuario quita el dedo de la pantalla
-        o suelta el botón del mouse.
+        This is called when the user lifts their finger off of the screen
+        or releases the mouse.
       </td>
     </tr>
     <tr>
@@ -520,68 +405,68 @@ app:
         <code>pointercancel</code>
       </td>
       <td data-th="Description">
-        Se llama cuando el navegador cancela los gestos de acciones táctiles. Por ejemplo,
-        el usuario toca una app web y después cambia de pestaña.
+        This is called when the browser cancels the touch gestures. For example,
+        a user touch a web app and then change tabs.
       </td>
     </tr>
   </tbody>
 </table>
 
-### Listas de las acciones táctiles
+### Touch lists
 
-Cada evento táctil incluye tres atributos de lista:
+Each touch event includes three list attributes:
 
 <table class="responsive">
   <thead>
     <tr>
-      <th colspan="2">Atributos de los eventos táctiles</th>
+      <th colspan="2">Touch Event Attributes</th>
     </tr>
   </thead>
   <tbody>
     <tr>
       <td data-th="Attribute"><code>touches</code></td>
       <td data-th="Description">
-        Lista de todas las acciones táctiles actuales en la pantalla, independientemente de los elementos
-        que se estén tocando.
+        List of all current touches on the screen, regardless of elements
+        being touched.
       </td>
     </tr>
     <tr>
       <td data-th="Attribute"><code>targetTouches</code></td>
       <td data-th="Description">
-        Lista de las acciones táctiles que se iniciaron en el elemento 
-        del evento actual. Por ejemplo, si el destino es un <code>&lt;button&gt;</code>,
-        solo obtendrás las acciones táctiles actualmente en dicho botón. Si el destino es el
-       documento, obtendrás todas las acciones táctiles actualmente en el documento.
+        List of touches that started on the element that is the target of
+        the current event. For example, if you bind to a <code>&lt;button&gt;</code>,
+        you'll only get touches currently on that button. If you bind to the
+        document, you'll get all touches currently on the document.
       </td>
     </tr>
     <tr>
       <td data-th="Attribute"><code>changedTouches</code></td>
       <td data-th="Description">
-        Lista de las acciones táctiles que se modificaron y provocaron la ejecución del evento:
+        List of touches which changed resulting in the event being fired:
         <ul>
           <li>
-            En el evento <code>
+            For the <code>
             <a href="http://www.w3.org/TR/touch-events/#dfn-touchstart">
-            touchstart</a></code>,
-            lista de los puntos táctiles que se acaban de activar con el
-            evento actual.
+            touchstart</a></code>
+            event-- list of the touch points that just became active with the
+            current event.
           </li>
           <li>
-            En el evento <code>
+            For the <code>
             <a href="http://www.w3.org/TR/touch-events/#dfn-touchmove">
-            touchmove</a></code>,
-            lista de los puntos táctiles que se movieron desde el último
-            evento.
+            touchmove</a></code>
+            event-- list of the touch points that have moved since the last
+            event.
           </li>
           <li>
-            En los eventos <code>
+            For the <code>
             <a href="http://www.w3.org/TR/touch-events/#dfn-touchend">
             touchend</a></code>
-            y <code>
+            and <code>
             <a href="http://www.w3.org/TR/touch-events/#dfn-touchcancel">
-            touchcancel</a></code>,
-            lista de los puntos táctiles que se acaban de quitar
-            de la superficie.
+            touchcancel</a></code>
+            events-- list of the touch points that have just been removed
+            from the surface.
           </li>
         </ul>
       </td>
@@ -589,28 +474,22 @@ Cada evento táctil incluye tres atributos de lista:
   </tbody>
 </table>
 
-### Habilitar compatibilidad con estado active en iOS
+### Enabling active state support on iOS
 
-Infortunadamente, Safari en iOS no establece el estado *active* de forma predeterminada. Para
-comenzar a usarlo, debes agregar un receptor de evento `touchstart` al *cuerpo del
-documento* o a cada elemento.
+Unfortunately, Safari on iOS does not apply the *active* state by default, to get it working you need to add a `touchstart` event listener to the *document body* or to each element.
 
-Debes hacerlo desde una prueba de usuario-agente para que solo se ejecute en dispositivos iOS.
+You should do this behind a user agent test so it's only run on iOS devices.
 
-Agregar un inicio táctil al cuerpo tiene la ventaja de afectar a todos los elementos
-del DOM; sin embargo, es posible que esto provoque problemas de rendimiento durante el desplazamiento de la página.
-
+Adding a touch start to the body has the advantage of applying to all elements in the DOM, however this may have performance issues when scrolling the page.
 
     window.onload = function() {
       if(/iP(hone|ad)/.test(window.navigator.userAgent)) {
         document.body.addEventListener('touchstart', function() {}, false);
       }
     };
+    
 
-
-La alterativa es agregar los receptores de inicio táctil a todos los elementos
-de la página con los que se pueda interactuar. De esta forma, se evitan algunos de los problemas de rendimiento.
-
+The alternative is to add the touch start listeners to all the interactable elements in the page, alleviating some of the performance concerns.
 
     window.onload = function() {
       if(/iP(hone|ad)/.test(window.navigator.userAgent)) {
@@ -621,6 +500,8 @@ de la página con los que se pueda interactuar. De esta forma, se evitan algunos
         }
       }
     };
+    
 
+## Feedback {: #feedback }
 
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
