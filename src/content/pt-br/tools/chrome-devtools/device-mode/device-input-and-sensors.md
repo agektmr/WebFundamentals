@@ -1,82 +1,90 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Telas de toque, chips de GPS e acelerômetros podem ser difíceis de testar, já que a maioria dos computadores não tem esses recursos. Os emuladores de sensor do Chrome DevTools reduzem a sobrecarga dos testes com a emulação de sensores comuns de dispositivos móveis.
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Touch screens, GPS chips, and accelerometers can be difficult to test since most desktops don't have them. The Chrome DevTools sensor emulators reduce the overhead of testing by emulating common mobile device sensors. robots: noindex
 
-{# wf_updated_on: 2016-03-07 #}
-{# wf_published_on: 2015-04-13 #}
+{# wf_updated_on: 2018-12-18 #} {# wf_published_on: 2015-04-13 #} {# wf_blink_components: Platform>DevTools #}
 
-# Emular sensores: geolocalização e acelerômetro {: .page-title }
+# Emulate Sensors: Geolocation and Accelerometer {: .page-title }
 
-{% include "web/_shared/contributors/megginkearney.html" %}
-{% include "web/_shared/contributors/pbakaus.html" %}
+{% include "web/_shared/contributors/megginkearney.html" %} {% include "web/_shared/contributors/pbakaus.html" %}
 
-Os chips de GPS e os acelerômetros podem ser difíceis de testar, já que a maioria dos computadores não tem esses recursos. O painel de emulação de sensores do Chrome DevTools reduz a sobrecarga dos testes com a emulação de sensores comuns de dispositivos móveis.
+<aside class="warning">
+  <b>This page is deprecated</b>. There are links to up-to-date documentation
+  throughout the page.
+</aside>
 
+GPS chips and accelerometers can be difficult to test since most desktops don't have them. The Chrome DevTools Sensors emulation pane reduces the overhead of testing by emulating common mobile device sensors.
 
 ### TL;DR {: .hide-from-toc }
-- Emule as coordenadas de geolocalização para testar modificações de geolocalização.
-- Simule a orientação do dispositivo para testar dados do acelerômetro.
 
+- Emulate geolocation coordinates to test geolocation overrides.
+- Simulate device orientation to test accelerometer data.
 
-## Acessar controles do sensor
+## Access sensor controls
 
 <div class="wf-devtools-flex">
   <div>
-    <p>Para acessar os controles do sensor do Chrome DevTools:</p>
+    <p>To access the Chrome DevTools sensor controls:</p>
     <ol>
-      <li>Abra o menu principal do DevTools e</li>
-      <li>Em <strong>More Tools</strong>, clique em <strong>Sensors</strong></li>
+      <li>Open the DevTools main menu, then</li>
+      <li>Under <strong>More Tools</strong>, click on <strong>Sensors</strong></li>
     </ol>
   </div>
   <div class="wf-devtools-flex-half">
-    <img src="imgs/navigate-to-sensors.png" alt="Navegue para o painel Sensors">
+    <img src="imgs/navigate-to-sensors.png" alt="Navigate to Sensors panel">
   </div>
 </div>
 
-Observação: Se seu aplicativo detectar sensores onload usando JavaScript (como o Modernizr), certifique-se de recarregar a página depois de ativar os emuladores de sensor.
+Note: If your app detects sensors onload using JavaScript (such as Modernizr), make sure that you reload the page after enabling sensor emulators.
 
-## Modificar dados de geolocalização
+## Override geolocation data
 
-Diferentemente dos computadores, os dispositivos móveis normalmente usam hardware de GPS para detectar a localização. No painel Sensors, é possível simular coordenadas de geolocalização para usar com a <a href='http://www.w3.org/TR/geolocation-API/'>Geolocation API</a>.
+<aside class="warning">
+  <b>This page is deprecated</b>. See <a href="/web/tools/chrome-devtools/device-mode/geolocation">Override Geolocation</a>.
+</aside>
+
+Unlike desktops, mobile devices commonly use GPS hardware to detect location. In the Sensors pane, you can simulate geolocation coordinates to use with the [Geolocation API](http://www.w3.org/TR/geolocation-API/).
 
 <div class="wf-devtools-flex">
   <div>
-    <p>Ative a emulação de geolocalização marcando a caixa de seleção <strong>Emulate geolocation coordinates</strong> no painel de sensores da gaveta de emulação.</p>
+    <p>Enable the geolocation emulation by selecting the <strong>Emulate geolocation coordinates</strong> checkbox in the sensors pane of the emulation drawer.</p>
   </div>
   <div class="wf-devtools-flex-half">
-    <img src="imgs/emulation-drawer-geolocation.png" alt="emulador de geolocalização ativado">
+    <img src="imgs/emulation-drawer-geolocation.png" alt="geolocation emulator enabled">
   </div>
 </div>
 
-Você pode usar esse emulador para modificar os valores da posição para `navigator.geolocation`, assim como simular casos em que os dados de geolocalização estão indisponíveis.
+You can use this emulator to override position values for `navigator.geolocation`, as well as to simulate cases when geolocation data is unavailable.
 
-## Emular acelerômetro (orientação do dispositivo)
+## Emulate Accelerometer (Device Orientation)
+
+<aside class="warning">
+  <b>This page is deprecated</b>. See <a href="/web/tools/chrome-devtools/device-mode/orientation">Simulate Device Orientation</a>.
+</aside>
 
 <div class="wf-devtools-flex">
   <div>
-    <p>Para testar os dados de acelerômetro que vêm da <a href='http://www.w3.org/TR/screen-orientation/'>Orientation API</a>, ative o emulador de acelerômetro marcando a caixa de seleção <strong>Accelerometer</strong> no painel Sensors.</p>
+    <p>To test accelerometer data coming from the <a href='http://www.w3.org/TR/screen-orientation/'>Orientation API</a>, enable the accelerometer emulator by selecting the <strong>Accelerometer</strong> checkbox in the Sensors pane.</p>
   </div>
   <div class="wf-devtools-flex-half">
-    <img src="imgs/emulation-drawer-accelerometer.png" alt="Controle do acelerômetro">
+    <img src="imgs/emulation-drawer-accelerometer.png" alt="Accelerometer control">
   </div>
 </div>
 
-É possível manipular os seguintes parâmetros de orientação:
+You can manipulate the following orientation parameters:
 
 <dl>
+  
 <dt><abbr title="alpha">α</abbr></dt>
-<dd>Rotação no eixo Z.</dd>
+<dd>Rotation around the z-axis.</dd>
 <dt><abbr title="beta">β</abbr></dt>
-<dd>Inclinação lateral.</dd>
+<dd>Left-to-right tilt.</dd>
 <dt><abbr title="gamma">γ</abbr></dt>
-<dd>Inclinação vertical.</dd>
+<dd>Front-to-back tilt.</dd>
 </dl>
 
-Além disso, você pode clicar e arrastar o modelo de acelerômetro para a orientação desejada.
+You can also click and drag the model accelerometer to the desired orientation.
 
-Experimente o emulador de acelerômetro com esta [demonstração de orientação do dispositivo](http://googlesamples.github.io/web-fundamentals/fundamentals/native-hardware/device-orientation/dev-orientation.html).
+Try out the accelerometer emulator using this [device orientation demo](http://googlesamples.github.io/web-fundamentals/fundamentals/native-hardware/device-orientation/dev-orientation.html).
 
+## Feedback {: #feedback }
 
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
