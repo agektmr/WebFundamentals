@@ -1,102 +1,86 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Inspeccionar y borrar cookies desde el panel de la App.
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Inspect and delete cookies from the Application panel.
 
-{# wf_updated_on: 2016-07-28 #}
-{# wf_published_on: 2015-04-13 #}
+{# wf_updated_on: 2018-07-27 #} {# wf_published_on: 2015-04-13 #} {# wf_blink_components: Platform>DevTools #}
 
-# Inspeccionar y borrar cookies {: .page-title }
+# Inspect and Delete Cookies {: .page-title }
 
 {% include "web/_shared/contributors/kaycebasques.html" %}
 
-Inspecciona y borrar cookies desde el panel de la
-<strong>App</strong>.
+Inspect and delete cookies from the
+<strong>Application</strong> panel.
 
-![panel de cookies](imgs/cookies.png)
-
+![cookies pane](imgs/cookies.png)
 
 ### TL;DR {: .hide-from-toc }
-- Ve información detallada sobre una cookie, como su nombre, valor, dominio, tamaño y mucho más.
-- Borra una única cookie, las cookies de un dominio seleccionado o todas las cookies de todos los dominios.
 
+* View detailed information about a cookie, such as its name, value, domain, size, and more.
+* Delete a single cookie, cookies from a selected domain, or all cookies from all domains.
 
-## Información general {:#cookies}
+## Overview {:#cookies}
 
-Utiliza el panel **Cookie** para ver y borrar cookies. No puedes modificar valores de
-cookies.
+Use the **Cookies** pane to view and delete cookies. You cannot modify cookie values.
 
-![panel de cookies][cookies]
+![cookies pane](/web/tools/chrome-devtools/manage-data/imgs/cookies.png)
 
-Las cookies se enumeran por dominio. Esto incluye el documento principal, al igual que todos los
-marcos anidados. Si se selecciona uno de estos "grupos de marcos", se muestran todas las cookies de
-todos los recursos de todos los marcos de ese grupo. Debes conocer dos consecuencias
-de este agrupamiento:
+Cookies are listed by domain. This includes the main document as well as all nested frames. Selecting one of these “frame groups” displays all cookies, for all resources, for all frames in that group. There are two consequences of this grouping to be aware of:
 
-* Cookies de dominios diferentes pueden aparecer en el mismo grupo de marcos.
-* La misma cookie puede aparecer en varios grupos de cuadros.
+* Cookies from different domains may appear in the same frame group.
+* The same cookie may appear in several frame groups.
 
-[cookies]: /web/tools/chrome-devtools/manage-data/imgs/cookies.png
+## Fields {:#fields}
 
-## Campos {:#fields}
-
-Se proporcionan los siguientes campos para cada cookie:
+The following fields are provided for each cookie:
 
 <table class="responsive">
   <thead>
     <tr>
-      <th colspan="2">Campo de la cookie y descripción</th>
+      <th colspan="2">Cookie Field &amp; Description</th>
     </tr>
   </thead>
   <tbody>
         <tr>
       <td data-th="Cookie Field">Name</td>
-      <td data-th="Description">Nombre de la cookie.</td>
+      <td data-th="Description">The cookie's name.</td>
     </tr>
     <tr>
       <td data-th="Cookie Field">Value</td>
-      <td data-th="Description">Valor de la cookie.</td>
+      <td data-th="Description">The cookie's value.</td>
     </tr>
     <tr>
-      <td data-th="Cookie Field">Dominio</td>
-      <td data-th="Description">Dominio de la cookie.</td>
+      <td data-th="Cookie Field">Domain</td>
+      <td data-th="Description">The cookie's domain.</td>
     </tr>
     <tr>
       <td data-th="Cookie Field">Path</td>
-      <td data-th="Description">Ruta de acceso de la cookie.</td>
+      <td data-th="Description">The cookie's path.</td>
     </tr>
     <tr>
-      <td data-th="Cookie Field">Vence / antigüedad máxima</td>
-      <td data-th="Description">Hora de vencimiento o antigüedad máxima de la cookie. Respecto de las cookies de sesión, este campo siempre es "Session".</td>
+      <td data-th="Cookie Field">Expires / Maximum Age</td>
+      <td data-th="Description">The cookie's expiration time, or maximum age. For session cookies, this field is always "Session".</td>
     </tr>
     <tr>
       <td data-th="Cookie Field">Size</td>
-      <td data-th="Description">El tamaño en bytes de las cookies.</td>
+      <td data-th="Description">The cookie's size in bytes.</td>
     </tr>
     <tr>
       <td data-th="Cookie Field">HTTP</td>
-      <td data-th="Description">Si está presente, indica que las cookies solo deben usarse en HTTP y no se permite la modificación de JavaScript.</td>
+      <td data-th="Description">If present, indicates that cookies should be used only over HTTP, and JavaScript modification is not allowed.</td>
     </tr>
     <tr>
-      <td data-th="Cookie Field">Seguro</td>
-      <td data-th="Description">Si está presente, indica que la comunicación para esta cookie debe realizarse mediante una transmisión encriptada.</td>
+      <td data-th="Cookie Field">Secure</td>
+      <td data-th="Description">If present, indicates that communication for this cookie must be over an encrypted transmission.</td>
     </tr>
   </tbody>
 </table>
 
-## Borrar cookies {:#delete}
+## Delete cookies {:#delete}
 
-Existen algunas formas de borrar cookies:
+There are a few ways you can delete cookies:
 
-* Para borrar solo una cookie, selecciónala y presiona el botón **delete**
-  (![botón delete][delete]{:.inline}).
-* Para borrar todas las
-  cookies del grupo de marcos especificado, presiona el botón**clear** (![botón clear][cos]{:.inline}).
-* Haz clic en el botón secundario en el valor **Domain** de una cookie y selecciona  **Clear all
-  from "..."** (donde **"..."** es el nombre del dominio) para borrar todas las cookies
-  de ese dominio.
+* Select a cookie and press the **delete** button (![delete button](imgs/delete.png){:.inline}) to delete just that cookie.
+* Press the **clear** button (![clear button](imgs/clear-object-store.png){:.inline}) to delete all cookies for the specified frame group.
+* Right-click on the **Domain** value of a cookie and select **Clear all from "..."** (where **"..."** is the name of the domain) to delete all cookies from that domain.
 
-[delete]: imgs/delete.png
-[cos]: imgs/clear-object-store.png
+## Feedback {: #feedback }
 
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
