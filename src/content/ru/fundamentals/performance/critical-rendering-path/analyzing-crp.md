@@ -1,192 +1,209 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: В этой статье мы рассмотрим несколько примеров из практики, которые помогут вам оптимизировать процесс визуализации, т. е. находить и устранять замедляющие ее помехи.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Learn to identify and resolve critical rendering path performance bottlenecks.
 
-{# wf_updated_on: 2014-04-27 #}
-{# wf_published_on: 2014-03-31 #}
+{# wf_updated_on: 2018-08-17 #} {# wf_published_on: 2014-03-31 #} {# wf_blink_components: N/A #}
 
-# Анализ процесса визуализации {: .page-title }
+# Analyzing Critical Rendering Path Performance {: .page-title }
 
 {% include "web/_shared/contributors/ilyagrigorik.html" %}
 
+Identifying and resolving critical rendering path performance bottlenecks requires good knowledge of the common pitfalls. Let's take a hands-on tour and extract common performance patterns that will help you optimize your pages.
 
-В этой статье мы рассмотрим несколько примеров из практики, которые помогут вам оптимизировать процесс визуализации, т. е. находить и устранять замедляющие ее помехи.
+Optimizing the critical rendering path allows the browser to paint the page as quickly as possible: faster pages translate into higher engagement, more pages viewed, and [improved conversion](https://www.google.com/think/multiscreen/success.html). To minimize the amount of time a visitor spends viewing a blank screen, we need to optimize which resources are loaded and in which order.
 
+To help illustrate this process, let's start with the simplest possible case and incrementally build up our page to include additional resources, styles, and application logic. In the process, we'll optimize each case; we'll also see where things can go wrong.
 
+So far we've focused exclusively on what happens in the browser after the resource (CSS, JS, or HTML file) is available to process. We've ignored the time it takes to fetch the resource either from cache or from the network. We'll assume the following:
 
-Цель оптимизации - минимизировать время визуализации страниц. Этого можно добиться, меняя порядок загрузки ресурсов. Помните, что чем меньше времени пользователь проводит перед пустым экраном, тем больше степень его вовлеченности. Кроме того, оптимизация позволяет увеличить число просмотров и [улучшить конверсию](http://www.google.com/think/multiscreen/success.html).
+* A network roundtrip (propagation latency) to the server costs 100ms.
+* Server response time is 100ms for the HTML document and 10ms for all other files.
 
-Для наглядности мы приведем несколько примеров: начнем с самого простого и будем постепенно дополнять его ресурсами, стилями и скриптами. В результате вы поймете, где могут возникнуть ошибки, и научитесь оптимизировать разные типы страниц.
-
-Перед тем как начать этот урок, обговорим один технический момент. В прошлых главах мы не принимали в расчет время, необходимое для загрузки HTML-, CSS- и JavaScript-файлов из сети или кеша. О том, как оптимизировать это время, мы расскажем позже. а пока в основу наших примеров лягут следующие значения:
-
-* соединение (вызов сервера и получение ответа)  - 100 мс;
-* ответ сервера - 100 мс для HTML-документов и 10 мс для других файлов.
-
-## Страница Hello World
+## The hello world experience
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/performance/critical-rendering-path/_code/basic_dom_nostyle.html" region_tag="full" adjust_indentation="auto" %}
 </pre>
 
-Начнем с самой простой страницы без CSS и JavaScript, состоящей из HTML-разметки и картинки. Запустим инструменты разработчика в Chrome, откроем вкладку Network (Сеть) и проанализируем динамический список:
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/performance/critical-rendering-path/basic_dom_nostyle.html){: target="_blank" .external }
 
-<img src="images/waterfall-dom.png" class="center" alt="Процесс визуализации">
+We'll start with basic HTML markup and a single image; no CSS or JavaScript. Let's open up our Network timeline in Chrome DevTools and inspect the resulting resource waterfall:
 
-Как и ожидалось, на скачивание HTML-файла ушло примерно 200 мс. Обратите внимание, что светло-голубая полоса отражает время ожидания, а темно-голубая - период скачивания файла с момента получения первых байтов. Размер HTML-файла очень маленький, поэтому для скачивания потребовалось всего одно соединение продолжительностью 200 мс, т. е. по 100 мс на ожидание и получение ответа.
+<img src="images/waterfall-dom.png" alt="CRP" />
 
-Скачав HTML-документ, браузер анализирует байты, преобразует их в объекты и строит модель визуализации. Обратите внимание, что в инструментах разработчика также указана продолжительность события DOMContentLoaded (216 мс), отмеченного на графике синей вертикальной чертой. Пробел между этой чертой и темно-голубой полосой - это время, которое понадобилось браузеру для создания модели визуализации (всего пара миллисекунд в нашем случае).
+Note: Although this doc uses DevTools to illustrate CRP concepts, DevTools is currently not well-suited for CRP analysis. See [What about DevTools?](measure-crp#devtools) for more information.
 
-На графике есть ещё одна любопытная деталь: картинка `awesome photo` не помешала событию DOMContentLoaded. Значит, браузер может создавать модель визуализации и выводить страницу на экран, не дожидаясь загрузки всех элементов. Отсюда вывод: **не все ресурсы необходимы для первоочередной визуализации**. Первоочередной процесс визуализации затрагивает только HTML-, CSS и JavaScript-файлы. Изображения не препятствуют выводу страницы, однако мы должны позаботиться о том, чтобы они также загружались достаточно быстро.
+As expected, the HTML file took approximately 200ms to download. Note that the transparent portion of the blue line represents the length of time that the browser waits on the network without receiving any response bytes whereas the solid portion shows the time to finish the download after the first response bytes have been received. The HTML download is tiny (<4K), so all we need is a single roundtrip to fetch the full file. As a result, the HTML document takes approximately 200ms to fetch, with half the time spent waiting on the network and the other half waiting on the server response.
 
-До тех пор пока картинки не отобразятся на экране, невозможна полная загрузка страницы и использование события onload. Помните, что страница загружается полностью только после скачивания и обработки **всех ресурсов**. На скриншоте выше загрузка (load) завершилась через 335 мс - это событие отмечено красной вертикальной чертой.
+When the HTML content becomes available, the browser parses the bytes, converts them into tokens, and builds the DOM tree. Notice that DevTools conveniently reports the time for the DOMContentLoaded event at the bottom (216ms), which also corresponds to the blue vertical line. The gap between the end of the HTML download and the blue vertical line (DOMContentLoaded) is the time it takes the browser to build the DOM tree&mdash;in this case, just a few milliseconds.
 
+Notice that our "awesome photo" did not block the `domContentLoaded` event. Turns out, we can construct the render tree and even paint the page without waiting for each asset on the page: **not all resources are critical to deliver the fast first paint**. In fact, when we talk about the critical rendering path we are typically talking about the HTML markup, CSS, and JavaScript. Images do not block the initial render of the page&mdash;although we should also try to get the images painted as soon as possible.
 
-## Страница с CSS и JavaScript
+That said, the `load` event (also known as `onload`), is blocked on the image: DevTools reports the `onload` event at 335ms. Recall that the `onload` event marks the point at which **all resources** that the page requires have been downloaded and processed; at this point, the loading spinner can stop spinning in the browser (the red vertical line in the waterfall).
 
-Несмотря на простоту нашего примера, браузеру пришлось потрудиться. Однако обычно страницы содержат не только только HTML-разметку, но и таблицы стилей (CSS), и интерактивные функции (скрипты). Попробуем добавить их в код Hello World:
+## Adding JavaScript and CSS into the mix
+
+Our "Hello World experience" page seems simple but a lot goes on under the hood. In practice we'll need more than just the HTML: chances are, we'll have a CSS stylesheet and one or more scripts to add some interactivity to our page. Let's add both to the mix and see what happens:
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/performance/critical-rendering-path/_code/measure_crp_timing.html" region_tag="full" adjust_indentation="auto" %}
 </pre>
 
-_Перед добавлением JavaScript и CSS:_
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/performance/critical-rendering-path/measure_crp_timing.html){: target="_blank" .external }
 
-<img src="images/waterfall-dom.png" alt="DOM" class="center">
+*Before adding JavaScript and CSS:*
 
-_После добавления JavaScript и CSS_
+<img src="images/waterfall-dom.png" alt="DOM CRP" />
 
-<img src="images/waterfall-dom-css-js.png" alt="DOM, CSSOM, JavaScript" class="center">
+*With JavaScript and CSS:*
 
-Браузер обработал CSS- и JavaScript-файлы одновременно, и в динамическом списке появились две новые строки. Но это ещё не все. **Вы наверняка заметили, что промежуток между красной и синей чертами сократился. Что произошло?**
+<img src="images/waterfall-dom-css-js.png" alt="DOM, CSSOM, JS" />
 
-* В отличие от первого примера, браузеру нужно скачать и проанализировать CSS-файл, а также построить модель CSSOM. Без нее создать модель визуализации невозможно.
-* Поскольку для выполнения JavaScript может понадобиться CSSOM, браузер блокирует событие DOMContentLoaded (см. синюю черту) до тех пор, пока не скачает и не проанализирует CSS-файл.
+Adding external CSS and JavaScript files adds two extra requests to our waterfall, all of which the browser dispatches at about the same time. However, **note that there is now a much smaller timing difference between the `domContentLoaded` and `onload` events.**
 
-Но как ускорить визуализацию? **Может, стоит заменить файл JavaScript встроенным скриптом?** Это сложный вопрос. Даже если мы разместим в HTML-документе текст скрипта, браузер должен выполнить его, предварительно создав модель CSSOM. Поэтому встроенный JavaScript также блокирует анализ документа.
+What happened?
 
-Тем не менее, будет ли страница загружаться быстрее, если мы все-таки используем встроенный код? Давайте проверим:
+* Unlike our plain HTML example, we also need to fetch and parse the CSS file to construct the CSSOM, and we need both the DOM and CSSOM to build the render tree.
+* Because the page also contains a parser blocking JavaScript file, the `domContentLoaded` event is blocked until the CSS file is downloaded and parsed: because the JavaScript might query the CSSOM, we must block the CSS file until it downloads before we can execute JavaScript.
 
-_Внешний файл JavaScript:_
+**What if we replace our external script with an inline script?** Even if the script is inlined directly into the page, the browser can't execute it until the CSSOM is constructed. In short, inlined JavaScript is also parser blocking.
 
-<img src="images/waterfall-dom-css-js.png" alt="DOM, CSSOM, JavaScript" class="center">
+That said, despite blocking on CSS, does inlining the script make the page render faster? Let's try it and see what happens.
 
-_Встроенный JavaScript:_
+*External JavaScript:*
 
-<img src="images/waterfall-dom-css-js-inline.png" alt="DOM, CSSOM, встроенный JavaScript" class="center">
+<img src="images/waterfall-dom-css-js.png" alt="DOM, CSSOM, JS" />
 
-Итак, количество запросов уменьшилось, но время завершения загрузки (load) не изменилось, как и временная метка события DOMContentLoaded. Почему? Во-первых, как мы уже знаем, встроенный скрипт требует создания CSSOM, что невозможно без приостановки синтаксического анализа. Во-вторых, в прошлый раз браузер скачивал файл JavaScript одновременно с CSS, поэтому устранение одного из запросов не играет роли. В результате встроенный код не решил проблему на нашей странице. Что же делать? Есть ли другой способ оптимизации? Есть, и даже не один.
+*Inlined JavaScript:*
 
-Например, чтобы предотвратить остановку визуализации, можно перенести код JavaScript в отдельный файл и присвоить тегу script параметр async. Посмотрим, что получилось:
+<img src="images/waterfall-dom-css-js-inline.png" alt="DOM, CSSOM, and inlined JS" />
+
+We are making one less request, but both our `onload` and `domContentLoaded` times are effectively the same. Why? Well, we know that it doesn't matter if the JavaScript is inlined or external, because as soon as the browser hits the script tag it blocks and waits until the CSSOM is constructed. Further, in our first example, the browser downloads both CSS and JavaScript in parallel and they finish downloading at about the same time. In this instance, inlining the JavaScript code doesn't help us much. But there are several strategies that can make our page render faster.
+
+First, recall that all inline scripts are parser blocking, but for external scripts we can add the "async" keyword to unblock the parser. Let's undo our inlining and give that a try:
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/performance/critical-rendering-path/_code/measure_crp_async.html" region_tag="full" adjust_indentation="auto" %}
 </pre>
 
-_Внешний файл JavaScript (блокирующий визуализацию):_
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/performance/critical-rendering-path/measure_crp_async.html){: target="_blank" .external }
 
-<img src="images/waterfall-dom-css-js.png" alt="DOM, CSSOM, JavaScript" class="center">
+*Parser-blocking (external) JavaScript:*
 
-_Внешний файл JavaScript (асинхронный):_
+<img src="images/waterfall-dom-css-js.png" alt="DOM, CSSOM, JS" />
 
-<img src="images/waterfall-dom-css-js-async.png" alt="DOM, CSSOM, асинхронный JavaScript" class="center">
+*Async (external) JavaScript:*
 
-Уже лучше! Теперь браузер инициирует событие DOMContentLoaded почти сразу после завершения анализа HTML. Поскольку JavaScript не блокирует анализатор, CSSOM создается одновременно с обработкой скрипта.
+<img src="images/waterfall-dom-css-js-async.png" alt="DOM, CSSOM, async JS" />
 
-Другое возможное решение - встроить в HTML как скрипт, так и CSS:
+Much better! The `domContentLoaded` event fires shortly after the HTML is parsed; the browser knows not to block on JavaScript and since there are no other parser blocking scripts the CSSOM construction can also proceed in parallel.
+
+Alternatively, we could have inlined both the CSS and JavaScript:
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/performance/critical-rendering-path/_code/measure_crp_inlined.html" region_tag="full" adjust_indentation="auto" %}
 </pre>
 
-<img src="images/waterfall-dom-css-inline-js-inline.png" alt="DOM, встроенный CSS и встроенный JavaScript" class="center">
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/performance/critical-rendering-path/measure_crp_inlined.html){: target="_blank" .external }
 
-Обратите внимание, что временные отметки события _DOMContentLoaded_ в текущем и прошлом примере почти не различаются. Хотя теперь браузер затрачивает немного больше времени на обработку HTML-документа, в который встроены JavaScript и CSS, мы избавились от ожидания загрузки скрипта и таблицы стилей.
+<img src="images/waterfall-dom-css-inline-js-inline.png" alt="DOM, inline CSS, inline JS" />
 
-Как вы уже успели заметить, оптимизация даже самой простой страницы требует кропотливой работы: нам нужно понять взаимосвязь между ресурсами, выделить среди них основные и, наконец, выбрать способ оптимизации. Эти действия нужно проделывать каждый раз, потому что универсальной стратегии оптимизации не существует.
+Notice that the `domContentLoaded` time is effectively the same as in the previous example; instead of marking our JavaScript as async, we've inlined both the CSS and JS into the page itself. This makes our HTML page much larger, but the upside is that the browser doesn't have to wait to fetch any external resources; everything is right there in the page.
 
-Тем не менее, чтобы упростить этот процесс, мы можем изучить алгоритмы визуализации.
+As you can see, even with a very simple page, optimizing the critical rendering path is a non-trivial exercise: we need to understand the dependency graph between different resources, we need to identify which resources are "critical," and we must choose among different strategies for how to include those resources on the page. There is no one solution to this problem; each page is different. You need to follow a similar process on your own to figure out the optimal strategy.
 
+That said, let's see if we can step back and identify some general performance patterns.
 
-## Алгоритмы визуализации
+## Performance patterns
 
-Для начала вернемся к самой простой странице без CSS и JavaScript, состоящей только из HTML-разметки. Чтобы визуализировать эту страницу, браузер должен отправить запрос на сервер, скачать HTML-документ, проанализировать его, создать модель DOM и, наконец, вывести страницу на экран:
+The simplest possible page consists of just the HTML markup; no CSS, no JavaScript, or other types of resources. To render this page the browser has to initiate the request, wait for the HTML document to arrive, parse it, build the DOM, and then finally render it on the screen:
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/performance/critical-rendering-path/_code/basic_dom_nostyle.html" region_tag="full" adjust_indentation="auto" %}
 </pre>
 
-<img src="images/analysis-dom.png" alt="Процесс визуализации: DOM" class="center">
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/performance/critical-rendering-path/basic_dom_nostyle.html){: target="_blank" .external }
 
-**Промежуток между T<sub>0</sub> и T<sub>1</sub> - это время сетевой и серверной обработки.** Если HTML-документ небольшой, то для его загрузки достаточно одного соединения. Большие файлы требуют нескольких соединений из-за особенностей протокола TCP. Эту тему мы рассмотрим в одном из следующих уроков. **Итак, для визуализации нашей страницы требуется как минимум одно соединение.**
+<img src="images/analysis-dom.png" alt="Hello world CRP" />
 
-Теперь усложним задачу и добавим внешний CSS-файл:
+**The time between T<sub>0</sub> and T<sub>1</sub> captures the network and server processing times.** In the best case (if the HTML file is small), just one network roundtrip fetches the entire document. Due to how the TCP transports protocols work, larger files may require more roundtrips. **As a result, in the best case the above page has a one roundtrip (minimum) critical rendering path.**
+
+Now, let's consider the same page but with an external CSS file:
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/performance/critical-rendering-path/_code/analysis_with_css.html" region_tag="full" adjust_indentation="auto" %}
 </pre>
 
-<img src="images/analysis-dom-css.png" alt="Процесс визуализации: DOM и CSSOM" class="center">
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/performance/critical-rendering-path/analysis_with_css.html){: target="_blank" .external }
 
-Для передачи HTML-документа требуется одно соединение, но теперь в разметке содержится ссылка на CSS-файл, который также необходим для вывода страницы на экран. Браузер снова соединяется с сервером и скачивает CSS-файл. **В результате для визуализации страницы нужно как минимум два соединения** (и больше, если мы имеем дело со сложным CSS- или HTML-файлом).
+<img src="images/analysis-dom-css.png" alt="DOM + CSSOM CRP" />
 
-Остановимся на терминах, с помощью которых можно описать процесс визуализации:
+Once again, we incur a network roundtrip to fetch the HTML document, and then the retrieved markup tells us that we also need the CSS file; this means that the browser has to go back to the server and get the CSS before it can render the page on the screen. **As a result, this page incurs a minimum of two roundtrips before it can be displayed.** Once again, the CSS file may take multiple roundtrips, hence the emphasis on "minimum".
 
-* **Первоочередные ресурсы** - файлы, которые могут заблокировать процесс визуализации.
-* **Продолжительность обработки** - количество соединений или общее время, необходимое для загрузки всех первоочередных ресурсов.
-* **Число байтов** - количество байтов, которое нужно получить для первоочередной визуализации страницы (общий размер всех первоочередных ресурсов).
-Вернемся к первому алгоритму: страница Hello World содержит один первоочередной ресурс (HTML-документ), продолжительность обработки составляет 1 соединение (т. к. файл имеет небольшой размер), а число байтов совпадает с размером HTML-документа.
+Let's define the vocabulary we use to describe the critical rendering path:
 
-Теперь рассмотрим характеристики второй страницы, состоящей из HTML и CSS:
+* **Critical Resource:** Resource that could block initial rendering of the page.
+* **Critical Path Length:** Number of roundtrips, or the total time required to fetch all of the critical resources.
+* **Critical Bytes:** Total number of bytes required to get to first render of the page, which is the sum of the transfer filesizes of all critical resources. Our first example, with a single HTML page, contained a single critical resource (the HTML document); the critical path length was also equal to one network roundtrip (assuming file was small), and the total critical bytes was just the transfer size of the HTML document itself.
 
-<img src="images/analysis-dom-css.png" alt="Процесс визуализации: DOM и CSSOM" class="center">
+Now let's compare that to the critical path characteristics of the HTML + CSS example above:
 
-* первоочередные ресурсы - **2** файла;
-* продолжительность обработки - **2** соединения минимум;
-* число байтов - **9** КБ.
+<img src="images/analysis-dom-css.png" alt="DOM + CSSOM CRP" />
 
-Поскольку для создания модели визуализации нужны DOM и CSSOM, первоочередными ресурсами являются два файла - HTML и CSS. Сначала браузер скачивает HTML-документ, и только потом - CSS, поэтому для обработки файлов нужно как минимум два соединения. Общий размер ресурсов составляет 9 КБ.
+* **2** critical resources
+* **2** or more roundtrips for the minimum critical path length
+* **9** KB of critical bytes
 
-А теперь дополним пример кодом JavaScript:
+We need both the HTML and CSS to construct the render tree. As a result, both HTML and CSS are critical resources: the CSS is fetched only after the browser gets the HTML document, hence the critical path length is at minimum two roundtrips. Both resources add up to a total of 9KB of critical bytes.
+
+Now let's add an extra JavaScript file into the mix.
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/performance/critical-rendering-path/_code/analysis_with_css_js.html" region_tag="full" adjust_indentation="auto" %}
 </pre>
 
-Мы привели в HTML-документе ссылку на внешний файл app.js. Как нам уже известно, это первоочередной ресурс, который задерживает визуализацию. К тому же скрипт может ссылаться на CSSOM, поэтому для его выполнения браузеру нужно скачать файл style.css и сформировать модель. На это время визуализация также будет приостановлена.
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/performance/critical-rendering-path/analysis_with_css_js.html){: target="_blank" .external }
 
-<img src="images/analysis-dom-css-js.png" alt="Процесс визуализации: DOM, CSSOM и JavaScript" class="center">
+We added `app.js`, which is both an external JavaScript asset on the page and a parser blocking (that is, critical) resource. Worse, in order to execute the JavaScript file we have to block and wait for CSSOM; recall that JavaScript can query the CSSOM and hence the browser pauses until `style.css` is downloaded and CSSOM is constructed.
 
-Однако на вкладке Network (Сеть) в инструментах разработчика можно увидеть следующее: когда браузер обнаруживает файлы CSS и JavaScript, он инициирует оба запроса почти одновременно. Поэтому характеристики страницы выглядят так:
+<img src="images/analysis-dom-css-js.png" alt="DOM, CSSOM, JavaScript CRP" />
 
-* первоочередные ресурсы - **3** файла;
-* продолжительность обработки - **2** соединения минимум;
-* число байтов - **11** КБ.
+That said, in practice if we look at this page's "network waterfall," you'll see that both the CSS and JavaScript requests are initiated at about the same time; the browser gets the HTML, discovers both resources, and initiates both requests. As a result, the above page has the following critical path characteristics:
 
-Размер первоочередных ресурсов увеличился до 11 КБ, однако для их обработки браузеру нужно всего два соединения, потому что файлы CSS и JavaScript можно скачивать одновременно. **Такой анализ характеристик поможет вам выделить первоочередные ресурсы и понять, как браузер получает их.** Но это ещё не все.
+* **3** critical resources
+* **2** or more roundtrips for the minimum critical path length
+* **11** KB of critical bytes
 
-Как вы помните, мы можем избежать приостановки визуализации, сообщив браузеру, что JavaScript нужно обработать позже. Для этого мы присвоим скрипту параметр async:
+We now have three critical resources that add up to 11KB of critical bytes, but our critical path length is still two roundtrips because we can transfer the CSS and JavaScript in parallel. **Figuring out the characteristics of your critical rendering path means being able to identify the critical resources and also understanding how the browser will schedule their fetches.** Let's continue with our example.
+
+After chatting with our site developers, we realize that the JavaScript we included on our page doesn't need to be blocking; we have some analytics and other code in there that doesn't need to block the rendering of our page. With that knowledge, we can add the "async" attribute to the script tag to unblock the parser:
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/performance/critical-rendering-path/_code/analysis_with_css_js_async.html" region_tag="full" adjust_indentation="auto" %}
 </pre>
 
-<img src="images/analysis-dom-css-js-async.png" alt="Процесс визуализации: DOM, CSSOM и асинхронный JavaScript" class="center">
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/performance/critical-rendering-path/analysis_with_css_js_async.html){: target="_blank" .external }
 
-У асинхронного кода есть ряд преимуществ:
+<img src="images/analysis-dom-css-js-async.png" alt="DOM, CSSOM, async JavaScript CRP" />
 
-* Он предотвращает приостановку визуализации, поэтому скрипт больше не считается первоочередным ресурсом.
-* Поскольку браузеру не нужно сразу выполнять скрипт, он может отложить создание модели CSSOM и не блокировать событие DOMContentLoaded.
-* Чем скорее браузер инициирует событие DOMContentLoaded, тем раньше начнется выполнение скрипта.
+An asynchronous script has several advantages:
 
-Результатом нашей оптимизации стала страница с двумя первоочередными ресурсами - файлами HTML и CSS размером 9 КБ. Для их обработки потребуется как минимум два соединения.
+* The script is no longer parser blocking and is not part of the critical rendering path.
+* Because there are no other critical scripts, the CSS doesn't need to block the `domContentLoaded` event.
+* The sooner the `domContentLoaded` event fires, the sooner other application logic can begin executing.
 
-Но ещё лучшего результата можно добиться, если CSS необходим только для печати страницы:
+As a result, our optimized page is now back to two critical resources (HTML and CSS), with a minimum critical path length of two roundtrips, and a total of 9KB of critical bytes.
+
+Finally, if the CSS stylesheet were only needed for print, how would that look?
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/performance/critical-rendering-path/_code/analysis_with_css_nb_js_async.html" region_tag="full" adjust_indentation="auto" %}
 </pre>
 
-<img src="images/analysis-dom-css-nb-js-async.png" alt="Процесс визуализации: DOM, CSS для печати и асинхронный JavaScript" class="center">
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/performance/critical-rendering-path/analysis_with_css_nb_js_async.html){: target="_blank" .external }
 
-Поскольку файл style.css используется только для печати, браузер пропустит его обработку, чтобы не задерживать визуализацию. Значит, страницу можно вывести на экран уже после того, как браузер построит модель DOM! Таким образом мы сократили число первоочередных ресурсов до одного HTML-документа, для обработки которого понадобится как минимум одно соединение.
+<img src="images/analysis-dom-css-nb-js-async.png" alt="DOM, non-blocking CSS, and async JavaScript CRP" />
+
+Because the style.css resource is only used for print, the browser doesn't need to block on it to render the page. Hence, as soon as DOM construction is complete, the browser has enough information to render the page. As a result, this page has only a single critical resource (the HTML document), and the minimum critical rendering path length is one roundtrip.
+
+## Feedback {: #feedback }
+
+{% include "web/_shared/helpful.html" %}
