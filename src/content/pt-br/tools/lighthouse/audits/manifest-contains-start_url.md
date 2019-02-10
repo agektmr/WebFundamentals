@@ -1,40 +1,32 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Documentação de referência para a auditoria do Lighthouse “O manifesto contém start_url”.
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Reference documentation for the "Manifest Contains start_url" Lighthouse audit.
 
-{# wf_updated_on: 2016-09-21 #}
-{# wf_published_on: 2016-09-21 #}
+{# wf_updated_on: 2018-07-23 #} {# wf_published_on: 2016-09-21 #} {# wf_blink_components: N/A #}
 
-# O manifesto contém start_url  {: .page-title }
+# Manifest Contains Start URL {: .page-title }
 
-## Por que a auditoria é importante {: #why }
+## Overview {: #overview }
 
-Depois que seu aplicativo da Web é adicionado à tela inicial de um usuário, a propriedade `start_url`
-no manifesto do aplicativo da Web determina qual página do aplicativo é carregada primeiro
-quando o usuário o inicializa da tela inicial.
+After your web app has been added to a user's homescreen, the `start_url` property in the Web App Manifest determines what page of your app loads first when the user launches your app from the homescreen.
 
-Se a propriedade `start_url` não estiver presente, o navegador assume como padrão a
-página que estava ativa quando o usuário decidiu adicionar o aplicativo à tela inicial.
+If the `start_url` property is absent, then the browser defaults to whatever page was active when the user decided to add the app to the homescreen.
 
-## Como ser aprovado na auditoria {: #how }
+## Recommendations {: #recommendations }
 
-Adicione uma propriedade `start_url` no manifesto do seu aplicativo da Web.
+Add a `start_url` property in your Web App Manifest.
 
     {
       ...
       "start_url": ".",
       ...
     }
+    
 
-Confira [O manifesto existe](manifest-exists#how)
-para obter uma lista de guias que ensinam você a implementar
-e testar corretamente o suporte à adição na tela inicial em seu aplicativo.
+Check out [Manifest Exists](manifest-exists#recommendations) for a list of guides that teach you how to properly implement and test "Add to Homescreen" support in your app.
 
-{% include "web/tools/lighthouse/audits/implementation-heading.html" %}
+## More information {: #more-info }
 
-O Lighthouse busca o manifesto e verifica se ele tem uma propriedade `start_url`.
-O manifesto que o Lighthouse busca é separado do que o Chrome está
-usando na página, que pode causar resultados imprecisos.
+Lighthouse fetches the manifest and verifies that it has a `start_url` property. The manifest that Lighthouse fetches is separate from the one that Chrome is using on the page, which can possibly cause inaccurate results.
 
+## Feedback {: #feedback }
 
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
