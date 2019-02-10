@@ -1,37 +1,28 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Este guia examina as regras do PageSpeed Insights no contexto: o que devemos examinar na otimização do caminho crítico de renderização e por quê.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: This guide examines PageSpeed Insights rules in context: what to pay attention to when optimizing the critical rendering path, and why.
 
-{# wf_updated_on: 2015-10-05 #}
-{# wf_published_on: 2014-03-31 #}
+{# wf_updated_on: 2018-08-17 #} {# wf_published_on: 2014-03-31 #} {# wf_blink_components: Blink>JavaScript,Blink>CSS #}
 
-# Regras e recomendações para o PageSpeed {: .page-title }
+# PageSpeed Rules and Recommendations {: .page-title }
 
 {% include "web/_shared/contributors/ilyagrigorik.html" %}
 
-Este guia examina as regras do PageSpeed Insights no contexto: o que devemos examinar na otimização do caminho crítico de renderização e por quê.
+This guide examines PageSpeed Insights rules in context: what to pay attention to when optimizing the critical rendering path, and why.
 
+## Eliminate render-blocking JavaScript and CSS
 
-## Elimine JavaScript e CSS bloqueadores de renderização
+To deliver the fastest time to first render, minimize and (where possible) eliminate the number of critical resources on the page, minimize the number of downloaded critical bytes, and optimize the critical path length.
 
-Para acelerar ao máximo a primeira renderização, minimize e, se possível, elimine a quantidade de recursos críticos na página, minimize o número de bytes críticos baixados e otimize o tamanho do caminho crítico.
+## Optimize JavaScript use
 
-## Otimize o uso do JavaScript
+JavaScript resources are parser blocking by default unless marked as `async` or added via a special JavaScript snippet. Parser blocking JavaScript forces the browser to wait for the CSSOM and pauses construction of the DOM, which in turn can significantly delay the time to first render.
 
-Por padrão, os recursos do JavaScript bloqueiam o analisador, a menos que marcados como `async` ou adicionados por meio de um snippet especial do JavaScript. Quando o JavaScript bloqueia o analisador, força o navegador esperar pelo CSSOM e suspende a construção do DOM, o que, por sua vez, pode retardar consideravelmente a primeira renderização.
+### Prefer asynchronous JavaScript resources
 
-### Dê preferência a recursos JavaScript assíncronos
+Asynchronous resources unblock the document parser and allow the browser to avoid blocking on CSSOM prior to executing the script. Often, if the script can use the `async` attribute, it also means it is not essential for the first render. Consider loading scripts asynchronously after the initial render.
 
-Recursos assíncronos desbloqueiam o analisador de documentos e permitem que o navegador não fique bloqueado no CSSOM antes de executar o script. Muitas vezes, se o script puder usar o atributo `async`, quer dizer que ele não é essencial para a primeira renderização. Pense em carregar scripts de forma assíncrona depois da renderização inicial.
+### Avoid synchronous server calls
 
-### Evite chamadas síncronas ao servidor
-
-Use o método `navigator.sendBeacon()` para limitar os dados enviados por XMLHttpRequests em
-gerenciadores `unload`. Como muitos navegadores exigem que essas solicitações sejam
-síncronas, podem retardar, algumas vezes visivelmente, as transições entre as páginas. O código
-a seguir mostra como usar `navigator.sendBeacon()` para enviar dados ao servidor no
-gerenciador `pagehide` em vez de no gerenciador `unload`.
-
+Use the `navigator.sendBeacon()` method to limit data sent by XMLHttpRequests in `unload` handlers. Because many browsers require such requests to be synchronous, they can slow page transitions, sometimes noticeably. The following code shows how to use `navigator.sendBeacon()` to send data to the server in the `pagehide` handler instead of in the `unload` handler.
 
     <script>
       function() {
@@ -45,8 +36,7 @@ gerenciador `pagehide` em vez de no gerenciador `unload`.
     </script>
     
 
-O novo método `fetch()` oferece uma forma fácil de solicitar assincronamente os dados. Como ele ainda não está disponível em todos os lugares, você deve usar a detecção de recursos para verificar sua presença antes de usá-lo. Esse método processa respostas com promessas em vez de vários gerenciadores de eventos. Ao contrário da resposta ao XMLHttpRequest, a resposta da recuperação é um objeto stream a partir do Chrome 43. Isso significa que uma chamada a `json()` também retorna uma promessa. 
-
+The new `fetch()` method provides an easy way to asynchronously request data. Because it is not available everywhere yet, you should use feature detection to test for its presence before use. This method processes responses with Promises rather than multiple event handlers. Unlike the response to an XMLHttpRequest, a fetch response is a stream object starting in Chrome 43. This means that a call to `json()` also returns a Promise.
 
     <script>
     fetch('./api/some.json')  
@@ -68,8 +58,7 @@ O novo método `fetch()` oferece uma forma fácil de solicitar assincronamente o
     </script>
     
 
-O método `fetch()` também pode processar solicitações POST.
-
+The `fetch()` method can also handle POST requests.
 
     <script>
     fetch(url, {
@@ -78,34 +67,34 @@ O método `fetch()` também pode processar solicitações POST.
         "Content-type": "application/x-www-form-urlencoded; charset=UTF-8"  
       },  
       body: 'foo=bar&lorem=ipsum'  
-    }).then(function() { // Aditional code });
+    }).then(function() { // Additional code });
     </script>
     
 
-### Adie a análise do JavaScript
+### Defer parsing JavaScript
 
-Para minimizar a quantidade de trabalho que o navegador tem para renderizar a página, adie todos os scripts que não são críticos para construir o conteúdo visível da renderização inicial.
+To minimize the amount of work the browser has to perform to render the page, defer any non-essential scripts that are not critical to constructing the visible content for the initial render.
 
-### Evite JavaScript de longa duração
+### Avoid long running JavaScript
 
-JavaScript de longa duração impede o navegador de construir o DOM, o CSSOM e de renderizar a página, por isso, postergue para depois disso toda lógica de inicialização e as funcionalidades que não são essenciais para a primeira renderização. Se for necessário executar uma longa sequência de inicialização, considere dividi-la em várias fases para permitir que o navegador processe outros eventos entre elas.
+Long running JavaScript blocks the browser from constructing the DOM, CSSOM, and rendering the page, so defer until later any initialization logic and functionality that is non-essential for the first render. If a long initialization sequence needs to run, consider splitting it into several stages to allow the browser to process other events in between.
 
-## Otimize o uso do CSS
+## Optimize CSS Use
 
-O CSS é necessário para construir a árvore de renderização. Na maioria das vezes, o JavaScript fica bloqueado no CSS durante a construção inicial da página. Confirme que todo CSS não essencial esteja marcado como não crítico (por exemplo, gravações e outras consultas de mídia) e que a quantidade de CSS crítico e o tempo de entrega deles sejam os menores possíveis.
+CSS is required to construct the render tree and JavaScript often blocks on CSS during initial construction of the page. Ensure that any non-essential CSS is marked as non-critical (for example, print and other media queries), and that the amount of critical CSS and the time to deliver it is as small as possible.
 
-### Coloque o CSS no cabeçalho do documento
+### Put CSS in the document head
 
-Especifique todos os recursos CSS o mais cedo possível dentro do documento HTML para que o navegador possa encontrar as tags `<link>` e despachar a solicitação do CSS o quanto antes.
+Specify all CSS resources as early as possible within the HTML document so that the browser can discover the `<link>` tags and dispatch the request for the CSS as soon as possible.
 
-### Evite importações de CSS
+### Avoid CSS imports
 
-A diretiva de importação (`@import`) do CSS permite que uma folha de estilo importe regras de outro arquivo de folha de estilo. No entanto, evite essas diretivas, já que elas introduzem mais idas e voltas ao caminho crítico. Os recursos CSS importados são encontrados somente após o recebimento e a análise da folha de estilos CSS com a própria regra `@import`.
+The CSS import (`@import`) directive enables one stylesheet to import rules from another stylesheet file. However, avoid these directives because they introduce additional roundtrips into the critical path: the imported CSS resources are discovered only after the CSS stylesheet with the `@import` rule itself is received and parsed.
 
-### CSS em linha bloqueador de renderização
+### Inline render-blocking CSS
 
-Para obter o melhor desempenho, considere a inserção do CSS crítico em linha diretamente no documento HTML. Assim, você consegue eliminar idas e vindas adicionais ao caminho crítico e, se fizer isso corretamente, pode obter um caminho crítico com apenas uma ida e vinda, com o HTML sendo o único recurso bloqueador.
+For best performance, you may want to consider inlining the critical CSS directly into the HTML document. This eliminates additional roundtrips in the critical path and if done correctly can deliver a "one roundtrip" critical path length where only the HTML is a blocking resource.
 
+## Feedback {: #feedback }
 
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
