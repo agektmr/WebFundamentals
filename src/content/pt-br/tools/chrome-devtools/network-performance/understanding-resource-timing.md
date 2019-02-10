@@ -1,78 +1,81 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: É fundamental entender as fases em que os recursos são coletados pela rede. Esta é a base para consertar problemas de carregamento.
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: It is crucial to understand the phases in which resources are gathered over the network. This is the foundation for fixing load issues.
 
-{# wf_published_on: 2016-02-03 #}
-{# wf_updated_on: 2016-02-03 #}
+{# wf_published_on: 2016-12-29 #} {# wf_updated_on: 2018-07-27 #} {# wf_blink_components: Platform>DevTools #}
 
-# Como entender Resource Timing {: .page-title }
+# Understanding Resource Timing {: .page-title }
 
 {% include "web/_shared/contributors/jonathangarbee.html" %}
 
-É fundamental entender as fases em que os recursos são coletados pela rede. Esta é a base para consertar problemas de carregamento.
+<aside class="note">
+  <b>Note:</b> This page is deprecated. At the top of each section, there's a
+  link to an up-to-date page where you can find similar information.
+</aside>
 
+It is crucial to understand the phases in which resources are gathered over the network. This is the foundation for fixing load issues.
 
 ### TL;DR {: .hide-from-toc }
-- Entenda as fases da sincronização de recursos.
-- Saiba o que cada fase fornece à Resource Timing API.
-- Gere diferentes indicadores de problemas de desempenho no gráfico da linha do tempo, como séries de barras transparentes ou blocos grandes verdes.
 
+* Understand the phases of resource timing.
+* Know what each phase provides to the Resource Timing API.
+* Realize different indicators of performance problems in the timeline graph, such as series of transparent bars or large green chunks.
 
-Todas as solicitações de rede são consideradas recursos.
-Como foram recuperados na rede, os recursos têm ciclos de vida distintos expressos em termos de sincronização.
-O painel Network usa a mesma [Resource Timing API](http://www.w3.org/TR/resource-timing) que está disponível para desenvolvedores de aplicativo.
+All network requests are considered resources. As they are retrieved over the network, resources have distinct lifecycles expressed in terms of resource timing. The Network Panel uses the same [Resource Timing API](http://www.w3.org/TR/resource-timing) that is available to application developers.
 
-Observação: quando usar a Resource Timing API com recursos de diversas origens, certifique-se
-de que todos os recursos tenham cabeçalhos CORS.
+Note: when using the Resource Timing API with cross origin resources, make sure that all of the resources have CORS headers.
 
-A Resource Timing API fornece riqueza de detalhes sobre o tempo de cada ativo a ser recebido.
-As fases principais do ciclo de vida da solicitação são:
+The Resource Timing API provides a rich level of detail about each individual asset's time to be received. The primary phases of the request lifecycle are:
 
-* Redirecionamento
-  * Inicia `startTime` imediatamente.
-  * Se um redirecionamento estiver acontecendo, `redirectStart` inicia também.
-  * Se um redirecionamento estiver ocorrendo no fim desta fase, `redirectEnd` será obtido.
-* Cache do aplicativo
-  * Se o cache do aplicativo estiver realizando a solicitação, um tempo de `fetchStart` será obtido.
-* DNS
-  * O tempo de `domainLookupStart` é obtido no início da solicitação de DNS.
-  * O tempo de `domainLookupEnd` é obtido no fim da solicitação de DNS.
-* TCP
-  * `connectStart` é obtido quando se conecta inicialmente ao servidor.
-  * Se TLS ou SSL estiverem em uso, `secureConnectionStart` iniciará quando o handshake começar para proteger a conexão.
-  * `connectEnd` é obtido quando a conexão com o servidor é concluída.
-* Solicitação
-  * `requestStart` é obtido quando a solicitação de um recurso é enviada ao servidor.
-* Resposta
-  * `responseStart` é o tempo em que o servidor responde inicialmente à solicitação.
-  * `responseEnd` é o tempo em que a solicitação encerra e os dados são recuperados.
+* Redirect 
+    * Immediately begins `startTime`.
+    * If a redirect is happening, `redirectStart` begins as well.
+    * If a redirect is occurring at the end of this phase then `redirectEnd` will be taken.
+* App Cache 
+    * If it’s application cache fulfilling the request, a `fetchStart` time will be taken.
+* DNS 
+    * `domainLookupStart` time is taken at the beginning of the DNS request.
+    * `domainLookupEnd` time is taken at the end of the DNS request.
+* TCP 
+    * `connectStart` is taken when initially connecting to the server.
+    * If TLS or SSL are in use then `secureConnectionStart` will start when the handshake begins for securing the connection.
+    * `connectEnd` is taken when the connection to the server is complete.
+* Request 
+    * `requestStart` is taken once the request for a resource has been sent to the server.
+* Response 
+    * `responseStart` is the time when the server initially responds to the request.
+    * `responseEnd` is the time when the request ends and the data is retrieved.
 
-![Diagrama da Resource Timing API](imgs/resource-timing-api.png)
+![Resource Timing API diagram](imgs/resource-timing-api.png)
 
-## Como visualizar no DevTools
+## Viewing in DevTools
 
-Você tem três opções para visualizar as informações de sincronização completas de uma estrada específica do painel Network.
+<aside class="note">
+  <b>Note:</b> This page is deprecated. See following sections for up-to-date
+  information:
+  <ul>
+    <li><a href="reference#timing-breakdown">View timing breakdown</a></li>
+    <li><a href="reference#timing">Timing tab</a></li>
+  </ul>
+</aside>
 
-1. Passar o cursor sobre o gráfico de sincronização abaixo da coluna da linha do tempo. Isto apresentará uma janela pop-up que exibe os dados de sincronização completos.
-2. Clicar em qualquer entrada e abrir guia Timing dessa entrada.
-3. Usar a Resource Timing API para recuperar os dados brutos do JavaScript.
+To view the full timing information for a given entry of the Network Panel you have three options.
 
-![Informações da Resource Timing](imgs/resource-timing-data.png)
+1. Hover the timing graph under the timeline column. This will present a popup that shows the full timing data.
+2. Click on any entry and open the Timing tab of that entry.
+3. Use the Resource Timing API to retrieve the raw data from JavaScript.
 
-<figure>
-<figcaption>
+![Resource Timing Information](imgs/resource-timing-data.png)<figure> <figcaption>
 <p>
-  Este código pode ser executado no console do DevTools.
-  Ele usará a API de sincronização de rede para recuperar todos os recursos.
-  Em seguida, filtrará as entradas para buscar uma com um nome que contenha "style.css".
-  Se esse nome for encontrado, ele será retornado.
+  This code can be ran in the DevTools console.
+  It will use the network timing API to retrieve all resources.
+  Then it filters the entries looking for one with a name that contains "style.css".
+  If found it will be returned.
 </p>
 <code>
   performance.getEntriesByType('resource').filter(item => item.name.includes("style.css"))
 </code>
-</figcaption>
-<img src="imgs/resource-timing-entry.png" alt="Entrada da Resource Timing">
-</figure>
+</figcaption> 
+
+<img src="imgs/resource-timing-entry.png" alt="Resource Timing Entry" /> </figure> 
 
 <style>
 dt:before {
@@ -100,122 +103,107 @@ dt.content-download:before {
 
 <dl>
 
-  <dt class="queued"><strong>Enfileiramento</strong></dt>
+  <dt class="queued"><strong>Queuing</strong></dt>
   <dd>
-    A solicitação de uma fila indica que:
+    A request being queued indicates that:
       <ul>
         <li>
-        A solicitação foi adiada pelo mecanismo de renderização porque é considerada de baixa prioridade, e não recurso crítico (como scripts/estilos).
-        Isso geralmente acontece com imagens.
+        The request was postponed by the rendering engine because it's considered lower priority than critical resources (such as scripts/styles).
+        This often happens with images.
         </li>
         <li>
-        A solicitação foi colocada em espera para aguardar a liberação de um soquete TCP indisponível.
+        The request was put on hold to wait for an unavailable TCP socket that's about to free up.
         </li>
         <li>
-        A solicitação foi colocada em espera porque o navegador só permite <a href="https://crbug.com/12066">seis conexões TCP</a> por origem em HTTP 1.
+        The request was put on hold because the browser only allows <a href="https://crbug.com/12066">six TCP connections</a> per origin on HTTP 1.
         </li>
         <li>
-        Tempo gasto realizando entradas no cache do disco (normalmente muito rápido).
+        Time spent making disk cache entries (typically very quick.)
         </li>
       </ul>
   </dd>
 
-  <dt class="stalled"><strong> Paralisado/bloqueio</strong></dt>
+  <dt class="stalled"><strong> Stalled/Blocking</strong></dt>
   <dd>
-    Tempo que a solicitação gastou em espera antes de poder ser enviada.
-    Ela pode aguardar por qualquer um dos motivos descritos em Enfileiramento.
-    Além disso, esse tempo inclui todo tempo gasto em negociação de proxy.
+    Time the request spent waiting before it could be sent.
+    It can be waiting for any of the reasons described for Queueing.
+    Additionally, this time is inclusive of any time spent in proxy negotiation.
   </dd>
 
-  <dt class="proxy-negotiation"><strong> Negociação de proxy</strong></dt>
-  <dd>Tempo gasto na negociação de conexão com um servidor proxy.</dd>
+  <dt class="proxy-negotiation"><strong> Proxy Negotiation</strong></dt>
+  <dd>Time spent negotiating with a proxy server connection.</dd>
 
-  <dt class="dns-lookup"><strong>Análise de <abbr title="Domain Name System">DNS</abbr></strong></dt>
+  <dt class="dns-lookup"><strong><abbr title="Domain Name System"> DNS</abbr> Lookup</strong></dt>
   <dd>
-    Tempo gasto realizando a análise de DNS.
-    Cada novo domínio de uma página requer uma viagem de ida e volta completa para realizar a análise de DNS.
+    Time spent performing the DNS lookup.
+    Every new domain on a page requires a full roundtrip to do the DNS lookup.
   </dd>
 
-  <dt class="initial-connection"><strong> Conexão inicial/conectando</strong></dt>
-  <dd>Tempo levado para estabelecer uma conexão, incluindo handshakes/novas tentativas de <abbr title="Transmission Control Protocol">TCP</abbr> e negociação de um <abbr title="Secure Sockets Layer">SSL</abbr>.</dd>
+  <dt class="initial-connection"><strong> Initial Connection / Connecting</strong></dt>
+  <dd>Time it took to establish a connection, including <abbr title="Transmission Control Protocol">TCP</abbr> handshakes/retries and negotiating a <abbr title="Secure Sockets Layer">SSL</abbr>.</dd>
 
   <dt class="ssl"><strong> SSL</strong></dt>
-  <dd>Tempo gasto para concluir um handshake de SSL.</dd>
+  <dd>Time spent completing a SSL handshake.</dd>
 
-  <dt class="request-sent"><strong> Solicitação enviada/em envio</strong></dt>
+  <dt class="request-sent"><strong> Request Sent / Sending</strong></dt>
   <dd>
-    Tempo gasto emitindo a solicitação de rede.
-    Normalmente uma fração de milissegundo.
+    Time spent issuing the network request.
+    Typically a fraction of a millisecond.
   </dd>
 
-  <dt class="ttfb"><strong> Aguardando (<abbr title="Time To First Byte">TTFB</abbr>)</strong></dt>
+  <dt class="ttfb"><strong> Waiting (<abbr title="Time To First Byte">TTFB</abbr>)</strong></dt>
   <dd>
-    Tempo gasto aguardando a resposta inicial, também conhecido como Tempo para o primeiro byte.
-    Esse tempo captura a latência de uma viagem de ida e volta ao servidor, além do tempo gasto na espera do fornecimento da resposta pelo servidor.
+    Time spent waiting for the initial response, also known as the Time To First Byte.
+    This time captures the latency of a round trip to the server in addition to the time spent waiting for the server to deliver the response.
   </dd>
 
-  <dt class="content-download"><strong> Download de conteúdo/baixando</strong></dt>
-  <dd>Tempo gasto no recebimento dos dados da resposta.</dd>
+  <dt class="content-download"><strong> Content Download / Downloading</strong></dt>
+  <dd>Time spent receiving the response data.</dd>
 </dl>
 
+## Diagnosing Network Issues
 
-## Diagnosticar problemas de rede
+<aside class="note">
+  <b>Note:</b> This page is deprecated. See
+  <a href="issues">Network Issues Guide</a>
+  for up-to-date information.
+</aside>
 
-Há diversos problemas possíveis que podem ser descobertos pelo painel Network.
-Poder encontrá-los requer uma boa compreensão de como os clientes e servidores se comunicam e das limitações impostas pelos protocolos.
+There are numerous possible issues that can be uncovered through the Network Panel. Being able to find these requires a good understanding of how clients and servers communicate and the limitations imposed by the protocols.
 
-### Série enfileirada ou paralisada
+### Queued or Stalled series
 
-O problema mais comum visto é uma série de itens enfileirados ou paralisados.
-Isso indica que muitos recursos estão sendo recuperados por um único cliente.
-Em conexões HTTP 1.0/1.1, o Chrome aplica um máximo de seis conexões TCP por host.
-Se você estiver solicitando doze itens de uma vez, os primeiros seis começarão e os outros serão enfileirados.
-Quando um do primeiro grupo for finalizado, o primeiro item da fila começará seu processo de solicitação.
+The most common issue seen is a series of items that are queued or stalled. This indicates that too many resources are being retrieved from a single domain. On HTTP 1.0/1.1 connections, Chrome enforces a maximum of six TCP connections per host. If you are requesting twelve items at once, the first six will begin and the last half will be queued. Once one of the original half is finished, the first item in the queue will begin its request process.
 
-![Série paralisada de solicitações](imgs/stalled-request-series.png)
+![Stalled series of requests](imgs/stalled-request-series.png)
 
-Para consertar este problema de tráfego HTTP 1 tradicional, você precisaria implementar [fragmentação de domínio](https://www.maxcdn.com/one/visual-glossary/domain-sharding-2/).
-Isso significa criar diversos subdomínios no seu aplicativo para fornecer recursos a partir deles.
-Em seguida, divida os recursos que são fornecidos uniformemente entre os subdomínios.
+To fix this problem for traditional HTTP 1 traffic, you would need to implement [domain sharding](https://www.maxcdn.com/one/visual-glossary/domain-sharding-2/). That is making multiple subdomains on your application to serve resources from. Then split the resources being served evenly among the subdomains.
 
-O reparo para conexões HTTP 1 **não** se aplica a conexões HTTP 2.
-Na verdade, ele as prejudica. Se você tem HTTP 2 implementado, não fragmente os domínios dos seus recursos, já que isso trabalha de forma contrária ao modo como HTTP 2 foi desenvolvido para operar.
-Em HTTP 2, há uma única conexão TCP com o servidor que atua como uma conexão multiplexada.
-Isso elimina o limite de seis conexões do HTTP 1 e diversos recursos podem ser transferidos por uma única conexão simultaneamente.
+The fix for HTTP 1 connections does **not** apply to HTTP 2 connections. In fact, it hurts them. If you have HTTP 2 deployed, don’t domain-shard your resources as it works against how HTTP 2 is engineered to operate. In HTTP 2, there is a single TCP connection to the server that acts as a multiplexed connection. This gets rid of the six connection limit of HTTP 1 and multiple resources can be transferred over the single connection simultaneously.
 
-### Tempo lento para primeiro byte
+### Slow Time to First Byte
 
-<small>Também conhecido como: um monte de verde</small>
+<small>AKA: lots of green</small>
 
-![Indicador TTFB alto](imgs/indicator-of-high-ttfb.png)
+![High TTFB Indicator](imgs/indicator-of-high-ttfb.png)
 
-Um tempo lento para o primeiro byte (TTFB) é reconhecido por um alto tempo de espera.
-Recomenda-se ter este valor [menor que 200 ms](/speed/docs/insights/Server).
-Um TTFB alto revela um de dois principais problemas. Uma das possibilidades:
+A slow time to first byte (TTFB) is recognized by a high waiting time. It is recommended that you have this [under 200ms](/speed/docs/insights/Server). A high TTFB reveals one of two primary issues. Either:
 
-1. Condições ruins de rede entre cliente e servidor, ou
-2. Aplicativo em um servidor de resposta lenta
+1. Bad network conditions between client and server, or
+2. A slowly responding server application
 
-Para corrigir um TTFB alto, corte o máximo de rede possível.
-O ideal é hospedar o aplicativo localmente e ver se ainda há um TTFB alto.
-Se houver, o aplicativo precisa ser otimizado quanto a velocidade de resposta.
-Isso pode significar otimizar consultas ao banco de dados, implementar cache para determinadas partes do conteúdo ou modificar a configuração do servidor Web.
-Há muitos motivos para a lentidão de um back-end.
-Você precisará analisar o seu software e descobrir o que não está atendendo a sua meta de desempenho.
+To address a high TTFB, first cut out as much network as possible. Ideally, host the application locally and see if there is still a big TTFB. If there is, then the application needs to be optimized for response speed. This could mean optimizing database queries, implementing a cache for certain portions of content, or modifying your web server configuration. There are many reasons a backend can be slow. You will need to do research into your software and figure out what is not meeting your performance budget.
 
-Se o TTFB for baixo localmente, as redes entre o cliente e o servidor são o problema.
-O percurso da rede pode estar obstruído por diversas coisas.
-Há vários pontos entre clientes e servidores, e cada um deles tem suas próprias limitações de conexão que podem causar um problema.
-O método mais simples para testar a atenuação desse problema é colocar o aplicativo em outro host e ver se o TTFB melhora.
+If the TTFB is low locally then the networks between your client and the server are the problem. The network traversal could be hindered by any number of things. There are a lot of points between clients and servers and each one has its own connection limitations and could cause a problem. The simplest method to test reducing this is to put your application on another host and see if the TTFB improves.
 
-### Como obter capacidade de transferência
+### Hitting throughput capacity
 
-<small>Também conhecido como: um monte de azul</small>
+<small>AKA: lots of blue</small>
 
-![Indicador de capacidade de transferência](imgs/indicator-of-large-content.png)
+![Throughput capacity Indicator](imgs/indicator-of-large-content.png)
 
-Se você perceber muito tempo sendo gasto nas fases de Download de conteúdo, melhorar a resposta ou a concatenação do servidor não ajudará.
-A principal solução é enviar menos bytes.
+If you see lots of time spent in the Content Download phases, then improving server response or concatenating won't help. The primary solution is to send fewer bytes.
 
+## Feedback {: #feedback }
 
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
