@@ -1,41 +1,30 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Conoce los factores clave para la optimización de la ruta de representación crítica.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Learn the key factors in optimizing the critical rendering path.
 
-{# wf_updated_on: 2015-10-05 #}
-{# wf_published_on: 2014-03-31 #}
+{# wf_updated_on: 2018-08-17 #} {# wf_published_on: 2014-03-31 #} {# wf_blink_components: N/A #}
 
-# Optimización de la ruta de representación crítica {: .page-title }
+# Optimizing the Critical Rendering Path {: .page-title }
 
 {% include "web/_shared/contributors/ilyagrigorik.html" %}
 
+To deliver the fastest possible time to first render, we need to minimize three variables:
 
-  Para proporcionar la mayor rapidez posible en la primera representación, debemos 
-  minimizar tres variables:
+- The number of critical resources.
+- The critical path length.
+- The number of critical bytes.
 
-  <ul>
-    <li>La cantidad de recursos críticos</li>
-    <li>La longitud de la ruta crítica</li>
-    <li>La cantidad de bytes críticos</li>
-  </ul>
+A critical resource is a resource that could block initial rendering of the page. The fewer of these resources, the less work for the browser, the CPU, and other resources.
 
-Un recurso crítico es un recurso que podría bloquear la representación inicial de la página. Mientras menos recursos haya de este tipo, menor trabajo deberá realizar el navegador, la CPU y otros recursos.
+Similarly, the critical path length is a function of the dependency graph between the critical resources and their bytesize: some resource downloads can only be initiated after a previous resource has been processed, and the larger the resource the more roundtrips it takes to download.
 
-Asimismo, la extensión de la ruta crítica depende del gráfico de dependencias entre los recursos críticos y el tamaño en bytes: algunas descargas de recursos solo pueden iniciarse una vez que termina de procesarse el recurso anterior, y cuanto más grande sea el recurso, más recorridos se requerirán para descargarlo.
+Finally, the fewer critical bytes the browser has to download, the faster it can process content and render it visible on the screen. To reduce the number of bytes, we can reduce the number of resources (eliminate them or make them non-critical) and ensure that we minimize the transfer size by compressing and optimizing each resource.
 
-Por último, cuantos menos bytes críticos deba descargar el navegador, más rápido se podrá procesar el contenido y exhibirlo en la pantalla. Para reducir la cantidad de bytes, podemos disminuir la cantidad de recursos (eliminarlos o hacer que no sean críticos), y asegurarnos de minimizar el tamaño de la transferencia mediante la compresión y la optimización de cada recurso.
+**The general sequence of steps to optimize the critical rendering path is:**
 
-**La secuencia general de pasos para optimizar la ruta de acceso de representación crítica es la siguiente:**
+1. Analyze and characterize your critical path: number of resources, bytes, length.
+2. Minimize number of critical resources: eliminate them, defer their download, mark them as async, and so on.
+3. Optimize the number of critical bytes to reduce the download time (number of roundtrips).
+4. Optimize the order in which the remaining critical resources are loaded: download all critical assets as early as possible to shorten the critical path length.
 
-1. Analizar y caracterizar tu ruta crítica: cantidad de recursos, bytes y extensión.
-1. Minimizar la cantidad de recursos críticos: eliminarlos, diferir su descarga, marcarlos como asincrónicos, etc.
-1. Optimizar la cantidad de bytes críticos para reducir el tiempo de descarga (cantidad de recorridos).
-1. Optimizar el orden en el que se cargan los recursos críticos restantes: descarga todos los recursos críticos lo más rápido posible para reducir la longitud de la ruta crítica.
+## Feedback {: #feedback }
 
-<a href="page-speed-rules-and-recommendations" class="gc-analytics-event"
-    data-category="CRP" data-label="Next / PageSpeed">
-  <button>A continuación: Reglas y recomendaciones de PageSpeed</button>
-</a>
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
