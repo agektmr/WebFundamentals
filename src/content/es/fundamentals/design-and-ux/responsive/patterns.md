@@ -1,84 +1,55 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Los patrones de diseño web adaptables evolucionan rápidamente, pero existen varios patrones establecidos que funcionan bien en los diferentes equipos de escritorio y dispositivos móviles.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Responsive web design patterns are quickly evolving, but there are a handful of established patterns that work well across the desktop and mobile devices
 
-{# wf_updated_on: 2014-10-20 #}
-{# wf_published_on: 2014-04-29 #}
+{# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2014-04-29 #} {# wf_blink_components: Blink>CSS #}
 
-# Patrones de diseño web adaptables {: .page-title }
+# Responsive Web Design Patterns {: .page-title }
 
 {% include "web/_shared/contributors/petelepage.html" %}
 
-Los patrones de diseño web adaptables evolucionan rápidamente, pero existen varios patrones establecidos que funcionan bien en los diferentes equipos de escritorio y dispositivos móviles.
+Responsive web design patterns are quickly evolving, but there are a handful of established patterns that work well across the desktop and mobile devices.
 
-La mayoría de los diseños que se usan en las páginas web receptivas se pueden categorizar dentro de cinco clases de
-patrones: mostly fluid, column drop, layout shifter, tiny tweaks y off canvas.
-En algunos casos, en una página se puede usar una combinación de patrones; por ejemplo, column drop
-y off canvas.  Estos patrones, originalmente identificados por [Luke
-Wroblewski](http://www.lukew.com/ff/entry.asp?1514), son un punto de partida sólido
-para cualquier página receptiva.
+Most layouts used by responsive web pages can be categorized into one of five patterns: mostly fluid, column drop, layout shifter, tiny tweaks, and off canvas. In some cases, a page may use a combination of patterns, for example column drop and off canvas. These patterns, originally identified by [Luke Wroblewski](http://www.lukew.com/ff/entry.asp?1514), provide a solid starting point for any responsive page.
 
-### Los patrones
+### The patterns
 
-Con el propósito de lograr una comprensión simple y fácil, cada uno de los que se presentan a continuación se crearon con lenguaje de marcado real a través de
-[`flexbox`](https://developer.mozilla.org/en-US/docs/Web/Guide/CSS/Flexible_boxes),
-generalmente con tres `div`de contenido dentro de un contenedor principal de `div`.
- Cada muestra se escribió primero a partir de la vista más pequeña y
-se agregaron puntos de interrupción cuando fue necesario.  El [modo de diseño Flexbox es muy
-compatible](http://caniuse.com/#search=flexbox) con los navegadores modernos; sin embargo, es posible que el
-proveedor deba realizar ajustes previos para lograr una compatibilidad óptima.
+For simplicity and ease of understanding, each the samples below were created with real markup using [`flexbox`](https://developer.mozilla.org/en-US/docs/Web/Guide/CSS/Flexible_boxes), typically with three content `div`'s contained within a primary container `div`. Each sample was written starting with the smallest view first, and breakpoints were added when necessary. The [flexbox layout mode is well supported](http://caniuse.com/#search=flexbox) for modern browsers, though may still require vendor prefixing for optimal support.
 
 ## Mostly Fluid
 
-El patrón Mostly fluid consiste, principalmente, en una cuadrícula fluida.  Por lo general, en las pantallas grandes o
-medianas se mantiene el mismo tamaño y simplemente se ajustan los márgenes en las
-más anchas.
+The mostly fluid pattern consists primarily of a fluid grid. On large or medium screens, it usually remains the same size, simply adjusting the margins on wider screens.
 
-En las pantallas más pequeñas, la cuadrícula fluida genera el reprocesamiento del contenido principal,
-mientras que las columnas se apilan verticalmente.  Una de las mayores ventajas de este patrón es
-que, en general, solo se necesita un punto de interrupción entre las pantallas grandes y las
-pequeñas.
+On smaller screens, the fluid grid causes the main content to reflow, while columns are stacked vertically. One major advantage of this pattern is that it usually only requires one breakpoint between small screens and large screens.
 
-<img src="imgs/mostly-fluid.svg">
-<a href="https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/responsive/mostly-fluid.html" class="button button-primary">Probar</a>
+<img src="imgs/mostly-fluid.svg" />
+<a href="https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/responsive/mostly-fluid.html" class="button button-primary">Try it</a>
 
-En la vista más pequeña, cada `div` de contenido se apila verticalmente.  Una vez que el ancho de la pantalla
-alcanza los 600 píxeles, el `div` de contenido principal permanece en `width: 100%`, mientras que el
-`div` de contenido secundario se muestra como dos columnas debajo del `div` principal.  Al superarse los
-800 píxeles, el `div` del contenedor adopta ancho fijo y se centra en la pantalla.
+In the smallest view, each content `div` is stacked vertically. When the screen width hits 600px, the primary content `div` remains at `width: 100%`, while the secondary `div`'s are shown as two columns below the primary `div`. Beyond 800px, the container `div` becomes fixed width and is centered on the screen.
 
-Entre los sitios en los que se usa este patrón se incluyen los siguientes:
+Sites using this pattern include:
 
- * [A List Apart](http://mediaqueri.es/ala/){: .external }
- * [Media Queries](http://mediaqueri.es/){: .external }
- * [SimpleBits](http://simplebits.com/){: .external }
+- [A List Apart](http://mediaqueri.es/ala/){: .external }
+- [Media Queries](http://mediaqueri.es/){: .external }
+- [SimpleBits](http://simplebits.com/){: .external }
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/design-and-ux/responsive/_code/mostly-fluid.html" region_tag="mfluid" adjust_indentation="auto" %}
 </pre>
 
-## Colocación de columnas 
+## Column drop
 
-En el caso de los diseños con varias columnas de ancho completo, durante el proceso de colocación de columnas éstas únicamente se colocan
-de forma vertical debido a que el ancho de la ventana es demasiado reducido para el contenido.
+For full-width multi-column layouts, column drop simply stacks the columns vertically as the window width becomes too narrow for the content.
 
-En un momento dado, todas las columnas se apilan verticalmente.  La selección
-de puntos de interrupción para este patrón de diseño depende del contenido y cambia
-para cada diseño.
+Eventually this results in all of the columns being stacked vertically. Choosing breakpoints for this layout pattern is dependent on the content and changes for each design.
 
-<img src="imgs/column-drop.svg">
-<a href="https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/responsive/column-drop.html" class="button button-primary">Probar</a>
+<img src="imgs/column-drop.svg" />
+<a href="https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/responsive/column-drop.html" class="button button-primary">Try it</a>
 
-Como sucede con los ejemplos que son principalmente fluidos, el contenido se coloca verticalmente en la
-vista más pequeña, pero a medida que se expande la pantalla a más de 600 píxeles, los
-`div`de contenido principal y secundario ocupan todo el ancho de la pantalla.  El orden de los `div`se configura con la propiedad
-CSS de orden.  Con 800 píxeles, se muestran los tres `div`de contenido en todo el
-ancho de la pantalla.
+Like the mostly fluid sample, content is stacked vertically in the smallest view, but as the screen expands beyond 600px, the primary and secondary content `div`'s take the full width of the screen. The order of the `div`'s is set using the order CSS property. At 800px all three content `div`'s are shown, using the full screen width.
 
-Entre los sitios en los que se usa este patrón se incluyen los siguientes:
+Sites using this pattern include:
 
- * [Modernizr](https://modernizr.com/){: .external }
- * [Wee Nudge](http://weenudge.com/){: .external }
+- [Modernizr](https://modernizr.com/){: .external }
+- [Wee Nudge](http://weenudge.com/){: .external }
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/design-and-ux/responsive/_code/column-drop.html" region_tag="cdrop" adjust_indentation="auto" %}
@@ -86,27 +57,20 @@ Entre los sitios en los que se usa este patrón se incluyen los siguientes:
 
 ## Layout shifter
 
-El patrón Layout shifter es el más adaptable, ya que posee varios
-puntos de interrupción en diferentes anchos de pantalla.
+The layout shifter pattern is the most responsive pattern, with multiple breakpoints across several screen widths.
 
-La clave para este diseño es el desplazamiento del contenido, en lugar de su reprocesamiento y
-colocación debajo de otras columnas.  Debido a las diferencias significativas entre cada
-punto de interrupción principal, es más complejo de mantener, y es posible que se deban realizar cambios
-dentro de los elementos, no solo en el diseño de contenido general.
+Key to this layout is the way content moves about, instead of reflowing and dropping below other columns. Due to the significant differences between each major breakpoint, it is more complex to maintain and likely involves changes within elements, not just overall content layout.
 
-<img src="imgs/layout-shifter.svg">
-<a href="https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/responsive/layout-shifter.html" class="button button-primary">Probar</a>
+<img src="imgs/layout-shifter.svg" />
+<a href="https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/responsive/layout-shifter.html" class="button button-primary">Try it</a>
 
-En este ejemplo simplificado, se muestra el patrón Layout shifter. En las pantallas más pequeñas, el contenido se
-apila verticalmente, pero cambia considerablemente a medida que se
-agranda la pantalla, con un `div`a la izquierda y dos `div` apilados a la derecha.
+This simplified example shows the layout shifter pattern, on smaller screens content is stacked vertically, but changes significantly as the screen becomes larger, with a left `div` and two stacked `div`'s on the right.
 
-Entre los sitios en los que se usa este patrón se incluyen los siguientes:
+Sites using this pattern include:
 
- * [Food Sense](http://foodsense.is/){: .external }
- * [Ejemplo de
-  Seminal Responsive Design](http://alistapart.com/d/responsive-web-design/ex/ex-site-FINAL.html)
- * [Andersson-Wise Architects](http://www.anderssonwise.com/){: .external }
+- [Food Sense](http://foodsense.is/){: .external }
+- [Seminal Responsive Design Example](http://alistapart.com/d/responsive-web-design/ex/ex-site-FINAL.html)
+- [Andersson-Wise Architects](http://www.anderssonwise.com/){: .external }
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/design-and-ux/responsive/_code/layout-shifter.html" region_tag="lshifter" adjust_indentation="auto" %}
@@ -114,55 +78,45 @@ Entre los sitios en los que se usa este patrón se incluyen los siguientes:
 
 ## Tiny tweaks
 
-El patrón Tiny tweaks permite realizar pequeños cambios en el diseño, como ajustar el
-tamaño de la fuente, cambiar el tamaño de las imágenes o desplazar el contenido de maneras muy poco significativas.
+Tiny tweaks simply makes small changes to the layout, such as adjusting font size, resizing images, or moving content around in very minor ways.
 
-Funciona correctamente en diseños con una sola columna, como los sitios web lineales de una sola página y los artículos con mucho texto.
+It works well on single column layouts such as one page linear websites and text-heavy articles.
 
-<img src="imgs/tiny-tweaks.svg">
-<a href="https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/responsive/tiny-tweaks.html" class="button button-primary">Probar</a>
+<img src="imgs/tiny-tweaks.svg" />
+<a href="https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/responsive/tiny-tweaks.html" class="button button-primary">Try it</a>
 
-Como lo indica el nombre, en este ejemplo se producen pocos cambios pequeños cuando cambia el tamaño de la pantalla.
-A medida que aumenta el ancho de la pantalla, también cambian el tamaño de la fuente y el relleno.
+As its name implies, not much changes with this sample as the screen size changes. As the screen width gets larger, so do the font size and padding.
 
-Entre los sitios en los que se usa este patrón se incluyen los siguientes:
+Sites using this pattern include:
 
- * [Ginger Whale](http://gingerwhale.com/){: .external }
- * [Future Friendly](http://futurefriendlyweb.com/){: .external }
+- [Ginger Whale](http://gingerwhale.com/){: .external }
+- [Future Friendly](http://futurefriendlyweb.com/){: .external }
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/design-and-ux/responsive/_code/tiny-tweaks.html" region_tag="ttweaks" adjust_indentation="auto" %}
 </pre>
 
-
 ## Off canvas
 
-En lugar de apilar contenido verticalmente, el patrón Off canvas coloca contenido
-menos usado (tal vez menús de navegación o de apps) fuera de la pantalla y solo lo
-muestra cuando el tamaño de la pantalla es suficientemente grande. En las pantallas más pequeñas, el acceso al
-contenido es posible con solo a un clic.
+Rather than stacking content vertically, the off canvas pattern places less frequently used content&mdash;perhaps navigation or app menus&mdash;off screen, only showing it when the screen size is large enough, and on smaller screens, content is only a click away.
 
-<img src="imgs/off-canvas.svg">
-<a href="https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/responsive/off-canvas.html" class="button button-primary">Probar</a>
+<img src="imgs/off-canvas.svg" />
+<a href="https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/responsive/off-canvas.html" class="button button-primary">Try it</a>
 
-En esta muestra, en lugar de apilarse el contenido verticalmente, se usa una declaración `transform: translate(-250px, 0)` para ocultar dos de los `div` de contenido fuera de la pantalla mediante la propiedad.  Se usa JavaScript
-para mostrar los divs agregando una clase abierta al elemento para hacerlo visible.  A medida que se
-ensancha la pantalla, el posicionamiento fuera de esta se elimina de los elementos y
-estos se muestran dentro de la ventana de visualización visible.
+Rather than stacking content vertically, this sample uses a `transform: translate(-250px, 0)` declaration to hide two of the content `div`s off screen. JavaScript is used to show the divs by adding an open class to the element to make visible. As the screen gets wider, the off-screen positioning is removed from the elements and they're shown within the visible viewport.
 
-Ten en cuenta que en este ejemplo Safari para iOS 6 y el navegador de Android no son compatibles con la función
-`flex-flow: row nowrap` de `flexbox`, por lo cual se debió recurrir nuevamente al
-posicionamiento absoluto.
+Note in this sample, Safari for iOS 6 and Android Browser do not support the `flex-flow: row nowrap` feature of `flexbox`, so we’ve had to fall back to absolute positioning.
 
-Entre los sitios en los que se usa este patrón se incluyen los siguientes:
+Sites using this pattern include:
 
- * [HTML5Rocks Articles](http://www.html5rocks.com/en/tutorials/developertools/async-call-stack/)
- * [Google Nexus](https://www.google.com/nexus/){: .external }
- * [Sitios para celulares de Facebook](https://m.facebook.com/){: .external }
+- [HTML5Rocks Articles](http://www.html5rocks.com/en/tutorials/developertools/async-call-stack/)
+- [Google Nexus](https://www.google.com/nexus/){: .external }
+- [Facebook's Mobile Site](https://m.facebook.com/){: .external }
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/design-and-ux/responsive/_code/off-canvas.html" region_tag="ocanvas" adjust_indentation="auto" %}
 </pre>
 
+## Feedback {: #feedback }
 
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
