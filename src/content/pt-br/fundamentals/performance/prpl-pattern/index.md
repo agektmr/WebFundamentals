@@ -1,255 +1,150 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml
 
-{# wf_updated_on: 2017-12-19 #}
-{# wf_published_on: 2016-09-28 #}
-{# wf_blink_components: Blink>Network,Blink>Loader #}
+{# wf_updated_on: 2018-08-17 #} {# wf_published_on: 2016-09-28 #} {# wf_blink_components: Blink>Network,Blink>Loader #}
 
-# O padrão PRPL {: .page-title }
+# The PRPL Pattern {: .page-title }
 
 {% include "web/_shared/contributors/addyosmani.html" %}
 
-Dogfood: sentimos que o PRPL tem muito potencial. Nesse momento, 
-estamos usando a experimentação que ele oferece enquanto iteramos as ideias no 
-padrão e coletamos mais dados sobre em que pontos ele oferece os maiores benefícios.
-
-A web para dispositivos móveis é muito lenta. Ao longo dos anos, a web evoluiu de uma plataforma
-centrada em documentos para uma plataforma de aplicativos de nível mundial. Graças aos
-avanços da plataforma (como os
-[Service Workers](/web/fundamentals/getting-started/primers/service-workers)) e das ferramentas
-e técnicas que usamos para criar aplicativos, os usuários podem fazer na web praticamente tudo que
-fazem em um aplicativo nativo.
-
-Ao mesmo tempo, o grosso da computação passou das poderosas máquinas
-desktop com conexões de rede rápidas e confiáveis para os relativamente insuficientes
-dispositivos móveis, com conexões que muitas vezes são lentas, instáveis ou ambos. Isso acontece
-principalmente em partes do mundo onde estão os próximos bilhões
-de usuários que estão chegando ao mundo digital conectado.
-
-Infelizmente, os padrões que imaginamos para criar e implementar aplicativos web cheios de recursos
-e poderosos na era do computador normalmente geravam aplicativos que demoravam
-muito para carregar em dispositivos móveis — tanto que muitos usuários simplesmente desistiam.
+Dogfood: PRPL is a new pattern we feel has great potential. At this stage, we welcome experimentation with it while we iterate on the ideas in the pattern and collect more data on where it offers the greatest benefits.
 
-Isso se mostra uma oportunidade para criar novos padrões que aproveitem os recursos
-da plataforma web moderna para fornecer experiências web móvel de forma granular e mais rápida.
-O PRPL é um desses padrões.
+The mobile web is too slow. Over the years the web has evolved from a document-centric platform to a first-class application platform. Thanks to advancements in the platform itself (such as [Service Workers](/web/fundamentals/getting-started/primers/service-workers)) and in the tools and techniques we use to build apps, users can do virtually anything on the web they can do in a native app.
 
-## O padrão PRPL
+At the same time, the bulk of our computing has moved from powerful desktop machines with fast, reliable network connections to relatively underpowered mobile devices with connections that are often slow, flaky or both. This is especially true in parts of the world where the next billion users are coming online.
 
-PRPL é um padrão de estruturação e fornecimento de Progressive Web Apps (PWAs) com
-ênfase no desempenho de lançamento e fornecimento do aplicativo. Ele significa:
+Unfortunately, the patterns we devised for building and deploying powerful, feature-rich web apps in the desktop era generally yield apps that take far too long to load on mobile devices – so long that many users simply give up.
 
-*  **Push** (enviar) recursos críticos para a rota do URL inicial.
-*  **Render** (renderizar) a rota inicial.
-*  **Pre-cache** (armazenar em cache) as demais rotas.
-*  **Lazy-load** (carregar com atraso) e criar demais rotas de acordo com a ação do usuário.
+This presents an opportunity to craft new patterns that take advantage of modern web platform features to granularly deliver mobile web experiences more quickly. PRPL is one such pattern.
 
-Além de visar aos objetivos e padrões fundamentais dos PWAs, o PRPL busca
-a otimização para gerar:
+## The PRPL pattern
 
-* Menor tempo possível antes do início da interação
-    * Especialmente no primeiro uso (independentemente do ponto de entrada)
-    * Especialmente em dispositivos móveis comuns
-* Máximo armazenamento em cache eficiente, especialmente ao longo do tempo, à medida que mais atualizações são lançadas
-* Simplicidade de desenvolvimento e implementação
+PRPL is a pattern for structuring and serving Progressive Web Apps (PWAs), with an emphasis on the performance of app delivery and launch. It stands for:
 
-O PRPL se inspira em um conjunto de recursos modernos da plataforma web, mas é possível
-aplicá-lo sem fazer valer todas as letras da sigla ou usar todos os
-recursos.
+* **Push** critical resources for the initial URL route.
+* **Render** initial route.
+* **Pre-cache** remaining routes.
+* **Lazy-load** and create remaining routes on demand.
 
-Na verdade, o PRPL é mais voltado para uma mentalidade e visão de longo prazo no que diz respeito a melhorar o
-desempenho da web móvel, nem tanto para tecnologias ou
-técnicas específicas. Os conceitos por trás do PRPL não são novos, mas a abordagem foi moldada e
-constituída pela equipe do Polymer e revelada na [Google I/O
-2016](https://www.youtube.com/watch?v=J4i0xJnQUzU).
+Beyond targeting the fundamental goals and standards of PWAs, PRPL strives to optimize for:
 
-A demonstração de uma loja eletrônica do Polymer, o [Shop](https://shop.polymer-project.org), é um ótimo
-exemplo de aplicativo que usa PRPL para fornecer recursos de forma granular.
-Ele permite a interatividade em cada rota de forma extremamente rápida em dispositivos móveis
-comuns.
+* Minimum time-to-interactive 
+    * Especially on first use (regardless of entry point)
+    * Especially on real-world mobile devices
+* Maximum caching efficiency, especially over time as updates are released
+* Simplicity of development and deployment
 
-![A demonstração do Shop do Polymer se torna interativa em 1,75 segundos](images/app-build-prpl-shop.png)
+PRPL is inspired by a suite of modern web platform features, but it’s possible to apply the pattern without hitting every letter in the acronym or using every feature.
 
-Francamente, para a maioria dos projetos para o mundo real, é muito cedo para entender a visão PRPL
-na sua forma essencial e completa — mas definitivamente não é muito cedo para adotar
-o conceito ou começar a abordar a visão por vários ângulos diferentes. Há muitas
-etapas práticas que os desenvolvedores de aplicativo, de ferramentas e fornecedores de navegador
-podem adotar ao buscar atingir o PRPL hoje.
+In fact, PRPL is more about a mindset and a long-term vision for improving the performance of the mobile web than it is about specific technologies or techniques. The ideas behind PRPL are not new, but the approach was framed and named by the Polymer team and unveiled at [Google I/O 2016](https://www.youtube.com/watch?v=J4i0xJnQUzU).
 
-## Estrutura do aplicativo
+Polymer's [Shop](https://shop.polymer-project.org) e-commerce demo is a first-class example of an application using PRPL to granularly serve resources. It achieves interactivity for each route incredibly quickly on real-world mobile devices:
 
-O PRPL funciona bem se você tiver um aplicativo de página única (SPA) com a seguinte
-estrutura:
+![The Polymer Shop demo is interactive in 1.75s](images/app-build-prpl-shop.jpg)
 
--   O principal _entrypoint_ do aplicativo que é fornecido a partir de qualquer
-    rota válida. Esse arquivo deve ser muito pequeno, já que será fornecido por
-    diferentes URLs e, portanto, armazenado em cache diversas vezes. Todos os URLs de recurso
-    do ponto de entrada precisam ser absolutos, já que podem ser fornecidos por
-    URLs não primários.
+For most real-world projects, it’s frankly too early to realize the PRPL vision in its purest, most complete form – but it’s definitely not too early to adopt the mindset, or to start chasing the vision from various angles. There are many practical steps that app developers, tool developers and browser vendors can take in pursuit of PRPL today.
 
--   O _shell_ ou shell do aplicativo, que contém a lógica principal do aplicativo, o roteador
-    e outros.
+## App structure
 
--   _Fragmentos_ do aplicativo carregados com atraso. Um fragmento pode representar o código de
-    uma determinada vista ou outro código que pode ser carregado com atraso (por exemplo,
-    partes do aplicativo principal não necessárias para a primeira gravação, como menus que não
-    são exibidos até o usuário interagir com o aplicativo). O shell é responsável por
-    importar os fragmentos dinamicamente, de acordo com a necessidade.
+PRPL can work well if you have a single-page app (SPA) with the following structure:
 
-O servidor e o service worker trabalham juntos para pré-armazenar os recursos em cache para as
-rotas inativas.
+* The main *entrypoint* of the application which is served from every valid route. This file should be very small, since it will be served from different URLs and therefore be cached multiple times. All resource URLs in the entrypoint need to be absolute, since it may be served from non-top-level URLs.
 
-Quando o usuário troca de rota, o aplicativo adia o carregamento de todos os recursos necessários que
-ainda não foram armazenados em cache e cria as vistas solicitadas. Acessos repetidos às rotas
-devem ser interativos de forma imediata. Nisso o Service Worker ajuda muito.
+* The *shell* or app-shell, which includes the top-level app logic, router, and so on.
 
-O diagrama abaixo mostra os componentes de um aplicativo simples que podem ser estruturados
-usando [Web Components](http://webcomponents.org/):
+* Lazily loaded *fragments* of the app. A fragment can represent the code for a particular view, or other code that can be loaded lazily (for example, parts of the main app not required for first paint, like menus that aren't displayed until a user interacts with the app). The shell is responsible for dynamically importing the fragments as needed.
 
-![diagrama de um aplicativo que tem duas vistas, com ambas tendo dependências individuais
-e compartilhadas](images/app-build-components.png)
+The server and service worker together work to precache the resources for the inactive routes.
 
-Note: embora o HTML Imports seja a estratégia de agrupamento preferida do Polymer, você pode
-usar agrupamento baseado em rotas e divisão de código para ter uma configuração parecida com a que se consegue com
-agrupadores de módulo JavaScript modernos
+When the user switches routes, the app lazy-loads any required resources that haven't been cached yet, and creates the required views. Repeat visits to routes should be immediately interactive. Service Worker helps a lot here.
 
-Nesse diagrama, as linhas tracejadas representam _dependências estáticas_: recursos
-externos identificados nos arquivos pelas tags `<link>` e `<script>`. As linhas
-pontilhadas representam _dependências dinâmicas_ ou _carregadas sob demanda_: arquivos carregados
-conforme a necessidade pelo shell.
+The diagram below shows the components of a simple app that might be structured using [Web Components](http://webcomponents.org/):
 
-O processo de compilação compila um gráfico de todas essas dependências e o servidor
-usa essa informação para fornecer os arquivos com eficiência. Além disso, ele compila um conjunto de
-agrupamentos vulcanizados para navegadores que não oferecem suporte a HTTP/2.
+![diagram of an app that has two views, which have both individual and shared
+dependencies](images/app-build-components.png)
 
-### Ponto de entrada do aplicativo
+Note: although HTML Imports are Polymer's preferred bundling strategy, you can use code-splitting and route-based chunking to achieve a similar setup with modern JavaScript module bundlers.
 
-O ponto de entrada deve importar e instanciar o shell, além de carregar
-condicionalmente todo polyfill necessário.
+In this diagram, the solid lines represent *static dependencies*: external resources identified in the files using `<link>` and `<script>` tags. Dotted lines represent *dynamic* or *demand-loaded dependencies*: files loaded as needed by the shell.
 
-As principais considerações para o ponto de entrada são:
+The build process builds a graph of all of these dependencies, and the server uses this information to serve the files efficiently. It also builds a set of vulcanized bundles, for browsers that don't support HTTP/2.
 
--   Ter o menor número possível de dependências estáticas, ou seja, não muito mais do que o próprio shell do aplicativo.
--   Carrega os polyfills necessários condicionalmente.
--   Usa caminhos absolutos para todas as dependências.
+### App entrypoint
 
-### App Shell
+The entrypoint must import and instantiate the shell, as well as conditionally load any required polyfills.
 
-O shell é responsável pelo roteamento e normalmente contém a principal IU de navegação
-do aplicativo.
+The main considerations for the entrypoint are:
 
-O aplicativo deve carregar fragmentos com atraso à medida que forem necessários. Por exemplo, quando o usuário
-muda para uma nova rota, ele importa o(s) fragmento(s) associado(s) a
-ela. Isso pode dar origem a uma nova solicitação ao servidor ou simplesmente carregar o
-recurso armazenado em cache.
+* Has minimal static dependencies, in other words, not much beyond the app-shell itself.
+* Conditionally loads required polyfills.
+* Uses absolute paths for all dependencies.
 
-O shell (incluindo suas dependências estáticas) deve conter tudo o que é necessário
-para a primeira gravação.
+### App shell
 
-## Resultado da compilação
+The shell is responsible for routing and usually includes the main navigation UI for the app.
 
-Embora não seja um requisito muito complicado do uso do PRPL, seu processo de compilação pode
-produzir duas versões:
+The app should lazy-load fragments as they're required. For example, when the user changes to a new route, it imports the fragment(s) associated with that route. This may initiate a new request to the server, or simply load the resource from the cache.
 
--   Uma versão não agrupada voltada para combinações de servidor/navegador compatíveis com
-    HTTP/2 para fornecer os recursos de que o navegador precisa para produzir uma rápida primeira gravação 
-    otimizando o armazenamento em cache ao mesmo tempo. O fornecimento desses recursos pode ser acionado
-    com eficiência por [`<link rel="preload">`][Resource hints] ou [HTTP/2 Push].
+The shell (including its static dependencies) should contain everything needed for first paint.
 
--   Uma versão agrupada voltada para minimizar o número de idas e voltas necessárias para
-    fazer o aplicativo funcionar em combinações de servidor/navegador que não são compatíveis com
-    envio (push) de servidor.
+## Build output
 
-Sua lógica de servidor deve fornecer a versão adequada para cada navegador.
+Although it isn't a hard requirement for using PRPL, your build process could produce two builds:
 
-### Versão agrupada
+* An unbundled build designed for server/browser combinations that support HTTP/2 to deliver the resources the browser needs for a fast first paint while optimizing caching. The delivery of these resources can be triggered efficiently using [`<link rel="preload">`](/web/updates/2016/03/link-rel-preload) or [HTTP/2 Push](/web/fundamentals/performance/http2/#server-push).
 
-Para navegadores que não trabalham com HTTP/2, o processo de compilação pode produzir um conjunto
-de diferentes agrupamentos: um para o shell e outro para cada
-fragmento. O diagrama abaixo mostra como um aplicativo simples seria agrupado, novamente usando o
-Web Components:
+* A bundled build designed to minimize the number of round-trips required to get the application running on server/browser combinations that don't support server push.
 
-![diagrama do mesmo aplicativo de antes, em que há três dependências
-agrupadas](images/app-build-bundles.png)
+Your server logic should deliver the appropriate build for each browser.
 
-Toda dependência compartilhada por dois ou mais fragmentos é agrupada junto com o shell e
-suas dependências estáticas.
+### Bundled build
 
-Cada fragmento e suas dependências estáticas _não compartilhadas_ são agrupadas em um único
-grupo. O servidor deve retornar a versão adequada do fragmento
-(agrupada ou não agrupada), dependendo do navegador. Isso significa que o código do shell
-pode carregar `detail-view.html` com atraso _sem precisar saber se o arquivo está agrupado
-ou não_. Ele trabalha com base no servidor e no navegador para carregar as dependências da
-forma mais eficiente possível.
+For browsers that don't handle HTTP/2, the build process could produce a set of different bundles: one bundle for the shell, and one bundle for each fragment. The diagram below shows how a simple app would be bundled, again using Web Components:
 
+![diagram of the same app as before, where there are three bundled
+dependencies](images/app-build-bundles.png)
 
-## Por trás dos panos: HTTP/2 e envio push de servidor do HTTP/2
+Any dependency shared by two or more fragments is bundled with the shell and its static dependencies.
 
-O [HTTP/2] permite downloads _multiplexados_ em uma única
-conexão. Assim, diversos arquivos pequenos podem ser baixados com mais eficiência.
+Each fragment and its *unshared* static dependencies are bundled into a single bundle. The server should return the appropriate version of the fragment (bundled or unbundled), depending on the browser. This means that the shell code can lazy-load `detail-view.html` *without having to know whether it is bundled or unbundled*. It relies on the server and browser to load the dependencies in the most efficient way.
 
-O [envio push de servidor do HTTP/2][HTTP/2 Push] permite que o servidor
-envie recursos com antecedência ao navegador.
+## Background: HTTP/2 and HTTP/2 server push
 
-Se quiser um exemplo de como o envio push de servidor do HTTP/2 acelera os downloads, imagine como o
-navegador busca um arquivo HTML com uma folha de estilo vinculada a ele.
+[HTTP/2](/web/fundamentals/performance/http2/) allows *multiplexed* downloads over a single connection, so that multiple small files can be downloaded more efficiently.
 
-No HTTP/1:
+[HTTP/2 server push](/web/fundamentals/performance/http2/#server-push) allows the server to preemptively send resources to the browser.
 
-*   O navegador solicita o arquivo HTML.
-*   O servidor retorna o arquivo HTML e o navegador começa a analisá-lo.
-*   O navegador encontra a tag `<link rel="stylesheet">` e cria uma nova
-    solicitação para a folha de estilos.
-*   O navegador recebe a folha de estilos.
+For an example of how HTTP/2 server push speeds up downloads, consider how the browser retrieves an HTML file with a linked stylesheet.
 
-Com o envio push do HTTP/2:
+In HTTP/1:
 
-*   O navegador solicita o arquivo HTML.
-*   O servidor retorna o arquivo HTML e envia por push a folha de estilos ao mesmo
-    tempo.
-*   O navegador começa a analisar o HTML. No momento em que ele encontra `<link
-    rel="stylesheet">, a folha de estilos já está armazena﻿da em cache.
+* The browser requests the HTML file.
+* The server returns the HTML file and the browser starts parsing it.
+* The browser encounters the `<link rel="stylesheet">` tag, and starts a new request for the stylesheet.
+* The browser receives the stylesheet.
 
-Nos casos mais simples, o envio push de servidor do HTTP/2 elimina uma única resposta
-a solicitação HTTP.
+With HTTP/2 push:
 
-Com o HTTP/1, os desenvolvedores agrupam recursos para reduzir o número de solicitações
-HTTP necessárias para renderizar uma página. No entanto, agrupar pode reduzir a eficiência
-do cache do navegador. Se os recursos de toda página forem combinados em um único
-pacote, toda página receberá o próprio pacote e o navegador não conseguirá identificar os recursos
-compartilhados.
+* The browser requests the HTML file.
+* The server returns the HTML file, and pushes the stylesheet at the same time.
+* The browser starts parsing the HTML. By the time it encounters the `<link
+rel="stylesheet">`, the stylesheet is already in the cache.
 
-A combinação de HTTP/2 e envio push de servidor do HTTP/2 oferece os _benefícios_ do
-agrupamento (latência reduzida) sem agrupar realmente. Manter os recursos separados
-significa poder armazená-los em cache com eficiência e compartilhá-los entre as páginas.
+In the simplest case, HTTP/2 server push eliminates a single HTTP request-response.
 
-O envio push do HTTP/2 precisa ser utilizado com cuidado, já que ele força os dados ao navegador,
-mesmo se o arquivo já estiver no cache local do navegador ou a largura de banda já
-estiver saturada. Se usado de forma incorreta, pode prejudicar o desempenho. As 
-[`<link rel="preload">`][Resource hints] podem ser uma boa alternativa para permitir 
-que o navegador tome decisões inteligentes sobre a priorização das solicitações.  
+With HTTP/1, developers bundle resources to reduce the number of HTTP requests required to render a page. However, bundling can reduce the efficiency of the browser's cache. if resources for each page are combined into a single bundle, each page gets its own bundle, and the browser can't identify shared resources.
 
-## Conclusão
+The combination of HTTP/2 and HTTP/2 server push provides the *benefits* of bundling (reduced latency) without actual bundling. Keeping resources separate means they can be cached efficiently and be shared between pages.
 
-Carregar o código das rotas de forma mais granular e permitir que os navegadores programem
-o trabalho da melhor forma tem um potencial enorme de acelerar o início da interatividade nos
-aplicativos. Precisamos de **melhores arquiteturas que disponibilizem a
-interatividade rapidamente**, e o padrão PRPL é um exemplo interessante de como
-atingir esse objetivo em dispositivos comuns.
+HTTP/2 Push needs to be utilized with care, as it forces data to the browser, even if the file is already in the browser’s local cache or bandwidth is already saturated. If done wrong, performance can suffer. [`<link rel="preload">`](/web/updates/2016/03/link-rel-preload) might be a good alternative to allow the browser to make smart decisions about the prioritization of these requests.
 
-Tudo se baseia em ter espaço simultâneo suficiente depois de carregar as
-abstrações. Se a abertura de um link é atrasada em segundos por script que impede
-que eventos de entrada sejam enviados, há um indício sólido de que é preciso melhorar
-o desempenho. Esse é um problema comum com aplicativos criados com base
-em bibliotecas JavaScript grandes, em que a IU é renderizada como se parecesse
-funcionar mas, na verdade, não funciona.
+## Conclusion
 
-Superando esse desafio, o PRPL pode ajudar a fornecer o código funcional mínimo necessário para tornar a rota em que
-os usuários caem interativa
+Loading the code for routes more granularly and allowing browsers to schedule work better has the potential to greatly aid reaching interactivity in our applications sooner. We need **better architectures that enable interactivity quickly** and the PRPL pattern is an interesting example of how to accomplish this goal on real mobile devices.
 
-[HTTP/2]: /web/fundamentals/performance/http2/
-[Resource hints]: /web/updates/2016/03/link-rel-preload
-[HTTP/2 Push]: /web/fundamentals/performance/http2/#server-push
+It’s all about headroom and giving yourself enough once you’re done loading your abstractions. If tapping on a link is delayed by seconds of script that prevents input events from dispatching, that’s a strong indication there is work to be done on performance. This is a common problem with applications built using larger JavaScript libraries today, where UI is rendered that looks like it should work but does not.
 
+PRPL can help deliver the minimal functional code needed to make the route your users land on interactive, addressing this challenge.
 
-{# wf_devsite_translation #}
+## Feedback {: #feedback }
+
+{% include "web/_shared/helpful.html" %}
