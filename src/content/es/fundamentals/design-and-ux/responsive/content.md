@@ -1,259 +1,247 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Considera el contenido, el formato y el diseño gráfico al desarrollar para diferentes usuarios y dispositivos.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Consider content as well as layout and graphic design when building for a range of users and devices.
 
-{# wf_updated_on: 2017-07-12 #}
-{# wf_published_on: 2016-05-10 #}
+{# wf_blink_components: N/A #} {# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2016-05-10 #}
 
-# Contenido para varios dispositivos {: .page-title }
+# Multi-Device Content {: .page-title }
 
 {% include "web/_shared/contributors/samdutton.html" %}
 
-## Qué clase de lectura realiza la gente en la Web
+## How people read on the web
 
-La [guía de escritura del gobierno de EE. UU.](http://www.usability.gov/how-to-and-tools/methods/writing-for-the-web.html) resume lo que la gente quiere leer en la web:
+The [US government writing guide](http://www.usability.gov/how-to-and-tools/methods/writing-for-the-web.html) summarizes what people want from writing on the web:
 
-> Cuando se escribe para la web, un lenguaje simple permite a los usuarios encontrar lo que necesitan, entender lo que encontraron y luego usarlo para cumplir sus propósitos.
->
-> También debe ser interactivo, fácil de encontrar y fácil de compartir.
+> When writing for the web, using plain language allows users to find what they need, understand what they have found, and then use it to meet their needs.
+> 
+> It should also be actionable, findable, and shareable.
 
-Las investigaciones muestran que [la gente no lee las páginas web, las ojea](https://www.nngroup.com/articles/concise-scannable-and-objective-how-to-write-for-the-web/). En promedio, [la gente solo lee entre un 20 y un 28% del contenido de las páginas web](https://www.nngroup.com/articles/how-little-do-users-read/). La lectura en pantallas es mucho más lenta que en papel. La gente se rendirá y abandonará tu sitio a menos que la información sea accesible y fácil de comprender.
+Research shows that [people don't read web pages, they scan](https://www.nngroup.com/articles/concise-scannable-and-objective-how-to-write-for-the-web/). On average, [people only read 20–28% of web page content](https://www.nngroup.com/articles/how-little-do-users-read/). Reading from screens is much slower than reading from paper. People will give up and leave your site unless information is easy to access and understand.
 
-## Cómo redactar contenido para plataformas móviles
+## How to write for mobile
 
-Concéntrate en el asunto en cuestión y cuenta la historia de antemano. Si deseas redactar contenido para que funcione en diferentes dispositivos y ventanas de visualización, asegúrate de incluir los puntos principales desde el principio: a modo de regla, idealmente [en los primeros cuatro párrafos, en alrededor de 70 palabras](http://www.bbc.co.uk/academy/journalism/article/art20130702112133610).
+Focus on the subject at hand and tell the story upfront. For writing to work across a range of devices and viewports, make sure to get your main points across at the start: as a rule, ideally [in the first four paragraphs, in around 70 words](http://www.bbc.co.uk/academy/journalism/article/art20130702112133610).
 
-Pregúntate qué desean de tu sitio los visitantes. ¿Intentan descubrir algo? Si la gente visita tu sitio para buscar información, asegúrate de que el propósito de todo el texto sea ayudarlos a alcanzar sus objetivos. Escribe con [voz activa](https://learnenglish.britishcouncil.org/en/english-grammar/verbs/active-and-passive-voice), proporciona acciones y soluciones.
+Ask yourself what people want from your site. Are they trying to find something out? If people visit your site for information, make sure that all your text is oriented to helping them achieve their goal. Write in the [active voice](https://learnenglish.britishcouncil.org/en/english-grammar/verbs/active-and-passive-voice), offer actions and solutions.
 
-Publica únicamente lo que tus visitantes quieren y nada más.
+Publish only what your visitors want, and nothing more.
 
-[Una investigación del gobierno del RU](https://www.gov.uk/guidance/content-design/writing-for-gov-uk) también demuestra lo siguiente:
+[UK government research](https://www.gov.uk/guidance/content-design/writing-for-gov-uk) also shows that:
 
-> El 80% de las personas prefiere oraciones escritas en un idioma claro; y mientras más
->complejo es el tema, esa preferencia crece (p. ej., el 97% prefiere expresiones
-> comunes en su idioma antes que latinismos).
->
->A mayor educación y más especializado el conocimiento de una persona,
-> mayor su preferencia por un lenguaje simple.
+> 80% of people preferred sentences written in clear English — and the more complex the issue, the greater that preference (e.g., 97% preferred "among other things" over the Latin "inter alia").
+> 
+> The more educated the person and the more specialist their knowledge, the greater their preference for plain English.
 
-En otras palabras: usa un lenguaje claro, con palabras más cortas y estructuras de oraciones simples; incluso para un público instruido y técnico. A menos que haya una buena razón para no hacerlo, mantén un tono coloquial. Una vieja regla del periodismo es escribir como si te dirigieras a un niño inteligente de 11 años.
+In other words: use plain language, shorter words and simple sentence structures — even for a literate, technical audience. Unless there's a good reason not to, keep your tone of voice conversational. An old rule of journalism is to write as if you are speaking to an intelligent 11 year old.
 
-## Los próximos mil millones de usuarios
+## The next billion users
 
-El enfoque de redacción sencilla tiene particular importancia para los lectores que usan dispositivos móviles y es crucial al crear contenido para teléfonos de bajo costo con ventanas de visualización pequeñas que requieren más desplazamientos y pueden tener pantallas de menor calidad y menor repuesta.
+The pared-down approach to writing is particularly important for readers on mobile devices, and is crucial when creating content for low-cost phones with small viewports that require more scrolling and may have lower quality displays and less responsive screens.
 
-La mayor parte de los próximos mil millones de usuarios que se sumen a la red tendrán dispositivos económicos. No querrán gastar su presupuesto de datos en navegar por contenidos extensos, y es probable que no lean en su lengua materna. Reduce tu texto: usa oraciones cortas, reduce al mínimo la puntuación, forma párrafos de cinco o menos líneas y aplica títulos de una sola línea. Considera usar textos adaptables (por ejemplo, usa títulos más cortos para ventanas de visualización más cortas), pero [ten presente las desventajas](https://www.smashingmagazine.com/2012/02/ever-justification-for-responsive-text/).
+Most of the next billion users coming online will have cheap devices. They will not want to spend their data budget on navigating long-winded content, and may not be reading in their first language. Trim your text: use short sentences, minimal punctuation, paragraphs five lines or less, and single line headings. Consider responsive text (for example, using shorter headlines for smaller viewports) but [beware of the downsides](https://www.smashingmagazine.com/2012/02/ever-justification-for-responsive-text/).
 
-Una perspectiva minimalista respecto del texto también hará que tu contenido sea más fácil de localizar e internacionalizar, y aumentará las probabilidades de que lo citen en las redes sociales.
+A minimalist attitude to text will also make your content easier to localize and internationalize — and make it more likely that your content gets quoted in social media.
 
-Lo más importante:
+The bottom line:
 
-* Procede de modo simple.
-* Reduce la sobrecarga.
-* Sé conciso.
+* Keep it simple
+* Reduce clutter
+* Get to the point
 
+## Eliminate unnecessary content
 
-## Elimina el contenido innecesario
+In terms of byte size, web pages are [big and getting bigger](http://httparchive.org/trends.php#bytesTotal&reqTotal).
 
-En términos de tamaño en bytes, las páginas web son [grandes y cada vez crecen más](http://httparchive.org/trends.php#bytesTotal&reqTotal).
+[Responsive design techniques](/web/fundamentals/design-and-ux/responsive/) make it possible to serve different content for smaller viewports, but it's always sensible to start by streamlining text, images and other content.
 
-[Las técnicas de diseño adaptable](/web/fundamentals/design-and-ux/responsive/) hacen posible el aprovisionamiento de contenidos diferentes para ventanas de visualización más pequeñas, pero siempre será una práctica sensata comenzar por optimizar el texto, las imágenes y otros contenidos.
-
-> A menudo, los usuarios de la web se enfocan en la acción, “con una inclinación hacia” la búsqueda de respuestas para sus preguntas actuales, en lugar de recostarse y dejarse absorber por un buen libro.
->
+> Web users are often action oriented, "leaning forward" in the hunt for answers to their current question, rather than leaning back to absorb a good book.
+> 
 > — [Jakob Nielsen](https://www.nngroup.com/articles/concise-scannable-and-objective-how-to-write-for-the-web/)
 
-Pregúntate “¿qué desea conseguir la gente cuando visita mi sitio?”
+Ask yourself: what are people are trying to achieve when they visit my site?
 
-¿Cada componente de la página ayuda a los usuarios a alcanzar sus objetivos?
+Does every page component help users achieve their goal?
 
-### Quita elementos redundantes de la página
+### Remove redundant page elements
 
-Los archivos HTML representan cerca de 70 k y más de nueve solicitudes para la página web promedio, conforme al [archivo HTTP](http://httparchive.org/trends.php#bytesHtml&reqHtml).
+HTML files constitute nearly 70k and more than nine requests for the average web page, according to [HTTP Archive](http://httparchive.org/trends.php#bytesHtml&reqHtml).
 
-En muchos sitios populares se usan varios miles de elementos HTML por página y varios miles de líneas de código, incluso en dispositivos móviles. El tamaño excesivo del archivo HTML [puede hacer que las páginas no se carguen más lentamente](http://jsbin.com/zofavunapo/1/edit?html,js,output), pero una carga HTML pesada puede indicar un aumento de contenido: los archivos .html más grandes implican más elementos, más contenido de texto o ambos aspectos.
+Many popular sites use several thousand HTML elements per page, and several thousand lines of code, even on mobile. Excessive HTML file size [may not make pages load more slowly](http://jsbin.com/zofavunapo/1/edit?html,js,output), but a heavy HTML payload can be a sign of content bloat: larger .html files mean more elements, more text content, or both.
 
-Reducir la complejidad de la carga HTML también reducirá la carga de la página ayudará a permitir la localización e internalización, y hará un diseño adaptable más fácil de planear y depurar. Para obtener información sobre cómo redactar HTML más eficiente, consulta [HTML de alto rendimiento](https://samdutton.wordpress.com/2015/04/02/high-performance-html/).
+Reducing HTML complexity will also reduce page weight, help enable localization and internationalization and make responsive design easier to plan and debug. For information about writing more efficient HTML, see [High performance HTML](https://samdutton.wordpress.com/2015/04/02/high-performance-html/).
 
-> Cada paso que hagas dar a un usuario para obtener valor en tu app te costará un 20% de los usuarios
->
->— [Gabor Cselle, Twitter](http://blog.gaborcselle.com/2012/10/every-step-costs-you-20-of-users.html)
+> Every step you make a user perform before they get value out of your app will cost you 20% of users
+> 
+> — [Gabor Cselle, Twitter](http://blog.gaborcselle.com/2012/10/every-step-costs-you-20-of-users.html)
 
-Lo mismo se aplica al contenido: ayuda a los usuarios a obtener lo que deseen tan pronto como sea posible.
+The same applies to content: help users get to what they want as quickly as possible.
 
-No ocultes el contenido a los usuarios de dispositivos móviles. Apunta hacia la [igualdad de contenido](http://bradfrost.com/blog/mobile/content-parity/), ya que especular sobre las funciones que tus usuarios de dispositivos móviles no se perderán está condenada a fracasar en algún caso. Si cuentas con los recursos necesarios, crea versiones alternativas del mismo contenido para diferentes tamaños de ventanas de visualización, aun cuando se trate únicamente de elementos de página de prioridad alta.
+Don't just hide content from mobile users. Aim for [content parity](http://bradfrost.com/blog/mobile/content-parity/), since guessing what features your mobile users won't miss is bound to fail for someone. If you have the resources, create alternative versions of the same content for different viewport sizes — even if only for high priority page elements.
 
-Considera la administración de contenido y el flujo de trabajo: ¿los sistemas heredados generan contenido heredado?
+Consider content management and workflow: are legacy systems resulting in legacy content?
 
-### Simplifica el texto
+### Simplify text
 
-En medio de la transición Web hacia los dispositivos móviles, deberás cambiar el modo de redactar. Hazlo de modo simple, reduce la sobrecarga y sé conciso.
+As the web goes mobile, you need to change the way you write. Keep it simple, reduce clutter and get to the point.
 
-### Quita imágenes redundantes
+### Remove redundant images
 
 <div class="attempt-right">
   <figure>
-    <img src="imgs/http-archive-images.png" alt="Archivo HTTP que muestra una cantidad creciente de tamaños de transferencia de imágenes y solicitudes de imágenes" />
-    <figcaption>Según <a href="http://httparchive.org/trends.php#bytesImg&reqImg">los datos del archivo HTTP</a>, una página web promedio realiza 54 solicitudes de imágenes.</figcaption>
- </figure>
+    <img src="imgs/http-archive-images.png" alt="HTTP Archive showing increasing number of image transfer sizes and image requests" />
+    <figcaption>According to <a href="http://httparchive.org/trends.php#bytesImg&reqImg">HTTP Archive data</a>, the average web page makes 54 requests for images.</figcaption>
+  </figure>
 </div>
 
-Las imágenes pueden ser bellas, divertidas e informativas, pero también ocupan espacio real de la página, agregan volumen a esta y aumentan el número de solicitudes de archivos. [La latencia empeora cuando lo mismo sucede con la conectividad](https://www.igvita.com/2012/07/19/latency-the-new-web-performance-bottleneck/). Esto significa que un exceso de solicitudes de archivos de imagen es un problema que aumenta cuando se cambia de la Web al dispositivo móvil.
-
+Images can be beautiful, fun and informative — but they also use page real estate, add to page weight, and increase the number of file requests. [Latency gets worse as connectivity gets worse](https://www.igvita.com/2012/07/19/latency-the-new-web-performance-bottleneck/), meaning that an excess of image file requests is an increasing problem as the web goes mobile.
 
 <div style="clear:both;"></div>
 
 <div class="attempt-right">
   <figure>
-    <img src="imgs/http-archive-content-type-pie-chart.png" alt="Gráfico circular del archivo HTTP que muestra el promedio de bytes por página conforme al tipo de contenido, del cuál el 60% son imágenes">
-    <figcaption>Las imágenes constituyen más del 60% del peso de la página.</figcaption>
+    <img src="imgs/http-archive-content-type-pie-chart.png" alt="HTTP Archive pie chart showing average bytes per page by content type, around 60% of which is images">
+    <figcaption>Images constitute over 60% of page weight.</figcaption>
   </figure>
 </div>
 
-Las imágenes también consumen energía. Después de la pantalla, la radio es el segundo factor de descarga de batería en importancia. Más solicitudes de imágenes, más uso de la radio, más baterías sin carga. Incluso, la mera representación de imágenes consume energía y esto es proporcional al tamaño y al número. Consulta el informe de Stanford [Who Killed My Battery?](http://cdn.oreillystatic.com/en/assets/1/event/79/Who%20Killed%20My%20Battery_%20Analyzing%20Mobile%20Browser%20Energy%20Consumption%20Presentation.pdf) (¿quién acabó con la carga de mi batería?).
+Images also consume power. After the screen, radio is the second biggest drain on your battery. More image requests, more radio usage, more flat batteries. Even just to render images takes power – and this is proportional to size and number. Check out the Stanford report [Who Killed My Battery?](http://cdn.oreillystatic.com/en/assets/1/event/79/Who%20Killed%20My%20Battery_%20Analyzing%20Mobile%20Browser%20Energy%20Consumption%20Presentation.pdf)
 
-Si puedes, deshazte de las imágenes.
+If you can, get rid of images!
 
-Aquí te proporcionamos alguna sugerencias:
+Here are some suggestions:
 
-* Ten en cuenta los diseños que evitan las imágenes o úsalas con moderación. [El texto por sí solo puede ser bello](https://onepagelove.com/tag/text-only). Pregúntate “¿qué desean obtener quienes visitan mi sitio? ¿Las imágenes ayudan en ese proceso?”
-* En el pasado, era común guardar encabezados y otros elementos textuales como gráficos. Ese enfoque no responde bien a los cambios de tamaños de ventanas de visualización, y agrega volumen y latencia a la página. El uso del texto como gráficos también implica que no será posible su localización a través de motores de búsqueda ni el acceso a él a través de lectores de pantalla u otras tecnologías de asistencia. Usa texto “real” cuando sea posible; las fuentes web y las CSS pueden permitir acceder a una bella tipografía.
-* Usa CSS en lugar de imágenes para degradados, sombras, esquinas redondeadas y [texturas de fondo](http://lea.verou.me/css3patterns/){: .external }, funciones [admitidas en todos los navegadores modernos](http://caniuse.com/#search=shadows). Sin embargo, ten en cuenta que las CSS pueden ser mejores que las imágenes, aunque de todos modos puede haber una [penalidad de representación y procesamiento](http://www.smashingmagazine.com/2013/04/03/build-fast-loading-mobile-website/) particularmente considerable en el dispositivo móvil.
-* Las imágenes de fondo raramente funcionan bien en un dispositivo móvil. Puedes [usar solicitudes de medios](http://udacity.github.io/responsive-images/examples/2-06/backgroundImageConditional/) para evitar imágenes de fondo en pequeñas ventanas de visualización.
-* Evita imágenes de pantallas de presentación.
-* [Usa CSS para animaciones de IU](/web/fundamentals/design-and-ux/animations/).
-* Conoce tus glifos; usa [símbolos e íconos Unicode](https://en.wikipedia.org/wiki/List_of_Unicode_characters) en lugar de imágenes, con fuentes web si es necesario.
-* Ten en cuenta [fuentes de íconos](http://weloveiconfonts.com/#zocial); son gráficos vectoriales que admiten escalamiento infinito, y se puede descargar un conjunto completo de imágenes en una fuente. (Ten en cuenta, no obstante, [estos asuntos](https://sarasoueidan.com/blog/icon-fonts-to-svg/)).
-* El elemento `<canvas>` se puede usar para crear imágenes en JavaScript a partir de líneas, curvas, texto y otras imágenes.
-* [Las imágenes del archivo SVG en línea o de URI de datos](http://udacity.github.io/responsive-images/examples/2-11/svgDataUri/) no reducirán el peso de la página, pero pueden disminuir la latencia mediante la reducción del número de solicitudes de recursos. El archivo SVG en línea ofrece [gran compatibilidad en dispositivos móviles y navegadores de escritorio](http://caniuse.com/#feat=svg-html5), y  las [herramientas de optimización](http://petercollingridge.appspot.com/svg-optimiser) pueden reducir de manera significativa el tamaño del archivo SVG. Del mismo modo, los URI de datos son [muy compatibles](http://caniuse.com/datauri). Ambos se pueden poner en línea en CSS.
-* Considera usar `<video>` en lugar de GIF animados. [El elemento de video es compatible con todos los navegadores de dispositivos móviles](http://caniuse.com/video) (excepto con Opera Mini).
+* Consider designs that avoid images altogether, or use images sparingly. [Text-only can be beautiful](https://onepagelove.com/tag/text-only)! Ask yourself, "What are visitors to my site trying to achieve? Do images help that process?"
+* In the old days, it was commonplace to save headings and other text as graphics. That approach does not respond well to viewport size changes, and adds to page weight and latency. Using text as a graphic also means the text can't be found by search engines, and isn't accessible by screenreaders and other assistive technologies. Use "real" text where possible — Web Fonts and CSS can enable beautiful typography.
+* Use CSS rather than images for gradients, shadows, rounded corners, and [background textures](http://lea.verou.me/css3patterns/){: .external }, features [supported by all modern browsers](http://caniuse.com/#search=shadows). Bear in mind, however, that CSS may be better than images, but there can still be a [processing and rendering penalty](http://www.smashingmagazine.com/2013/04/03/build-fast-loading-mobile-website/), especially significant on mobile.
+* Background images rarely work well on mobile. You can [use media queries](http://udacity.github.io/responsive-images/examples/2-06/backgroundImageConditional/) to avoid background images on small viewports.
+* Avoid splash screen images.
+* [Use CSS for UI animations](/web/fundamentals/design-and-ux/animations/).
+* Get to know your glyphs; use [Unicode symbols and icons](https://en.wikipedia.org/wiki/List_of_Unicode_characters) instead of images, with Web Fonts if necessary.
+* Consider [icon fonts](http://weloveiconfonts.com/#zocial); they are vector graphics that can be infinitely scaled, and an entire set of images can be downloaded in one font. (Be aware of [these concerns](https://sarasoueidan.com/blog/icon-fonts-to-svg/), however.)
+* The `<canvas>` element can be used to build images in JavaScript from lines, curves, text, and other images.
+* [Inline SVG or Data URI images](http://udacity.github.io/responsive-images/examples/2-11/svgDataUri/) will not reduce page weight, but they can reduce latency by reducing the number of resource requests. Inline SVG has [great support on mobile and desktop browsers](http://caniuse.com/#feat=svg-html5), and [optimization tools](http://petercollingridge.appspot.com/svg-optimiser) can significantly reduce SVG size. Likewise, Data URIs are [well supported](http://caniuse.com/datauri). Both can be inlined in CSS.
+* Consider using `<video>` instead of animated GIFs. [The video element is supported by all browsers on mobile](http://caniuse.com/video) (apart from Opera Mini).
 
-Para obtener más información, consulta [Optimización de la imagen](/web/fundamentals/performance/optimizing-content-efficiency/image-optimization) e [Eliminación y reemplazo de imágenes](/web/fundamentals/performance/optimizing-content-efficiency/image-optimization#eliminating-and-replacing-images).
+For more information see [Image Optimization](/web/fundamentals/performance/optimizing-content-efficiency/image-optimization) and [Eliminating and replacing images](/web/fundamentals/performance/optimizing-content-efficiency/image-optimization#eliminating-and-replacing-images).
 
+## Design content to work well across different viewport sizes {: #viewport }
 
-## Diseña el contenido para que funcione correctamente en diferentes tamaños de ventana de visualización {: #viewport }
+> "Create a product, don't re-imagine one for small screens. Great mobile products are created, never ported."
+> 
+> — [Mobile Design and Development](https://goo.gl/KBAXj0), Brian Fling
 
-> "Crea un producto, no rediseñes uno para pantallas pequeñas. Los grandes productos
-> móviles se crean, nunca se adaptan."
->
->— <a href="https://goo.gl/KBAXj0">Mobile Design and Development</a>, Brian Fling
+Great designers don't "optimize for mobile" — they think responsively to build sites that work across a range of devices. The structure of text and other page content is critical to cross-device success.
 
+Many of the next billion users coming online use low-cost devices with small viewports. Reading on a low resolution 3.5" or 4" screen can be hard work.
 
-Los grandes diseñadores no realizan “optimizaciones para dispositivos móviles”; piensan, de manera responsable, en crear sitios que funcionen en varios dispositivos. La estructura del texto y otros contenidos de la página es esencial para el éxito en diferentes dispositivos.
+Here is a photograph of the two together:
 
-Los próximos miles de millones de usuarios que se conectan usan dispositivos de bajo costo con pequeñas ventanas de visualización. Puede resultar difícil leer en una pantalla con una resolución baja de 3,5 o 4”.
+![Photo comparing display of blog post on high end and low-cost smartphones](imgs/devices-photo.jpg)
 
-Aquí te mostramos una fotografía de los dos juntos:
+On the larger screen, text is small but readable.
 
-![Foto en la que se compara la pantalla de la entrada de blog en smartphones de bajo costo y de alta capacidad](imgs/devices-photo.jpg)
+On the smaller screen the browser renders the layout correctly, but the text is unreadable, even when zoomed in. The display is blurry and has a 'color cast' — white doesn't look white — making content less legible.
 
-En la pantalla más grande, el texto es pequeño pero se puede leer.
+### Design content for mobile
 
-En la pantalla más pequeña, el diseño se representa de manera correcta en el navegador, pero el texto no se puede leer; tampoco cuando se realiza un acercamiento. La pantalla se ve borrosa y tiene una “transmisión de color”, el blanco no se ve blanco, lo cual hace que el contenido sea menos legible.
+When building for a range of viewports, consider content as well as layout and graphic design, [design with real text and images, not dummy content](http://uxmyths.com/post/718187422/myth-you-dont-need-the-content-to-design-a-website).
 
-### Diseñar contenido para móviles
+> "Content precedes design. Design in the absence of content is not design, it's decoration."
+> 
+> — Jeffrey Zeldman
 
-Cuando desarrolles para varias ventanas de visualización diferentes, ten en cuenta el contenido además de la disposición y el diseño gráfico,
-[diseña con textos e imágenes reales, no con contenido ficticio](http://uxmyths.com/post/718187422/myth-you-dont-need-the-content-to-design-a-website).
+* Put your most important content at the top, since [users tend to read web pages in an F-shaped pattern](https://www.nngroup.com/articles/f-shaped-pattern-reading-web-content/).
+* Users visit your site to achieve a goal. Ask yourself what they need to achieve that goal and get rid of everything else. Get tough on visual and textual embellishments, legacy content, excessive links, and other clutter.
+* Be careful with social sharing icons; they can clutter layouts, and the code for them can slow down page loading.
+* Design [responsive layouts](/web/fundamentals/design-and-ux/responsive/) for content, not fixed device sizes.
 
-> "El contenido precede al diseño. El diseño sin contenido no es diseño, es decoración."
->
->— Jeffrey Zeldman
+### Test content
 
-* Pon tu contenido más importante en la parte superior, ya que los [usuarios tienden a leer las páginas web de acuerdo a un patrón en forma de F](https://www.nngroup.com/articles/f-shaped-pattern-reading-web-content/).
-* Los usuarios visitan tu sitio en busca de un objetivo. Pregúntate qué necesitan para alcanzar ese objetivo y deshazte del resto. Sé firme respecto de los adornos visuales y textuales, el contenido heredado, los vínculos excesivos y otras sobrecargas.
-* Ten cuidado con los íconos de uso compartido en redes sociales; pueden sobrecargar los diseños y su código puede reducir la velocidad de la carga de la página.
-* Crea [diseños adaptables](/web/fundamentals/design-and-ux/responsive/) para el contenido, en lugar de tamaños fijos para diferentes dispositivos.
+Success: Whatever you do — **test**!
 
-### Probar contenido
+* Check readability on smaller viewports using Chrome DevTools and other [emulation tools](/web/fundamentals/performance/poor-connectivity/).
+* [Test your content under conditions of low bandwidth and high latency](/web/fundamentals/performance/poor-connectivity/); try out content in a variety of connectivity scenarios.
+* Try reading and interacting with your content on a low-cost phone.
+* Ask friends and colleagues to try out your app or site.
+* Build a simple device test lab. The [GitHub repo](https://github.com/GoogleChrome/MiniMobileDeviceLab) for Google's Mini Mobile Device Lab has instructions on how to build your own. [OpenSTF](https://github.com/openstf/stf) is a simple web application for testing websites on multiple Android devices.
 
-Success: Hagas lo que hagas, ¡**pruébalo**!
+Here is OpenSTF in action:
 
-* Verifica la lectura en ventanas de visualización más pequeñas con Chrome DevTools y otras [herramientas de emulación](/web/fundamentals/performance/poor-connectivity/).
-* [Prueba tu contenido en condiciones de ancho de banda reducido y latencia alta](/web/fundamentals/performance/poor-connectivity/); prueba el contenido en diferentes situaciones de conectividad.
-* Intenta leer tu contenido e interactuar con él en un teléfono de bajo costo.
-* Pídeles a amigos y colegas que prueben tu app o tu sitio.
-* Crea un test lab de dispositivos simples. El [repositorio de GitHub](https://github.com/GoogleChrome/MiniMobileDeviceLab) para el Mini Mobile Device Lab de Google tiene instrucciones sobre cómo crear uno propio. [OpenSTF](https://github.com/openstf/stf) es una app web simple para probar sitios web en diferentes dispositivos Android.
+[![OpenSTF interface](imgs/stf.png)](https://github.com/openstf/stf)
 
-A continuación, se muestra OpenSTF en acción:
+Mobile devices are increasingly used to consume content and obtain information — not just as devices for communication, games and media.
 
-[![Interfaz OpenSTF](imgs/stf.png)](https://github.com/openstf/stf)
+This makes it increasingly import to plan content to work well on a range of viewports, and to prioritize content when considering cross-device layout, interface and interaction design.
 
-Crece el uso de dispositivos móviles para el consumo de contenido y la obtención de información, no solo como dispositivos para la comunicación, juegos y medios.
+## Understand data cost
 
-Esto aumenta la importancia de planear el contenido con el fin de que funcione bien en diferentes ventanas de visualización, y de priorizar el contenido al considerar un diseño, una interfaz y un bosquejo de interacción para diferentes dispositivos.
+Web pages are getting bigger.   
+  
+According to [HTTP Archive](http://httparchive.org/trends.php#bytesTotal&reqTotal), the average page weight for the [top one million sites](http://httparchive.org/about.php#listofurls) is now over 2MB.
 
+Users avoid sites or apps perceived to be slow or expensive, so it's crucial to understand the cost of loading page and app components.
 
-## Comprende el costo de los datos
+Reducing page weight can also be profitable. [Chris Zacharias from YouTube](http://blog.chriszacharias.com/page-weight-matters) found that when they reduced the watch-page size from 1.2MB to 250KB:
 
-Las páginas web se están expandiendo. <br><br>Conforme al <a href="http://httparchive.org/trends.php#bytesTotal&reqTotal">archivo HTTP</a>, el tamaño promedio de una página para el <a href="http://httparchive.org/about.php#listofurls">millón de sitios más importantes</a> supera los 2 MB.
+> Large numbers of people who were previously unable to use YouTube before were suddenly able to.
 
+In other words, reducing page weight **can open up whole new markets**.
 
-Los usuarios evitan sitios o apps que les resultan lentos o costosos, de modo que es crucial comprender el costo de carga de una página y de los componentes de la app.
+### Calculate page weight {: #weight }
 
-Reducir el peso de la página también puede ser rentable. [Chris Zacharias, de YouTube](http://blog.chriszacharias.com/page-weight-matters), descubrió que cuando se redujo el tamaño de la página de visualización de 1,2 MB a 250 KB:
+There are a number of tools for calculating page weight. The Chrome DevTools Network panel shows the total byte size for all resources, and can be used to ascertain weights for individual asset types. You can also check which items have been retrieved from the browser cache.
 
->  un gran número de personas que antes no podían usar YouTube de repente pudieron hacerlo.
+![Chrome DevTools Network panel showing resource sizes](imgs/chrome-dev-tools.png)
 
-En otras palabras, la reducción del tamaño de una página **puede abrir nuevos mercados**.
+Firefox and other browsers offer similar tools.
 
-### Calcula el peso de la página {: #weight }
+[WebPagetest](http://webpagetest.org) provides the ability to test first and subsequent page loads. You can automate testing with [scripts](https://sites.google.com/a/webpagetest.org/docs/using-webpagetest/scripting) (for example, to log in to a site) or by using their [RESTful APIs](https://sites.google.com/a/webpagetest.org/docs/advanced-features/webpagetest-restful-apis). The following example (loading [developers.google.com/web](/web/)) shows that caching was successful and that subsequent page loads required no additional resources.
 
-Hay varias herramientas para calcular el tamaño de una página. El panel Network de Chrome DevTools muestra el tamaño total en bytes para todos los recursos y se puede usar para determinar los tamaños de los tipos de recursos individuales. También puedes verificar los elementos recuperados del caché del navegador.
+![WebPagetest results showing total byte size for first and repeat page visits](imgs/webpagetest-first-and-repeat.png)
 
-![Visualización de los tamaños de recursos en el panel Network de Chrome DevTools](imgs/chrome-dev-tools.png)
+WebPagetest also gives a size and request breakdown by MIME type.
 
-Firefox y otros navegadores ofrecen herramientas similares.
+![WebPagetest pie charts showing requests and bytes by MIME type](imgs/webpagetest-requests-and-bytes-pie-charts.png)
 
-[webpagetest.org](http://webpagetest.org) ofrece la posibilidad de probar la primera carga de página y las que siguen. Puedes automatizar las pruebas con [secuencias de comandos](https://sites.google.com/a/webpagetest.org/docs/using-webpagetest/scripting) (por ejemplo, para acceder a un sitio) o con sus [API RESTful](https://sites.google.com/a/webpagetest.org/docs/advanced-features/webpagetest-restful-apis). En el siguiente ejemplo (carga de [developers.google.com/web](/web/)) se muestra que el almacenamiento en caché fue exitoso y que para las cargas de página posteriores no se necesitaron recursos adicionales.
+### Calculate page cost
 
-![Resultados de WebPagetest en los que se muestra el tamaño total en bytes para las primeras visitas y las repeticiones de visitas de página](imgs/webpagetest-first-and-repeat.png).
+For many users, data doesn't just cost bytes and performance — it costs money.
 
-WebPagetest también otorga un desglose de tamaños y solicitudes por tipo de MIME.
+The site [What Does My Site Cost?](https://whatdoesmysitecost.com/){: .external } enables you to estimate the actual financial cost of loading your site. The histogram below shows how much it costs (using a prepaid data plan) to load [amazon.com](https://www.amazon.com/).
 
-![Gráficos circulares de WebPagetest en los que se muestran solicitudes y bytes a través por tipo de MIME](imgs/webpagetest-requests-and-bytes-pie-charts.png).
+![Estimated data cost in 12 countries) of loading the amazon.com homepage](imgs/what-does-my-site-cost.png)
 
-### Calcula el costo de la página
-
-Para muchos usuarios, los datos no solo consumen bytes y rendimiento, sino también dinero.
-
-El sitio [What Does My Site Cost?](https://whatdoesmysitecost.com/){: .external } te permite estimar el costo real que supone la carga de tu sitio. En el histograma que se ofrece a continuación se muestra cuánto cuesta (con un plan de datos prepago) cargar [amazon.com](https://www.amazon.com/).
-
-![Costo estimado de los datos en 12 países para la carga de la página principal de amazon.com](imgs/what-does-my-site-cost.png).
-
-Ten presente que no se tiene en cuenta la accesibilidad a cuentas conforme a los ingresos. Información de [blog.jana.com](https://blog.jana.com/2015/05/21/the-data-trap-affordable-smartphones-expensive-data/) en la que se muestra el costo de los datos.
+Bear in mind that this doesn't take into account affordability relative to income. Data from [blog.jana.com](https://blog.jana.com/2015/05/21/the-data-trap-affordable-smartphones-expensive-data/) shows the cost of data.
 
 <table>
   <tr>
     <td></td>
-    <td><strong>Costo de un plan de datos<br>de 500 MB (en USD)</strong></td>
-    <td><strong>Salario mínimo<br>por hora (en USD)</strong></td>
-    <td><strong>Horas de trabajo para pagar<br>un plan de datos de 500 MB</strong></td>
+    <td><strong>500MB data plan<br>cost (USD)</strong></td>
+    <td><strong>Hourly minimum<br>wage (USD)</strong></td>
+    <td><strong>Hours of work to pay<br>for 500MB data plan</strong></td>
   </tr>
   <tr>
     <td>India</td>
-    <td>USD 3.38</td>
-    <td>USD 0.20</td>
-    <td>17 horas</td>
+    <td>$3.38</td>
+    <td>$0.20</td>
+    <td>17 hours</td>
   </tr>
   <tr>
     <td>Indonesia</td>
-    <td>USD 2.39</td>
-    <td>USD 0.43</td>
-    <td>6 horas</td>
+    <td>$2.39</td>
+    <td>$0.43</td>
+    <td>6 hours</td>
   </tr>
   <tr>
-    <td>Brasil</td>
-    <td>USD 13.77</td>
-    <td>USD 1.04</td>
-    <td>13 horas</td>
+    <td>Brazil</td>
+    <td>$13.77</td>
+    <td>$1.04</td>
+    <td>13 hours</td>
   </tr>
 </table>
 
+Page weight isn't just a problem for emerging markets. In many countries, people use mobile plans with limited data, and will avoid your site or app if they perceive it to be heavy and expensive. Even "unlimited" cell and wifi data plans generally have a data limit beyond which they are blocked or throttled.
 
-El tamaño de la página no es solo un problema de los mercados emergentes. En muchos países, la gente usa planes de telefonía móvil con datos limitados y evitará tu sitio o tu app si percibe que son cargados y de navegación costosa. Incluso los planes de datos de datos de telefonía celular y Wi-Fi “ilimitados” tienen en general un límite de datos y al superarlo se bloquean o se regulan.
+The bottom line: page weight affects performance and costs money. [Optimizing content efficiency](/web/fundamentals/performance/optimizing-content-efficiency/) shows how to reduce that cost.
 
-Lo más importante: el tamaño de la página afecta el rendimiento y cuesta dinero. En [Optimización del ahorro del contenido](/web/fundamentals/performance/optimizing-content-efficiency/) se muestra cómo reducir ese costo.
+## Feedback {: #feedback }
 
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
