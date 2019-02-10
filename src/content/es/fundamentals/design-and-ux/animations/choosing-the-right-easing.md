@@ -1,45 +1,40 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Elige la aceleración adecuada para tu proyecto, así se trate de una entrada o salida lentas o de ambas posibilidades. ¡Incluso puedes usar rebotes para agregarle diversión!
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Choose the appropriate easing for your project, whether that's easing in, out, or both. Maybe even use bounces for extra fun!
 
-{# wf_updated_on: 2016-08-23 #}
-{# wf_published_on: 2014-08-08 #}
+{# wf_blink_components: Blink>Animation #} {# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2014-08-08 #}
 
-# Elección de la aceleración adecuada {: .page-title }
+# Choosing the Right Easing {: .page-title }
 
 {% include "web/_shared/contributors/paullewis.html" %}
 
-Ahora que ya analizamos las diferentes opciones disponibles para acelerar las animaciones, ¿qué clase deberías usar en tus proyectos y qué tipos de duraciones deben tener tus animaciones?
+Having discussed the various options available for easing in animations, what kind should you use in your projects, and what kind of durations should your animations have?
 
 ### TL;DR {: .hide-from-toc }
-* Usa las animaciones de salida lenta para los elementos de la IU; una salida lenta Quintic, a pesar de ser rápida, es una aceleración muy atractiva.
-* Asegúrate de usar la duración de la animación. Las salidas y las entradas lentas deben durar entre 200 y 500 ms, mientras que los rebotes y las aceleraciones elásticas deben tener una duración más prolongada de entre 800 y 1200 ms.
 
+* Use ease-out animations for UI elements; a Quintic ease-out is a very nice, albeit quick, ease.
+* Be sure to use the animation duration; ease-outs and ease-ins should be 200ms-500ms, whereas bounces and elastic eases should clock in a longer duration of 800ms-1200ms.
 
-<img src="images/quintic-ease-out-markers.png" alt="La curva de una animación de salida lenta Quintic" style="max-width: 300px" class="attempt-right"/>
+<img src="images/quintic-ease-out-markers.png" alt="A Quintic ease-out animation curve" style="max-width: 300px" class="attempt-right" />
 
-En términos generales, una **salida lenta** será la opción correcta y, sin dudas, un buen parámetro predeterminado. Se inicia rápidamente, lo cual proporciona a tus animaciones una sensación de receptividad (un aspecto bienvenido), aunque con una agradable reducción de la velocidad al final.
+Generally speaking, an **ease-out** will be the right call, and certainly a good default. It is quick to start, giving your animations a feeling of responsiveness, which is desirable, but with a nice slowdown at the end.
 
-Existe un grupo de ecuaciones de salida lenta reconocidas más allá de la especificada con la palabra clave `ease-out` en CSS, cuyos niveles de “agresividad” varían. Para obtener un efecto rápido de salida lenta, considera la [salida lenta Quintic](http://easings.net/#easeOutQuint).
+There is a group of well-known ease-out equations beyond the one specified with the `ease-out` keyword in CSS, which range in their "aggressiveness." For a fast ease-out effect, consider a [Quintic ease-out](http://easings.net/#easeOutQuint).
 
+[See a Quintic ease-out animation](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/animations/box-move-quintic-ease-out.html){: target="_blank" .external }
 
-[Ver una animación de salida lenta Quintic](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/animations/box-move-quintic-ease-out.html){: target="_blank" .external }
+Other easing equations, particularly bounces or elastic eases, should be used sparingly, and only when it’s appropriate to your project. There are few things that bring a user out of an experience like a jarring animation. If your project isn’t intended to be fun, then don’t have elements bouncing around the UI. Conversely, if you’re creating a site that is supposed to be lighthearted, then by all means use bounces!
 
-El resto de las ecuaciones de aceleración, especialmente los rebotes y las aceleraciones elásticas, se deben usar con moderación y solo cuando sean adecuadas para tu proyecto. Existen algunos elementos que interrumpen la experiencia del usuario, como una animación estridente. Si tu proyecto no pretende ser divertido, entonces no hagas que los elementos reboten por la IU. Por el contrario, si creas un sitio con la intención de que sea alegre, ¡entonces sí usa rebotes!
+Play around with eases, see which ones match your project’s personality, and go from there. For a full list of easing types, along with demos, see [easings.net](http://easings.net).
 
-Prueba con diferentes aceleraciones; descubre las que coincidan con la personalidad de tu proyecto y úsalas. Para acceder a una lista completa de tipos de aceleraciones, con sus demos, visita [easings.net](http://easings.net).
+## Pick the right animation duration
 
-## Selecciona la duración correcta para las animaciones
+It is important that any animation added to your project has the correct duration. Too short and the animation will feel aggressive and sharp; too long and it will be obstructive and annoying.
 
-Es importante que las animaciones que se agregan a tu proyecto tengan la duración correcta. Si la animación es demasiado breve, resultará agresiva y grosera; si es demasiado larga, será entorpecedora e irritante.
+* **Ease-outs: around 200ms-500ms**. This gives the eye a chance to see the animation, but it doesn’t feel obstructive.
+* **Ease-ins: around 200ms-500ms**. Bear in mind that it will jolt at the end, and no amount of timing changes will soften that impact.
+* **Bounce or elastic effects: around 800ms-1200ms**. You need to allow time for the elastic or bounce effect to "settle." Without this extra time, the elastic bouncing part of the animation will be aggressive and unpleasant to the eye.
 
-* **Salidas lentas: aproximadamente entre 200 ms y 500 ms**. De este modo, el ojo puede captar la animación, pero no es entorpecedora.
-* **Entradas lentas: aproximadamente entre 200 ms y 500 ms**. Ten en cuenta que se sacudirá al final y ningún cambio que se realice en la duración podrá suavizar ese impacto.
-* **Efectos de rebote o elásticos: aproximadamente entre 800 ms y 1200 ms**. Debes asignar tiempo suficiente para que el efecto de rebote o elástico se “asiente”. Sin este tiempo adicional, la parte de rebote elástico de la animación será agresiva y poco placentera a la vista.
+Of course, these are just guidelines. Experiment with your own eases and choose what feels right for your projects.
 
-Estas, por supuesto, son solo algunas recomendaciones. Experimenta con tus propias aceleraciones y elige las que combinen mejor con tus proyectos.
+## Feedback {: #feedback }
 
-
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
