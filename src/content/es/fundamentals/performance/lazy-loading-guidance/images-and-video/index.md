@@ -1,139 +1,73 @@
-project_path: /web/fundamentals/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Si el sitio contiene una gran cantidad de imágenes y videos, pero no deseas reducir ese contenido, la carga diferida puede ser la técnica que necesitas para mejorar el tiempo de carga inicial de la página y reducir la carga útil por página.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: If your site has a ton of images and video, but you don't want to cut down on any of it, lazy loading might be just the technique you need to improve initial page load time and lower per-page payload.
 
-{# wf_updated_on: 2019-02-06 #}
-{# wf_published_on: 2018-04-04 #}
-{# wf_blink_components: Blink>Image,Blink>HTML,Blink>JavaScript #}
+{# wf_updated_on: 2018-06-11 #} {# wf_published_on: 2018-04-04 #} {# wf_blink_components: Blink>Image,Blink>HTML,Blink>JavaScript #}
 
-# Carga diferida de imágenes y videos {: .page-title }
+# Lazy Loading Images and Video {: .page-title }
 
 {% include "web/_shared/contributors/jeremywagner.html" %}
 
-La porción de
-[imágenes](http://beta.httparchive.org/reports/state-of-images?start=earliest&end=latest)
-y [videos](http://beta.httparchive.org/reports/page-weight#bytesVideo) en la
-carga útil típica de un sitio web puede ser considerable. Lamentablemente, las
-partes interesadas de un proyecto pueden ser renuentes a reducir los recursos de medios
-de sus aplicaciones existentes. Esos estancamientos son frustrantes, especialmente cuando
-todas las partes involucradas desean mejorar el rendimiento del sitio, pero no acuerdan la forma de lograrlo.
-Afortunadamente, la carga diferida es una solución que reduce el tiempo de carga
-inicial de la página _y_ el tiempo de carga, pero no escatima en contenido.
+The portion of [images](http://beta.httparchive.org/reports/state-of-images?start=earliest&end=latest) and [video](http://beta.httparchive.org/reports/page-weight#bytesVideo) in the typical payload of a website can be significant. Unfortunately, project stakeholders may be unwilling to cut any media resources from their existing applications. Such impasses are frustrating, especially when all parties involved want to improve site performance, but can't agree on how to get there. Fortunately, lazy loading is a solution that lowers initial page payload *and* load time, but doesn't skimp on content.
 
-## ¿Qué es la carga diferida?
+## What is lazy loading?
 
-La carga diferida es una técnica que aplaza la carga de recursos no esenciales en
-el tiempo de carga de la página. Estos recursos no esenciales se cargan en el momento en que
-son necesarios. En lo que se refiere a las imágenes, "no esencial" generalmente es sinónimo de
-"fuera de pantalla". Si utilizaste Lighthouse y exploraste algunas oportunidades de
-mejora, sin dudas obtuviste cierta orientación en este ámbito en la
-[auditoría Imágenes fuera de
-pantalla](/web/tools/lighthouse/audits/offscreen-images):
+Lazy loading is technique that defers loading of non-critical resources at page load time. Instead, these non-critical resources are loaded at the moment of need. Where images are concerned, "non-critical" is often synonymous with "off-screen". If you've used Lighthouse and examined some opportunities for improvement, you may have seen some guidance in this realm in the form of the [Offscreen Images audit](/web/tools/lighthouse/audits/offscreen-images):<figure> 
 
-<figure>
-  <img srcset="images/offscreen-audit-2x.png 2x, images/offscreen-audit-1x.png 1x"
-src="images/offscreen-audit-1x.png" alt="Una captura de pantalla de la auditoría
-Imágenes fuera de pantalla en Lighthouse.">
-  <figcaption><b>Figura 1</b>. Una de las auditorías de rendimiento de Lighthouse es
-identificar las imágenes fuera de pantalla candidatas para la carga diferida.</figcaption>
-</figure>
+<img srcset="images/offscreen-audit-2x.png 2x, images/offscreen-audit-1x.png 1x"
+src="images/offscreen-audit-1x.png" alt="A screenshot of the Offscreen Images
+Audit in Lighthouse." /> <figcaption>**Figure 1**. One of Lighthouse's performance audits is to identify off screen images, which are candidates for lazy loading.</figcaption> </figure> 
 
-Seguramente, ya viste la carga diferida en acción alguna vez. Se parece a
-esto:
+You've probably already seen lazy loading in action, and it goes something like this:
 
-- Llegas a una página. Te desplazas a medida que lees el contenido.
-- En cierto punto, te desplazas hasta una imagen de marcador de posición en la ventana de visualización.
-- De repente, la imagen de marcador de posición se reemplaza por la imagen final.
+- You arrive at a page, and begin to scroll as you read content.
+- At some point, you scroll a placeholder image into the viewport.
+- The placeholder image is suddenly replaced by the final image.
 
-Es posible ver un ejemplo de carga diferida de imagen en la popular plataforma de publicación
-[Medium](https://medium.com/), que carga imágenes de marcador de posición ligeras
-en el tiempo de carga y las reemplaza por imágenes de carga diferida a medida que se desplazan
-en la ventana de visualización.
+An example of image lazy loading can be found on the popular publishing platform [Medium](https://medium.com/), which loads lightweight placeholder images at page load, and replaces them with lazily-loaded images as they're scrolled into the viewport.<figure> 
 
-<figure>
-  <img srcset="images/lazy-loading-example-2x.jpg 2x,
+<img srcset="images/lazy-loading-example-2x.jpg 2x,
 images/lazy-loading-example-1x.jpg 1x"
-src="images/lazy-loading-example-1x.jpg" alt="Una captura de pantalla del sitio web
-Medium en la navegación donde se muestra la carga diferida en acción. El marcador de posición
-borroso se encuentra a la izquierda y el recurso cargado a la derecha.">
-  <figcaption><b>Figura 2</b>. Un ejemplo de carga diferida de imagen en acción. Se
-carga una imagen de marcador de posición en la carga de la página (izquierda) y, al desplazarse
-a la ventana de visualización, se carga la imagen final cuando se necesita.</figcaption>
-</figure>
+src="images/lazy-loading-example-1x.jpg" alt="A screenshot of the website
+Medium in the browsing, demonstrating lazy loading in action. The blurry
+placeholder is on the left, and the loaded resource is on the right." /> <figcaption>**Figure 2**. An example of image lazy loading in action. A placeholder image is loaded at page load (left), and when scrolled into the viewport, the final image loads at the time of need.</figcaption> </figure> 
 
-Si no conoces bien la carga diferida, seguramente te preguntas qué tan útil es
-esta técnica y cuáles son sus beneficios. ¡Continúa leyendo para descubrirlo!
+If you're unfamiliar with lazy loading, you might be wondering just how useful the technique is, and what its benefits are. Read on to find out!
 
-## ¿Por qué cargar de forma diferida las imágenes y los videos en lugar de solo _cargarlos_?
+## Why lazy load images or video instead of just *loading* them?
 
-Para evitar cargar elementos que es probable que el usuario nunca vea. Esto es
-un problema por diversos motivos:
+Because it's possible you're loading stuff the user may never see. This is problematic for a couple reasons:
 
-- Se desperdician datos. En las conexiones sin medición de uso, esto no es lo peor que puede pasar
-(aunque se puede utilizar ese valioso ancho de banda para descargar
-otros recursos que el usuario efectivamente verá). Sin embargo, en los planes
-de datos limitados, la carga de elementos que el usuario nunca verá
-puede ser un desperdicio real de dinero.
-- Se desperdician tiempo de procesamiento, batería y otros recursos del sistema. Una vez cargado
-el recurso de medios, el navegador debe decodificarlo y representar su contenido
-en la ventana de visualización.
+- It wastes data. On unmetered connections, this isn't the worst thing that could happen (although you could be using that precious bandwidth for downloading other resources that are indeed going to be seen by the user). On limited data plans, however, loading stuff the user never sees could effectively be a waste of their money.
+- It wastes processing time, battery, and other system resources. After a media resource is downloaded, the browser must decode it and render its content in the viewport.
 
-Al cargar de forma diferida imágenes y videos, se reducen el tiempo de carga inicial de la página,
-el peso inicial de la página y el uso de recursos del sistema, lo que afecta positivamente
-el rendimiento. En esta guía, abordaremos algunas técnicas y brindaremos orientación para
-la carga diferida de imágenes y videos, así como [una lista breve de
-bibliotecas utilizadas comúnmente](/web/fundamentals/performance/lazy-loading-guidance/images-and-video/#lazy_loading_libraries).
+When we lazy load images and video, we reduce initial page load time, initial page weight, and system resource usage, all of which have positive impacts on performance. In this guide, we'll cover some techniques and offer guidance for lazy loading images and video, as well as [a short list of some commonly used libraries](/web/fundamentals/performance/lazy-loading-guidance/images-and-video/#lazy_loading_libraries).
 
-## Carga diferida de imágenes
+## Lazy loading images
 
-En teoría, los mecanismos de carga diferida de imágenes son simples, pero los detalles son
-algo complicados. Además, existen algunos casos de uso puntuales en los que
-la carga diferida aporta beneficios. Comencemos por la carga diferida de imágenes incorporadas en
-HTML.
+Image lazy loading mechanisms are simple in theory, but the details are actually a bit finicky. Plus there are a couple of distinct use cases that can both benefit from lazy loading. Let's first start with lazy loading inline images in HTML.
 
-### Imágenes incorporadas
+### Inline images
 
-Los candidatos más comunes para la carga diferida son las imágenes que se utilizan en los elementos `<img>`.
-Cuando se cargan de forma diferida elementos `<img>`, se utiliza JavaScript para comprobar si se encuentran
-en la ventana de visualización. Si se encuentran, sus atributos `src` (y a veces `srcset`) se rellenan
-con direcciones URL al contenido de imagen deseado.
+The most common lazy loading candidates are images as used in `<img>` elements. When we lazy load `<img>` elements, we use JavaScript to check if they're in the viewport. If they are, their `src` (and sometimes `srcset`) attributes are populated with URLs to the desired image content.
 
-#### Uso de Intersection Observer
+#### Using intersection observer
 
-Si alguna vez escribiste código de carga diferida, es probable que hayas logrado esta tarea con
-controladores de eventos como `scroll` o `resize`. Si bien este enfoque es el más
-compatible con los navegadores, los navegadores modernos ofrecen una forma más eficaz
-de comprobar la visibilidad de los elementos mediante
-[la API Intersection Observer](/web/updates/2016/04/intersectionobserver).
+If you've written lazy loading code before, you may have accomplished your task by using event handlers such as `scroll` or `resize`. While this approach is the most compatible across browsers, modern browsers offer a more performant and efficient way to do the work of checking element visibility via [the intersection observer API](/web/updates/2016/04/intersectionobserver).
 
-Note: Intersection Observer no es compatible con todos los navegadores. Si la compatibilidad
-con todos los navegadores es esencial, asegúrate de leer [la próxima
-sección](#using_event_handlers_the_most_compatible_way), donde se muestra cómo
-cargar de forma diferida imágenes con controladores de eventos scroll
-y resize menos eficaces (pero más compatibles).
+Note: Intersection observer is not supported in all browsers. If compatibility across browsers is crucial, be sure to read [the next section](#using_event_handlers_the_most_compatible_way), which shows you how to lazy load images using less performant (but more compatible!) scroll and resize event handlers.
 
-Intersection Observer es una API más fácil de usar y leer que el código basado en
-diversos controladores de eventos, ya que los desarrolladores solo deben registrar una instancia de Intersection Observer
-para vigilar los elementos en lugar de escribir el tedioso código de detección de visibilidad de elementos. Todo
-lo que el desarrollador debe hacer es decidir qué hacer cuando un elemento se vuelve
-visible. Supongamos que este es el patrón de marcado básico para los elementos `<img>`
-cargados de forma diferida:
+Intersection observer is easier to use and read than code relying on various event handlers, because developers only need to register an observer to watch elements rather than writing tedious element visibility detection code. All that's left to do for the developer is to decide what to do when an element is visible. Let's assume this basic markup pattern for our lazily loaded `<img>` elements:
 
 ```html
 <img class="lazy" src="placeholder-image.jpg" data-src="image-to-lazy-load-1x.jpg" data-srcset="image-to-lazy-load-2x.jpg 2x, image-to-lazy-load-1x.jpg 1x" alt="I'm an image!">
 ```
 
-Debemos enfocarnos en tres partes relevantes de este marcado:
+There are three relevant pieces of this markup we should focus on:
 
-1. El atributo `class`, que es con lo que seleccionaremos el elemento en
-JavaScript.
-2. El atributo `src`, que hace referencia a una imagen de marcador de posición que aparecerá
-cuando se cargue la página por primera vez.
-3. Los atributos `data-src` y `data-srcset`, que son atributos de marcador de posición y
-contienen la URL para la imagen que cargaremos cuando el elemento se encuentre en la ventana de visualización.
+1. The `class` attribute, which is what we'll select the element with in JavaScript.
+2. The `src` attribute, which references a placeholder image that will appear when the page first loads.
+3. The `data-src` and `data-srcset` attributes, which are placeholder attributes containing the URL for the image we'll load once the element is in the viewport.
 
-Ahora veamos la forma en que podemos usar Intersection Observer en JavaScript para
-cargar imágenes de forma diferida con este patrón de marcado:
+Now let's see how we can use intersection observer in JavaScript to lazy load images using this markup pattern:
 
 ```javascript
 document.addEventListener("DOMContentLoaded", function() {
@@ -161,43 +95,17 @@ document.addEventListener("DOMContentLoaded", function() {
 });
 ```
 
-En el evento `DOMContentLoaded` del documento, esta secuencia de comandos consulta el DOM
-para todos los elementos `<img>` con la clase `lazy`. Si existe una instancia de Intersection Observer disponible,
-se crea un nuevo observador que ejecuta una devolución de llamada cuando los elementos `img.lazy`
-ingresan a la pantalla de visualización. Revisa [este ejemplo
-de CodePen](https://codepen.io/malchata/pen/YeMyrQ) para ver este código en acción.
+On the document's `DOMContentLoaded` event, this script queries the DOM for all `<img>` elements with a class of `lazy`. If intersection observer is available, we create a new observer that runs a callback when `img.lazy` elements enter the viewport. Check out [this CodePen example](https://codepen.io/malchata/pen/YeMyrQ) to see this code in action.
 
-Note: Este código utiliza un método basado en Intersection Observer llamado
-`isIntersecting`, que no se encuentra disponible en la implementación de Intersection Observer
-de Edge 15. Así que el código de carga diferida anterior (y otros fragmentos
-de código similares) producirá un error. Consulta [este problema
-de GitHub](https://github.com/w3c/IntersectionObserver/issues/211) para obtener orientación sobre
-un condicional de detección de funciones más completo.
+Note: This code makes use of an intersection observer method named `isIntersecting`, which is unavailable in Edge 15's intersection observer implementation. As such, the lazy loading code above (and other similar code snippets) will fail. Consult [this GitHub issue](https://github.com/w3c/IntersectionObserver/issues/211) for guidance on a more complete feature detection conditional.
 
-La desventaja de la API Intersection Observer es que, si bien [ofrece
-una buena compatibilidad con navegadores](https://caniuse.com/#feat=intersectionobserver),
-no es universal. [Es necesario aplicar
-polyfill](https://github.com/w3c/IntersectionObserver/tree/master/polyfill)
-en los navegadores que no lo admiten o, como sugiere el código anterior, detectar si
-se encuentra disponible y posteriormente revertir a métodos anteriores compatibles.
+The drawback of intersection observer, however, is that while [it has good support amongst browsers](https://caniuse.com/#feat=intersectionobserver), it's not universal. [You'll need to polyfill](https://github.com/w3c/IntersectionObserver/tree/master/polyfill) browsers that don't support it, or as the above code suggests, detect if it's available and subsequently fall back to older, more compatible methods.
 
-#### Uso de controladores de eventos (la forma más compatible)
+#### Using event handlers (the most compatible way)
 
-Si bien es _recomendable_ usar Intersection Observer para la carga diferida,
-es posible que la compatibilidad con el navegador sea esencial debido a los requisitos de la aplicación. [Una _posibilidad_ es aplicar
-polyfill a la compatibilidad de
-Intersection Observer](https://github.com/w3c/IntersectionObserver/tree/master/polyfill) (y
-esta es la opción más simple), pero también es posible revertir el código mediante
-los controladores de eventos [`scroll`](https://developer.mozilla.org/en-US/docs/Web/Events/scroll),
-[`resize`](https://developer.mozilla.org/en-US/docs/Web/Events/resize), y
-posiblemente
-[`orientationchange`](https://developer.mozilla.org/en-US/docs/Web/Events/orientationchange)
-en sintonía con
-[`getBoundingClientRect`](https://developer.mozilla.org/en-US/docs/Web/API/Element/getBoundingClientRect)
-para determinar si un elemento se encuentra en la ventana de visualización.
+While you *should* use intersection observer for lazy loading, your application requirements may be such that browser compatibility is critical. [You *can* polyfill intersection observer support](https://github.com/w3c/IntersectionObserver/tree/master/polyfill) (and this would be easiest), but you could also fall back to code using [`scroll`](https://developer.mozilla.org/en-US/docs/Web/Events/scroll), [`resize`](https://developer.mozilla.org/en-US/docs/Web/Events/resize), and possibly [`orientationchange`](https://developer.mozilla.org/en-US/docs/Web/Events/orientationchange) event handlers in concert with [`getBoundingClientRect`](https://developer.mozilla.org/en-US/docs/Web/API/Element/getBoundingClientRect) to determine whether an element is in the viewport.
 
-Suponiendo que el patrón de marcado es el mismo que el anterior, el siguiente JavaScript
-brinda la funcionalidad de carga diferida:
+Assuming the same markup pattern from before, the following JavaScript provides the lazy loading functionality:
 
 ```javascript
 document.addEventListener("DOMContentLoaded", function() {
@@ -238,48 +146,17 @@ document.addEventListener("DOMContentLoaded", function() {
 });
 ```
 
-Este código usa `getBoundingClientRect` en un controlador de eventos `scroll` para comprobar si
-algunos de los elementos `img.lazy` se encuentra en la ventana de visualización. Se utiliza una llamada `setTimeout` para
-demorar el procesamiento y una variable `active` contiene el estado de procesamiento
-que se utiliza para regular las llamadas de función. A medida que se cargan de forma diferida,
-las imágenes se eliminan de la matriz de elementos. Cuando la matriz de elementos alcanza un valor de `length` de `0`,
-se elimina el código del controlador de eventos scroll. Ve este código en acción en [este ejemplo
-de CodePen](https://codepen.io/malchata/pen/mXoZGx).
+This code uses `getBoundingClientRect` in a `scroll` event handler to check if any of `img.lazy` elements are in the viewport. A `setTimeout` call is used to delay processing, and an `active` variable contains the processing state which is used to throttle function calls. As images are lazy loaded, they're removed from the elements array. When the elements array reaches a `length` of `0`, the scroll event handler code is removed. See this code in action in [this CodePen example](https://codepen.io/malchata/pen/mXoZGx).
 
-Si bien funciona en casi todos los navegadores, este código presenta problemas potenciales
-de rendimiento. La repetición de llamadas `setTimeout` puede ser un desperdicio, aunque
-se regule el código en ellas. En este ejemplo, se ejecuta una comprobación cada 200
-milisegundos sobre el desplazamiento en el documento o el cambio de tamaño de la ventana,
-independientemente de que exista o no una imagen en la ventana de visualización. Además, el tedioso seguimiento de la cantidad de elementos
-restantes para la carga diferida y el desenlace del controlador de eventos scroll
-son responsabilidad del desarrollador.
+While this code works in pretty much any browser, it has potential performance issues in that repetitive `setTimeout` calls can be wasteful, even if the code within them is throttled. In this example, a check is being run every 200 milliseconds on document scroll or window resize regardless of whether there's an image in the viewport or not. Plus, the tedious work of tracking how many elements are left to lazy load and unbinding the scroll event handler are left to the developer.
 
-En pocas palabras: Usa Intersection Observer siempre que puedas y revierte a
-controladores de eventos si la compatibilidad más amplia posible es
-un requisito esencial de la aplicación.
+Simply put: Use intersection observer wherever possible, and fall back to event handlers if the widest possible compatibility is a critical application requirement.
 
-### Imágenes en CSS
+### Images in CSS
 
-Si bien las etiquetas `<img>` son la forma más común de usar imágenes en páginas web,
-también es posible invocar imágenes mediante la propiedad CSS
-[`background-image`](https://developer.mozilla.org/en-US/docs/Web/CSS/background-image)
-(y otras propiedades). A diferencia de los elementos `<img>` que se cargan independientemente
-de su visibilidad, el comportamiento de carga de imágenes en CSS
-implica más especulación. Cuando se crean [los modelos de documento y
-objeto CSS](/web/fundamentals/performance/critical-rendering-path/constructing-the-object-model)
-y [el árbol
-de representación](/web/fundamentals/performance/critical-rendering-path/render-tree-construction),
-el navegador examina la forma en que se aplica CSS a un documento antes de
-solicitar recursos externos. Si el navegador determina una regla de CSS
-por la que un recurso externo no se aplica al documento en función de su construcción
-actual, el navegador no lo solicita.
+While `<img>` tags are the most common way of using images on web pages, images can also be invoked via the CSS [`background-image`](https://developer.mozilla.org/en-US/docs/Web/CSS/background-image) property (and other properties). Unlike `<img>` elements which load regardless of their visibility, image loading behavior in CSS is done with more speculation. When [the document and CSS object models](/web/fundamentals/performance/critical-rendering-path/constructing-the-object-model) and [render tree](/web/fundamentals/performance/critical-rendering-path/render-tree-construction) are built, the browser examines how CSS is applied to a document before requesting external resources. If the browser has determined a CSS rule involving an external resource doesn't apply to the document as it's currently constructed, the browser doesn't request it.
 
-Es posible usar este comportamiento especulativo para diferir la carga de imágenes en CSS
-mediante JavaScript para determinar si un elemento se encuentra en la ventana de visualización y,
-posteriormente, aplicar una clase a ese elemento
-con la que se invoque el estilo de una imagen de fondo. Esto hace que la imagen se descargue cuando se necesita
-y no en la carga inicial. Por ejemplo, veamos un elemento que contiene
-una gran imagen de fondo hero:
+This speculative behavior can be used to defer the loading of images in CSS by using JavaScript to determine when an element is within the viewport, and subsequently applying a class to that element that applies styling invoking a background image. This causes the image to be downloaded at the time of need instead of at initial load. For example, let's take an element that contains a large hero background image:
 
 ```html
 <div class="lazy-background">
@@ -289,10 +166,7 @@ una gran imagen de fondo hero:
 </div>
 ```
 
-Normalmente, el elemento `div.lazy-background` contiene una imagen de fondo hero
-invocada por alguna CSS. No obstante, en este ejemplo de carga diferida, es posible aislar
-la propiedad `background-image` del elemento `div.lazy-background` mediante una clase `visible`
-que se agrega al elemento cuando este llegue a la ventana de visualización:
+The `div.lazy-background` element would normally contain the hero background image invoked by some CSS. In this lazy loading example, however, we can isolate the `div.lazy-background` element's `background-image` property via a `visible` class that we'll add to the element when it's in the viewport:
 
 ```css
 .lazy-background {
@@ -304,9 +178,7 @@ que se agrega al elemento cuando este llegue a la ventana de visualización:
 }
 ```
 
-Desde aquí, se utiliza JavaScript para comprobar si el elemento se encuentra en la ventana de visualización (con
-Intersection Observer), y se agrega la clase `visible` al
-elemento `div.lazy-background` en ese momento, lo que carga la imagen:
+From here, we'll use JavaScript to check if the element is in the viewport (with intersection observer!), and add the `visible` class to the `div.lazy-background` element at that time, which loads the image:
 
 ```javascript
 document.addEventListener("DOMContentLoaded", function() {
@@ -329,27 +201,15 @@ document.addEventListener("DOMContentLoaded", function() {
 });
 ```
 
-Como se indicó anteriormente, se recomienda proporcionar una reserva o un
-polyfill para Intersection Observer, ya que no todos los navegadores admiten esta API en la actualidad.
-Revisa [esta demostración de CodePen](https://codepen.io/malchata/pen/wyLMpR) para ver
-este código en acción.
+As indicated earlier, you'll want to make sure you provide a fallback or a polyfill for intersection observer since not all browsers currently support it. Check out [this CodePen demo](https://codepen.io/malchata/pen/wyLMpR) to see this code in action.
 
-## Carga diferida de videos
+## Lazy loading video
 
-Al igual que con los elementos de imagen, también es posible cargar de forma diferida videos. Para cargar un video en
-circunstancias normales, se utiliza el elemento `<video>` (a pesar de que ha surgido
-[un método alternativo con
-`<img>`](https://calendar.perfplanet.com/2017/animated-gif-without-the-gif/)
-de implementación limitada). Sin embargo, el _modo_ en que se carga de forma diferida `<video>`
-depende de cada caso de uso. Analicemos algunas situaciones y la solución diferente
-que se requiere en cada una.
+As with image elements, we can also lazy load video. When we load video in normal circumstances, we do so using the `<video>` element (although [an alternate method using `<img>`](https://calendar.perfplanet.com/2017/animated-gif-without-the-gif/) has emerged with limited implementation). *How* we lazy load `<video>` depends on the use case, though. Let's discuss a couple of scenarios that each require a different solution.
 
-### Para videos sin reproducción automática
+### For video that doesn't autoplay
 
-En los videos donde el usuario inicia la reproducción (es decir, videos _sin_
-reproducción automática), especificar el [atributo
-`preload`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/video#attr-preload)
-en el elemento `<video>` puede ser conveniente:
+For videos where playback is initiated by the user (i.e., videos that *don't* autoplay), specifying the [`preload` attribute](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/video#attr-preload) on the `<video>` element may be desirable:
 
 ```html
 <video controls preload="none" poster="one-does-not-simply-placeholder.jpg">
@@ -358,50 +218,27 @@ en el elemento `<video>` puede ser conveniente:
 </video>
 ```
 
-Aquí, se usa un atributo `preload` con el valor `none` para evitar que los navegadores
-precarguen _cualquier_ dato de video. Para ocupar el espacio, se usa el atributo `poster`
-para otorgar un marcador de posición al elemento `<video>`. El motivo de esto es que
-los comportamientos predeterminados de carga de video pueden variar de un navegador a otro:
+Here, we use a `preload` attribute with a value of `none` to prevent browsers from preloading *any* video data. To occupy the space, we use the `poster` attribute to give the `<video>` element a placeholder. The reason for this is that default behaviors for loading video can vary from browser to browser:
 
-- En Chrome, el valor predeterminado para `preload` era `auto`. A partir de Chrome 64,
-el valor predeterminado es `metadata`. Aun así, en la versión de Chrome para equipos de escritorio, es posible que
-se precargue una porción de video con el encabezado `Content-Range`. Firefox, Internet Explorer 11
-y Edge se comportan de un modo similar.
-- Al igual que Chrome en los equipos de escritorio, las versiones de Safari 11.0 para escritorio precargan
-un intervalo de video. En la versión 11.2 (la versión Tech Preview actual de Safari), solo
-se precargan los metadatos de video. [En Safari en iOS, nunca se precargan
-los videos](https://developer.apple.com/library/content/documentation/AudioVideo/Conceptual/Using_HTML5_Audio_Video/AudioandVideoTagBasics/AudioandVideoTagBasics.html#//apple_ref/doc/uid/TP40009523-CH2-SW9).
-- Cuando se habilita [el modo de ahorro de datos](https://support.google.com/chrome/answer/2392284),
-el valor predeterminado de `preload` es `none`.
+- In Chrome, the default for `preload` used to be `auto`, but as of Chrome 64, it now defaults to `metadata`. Even so, on the desktop version of Chrome, a portion of the video may be preloaded using the `Content-Range` header. Firefox, Edge and Internet Explorer 11 behave similarly.
+- As with Chrome on desktop, 11.0 desktop versions of Safari will preload a range of the video. In version 11.2 (currently Safari's Tech Preview version), only the video metadata is preloaded. [In Safari on iOS, videos are never preloaded](https://developer.apple.com/library/content/documentation/AudioVideo/Conceptual/Using_HTML5_Audio_Video/AudioandVideoTagBasics/AudioandVideoTagBasics.html#//apple_ref/doc/uid/TP40009523-CH2-SW9).
+- When [Data Saver mode](https://support.google.com/chrome/answer/2392284) is enabled, `preload` defaults to `none`.
 
-Como los comportamientos predeterminados de los navegadores con respecto a `preload`
-no son inamovibles, ser explícitos es probablemente la mejor jugada. En los casos donde el usuario inicia la reproducción,
-el uso de `preload="none"` es la forma más fácil de diferir la carga de un video
-en todas las plataformas. El atributo `preload` no es la única forma de diferir la carga
-de contenido de video. En [_Reproducción rápida con carga
-previa de video_](/web/fundamentals/media/fast-playback-with-video-preload), es posible obtener algunas ideas
-y conocimientos sobre el trabajo con la reproducción de video en JavaScript.
+Because browser default behaviors with regard to `preload` are not set in stone, being explicit is probably your best bet. In this cases where the user initiates playback, using `preload="none"` is the easiest way to defer loading of video on all platforms. The `preload` attribute isn't the only way to defer the loading of video content. [*Fast Playback with Video Preload*](/web/fundamentals/media/fast-playback-with-video-preload) may give you some ideas and insight into working with video playback in JavaScript.
 
-Lamentablemente, esto no resulta útil para usar videos en lugar de
-GIF animados, los cuales se analizarán a continuación.
+Unfortunately, it doesn't prove useful when we want to use video in place of animated GIFs, which we'll cover next.
 
-### Para videos en reemplazo de GIF animados
+### For video acting as an animated GIF replacement
 
-Si bien los GIF animados se utilizan ampliamente, son mediocres equivalentes de los videos
-en diversas aspectos, especialmente en el tamaño de archivo de salida. Los GIF animados pueden alcanzar
-el rango de varios megabytes de datos. Los videos con una calidad visual similar
-suelen ser mucho más pequeños.
+While animated GIFs enjoy wide use, they're subpar to video equivalents in a number of ways, particularly in output file size. Animated GIFs can stretch into the range of several megabytes of data. Videos of similar visual quality tend to be far smaller.
 
-El uso del elemento `<video>` como reemplazo de un GIF animado no es tan
-simple como el elemento `<img>`. Los GIF animados presentan estos
-tres comportamientos inherentes:
+Using the `<video>` element as a replacement for animated GIF is not as straightforward as the `<img>` element. Inherent in animated GIFs are these three behaviors:
 
-1. Se reproducen automáticamente cuando se cargan.
-2. Se repiten de forma continua ([si bien ese no es siempre
-el caso](https://davidwalsh.name/prevent-gif-loop)).
-3. No tienen una pista de audio.
+1. They play automatically when loaded.
+2. They loop continuously ([though that's not always the case](https://davidwalsh.name/prevent-gif-loop)).
+3. They don't have an audio track.
 
-Lograr esto con el elemento `<video>` se parece a algo como esto:
+Achieving this with the `<video>` element looks something like this:
 
 ```html
 <video autoplay muted loop playsinline>
@@ -410,15 +247,7 @@ Lograr esto con el elemento `<video>` se parece a algo como esto:
 </video>
 ```
 
-Los atributos `autoplay`, `muted` y `loop` se explican por sí solos.
-[`playsinline` se necesita para la reproducción automática en
-iOS](https://webkit.org/blog/6784/new-video-policies-for-ios/). Se obtiene un reemplazo
-de video como GIF que se puede utilizar en todas las plataformas. ¿Pero cómo se debe abordar
-su carga diferida? [Chrome cargará de forma diferida
-el video por el usuario](https://www.google.com/url?q=https://developers.google.com/web/updates/2017/03/chrome-58-media-updates%23offscreen&sa=D&ust=1521096956530000&usg=AFQjCNHPv7wM_yxmkOWKA0sZ-MXYKUdUXg).
-No se puede dar por hecho que todos los navegadores brindarán este comportamiento optimizado.
-Según el público y los requisitos de la aplicación, es posible que debas tomar
-las riendas de este asunto. Para comenzar, modifica el marcado `<video>` según corresponda:
+The `autoplay`, `muted`, and `loop` attributes are self-explanatory. [`playsinline` is necessary for autoplaying to occur in iOS](https://webkit.org/blog/6784/new-video-policies-for-ios/). Now we have a serviceable video-as-GIF replacement that works across platforms. But how to go about lazy loading it? [Chrome will lazy load video for you](https://www.google.com/url?q=https://developers.google.com/web/updates/2017/03/chrome-58-media-updates%23offscreen&sa=D&ust=1521096956530000&usg=AFQjCNHPv7wM_yxmkOWKA0sZ-MXYKUdUXg), but you can't count on all browsers to provide this optimized behavior. Depending on your audience and application requirements, you may need to take matters into your own hands. To start, modify your `<video>` markup accordingly:
 
 ```html
 <video autoplay muted loop playsinline width="610" height="254" poster="one-does-not-simply.jpg">
@@ -427,13 +256,7 @@ las riendas de este asunto. Para comenzar, modifica el marcado `<video>` según 
 </video>
 ```
 
-Notarás que la adición de un [atributo `poster`
-](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/video#attr-poster)
-permite especificar un marcador de posición que ocupe el espacio del elemento `<video>`
-hasta que se cargue de forma diferida el video. Al igual que con los ejemplos de carga diferida de `<img>` anteriores,
-se guarda la URL del video en el atributo `data-src` de cada elemento `<source>`.
- Desde allí, se utiliza un JavaScript similar al de los ejemplos
-de carga diferida de imágenes basada en Intersection Observer:
+You'll notice the addition of the [`poster` attribute](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/video#attr-poster), which lets you specify a placeholder to occupy the `<video>` element's space until the video is lazy loaded. As with our `<img>` lazy loading examples from before, we stash the video URL in the `data-src` attribute on each `<source>` element. From there, we'll use some JavaScript similar to the earlier intersection observer-based image lazy loading examples:
 
 ```javascript
 document.addEventListener("DOMContentLoaded", function() {
@@ -464,87 +287,35 @@ document.addEventListener("DOMContentLoaded", function() {
 });
 ```
 
-Cuando se carga de forma diferida un elemento `<video>`, es necesario recorrer todos los elementos
-`<source>` secundarios y alternar sus atributos `data-src` por atributos `src`. Una vez
-hecho eso, es necesario activar la carga del video mediante una llamada al
-método del elemento `load`, después de la cual los medios comenzarán a reproducirse automáticamente
-según el atributo `autoplay`.
+When we lazy load a `<video>` element, we need to iterate through all of the child `<source>` elements and flip their `data-src` attributes to `src` attributes. Once we've done that, we need to trigger loading of the video by calling the element's `load` method, after which the media will begin playing automatically per the `autoplay` attribute.
 
-Al usar este método, se obtiene una solución de video que emula el comportamiento de los GIF animados,
-pero no genera el mismo uso de datos intensivo que los GIF animados y permite
-cargar de forma diferida ese contenido.
+Using this method, we have a video solution that emulates animated GIF behavior, but doesn't incur the same intensive data usage as animated GIFs do, and we get to lazy load that content.
 
-## Carga diferida de bibliotecas
+## Lazy loading libraries
 
-Si no te importa tanto saber _cómo_ funciona la carga diferida en detalle y solo deseas
-seleccionar una biblioteca y comenzar (¡eso no tiene nada de malo!), dispones de muchas
-opciones para elegir. Muchas bibliotecas utilizan un patrón de marcado similar
-a los que se mostraron en esta guía. Estas son algunas bibliotecas de carga diferida que puedes considerar
-útiles:
+If you're not so concerned about *how* lazy loading works under the hood and just want to pick a library and go (and there's no shame in that!), there's plenty of options to choose from. Many libraries use a markup pattern similar to the ones demonstrated in this guide. Here are some lazy loading libraries you may find useful:
 
-- [lazysizes](https://github.com/aFarkas/lazysizes) es una biblioteca de carga diferida
-con todas las funciones para cargar de forma diferida imágenes e iframes. Utiliza un patrón bastante
-similar a los ejemplos de código mostrados aquí, ya que se enlaza automáticamente
-a una clase `lazyload` en los elementos `<img>` y requiere especificar URL de imagen en
-los atributos `data-src` y/o `data-srcset`, cuyo contenido se intercambia
-por los atributos `src` y/o `srcset`, respectivamente. Utiliza Intersection Observer
-(donde se puede aplicar polyfill) y se puede ampliar con [diversos
-complementos](https://github.com/aFarkas/lazysizes#available-plugins-in-this-repo) para
-tareas como la carga diferida de videos.
-- [lozad.js](https://github.com/ApoorvSaxena/lozad.js) es una opción súper ligera
-que solo utiliza Intersection Observer. Por esto, es altamente eficaz,
-pero requiere polyfill para poder utilizarla en navegadores anteriores.
-- [blazy](https://github.com/dinbror/blazy) es otra opción similar que se factura
-como un cargador diferido ligero (su tamaño es 1.4 KB). Al igual que con los tamaños diferidos,
-no requiere utilidades de terceros para la carga y funciona con IE7+.
-Lamentablemente, no utiliza Intersection Observer.
-- [yall.js](https://github.com/malchata/yall.js) es una biblioteca de mi autoría que utiliza
-IntersectionObserver y se revierte a los controladores de eventos. Es compatible con IE11
-y los principales navegadores.
-- Si buscas una biblioteca de carga diferida específica para React, puedes considerar el uso de
-[react-lazyload](https://github.com/jasonslyvia/react-lazyload). Si bien
-no utiliza Intersection Observer, _sí_ proporciona un método conocido de
-carga diferida de imágenes para los usuarios habituados a desarrollar aplicaciones con React.
+- [lazysizes](https://github.com/aFarkas/lazysizes) is a full-featured lazy loading library that lazy loads images and iframes. The pattern it uses is quite similar to the code examples shown here in that it automatically binds to a `lazyload` class on `<img>` elements, and requires you to specify image URLs in `data-src` and/or `data-srcset` attributes, the contents of which are swapped into `src` and/or `srcset` attributes, respectively. It uses intersection observer (which you can polyfill), and can be extended with [a number of plugins](https://github.com/aFarkas/lazysizes#available-plugins-in-this-repo) to do things like lazy load video.
+- [lozad.js](https://github.com/ApoorvSaxena/lozad.js) is a super lightweight option that uses intersection observer only. As such, it's highly performant, but will need to be polyfilled before you can use it on older browsers.
+- [blazy](https://github.com/dinbror/blazy) is another such option that bills itself as a lightweight lazy loader (weighing in at 1.4 KB). As with lazysizes, it doesn't need any third party utilities to load, and works for IE7+. Unfortunately, it doesn't use intersection observer.
+- [yall.js](https://github.com/malchata/yall.js) is a library I wrote that uses IntersectionObserver and falls back to event handlers. It's compatible with IE11 and major browsers.
+- If you're seeking a React-specific lazy loading library, you might consider [react-lazyload](https://github.com/jasonslyvia/react-lazyload). While it doesn't use intersection observer, it *does* provide a familiar method of lazy loading images for those accustomed to developing applications with React.
 
-Cada una de estas bibliotecas de carga diferida está bien documentada, con muchos patrones
-de marcado para diversos esfuerzos de carga diferida. Si no eres de realizar cambios,
-toma una biblioteca y comienza. Requiere el mínimo esfuerzo.
+Each of these lazy loading libraries is well documented, with plenty of markup patterns for your various lazy loading endeavors. If you're not one to tinker, grab a library and go. It will take the least amount of effort.
 
-## Lo que puede salir mal
+## What can go wrong
 
-A pesar de que la carga diferida de imágenes y videos ofrece beneficios de rendimiento
-positivos y medibles, no es una tarea para tomar a la ligera. Un error puede producir
-consecuencias inesperadas. Así que es importante tener en cuenta
-las siguientes consideraciones:
+While lazy loading images and video have positive and measurable performance benefits, it's not a task to be taken lightly. If you get it wrong, there could be unintended consequences. As such, it's important to keep the following concerns in mind:
 
-### Cuidado con la mitad superior
+### Mind the fold
 
-Aplicar la carga diferida a cada recurso de medios en la página con JavaScript puede ser tentador,
-pero es necesario resistir la tentación. No se debe cargar de forma diferida ningún
-elemento en la mitad superior de la página. Esos recursos deben ser considerados activos
-esenciales y, por lo tanto, deben cargarse de forma normal.
+It may be tempting to lazy load every single media resource on the page with JavaScript, but you need to resist this temptation. Anything resting above the fold shouldn't be lazy loaded. Such resources should be considered critical assets, and thus should be loaded normally.
 
-El principal argumento para cargar los recursos de medios esenciales de la forma habitual en lugar de
-diferir la carga es que la carga diferida demora la carga de esos recursos
-hasta que el DOM se vuelve interactivo, cuando se completa la carga de las secuencias de comandos
-y se inicia su ejecución. Esto es apropiado para las imágenes en la mitad inferior de la página,
-pero es más rápido cargar los recursos esenciales en la mitad superior con un elemento `<img>` estándar.
+The primary argument for loading critical media resources the usual way in lieu of lazy loading is that lazy loading delays the loading of those resources until after the DOM is interactive when scripts have finished loading and begin execution. For images below the fold, this is fine, but it would be faster to load critical resources above the fold with a standard `<img>` element.
 
-Obviamente, la ubicación de la mitad no es tan clara por estos días cuando los sitios web son vistos
-en tantas pantallas de tamaños variados. Lo que se encuentra en la mitad superior en
-un equipo portátil puede estar en la mitad _inferior_ en los dispositivos móviles. No existe un consejo infalible para
-abordar esto de forma óptima en cada situación. Es necesario realizar un inventario
-de los activos esenciales de la página y cargar esas imágenes
-de la forma típica.
+Of course, where the fold lies is not so clear these days when websites are viewed on so many screens of varying sizes. What lies above the fold on a laptop may well lie *below* it on mobile devices. There's no bulletproof advice for addressing this optimally in every situation. You'll need to conduct an inventory of your page's critical assets, and load those images in typical fashion.
 
-Además, no es conveniente ser tan estricto sobre la línea de mitad de página
-como el umbral para activar la carga diferida. Quizás, lo ideal para los fines personales sea
-establecer una zona de búfer un poco más abajo de la mitad de la página para que
-las imágenes comiencen a cargarse bastante antes de que el usuario las desplace a la ventana de visualización. Por ejemplo, la
-API Intersection Observer permite especificar una propiedad `rootMargin` en un objeto
-de opciones al crear una nueva instancia de `IntersectionObserver`. Esto
-otorga efectivamente un búfer a los elementos, lo que activa el comportamiento
-de carga diferida antes de que los elementos lleguen a la pantalla de visualización:
+Additionally, you may not want to be so strict about the fold line as the threshold for triggering lazy loading. It may be more ideal for your purposes to establish a buffer zone some distance below the fold so that images begin loading well before the user scrolls them into the viewport. For example, The intersection observer API allows you to specify a `rootMargin` property in an options object when you create a new `IntersectionObserver` instance. This effectively gives elements a buffer, which triggers lazy loading behavior before the element is in the viewport:
 
 ```javascript
 let lazyImageObserver = new IntersectionObserver(function(entries, observer) {
@@ -554,46 +325,19 @@ let lazyImageObserver = new IntersectionObserver(function(entries, observer) {
 });
 ```
 
-Si el valor de `rootMargin` parece similar a los valores especificados para una propiedad
-`margin` de CSS, es porque lo es. En este caso, se expande 256 píxeles
-el margen inferior del elemento de observación (la ventana de visualización del navegador
-de forma predeterminada, pero esto puede cambiarse por un elemento específico mediante
-la propiedad `root`). Eso significa que se ejecutará una función de callback cuando un elemento de imagen
-se encuentre a 256 píxeles de la ventana de visualización,
-es decir, que la imagen comenzará a cargarse antes de que el usuario la vea.
+If the value for `rootMargin` looks similar to values you'd specify for a CSS `margin` property, that's because it is! In this case, we're broadening the bottom margin of the observing element (the browser viewport by default, but this can be changed to a specific element using the `root` property) by 256 pixels. That means the callback function will execute when an image element is within 256 pixels of the viewport, meaning that the image will begin to load before the user actually sees it.
 
-A fin de lograr el mismo efecto con un código de control de eventos scroll, simplemente ajusta
-la comprobación `getBoundingClientRect` para incluir un búfer y obtener el mismo efecto
-en navegadores no compatibles con Intersection Observer.
+To achieve this same effect using scroll event handling code, simply adjust your `getBoundingClientRect` check to include a buffer, and you'll get the same effect in browsers that don't support intersection observer.
 
-### Cambio de diseño y marcadores de posición
+### Layout shifting and placeholders
 
-La carga diferida de medios puede provocar cambios en el diseño si no se utilizan marcadores de posición.
-Estos cambios pueden desorientar a los usuarios y activar operaciones costosas de diseño de DOM
-que consumen recursos del sistema y favorecen los bloqueos. Como mínimo,
-considera usar un marcador de posición de color sólido que ocupe las mismas dimensiones
-que la imagen de destino, o técnicas como
-[LQIP](http://www.guypo.com/introducing-lqip-low-quality-image-placeholders/) o
-[SQIP](https://github.com/technopagan/sqip) que dan indicios sobre el contenido de un elemento
-de medios antes de que se cargue.
+Lazy loading media can cause shifting in the layout if placeholders aren't used. These changes can be disorienting for users and trigger expensive DOM layout operations that consume system resources and contribute to jank. At a minimum, consider using a solid color placeholder occupying the same dimensions as the target image, or techniques such as [LQIP](http://www.guypo.com/introducing-lqip-low-quality-image-placeholders) or [SQIP](https://github.com/technopagan/sqip) that hint at the content of a media item before it loads.
 
-Para las etiquetas `<img>`, `src` debe apuntar inicialmente a un marcador de posición
-hasta que ese atributo se actualice con la URL de la imagen final. Utiliza el atributo `poster` en un elemento
-`<video>` para apuntar a una imagen de marcador de posición. Asimismo, utiliza los atributos `width` y
-`height` en las etiquetas `<img>` y `<video>`. Esto garantiza que
-la transición de los marcadores de posición a las imágenes finales no modifique
-el tamaño representado del elemento mientras se cargan los medios.
+For `<img>` tags, `src` should initially point to a placeholder until that attribute is updated with the final image URL. Use the `poster` attribute in a `<video>` element to point to a placeholder image. Additionally, use `width` and `height` attributes on both `<img>` and `<video>` tags. This ensures that transitioning from placeholders to final images won't change the rendered size of the element as media loads.
 
-### Demoras en la decodificación de imágenes
+### Image decoding delays
 
-La carga de imágenes grandes en JavaScript y su colocación en DOM pueden ocupar
-el subproceso principal y, como consecuencia, la interfaz de usuario puede dejar de responder
-por un breve período mientras se ejecuta la decodificación. [La decodificación asíncrona de imágenes con el método
-`decode`](https://medium.com/dailyjs/image-loading-with-image-decode-b03652e7d2d2)
-antes de insertarlas en el DOM puede reducir este tipo de bloqueos,
-pero cuidado: Todavía no se encuentra disponible en todos lados y aumenta la complejidad
-de la lógica de carga diferida. Si deseas usarla, debes revisar la disponibilidad. A continuación, se muestra
-cómo se puede usar `Image.decode()` con una reserva:
+Loading large images in JavaScript and dropping them into the DOM can tie up the main thread, causing the user interface to be unresponsive for a short period of time while decoding occurs. [Asynchronously decoding images using the `decode` method](https://medium.com/dailyjs/image-loading-with-image-decode-b03652e7d2d2) prior to inserting them into the DOM can cut down on this sort of jank, but beware: It's not available everywhere yet, and it adds complexity to lazy loading logic. If you want to use it, you'll need to check for it. Below shows how you might use `Image.decode()` with a fallback:
 
 ```javascript
 var newImage = new Image();
@@ -610,26 +354,13 @@ if ("decode" in newImage) {
 }
 ```
 
-Revisa [este vínculo de CodePen](https://codepen.io/malchata/pen/WzeZGW) para ver
-código similar a este ejemplo en acción. Si la mayoría de las imágenes son relativamente pequeñas,
-esta opción no ofrece mucho, pero sin dudas puede reducir los bloqueos al
-cargar de forma diferida imágenes grandes e insertarlas en el DOM.
+Check out [this CodePen link](https://codepen.io/malchata/pen/WzeZGW) to see code similar to this example in action. If most of your images are fairly small, this may not do much for you, but it can certainly help cut down on jank when lazy loading large images and inserting them into the DOM.
 
-### Cuando algo no se carga
+### When stuff doesn't load
 
-A veces, los recursos de medios no se cargan por un motivo u otro y se producen
-errores. ¿Cuándo puede suceder esto? Depende. Aquí se presenta una situación hipotética:
- Existe una política de almacenamiento en caché HTML válida por un período breve (p. ej., cinco
-minutos), y un usuario visita el sitio _o_ un usuario deja una pestaña obsoleta abierta
-por un período extenso (p. ej., siete horas) y regresa para leer el contenido.
-En algún punto de este proceso, se produce una reimplementación. Durante esta implementación, se modifica
-el nombre de un recurso de imagen debido al control de versiones basado en hash o
-se elimina por completo. Para cuando el usuario carga de forma diferida la imagen,
-el recurso ya no está disponible y se produce un error.
+Sometimes media resources will fail to load for one reason or another and errors occur. When might this happen? It depends, but here's one hypothetical scenario for you: You have an HTML caching policy for a short period of time (e.g., five minutes), and the user visits the site *or* a user has a left a stale tab open for a long period of time (e.g., several hours) and comes back to read your content. At some point in this process, a redeployment occurs. During this deployment, an image resource's name changes due to hash-based versioning, or is removed altogether. By the time the user lazy loads the image, the resource is unavailable, and thus fails.
 
-Si bien estos casos son bastante inusuales, es conveniente disponer de un plan de copia de seguridad
-en caso de que la carga diferida falle. Para las imágenes, una solución de ese tipo puede ser
-similar a esto:
+While these are relatively rare occurrences, it may behoove you to have a backup plan if lazy loading fails. For images, such a solution may look something like this:
 
 ```javascript
 var newImage = new Image();
@@ -643,21 +374,13 @@ newImage.onload = function(){
 };
 ```
 
-Lo que se decide hacer en caso de un error depende de la aplicación. Por
-ejemplo, se puede reemplazar el área de marcador de posición de la imagen por un botón
-con el que el usuario pueda intentar cargar la imagen de nuevo o solo ver un mensaje de error
-en el área de marcador de posición de la imagen.
+What you decide to do in the event of an error depends on your application. For example, you could replace the image placeholder area with a button that allows the user to attempt to load the image again, or simply display an error message in the image placeholder area.
 
-También se pueden presentar otras situaciones. Lo que sea que se haga, nunca es mala idea
-indicar al usuario cuando se produce un error y ofrecerle una acción para ejecutar
-si algo sale mal.
+Other scenarios could arise as well. Whatever you do, it's never a bad idea to signal to the user when an error has occurred, and possibly give them an action to take if something goes awry.
 
-### Disponibilidad de JavaScript
+### JavaScript availability
 
-No se debe suponer que JavaScript está siempre disponible. Si planeas cargar imágenes
-de forma diferida, considera ofrecer un marcado `<noscript>` que muestre las imágenes
-en caso de que JavaScript no esté disponible. El ejemplo de reserva más simple posible
-implica usar elementos `<noscript>` para presentar imágenes si JavaScript está desactivado:
+It shouldn't be assumed that JavaScript is always available. If you're going to lazy load images, consider offering `<noscript>` markup that will show images in case JavaScript is unavailable. The simplest possible fallback example involves using `<noscript>` elements to serve images if JavaScript is turned off:
 
 ```html
 <!-- An image that eventually gets lazy loaded by JavaScript -->
@@ -668,24 +391,19 @@ implica usar elementos `<noscript>` para presentar imágenes si JavaScript está
 </noscript>
 ```
 
-Si JavaScript está desactivado, los usuarios verán _ambos_: la imagen de marcador de posición
-y la imagen incluida en los elementos `<noscript>`. Para evitar esto, coloca una clase
-`no-js` en la etiqueta `<html>` de esta manera:
+If JavaScript is turned off, users will see *both* the placeholder image and the image contained with the `<noscript>` elements. To get around this, we can place a class of `no-js` on the `<html>` tag like so:
 
 ```html
 <html class="no-js">
 ```
 
-A continuación, coloca una línea de la secuencia de comandos integrada en `<head>`, antes de
-que se soliciten hojas de estilo a través de etiquetas `<link>`, para eliminar la clase `no-js`
-del elemento `<html>` si JavaScript está activado:
+Then we place one line of inline script in the `<head>` before any style sheets are requested via `<link>` tags that removes the `no-js` class from the `<html>` element if JavaScript is on:
 
 ```html
 <script>document.documentElement.classList.remove("no-js");</script>
 ```
 
-Por último, puedes utilizar cierta CSS para ocultar los elementos con una clase diferida cuando
-JavaScript no está disponible de esta manera:
+Finally, we can use some CSS to simply hide elements with a class of lazy when JavaScript is unavailable like so:
 
 ```css
 .no-js .lazy {
@@ -693,27 +411,12 @@ JavaScript no está disponible de esta manera:
 }
 ```
 
-Esto no evita que las imágenes de marcador de posición se carguen, sino que ofrece un resultado
-más conveniente. Los usuarios con JavaScript desactivado obtienen algo más que imágenes de
-marcador de posición, lo que es mejor que obtener marcadores de posición sin contenido
-de imagen con ningún significado.
+This doesn't prevent placeholder images from loading, but the outcome is more desirable. People with JavaScript turned off get something more than placeholder images, which is better than placeholders and no meaningful image content at all.
 
-## Conclusión
+## Conclusion
 
-Si se utiliza con cuidado, la carga diferida de imágenes y videos puede reducir
-seriamente el tiempo de carga inicial y la carga útil de páginas en el sitio. Los usuarios no soportarán la actividad de red
-innecesaria ni los costos de procesamiento de recursos de medios que quizás nunca vean,
-pero podrán ver esos recursos si lo desean.
+Used with care, lazy loading images and video can seriously lower the initial load time and page payloads on your site. Users won't incur unnecessary network activity and processing costs of media resources they may never see, but they can still view those resources if they want.
 
-En lo que respecta a las técnicas de mejora del rendimiento, la carga diferida no presenta
-controversia razonable. Si un sitio contiene muchas imágenes integradas, es una forma
-perfectamente adecuada de reducir las descargas innecesarias. ¡Los usuarios del sitio y
-las partes interesadas del proyecto lo agradecerán!
+As far as performance improvement techniques go, lazy loading is reasonably uncontroversial. If you have a lot of inline imagery in your site, it's a perfectly fine way to cut down on unnecessary downloads. Your site's users and project stakeholders will appreciate it!
 
-_Un agradecimiento especial a [François
-Beaufort](/web/resources/contributors/beaufortfrancois), Dean Hume, [Ilya
-Grigork](/web/resources/contributors/ilyagrigorik), [Paul
-Irish](/web/resources/contributors/paulirish), [Addy
-Osmani](/web/resources/contributors/addyosmani), [Jeff
-Posnick](/web/resources/contributors/jeffposnick) y Martin Schierle por sus
-valiosos comentarios, los cuales mejoraron notablemente la calidad de este artículo._
+*Special thanks to [François Beaufort](/web/resources/contributors/beaufortfrancois), Dean Hume, [Ilya Grigork](/web/resources/contributors/ilyagrigorik), [Paul Irish](/web/resources/contributors/paulirish), [Addy Osmani](/web/resources/contributors/addyosmani), [Jeff Posnick](/web/resources/contributors/jeffposnick), and Martin Schierle for their valuable feedback, which significantly improved the quality of this article.*
