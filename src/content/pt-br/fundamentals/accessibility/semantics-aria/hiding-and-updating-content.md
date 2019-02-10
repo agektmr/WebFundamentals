@@ -1,33 +1,19 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Ocultação de conteúdo contra tecnologia assistiva
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Hiding content from assistive technology
 
+{# wf_blink_components: Blink>Accessibility #} {# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2016-10-04 #}
 
-{# wf_updated_on: 2016-10-04 #}
-{# wf_published_on: 2016-10-04 #}
+# Hiding and Updating Content {: .page-title }
 
-# Ocultação e Atualização de Conteúdo {: .page-title }
-
-{% include "web/_shared/contributors/megginkearney.html" %}
-{% include "web/_shared/contributors/dgash.html" %}
-{% include "web/_shared/contributors/aliceboxhall.html" %}
+{% include "web/_shared/contributors/megginkearney.html" %} {% include "web/_shared/contributors/dgash.html" %} {% include "web/_shared/contributors/aliceboxhall.html" %}
 
 ## aria-hidden
 
-Outra técnica importante no ajuste fino da experiência para usuários de
-tecnologia assistiva envolve garantir que apenas partes relevantes da página
-sejam expostas à tecnologia assistiva. Existem várias maneiras de garantir que uma seção
-do DOM não se exponha a APIs de acessibilidade.
+Another important technique in fine-tuning the experience for assistive technology users involves ensuring that only relevant parts of the page are exposed to assistive technology. There are several ways to ensure that a section of the DOM does not get exposed to accessibility APIs.
 
-Em primeiro lugar, qualquer coisa que seja explicitamente oculta do DOM
-também não será incluída na árvore de acessibilidade. Então, qualquer coisa que tenha um estilo CSS com atributo `visibility:
-hidden` ou `display: none` ou use HTML5 `hidden` também será oculta
-para usuários de tecnologia assistiva.
+First, anything that is explicitly hidden from the DOM will also not be included in the accessibility tree. So anything that has a CSS style of `visibility:
+hidden` or `display: none` or uses the HTML5 `hidden` attribute will also be hidden from assistive technology users.
 
-No entanto, um elemento que não seja renderizado visualmente, mas não é explicitamente
-oculto ainda é incluído na árvore de acessibilidade. Uma técnica comum é incluir
-"texto somente para leitor de tela" em um elemento que é absoluto posicionado fora da tela.
-
+However, an element that is not visually rendered but not explicitly hidden is still included in the accessibility tree. One common technique is to include "screen reader only text" in an element that is absolute positioned offscreen.
 
     .sr-only {
       position: absolute;
@@ -38,19 +24,11 @@ oculto ainda é incluído na árvore de acessibilidade. Uma técnica comum é in
     }
     
 
-Além disso, como vimos, é possível fornecer texto somente para leitor de tela por meio de um atributo 
-`aria-label`, `aria-labelledby`, ou `aria-describedby` referenciando um elemento
-que, de outra forma, é oculto.
+Also, as we have seen, it's possible to provide screen reader only text via an `aria-label`, `aria-labelledby`, or `aria-describedby` attribute referencing an element that is otherwise hidden.
 
-Veja este artigo WebAIM sobre [As técnicas para ocultar
-texto](http://webaim.org/techniques/css/invisiblecontent/#techniques){: .external }
-para mais informações sobre a criação de texto "somente para leitor de tela".
+See this WebAIM article on [Techniques for hiding text](http://webaim.org/techniques/css/invisiblecontent/#techniques){: .external } for more information on creating "screen reader only" text.
 
-Por fim, ARIA fornece um mecanismo para excluir conteúdo de tecnologia
-assistiva que não está visualmente oculto, usando o atributo `aria-hidden`.
-Aplicar este atributo a um elemento efetivamente o remove *e todas seus
- descendentes* da árvore de acessibilidade. As únicas exceções são elementos
-referidos por um atributo `aria-labelledby` ou `aria-describedby`.
+Finally, ARIA provides a mechanism for excluding content from assistive technology that is not visually hidden, using the `aria-hidden` attribute. Applying this attribute to an element effectively removes it *and all of its descendants* from the accessibility tree. The only exceptions are elements referred to by an `aria-labelledby` or `aria-describedby` attribute.
 
     <div class="deck">
       <div class="slide" aria-hidden="true">
@@ -63,103 +41,53 @@ referidos por um atributo `aria-labelledby` ou `aria-describedby`.
         Action Items
       </div>
     </div>
+    
 
-Por exemplo, você pode usar `aria-hidden` se estiver criando alguma IU modal que
-bloqueia o acesso à página principal. Neste caso, um usuário que enxerga pode ver algum tipo de
-sobreposição de semitransparente, que indica que a maior parte da página não
-pode ser usada atualmente, mas um usuário de leitor de tela ainda pode
-conseguir explorar as outras partes da página. Neste caso, além de criar a armadilha de teclado [explicada
-anteriormente](/web/fundamentals/accessibility/focus/using-tabindex#modals-and-keyboard-traps),
-você precisa certificar que as partes da página que estão atualmente fora do
-escopo também são `aria-hidden`.
+For example, you might use `aria-hidden` if you're creating some modal UI that blocks access to the main page. In this case, a sighted user might see some kind of semi-transparent overlay indicating that most of the page can't currently be used, but a screen reader user may still be able to explore to the other parts of the page. In this case, as well as creating the keyboard trap [explained earlier](/web/fundamentals/accessibility/focus/using-tabindex#modals-and-keyboard-traps), you need to make sure that the parts of the page that are currently out of scope are `aria-hidden` as well.
 
-Agora que você entende os conceitos básicos de ARIA, como ele joga com semântica de HTML
-nativa, e como pode ser utilizado para realizar cirurgias bastante importantes na
-árvore de acessibilidade, além de alterar a semântica de um único elemento, vejamos
-como podemos usá-lo para transmitir informações que dependem do tempo.
+Now that you understand the basics of ARIA, how it plays with native HTML semantics, and how it can be used to perform fairly major surgery on the accessibility tree as well as changing the semantics of a single element, let's look at how we can use it to convey time-sensitive information.
 
 ## aria-live
 
-`aria-live` permite que desenvolvedores marquem uma parte da página como "ativa"
-no sentido de que atualizações devem ser comunicadas aos usuários imediatamente,
-independentemente da posição na página, em vez de fazê-lo apenas se elas exploram essa parte da página. Quando
-um elemento tem um atributo `aria-live`, a parte da página que o contém
-e seus descendentes é chamada de *região ativa*.
+`aria-live` lets developers mark a part of the page as "live" in the sense that updates should be communicated to users immediately regardless of the page position, rather than if they just happen to explore that part of the page. When an element has an `aria-live` attribute, the part of the page containing it and its descendants is called a *live region*.
 
-![ARIA live estabelece uma região ativa](imgs/aria-live.jpg)
+![ARIA live establishes a live region](imgs/aria-live.jpg)
 
-Por exemplo, uma região ativa pode ser uma mensagem de status que aparece como resultado de
-uma ação do usuário. Se a mensagem for suficientemente importante para chamar a atenção
-de um usuário que enxerga, ela é importante o suficiente para chamar para si a atenção
-de um usuário de tecnologia assistiva, definindo seu atributo `aria-live`. Compare este `div` direto
-
+For example, a live region might be a status message that appears as a result of a user action. If the message is important enough to grab a sighted user's attention, it is important enough to direct an assistive technology user's attention to it by setting its `aria-live` attribute. Compare this plain `div`
 
     <div class="status">Your message has been sent.</div>
     
 
-com seu equivalente "ativo".
-
+with its "live" counterpart.
 
     <div class="status" aria-live="polite">Your message has been sent.</div>
     
 
-`aria-live` tem três valores permitidos: `polite`, `assertive` e `off`.
+`aria-live` has three allowable values: `polite`, `assertive`, and `off`.
 
- - `aria-live="polite"` informa à tecnologia assistiva para alertar o usuário sobre esta
-   mudança assim que tiver terminado o que quer que esteja fazendo atualmente. É ótimo para ser usado
-   se algo é importante, mas não urgente, e é responsável pela maioria do
-   uso de `aria-live`.
- - `aria-live="assertive"` informa à tecnologia assistiva para interromper o que quer que esteja
-   fazendo e alertar o usuário sobre esta mudança imediatamente. Este é somente para
-   atualizações importantes e urgentes, como uma mensagem de status como "Ocorreu um erro
-   de servidor e as alterações não estão salvas; por favor, atualize a página", ou
-   alterações de um campo de interação como resultado direto de uma ação do usuário, como
-   botões em um widget de podômetro.
- - `aria-live="off"` informa à tecnologia assistiva para suspender temporariamente
-   `aria-live` as interrupções.
+- `aria-live="polite"` tells assistive technology to alert the user to this change when it has finished whatever it is currently doing. It's great to use if something is important but not urgent, and accounts for the majority of `aria-live` use.
+- `aria-live="assertive"` tells assistive technology to interrupt whatever it's doing and alert the user to this change immediately. This is only for important and urgent updates, such as a status message like "There has been a server error and your changes are not saved; please refresh the page", or updates to an input field as a direct result of a user action, such as buttons on a stepper widget.
+- `aria-live="off"` tells assistive technology to temporarly suspend `aria-live` interruptions.
 
-Há alguns truques para ter certeza que suas regiões ativas funcionam corretamente.
+There are some tricks to making sure your live regions work correctly.
 
-Em primeiro lugar, a sua região `aria-live` provavelmente deve ser definida no carregamento
-inicial da página. Esta não é uma regra rígida, mas se você tiver dificuldade com
-uma região `aria-live`, este pode ser o problema.
+First, your `aria-live` region should probably be set in the initial page load. This is not a hard-and-fast rule, but if you're having difficulty with an `aria-live` region, this might be the issue.
 
-Em segundo lugar, leitores de tela diferentes reagem de forma diferente a diferentes tipos
-de mudança. Por exemplo, é possível disparar um alerta em alguns leitores de tela
-alternando o estilo `hidden` de um elemento descendente de verdadeiro para falso.
+Second, different screen readers react differently to different types of changes. For example, it's possible to trigger an alert on some screen readers by toggling a descendant element's `hidden` style from true to false.
 
-Outros atributos que funcionam com `aria-live` te ajudam a ajustar o que
-é comunicado ao usuário quando a região ativa muda.
+Other attributes that work with `aria-live` help you fine-tune what is communicated to the user when the live region changes.
 
-`aria-atomic` indica se a região inteira deve ser considerada como um todo
-ao comunicar atualizações. Por exemplo, se a data de um widget, consistindo de 
-um dia, mês e ano tem `aria-live=true` e `aria-atomic=true`, e o usuário usa um
-controle do podômetro para alterar o valor apenas do mês, todo o
-conteúdo do widget de data seria lido novamente. O valor de `aria-atomic` pode ser `true`
-ou `false` (o padrão).
+`aria-atomic` indicates whether the entire region should be considered as a whole when communicating updates. For example, if a date widget consisting of a day, month, and year has `aria-live=true` and `aria-atomic=true`, and the user uses a stepper control to change the value of just the month, the full contents of the date widget would be read out again. `aria-atomic`'s value may be `true` or `false` (the default).
 
-`aria-relevant` indica que tipos de mudanças devem ser apresentadas ao usuário.
-Existem algumas opções que podem ser utilizadas separadamente ou como uma lista de token.
+`aria-relevant` indicates what types of changes should be presented to the user. There are some options that may be used separately or as a token list.
 
- - *adições*, que significa que qualquer elemento que seja adicionado à região 
-   ativa é significativo. Por exemplo, adicionar um span a um registro existente de mensagens
-   de status significaria que o span seria anunciado para o usuário (supondo
-   que `aria-atomic` fosse `false`).
- - *texto*, que significa que o conteúdo do texto sendo adicionado a qualquer nó
-   descendente é relevante. Por exemplo, modificar a propriedade `textContent` de um campo de texto
-   personalizado leria o texto modificado para o usuário.
- - *remoções*, que significa que a remoção de qualquer texto ou nós descendentes
-   devem ser transmitidos para o usuário.
- - *todos*, que significa que todas as alterações são relevantes. No entanto, o valor padrão para
-   `aria-relevant` é `additions text`, o que significa que se você não especificar
-   `aria-relevant`, ele vai atualizar o usuário sobre qualquer adição ao elemento,
-   que é o que você mais provavelmente deseja.
+- *additions*, meaning that any element being added to the live region is significant. For example, appending a span to an existing log of status messages would mean that the span would be announced to the user (assuming that `aria-atomic` was `false`).
+- *text*, meaning that text content being added to any descendant node is relevant. For example, modifying a custom text field's `textContent` property would read the modified text to the user.
+- *removals*, meaning that the removal of any text or descendant nodes should be conveyed to the user.
+- *all*, meaning that all changes are relevant. However, the default value for `aria-relevant` is `additions text`, meaning that if you don't specify `aria-relevant` it will update the user for any addition to the element, which is what you are most likely to want.
 
-Finalmente, `aria-busy` permite notificar a tecnologia assistiva que ela deve
-ignorar temporariamente mudanças em um elemento, como quando as coisas estão carregando. Quando
-tudo estiver no lugar, `aria-busy` deve ser definido como falso para normalizar
-a operação do leitor.
- 
+Finally, `aria-busy` lets you notify assistive technology that it should temporarily ignore changes to an element, such as when things are loading. Once everything is in place, `aria-busy` should be set to false to normalize the reader's operation.
 
+## Feedback {: #feedback }
 
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
