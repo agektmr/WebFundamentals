@@ -1,165 +1,124 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Visualización y edición de archivos, creación de fragmentos, depuración de JavaScript y configuración de lugares de trabajo en el panel Sources de Chrome DevTools.
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: View and edit files, create Snippets, debug JavaScript, and set up Workspaces in the Sources panel of Chrome DevTools.
 
-{# wf_blink_components: Platform>DevTools #}
-{# wf_updated_on: 2019-02-06 #}
-{# wf_published_on: 2018-01-09 #}
+{# wf_blink_components: Platform>DevTools #} {# wf_updated_on: 2019-01-30 #} {# wf_published_on: 2018-01-09 #}
 
 {% include "web/tools/chrome-devtools/_shared/styles.html" %}
 
-# Descripción general del panel Sources {: .page-title }
+# Sources Panel Overview {: .page-title }
 
 {% include "web/_shared/contributors/kaycebasques.html" %}
 
-Usa el panel **Sources** de Chrome DevTools para hacer lo siguiente:
+Use the Chrome DevTools **Sources** panel to:
 
-* [Ver archivos](#files).
-* [Editar CSS y JavaScript](#edit).
-* [Crear y guardar **fragmentos** de JavaScript](#snippets) que se puedan ejecutar en cualquier página.
-  Los **fragmentos** son similares a los bookmarklets.
-* [Depurar JavaScript](#debug).
-* [Configurar un lugar de trabajo](#workspace) para que los cambios que hagas en DevTools se guardan en el código, en
-  tu sistema de archivos.
+* [View files](#files).
+* [Edit CSS and JavaScript](#edit).
+* [Create and save **Snippets** of JavaScript](#snippets), which you can run on any page. **Snippets** are similar to bookmarklets.
+* [Debug JavaScript](#debug).
+* [Set up a Workspace](#workspace), so that changes you make in DevTools get saved to the code on your file system.
 
-## Ver archivos {: #files }
+## View files {: #files }
 
-Usa el panel **Network** para ver todos los recursos que tiene cargados la página.
+Use the **Page** pane to view all of the resources that the page has loaded.
 
 <figure>
-  <img src="images/sources-network-pane.png"
-       alt="Panel Network"/>
+  <img src="images/sources-page-pane.png"
+       alt="The Page pane"/>
   <figcaption>
-    <b>Figura 1</b>. Panel <b>Network</b>
+    <b>Figure 1</b>. The <b>Page</b> pane
   </figcaption>
 </figure>
 
-Organización del panel **Network**:
+How the **Page** pane is organized:
 
-* El nivel superior, como `top` en la <b>Figura 1</b>, representa un [marco HTML][frame].
-  Encontrarás `top` en cada página que visites. `top` representa el marco del documento
-  principal.
-* El segundo nivel, como `developers.google.com` en la <b>Figura 1</b>, representa un
-  [origen][origin].
-* El tercer nivel, el cuarto nivel, etc., representan directorios y recursos que
-  se cargaron desde ese origen. Por ejemplo, en la <b>Figura 1</b>, la ruta de acceso completa al
-  recurso `devsite-googler-button` es
-  `developers.google.com/_static/f6e16de9fa/css/devsite-googler-button`
+* The top-level, such as `top` in **Figure 1**, represents an [HTML frame](https://www.w3.org/TR/html401/present/frames.html). You'll find `top` on every page that you visit. `top` represents the main document frame.
+* The second-level, such as `developers.google.com` in **Figure 1**, represents an [origin](https://html.spec.whatwg.org/multipage/origin.html#origin).
+* The third-level, fourth-level, and so on, represent directories and resources that were loaded from that origin. For example, in **Figure 1** the full path to the resource `devsite-googler-button` is `developers.google.com/_static/19aa27122b/css/devsite-googler-button`
 
-[frame]: https://www.w3.org/TR/html401/present/frames.html
-[origin]: https://www.w3.org/TR/2011/WD-html5-20110525/origin-0.html
-
-Haz clic en un archivo en el panel **Network** para ver su contenido en el panel **Editor**. Puedes
-ver cualquier tipo de archivo. En el caso de las imágenes, puedes obtener una vista previa.
+Click a file in the **Page** pane to view its contents in the **Editor** pane. You can view any type of file. For images, you see a preview of the image.
 
 <figure>
   <img src="images/sources-editor-pane.png"
-       alt="Visualización de un archivo en el panel Editor"/>
+       alt="Viewing a file in the Editor pane"/>
   <figcaption>
-    <b>Figura 2</b>. Visualización del contenido de <code>jquery-bundle.js</code> en el panel <b>Editor</b>
-    .
+    <b>Figure 2</b>. Viewing the contents of <code>jquery-bundle.js</code> in the <b>Editor</b>
+    pane
   </figcaption>
 </figure>
 
-## Cómo editar CSS y JavaScript {: #edit }
+## Edit CSS and JavaScript {: #edit }
 
-Usa el panel **Editor** para editar CSS y JavaScript.  DevTools actualiza la
-página para ejecutar tu nuevo código. Por ejemplo, si editas el `background-color` de un elemento, ese
-cambio se realiza de inmediato.
+Use the **Editor** pane to edit CSS and JavaScript. DevTools updates the page to run your new code. For example, if you edit the `background-color` of an element, you'll see that change take effect immediately.
 
 <figure>
   <img src="images/edit-css.gif"
-       alt="Edición de CSS en el panel Editor"/>
+       alt="Editing CSS in the Editor pane"/>
   <figcaption>
-    <b>Figura 3</b>. Edición de CSS en el panel <b>Editor</b> para cambiar el color de fondo de un
-    elemento de azul a rojo
+    <b>Figure 3</b>. Editing CSS in the <b>Editor</b> pane to change the background color of an
+    element from blue to red
   </figcaption>
 </figure>
 
-Los cambios de CSS se realizan de inmediato y no es necesario guardarlos. Para que se apliquen los cambios de JavaScript, presiona
-<kbd>Command</kbd>+<kbd>S</kbd> (Mac) o <kbd>Ctrl</kbd>+<kbd>S</kbd> (Windows, Linux).
-DevTools no vuelve a ejecutar una secuencia de comandos, de modo que los únicos cambios de JavaScript que se aplican son los
-que haces dentro de funciones. Por ejemplo, en la <b>Figura 4</b>, observa cómo `console.log('A')` no se
-ejecuta, mientras que `console.log('B')` sí lo hace. Si DevTools volviera a ejecutar toda la secuencia de comandos después de hacer el
-cambio, el texto `A` se registraría en la **consola**.
+CSS changes take effect immediately, no save needed. For JavaScript changes to take effect, press
+<kbd>Command</kbd>+<kbd>S</kbd> (Mac) or <kbd>Control</kbd>+<kbd>S</kbd> (Windows, Linux). DevTools doesn't re-run a script, so the only JavaScript changes that take effect are those that you make inside of functions. For example, in **Figure 4** note how `console.log('A')` doesn't run, whereas `console.log('B')` does. If DevTools re-ran the entire script after making the change, then the text `A` would have been logged to the **Console**.
 
 <figure>
   <img src="images/edit-js.gif"
-       alt="Edición de JavaScript en el panel Editor"/>
+       alt="Editing JavaScript in the Editor pane"/>
   <figcaption>
-    <b>Figura 5</b>. Edición de JavaScript en el panel <b>Editor</b>
+    <b>Figure 4</b>. Editing JavaScript in the <b>Editor</b> pane
   </figcaption>
 </figure>
 
-DevTools borra los cambios de CSS y JavaScript cuando vuelves a cargar la página. Consulta
-[cómo configurar un lugar de trabajo](#workspace) para obtener información acerca de cómo guardar los cambios en tu sistema de
-archivos.
+DevTools erases your CSS and JavaScript changes when you reload the page. See [Set up a Workspace](#workspace) to learn how to save the changes to your file system.
 
-## Cómo crear, guardar y ejecutar fragmentos {: #snippets }
+## Create, save, and run Snippets {: #snippets }
 
-Los fragmentos son secuencias de comandos que se pueden ejecutar en cualquier página. Imagina que escribes el siguiente
-código repetidamente en la **consola** para insertar la biblioteca de jQuery en una página, de modo que
-puedas ejecutar comandos de jQuery desde la **consola**:
+Snippets are scripts which you can run on any page. Imagine that you repeatedly type out the following code in the **Console**, in order to insert the jQuery library into a page, so that you can run jQuery commands from the **Console**:
 
     let script = document.createElement('script');
     script.src = 'https://code.jquery.com/jquery-3.2.1.min.js';
     script.crossOrigin = 'anonymous';
     script.integrity = 'sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=';
     document.head.appendChild(script);
+    
 
-En cambio, puedes guardar este código en un **fragmento** y ejecutarlo con un par de clics
-cada vez que necesites. DevTools guarda el **fragmento** en tu sistema de archivos.
+Instead, you can save this code in a **Snippet** and run it with a couple of button clicks, any time you need it. DevTools saves the **Snippet** to your file system.
 
 <figure>
   <img src="images/snippet.png"
-       alt="Fragmento que inserta la biblioteca de jQuery en una página."/>
+       alt="A Snippet that inserts the jQuery library into a page."/>
   <figcaption>
-    <b>Figura 6</b>. <b>Fragmento</b> que inserta la biblioteca de jQuery en una página
+    <b>Figure 5</b>. A <b>Snippet</b> that inserts the jQuery library into a page
   </figcaption>
 </figure>
 
-Para ejecutar un **fragmento**, haz lo siguiente:
+To run a **Snippet**:
 
-* Abre el archivo mediante el panel **Snippets** y haz clic en **Run** ![botón Run][run]{:.cdt-inl}.
-* Abre el [**menú Command**][CM], borra el carácter `>`, escribe `!`, escribe el nombre de tu
-  **fragmento** y presiona <kbd>Intro</kbd>.
+* Open the file via the **Snippets** pane, and click **Run** ![The Run button](images/run-snippet.png){:.cdt-inl}.
+* Open the [**Command Menu**](/web/tools/chrome-devtools/ui#command-menu), delete the `>` character, type `!`, type the name of your **Snippet**, then press <kbd>Enter</kbd>.
 
-[CM]: /web/tools/chrome-devtools/ui#command-menu
-[run]: images/run-snippet.png
+See [Run Snippets Of Code From Any Page](/web/tools/chrome-devtools/snippets) to learn more.
 
-Consulta [cómo ejecutar fragmentos de código desde cualquier página][snip] para obtener más información.
+## Debug JavaScript {: #debug }
 
-[snip]: /web/tools/chrome-devtools/snippets
+Rather than using `console.log()` to infer where your JavaScript is going wrong, consider using the Chrome DevTools debugging tools, instead. The general idea is to set a breakpoint, which is an intentional stopping place in your code, and then step through your code's execution, one line at a time. As you step through the code, you can view and change the values of all currently-defined properties and variables, run JavaScript in the **Console**, and more.
 
-## Cómo depurar JavaScript {: #debug }
-
-En lugar de usar `console.log()` para inferir dónde hay algún problema en JavaScript, considera usar
-las herramientas de depuración de Chrome DevTools. La idea general es definir un punto de interrupción, que
-es un lugar donde se detiene intencionalmente el código, y después avanzar paso a paso en la ejecución del código,
-una línea a la vez. Cuando avanzas paso a paso por el código, puedes ver y cambiar los valores de todas las
-propiedades y variables actualmente definidas, ejecutar JavaScript en la **consola** y mucho más.
-
-Consulta [cómo comenzar con la depuración de JavaScript](/web/tools/chrome-devtools/javascript/) para obtener información
-acerca de los conceptos básicos de depuración en DevTools.
+See [Get Started With Debugging JavaScript](/web/tools/chrome-devtools/javascript/) to learn the basics of debugging in DevTools.
 
 <figure>
   <img src="images/debugging.png"
-       alt="Depuración de JavaScript"/>
+       alt="Debugging JavaScript"/>
   <figcaption>
-    <b>Figura 7</b>. Depuración de JavaScript
+    <b>Figure 6</b>. Debugging JavaScript
   </figcaption>
 </figure>
 
-## Cómo configurar un lugar de trabajo {: #workspace }
+## Set up a Workspace {: #workspace }
 
-De manera predeterminada, cuando editas un archivo en el panel **Sources**, esos cambios se pierden cuando
-vuelves a cargar la página. Los **lugares de trabajo** te permiten guardar en
-tu sistema de archivos los cambios que haces en DevTools. Esencialmente, esto te permite usar DevTools como editor de código.
+By default, when you edit a file in the **Sources** panel, those changes are lost when you reload the page. **Workspaces** enable you to save the changes that you make in DevTools to your file system. Essentially, this lets you use DevTools as your code editor.
 
-Para comenzar, consulta [cómo configurar la persistencia con los lugares de trabajo de DevTools][WS].
+See [Edit Files With Workspaces](/web/tools/chrome-devtools/workspaces/) to get started.
 
-[WS]: /web/tools/chrome-devtools/workspaces/
-
-## Comentarios {: #feedback }
+## Feedback {: #feedback }
 
 {% include "web/_shared/helpful.html" %}
