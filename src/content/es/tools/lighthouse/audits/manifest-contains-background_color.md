@@ -1,40 +1,30 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Documentación de referencia para la auditoría de Lighthouse "El manifiesto contiene la propiedad background_color".
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Reference documentation for the "Manifest Contains background_color" Lighthouse audit.
 
-{# wf_updated_on: 2016-09-21 #}
-{# wf_published_on: 2016-09-21 #}
+{# wf_updated_on: 2018-07-23 #} {# wf_published_on: 2016-09-21 #} {# wf_blink_components: N/A #}
 
-# El manifiesto contiene color de fondo  {: .page-title }
+# Manifest Contains background_color {: .page-title }
 
-## Por qué es importante la auditoría {: #why }
+## Overview {: #overview }
 
-Cuando la app web se carga desde la pantalla de inicio de un usuario, el navegador usa la propiedad
-`background_color` para el color de fondo del navegador durante
-la carga de la app. Esto crea una transición suave entre el lanzamiento de la app y
-la carga de su contenido.
+When your web app is loading from a user's homescreen, the browser uses the `background_color` property to draw the background color of the browser while the app loads. This creates a smooth transition between launching the app and loading the app's content.
 
-## Cómo aprobar la auditoría {: #how }
+## Recommendations {: #recommendations }
 
-Agrega la propiedad `background_color` al manifiesto de apps web. El valor puede ser cualquier
-color válido de la CSS.
+Add a `background_color` property in your Web App Manifest. The value can be any valid CSS color.
 
     {
       ...
       "background_color": "cornflowerblue",
       ...
     }
+    
 
-Consulta [El manifiesto existe](manifest-exists#how)
-para obtener una lista de guías que muestran cómo implementar
-y probar correctamente la compatibilidad con "Add to Homescreen" en tu app.
+Check out [Manifest Exists](manifest-exists#recommendations) for a list of guides that teach you how to properly implement and test "Add to Homescreen" support in your app.
 
-{% include "web/tools/lighthouse/audits/implementation-heading.html" %}
+## More information {: #more-info }
 
-La auditoría se aprueba si el manifiesto contiene la propiedad `background_color`.
-El manifiesto que Lighthouse obtiene no es el que Chrome
-usa en la página, lo que puede dar resultados imprecisos. Lighthouse no
-valida que el valor sea un color válido de la CSS.
+Audit passes if the manifest contains a `background_color` property. The manifest that Lighthouse fetches is separate from the one that Chrome is using on the page, which can possibly cause inaccurate results. Lighthouse does not validate that the value is a valid CSS color.
 
+## Feedback {: #feedback }
 
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
