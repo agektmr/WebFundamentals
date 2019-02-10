@@ -1,38 +1,25 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Documentação de referência da auditoria do Lighthouse "Marcações e medições da User Timing".
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Reference documentation for the "User Timing Marks and Measures" Lighthouse audit.
 
-{# wf_updated_on: 2016-10-06 #}
-{# wf_published_on: 2016-10-06 #}
+{# wf_updated_on: 2018-07-23 #} {# wf_published_on: 2016-10-06 #} {# wf_blink_components: N/A #}
 
-# Marcações e medições da User Timing  {: .page-title }
+# User Timing Marks and Measures {: .page-title }
 
-## Por que a auditoria é importante {: #why }
+## Overview {: #overview }
 
-A API User Timing permite medir o desempenho em JavaScript do seu aplicativo.
-O propósito básico é permitir que você dedica quais partes dos scripts pretende
-otimizar e instrumentá-las com a API User
-Timing. Depois disso, é possível acessar os resultados do JavaScript usando a
-API ou vê-los pelas [Chrome DevTools Timeline
-Recordings](/web/tools/chrome-devtools/evaluate-performance/timeline-tool).
+The User Timing API enables you to measure your app's JavaScript performance. The basic idea is that you decide which parts of your scripts you want to optimize, and then you instrument those parts of your scripts with the User Timing API. From there, you can access the results from JavaScript using the API, or view them on your [Chrome DevTools Timeline Recordings](/web/tools/chrome-devtools/evaluate-performance/timeline-tool).
 
-## Como ser aprovado na auditoria {: #how }
+## Recommendations {: #recommendations }
 
-Esta auditoria não é estruturada com base em um teste de aprovação ou reprovação. Ela simplesmente representa
-uma oportunidade de descobrir uma API útil que pode ajudá-lo a medir o desempenho do seu
-aplicativo. A pontuação que o Lighthouse determina nesta auditoria corresponde ao
-número de marcações de medições da User Timing encontrados no aplicativo.
+This audit is not structured as a "pass" or "fail" test. It's just an opportunity to discover a useful API that can aid you in measuring your app's performance. The score that Lighthouse reports for this audit corresponds to the number of User Timing Marks and Measures that it finds in your app.
 
-Se seu aplicativo contiver marcações e medições da User Timing, esses parâmetros
-serão indicados no relatório do Lighthouse.
+When your app does include User Timing Marks and Measures, you'll see these Marks and Measures in your Lighthouse report.
 
-Acesse [API User Timing](https://www.html5rocks.com/en/tutorials/webperformance/usertiming/)
-para ver uma introdução sobre como usar a API User Timing para medir o desempenho do seu aplicativo em
-JavaScript.
+Check out [User Timing API](https://www.html5rocks.com/en/tutorials/webperformance/usertiming/) for an introduction on using the User Timing API to measure your app's JavaScript performance.
 
-{% include "web/tools/lighthouse/audits/implementation-heading.html" %}
+## More information {: #more-info }
 
-O Lighthouse extrai os dados da User Timing pela Trace Event Profiling Tool do Chrome.
+Lighthouse extracts User Timing data from Chrome's Trace Event Profiling Tool.
 
+## Feedback {: #feedback }
 
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
