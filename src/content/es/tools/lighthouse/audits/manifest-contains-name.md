@@ -1,42 +1,34 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Documentación de referencia para la auditoría de Lighthouse "El manifiesto contiene la propiedad name".
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Reference documentation for the "Manifest Contains name" Lighthouse audit.
 
-{# wf_updated_on: 2016-09-21 #}
-{# wf_published_on: 2016-09-21 #}
+{# wf_updated_on: 2018-07-23 #} {# wf_published_on: 2016-09-21 #} {# wf_blink_components: N/A #}
 
-# El manifiesto contiene un nombre  {: .page-title }
+# Manifest Contains name {: .page-title }
 
-## Por qué es importante la auditoría {: #why }
+## Overview {: #overview }
 
-La propiedad `name` del manifiesto de apps web es un nombre de tu app
-que el usuario puede leer, ya que su fin es que se muestre al dispositivo móvil del usuario.
+The `name` property of the Web App Manifest is a human-readable name of your application as it is intended to be displayed to the user's mobile device.
 
-Si no se proporciona una propiedad `short_name`, entonces `name` es la etiqueta que se usará
-en la pantalla de inicio del dispositivo móvil junto al ícono de tu app.
+If a `short_name` is not provided, then the `name` is the label that will be used on the mobile device's homescreen, next to your app's icon.
 
-## Cómo aprobar la auditoría {: #how }
+## Recommendations {: #recommendations }
 
-Agrega la propiedad `name` al manifiesto de apps web.
+Add a `name` property in your Web App Manifest.
 
     {
       ...
       "name": "Air Horner",
       ...
     }
+    
 
-La [extensión
-máxima](https://developer.chrome.com/apps/manifest/name) de Chrome es de 45 caracteres.
+Chrome's [maximum length](https://developer.chrome.com/apps/manifest/name) is 45 characters.
 
-Consulta [El manifiesto existe](manifest-exists#how)
-para obtener una lista de guías que muestran cómo implementar
-y probar correctamente la compatibilidad con "Add to Homescreen" en tu app.
+Check out [Manifest Exists](manifest-exists#recommendations) for a list of guides that teach you how to properly implement and test "Add to Homescreen" support in your app.
 
-{% include "web/tools/lighthouse/audits/implementation-heading.html" %}
+## More information {: #more-info }
 
-Lighthouse obtiene manifiesto y verifica que tenga la propiedad `name`.
-El manifiesto que Lighthouse obtiene no es el que Chrome
-usa en la página, lo que puede dar resultados imprecisos.
+Lighthouse fetches the manifest and verifies that it has a `name` property. The manifest that Lighthouse fetches is separate from the one that Chrome is using on the page, which can possibly cause inaccurate results.
 
+## Feedback {: #feedback }
 
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
