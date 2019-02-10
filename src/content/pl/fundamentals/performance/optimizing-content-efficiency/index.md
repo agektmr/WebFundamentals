@@ -1,77 +1,74 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Ilość danych pobieranych przez każdą aplikację cały czas rośnie. Aby zagwarantować najwyższą wydajność, musimy zoptymalizować transfer każdego bajtu.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: The amount of data downloaded by apps continues to increase over time. To deliver great performance you must optimize data delivery as much as possible.
 
+{# wf_updated_on: 2018-08-17 #} {# wf_published_on: 2014-03-31 #} {# wf_blink_components: Blink>Network #}
 
-{# wf_updated_on: 2014-04-28 #}
-{# wf_published_on: 2014-03-31 #}
-
-# Optymalizacja wydajności związanej z treścią {: .page-title }
+# Optimizing Content Efficiency {: .page-title }
 
 {% include "web/_shared/contributors/ilyagrigorik.html" %}
 
+Our web applications continue to grow in their scope, ambition, and functionality -- that's a good thing. However, the relentless march toward a richer web is driving another trend: the amount of data downloaded by each application continues to increase at a steady pace. To deliver great performance we need to optimize delivery of each and every byte!
 
+What does a modern web application look like? [HTTP Archive](http://httparchive.org/){: .external } can help us answer this question. The project tracks how the web is built by periodically crawling the most popular sites (300,000+ from the Alexa Top 1M list) and recording and aggregating analytics on the number of resources, content types, and other metadata for each individual destination.
 
-Nasze aplikacje internetowe stają się coraz bardziej wyrafinowane, ambitne i funkcjonalne &ndash; to dobry kierunek. Jednak niepowstrzymane dążenie ku coraz bogatszym wrażeniom w Internecie powoduje powstanie kolejnego trendu: ilość danych pobieranych przez aplikacje rośnie w stałym tempie. Aby zagwarantować najwyższą wydajność, musimy zoptymalizować transfer każdego bajtu.
+<img src="images/http-archive-trends.png"  alt="HTTP Archive trends" />
 
-
-Jak wygląda nowoczesna aplikacja internetowa? Projekt [HTTP Archive](http://httparchive.org/){: .external } pozwoli nam uzyskać odpowiedź na to pytanie. Projekt ten śledzi sposób budowy stron internetowych, regularnie indeksując najbardziej popularne witryny (ponad 300 000 pozycji z listy Alexa Top 1M), w każdej z lokalizacji rejestrując i agregując analizy liczby zasobów, rodzaju treści i innych metadanych.
-
-<img src="images/http-archive-trends.png" class="center" alt="Trendy zarejestrowane w projekcie HTTP Archive">
-
-<table>
+<table class="">
+  
+<colgroup><col span="1"><col span="1"><col span="1"><col span="1"></colgroup>
 <thead>
   <tr>
     <th></th>
-    <th>50 percentyl</th>
-    <th>75 percentyl</th>
-    <th>90 percentyl</th>
+    <th>50th percentile</th>
+    <th>75th percentile</th>
+    <th>90th percentile</th>
   </tr>
 </thead>
 <tr>
-  <td data-th="typ">HTML</td>
+  <td data-th="type">HTML</td>
   <td data-th="50%">13 KB</td>
   <td data-th="75%">26 KB</td>
   <td data-th="90%">54 KB</td>
 </tr>
 <tr>
-  <td data-th="typ">Obrazy</td>
+  <td data-th="type">Images</td>
   <td data-th="50%">528 KB</td>
   <td data-th="75%">1213 KB</td>
   <td data-th="90%">2384 KB</td>
 </tr>
 <tr>
-  <td data-th="typ">JavaScript</td>
+  <td data-th="type">JavaScript</td>
   <td data-th="50%">207 KB</td>
   <td data-th="75%">385 KB</td>
   <td data-th="90%">587 KB</td>
 </tr>
 <tr>
-  <td data-th="typ">CSS</td>
+  <td data-th="type">CSS</td>
   <td data-th="50%">24 KB</td>
   <td data-th="75%">53 KB</td>
   <td data-th="90%">108 KB</td>
 </tr>
 <tr>
-  <td data-th="typ">Inne</td>
+  <td data-th="type">Other</td>
   <td data-th="50%">282 KB</td>
   <td data-th="75%">308 KB</td>
   <td data-th="90%">353 KB</td>
 </tr>
 <tr>
-  <td data-th="typ"><strong>Razem</strong></td>
+  <td data-th="type"><strong>Total</strong></td>
   <td data-th="50%"><strong>1054 KB</strong></td>
   <td data-th="75%"><strong>1985 KB</strong></td>
   <td data-th="90%"><strong>3486 KB</strong></td>
 </tr>
 </table>
 
-Powyższe dane przedstawiają trendy wzrostu ilości danych pobranych z popularnych lokalizacji w Internecie od stycznia 2013 r. do stycznia 2014 r. Oczywiście nie każda witryna rośnie w tym samym tempie lub generuje tę samą ilość danych, dlatego zamieszczamy różne kwantyle z dystrybucji: 50. (mediana), 75. i 90.
+The above data captures the trend in growth of number of downloaded bytes for popular destinations on the web between January 2013 and January 2014. Of course, not every site grows at the same rate or requires the same amount of data, hence the reason why we are highlighting the different quantiles within the distribution: 50th (median), 75th, and 90th.
 
-Medianowa witryna na początku 2014 r. generowała 75 żądań o łącznym rozmiarze 1054 KB przesłanych danych. Łączna ilość danych (i żądań) rosła w stałym tempie przez cały poprzedni rok. Nie powinno to nikogo dziwić, choć niesie za sobą poważne konsekwencje odnośnie do wydajności: tak, połączenia sieciowe stają się coraz szybsze, jednak zależnie od kraju różnią się od siebie dynamiką, a wielu użytkowników nadal podlega limitom i opłatom za transfer danych &ndash; szczególnie w przypadku Internetu na urządzeniach mobilnych.
+A median site at the beginning of 2014 is composed of 75 requests that add up to 1054 KB of total transferred bytes, and the total number of bytes (and requests) has grown at a steady pace throughout the previous year. This by itself should not be all that surprising, but it does carry important performance implications: yes, internet speeds are getting faster, but they are getting faster at different rates in different countries, and many users are still subject to data caps and expensive metered plans - especially on mobile.
 
-W przeciwieństwie do swoich komputerowych odpowiedników, aplikacje internetowe nie wymagają osobnego procesu instalacji: wystarczy wprowadzić adres URL i można pracować -- to najważniejsza cecha Internetu. Jest to możliwe dzięki temu, że **pobiera się często dziesiątki, a czasami setki różnych zasobów, których łączny rozmiar może sięgać megabajtów. Błyskawiczne działanie aplikacji internetowych, do którego dążymy, jest możliwe dzięki pobieraniu wszystkich tych danych razem w ciągu kilkuset milisekund.**
+Unlike their desktop counterparts, web applications do not require a separate installation process: enter the URL and we are up and running -- that’s a key feature of the web. However, to make this happen **we often have to fetch dozens, and sometime hundreds, of various resources, all of which can add up to megabytes of data and must come together in hundreds of milliseconds to facilitate the instant web experience we are aiming for.**
 
-Osiągnięcie szybkiej pracy aplikacji internetowych jest w świetle tych wymagań niełatwym zadaniem. Dlatego kluczowe znaczenie ma optymalizacja wydajności związanej z treścią: eliminacja zbędnych pobrań, optymalizacja kodowania transferu każdego zasobu dzięki różnym technikom kompresji, jak również powszechne użycie funkcji buforowania w celu eliminacji powtarzających się pobrań.
+Achieving an instant web experience in light of these requirements is no small feat, which is why optimizing content efficiency is critical: eliminating unnecessary downloads, optimizing transfer encoding of each resource through various compression techniques, and leveraging caching whenever possible to eliminate redundant downloads.
 
+## Feedback {: #feedback }
 
+{% include "web/_shared/helpful.html" %}
