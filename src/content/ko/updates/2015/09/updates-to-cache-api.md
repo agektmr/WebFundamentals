@@ -1,36 +1,26 @@
-project_path: /web/_project.yaml
-book_path: /web/updates/_book.yaml
-description: 크롬 버전 46 에서 캐쉬 관리에 대한 새로운 메서드가 추가 되었습니다. 크롬 47 도 추가된 것 처럼, 48 도 그렇게 되겠지요. 절대 멈추지 않습니다!
+project_path: /web/_project.yaml book_path: /web/updates/_book.yaml description: Chrome 46 brought new methods to caches, as does Chrome 47, and probably 48. It never stops.
 
+{# wf_updated_on: 2016-06-23 #} {# wf_published_on: 2015-09-02 #} {# wf_tags: news,serviceworker,cache #}
 
-{# wf_updated_on: 2016-06-23 #}
-{# wf_published_on: 2015-09-02 #}
-{# wf_tags: news,serviceworker,cache #}
-
-
-# 서비스워커 cache API 업데이트 {: .page-title }
+# Updates to the Service Worker Cache API {: .page-title }
 
 {% include "web/_shared/contributors/jakearchibald.html" %}
 
-요즘 서비스워커 캐쉬 API 작은 업데이트에 대해서 글을 써달라고 부탁을 받았습니다.
-그렇다고 해서 기사를 써야하는 건 아닌거 같았지만 긴 토론 끝에 결국 가위바위보 게임으로 넘어왔고,
-그 결과 이렇게 글이 나오게 되었습니다.
+I’ve been asked to write this post on a fairly minor update to the service worker cache API. I didn’t think it warranted its own article, but after a long debate that eventually came down to a game of rock-paper-scissors, I lost, so here it is.
 
-크롬의 서비스워커 cache API 구현에 관한 업데이트를 들을 준비가 되었나요?
+Are you ready to hear about the updates to Chrome’s implementation of the service worker cache API?
 
-대답이 잘 안들리네요! 준비 되셨나요?
+I can’t hear you! I said, are you ready to hear about the updates to Chrome’s implementation of the service worker cache API?
 
-(의자 위로 뛰어 올라서 "아싸" 라고 외치셔야 읽을 수 있을 겁니다, 그리고 동시에 밧줄을 돌리는 척 해야할 겁니다)
+(you may only read on if you’ve jumped onto your chair and shouted “YEAHHH!”. Simultaneously pretending to swing a lasso is optional, but encouraged).
 
-## 크롬 46에 도착한 cache.addAll
+## cache.addAll arrived in Chrome 46
 
-예 맞습니다! 캐쉬! 점 add all! 이 크롬 46버전에 추가되었어요.
+Yes! That’s right! Cache! Dot add all! Chrome 46!
 
-자 풍자를 뒤로하고, 이건 정말 엄청난 겁니다 왜냐면 `cache.addAll`이 [cache “essentials” polyfill](https://github.com/coonsta/cache-polyfill/blob/master/index.js){: .external }의 마지막 남은 부분이었거든요.
-이제 더이상 필요 없게 되었습니다.
+Ok ok, sarcasm aside, this is actually a pretty big deal, as `cache.addAll` is the last remaining part of the [cache “essentials” polyfill](https://github.com/coonsta/cache-polyfill/blob/master/index.js), meaning it’s no longer needed.
 
-`cache.addAll`가 어떻게 동작하는지 확인하시죠:
-
+Here’s how `cache.addAll` works:
 
     // when the browser sees this SW for the first time
     self.addEventListener('install', function(event) {
@@ -50,24 +40,19 @@ description: 크롬 버전 46 에서 캐쉬 관리에 대한 새로운 메서드
     });
     
 
-`addAll` 는 url과 필요한 리소스의 요청들을 배열로 받고, 페치합니다. 그리고 캐쉬에 저장하죠.
-이건 transactional 한 성격을 지니고 있습니다. 왜냐면 어느 하나라도 페치나 쓰기가 실패하면 전체 동작이 실패하기 떄문이죠.
-그리고 실패한 캐쉬는 이전 상태로 돌아갑니다. 이건 위와 같이 일부분이라도 실패하면 전체가 실패해야 하는 특정한 설치 상황에서만 유용합니다.
+`addAll` takes an array of urls & requests, fetches them, and adds them to the cache. This is transactional - if any of the fetching or writing fails, the whole operation fails, and the cache is returned to its previous state. This is particularly useful for install operations like above, where a single failure should be an overall failure.
 
-**업데이트**: 크롬 50 경우에는, `cache.addAll()`과 `cache.add()` 동작이 [조금 바뀌었습니다](https://github.com/dstockwell/chromium/commit/d8a95558a04b5734bc5568546097799d942aaec5#diff-c0babf201659e01414abe4a511fb8c7cR218).
-현재는 캐쉬에 추가된 모든 응답들은 2.xx 응답 코드를 [갖고 있어야만 합니다.](https://github.com/slightlyoff/ServiceWorker/issues/823){: .external }
-non-CORS 요청에서 비롯된 [opaque](https://fetch.spec.whatwg.org/#concept-filtered-response-opaque)를 포함한 2xx 응답 코드가 아닌 응답들은 `cache.addAll()`를 거절합니다.
+Note: As of Chrome 50, the `cache.addAll()` (and `cache.add()`) behavior has [changed slightly](https://github.com/dstockwell/chromium/commit/d8a95558a04b5734bc5568546097799d942aaec5#diff-c0babf201659e01414abe4a511fb8c7cR218). Now, all of the responses that are added to the cache [need to have](https://github.com/slightlyoff/ServiceWorker/issues/823) a `2xx` (i.e. "OK") response code. Any responses with non-`2xx` response codes, including [opaque](https://fetch.spec.whatwg.org/#concept-filtered-response-opaque) responses from non-CORS requests, will cause the `cache.addAll()` to reject.
 
-위 예제는 서비스워커 안에 있지만, 캐쉬 API 는 페이지에서 완전히 접근이 가능합니다.
+The example above is within a service worker, but the caches API is fully accessible from pages too.
 
-Firefox는 [developer edition](https://www.mozilla.org/en-GB/firefox/developer/){: .external }에서 이 API를 이미 지원하고 있습니다. 곧 서비스워커 구현에 관련된 나머지 내용들에 대해서도 지원을 하겠죠.
+Firefox already supports this API in their [developer edition](https://www.mozilla.org/en-GB/firefox/developer/), so it’ll land with the rest of their service worker implementation.
 
-여기서 잠깐, 이게 전부가 아닙니다. 이 과정안에 캐쉬의 개선된 부분이 더 있습니다.
+But wait, that’s not all, there are more cache improvements in the pipeline…
 
-## 크롬 47 버전에 추가될 cache.matchAll
+## cache.matchAll coming to Chrome 47
 
-이 API는 여러개의 매칭을 가능하게 합니다.
-
+This allows you to get multiple matches:
 
     caches.open('mysite-static-v1').then(function(cache) {
       return cache.matchAll('/');
@@ -76,16 +61,13 @@ Firefox는 [developer edition](https://www.mozilla.org/en-GB/firefox/developer/)
     });
     
 
-위 예제에서는 `mysite-static-v1` 안에서 `/`와 일치하는 모든 요청들을 얻어옵니다.
-캐쉬는 각 URL 마다 여러 개의 엔트리 파일들을 얻게 합니다. 다만, 각 파일들은 독립적으로 캐쉬가 가능해야합니다.
-예) 각각 다른 `Vary` 헤더가 필요합니다.
+The above will get everything in `mysite-static-v1` that matches `/`. The cache lets you have multiple entries per URL if they’re independently cacheable, eg if they have different `Vary` headers.
 
-Firefox는 [developer edition](https://www.mozilla.org/en-GB/firefox/developer/){: .external }에서 이 API를 이미 지원하고 있습니다. 곧 서비스워커 구현에 관련된 나머지 내용들에 대해서도 지원을 하겠죠.
+Firefox already supports this in their [developer edition](https://www.mozilla.org/en-GB/firefox/developer/), so it’ll land with the rest of their service worker implementation.
 
-## 크롬에 곧.. 추가될 캐쉬 쿼리 옵션
+## Cache query options coming to Chrome… soon
 
-아래는 표준적인 페치 핸들러의 예제입니다:
-
+Here's a pretty standard fetch handler:
 
     self.addEventListener('fetch', function(event) {
       event.respondWith(
@@ -96,10 +78,7 @@ Firefox는 [developer edition](https://www.mozilla.org/en-GB/firefox/developer/)
     });
     
 
-만약 `/` 를 캐쉬하고 `/`의 요청을 받아오면, 이들은 캐쉬에서 제공됩니다.
-그러나, `/?utm_source=blahblahwhatever` 의 요청은 캐쉬에서 받지 못합니다.
-아래와 같이 로직에 url search string 무시 옵션을 넣어 해결이 가능합니다.
-
+If we have `/` cached, and we get a request for `/`, it’ll be served from the cache. However, if we get a request for `/?utm_source=blahblahwhatever` that *won’t* come from the cache. You can work around this by ignoring the url search string while matching:
 
     self.addEventListener('fetch', function(event) {
       event.respondWith(
@@ -112,18 +91,14 @@ Firefox는 [developer edition](https://www.mozilla.org/en-GB/firefox/developer/)
     });
     
 
-이제 `/?utm_source=blahblahwhatever`가 `/`의 엔트리와 매치가 가능하니다. 이같은 옵션들은:
-* `ignoreSearch` - 요청과 캐쉬된 결과에서 url 검색하는 부분을 무시한다.
-* `ignoreMethod` - 요청 메서드를 무시하여, 캐쉬에서 POST 요청도 GET 엔트리에 접근할 수 있다.
-* 'ignoreVary' - 캐쉬된 응답에서 vary 헤더를 무시한다.
+Now `/?utm_source=blahblahwhatever` will be matched to the entry for `/`! The full options are:
 
-Firefox 는 이미 이들을 지원합니다. [Ben Kelly](https://twitter.com/wanderview){: .external }에 한테 가서 얼마나 그가 대단한지 말해주세요.
+* `ignoreSearch` - ignore the search portion of the url in both the request argument and cached requests
+* `ignoreMethod` - ignore the method of the request argument, so a POST request can match a GET entry in the cache
+* `ignoreVary` - ignore the vary header in cached responses
 
-만약 캐쉬 쿼리 옵션을 어떻게 크롬이 구현하는지 알고 싶으시다면, [crbug.com/426309](https://code.google.com/p/chromium/issues/detail?id=426309)를 확인하세요.
+Firefox already supports this in their… ok you know the drill by now. Go tell [Ben Kelly](https://twitter.com/wanderview) how great he is for getting all of this into Firefox.
 
-“what we implemented in the cache API” 챕터로 다시 찾아뵙겠습니다!
+If you want to follow the Chrome implementation of the cache query options, check out [crbug.com/426309](https://code.google.com/p/chromium/issues/detail?id=426309).
 
-
-Translated By:
-{% include "web/_shared/contributors/captainpangyo.html" %}
-
+See you next time for another exciting chapter of “what we implemented in the cache API”!
