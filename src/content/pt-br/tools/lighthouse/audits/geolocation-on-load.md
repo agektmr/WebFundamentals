@@ -1,44 +1,25 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Documentação de referência para a auditoria do Lighthouse "Página não solicita automaticamente geolocalização ao ser carregada".
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Reference documentation for the "Avoids Requesting The Geolocation Permission On Page Load" Lighthouse audit.
 
-{# wf_updated_on: 2016-11-30 #}
-{# wf_published_on: 2016-11-30 #}
+{# wf_updated_on: 2018-07-23 #} {# wf_published_on: 2016-11-30 #} {# wf_blink_components: N/A #}
 
-# Página não solicita automaticamente geolocalização ao ser carregada  {: .page-title }
+# Avoids Requesting The Geolocation Permission On Page Load {: .page-title }
 
-## Por que a auditoria é importante {: #why }
+## Overview {: #overview }
 
-Os usuários desconfiam ou se confundem quando as páginas solicitam automaticamente
-sua localização durante o carregamento. Em vez de solicitar automaticamente a
-localização do usuário no carregamento da página, vincule a solicitação a um gesto do usuário, como
-um toque no botão "Find Stores Near Me". Verifique se o gesto exprime de forma clara
-e explícita a necessidade da localização do usuário.
+Users are mistrustful of or confused by pages that automatically request their location on page load. Rather than automatically requesting a user's location on page load, tie the request to a user's gesture, such as a tapping a "Find Stores Near Me" button. Make sure that the gesture clearly and explicitly expresses the need for the user's location.
 
-## Como ser aprovado na auditoria {: #how }
+## Recommendations {: #recommendations }
 
-Em **URLs**, o Lighthouse relata os números das linhas e colunas nas quais seu
-código está solicitando a localização do usuário. Remova essas chamadas e vincule as
-solicitações a gestos do usuário. 
+Under **URLs**, Lighthouse reports the line and column numbers where your code is requesting the user's location. Remove these calls, and tie the requests to user gestures instead.
 
-Consulte [Peça autorização com consciência][ask] para obter uma lista de práticas recomendadas para
-solicitar a localização de um usuário.
+See [Ask permission responsibly](/web/fundamentals/native-hardware/user-location/#ask_permission_responsibly) for a list of best practices when requesting a user's location.
 
-[ask]: /web/fundamentals/native-hardware/user-location/#ask_permission_responsibly
+## More information {: #more-info }
 
-{% include "web/tools/lighthouse/audits/implementation-heading.html" %}
+If geolocation permission was already granted to a page before Lighthouse's audit, Lighthouse cannot determine if the page requests the user's location on page load. Reset the permissions and run Lighthouse again. See [Change website permissions](https://support.google.com/chrome/answer/6148059) for more help.
 
-Se a permissão de geolocalização já foi concedida a uma página antes da auditoria
-do Lighthouse, ele não poderá determinar se a página solicita a localização do usuário
-no carregamento da página. Redefina as permissões e execute o Lighthouse novamente. Consulte
-[Alterar permissões do site][help] para obter mais ajuda.
+Lighthouse collects the JavaScript that was executed on page load. If this code contains calls to `geolocation.getCurrentPosition()` or `geolocation.watchPosition()`, and geolocation permission was not already granted, then the user's location was requested.
 
-O Lighthouse coleta o JavaScript executado no carregamento da página. Se esse
-código tiver chamadas para `geolocation.getCurrentPosition()` ou
-`geolocation.watchPosition()` e a permissão de geolocalização ainda não tiver sido
-concedida, a localização do usuário foi solicitada.
+## Feedback {: #feedback }
 
-[help]: https://support.google.com/chrome/answer/6148059
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
