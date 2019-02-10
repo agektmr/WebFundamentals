@@ -1,321 +1,262 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Si ejecutas tu código de a una línea o función a la vez, podrás observar los cambios en los datos y en la página para conocer exactamente lo que sucede.
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: By executing code one line or one function at a time, you can observe changes in the data and in the page to understand exactly what is happening.
 
-{# wf_updated_on: 2015-09-01 #}
-{# wf_published_on: 2015-04-13 #}
+{# wf_updated_on: 2018-07-27 #} {# wf_published_on: 2015-04-13 #} {# wf_blink_components: Platform>DevTools #}
 
-# Cómo recorrer tu código {: .page-title }
+# How to step through your code {: .page-title }
 
-{% include "web/_shared/contributors/dgash.html" %}
-{% include "web/_shared/contributors/pbakaus.html" %}
-{% include "web/_shared/contributors/kaycebasques.html" %}
+{% include "web/_shared/contributors/dgash.html" %} {% include "web/_shared/contributors/pbakaus.html" %} {% include "web/_shared/contributors/kaycebasques.html" %}
 
-Si ejecutas tu código de a una línea o función a la vez, podrás observar los cambios en los datos y en la página para conocer exactamente lo que sucede. También puedes modificar valores de datos usados por la secuencia de comandos e incluso puedes modificar la propia secuencia de comandos.
+Warning: This page is deprecated. At the top of each section, there's a link to an up-to-date page where you can find similar information.
 
-*¿Por qué el valor de esta variable es 20 y no 30? ¿Por qué esa línea de código parece no cumplir ninguna función? ¿Por qué es este indicador true cuando debería ser false?* Todo desarrollador enfrenta estos desafíos y recorre el código para buscar soluciones.
+By executing code one line or one function at a time, you can observe changes in the data and in the page to understand exactly what is happening. You can also modify data values used by the script, and you can even modify the script itself.
 
-Después de [configurar puntos de interrupción](add-breakpoints), regresa a la página y úsala normalmente hasta alcanzar uno. Todo el JavaScript se pausará en la página, el foco pasará al panel Sources de DevTools y el punto de interrupción se destacará. Ahora podrás ejecutar código de manera selectiva y examinar los datos paso a paso.
+*Why is this variable value 20 instead of 30? Why doesn't that line of code seem to have any effect? Why is this flag true when it should be false?* Every developer faces these questions, and steps through code to find out.
 
+After [setting breakpoints](breakpoints), return to the page and use it normally until a breakpoint is reached. This pauses all JavaScript on the page, focus shifts to the DevTools Sources panel, and the breakpoint is highlighted. You can now selectively execute code and examine its data, step by step.
 
 ### TL;DR {: .hide-from-toc }
-- Recorre el código para identificar problemas antes de que sucedan o mientras lo hacen y prueba cambios mediante edición en tiempo real.
-- Es preferible omitir el registro por consola, ya que los datos registrados ya están caducos cuando llegan a la consola.
-- Habilita la característica "Async call stack" para obtener más información sobre la pila de llamadas de funciones asincrónicas.
-- Dispón archivos de secuencias de comandos en la caja negra para ocultar los archivos de terceros en las pilas de llamadas.
-- Usa funciones con nombres, en lugar de funciones anónimas, para mejorar la legibilidad de la pila de llamadas.
 
+* Step through code to observe issues before or while they happen and test out changes through live editing.
+* Prefer stepping over console logging, as logged data is already stale the moment it arrives in the console.
+* Enable the 'Async call stack' feature to gain greater visibility into the call stack of asynchronous functions.
+* Blackbox scripts to hide third-party code from your call stacks.
+* Use named functions rather than anonymous ones to improve call stack readability.
 
-## Recorrer el código
+## Stepping in action
 
-Todas las opciones para recorrer código se representan mediante íconos seleccionables ![Barra de botones de puntos de interrupción](imgs/image_7.png){:.inline} en la barra lateral, pero también se pueden activar con combinaciones de teclas. A continuación, se muestra un resumen de las acciones:
+Warning: This page is deprecated. See [Step through code](reference#stepping) for up-to-date information.
+
+All step options are represented through clickable icons ![Breakpoints button bar](imgs/image_7.png){:.inline} in the sidebar, but can also be triggered via shortcut. Here's the rundown:
 
 <table>
   <thead>
     <tr>
-      <th data-th="Icon/Button">Ícono/botón</th>
-      <th data-th="Action">Acción</th>
-      <th data-th="Description">Descripción</th>
+      <th data-th="Icon/Button">Icon/Button</th>
+      <th data-th="Action">Action</th>
+      <th data-th="Description">Description</th>
     </tr>
   </thead>
   <tbody>
     <tr>
-      <td data-th="Icon/Button"><img src="imgs/image_8.png" alt="Reanudar" class="inline"></td>
-      <td data-th="Action">Reanudar</td>
-      <td data-th="Description">Reanuda la ejecución hasta el siguiente punto de interrupción. Si no se encuentra ningún punto de interrupción, se reanuda la ejecución normal.</td>
+      <td data-th="Icon/Button"><img src="imgs/image_8.png" alt="Resume" class="inline"></td>
+      <td data-th="Action">Resume</td>
+      <td data-th="Description">Resumes execution up to the next breakpoint. If no breakpoint is encountered, normal execution is resumed.</td>
     </tr>
     <tr>
-      <td data-th="Icon/Button"><img src="imgs/image_9.png" alt="Reanudar prolongadamente" class="inline"></td>
-      <td data-th="Action">Reanudar prolongadamente</td>
-      <td data-th="Description">Reanuda la ejecución con los puntos de interrupción inhabilitados por 500 ms. Se recomienda para saltear momentáneamente puntos de interrupción que provocarían pausas continuas en el código (p. ej., un punto de interrupción dentro de un bucle). <p><b>Haz clic y mantén presionado <i>Reanudar</i> hasta que se expanda y muestre la acción.</b></p></td>
+      <td data-th="Icon/Button"><img src="imgs/image_9.png" alt="Long Resume" class="inline"></td>
+      <td data-th="Action">Long Resume</td>
+      <td data-th="Description">Resumes execution with breakpoints disabled for 500ms. Convenient for momentarily skipping breakpoints that would otherwise continually pause the code, e.g., a breakpoint inside a loop. <p><b>Click and hold <i>Resume</i> until expands to show the action.</b></p></td>
     </tr>
     <tr>
-      <td data-th="Icon/Button"><img src="imgs/image_10.png" alt="Omitir" class="inline"></td>
-      <td data-th="Action">Omitir</td>
-      <td data-th="Description">Ejecuta la acción que se indica en la siguiente línea y pasa a la siguiente línea.</td>
+      <td data-th="Icon/Button"><img src="imgs/image_10.png" alt="Step Over" class="inline"></td>
+      <td data-th="Action">Step Over</td>
+      <td data-th="Description">Executes whatever happens on the next line and jumps to the next line.</td>
     </tr>
     <tr>
-      <td data-th="Icon/Button"><img src="imgs/image_11.png" alt="Entrar" class="inline"></td>
-      <td data-th="Action">Entrar</td>
-      <td data-th="Description">Si la siguiente línea contiene una llamada de función, <i>Entrar</i> irá a esa función y la pausará en la primera línea.</td>
+      <td data-th="Icon/Button"><img src="imgs/image_11.png" alt="Step Into" class="inline"></td>
+      <td data-th="Action">Step Into</td>
+      <td data-th="Description">If the next line contains a function call, <i>Step Into</i> will jump to and pause that function at its first line.</td>
     </tr>
     <tr>
-      <td data-th="Icon/Button"><img src="imgs/image_12.png" alt="Salir" class="inline"></td>
-      <td data-th="Action">Salir</td>
-      <td data-th="Description">Ejecuta el resto de la función actual y pausa la ejecución en la siguiente instrucción después de la llamada de función.</td>
+      <td data-th="Icon/Button"><img src="imgs/image_12.png" alt="Step Out" class="inline"></td>
+      <td data-th="Action">Step Out</td>
+      <td data-th="Description">Executes the remainder of the current function and then pauses at the next statement after the function call.</td>
     </tr>
     <tr>
-      <td data-th="Icon/Button"><img src="imgs/image_13.png" alt="Inhabilitar los puntos de interrupción" class="inline"></td>
-      <td data-th="Action">Inhabilitar los puntos de interrupción</td>
-      <td data-th="Description">Inhabilita temporalmente los puntos de interrupción. Se usa para reanudar la ejecución completa sin quitar los puntos de interrupción. Haz clic de nuevo en el botón para volver a activar los puntos de interrupción.</td>
+      <td data-th="Icon/Button"><img src="imgs/image_13.png" alt="Deactivate breakpoints" class="inline"></td>
+      <td data-th="Action">Deactivate breakpoints</td>
+      <td data-th="Description">Temporarily disables all breakpoints. Use to resume full execution without actually removing your breakpoints. Click it again to reactivate the breakpoints.</td>
     </tr>
     <tr>
-      <td data-th="Icon/Button"><img src="imgs/image_14.png" alt="Pausar en excepciones" class="inline"></td>
-      <td data-th="Action">Pausar en excepciones</td>
-      <td data-th="Description">Automáticamente pausa el código cuando se produce una excepción.</td>
+      <td data-th="Icon/Button"><img src="imgs/image_14.png" alt="Pause on exceptions" class="inline"></td>
+      <td data-th="Action">Pause on exceptions</td>
+      <td data-th="Description">Automatically pauses the code when an exception occurs.</td>
     </tr>
   </tbody>
 </table>
 
-Usa **Ingresar** como la acción típica para recorrer el código "una línea a la vez", ya que garantiza la ejecución de una sola instrucción, independientemente de la función a la que hayas ingresado o de la que hayas salido.
+Use **step into** as your typical "one line at a time" action, as it ensures that only one statement gets executed, no matter what functions you step in and out of.
 
-Usa [Pausar en excepciones](add-breakpoints#break-on-uncaught-exception) cuando sospeches que una excepción no detectada esté causando un problema y no sepas de dónde proviene. Cuando se habilita esta opción, puedes definirla mejor haciendo clic en la casilla de verificación **Pause On Caught Exceptions**; en este caso, la ejecución se pausa únicamente cuando se produce una excepción con la que se haya trabajado de forma específica.
+Use [Pause on exceptions](breakpoints#exceptions) when you suspect an uncaught exception is causing a problem, but you don't know where it is. When this option is enabled, you can refine it by clicking the **Pause On Caught Exceptions** checkbox; in this case, execution is paused only when a specifically-handled exception occurs.
 
-## Ver propiedades por ámbito {: #scope }
+## View properties by scope {: #scope }
 
-Cuando pausas una secuencia de comandos, el subpanel **Scope** te muestra todas las
-propiedades definidas en ese momento.
+Warning: This page is deprecated. See [View and edit local, closure, and global properties](reference#scope) for up-to-date information.
 
-El subpanel se ve destacado en azul en la captura de pantalla a continuación.
+When you pause a script, the **Scope** pane shows you all of the currently-defined properties at that moment in time.
 
-![Subpanel Scope del panel Sources](imgs/scope-pane.png)
+The pane is highlighted in blue in the screenshot below.
 
-El subpanel solo se completa cuando una secuencia de comandos está pausada.
-Mientras la página se ejecuta, el subpanel Scope permanece vacío.
+![The Scope pane of the Sources panel](imgs/scope-pane.png)
 
-El subpanel Scope te muestra las propiedades definidas en los niveles local, cierre y
-global.
+The Scope pane is only populated when a script is paused. While your page is running, the Scope pane is empty.
 
-Si una propiedad tiene un ícono de flecha junto a ella, esto significa que es un objeto. Haz clic
-en el ícono de flecha para expandir el objeto y ver sus propiedades.
+The Scope pane shows you properties defined at the local, closure, and global levels.
 
-Algunas veces, las propiedades están atenuadas. Por ejemplo, la propiedad `constructor`
-está más atenuada que la propiedad `confirm` en la captura de pantalla siguiente.
+If a property has a carat icon next to it, it means that it's an object. Click on the carat icon to expand the object and view its properties.
 
-![Propiedades atenuadas](imgs/enumerables.png)
+Sometimes properties are dimmed down. For example, the property `constructor` is dimmer than the `confirm` property in the screenshot below.
 
-Las propiedades más oscuras se pueden enumerar. Las propiedades atenuadas
-no se pueden enumerar. Consulta el siguiente subproceso de Stack Overflow para obtener más información:
-[¿Qué significan los colores en el panel Scope
-de Chrome Developer Tools?](Qué significan los colores en el panel Scope de Chrome Developer Tools?).
+![Dimmed down properties](imgs/enumerables.png)
 
-## La pila de llamadas
+The darker properties are enumerable. The lighter, dimmed down properties are not. See the following Stack Overflow thread for more information: [What do the colors mean in Chrome Developer Tools Scope panel?](http://stackoverflow.com/a/36545767/1669860)
 
-Cerca de la parte superior de la barra lateral, se encuentra la sección **Call Stack**. Cuando el código está pausado en un punto de interrupción, en la pila de llamadas se muestra, en orden cronológico inverso, la ruta de acceso de ejecución que llevó al código a dicho punto de interrupción. Es útil para entender tanto la ubicación *actual* de la ejecución como la manera en que llegó allí, un factor importante de la depuración.
+## The call stack
 
-### Ejemplo
+Warning: This page is deprecated. See [View the current call stack](reference#call-stack) for up-to-date information.
 
-<img src="imgs/image_15.png" alt="Call Stack" class="attempt-left">
+Near the top of the sidebar is the **Call Stack** section. When the code is paused at a breakpoint, the call stack shows the execution path, in reverse chronological order, that brought the code to that breakpoint. This is helpful in understanding not just where the execution is *now*, but how it got there, an important factor in debugging.
 
-Un evento de clics inicial en la línea 50 en el archivo `index.html` llamó a la función 
-`setone()` en la línea 18 en el archivo de JavaScript `dgjs.js`, el cual llamó a
-la función `setall()` en la línea 4 en el mismo archivo, donde se pausa la ejecución
-en el punto de interrupción actual.
+### Example
+
+<img src="imgs/image_15.png" alt="Call stack" class="attempt-left" />
+
+An initial onclick event at line 50 in the `index.html` file called the `setone()` function at line 18 in the `dgjs.js` JavaScript file, which then called the `setall()` function at line 4 in the same file, where execution is paused at the current breakpoint.
 
 <div class="clearfix"></div>
 
-### Habilitar la pila de llamadas asíncronas
+### Enable the async call stack
 
-Habilita la función de la pila de llamadas asincrónicas para obtener más visibilidad de la ejecución
-de tus llamadas de funciones asincrónicas.
+Enable the async call stack feature to gain more visibility into the execution of your asynchronous function calls.
 
-1. Abre el panel **Sources** de DevTools.
-2. En el subpanel **Call Stack**, habilita la casilla de verificación **Async**.
+1. Open the **Sources** panel of DevTools.
+2. On the **Call Stack** pane, enable the **Async** checkbox.
 
-El siguiente video contiene una secuencia de comandos simple para demostrar la función de la pila de 
-llamadas asincrónicas. En la secuencia de comandos, se usa una biblioteca de terceros para seleccionar un
-elemento del DOM. Una función denominada `onClick` se registra como el controlador del evento 
-`onclick` para el elemento. Cada vez que se llama a `onClick`,
-esta función llama a otra denominada `f`, que hace que la secuencia de comandos se 
-pause con la palabra clave `debugger`. 
+The video below contains a simple script to demonstrate the async call stack feature. In the script, a third-party library is used to select a DOM element. A function called `onClick` is registered as the `onclick` event handler for the element. Whenever `onClick` is called, it in turn calls a function named `f`, which just forces the script to pause via the `debugger` keyword.
 
 <video src="animations/async-call-stack-demo.mp4"
        autoplay muted loop controls></video>
 
-En el video, se activa un punto de interrupción y se expande la pila de llamadas.
-Solo hay una llamada en la pila: `f`. A continuación, se activa la función de la pila de llamadas
-asincrónicas, se reanuda la secuencia de comandos, se vuelve a activar el punto de interrupción y
-la pila de llamadas se expande por segunda vez. Esta vez, la pila de llamadas contiene 
-todas las llamadas hasta `f`, incluidas las llamadas a bibliotecas de terceros y
-la llamada a `onClick`. La primera vez que se llamó a la secuencia de comandos, 
-solo hubo una llamada en la pila de llamadas. La segunda vez, hubo cuatro. En
-resumen, la función de la pila de llamadas asincrónicas proporciona más visibilidad 
-de toda la pila de llamadas de las funciones asincrónicas.
+In the video, a breakpoint is triggered, and the call stack is expanded. There is only one call in the stack: `f`. The async call stack feature is then enabled, the script resumes, the breakpoint is triggered again, and then the call stack is expanded a second time. This time, the call stack contains all of the calls leading up to `f`, including third-party library calls, and the call to `onClick`. The first time that the script was called, there was only one call in the call stack. The second time, there were four. In short, the async call stack feature provides increased visibility into the full call stack of asynchronous functions.
 
-### Sugerencia: Nombra las funciones para mejorar la legibilidad de la pila de llamadas
+### Tip: name functions to improve call stack readability
 
-Las funciones anónimas dificultan la lectura de la pila de llamadas. Nombra tus funciones
-para mejorar la legibilidad.
+Anonymous functions make the call stack difficult to read. Name your functions to improve readability.
 
-Los fragmentos de código que figuran en las dos capturas de pantalla siguientes son funcionalmente equivalentes: El
-funcionamiento exacto del código no es importante, lo que importa es
-que el código de la primera captura de pantalla usa funciones anónimas, mientras
-que el de la segunda captura de pantalla usa funciones con nombre.
+The code snippets in the two screenshots below are functionally equivalent. The exact functioning of the code is not important, what is important is that the code in the first screenshot uses anonymous functions, while the second uses named functions.
 
-En la pila de llamadas de la primera captura de pantalla, las dos funciones superiores
-simplemente dicen `(anonymous function)`. En la segunda captura de pantalla, las dos
-funciones superiores tienen un nombre, lo que facilita la comprensión del flujo del programa
-en un solo vistazo. Cuando trabajas con una gran cantidad de archivos de secuencias de comandos, incluidas
-bibliotecas de terceros y frameworks, la pila de llamadas tiene cinco o diez
-llamadas; es mucho más fácil comprender el flujo de la pila de llamadas cuando
-las funciones tienen un nombre.
+In the call stack in the first screenshot, the top two functions are both just titled `(anonymous function)`. In the second screenshot, the top two functions are named, which makes it easier to understand the program flow at a glance. When you are working with numerous script files, including third-party libraries and frameworks, and your call stack is five or ten calls deep, it is much easier to understand the call stack flow when functions are named.
 
-Pila de llamadas con funciones anónimas:
+Call stack with anonymous functions:
 
-![Pila de llamadas con funciones anónimas y difíciles de leer](imgs/anon.png)
+![Call stack with hard-to-read anonymous functions](imgs/anon.png)
 
-Pila de llamadas con funciones con nombre: 
+Call stack with named functions:
 
-![Pila de llamadas con funciones con nombre y fáciles de leer](imgs/named.png)
+![Call stack with easier-to-read named function](imgs/named.png)
 
 <!-- blackbox OR disable third-party code??? -->
 
-### Disponer código de terceros en la caja negra
+### Blackbox third-party code
 
-Dispón archivos de secuencias de comandos en la caja negra para evitar archivos de terceros en las pilas de llamadas.
+Warning: This page is deprecated. See [Ignore a script or pattern of scripts](reference#blackbox) for up-to-date information.
 
-Antes de disponerlos en la caja negra:
+Blackbox script files to omit third-party files from your call stacks.
 
-![Pila de llamadas sin archivos en la caja negra](imgs/before-blackbox.png)
+Before blackbox:
 
-Después de la disposición en la caja negra:
+![Call stack before blackbox](imgs/before-blackbox.png)
 
-![Pila de llamadas después de la disposición en la caja negra](imgs/after-blackbox.png)
+After blackbox:
 
-Para disponer un archivo en la caja negra:
+![Call stack after blackbox](imgs/after-blackbox.png)
 
-1. Abre la configuración de DevTools
+To blackbox a file:
 
-   ![Abrir la configuración de DevTools](imgs/open-settings.png)
+1. Open DevTools Settings.
+    
+    ![Opening DevTools Settings](imgs/open-settings.png)
 
-2. En el menú de navegación de la izquierda, haz clic en **Blackboxing**.
+2. In the navigation menu on the left, click **Blackboxing**.
+    
+    ![Blackboxing panel in Chrome DevTools](imgs/blackbox-panel.png)
 
-   ![Panel Blackboxing de Chrome DevTools](imgs/blackbox-panel.png)
+3. Click **Add pattern**.
 
-3. Haz clic en **Add pattern**.
+4. In the **Pattern** textfield enter the filename pattern that you wish to exclude from your call stack. DevTools excludes any scripts that match the pattern.
+    
+    ![Adding blackbox pattern](imgs/add-pattern.png)
 
-4. En el campo de texto de **Pattern**, ingresa el patrón del nombre de archivo que deseas 
-   excluir de tu pila de llamadas. DevTools excluirá cualquier secuencia de comandos que coincida con el 
-   patrón. 
+5. In the dropdown menu to the right of the textfield, select **Blackbox** to execute the script files but exclude the calls from the call stack, or select **Disabled** to prevent the files from executing.
 
-   ![Agregar un patrón a la caja negra](imgs/add-pattern.png)
+6. Click **Add** to save.
 
-5. En el menú desplegable a la derecha del campo de texto, selecciona **Blackbox** para
-   ejecutar los archivos de la secuencia de comandos y excluir las llamadas de la pila de llamadas, o selecciona
-   **Disabled** para evitar que los archivos se ejecuten.
+The next time that you run the page and a breakpoint is triggered, DevTools hides any function calls from the blackboxed scripts from the call stack.
 
-6. Haz clic en **Add** para guardar.
+## Data manipulation
 
-La próxima vez que ejecutes la página y se active un punto de interrupción, DevTools
-ocultará de la pila de llamadas todas las llamadas de funciones de las secuencias de comandos dispuestas en la caja negra.
+When code execution is paused, you can observe and modify the data it is processing. This is crucial when trying to track down a variable that seems to have the wrong value or a passed parameter that isn't received as expected.
 
-## Manipulación de datos
+Show the Console drawer by clicking **Show/Hide drawer** ![Show/Hide drawer](imgs/image_16.png){: .inline} or press <kbd class="kbd">ESC</kbd>. With the console open while stepping, you can now:
 
-Cuando la ejecución del código está pausada, puedes observar y modificar los datos que se procesan. Esto es crucial cuando se intenta realizar el seguimiento de una variable que aparentemente tiene un valor incorrecto o de un parámetro que se pasó, pero no se recibió como se esperaba.
+* Type the name of a variable to see its current value in the scope of the current function
+* Type a JavaScript assignment statement to change the value
 
-Muestra el panel lateral Console haciendo clic en **Show/Hide drawer** ![Show/Hide drawer](imgs/image_16.png){: .inline} o presiona <kbd class="kbd">ESC</kbd>. Con la consola abierta mientras recorres el texto, podrás:
+Try modifying values, then continue execution to see how it changes the outcome of your code and whether it behaves as you expect.
 
-* escribir el nombre de una variable para ver su valor actual en el ámbito de la función actual;
-* escribir una instrucción de asignación JavaScript para cambiar el valor.
+#### Example
 
-Intenta modificar los valores y continúa con la ejecución para ver cómo influye en el resultado del código y si el código se comporta como esperas.
+<img src="imgs/image_17.png" alt="Console Drawer" class="attempt-left" />
 
-#### Ejemplo
-
-<img src="imgs/image_17.png" alt="Panel lateral Console" class="attempt-left">
-
-Revelamos que el valor del parámetro `dow` actualmente es 2, pero lo cambiamos
-manualmente a 3 antes de reanudar la ejecución.
+We reveal that the value of the parameter `dow` is currently 2, but manually change it to 3 before resuming execution.
 
 <div class="clearfix"></div>
 
-## Edición en tiempo real
+## Live editing
 
-Observar y pausar el código que está en ejecución te ayuda a localizar errores, y la edición en tiempo real te permite obtener rápidamente una vista previa sin tener que volver a cargar.
+Warning: This page is deprecated. See [Edit a script](reference#edit) for up-to-date information.
 
-Para editar una secuencia de comandos en tiempo real, solo debes hacer clic en la sección de edición del panel Sources cuando recorras el código. Realiza los cambios como lo harías en el editor y confirma los cambios con <kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">S</kbd> (o <kbd class="kbd">Cmd</kbd> + <kbd class="kbd">S</kbd> en Mac). En este momento, todo el archivo JS se corregirá en el VM y todas las definiciones de la función se actualizarán. 
+Observing and pausing the executing code helps you locate errors, and live editing allows you to quickly preview changes without the need to reload.
 
-Ahora puedes reanudar la ejecución. La secuencia de comandos modificada se ejecutará en lugar de la original y podrás observar los efectos de tus cambios.
+To live edit a script, simply click into the editor part of the Sources panel while stepping. Make your changes as you would do in your editor, then commit the change with <kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">S</kbd> (or <kbd class="kbd">Cmd</kbd> + <kbd class="kbd">S</kbd> on Mac). At this point, the entire JS file will be patched into the VM and all function definitions will be updated.
 
-#### Ejemplo
+Now, you can resume execution; your modified script will execute in place of the original, and you can observe the effects of your changes.
 
-![Edición en tiempo real](imgs/image_18.png)
+#### Example
 
-Sospechamos que el parámetro `dow` es, en cada caso, incorrecto por +1 cuando se lo
-pasa a la función `setone()`; es decir, el valor de `dow<` se 
-recibe como 1 cuando debería ser 0, como 2 cuando debería ser 1, etc. Para probar 
-rápidamente si disminuir el valor que se pasa confirma que esto es un problema,
-agregamos la línea 17 al comienzo de la función, aceptamos el cambio con 
-<kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">S</kbd> y reanudamos la ejecución.
+![Live editing](imgs/image_18.png)
 
-## Manejar la ejecución del subproceso {: #threads }
+We suspect that the parameter `dow` is, in every case, off by +1 when it is passed to the function `setone()` – that is, the value of `dow<`, as received, is 1 when it should be 0, 2 when it should be 1, etc. To quickly test whether decrementing the passed value confirms that this is the problem, we add line 17 at the beginning of the function, commit with
+<kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">S</kbd> and resume.
 
-Usa el subpanel **Threads** en el panel Sources para pausar, entrar e
-inspeccionar otros subprocesos, como los subprocesos del trabajador de servicio o del trabajador web.
+## Managing thread execution {: #threads }
 
-Para mostrar el subpanel Threads, esta sección usa la siguiente demostración:
-[Ejemplo básico de trabajadores web](http://mdn.github.io/simple-web-worker/).
+Warning: This page is deprecated. See [Change thread context](reference#threads) for up-to-date information.
 
-Si abres DevTools en la app, puedes ver que la secuencia de comandos principal está
-en `main.js`:
+Use the **Threads** pane on the Sources panel to pause, step into, and inspect other threads, such as service worker or web worker threads.
 
-![Secuencia de comandos principal](imgs/main-script.png)
+To demonstrate the Threads pane, this section uses the following demo: [Web Workers basic example](http://mdn.github.io/simple-web-worker/).
 
-La secuencia de comandos del trabajador web está en `worker.js`:
+If you open DevTools on the app, you can see that the main script is located in `main.js`:
 
-![Secuencia de comandos del trabajador](imgs/worker-script.png)
+![Main script](imgs/main-script.png)
 
-La secuencia de comandos principal detecta los cambios en los campos de entrada **Multiply number 1** o
-**Multiply number 2**. Ante un cambio, la secuencia de comandos principal envía un
-mensaje al trabajador web con los valores de los dos números que se deben multiplicar. El
-trabajador web realiza la multiplicación y pasa el resultado a la secuencia de
-comandos principal.
+And the web worker script is located in `worker.js`:
 
-Supón que estableces un punto de interrupción en `main.js` que se activa cuando
-se cambia el primer número:
+![Worker script](imgs/worker-script.png)
 
-![Punto de interrupción de la secuencia de comandos principal](imgs/main-script-breakpoint.png)
+The main script listens to changes to the **Multiply number 1** or **Multiply number 2** input fields. Upon change the main script sends a message to the web worker with the values of the two numbers to multiply. The web worker does the multiplication and then passes the result back to the main script.
 
-También estableces un punto de interrupción en `worker.js` cuando el trabajador recibe un
-mensaje:
+Suppose that you set a breakpoint in `main.js` that's triggered when the first number is changed:
 
-![Punto de interrupción de la secuencia de comandos del trabajador](imgs/worker-script-breakpoint.png)
+![Main script breakpoint](imgs/main-script-breakpoint.png)
 
-La modificación del primer número en la IU de la app activa ambos puntos de interrupción.
+And you also set a breakpoint in `worker.js` when the worker receives a message:
 
-![Puntos de interrupción de la secuencia de comandos principal y del trabajador activados](imgs/breakpoints-triggered.png)
+![Worker script breakpoint](imgs/worker-script-breakpoint.png)
 
-En el subpanel Threads, la flecha azul indica qué subproceso está
-seleccionado en el momento. Por ejemplo, en la captura de pantalla precedente, está seleccionado el subproceso **Main**. 
+Modifying the first number on the app's UI triggers both of the breakpoints.
 
-Todos los controles
-de DevTools para recorrer el código (reanudar o pausar la ejecución de la secuencia de comandos,
-omitir la siguiente llamada de función, entrada a la siguiente llamada de función, etc.) se relacionan con
-ese subproceso. En otras palabras, si presionaste el botón para **reanudar la ejecución de la secuencia de comandos**
-mientras DevTools se veía como en la captura de pantalla de arriba, el subproceso 
-Main reanudaría su ejecución, pero el subproceso del trabajador web
-seguiría pausado. Las secciones **Call Stack** y **Scope** solo muestran 
-información para el subproceso Main.
+![Main and worker script breakpoints triggered](imgs/breakpoints-triggered.png)
 
-Cuando desees recorrer el código para el subproceso del trabajador web o ver su
-información de ámbito y pila de llamadas, haz clic en su etiqueta en el subpanel Threads,
-para que aparezca la flecha azul junto a él. En la siguiente captura de pantalla se muestra cómo la información
-de la pila de llamadas y el ámbito cambia después de seleccionar el subproceso del trabajador.
-Nuevamente, si presionaras cualquiera de los botones para recorrer el código (reanudar
-la ejecución de la secuencia de comandos, omitir la siguiente llamada de función, etc.) esa acción solo
-correspondería al subproceso del trabajador. El subproceso Main no resulta afectado.
+In the Threads pane the blue arrow indicates which thread is currently selected. For example, in the screenshot above the **Main** thread is selected.
 
-![Subproceso del trabajador en foco](imgs/worker-thread.png)
+All of the DevTools controls for stepping through code (resume or pause script execution, step over next function call, step into next function call, etc.) pertain to that thread. In other words, if you pressed the **Resume script execution** button while your DevTools looked like the screenshot above, the Main thread would resume executing, but the web worker thread would still be paused. The **Call Stack** and **Scope** sections are only displaying information for the Main thread, too.
 
+When you want to step through the code for the web worker thread, or see its scope and call stack information, just click on its label in the Threads pane, so that the blue arrow is next to it. The screenshot below shows how the call stack and scope information changes after selecting the worker thread. Again, if you were to press any of the stepping through code buttons (resume script execution, step over next function call, etc.), that action would only pertain to the worker thread. The Main thread is not affected.
 
-{# wf_devsite_translation #}
+![worker thread in focus](imgs/worker-thread.png)
+
+## Feedback {: #feedback }
+
+{% include "web/_shared/helpful.html" %}
