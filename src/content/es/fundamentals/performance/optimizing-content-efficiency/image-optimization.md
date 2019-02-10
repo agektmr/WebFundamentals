@@ -1,97 +1,93 @@
-project_path: /web/fundamentals/_project.yaml
-book_path: /web/fundamentals/_book.yaml
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml
 
+{# wf_updated_on: 2018-08-30 #} {# wf_published_on: 2014-05-06 #} {# wf_blink_components: Blink>Image #}
 
-{# wf_updated_on: 2019-02-06 #}
-{# wf_published_on: 2014-05-06 #}
-{# wf_blink_components: Blink>Image #}
-
-# Optimización de imágenes {: .page-title }
+# Image Optimization {: .page-title }
 
 {% include "web/_shared/contributors/ilyagrigorik.html" %}
 
-A menudo, las imágenes representan la mayor parte de los bytes descargados en una página web y también ocupan una considerable proporción del espacio visual de esta. Como resultado, la optimización de imágenes a menudo puede ser uno de los más eficaces medios de ahorro de bytes y mejora de rendimiento para tu sitio web. Cuantos menos bytes deba descargar el navegador, menor será la exigencia para el ancho de banda del cliente y mayor la velocidad a la que el navegador podrá descargar y mostrar contenido útil en la pantalla.
+Images often account for most of the downloaded bytes on a web page and also often occupy a significant amount of visual space. As a result, optimizing images can often yield some of the largest byte savings and performance improvements for your website: the fewer bytes the browser has to download, the less competition there is for the client's bandwidth and the faster the browser can download and render useful content on the screen.
 
-La optimización de la imagen es un arte y una ciencia. Un arte porque no hay una respuesta definitiva respecto de cuál es la mejor manera de comprimir una imagen individual, y una ciencia porque existe una gran cantidad de técnicas y algoritmos bien desarrollados que pueden reducir notablemente el tamaño de una imagen. Para hallar la configuración óptima para tu imagen, se requiere un análisis cuidadoso en muchas dimensiones: capacidades del formato, contenido de los datos codificados, calidad, dimensiones en píxeles y más.
+Image optimization is both an art and science: an art because there is no one definitive answer for how best to compress an individual image, and a science because there are many well developed techniques and algorithms that can significantly reduce the size of an image. Finding the optimal settings for your image requires careful analysis along many dimensions: format capabilities, content of encoded data, quality, pixel dimensions, and more.
 
-## Eliminación y reemplazo de imágenes
-
-### TL;DR {: .hide-from-toc }
-- Eliminar recursos de imagen innecesarios
-- Aprovechar los efectos CSS3 cuando sea posible
-- Usar fuentes web en lugar de codificar texto en las imágenes
-
-
-Lo primero que debes preguntarte es si realmente es necesaria una imagen para lograr el efecto que buscas. El buen diseño es simple, y siempre te proporcionará el mejor rendimiento. Si puedes eliminar un recurso de imagen, que generalmente requiera una gran cantidad de bytes relacionados con HTML, CSS, JavaScript y otros recursos de la página, esa será siempre la mejor estrategia de optimización. Dicho esto, una imagen bien ubicada también puede comunicar más información que mil palabras, por lo que dependerá de ti buscar ese equilibrio.
-
-A continuación, debes considerar si hay una tecnología alternativa que pueda proporcionar los resultados deseados, aunque de forma más eficaz:
-
-* Los **efectos CSS** (gradientes, sombras, etc.) y las animaciones CSS pueden usarse para producir recursos independientes de la resolución que se vean siempre nítidos en todas las resoluciones y todos los niveles de zoom, a menudo en una fracción de los bytes que requiere un archivo de imagen.
-* Las **fuentes web** permiten usar tipos de letras bellísimos y, al mismo tiempo, conservar la capacidad de seleccionar, buscar y modificar el tamaño del texto, lo que representa una mejora considerable en la usabilidad.
-
-Si alguna vez planeas codificar texto en un recurso de imagen, detente a reconsiderar tu decisión. Para lograr un buen nivel de diseño, personalización de marca y lectura es esencial contar con una tipografía de excelencia, pero el texto integrado en las imágenes ofrece una experiencia de usuario deficiente: el texto no puede ajustarse a escala, no admite búsquedas, no puede acercarse ni alejarse, no ofrece accesibilidad y no se adapta bien a dispositivos con un valor elevado de ppp. El uso de fuentes web requiere su [propio conjunto de optimizaciones](https://www.igvita.com/2014/01/31/optimizing-web-font-rendering-performance/), pero aborda todas estas inquietudes y siempre es una mejor opción para mostrar texto.
-
-
-## Imágenes vectoriales frente a imágenes de trama
+## Eliminating and replacing images
 
 ### TL;DR {: .hide-from-toc }
-- Las imágenes vectoriales son ideales para imágenes que consisten en formas geométricas
-- Las imágenes vectoriales son independientes del zoom y de la resolución
-- Las imágenes de trama se deben usar para escenas complejas con muchos detalles y formas irregulares
 
+* Eliminate unnecessary image resources
+* Leverage CSS3 effects where possible
+* Use web fonts instead of encoding text in images
 
-Una vez que hayas determinado que una imagen es el medio óptimo para lograr el efecto deseado, el paso esencial que sigue es seleccionar el formato adecuado:
+The very first question you should ask yourself is whether an image is, in fact, required to achieve the effect you are after. Good design is simple and will also always yield the best performance. If you can eliminate an image resource, which often requires a large number of bytes relative to HTML, CSS, JavaScript and other assets on the page, then that is always the best optimization strategy. That said, a well-placed image can also communicate more information than a thousand words, so it is up to you to find that balance.
+
+Next, you should consider if there is an alternative technology that could deliver the desired results, but in a more efficient manner:
+
+* **CSS effects** (gradients, shadows, etc.) and CSS animations can be used to produce resolution-independent assets that always look sharp at every resolution and zoom level, often at a fraction of the bytes required by an image file.
+* **Web fonts** enable use of beautiful typefaces while preserving the ability to select, search, and resize text - a significant improvement in usability.
+
+If you ever find yourself encoding text in an image asset, stop and reconsider. Great typography is critical to good design, branding, and readability, but text-in-images delivers a poor user experience: the text is not selectable, not searchable, not zoomable, not accessible, and not friendly for high-DPI devices. The use of web fonts requires its [own set of optimizations](https://www.igvita.com/2014/01/31/optimizing-web-font-rendering-performance/), but it addresses all of these concerns and is always a better choice for displaying text.
+
+## Vector vs. Raster images
+
+### TL;DR {: .hide-from-toc }
+
+* Vector images are ideal for images that consist of geometric shapes
+* Vector images are zoom and resolution-independent
+* Raster images should be used for complex scenes with lots of irregular shapes and details
+
+Once you've determined that an image is, in fact, the optimal format to achieve the desired effect, the next critical choice is to select the appropriate format:
 
 <div class="attempt-left">
   <figure>
-    <img src="images/vector-zoom.png" alt="Imagen vectorial ampliada">
-    <figcaption>Imagen vectorial ampliada</figcaption>
+    <img src="images/vector-zoom.png" alt="Zoomed-in vector image">
+    <figcaption>Zoomed-in vector image</figcaption>
   </figure>
 </div>
+
 <div class="attempt-right">
   <figure>
-    <img src="images/raster-zoom.png" alt="Imagen de trama ampliada">
-    <figcaption>Imagen de trama ampliada</figcaption>
+    <img src="images/raster-zoom.png" alt="Zoomed-in raster image">
+    <figcaption>Zoomed-in raster image</figcaption>
   </figure>
 </div>
 
 <div style="clear:both;"></div>
 
-* En los [gráficos vectoriales](https://en.wikipedia.org/wiki/Vector_graphics) se usan líneas, puntos y polígonos para representar una imagen.
-* En los [gráficos de trama](https://en.wikipedia.org/wiki/Raster_graphics) se representa una imagen mediante la codificación de los valores individuales de cada píxel dentro de una cuadrícula rectangular.
+* [Vector graphics](https://en.wikipedia.org/wiki/Vector_graphics) use lines, points, and polygons to represent an image.
+* [Raster graphics](https://en.wikipedia.org/wiki/Raster_graphics) represent an image by encoding the individual values of each pixel within a rectangular grid.
 
-Cada formato tiene sus propias ventajas y desventajas. Los formatos vectoriales son ideales para imágenes que consisten en formas geométricas simples (por ejemplo, logotipos, texto, íconos, etc.) y ofrecen resultados nítidos en todos los ajustes de resolución y zoom. Esto los convierte en el formato ideal para pantallas de alta resolución y recursos que deben mostrarse en diferentes tamaños.
+Each format has its own set of pros and cons. Vector formats are ideally suited for images that consist of simple geometric shapes (for example, logos, text, icons, and so on), and deliver sharp results at every resolution and zoom setting, which makes them an ideal format for high-resolution screens and assets that need to be displayed at varying sizes.
 
-No obstante, los formatos vectoriales no son eficientes cuando la escena es compleja (por ejemplo, una foto): el volumen de lenguaje de marcado SVG para describir todas las formas puede ser prohibitivamente alto y el resultado podría no aportar "realidad fotográfica". Cuando eso sucede, debes usar un formato de imagen de trama como GIF, PNG o JPEG, o uno de los nuevos, como JPEG-XR y WebP.
+However, vector formats fall short when the scene is complicated (for example, a photo): the amount of SVG markup to describe all the shapes can be prohibitively high and the output may still not look "photorealistic". When that's the case, that's when you should be using a raster image format such as GIF, PNG, JPEG, or one of the newer formats such as JPEG-XR and WebP.
 
-Las imágenes de trama no tienen las mismas propiedades atractivas de ser independientes de la resolución o del zoom. Cuando amplíes una imagen de trama, verás gráficos angulosos y borrosos. En consecuencia, es posible que debas guardar varias versiones de una imagen de trama en diferentes resoluciones para proporcionar a tus usuarios una experiencia óptima.
+Raster images do not have the same nice properties of being resolution or zoom independent - when you scale up a raster image you'll see jagged and blurry graphics. As a result, you may need to save multiple versions of a raster image at various resolutions to deliver the optimal experience to your users.
 
-
-## Consecuencias de las pantallas de alta resolución
+## Implications of high-resolution screens
 
 ### TL;DR {: .hide-from-toc }
-- Las pantallas de alta resolución tienen píxeles para varios dispositivos por cada pixel CSS
-- Las imágenes de alta resolución requieren una cantidad de píxeles y bytes considerablemente superior
-- Las técnicas de optimización de imagen son las mismas, independientemente de la resolución
 
+* High resolution screens have multiple device pixels per CSS pixel
+* High resolution images require significantly higher number of pixels and bytes
+* Image optimization techniques are the same regardless of resolution
 
-Al hablar de píxeles de imagen, debemos distinguir diferentes tipos de píxeles: los píxeles CSS y los píxeles de dispositivo. Un píxel de CSS individual puede contener varios píxeles de dispositivos; por ejemplo, el píxel de CSS individual puede corresponder directamente a un solo píxel de dispositivo o estar respaldado por varios de estos píxeles. ¿Cuál es el sentido? Cuantos más píxeles de dispositivo haya, mayor será el detalle del contenido que se muestre en pantalla.
+When we talk about image pixels, we need to distinguish between different kinds of pixels: CSS pixels and device pixels. A single CSS pixel may contain multiple device pixels - for example, a single CSS pixel may correspond directly to a single device pixel, or may be backed by multiple device pixels. What's the point? Well, the more device pixels there are, the finer the detail of the displayed content on the screen.
 
-<img src="images/css-vs-device-pixels.png"  alt="Píxeles de CSS frente a píxeles de dispositivo">
+<img src="images/css-vs-device-pixels.png"  alt="CSS vs device pixels" />
 
-Las pantallas con valores altos de PPP (HiDPI en inglés) producen resultados bellos, pero presentan una desventaja obvia: nuestros recursos de imagen requieren más detalles para poder aprovechar las cantidades de píxeles de dispositivo más altas. La buena noticia es que las imágenes vectoriales son ideales para esta tarea, ya que se pueden representar en cualquier resolución con buenos resultados. Posiblemente, estaríamos ante mayores requisitos de procesamiento para la representación de detalles más precisos, pero el recurso subyacente es el mismo y es independiente de la resolución.
+High DPI (HiDPI) screens produce beautiful results, but there is one obvious tradeoff: our image assets require more detail in order to take advantage of the higher device pixel counts. The good news is, vector images are ideally suited for this task, as they can be rendered at any resolution with sharp results - we might incur a higher processing cost to render the finer detail, but the underlying asset is the same and is resolution independent.
 
-Por otra parte, las imágenes de trama presentan un desafío mucho más grande porque codifican los datos de la imagen por píxel. Por lo tanto, cuantos más píxeles haya, mayor será el tamaño del archivo de una imagen de trama. A modo de ejemplo, consideremos la diferencia entre un recurso de foto visualizado en 100 x 100 píxeles (CSS):
+On the other hand, raster images pose a much larger challenge because they encode image data on a per-pixel basis. Hence, the larger the number of pixels, the larger the filesize of a raster image. As an example, let's consider the difference between a photo asset displayed at 100x100 (CSS) pixels:
 
 <table>
+  
 <thead>
   <tr>
-    <th>Resolución de la pantalla</th>
-    <th>Píxeles totales</th>
-    <th>Tamaño del archivo sin comprimir (4 bytes por pixel)</th>
+    <th>Screen resolution</th>
+    <th>Total pixels</th>
+    <th>Uncompressed filesize (4 bytes per pixel)</th>
   </tr>
 </thead>
-<tbody>
+
 <tr>
   <td data-th="resolution">1x</td>
   <td data-th="total pixels">100 x 100 = 10,000</td>
@@ -100,30 +96,28 @@ Por otra parte, las imágenes de trama presentan un desafío mucho más grande p
 <tr>
   <td data-th="resolution">2x</td>
   <td data-th="total pixels">100 x 100 x 4 = 40,000</td>
-  <td data-th="filesize">160,000 bytes</td>
+  <td data-th="filesize">160,000 bytes</td>
 </tr>
 <tr>
   <td data-th="resolution">3x</td>
   <td data-th="total pixels">100 x 100 x 9 = 90,000</td>
-  <td data-th="filesize">360,000 bytes</td>
+  <td data-th="filesize">360,000 bytes</td>
 </tr>
-</tbody>
 </table>
 
-Cuando duplicamos la resolución de la pantalla física, la cantidad total de píxeles se multiplica por cuatro: se duplica la cantidad de píxeles horizontales y se duplica la cantidad de píxeles verticales. Por lo tanto, en una pantalla “2x” no solo se duplica, sino que se cuadruplica la cantidad necesaria de píxeles.
+When we double the resolution of the physical screen, the total number of pixels increases by a factor of four: double the number of horizontal pixels, times double the number of vertical pixels. Hence, a "2x" screen not just doubles, but quadruples the number of required pixels!
 
-¿Qué significa esto en la práctica? Las pantallas de alta resolución nos permiten mostrar imágenes bellas, lo cual puede ser una excelente función de producto. Sin embargo, para las pantallas de alta resolución también se requieren imágenes de alta resolución: usa imágenes vectoriales siempre que sea posible, ya que no dependen de la resolución y siempre proporcionan buenos resultados. Si fuera necesario usar una imagen de trama, proporciona y optimiza diferentes variantes de cada imagen con la ayuda de [`srcset` y `picture`](/web/fundamentals/design-and-ux/responsive/images#images-in-markup).
+So, what does this mean in practice? High resolution screens enable us to deliver beautiful images, which can be a great product feature. However, high resolution screens also require high-resolution images: prefer vector images whenever possible as they are resolution independent and always deliver sharp results, and if a raster image is required, deliver and optimize multiple variants of each image with the help of [`srcset` and `picture`](/web/fundamentals/design-and-ux/responsive/images#images-in-markup).
 
-## Optimización de imágenes vectoriales
+## Optimizing vector images
 
 ### TL;DR {: .hide-from-toc }
-- SVG es un formato de imagen basado en XML
-- Los archivos SVG se deben minificar para reducir su tamaño
-- Los archivos SVG se deben comprimir con GZIP
 
+* SVG is an XML-based image format
+* SVG files should be minified to reduce their size
+* SVG files should be compressed with GZIP
 
-Todos los navegadores modernos admiten gráficos vectoriales escalables (SVG), un formato de imagen basado en XML para gráficos bidimensionales. Podemos incorporar el lenguaje de marcado SVG directamente en la página o como un recurso externo. A su vez, se puede crear un archivo SVG con la mayoría de los programas de dibujo basados en vectores o a mano, directamente en tu editor de texto favorito.
-
+All modern browsers support Scalable Vector Graphics (SVG), which is an XML-based image format for two-dimensional graphics: we can embed the SVG markup directly on the page, or as an external resource. In turn, an SVG file can be created by most vector-based drawing software, or by hand and directly in your favorite text editor.
 
     <?xml version="1.0" encoding="utf-8"?>
     <!-- Generator: Adobe Illustrator 17.1.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
@@ -135,310 +129,301 @@ Todos los navegadores modernos admiten gráficos vectoriales escalables (SVG), u
       </g>
     </g>
     </svg>
+    
 
+The above example renders a simple circle shape with a black outline and red background and was exported from Adobe Illustrator. As you can tell, it contains a lot of metadata, such as layer information, comments, and XML namespaces that are often unnecessary to render the asset in the browser. As a result, it is always a good idea to minify your SVG files by running through a tool like [svgo](https://github.com/svg/svgo).
 
-En el ejemplo anterior se representa una forma circular simple con un delineado negro y un fondo rojo, exportada de Adobe Illustrator. Como puedes ver, contiene muchísimos metadatos, como información en capas, comentarios y espacio de nombres XML que generalmente no son necesarios para mostrar un recurso en el navegador. En consecuencia, siempre se recomienda minificar tus archivos SVG ejecutándolos a través de una herramienta como [svgo](https://github.com/svg/svgo).
+Case in point, svgo reduces the size of the above SVG file generated by Illustrator by 58%, taking it from 470 to 199 bytes. Further, because SVG is an XML-based format, we can also apply GZIP compression to reduce its transfer size - make sure your server is configured to compress SVG assets!
 
-Un ejemplo claro: svgo reduce en un 58% el tamaño del archivo SVG anterior generado por Illustrator, llevándolo así de 470 a 199 bytes. Además, debido a que SVG es un formato basado en XML, también se puede aplicar compresión GZIP para reducir su tamaño de transferencia. Asegúrate de que tu servidor esté configurado para comprimir recursos SVG.
-
-
-## Optimización de imágenes de trama
+## Optimizing raster images
 
 ### TL;DR {: .hide-from-toc }
-- Una imagen de trama es una cuadrícula de píxeles
-- Cada píxel codifica información sobre color y transparencia
-- Los compresores de imágenes usan diferentes técnicas para reducir la cantidad de bits necesarios por píxel a fin de reducir el tamaño del archivo de la imagen
 
+* A raster image is a grid of pixels
+* Each pixel encodes color and transparency information
+* Image compressors use a variety of techniques to reduce the number of required bits per pixel to reduce file size of the image
 
-Una imagen de trama es simplemente una cuadrícula bidimensional de "píxeles" individuales. Por ejemplo, una imagen de 100 x 100 píxeles es una secuencia de 10,000 píxeles. A su vez, en cada píxel se almacenan los valores de “[RGBA](https://en.wikipedia.org/wiki/RGBA_color_space)”: (R) canal rojo, (G) canal verde, (B) canal azul y (A) canal alfa (transparencia).
+A raster image is simply a 2-dimensional grid of individual "pixels" - for example, a 100x100 pixel image is a sequence of 10,000 pixels. In turn, each pixel stores the "[RGBA](https://en.wikipedia.org/wiki/RGBA_color_space)" values: (R) red channel, (G) green channel, (B) blue channel, and (A) alpha (transparency) channel.
 
-A nivel interno, el navegador asigna 256 valores (tonos) para cada canal, lo cual se traduce en 8 bits por canal (2 ^ 8 = 256) y 4 por píxel (4 canales x 8 bits = 32 bits = 4 bytes). Como consecuencia, si sabemos las dimensiones de la cuadrícula, podremos calcular fácilmente el tamaño del archivo:
+Internally, the browser allocates 256 values (shades) for each channel, which translates to 8 bits per channel (2 ^ 8 = 256), and 4 bytes per pixel (4 channels x 8 bits = 32 bits = 4 bytes). As a result, if we know the dimensions of the grid we can easily calculate the filesize:
 
-* Una imagen de 100 x 100 px está compuesta por 10,000 píxeles
-* 10,000 píxeles x 4 bytes = 40,000 bytes
-* 40,000 bytes / 1,024 = 39 KB
+* 100 x 100px image is composed of 10,000 pixels
+* 10,000 pixels x 4 bytes = 40,000 bytes
+* 40,000 bytes / 1024 = 39 KB
 
-Note: A modo de aclaración, independientemente del formato de imagen utilizado para transferir los datos del servidor al cliente, cuando el navegador decodifica la imagen, cada píxel siempre ocupa 4 bytes de memoria. Esta puede ser una limitación importante para las imágenes grandes y los dispositivos que no tienen mucha memoria disponible; por ejemplo dispositivos móviles de gama baja.
+Note: As an aside, regardless of the image format used to transfer the data from the server to the client, when the image is decoded by the browser, each pixel always occupies 4 bytes of memory. This can be an important constraint for large images and devices which do not have a lot of available memory - for example, low-end mobile devices.
 
 <table>
+  
 <thead>
   <tr>
-    <th>Dimensiones</th>
-    <th>Píxeles</th>
-    <th>Tamaño del archivo</th>
+    <th>Dimensions</th>
+    <th>Pixels</th>
+    <th>File size</th>
   </tr>
 </thead>
-<tbody>
+
 <tr>
-  <td data-th="dimensions">100 x 100</td>
+  <td data-th="dimensions">100 x 100</td>
   <td data-th="pixels">10,000</td>
-  <td data-th="file size">39 KB</td>
+  <td data-th="file size">39 KB</td>
 </tr>
 <tr>
   <td data-th="dimensions">200 x 200</td>
   <td data-th="pixels">40,000</td>
-  <td data-th="file size">156 KB</td>
+  <td data-th="file size">156 KB</td>
 </tr>
 <tr>
   <td data-th="dimensions">300 x 300</td>
   <td data-th="pixels">90,000</td>
-  <td data-th="file size">351 KB</td>
+  <td data-th="file size">351 KB</td>
 </tr>
 <tr>
   <td data-th="dimensions">500 x 500</td>
   <td data-th="pixels">250,000</td>
-  <td data-th="file size">977 KB</td>
+  <td data-th="file size">977 KB</td>
 </tr>
 <tr>
   <td data-th="dimensions">800 x 800</td>
   <td data-th="pixels">640,000</td>
-  <td data-th="file size">2500 KB</td>
+  <td data-th="file size">2500 KB</td>
 </tr>
-</tbody>
 </table>
 
-Tal vez 39 KB una imagen de 100 x 100 píxeles no parezca gran cosa, pero el tamaño del archivo aumenta rápidamente para imágenes más grandes y hace que la descarga de los recursos de imagen sea más lenta y pesada. Afortunadamente, lo descrito hasta ahora es el formato de imagen “sin comprimir”. ¿Qué podemos hacer para reducir el tamaño del archivo de imagen?
+39KB for a 100x100 pixel image may not seem like a big deal, but the filesize quickly explodes for larger images and makes image assets both slow and expensive to download. Thankfully, what we've described so far is the "uncompressed" image format. What could we do to reduce the image file size?
 
-Una estrategia simple consiste en reducir la "profundidad de bits" de la imagen de 8 bits por canal a una paleta de colores más pequeña: 8 bits por canal nos brindan 256 valores por canal y 16,777,216 (256 ^ 3) colores en total. ¿Qué ocurriría si redujeras la paleta a 256 colores? Solo necesitaríamos 8 bits en total para los canales RGB y ahorraríamos de inmediato dos bytes por píxel, lo cual equivale a un ahorro del 50% en la compresión en comparación con el formato original de 4 bytes por píxel.
+One simple strategy is to reduce the "bit-depth" of the image from 8 bits per channel to a smaller color palette: 8 bits per channel gives us 256 values per channel and 16,777,216 (256 ^ 3) colors in total. What if we reduced the palette to 256 colors? Then we would only need 8 bits in total for the RGB channels and immediately save two bytes per pixel -- that's 50% compression savings over our original 4 bytes per pixel format!
 
-<img src="images/artifacts.png"  alt="Alteraciones de la compresión">
+<img src="images/artifacts.png"  alt="Compression artifacts" />
 
-Note: De izquierda a derecha (PNG): 32 bits (16 millones de colores), 7 bits (128 colores), 5 bits (32 colores). Las escenas complejas con transiciones de color graduales (gradientes, cielo, etc.) requieren paletas de colores más amplias para evitar anomalías visuales, como un cielo pixelado en el recurso de 5 bits. Por el contrario, si la imagen solo usa pocos colores, la presencia de una paleta grande implicará la pérdida de bits valiosos.
+Note: Left to right (PNG): 32-bit (16M colors), 7-bit (128 colors), 5-bit (32 colors). Complex scenes with gradual color transitions (gradients, sky, etc.) require larger color palettes to avoid visual artifacts such as the pixelated sky in the 5-bit asset. On the other hand, if the image only uses a few colors, then a large palette is simply wasting precious bits!
 
-A continuación, una vez que optimicemos los datos almacenados en píxeles individuales, podríamos profundizar y observar también los píxeles cercanos: al parecer, muchas imágenes, y en especial las fotos, tienen muchos píxeles cercanos con colores similares; por ejemplo, el cielo, texturas repetidas, etc. Al usar esa información para nuestro beneficio, el compresor puede aplicar “[codificación delta](https://en.wikipedia.org/wiki/Delta_encoding)”. En lugar de almacenar valores individuales para cada píxel, podemos guardar la diferencia entre los píxeles cercanos. Si los píxeles adyacentes son los mismos, delta es “cero” y solo necesitamos almacenar un solo bit. Pero no hay por qué detenerse allí...
+Next, once we've optimized the data stored in individual pixels we could get more clever and look at nearby pixels as well: turns out, many images, and especially photos, have many nearby pixels with similar colors - for example, the sky, repeating textures, and so on. Using this information to our advantage the compressor can apply "[delta encoding](https://en.wikipedia.org/wiki/Delta_encoding)" where instead of storing the individual values for each pixel, we can store the difference between nearby pixels: if the adjacent pixels are the same, then the delta is "zero" and we only need to store a single bit! But why stop there...
 
-El ojo humano tiene distintos niveles de sensibilidad a distintos colores: podemos optimizar la codificación de colores para considerar esto; para ello, debemos reducir o aumentar la paleta de esos colores.
-Los píxeles "cercanos" forman una cuadrícula bidimensional, lo que significa que cada píxel tiene varios vecinos: podemos usar esto para mejorar más la codificación delta.
-En lugar de observar únicamente los vecinos inmediatos de cada píxel, podemos observar bloques más grandes de píxeles cercanos y codificar diferentes bloques con configuraciones distintas. Y así sucesivamente…
+The human eye has different level of sensitivity to different colors: we can optimize our color encoding to account for this by reducing or increasing the palette for those colors. "Nearby" pixels form a two dimensional grid, which means that each pixel has multiple neighbors: we can use this fact to further improve delta encoding. Instead of looking at just the immediate neighbors for each pixel, we can look at larger blocks of nearby pixels and encode different blocks with different settings. And so on...
 
-Como podrás ver, la optimización de la imagen cobra complejidad rápidamente (o se vuelve más divertida, según tu perspectiva) y representa un área activa de investigación académica y comercial. Las imágenes ocupan una gran cantidad de bytes y el desarrollo de mejores técnicas de compresión de imágenes es un aspecto de muchísimo valor. Si deseas obtener más información, visita la [página de Wikipedia](https://en.wikipedia.org/wiki/Image_compression) o lee el [documento técnico sobre técnicas de compresión WebP](/speed/webp/docs/compression) para observar un ejemplo práctico.
+As you can tell, image optimization gets complicated quickly (or fun, depending on your perspective), and is an active area of academic and commercial research. Images occupy a lot of bytes and there is a lot of value in developing better image compression techniques! If you're curious to learn more, head to the [Wikipedia page](https://en.wikipedia.org/wiki/Image_compression), or check out the [WebP compression techniques whitepaper](/speed/webp/docs/compression) for a hands-on example.
 
-Todo esto es genial, pero también muy académico. ¿Cómo nos ayuda a optimizar imágenes en nuestras páginas? No nos encontramos en una posición en la que se puedan inventar nuevas técnicas de compresión, pero es importante comprender el problema: los píxeles RGBA, la profundidad de bits y varias técnicas de optimización. Es fundamental comprender y considerar todos estos conceptos para abordar los diferentes formatos de imágenes de trama.
+So, once again, this is all great, but also very academic: how does it help us optimize images on our pages? Well, we are definitely not in a position to invent new compression techniques, but it's important to understand the shape of the problem: RGBA pixels, bit-depth, and various optimization techniques. All of these concepts are critical to understand and keep in mind before we dive into the discussions of various raster image formats.
 
-
-## Compresión de imágenes con y sin pérdida
+## Lossless vs lossy image compression
 
 ### TL;DR {: .hide-from-toc }
-- Debido a la manera en la que funcionan nuestros ojos, las imágenes son ideales para usar la compresión con pérdida
-- La optimización de una imagen es una función de la compresión con y sin pérdida
-- Las diferencias en los formatos de imagen se deben a la diferencia entre los algoritmos de compresión con y sin pérdida que se usan para optimizar la imagen, y las maneras en que se usan
-- No hay un formato ni un "ajuste de calidad" que sea óptimo para todas las imágenes: cada combinación específica de compresor y contenido de imagen produce un resultado único
 
+* Due to how our eyes work, images are great candidates for lossy compression
+* Image optimization is a function of lossy and lossless compression
+* Differences in image formats are due to the difference in how and which lossy and lossless algorithms are used to optimize the image
+* There is no single best format or "quality setting" for all images: each combination of particular compressor and image contents produce a unique output
 
-Para ciertos tipos de datos, como el código fuente de una página o un archivo ejecutable, es fundamental que el compresor no modifique ni pierda la información original. Si un solo dato falta o es incorrecto, podría cambiar completamente el significado del contenido del archivo o, lo que es peor, dañarlo por completo. Para otros tipos de datos, como las imágenes, el audio y el video, puede ser totalmente aceptable proporcionar una representación “aproximada” de los datos originales.
+For certain types of data, such as source code for a page, or an executable file, it is critical that a compressor does not alter or lose any of the original information: a single missing or wrong bit of data could completely change the meaning of the contents of the file, or worse, break it entirely. For some other types of data, such as images, audio, and video, it may be perfectly acceptable to deliver an "approximate" representation of the original data.
 
-De hecho, debido a la forma en que funciona el ojo, a menudo podemos descartar algo de información sobre cada píxel a fin de reducir el tamaño de archivo de una imagen; por ejemplo, nuestros ojos tienen una sensibilidad diferente para los distintos colores, lo cual significa que podemos usar menos bits para codificar algunos colores. En consecuencia, una canalización de optimización de imágenes típica consiste en dos pasos muy importantes:
+In fact, due to how the eye works, we can often get away with discarding some information about each pixel in order to reduce the filesize of an image - for example, our eyes have different sensitivity to different colors, which means that we can use fewer bits to encode some colors. As a result, a typical image optimization pipeline consists of two high level steps:
 
-1. La imagen se procesa con un filtro “[con pérdida](https://en.wikipedia.org/wiki/Lossy_compression)” que elimina parte de los datos de píxeles
-1. La imagen se procesa con un filtro “[sin pérdida](https://en.wikipedia.org/wiki/Lossless_compression)” que comprime los datos de los píxeles.
+1. Image is processed with a "[lossy](https://en.wikipedia.org/wiki/Lossy_compression)" filter that eliminates some pixel data
+2. Image is processed with a "[lossless](https://en.wikipedia.org/wiki/Lossless_compression)" filter that compresses the pixel data
 
-**El primer paso es opcional, y el algoritmo exacto dependerá del formato de imagen específico, pero es importante comprender que cualquier imagen puede atravesar una etapa de compresión con pérdida para reducir su tamaño.** De hecho, la diferencia entre los diferentes formatos de imagen, como GIF, PNG y JPEG, entre otros, se debe a la combinación de los algoritmos específicos que usan (u omiten) al aplicar los pasos de compresión con y sin pérdida.
+**The first step is optional, and the exact algorithm will depend on the particular image format, but it is important to understand that any image can undergo a lossy compression step to reduce its size.** In fact, the difference between various image formats, such as GIF, PNG, JPEG, and others, is in the combination of the specific algorithms they use (or omit) when applying the lossy and lossless steps.
 
-¿Cuál es, entonces, la configuración “óptima” para la optimización con y sin pérdida? La respuesta depende del contenido de imagen y de tus propios criterios, como las ventajas y desventajas entre el tamaño de archivo y los artefactos introducidos por la compresión con pérdida: en algunos casos, podrías omitir la optimización con pérdida para comunicar detalles complejos en su máxima fidelidad, y en otros podrías aplicar optimización agresiva con pérdida para reducir el tamaño de archivo del recurso de imagen.  Aquí es donde entran en juego tu criterio y el contexto; no existe una configuración universal.
+So, what is the "optimal" configuration of lossy and lossless optimization? The answer depends on the image contents and your own criteria such as the tradeoff between filesize and artifacts introduced by lossy compression: in some cases you may want to skip lossy optimization to communicate intricate detail in its full fidelity, and in others you may be able to apply aggressive lossy optimization to reduce the filesize of the image asset. This is where your own judgment and context need to come into play - there is no one universal setting.
 
-<img src="images/save-for-web.png" class="attempt-right" alt="Save for web">
+<img src="images/save-for-web.png" class="attempt-right" alt="Save for web" />
 
-A modo de ejemplo práctico, al usar un formato con pérdida, como JPEG, el compresor generalmente expondrá una configuración de "calidad" personalizable (por ejemplo, el control deslizante de calidad proporcionado por la funcionalidad "Save for Web", en Adobe Photoshop), que generalmente es un número entre 1 y 100 con el cual se controla el funcionamiento interno del conjunto específico de algoritmos con pérdida y sin pérdida. Para obtener mejores resultados, experimenta con varias configuraciones de calidad para tus imágenes, y no dudes en reducir la calidad. Los resultados visuales generalmente son muy buenos y la reducción del tamaño de archivo puede ser muy importante.
+As a hands-on example, when using a lossy format such as JPEG, the compressor will typically expose a customizable "quality" setting (for example, the quality slider provided by the "Save for Web" functionality in Adobe Photoshop), which is typically a number between 1 and 100 that controls the inner workings of the specific collection of lossy and lossless algorithms. For best results, experiment with various quality settings for your images, and don't be afraid to dial down the quality - the visual results are often very good and the filesize savings can be quite large.
 
-Note: Ten en cuenta que los niveles de calidad para los diferentes formatos de imagen no son directamente comparables debido a la diferencia en los algoritmos empleados para codificar la imagen: la calidad 90 JPEG producirá un resultado muy diferente del de la calidad 90 WebP. De hecho, incluso los niveles de calidad para el mismo formato de imagen pueden producir resultados visiblemente diferentes en la implementación del compresor.
+Note: Note that quality levels for different image formats are not directly comparable due to differences in algorithms used to encode the image: quality 90 JPEG will produce a very different result than a quality 90 WebP. In fact, even quality levels for the same image format may produce visibly different output based on implementation of the compressor!
 
-
-## Selección del formato de imagen adecuado
+## Selecting the right image format
 
 ### TL;DR {: .hide-from-toc }
-- Comienza por seleccionar el formato universal adecuado: GIF, PNG, JPEG
-- Experimenta y selecciona la mejor configuración para cada formato: calidad, tamaño de la paleta, etc.
-- Considera agregar recursos WebP y JPEG XR para clientes modernos
 
+* Start by selecting the right universal format: GIF, PNG, JPEG
+* Experiment and select the best settings for each format: quality, palette size, etc.
+* Consider adding WebP and JPEG XR assets for modern clients
 
-Además de los diversos algoritmos de compresión con y sin pérdida, los diferentes formatos de imagen son compatibles con distintas funciones, como los canales de animación y transparencia (alfa). Como resultado, la opción de “formato correcto” para una imagen específica es una combinación de resultados visuales deseados y requisitos funcionales.
-
+In addition to different lossy and lossless compression algorithms, different image formats support different features such as animation and transparency (alpha) channels. As a result, the choice of the "right format" for a particular image is a combination of desired visual results and functional requirements.
 
 <table>
+  
 <thead>
   <tr>
-    <th>Formato</th>
-    <th>Transparencia</th>
-    <th>Animación</th>
-    <th>Navegador</th>
+    <th>Format</th>
+    <th>Transparency</th>
+    <th>Animation</th>
+    <th>Browser</th>
   </tr>
 </thead>
-<tbody>
+
 <tr>
   <td data-th="format"><a href="http://en.wikipedia.org/wiki/Graphics_Interchange_Format">GIF</a></td>
-  <td data-th="transparency">Sí</td>
-  <td data-th="animation">Sí</td>
-  <td data-th="browser">Todos</td>
+  <td data-th="transparency">Yes</td>
+  <td data-th="animation">Yes</td>
+  <td data-th="browser">All</td>
 </tr>
 <tr>
   <td data-th="format"><a href="http://en.wikipedia.org/wiki/Portable_Network_Graphics">PNG</a></td>
-  <td data-th="transparency">Sí</td>
+  <td data-th="transparency">Yes</td>
   <td data-th="animation">No</td>
-  <td data-th="browser">Todos</td>
+  <td data-th="browser">All</td>
 </tr>
 <tr>
   <td data-th="format"><a href="http://en.wikipedia.org/wiki/JPEG">JPEG</a></td>
   <td data-th="transparency">No</td>
   <td data-th="animation">No</td>
-  <td data-th="browser">Todos</td>
+  <td data-th="browser">All</td>
 </tr>
 <tr>
   <td data-th="format"><a href="http://en.wikipedia.org/wiki/JPEG_XR">JPEG XR</a></td>
-  <td data-th="transparency">Sí</td>
-  <td data-th="animation">Sí</td>
+  <td data-th="transparency">Yes</td>
+  <td data-th="animation">Yes</td>
   <td data-th="browser">IE</td>
 </tr>
 <tr>
   <td data-th="format"><a href="http://en.wikipedia.org/wiki/WebP">WebP</a></td>
-  <td data-th="transparency">Sí</td>
-  <td data-th="animation">Sí</td>
+  <td data-th="transparency">Yes</td>
+  <td data-th="animation">Yes</td>
   <td data-th="browser">Chrome, Opera, Android</td>
 </tr>
-</tbody>
 </table>
 
-Hay tres formatos de imagen universalmente compatibles: GIF, PNG y JPEG. Además de estos formatos, algunos navegadores también admiten formatos más nuevos, como WebP y JPEG XR, que ofrecen una mejor compresión general y más funciones. Entonces, ¿qué formato debemos usar?
+There are three universally supported image formats: GIF, PNG, and JPEG. In addition to these formats, some browsers also support newer formats such as WebP and JPEG XR, which offer better overall compression and more features. So, which format should you use?
 
-<img src="images/format-tree.png"  alt="Save for web">
+<img src="images/format-tree.png"  alt="Save for web" />
 
-1. **¿Necesitas animaciones? Si es así, el formato GIF es la única opción universal.**
-    * Este formato limita la paleta de colores a un máximo de 256 colores, lo que lo convierte en una opción deficiente para la mayoría de las imágenes. A su vez, el formato PNG-8 ofrece una mejor compresión de imágenes con una paleta pequeña. En consecuencia, GIF es la opción correcta solo cuando hacen falta animaciones.
-1. **¿Necesitas conservar detalles con alta resolución? Usa el formato PNG.**
-    * Este formato no aplica algoritmos de compresión con pérdida más allá de la elección del tamaño de la paleta de colores. De este modo, producirá una imagen de máxima calidad, aunque con un tamaño de archivo resultante mucho mayor que el de otros formatos. Úsalo con precaución.
-    * Si el recurso de imagen contiene imágenes compuestas por formas geométricas, considera convertirlo a un formato vectorial (SVG).
-    * Si el recurso de imagen contiene texto, reconsidera tu decisión. El texto en las imágenes no admite selección ni búsqueda y no puede ampliarse ni reducirse. Si deseas darle una apariencia personalizada (para el desarrollo de una marca o por otros motivos), usa una fuente web.
-1. **¿Deseas optimizar una foto, una captura de pantalla o un recurso de imagen similar? Usa el formato JPEG.**
-    * En este formato se usa una combinación de optimización con y sin pérdida para reducir el tamaño de archivo del recurso de imagen. Prueba con diferentes niveles de calidad JPEG hasta encontrar la mejor relación entre calidad y tamaño de archivo para tu recurso.
+1. **Do you need animation? If so, GIF is the only universal choice.** 
+    * GIF limits the color palette to at most 256 colors, which makes it a poor choice for most images. Further, PNG-8 delivers better compression for images with a small palette. As a result, GIF is the right answer only when animation is required.
+2. **Do you need to preserve fine detail with highest resolution? Use PNG.** 
+    * PNG does not apply any lossy compression algorithms beyond the choice of the size of the color palette. As a result, it will produce the highest quality image, but at a cost of significantly higher filesize than other formats. Use judiciously.
+    * If the image asset contains imagery composed of geometric shapes, consider converting it to a vector (SVG) format!
+    * If the image asset contains text, stop and reconsider. Text in images is not selectable, searchable, or "zoomable". If you need to convey a custom look (for branding or other reasons), use a web font instead.
+3. **Are you optimizing a photo, screenshot, or a similar image asset? Use JPEG.** 
+    * JPEG uses a combination of lossy and lossless optimization to reduce filesize of the image asset. Try several JPEG quality levels to find the best quality vs. filesize tradeoff for your asset.
 
-Por último, una vez que hayas determinado el formato de imagen óptimo y la configuración para cada uno de tus archivos, considera agregar una variante adicional codificada en WebP y JPEG XR. Ambos formatos son nuevos y, desafortunadamente, los navegadores todavía no los admiten a nivel universal. Aun así, pueden representar un ahorro importante para los clientes más nuevos (por ejemplo, en promedio, WebP ofrece una [reducción del tamaño de archivo del 30%](/speed/webp/docs/webp_study) en comparación con una imagen JPEG.
+Finally, once you've determined the optimal image format and its settings for each of your assets, consider adding an additional variant encoded in WebP and JPEG XR. Both of these formats are new, and unfortunately are not (yet) universally supported by all browsers, but they can nonetheless provide significant savings for newer clients - for example, on average, WebP delivers a [30% filesize decrease](/speed/webp/docs/webp_study) over a comparable JPEG image.
 
-Dado que ni WebP ni JPEG XR tienen compatibilidad universal, deberás agregar lógica adicional a tu app o a tus servidores para proporcionar el recurso correcto:
+Since neither WebP and JPEG XR are universally supported, you will need to add additional logic to your application or servers to serve the appropriate resource:
 
-* Algunas CDN proporcionan optimización de imágenes como servicio e incluyen los formatos JPEG XR y WebP.
-* Algunas herramientas de código abierto (por ejemplo, PageSpeed para Apache o Nginx) automatizan la optimización, la conversión y la provisión de los recursos correspondientes.
-* Puedes agregar lógica de aplicación adicional para detectar el cliente, comprobar los formatos que admite y proporcionar el mejor formato de imagen disponible.
+* Some CDNs provide image optimization as a service, including JPEG XR and WebP delivery.
+* Some open-source tools (for example, PageSpeed for Apache or Nginx) automate the optimization, conversion, and serving of appropriate assets.
+* You can add additional application logic to detect the client, check which formats they support, and serve the best available image format.
 
-Por último, ten en cuenta que si usas una vista web para representar contenido en tu aplicación nativa, podrás controlar por completo el cliente y usar WebP de forma exclusiva. Facebook, Google+ y muchos otros usan WebP para proporcionar todas sus imágenes en sus apps. El ahorro definitivamente vale la pena. Para obtener más información acerca de WebP, consulta la presentación [WebP: Deploying Faster, Smaller, and More Beautiful Images](https://www.youtube.com/watch?v=pS8udLMOOaE) (WebP: implementación de imágenes más rápidas, pequeñas y mejoradas) de Google I/O 2013.
+Finally, note that if you are using a Webview to render content in your native application, then you have full control of the client and can use WebP exclusively! Facebook, Google+ and many others use WebP to deliver all of their images within their applications - the savings are definitely worth it. To learn more about WebP, checkout the [WebP: Deploying Faster, Smaller, and More Beautiful Images](https://www.youtube.com/watch?v=pS8udLMOOaE) presentation from Google I/O 2013.
 
+## Tools and parameter tuning
 
-## Ajuste de herramientas y parámetros
-
-No existe un formato, una herramienta ni un conjunto de parámetros de optimización perfecto para todas las imágenes. Para obtener los mejores resultados, deberás seleccionar el formato y su configuración según el contenido de la imagen y otros requisitos visuales y técnicos.
+There is no one perfect image format, tool, or a set of optimization parameters that apply to all images. For best results you will have to pick the format and its settings depending on the contents of the image, and its visual and other technical requirements.
 
 <table>
+  
 <thead>
   <tr>
-    <th>Herramienta</th>
-    <th>Descripción</th>
+    <th>Tool</th>
+    <th>Description</th>
   </tr>
 </thead>
-<tbody>
+
 <tr>
   <td data-th="tool"><a href="http://www.lcdf.org/gifsicle/">gifsicle</a></td>
-  <td data-th="description">creación y optimización de imágenes GIF</td>
+  <td data-th="description">create and optimize GIF images</td>
 </tr>
 <tr>
   <td data-th="tool"><a href="http://jpegclub.org/jpegtran/">jpegtran</a></td>
-  <td data-th="description">optimización de imágenes JPEG</td>
+  <td data-th="description">optimize JPEG images</td>
 </tr>
 <tr>
   <td data-th="tool"><a href="http://optipng.sourceforge.net/">optipng</a></td>
-  <td data-th="description">optimización de imágenes PNG sin pérdida</td>
+  <td data-th="description">lossless PNG optimization</td>
 </tr>
 <tr>
   <td data-th="tool"><a href="http://pngquant.org/">pngquant</a></td>
-  <td data-th="description">optimización de imágenes PNG con pérdida</td>
+  <td data-th="description">lossy PNG optimization</td>
 </tr>
-</tbody>
 </table>
 
+Don't be afraid to experiment with parameters of each compressor. Dial down the quality, see how it looks, then rinse, lather and repeat. Once you've found a good set of settings, you can apply them to other similar images on your site, but don't assume that all images must be compressed with the same settings.
 
-No dudes en experimentar con parámetros de cada compresor. Reduce la calidad, observa el aspecto y luego simplemente repite el procedimiento. Cuando encuentres un buen conjunto de ajustes, podrás aplicarlos a otras imágenes similares en tu sitio, pero no des por sentado que todas las imágenes deben comprimirse con la misma configuración.
-
-
-## Provisión de recursos de imagen ajustados a escala
+## Delivering scaled image assets
 
 ### TL;DR {: .hide-from-toc }
-- La provisión de recursos ajustados a escala es una de las optimizaciones más sencillas y eficaces
-- Presta mucha atención a los recursos grandes, ya que podrían provocar una gran sobrecarga
-- Reduce la cantidad de píxeles innecesarios al ajustar a escala tus imágenes hasta alcanzar su tamaño de representación
 
+* Delivering scaled assets is one of the simplest and most effective optimizations
+* Pay close attention to large assets as they result in high overhead
+* Reduce the number of unnecessary pixels by scaling your images to their display size
 
-La optimización de la imagen se reduce a dos criterios: la optimización de la cantidad de bytes empleados para codificar cada pixel de la imagen y la optimización de la cantidad total de píxeles. El tamaño de archivo de la imagen equivale simplemente a la cantidad total de píxeles multiplicada por la cantidad de bytes usados para codificar cada pixel. Nada más y nada menos que eso.
+Image optimization boils down to two criteria: optimizing the number of bytes used to encode each image pixel, and optimizing the total number of pixels: the filesize of the image is simply the total number of pixels times the number of bytes used to encode each pixel. Nothing more, nothing less.
 
-<img src="images/resized-image.png" class="attempt-right" alt="Imagen con tamaño modificado">
+<img src="images/resized-image.png" class="attempt-right" alt="Resized image" />
 
-En consecuencia, una de las técnicas más simples y eficaces de optimización de imágenes es asegurarse de no usar más píxeles que los necesarios para mostrar el recurso y su tamaño previsto en el navegador. ¿Suena simple, no es así? Lamentablemente, la mayoría de las páginas no superan esta prueba a causa de varios de sus recursos de imagen. Generalmente, envían recursos más grandes y derivan al navegador el ajuste de escala (lo cual también consumen más recursos de CPU) y la visualización con una resolución más baja.
+As a result, one of the simplest and most effective image optimization techniques is to ensure that we are not shipping any more pixels than needed to display the asset at its intended size in the browser. Sounds simple, right? Unfortunately, most pages fail this test for many of their image assets: typically, they ship larger assets and rely on the browser to rescale them - which also consumes extra CPU resources - and display them at a lower resolution.
 
-Note: El desplazamiento sobre el elemento de imagen en Chrome DevTools revela los tamaños "natural" y "de visualización" del recurso de imagen. En el ejemplo anterior se descarga la imagen de 300 x 260 píxeles, pero luego se reduce (245 x 212) en el cliente para poder mostrarla.
+Note: Hovering over the image element in Chrome DevTools reveals both the "natural" and "display" sizes of the image asset. In above example the 300x260 pixel image is downloaded but is then downscaled (245x212) on the client when it is displayed.
 
-La sobrecarga del uso de píxeles innecesarios para que el navegador modifique el tamaño de la imagen implica la pérdida de una gran oportunidad de reducir y optimizar la cantidad total de bytes para la representación de la página. Además, ten en cuenta que la modificación del tamaño no depende simplemente de la reducción en píxeles de la imagen, sino también de su tamaño natural.
+The overhead of shipping unnecessary pixels, only to have the browser rescale the image on our behalf, is a big missed opportunity to reduce and optimize the total number of bytes required to render the page. Further, note that resizing is not simply a function of the number of pixels by which the image is reduced by, but also of its natural size.
 
 <table>
+  
 <thead>
   <tr>
-    <th>Resolución de la pantalla</th>
-    <th>Tamaño natural</th>
-    <th>Tamaño de representación (px CSS)</th>
-    <th>Píxeles innecesarios</th>
+    <th>Screen resolution</th>
+    <th>Natural size</th>
+    <th>Display size (CSS px)</th>
+    <th>Unnecessary pixels</th>
   </tr>
 </thead>
-<tbody>
+
 <tr>
   <td data-th="resolution">1x</td>
-  <td data-th="natural">110 x 110</td>
-  <td data-th="display">100 x 100</td>
-  <td data-th="overhead">110 x 110 - 100 x 100 = 2100</td>
+  <td data-th="natural">110 x 110</td>
+  <td data-th="display">100 x 100</td>
+  <td data-th="overhead">110 x 110 - 100 x 100 = 2100</td>
 </tr>
 <tr>
   <td data-th="resolution">1x</td>
-  <td data-th="natural">410 x 410</td>
-  <td data-th="display">400 x 400</td>
-  <td data-th="overhead">410 x 410 - 400 x 400 = 8100</td>
+  <td data-th="natural">410 x 410</td>
+  <td data-th="display">400 x 400</td>
+  <td data-th="overhead">410 x 410 - 400 x 400 = 8100</td>
 </tr>
 <tr>
   <td data-th="resolution">1x</td>
-  <td data-th="natural">810 x 810</td>
+  <td data-th="natural">810 x 810</td>
   <td data-th="display">800 x 800</td>
-  <td data-th="overhead">810 x 810 - 800 x 800 = 16,100</td>
+  <td data-th="overhead">810 x 810 - 800 x 800 = 16100</td>
 </tr>
 <tr>
   <td data-th="resolution">2x</td>
-  <td data-th="natural">220 x 220</td>
-  <td data-th="display">100 x 100</td>
-  <td data-th="overhead">220 x 220 - (2 x 100) x (2 x 100) = 8,400</td>
+  <td data-th="natural">220 x 220</td>
+  <td data-th="display">100 x 100</td>
+  <td data-th="overhead">220 x 220 - (2 x 100) x (2 x 100) = 8400</td>
 </tr>
 <tr>
   <td data-th="resolution">2x</td>
-  <td data-th="natural">820 x 820</td>
-  <td data-th="display">400 x 400</td>
-  <td data-th="overhead">820 x 820 - (2 x 400) x (2 x 400) = 32,400</td>
+  <td data-th="natural">820 x 820</td>
+  <td data-th="display">400 x 400</td>
+  <td data-th="overhead">820 x 820 - (2 x 400) x (2 x 400) = 32400</td>
 </tr>
 <tr>
   <td data-th="resolution">2x</td>
-  <td data-th="natural">1620 x 1620</td>
+  <td data-th="natural">1620 x 1620</td>
   <td data-th="display">800 x 800</td>
-  <td data-th="overhead">1,620 x 1,620 - (2 x 800) x (2 x 800) = 64,400</td>
+  <td data-th="overhead">1620 x 1620 - (2 x 800) x (2 x 800) = 64400</td>
 </tr>
-</tbody>
 </table>
 
-Ten en cuenta que, en todos los casos anteriores, el tamaño de visualización es “solo 10 píxeles CSS más pequeño” que el recurso requerido para cada resolución de pantalla. No obstante, la cantidad de píxeles adicionales y la sobrecarga asociada aumentan rápidamente a medida que se incrementan las dimensiones de visualización de la imagen. Como consecuencia, si bien quizá no puedas garantizar la provisión de cada uno de los recursos con el tamaño exacto de visualización, **debes asegurarte de que la cantidad de píxeles innecesarios sea mínima y de que tus recursos voluminosos, en particular, se proporcionen con el tamaño más aproximado posible a su tamaño de visualización**.
+Note that in all of the cases above the display size is "only 10 CSS pixels smaller" than the required asset for each screen resolution. However, the number of extra pixels, and their associated overhead, rises rapidly as the display dimensions of the image increase! As a result, while you may not be able to guarantee that every single asset is delivered at the exact display size, **you should ensure that the number of unnecessary pixels is minimal, and that your large assets in particular are delivered as close as possible to their display size.**
 
-## Lista de comprobación de optimización de la imagen
+## Image optimization checklist
 
-La optimización de la imagen es un arte y una ciencia. Un arte porque no hay una respuesta definitiva respecto de cuál es la mejor manera de comprimir una imagen individual y una ciencia porque existe una gran cantidad de técnicas y algoritmos bien desarrollados que pueden reducir notablemente el tamaño de una imagen.
+Image optimization is both an art and a science: an art because there is no one definitive answer for how to best compress an individual image, and a science because there are well-developed techniques and algorithms that can help significantly reduce the size of an image.
 
-Te damos algunas sugerencias y técnicas para que recuerdes mientras trabajas en la optimización de tus imágenes:
+Some tips and techniques to keep in mind as you work on optimizing your images:
 
-* **Prioriza los formatos vectoriales:** las imágenes vectoriales no dependen de la resolución ni de la escala. Esto las convierte en una opción perfecta para el uso de varios dispositivos y la alta resolución.
-* **Reduce y comprime los recursos SVG:** el lenguaje de marcado XML producido por la mayoría de las aplicaciones de dibujo a menudo contiene metadatos innecesarios que se pueden eliminar. Asegúrate de que la configuración de tus servidores permita aplicar compresión GZIP para recursos SVG.
-* **Escoge el mejor formato de imagen de trama:** determina tus requisitos funcionales y selecciona el que se adecue a cada recurso en particular.
-* **Experimenta con configuraciones de calidad óptimas para formatos de trama:** no dudes en reducir la configuración de “calidad”; los resultados generalmente son muy buenos y la reducción en bytes es considerable.
-* **Elimina los metadatos de imágenes innecesarios:** muchas imágenes de trama contienen metadatos innecesarios sobre el recurso, como la información geográfica y la información de la cámara. Usa las herramientas correctas para eliminar estos datos.
-* **Proporciona imágenes ajustadas a escala:** modifica el tamaño de las imágenes en el servidor y asegúrate de que el tamaño de “visualización” sea lo más aproximado posible al tamaño “natural” de la imagen. Presta especial atención a las imágenes grandes, ya que representan la mayor sobrecarga cuando se les cambia el tamaño.
-* **Busca la automatización permanentemente:** invierte en herramientas e infraestructura automatizadas. Estas garantizarán que todos tus recursos de imagen estén siempre optimizados.
+* **Prefer vector formats:** vector images are resolution and scale independent, which makes them a perfect fit for the multi-device and high-resolution world.
+* **Minify and compress SVG assets:** XML markup produced by most drawing applications often contains unnecessary metadata which can be removed; ensure that your servers are configured to apply GZIP compression for SVG assets.
+* **Pick best raster image format:** determine your functional requirements and select the one that suits each particular asset.
+* **Experiment with optimal quality settings for raster formats:** don't be afraid to dial down the "quality" settings, the results are often very good and byte savings are significant.
+* **Remove unnecessary image metadata:** many raster images contain unnecessary metadata about the asset: geo information, camera information, and so on. Use appropriate tools to strip this data.
+* **Serve scaled images:** resize images on the server and ensure that the "display" size is as close as possible to the "natural" size of the image. Pay close attention to large images in particular, as they account for largest overhead when resized!
+* **Automate, automate, automate:** invest into automated tools and infrastructure that will ensure that all of your image assets are always optimized.
 
-## Comentarios {: #feedback }
+## Feedback {: #feedback }
 
 {% include "web/_shared/helpful.html" %}
