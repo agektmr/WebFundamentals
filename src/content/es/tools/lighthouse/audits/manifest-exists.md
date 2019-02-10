@@ -1,40 +1,27 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Documentación de referencia para la auditoría de Lighthouse "El manifiesto existe".
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Reference documentation for the "Manifest Exists" Lighthouse audit.
 
-{# wf_updated_on: 2017-10-06 #}
-{# wf_published_on: 2016-09-20 #}
+{# wf_updated_on: 2018-07-23 #} {# wf_published_on: 2016-09-20 #} {# wf_blink_components: N/A #}
 
-# El manifiesto existe  {: .page-title }
+# Manifest Exists {: .page-title }
 
-## Por qué es importante la auditoría {: #why }
+## Overview {: #overview }
 
-El manifiesto de apps web es la tecnología web que te permite agregar tu app web
-a la pantalla de inicio de un usuario. A esta función se la suele llamar "Add to
-Homescreen (A2HS)".
+The Web App Manifest is the web technology that enables you to add your web app to a user's homescreen. This feature is commonly referred to as "Add to Homescreen (A2HS)".
 
-## Cómo aprobar la auditoría {: #how }
+## Recommendations {: #recommendations }
 
-Para obtener una guía práctica y paso a paso sobre la adición de compatibilidad con A2HS en una
-app existente, consulta el siguiente codelab: [Agregar tu app web a la pantalla de
-inicio de un usuario](https://codelabs.developers.google.com/codelabs/add-to-home-screen).
+For a hands-on, step-by-step guide on adding A2HS support in an existing application, check out the following codelab: [Add Your Web App to a User's Home Screen](https://codelabs.developers.google.com/codelabs/add-to-home-screen).
 
-Para obtener una guía menos estructurada que analiza más detalladamente los manifiestos de apps
-web, consulta [Mejorar la experiencia del usuario con el manifiesto de apps
-web](/web/fundamentals/web-app-manifest).
+For a more loosely-structured guide that goes into more depth about Web App Manifests, see [Improve User Experiences with a Web App Manifest](/web/fundamentals/web-app-manifest).
 
-Aplica lo que aprendiste en estas guías para agregar compatibilidad con A2HS a tu
-app web.
+Use what you learn in these guides to add A2HS support in your own web app.
 
-Puedes emular y probar los eventos A2HS en Chrome DevTools. Consulta la siguiente
-sección para obtener más ayuda: [Manifiesto de
-apps web](/web/tools/chrome-devtools/debug/progressive-web-apps/#manifest).
+You can emulate and test A2HS events in Chrome DevTools. See the following section for more help: [Web App Manifest](/web/tools/chrome-devtools/debug/progressive-web-apps/#manifest).
 
-{% include "web/tools/lighthouse/audits/implementation-heading.html" %}
+## More information {: #more-info }
 
-Lighthouse obtiene el manifiesto y verifica que tenga datos. El manifiesto que
-Lighthouse obtiene no es el que Chrome usa en la página, lo que puede dar
-resultados imprecisos.
+Lighthouse fetches the manifest and verifies that it has data. The manifest that Lighthouse fetches is separate from the one that Chrome is using on the page, which can possibly cause inaccurate results.
 
+## Feedback {: #feedback }
 
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
