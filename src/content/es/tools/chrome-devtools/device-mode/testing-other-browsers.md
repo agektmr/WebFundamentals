@@ -1,125 +1,107 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Tu trabajo no termina al asegurarte de que el sitio funciona perfectamente en Chrome y Android. Aunque Device Mode puede simular otros dispositivos diferentes, como iPhone, te recomendamos ver otras soluciones de navegadores para emulación.
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Your job doesn't end with ensuring your site runs great across Chrome and Android. Even though Device Mode can simulate a range of other devices like iPhones, we encourage you to check out other browsers solutions for emulation.
 
-{# wf_updated_on: 2019-02-06 #}
-{# wf_published_on: 2015-04-13 #}
-{# wf_blink_components: Platform>DevTools #}
+{# wf_updated_on: 2018-07-27 #} {# wf_published_on: 2015-04-13 #} {# wf_blink_components: Platform>DevTools #}
 
-# Cómo emular y probar otros navegadores {: .page-title }
+# Emulate and Test Other Browsers {: .page-title }
 
-{% include "web/_shared/contributors/megginkearney.html" %}
-{% include "web/_shared/contributors/pbakaus.html" %}
+{% include "web/_shared/contributors/megginkearney.html" %} {% include "web/_shared/contributors/pbakaus.html" %}
 
-Tu trabajo no termina al asegurarte de que el sitio funciona perfectamente en Chrome y Android. Aunque Device Mode puede simular otros dispositivos diferentes, como iPhone, te recomendamos ver otras soluciones de navegadores para emulación.
-
+Your job doesn't end with ensuring your site runs great across Chrome and Android. Even though Device Mode can simulate a range of other devices like iPhones, we encourage you to check out other browsers solutions for emulation.
 
 ### TL;DR {: .hide-from-toc }
-- Cuando no tienes un dispositivo determinado o deseas realizar una verificación al azar, la mejor opción es emular el dispositivo dentro del navegador.
-- Los emuladores y simuladores de dispositivos te permiten imitar el sitio de desarrollo en diferentes dispositivos desde tu estación de trabajo.
-- Los emuladores basados en la nube te permiten automatizar las pruebas de unidades para el sitio en diferentes plataformas.
 
+* When you don’t have a particular device, or want to do a spot check on something, the best option is to emulate the device right inside your browser.
+* Device emulators and simulators let you mimic your development site on a range of devices from your workstation.
+* Cloud-based emulators let you automate unit tests for your site across different platforms.
 
-## Emuladores de navegadores
+## Browser emulators
 
-Los emuladores de navegadores son muy útiles para probar la adaptabilidad de un sitio, pero no
-emulan diferencias en API, compatibilidad con CSS y algunos comportamientos que estarían presentes
-en un navegador móvil. Prueba tu sitio en navegadores que se ejecuten en dispositivos reales para
-asegurarte de que todo tenga el comportamiento deseado.
+Browser emulators are great for testing a site's responsiveness, but they don’t emulate differences in API, CSS support, and certain behaviors that you'd see on a mobile browser. Test your site on browsers running on real devices to be certain everything behaves as expected.
 
-### Vista de diseño adaptable de Firefox
+### Firefox' Responsive Design View
 
-Firefox tiene una [vista de diseño adaptable](https://developer.mozilla.org/en-US/docs/Tools/Responsive_Design_View)
-que te alienta a dejar de pensar en términos de dispositivos específicos y a
-explorar cómo cambia tu diseño en tamaños de pantalla comunes o tu propio tamaño
-arrastrando los bordes.
+Firefox has a [responsive design view](https://developer.mozilla.org/en-US/docs/Tools/Responsive_Design_View) that encourages you to stop thinking in terms of specific devices and instead explore how your design changes at common screen sizes or your own size by dragging the edges.
 
-### Emulación con F12 de Edge
+### Edge's F12 Emulation
 
-Para emular los teléfonos Windows Phone, usa la [emulación integrada](https://dev.modern.ie/platform/documentation/f12-devtools-guide/emulation/) de Microsoft Edge.
+To emulate Windows Phones, use Microsoft Edge's [built-in emulation](https://dev.modern.ie/platform/documentation/f12-devtools-guide/emulation/).
 
-Como Edge no incluye compatibilidad con versiones heredadas, usa la [emulación de IE 11](https://msdn.microsoft.com/en-us/library/dn255001(v=vs.85).aspx) para simular cómo se vería tu página en versiones anteriores de Internet Explorer.
+Since Edge does not ship with legacy compatibility, use [IE 11's Emulation](https://msdn.microsoft.com/en-us/library/dn255001(v=vs.85).aspx) to simulate how your page would look in older versions of Internet Explorer.
 
-## Emuladores y simuladores de dispositivos
+## Device emulators and simulators
 
-Los emuladores y simuladores de dispositivos simulan no solo el entorno del navegador, sino también todo el dispositivo. Son útiles para probar comportamientos que requieren la integración del SO (por ejemplo, la entrada de un formulario con teclados virtuales).
+Device simulators and emulators simulate not just the browser environment but the entire device. They're useful to test things that require OS integration, for example form input with virtual keyboards.
 
-### Android Emulator
+### Android Emulator
 
 <figure class="attempt-right">
-  <img src="imgs/android-emulator-stock-browser.png" alt="Navegador Stock en Android Emulator">
-  <figcaption>Navegador Stock en Android Emulator</figcaption>
+  <img src="imgs/android-emulator-stock-browser.png" alt="Android Emulator Stock Browser">
+  <figcaption>Stock Browser in Android Emulator</figcaption>
 </figure>
 
-Hasta el momento, no se puede instalar Chrome en el emulador de Android. Sin embargo, puedes usar el navegador de Android, Chromium Content Shell y Firefox para Android, que abarcaremos posteriormente en esta guía. Chromium Content Shell usa el mismo motor de representación de Chrome, pero no incluye ninguna de las funciones específicas del navegador.
+At the moment, there is no way to install Chrome on an Android emulator. However, you can use the Android Browser, the Chromium Content Shell and Firefox for Android which we'll cover later in this guide. Chromium Content Shell uses the same Chrome rendering engine, but comes without any of the browser specific features.
 
-El emulador de Android incluye el SDK de Android que debes <a href="http://developer.android.com/sdk/installing/studio.html">descargar desde
-aquí</a>. Luego, sigue las instrucciones para <a href="http://developer.android.com/tools/devices/managing-avds.html">configurar un dispositivo virtual</a> e <a href="http://developer.android.com/tools/devices/emulator.html">iniciar el emulador</a>.
+The Android emulator comes with the Android SDK which you need to [download from here](http://developer.android.com/sdk/installing/studio.html). Then follow the instructions to [setup a virtual device](http://developer.android.com/tools/devices/managing-avds.html) and [start the emulator](http://developer.android.com/tools/devices/emulator.html).
 
-Una vez iniciado el emulador, haz clic en el ícono del navegador a fin de probar tu sitio en el navegador Stock para Android.
+Once your emulator is booted, click on the Browser icon and you'll be able to test your site on the old Stock Browser for Android.
 
-#### Chromium Content Shell en Android
+#### Chromium Content Shell on Android
 
 <figure class="attempt-right">
-  <img src="imgs/android-avd-contentshell.png" alt="Content Shell en Android Emulator">
-  <figcaption>Content Shell en Android Emulator</figcaption>
+  <img src="imgs/android-avd-contentshell.png" alt="Android Emulator Content Shell">
+  <figcaption>Android Emulator Content Shell</figcaption>
 </figure>
 
-A fin de instalar Chromium Content Shell para Android, deja el emulador en segundo plano
-y ejecuta los siguientes comandos en un símbolo del sistema:
+To install the Chromium Content Shell for Android, leave your emulator running and run the following commands at a command prompt:
 
     git clone https://github.com/PaulKinlan/chromium-android-installer.git
     chmod u+x ./chromium-android-installer/\*.sh
     ./chromium-android-installer/install-chromeandroid.sh
+    
 
-Ahora puedes probar tu sitio en Chromium Content Shell.
+Now you can test your site with the Chromium Content Shell.
 
-
-#### Firefox en Android
+#### Firefox on Android
 
 <figure class="attempt-right">
-  <img src="imgs/ff-on-android-emulator.png" alt="Ícono de Firefox en Android Emulator">
-  <figcaption>Ícono de Firefox en Android Emulator</figcaption>
+  <img src="imgs/ff-on-android-emulator.png" alt="Firefox Icon on Android Emulator">
+  <figcaption>Firefox Icon on Android Emulator</figcaption>
 </figure>
 
-Al igual que con Chromium Content Shell, puedes obtener un APK para instalar Firefox en el emulador.
+Similar to Chromium's Content Shell, you can get an APK to install Firefox onto the emulator.
 
-Descarga el archivo .apk correcto desde <a href="https://ftp.mozilla.org/pub/mozilla.org/mobile/releases/latest/">https://ftp.mozilla.org/pub/mozilla.org/mobile/releases/latest/</a>.
+Download the right .apk file from <https://ftp.mozilla.org/pub/mozilla.org/mobile/releases/latest/>.
 
-Desde aquí, puedes instalar el archivo en un emulador abierto o dispositivo Android conectado con el siguiente comando:
+From here, you can install the file onto an open emulator or connected Android device with the following command:
 
     adb install &lt;path to APK&gt;/fennec-XX.X.XX.android-arm.apk
+    
 
+### iOS Simulator
 
-### Simulador de iOS
+The iOS simulator for Mac OS X comes with Xcode, which you can [install from the App Store](https://itunes.apple.com/us/app/xcode/id497799835?ls=1&mt=12).
 
-El simulador de iOS para Mac OS X incluye Xcode, que se puede [instalar desde
-App Store](https://itunes.apple.com/us/app/xcode/id497799835?ls=1&mt=12).
+When you're done, learn how to work with the simulator through [Apple's documentation](https://developer.apple.com/library/prerelease/ios/documentation/IDEs/Conceptual/iOS_Simulator_Guide/Introduction/Introduction.html).
 
-Cuando finalices, obtén más información sobre cómo trabajar con el simulador en la [documentación de Apple](https://developer.apple.com/library/prerelease/ios/documentation/IDEs/Conceptual/iOS_Simulator_Guide/Introduction/Introduction.html).
-
-Note: Para evitar que debas abrir Xcode cada vez que quieras usar el simulador de iOS, ábrelo, haz clic en el ícono del simulador de iOS en tu conector y selecciona `Keep in Dock`. Ahora solo deberás hacer clic en este ícono cuando lo necesites.
+Note: To avoid having to open Xcode every time you want to use the iOS Simulator, open it, then right click the iOS Simulator icon in your dock and select `Keep in Dock`. Now just click this icon whenever you need it.
 
 ### Modern.IE
 
 <figure class="attempt-right">
-  <img src="imgs/modern-ie-simulator.png" alt="MV de Modern IE">
-  <figcaption>MV de Modern IE</figcaption>
+  <img src="imgs/modern-ie-simulator.png" alt="Modern IE VM">
+  <figcaption>Modern IE VM</figcaption>
 </figure>
 
-Las máquinas virtuales de Modern.IE te permiten acceder a versiones diferentes de IE en tu computadora mediante VirtualBox (o VMWare). Elige una máquina virtual en la <a href="https://modern.ie/en-us/virtualization-tools#downloads">página de descarga</a>.
+Modern.IE Virtual Machines let you access different versions of IE on your computer via VirtualBox (or VMWare). Choose a virtual machine on the [download page here](https://modern.ie/en-us/virtualization-tools#downloads).
 
+## Cloud-based emulators and simulators
 
-## Emuladores y simuladores basados en la nube
+If you can’t use the emulators and don't have access to real devices, then cloud-based emulators are the next best thing. A big advantage of cloud-based emulators over real devices and local emulators is that you can automate unit tests for your site across different platforms.
 
-Si no puedes usar los emuladores y no tienes acceso a dispositivos reales, la mejor opción son los emuladores basados en la nube. Una gran ventaja de los emuladores basados en la nube, en comparación con los dispositivos reales y emuladores locales, es que puedes automatizar pruebas de unidades para el sitio en diferentes plataformas.
+* [BrowserStack (commercial)](https://www.browserstack.com/automate) is the easiest to use for manual testing. You select an operating system, select your browser version and device type, select a URL to browse, and it spins up a hosted virtual machine that you can interact with. You can also fire up multiple emulators in the same screen, letting you test how your app looks and feels across multiple devices at the same time.
+* [SauceLabs (commercial)](https://saucelabs.com/){: .external } allows you to run unit tests inside of an emulator, which can be really useful for scripting a flow through your site and watch the video recording of this afterwards on various devices. You can also do manual testing with your site.
+* [Device Anywhere (commercial)](http://www.keynote.com/solutions/testing/mobile-testing) doesn't use emulators but real devices which you can control remotely. This is very useful in the event where you need to reproduce a problem on a specific device and can't see the bug on any of the options in the previous guides.
 
-* [BrowserStack (comercial)](https://www.browserstack.com/automate) es el más fácil de usar para pruebas manuales. Debes seleccionar un sistema operativo, la versión de tu navegador, el tipo de dispositivo y una URL para navegar. Este emulador generará una máquina virtual alojada con la que podrás interactuar. También puedes usar diferentes emuladores en la misma pantalla, lo que te permitirá probar el aspecto de tu app en diversos dispositivos al mismo tiempo.
-* [SauceLabs (comercial)](https://saucelabs.com/){: .external } te permite ejecutar pruebas de unidades dentro de un emulador, lo que puede ser muy útil para generar una secuencia de comandos del flujo por el sitio y ver posteriormente el video de esto en varios dispositivos. También puedes realizar la prueba manual del sitio.
-* [Device Anywhere (comercial)](http://www.keynote.com/solutions/testing/mobile-testing) no
-usa emuladores, sino dispositivos reales que puedes controlar de manera remota. Resulta muy útil cuando necesitas reproducir un problema en un dispositivo específico y no puedes ver el error en ninguna de las opciones de las guías anteriores.
-
-
-## Comentarios {: #feedback }
+## Feedback {: #feedback }
 
 {% include "web/_shared/helpful.html" %}
