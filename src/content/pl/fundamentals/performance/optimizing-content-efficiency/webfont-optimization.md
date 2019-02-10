@@ -1,77 +1,71 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Zagadnienie typografii ma kluczowe znaczenie w dążeniu do poprawności w projektowaniu, budowaniu marki, czytelności i dostępności dla niepełnosprawnych. Czcionki sieci web pozwalają osiągnąć powyższe cele i zwiększyć funkcjonalność tekstu: taki tekst można zaznaczać, wyszukiwać, dowolnie powiększać, jest przyjazny dla urządzeń o wysokiej rozdzielczości, zapewnia ostrość renderowania niezależnie od rozmiaru i rozdzielczości ekranu. 
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Typography is fundamental to good design, branding, readability, and accessibility. Webfonts enable all of the above and more: the text is selectable, searchable, zoomable, and high-DPI friendly, providing consistent and sharp text rendering regardless of the screen size and resolution.
 
-{# wf_updated_on: 2014-09-29 #}
-{# wf_published_on: 2014-09-19 #}
+{# wf_updated_on: 2018-12-17 #} {# wf_published_on: 2014-09-19 #} {# wf_blink_components: Blink>CSS #}
 
-# Optymalizacja czcionek sieci web {: .page-title }
+# Web Font Optimization {: .page-title }
 
 {% include "web/_shared/contributors/ilyagrigorik.html" %}
 
+*This article contains contributions from [Monica Dinculescu](https://meowni.ca/posts/web-fonts/), [Rob Dodson](/web/updates/2016/02/font-display), and Jeff Posnick.*
 
+Typography is fundamental to good design, branding, readability, and accessibility. Webfonts enable all of the above and more: the text is selectable, searchable, zoomable, and high-DPI friendly, providing consistent and sharp text rendering regardless of the screen size and resolution. Webfonts are critical to good design, UX, and performance.
 
-Zagadnienie typografii ma kluczowe znaczenie w dążeniu do poprawności w projektowaniu, budowaniu marki, czytelności i dostępności dla niepełnosprawnych. Czcionki sieci web pozwalają osiągnąć powyższe cele i zwiększyć funkcjonalność tekstu: taki tekst można zaznaczać, wyszukiwać, dowolnie powiększać, jest przyjazny dla urządzeń o wysokiej rozdzielczości, zapewnia ostrość renderowania niezależnie od rozmiaru i rozdzielczości ekranu. Czcionki sieci web mają kluczowe znaczenie dla dobrej praktyki projektowania oraz zagwarantowania użytkownikom wygody i wydajności.
+Webfont optimization is a critical piece of the overall performance strategy. Each font is an additional resource, and some fonts may block rendering of the text, but just because the page is using webfonts doesn't mean that it has to render slower. On the contrary, optimized fonts, combined with a judicious strategy for how they are loaded and applied on the page, can help reduce the total page size and improve page rendering times.
 
-
-Optymalizacja czcionek sieci web jest kluczowym elementem strategii zwiększania wydajności. Każda czcionka to dodatkowy zasób zdolny do zablokowania renderowania tekstu, ale korzystanie z czcionek sieci web na stronie wcale nie oznacza, że strona musi renderować się wolniej. Wręcz przeciwnie, zoptymalizowana czcionka w połączeniu z rozsądną strategią wczytywania i wywoływania na stronie może zmniejszyć łączny rozmiar strony i skrócić czas jej renderowania.
-
-## Budowa czcionki sieci web
-
-### TL;DR {: .hide-from-toc }
-- Czcionki Unicode mogą zawierać tysiące glifów
-- Stosuje się czcionki w czterech formatach: WOFF2, WOFF, EOT, TTF
-- Niektóre formaty czcionek wymagają zastosowania kompresji GZIP
-
-
-Czcionka sieci web to zbiór glifów, z których każdy jest określonym wektorowo kształtem odzwierciedlającym literę lub symbol. Dlatego rozmiar pliku danej czcionki zależy od dwóch zmiennych: złożoności ścieżek wektorowych w obrębie każdego glifu i liczby glifów w obrębie danej czcionki. Na przykład czcionka Open Sans, będąca jedną z najpopularniejszych czcionek sieci web, zawiera 897 glifów, w tym znaki łacińskie, greckie i cyrylicę.
-
-<img src="images/glyphs.png" class="center" alt="Tabela glifów czcionki">
-
-Przy wyborze czcionki ważne jest, by uwzględnić, które zestawy znaków będą obsługiwane. Jeśli treść strony będzie lokalizowana w wielu językach, wybierz czcionkę zapewniającą spójny wygląd i wrażenia wszystkim użytkownikom. Na przykład [rodzina czcionek Noto firmy Google](https://www.google.com/get/noto/){: .external } ma w zamierzeniu obsługiwać wszystkie języki świata. Jednak należy pamiętać, że łączny rozmiar czcionki Noto, przy załączonych wszystkich językach, wynosi ponad 130 MB i to już po zastosowaniu kompresji ZIP! 
-
-Jest oczywiste, że korzystanie z czcionek sieci web wymaga zastosowania dobrze przemyślanych zabiegów, by doskonała typografia nie kolidowała z wydajnością. Na szczęście platforma WWW dostarcza wszystkich potrzebnych funkcji podstawowych. W pozostałej części tego przewodnika zajmiemy się praktycznym wykorzystaniem najlepszych cech wszystkich rozwiązań.
-
-### Formaty czcionek sieci web
-
-Obecnie w Internecie korzysta się z czterech formatów kontenerów czcionek: [EOT](http://en.wikipedia.org/wiki/Embedded_OpenType){: .external }, [TTF](http://pl.wikipedia.org/wiki/TrueType), [WOFF](http://pl.wikipedia.org/wiki/Web_Open_Font_Format) i [WOFF2](http://www.w3.org/TR/WOFF2/). Niestety, mimo wielu możliwości wyboru, nie istnieje jeden uniwersalny format obsługiwany przez wszystkie starsze i nowsze przeglądarki: format EOT obsługuje [tylko przeglądarka IE](http://caniuse.com/#feat=eot), w przeglądarce IE obecna jest [częściowa obsługa formatu TTF](http://caniuse.com/#search=ttf), format WOFF jest najlepiej obsługiwany, ale [niedostępny w niektórych starszych przeglądarkach](http://caniuse.com/#feat=woff), a wdrażanie obsługi formatu WOFF 2.0 w wielu przeglądarkach [ciągle trwa](http://caniuse.com/#feat=woff2).
-
-Co to dla nas oznacza? Nie istnieje jeden format obsługiwany przez wszystkie przeglądarki, co oznacza konieczność stosowania wielu formatów, jeśli wrażenia użytkowników mają pozostać spójne:
-
-* Przesyłaj wariant WOFF 2.0 do przeglądarek go obsługujących
-* Przesyłaj wariant WOFF do większości przeglądarek
-* Przesyłaj wariant TTF do starszych przeglądarek na Androidzie (starszych od wersji 4.4)
-* Przesyłaj wariant EOT do starszych przeglądarek IE (starszych od wersji 9)
-
-
-Note: Prawdę powiedziawszy, istnieje również <a href='http://caniuse.com/svg-fonts'>kontener czcionek SVG</a>, ale nigdy nie obsługiwała go ani przeglądarka IE, ani Firefox, a obecnie oznaczono go jako przestarzały w przeglądarce Chrome. Z tego względu ma on ograniczone zastosowanie i nie będzie omawiany w tym przewodniku.
-
-### Redukcja rozmiaru czcionki dzięki kompresji
-
-Czcionka to zbiór glifów, z których każdy stanowi kolekcję ścieżek opisujących kształt litery. Poszczególne glify są oczywiście różne, ale mimo to zawierają mnóstwo podobnych informacji, które można poddać kompresji metodą GZIP lub inną kompatybilną: 
-
-* Domyślnie pliki formatów EOT i TTF nie są kompresowane: upewnij się, że konfiguracja serwerów wymusza stosowanie [kompresji GZIP](/web/fundamentals/performance/optimizing-content-efficiency/optimize-encoding-and-transfer#text-compression-with-gzip) przy przesyłaniu plików w tych formatach.
-* Format WOFF posiada wbudowaną kompresję &ndash; upewnij się, że algorytm kompresji formatu WOFF stosuje optymalne ustawienia kompresji. 
-* Format WOFF2 obejmuje niestandardowe przetwarzanie wstępne i algorytmy kompresji umożliwiające redukcję rozmiaru pliku o ok. 30% w stosunku do innych formatów &ndash; patrz [raport](http://www.w3.org/TR/WOFF20ER/){: .external }.
-
-Warto również wspomnieć, że niektóre formaty czcionek zawierają dodatkowe metadane, np. odnoszące się do [hintingu](http://pl.wikipedia.org/wiki/Hinting){: .external } i [kerningu](http://pl.wikipedia.org/wiki/Kerning), które mogą być zbędne na niektórych platformach, co umożliwia dalszą optymalizację. Sprawdź w dokumentacji algorytmu kompresji czcionek, jakie opcje optymalizacji są dostępne, i upewnij się, że dysponujesz odpowiednią infrastrukturą do testowania i dostarczania takich zoptymalizowanych czcionek dla każdej przeglądarki &ndash; np. Google Fonts utrzymuje ponad 30 zoptymalizowanych wariantów dla każdej czcionki i automatycznie wykrywa i dostarcza optymalny wariant dla każdej platformy i przeglądarki.
-
-Note: Zastanów się nad wykorzystaniem <a href='http://en.wikipedia.org/wiki/Zopfli'>kompresji Zopfli</a> do optymalizacji czcionek w formatach EOT, TTF i WOFF. Zopfli to kompresor zgodny z formatem zlib, zapewniający redukcję rozmiaru pliku o ok. 5% w stosunku do kompresji gzip.
-
-## Określanie rodziny czcionek regułą @font-face
+## Anatomy of a webfont
 
 ### TL;DR {: .hide-from-toc }
-- Formaty czcionek możesz określić za pomocą wskazówki format()
-- Aby zwiększyć wydajność, wydzielaj podzbiory z obszernych zbiorów czcionek Unicode: stosuj wydzielanie zakresów Unicode i ręczne wydzielanie podzbiorów w przypadku starszych przeglądarek
-- Ograniczaj liczbę różnych wariantów stylistycznych czcionek, by zwiększyć wydajność wczytywania i renderowania stron
 
+* Unicode fonts can contain thousands of glyphs.
+* There are four font formats: WOFF2, WOFF, EOT, and TTF.
+* Some font formats require the use of compression.
 
-@font-face jest regułą CSS umożliwiającą określenie lokalizacji konkretnego zasobu czcionki, jej stylu i kodów Unicode, dla których powinien obowiązywać. Połączenie takich deklaracji reguł @font-face można wykorzystać do utworzenia `rodziny czcionek`, dzięki której przeglądarka może określić, które czcionki trzeba pobrać i zastosować na bieżącej stronie. Przyjrzyjmy się dokładniej, jak to działa.
+A *webfont* is a collection of glyphs, and each glyph is a vector shape that describes a letter or symbol. As a result, two simple variables determine the size of a particular font file: the complexity of the vector paths of each glyph and the number of glyphs in a particular font. For example, Open Sans, which is one of the most popular webfonts, contains 897 glyphs, which include Latin, Greek, and Cyrillic characters.
 
-### Wybór formatu
+<img src="images/glyphs.png"  alt="Font glyph table" />
 
-W każdej deklaracji reguły @font-face określa się nazwę rodziny czcionek, dzięki której może ona pełnić rolę logicznej grupy wielu deklaracji, [własności czcionki](http://www.w3.org/TR/css3-fonts/#font-prop-desc), takie jak styl, grubość, rozciągnięcie i [deskryptor źródłowy](http://www.w3.org/TR/css3-fonts/#src-desc) zawierający uporządkowaną według ważności listę lokalizacji tego zasobu czcionki.
+When picking a font, it's important to consider which character sets are supported. If you need to localize your page content to multiple languages, you should use a font that can deliver a consistent look and experience to your users. For example, [Google's Noto font family](https://www.google.com/get/noto/){: .external } aims to support all the world's languages. Note, however, that the total size of Noto, with all languages included, results in a 1.1GB+ ZIP download.
 
+Clearly, using fonts on the web requires careful engineering to ensure that the typography doesn't impede performance. Thankfully, the web platform provides all the necessary primitives, and the rest of this guide provides a hands-on look at how to get the best of both worlds.
+
+### Webfont formats
+
+Today there are four font container formats in use on the web: [EOT](https://en.wikipedia.org/wiki/Embedded_OpenType), [TTF](https://en.wikipedia.org/wiki/TrueType), [WOFF](https://en.wikipedia.org/wiki/Web_Open_Font_Format), and [WOFF2](https://www.w3.org/TR/WOFF2/){: .external }. Unfortunately, despite the wide range of choices, there isn't a single universal format that works across all old and new browsers: EOT is [IE only](http://caniuse.com/#feat=eot), TTF has [partial IE support](http://caniuse.com/#search=ttf), WOFF enjoys the widest support but is [not available in some older browsers](http://caniuse.com/#feat=woff), and WOFF 2.0 support is a [work in progress for many browsers](http://caniuse.com/#feat=woff2).
+
+So, where does that leave us? There isn't a single format that works in all browsers, which means that we need to deliver multiple formats to provide a consistent experience:
+
+* Serve WOFF 2.0 variant to browsers that support it.
+* Serve WOFF variant to the majority of browsers.
+* Serve TTF variant to old Android (below 4.4) browsers.
+* Serve EOT variant to old IE (below IE9) browsers.
+
+Note: There's technically another container format, the [SVG font container](http://caniuse.com/svg-fonts), but IE and Firefox never supported it, and it is now deprecated in Chrome. As such, it's of limited use and it's intentionally omitted it in this guide.
+
+### Reducing font size with compression
+
+A font is a collection of glyphs, each of which is a set of paths describing the letter form. The individual glyphs are different, but they contain a lot of similar information that can be compressed with GZIP or a compatible compressor:
+
+* EOT and TTF formats are not compressed by default. Ensure that your servers are configured to apply [GZIP compression](/web/fundamentals/performance/optimizing-content-efficiency/optimize-encoding-and-transfer#text-compression-with-gzip) when delivering these formats.
+* WOFF has built-in compression. Ensure that your WOFF compressor is using optimal compression settings.
+* WOFF2 uses custom preprocessing and compression algorithms to deliver ~30% file-size reduction over other formats. For more information, see [the WOFF 2.0 evaluation report](http://www.w3.org/TR/WOFF20ER/){: .external }.
+
+Finally, it's worth noting that some font formats contain additional metadata, such as [font hinting](https://en.wikipedia.org/wiki/Font_hinting) and [kerning](https://en.wikipedia.org/wiki/Kerning) information that may not be necessary on some platforms, which allows for further file-size optimization. Consult your font compressor for available optimization options, and if you take this route, ensure that you have the appropriate infrastructure to test and deliver these optimized fonts to each browser. For example, [Google Fonts](https://fonts.google.com/) maintains 30+ optimized variants for each font and automatically detects and delivers the optimal variant for each platform and browser.
+
+Note: Consider using [Zopfli compression](http://en.wikipedia.org/wiki/Zopfli) for the EOT, TTF, and WOFF formats. Zopfli is a zlib compatible compressor that delivers ~5% file-size reduction over gzip.
+
+## Defining a font family with @font-face
+
+### TL;DR {: .hide-from-toc }
+
+* Use the `format()` hint to specify multiple font formats.
+* Subset large Unicode fonts to improve performance. Use Unicode-range subsetting and provide a manual subsetting fallback for older browsers.
+* Reduce the number of stylistic font variants to improve the page- and text-rendering performance.
+
+The `@font-face` CSS at-rule allows you to define the location of a particular font resource, its style characteristics, and the Unicode codepoints for which it should be used. A combination of such `@font-face declarations can be used to construct a "font family," which the browser will use to evaluate which font resources need to be downloaded and applied to the current page.
+
+### Format selection
+
+Each `@font-face` declaration provides the name of the font family, which acts as a logical group of multiple declarations, [font properties](http://www.w3.org/TR/css3-fonts/#font-prop-desc) such as style, weight, and stretch, and the [src descriptor](http://www.w3.org/TR/css3-fonts/#src-desc), which specifies a prioritized list of locations for the font resource.
 
     @font-face {
       font-family: 'Awesome Font';
@@ -80,10 +74,10 @@ W każdej deklaracji reguły @font-face określa się nazwę rodziny czcionek, d
       src: local('Awesome Font'),
            url('/fonts/awesome.woff2') format('woff2'), 
            url('/fonts/awesome.woff') format('woff'),
-           url('/fonts/awesome.ttf') format('ttf'),
-           url('/fonts/awesome.eot') format('eot');
+           url('/fonts/awesome.ttf') format('truetype'),
+           url('/fonts/awesome.eot') format('embedded-opentype');
     }
-
+    
     @font-face {
       font-family: 'Awesome Font';
       font-style: italic;
@@ -91,43 +85,41 @@ W każdej deklaracji reguły @font-face określa się nazwę rodziny czcionek, d
       src: local('Awesome Font Italic'),
            url('/fonts/awesome-i.woff2') format('woff2'), 
            url('/fonts/awesome-i.woff') format('woff'),
-           url('/fonts/awesome-i.ttf') format('ttf'),
-           url('/fonts/awesome-i.eot') format('eot');
+           url('/fonts/awesome-i.ttf') format('truetype'),
+           url('/fonts/awesome-i.eot') format('embedded-opentype');
     }
+    
 
+First, note that the above examples define a single *Awesome Font* family with two styles (normal and *italic*), each of which points to a different set of font resources. In turn, each `src` descriptor contains a prioritized, comma-separated list of resource variants:
 
-Przede wszystkim zwróć uwagę, że w powyższych przykładach określono jedną rodzinę czcionek _Awesome Font_ o dwóch stylach (normalny i _kursywa_), z których każdy jest skojarzony z innym zestawem zasobów czcionek. Z kolei każdy deskryptor `src` zawiera uporządkowaną według ważności, rozdzieloną przecinkami, listę wariantów zasobu: 
+* The `local()` directive allows you to reference, load, and use locally installed fonts.
+* The `url()` directive allows you to load external fonts, and are allowed to contain an optional `format()` hint indicating the format of the font referenced by the provided URL.
 
-* Dyrektywa `local()` umożliwia odwoływanie się, wczytywanie i używanie czcionek zainstalowanych lokalnie.
-* Dyrektywa `url()` umożliwia wczytywanie czcionek zewnętrznych. Można do niej dołączyć opcjonalną wskazówkę `format()` w celu opisania formatu czcionki opisanej podanym adresem URL.
+Note: Unless you're referencing one of the default system fonts, it is rare for the user to have it locally installed, especially on mobile devices, where it is effectively impossible to "install" additional fonts. You should always start with a `local()` entry "just in case," and then provide a list of `url()` entries.
 
+When the browser determines that the font is needed, it iterates through the provided resource list in the specified order and tries to load the appropriate resource. For example, following the example above:
 
-Note: Jeśli strona nie odwołuje się do jednej z domyślnych czcionek systemowych, w praktyce rzadko są one zainstalowane lokalnie, zwłaszcza w przypadku urządzeń mobilnych, na których instalacja dodatkowych czcionek jest w zasadzie niemożliwa. Z tego powodu należy zawsze udostępniać listę zewnętrznych lokalizacji czcionek.
+1. The browser performs page layout and determines which font variants are required to render the specified text on the page.
+2. For each required font, the browser checks if the font is available locally.
+3. If the font is not available locally, the browser iterates over external definitions: 
+    * If a format hint is present, the browser checks if it supports the hint before initiating the download. If the browser doesn't support the hint, the browser advances to the next one.
+    * If no format hint is present, the browser downloads the resource.
 
-Gdy przeglądarka ustali, że dana czcionka jest potrzebna, odczytuje w określonej kolejności podaną listę zasobów i próbuje wczytać odpowiedni zasób. Korzystając z powyższego przykładu:
+The combination of local and external directives with appropriate format hints allows you to specify all of the available font formats and let the browser handle the rest. The browser determines which resources are required and selects the optimal format.
 
-1. Przeglądarka wyznacza układ strony i określa, które warianty czcionki są wymagane do zrenderowania pewnego tekstu na stronie.
-2. Dla każdej wymaganej czcionki przeglądarka sprawdza, czy czcionka jest dostępna lokalnie.
-3. Jeśli plik nie jest dostępny lokalnie, wczytywane kolejno są definicje zewnętrzne:
-  * Jeśli obecna jest wskazówka opisująca format, przed rozpoczęciem pobierania przeglądarka sprawdza, czy go obsługuje, a jeśli nie, przechodzi do następnej pozycji.
-  * Jeśli nie podano wskazówki opisującej format, przeglądarka pobiera zasób.
+Note: The order in which the font variants are specified matters. The browser picks the first format it supports. Therefore, if you want the newer browsers to use WOFF2, then you should place the WOFF2 declaration above WOFF, and so on.
 
-Połączenie dyrektyw lokalnych i zewnętrznych z odpowiednimi wskazówkami opisującymi format pozwala określić wszystkie dostępne formaty czcionek i powierzyć przeglądarce pozostałe czynności: stwierdzenie, które zasoby są wymagane, i wybór ich optymalnego formatu.
+### Unicode-range subsetting
 
-Note: Kolejność podania kolejnych wariantów czcionek ma znaczenie. Przeglądarka wybiera pierwszy obsługiwany format. Dlatego jeśli w nowszych przeglądarkach powinien być używany format WOFF2, deklarację czcionki w tym formacie należy umieścić przed deklaracją czcionki w formacie WOFF i tak dalej.
+In addition to font properties such as style, weight, and stretch, the `@font-face` rule allows us to define a set of Unicode codepoints supported by each resource. This enables us to split a large Unicode font into smaller subsets (for example, Latin, Cyrillic, and Greek subsets) and only download the glyphs required to render the text on a particular page.
 
-### Wydzielanie zakresów Unicode
+The [unicode-range descriptor](http://www.w3.org/TR/css3-fonts/#descdef-unicode-range) allows you to specify a comma-delimited list of range values, each of which can be in one of three different forms:
 
-Oprócz właściwości czcionek, takich jak styl, grubość i rozciągniecie, reguła @font-face pozwala określić, jaki zakres Unicode ma być obsługiwany przez każdy z zasobów. Umożliwia to podział dużych czcionek Unicode na mniejsze podzbiory (np. zbiory czcionki łacińskiej, greckiej, cyrylicy) i pobieranie tylko glifów wymaganych do renderowania tekstu na konkretnej stronie.
+* Single codepoint (for example, `U+416`)
+* Interval range (for example, `U+400-4ff`): indicates the start and end codepoints of a range
+* Wildcard range (for example, `U+4??`): `?` characters indicate any hexadecimal digit
 
-[Deskryptor zakresu Unicode](http://www.w3.org/TR/css3-fonts/#descdef-unicode-range) umożliwia określenie wartości zakresów na liście rozdzielanej przecinkami, przy czym każdy z zakresów może przyjąć jedną z trzech postaci:
-
-* Jedna wartość kodu (np. U+416)
-* Zakres wartości (np. U+400-4ff): początek i koniec zakresu kodów
-* Zakres określony symbolem wieloznacznym (np. U+4??): znak `?` oznacza dowolną cyfrę heksadecymalną
-
-Na przykład naszą rodzinę czcionek _Awesome Font_ możemy rozdzielić na podzbiory czcionki łacińskiej i japońskiej, z których każdy przeglądarka będzie mogła pobrać według potrzeby: 
-
+For example, you can split your *Awesome Font* family into Latin and Japanese subsets, each of which the browser downloads on an as-needed basis:
 
     @font-face {
       font-family: 'Awesome Font';
@@ -136,8 +128,8 @@ Na przykład naszą rodzinę czcionek _Awesome Font_ możemy rozdzielić na podz
       src: local('Awesome Font'),
            url('/fonts/awesome-l.woff2') format('woff2'), 
            url('/fonts/awesome-l.woff') format('woff'),
-           url('/fonts/awesome-l.ttf') format('ttf'),
-           url('/fonts/awesome-l.eot') format('eot');
+           url('/fonts/awesome-l.ttf') format('truetype'),
+           url('/fonts/awesome-l.eot') format('embedded-opentype');
       unicode-range: U+000-5FF; /* Latin glyphs */
     }
     
@@ -148,42 +140,40 @@ Na przykład naszą rodzinę czcionek _Awesome Font_ możemy rozdzielić na podz
       src: local('Awesome Font'),
            url('/fonts/awesome-jp.woff2') format('woff2'), 
            url('/fonts/awesome-jp.woff') format('woff'),
-           url('/fonts/awesome-jp.ttf') format('ttf'),
-           url('/fonts/awesome-jp.eot') format('eot');
+           url('/fonts/awesome-jp.ttf') format('truetype'),
+           url('/fonts/awesome-jp.eot') format('embedded-opentype');
       unicode-range: U+3000-9FFF, U+ff??; /* Japanese glyphs */
     }
     
 
-Note: Wydzielanie zakresów Unicode ma szczególne znaczenie w przypadku języków azjatyckich, ponieważ liczba glifów jest o wiele większa niż w językach europejskich, a typowy pełny zbiór czcionek mierzy się w megabajtach, a nie w dziesiątkach kilobajtów.
+Note: Unicode-range subsetting is particularly important for Asian languages, where the number of glyphs is much larger than in Western languages and a typical "full" font is often measured in megabytes instead of tens of kilobytes.
 
-Użycie podzbiorów zakresów Unicode i osobnych plików dla każdego wariantu stylistycznego czcionki pozwala utworzyć złożoną rodzinę czcionek, co zwiększa zarówno prędkość, jak i efektywność pobierania &ndash; użytkownik będzie pobierać tylko potrzebne warianty i podzbiory, a nie te, których być może nigdy nie zobaczy lub nie wykorzysta na stronie. 
+The use of Unicode range subsets and separate files for each stylistic variant of the font allows you to define a composite font family that is both faster and more efficient to download. Visitors only download the variants and subsets they need, and they aren't forced to download subsets that they may never see or use on the page.
 
-Pamiętajmy jednak o małym haczyku: [jeszcze nie wszystkie przeglądarki obsługują zakresy Unicode](http://caniuse.com/#feat=font-unicode-range). Niektóre przeglądarki po prostu ignorują wskazówkę z opisem zakresu Unicode i pobierają wszystkie warianty, a inne mogą w ogóle nie przetwarzać deklaracji @font-face. Aby poradzić sobie z tym problemem, musimy uciec się do "ręcznego wydzielania podzbiorów" w starszych przeglądarkach.
+That said, there's one small issue with unicode-range: [not all browser support it](http://caniuse.com/#feat=font-unicode-range) yet. Some browsers simply ignore the unicode-range hint and download all variants, while others may not process the `@font-face` declaration at all. To address this, you need to fall back to "manual subsetting" for older browsers.
 
-Ponieważ starsze przeglądarki nie są na tyle inteligentne, by wybrać tylko niezbędne zasoby i utworzyć czcionkę złożoną, musimy uciec się do dostarczenia pojedynczego zasobu czcionki, który będzie zawierać wszystkie niezbędne podzbiory, a pozostałe ukryć przed przeglądarką. Na przykład, jeśli strona wykorzystuje tylko znaki łacińskie, możemy pozbyć się pozostałych glifów i przesłać tylko określony podzbiór jako samodzielny zasób. 
+Because old browsers are not smart enough to select only the necessary subsets and cannot construct a composite font, you have to fall back to providing a single font resource that contains all the necessary subsets and hide the rest from the browser. For example, if the page is only using Latin characters, then you can strip other glyphs and serve that particular subset as a standalone resource.
 
-1. **W jaki sposób określić, które podzbiory są potrzebne?** 
-  - Jeśli przeglądarka obsługuje wydzielanie zakresów Unicode, wybierze automatycznie właściwy podzbiór. Strona będzie wymagać tylko dostarczenia plików podzbiorów i określenia odpowiednich zakresów Unicode w regułach @font-face.
-  - W przypadku braku obsługi zakresów Unicode strona będzie musiała ukryć wszystkie zbędne podzbiory &ndash; tzn. programista będzie musiał samodzielnie określić wymagane podzbiory.
-2. **Jak wygenerować podzbiory czcionek?**
-  - Do określenia podzbiorów i optymalizacji czcionek można użyć narzędzia typu open source [pyftsubset](https://github.com/behdad/fonttools/blob/master/Lib/fontTools/subset.py#L16).
-  - Niektóre serwisy z czcionkami umożliwiają wydzielanie podzbiorów z użyciem własnych parametrów zapytań, dzięki czemu można ręcznie określić podzbiór wymagany przez stronę &ndash; szczegóły możesz sprawdzić w dokumentacji serwisu.
+1. **How do you determine which subsets are needed?** 
+    * If the browser supports unicode-range subsetting, then it will automatically select the right subset. The page just needs to provide the subset files and specify appropriate unicode-ranges in the `@font-face` rules.
+    * If the browser doesn't support unicode-range subsetting, then the page needs to hide all unnecessary subsets; that is, the developer must specify the required subsets.
+2. **How do you generate font subsets?** 
+    * Use the open-source [pyftsubset tool](https://github.com/behdad/fonttools/){: .external } to subset and optimize your fonts.
+    * Some font services allow manual subsetting via custom query parameters, which you can use to manually specify the required subset for your page. Consult the documentation from your font provider.
 
+### Font selection and synthesis
 
-### Wybór i synteza czcionek
+Each font family is composed of multiple stylistic variants (regular, bold, italic) and multiple weights for each style, each of which, in turn, may contain very different glyph shapes&mdash;for example, different spacing, sizing, or a different shape altogether.
 
-Każda rodzina czcionek składa się z wielu wariantów stylistycznych (normalnego, pogrubionego, kursywy) i wielu stopni pogrubienia dla każdego stylu, z których z kolei każdy może zawierać glify o bardzo różnych kształtach &ndash; np. o różnej wielkości rozstrzelenia, różnym rozmiarze albo w ogóle o odmiennym kształcie. 
+<img src="images/font-weights.png"  alt="Font weights" />
 
-<img src="images/font-weights.png" class="center" alt="Grubości czcionek">
+For example, the above diagram illustrates a font family that offers three different bold weights: 400 (regular), 700 (bold), and 900 (extra bold). All other in-between variants (indicated in gray) are automatically mapped to the closest variant by the browser.
 
-Powyższa ilustracja przedstawia rodzinę czcionek o trzech różnych grubościach: 400 (normalna), 700 (pogrubiona) i 900 (bardzo pogrubiona). Wszystkie inne (oznaczone kolorem szarym) warianty pomiędzy powyższymi są automatycznie mapowane przez przeglądarkę do najbliższego dostępnego wariantu. 
+> When a weight is specified for which no face exists, a face with a nearby weight is used. In general, bold weights map to faces with heavier weights and light weights map to faces with lighter weights.
+> 
+> > [CSS3 font matching algorithm](http://www.w3.org/TR/css3-fonts/#font-matching-algorithm)
 
-> Po określeniu grubości, dla której nie istnieje dedykowana czcionka, używana jest czcionka o najbliższej grubości. Generalnie warianty pogrubione są mapowane do wariantów o większych grubościach, a warianty normalne do wariantów o mniejszych grubościach.
-> > <a href="http://www.w3.org/TR/css3-fonts/#font-matching-algorithm">Algorytm dopasowywania czcionek CSS3</a>
-
-
-Podobna procedura obowiązuje dla różnych wariantów _kursywy_. Projektant czcionek ma kontrolę nad tym, które warianty zostaną utworzone, a my mamy kontrolę nad tym, których wariantów użyjemy na stronie &ndash; a ponieważ każdy wariant wymaga osobnego pobierania, dobrze jest ograniczyć ich liczbę do minimum. Na przykład możemy określić dwa warianty naszej rodziny czcionek _Awesome Font_: 
-
+Similar logic applies to *italic* variants. The font designer controls which variants they will produce, and you control which variants you'll use on the page. Because each variant is a separate download, it's a good idea to keep the number of variants small. For example, you can define two bold variants for the *Awesome Font* family:
 
     @font-face {
       font-family: 'Awesome Font';
@@ -192,8 +182,8 @@ Podobna procedura obowiązuje dla różnych wariantów _kursywy_. Projektant czc
       src: local('Awesome Font'),
            url('/fonts/awesome-l.woff2') format('woff2'), 
            url('/fonts/awesome-l.woff') format('woff'),
-           url('/fonts/awesome-l.ttf') format('ttf'),
-           url('/fonts/awesome-l.eot') format('eot');
+           url('/fonts/awesome-l.ttf') format('truetype'),
+           url('/fonts/awesome-l.eot') format('embedded-opentype');
       unicode-range: U+000-5FF; /* Latin glyphs */
     }
     
@@ -204,125 +194,296 @@ Podobna procedura obowiązuje dla różnych wariantów _kursywy_. Projektant czc
       src: local('Awesome Font'),
            url('/fonts/awesome-l-700.woff2') format('woff2'), 
            url('/fonts/awesome-l-700.woff') format('woff'),
-           url('/fonts/awesome-l-700.ttf') format('ttf'),
-           url('/fonts/awesome-l-700.eot') format('eot');
+           url('/fonts/awesome-l-700.ttf') format('truetype'),
+           url('/fonts/awesome-l-700.eot') format('embedded-opentype');
       unicode-range: U+000-5FF; /* Latin glyphs */
     }
     
 
-W powyższym przykładzie zadeklarowano rodzinę czcionek _Awesome Font_ składającą się z dwóch zasobów, które obejmują ten sam zestaw glifów łacińskich (U+000-5FF), ale cechują je inne grubości: normalna (400) i pogrubienie (700). Jednak co się stanie, jeśli w jednej z naszych reguł CSS zostanie użyta inna grubość czcionki lub jako styl czcionki zostanie wybrana kursywa?
+The above example declares the *Awesome Font* family that is composed of two resources that cover the same set of Latin glyphs (`U+000-5FF`) but offer two different "weights": normal (400) and bold (700). However, what happens if one of your CSS rules specifies a different font weight, or sets the font-style property to italic?
 
-* Jeśli dokładnie pasująca czcionka jest niedostępna, przeglądarka wybierze najbliższe dopasowanie.
-* Jeśli brak dopasowania względem stylu (np. brak zadeklarowanych wariantów z kursywą, jak w przykładzie powyżej), przeglądarka przeprowadzi syntezę własnego wariantu czcionki. 
+* If an exact font match isn't available, the browser substitutes the closest match.
+* If no stylistic match is found (for example, no italic variants were declared in the example above), then the browser synthesizes its own font variant.
 
-<img src="images/font-synthesis.png" class="center" alt="Synteza czcionek">
+<img src="images/font-synthesis.png"  alt="Font synthesis" />
 
-> Autorzy stron powinni mieć świadomość, że syntetyzowane czcionki mogą być zupełnie nieodpowiednie, np. w przypadku cyrylicy wersje z kursywą są zupełnie odmienne od normalnych. Zawsze lepiej jest polegać na rzeczywiście pobranej czcionce kursywy, niż na wersji zsyntetyzowanej.
-> > <a href="http://www.w3.org/TR/css3-fonts/#propdef-font-style">Styl czcionki CSS3</a>
+Warning: Authors should also be aware that synthesized approaches may not be suitable for scripts like Cyrillic, where italic forms are very different in shape. For proper fidelity in those scripts, use an actual italic font.
 
-Powyższy przykład ilustruje różnicę pomiędzy rzeczywistą i zsyntetyzowaną czcionką Open-Sans &ndash; wszystkie zsyntetyzowane warianty wygenerowano z jednej czcionki o grubości 400. Jak widać, różnice są zauważalne. Nie określono żadnych szczegółowych wytycznych generowania wariantów pogrubionych i skośnych. Dlatego wyniki mogą być różne dla różnych przeglądarek, zależą również w dużym stopniu od konkretnej czcionki.
+The example above illustrates the difference between the actual vs. synthesized font results for Open Sans. All synthesized variants are generated from a single 400-weight font. As you can see, there's a noticeable difference in the results. The details of how to generate the bold and oblique variants are not specified. Therefore, the results vary from browser to browser, and are highly dependent on the font.
 
-Note: Aby uzyskać jak najlepszy wygląd i zachować spójność wyświetlania, nie dopuszczaj do syntezy czcionek. Zamiast tego zmniejsz liczbę używanych wariantów czcionek i określ ich lokalizacje, dzięki czemu przeglądarka będzie mogła je pobrać, gdy okażą się potrzebne. Pamiętając o tym ostrzeżeniu, trzeba wiedzieć, że w niektórych przypadkach warianty uzyskane w drodze syntezy <a href='https://www.igvita.com/2014/09/16/optimizing-webfont-selection-and-synthesis/'>mogą spełniać wymagania</a> &ndash; jednak należy stosować je z rozwagą.
+Note: For best consistency and visual results, don't rely on font synthesis. Instead, minimize the number of used font variants and specify their locations, such that the browser can download them when they are used on the page. That said, in some cases a synthesized variant [may be a viable option](https://www.igvita.com/2014/09/16/optimizing-webfont-selection-and-synthesis/), but be cautious in using synthesized variants.
 
-
-## Optymalizacja wczytywania i renderowania
+## Optimizing loading and rendering
 
 ### TL;DR {: .hide-from-toc }
-- Żądania pobrania czcionek są odkładane do zakończenia tworzenia drzewa renderowania, co może prowadzić do opóźnienia renderowania tekstu
-- Interfejs API Font Loading pozwala wdrożyć własne strategie wczytywania i renderowania czcionek zastępujące domyślne procedury leniwego wczytywania czcionek
-- Zamieszczanie czcionek w kodzie umożliwia zastępowanie domyślnego sposobu leniwego wczytywania czcionek w starszych przeglądarkach
 
+* By default, font requests are delayed until the render tree is constructed, which can result in delayed text rendering.
+* `<link rel="preload">`, the CSS `font-display` property, and the Font Loading API provide the hooks needed to implementing custom font loading and rendering strategies, overriding the default behavior.
 
-Pełna wersja czcionki sieci web ze wszystkimi wariantami stylistycznymi, których możemy nie potrzebować, i ze wszystkimi glifami, których zazwyczaj się nie wykorzystuje, może skutkować koniecznością pobrania wielu megabajtów danych. Rozwiązaniem tego problemu jest reguła @font-face kodu CSS, którą opracowano specjalnie w celu umożliwienia podziału rodziny czcionek na kolekcję zasobów: podzbiorów Unicode, osobnych wariantów stylistycznych i tak dalej. 
+A "full" webfont that includes all stylistic variants, which you may not need, plus all the glyphs, which may go unused, can easily result in a multi-megabyte download. To address this, the `@font-face` CSS rule is specifically designed to allow you to split the font family into a collection of resources: unicode subsets, distinct style variants, and so on.
 
-Uwzględniając te deklaracje, przeglądarka wyznacza wymagane podzbiory i warianty, a następnie pobiera minimalny ich zestaw wymagany do zrenderowania tekstu. Takie zachowanie jest bardzo dla nas wygodne, ale jeśli nie zachowamy ostrożności, może wystąpić wąskie gardło w krytycznej ścieżce renderowania, co opóźni renderowanie tekstu &ndash; a tego chcielibyśmy uniknąć. 
+Given these declarations, the browser figures out the required subsets and variants and downloads the minimal set required to render the text, which is very convenient. However, if you're not careful, it can also create a performance bottleneck in the critical rendering path and delay text rendering.
 
-### Czcionki sieci web i krytyczna ścieżka renderowania
+### The default behavior
 
-Leniwe wczytywanie czcionek niesie ze sobą pewną ukrytą konsekwencję, która może prowadzić do opóźnienia renderowania tekstu: przeglądarka musi na podstawie drzew DOM i CSSOM [utworzyć drzewo renderowania](/web/fundamentals/performance/critical-rendering-path/render-tree-construction), zanim ustali, których zasobów będzie potrzebować do renderowania tekstu. Z tej przyczyny żądania pobierania czcionek są odkładane na moment po pobraniu innych krytycznych zasobów, a przeglądarka może zostać zablokowana i nie być zdolna do renderowania tekstu do chwili pobrania tych zasobów.
+Lazy loading of fonts carries an important hidden implication that may delay text rendering: the browser must [construct the render tree](/web/fundamentals/performance/critical-rendering-path/render-tree-construction), which is dependent on the DOM and CSSOM trees, before it knows which font resources it needs in order to render the text. As a result, font requests are delayed well after other critical resources, and the browser may be blocked from rendering text until the resource is fetched.
 
-<img src="images/font-crp.png" class="center" alt="Krytyczna ścieżka renderowania czcionek">
+<img src="images/font-crp.png"  alt="Font critical rendering path" />
 
-1. Przeglądarka wysyła żądanie dokumentu HTML
-2. Przeglądarka rozpoczyna parsowanie odpowiedzi HTML i tworzy drzewo DOM
-3. Przeglądarka rozpoznaje kod CSS i JS oraz inne zasoby, a następnie wysyła odpowiednie żądania
-4. Przeglądarka tworzy drzewo CSSOM po odebraniu wszystkich zasobów CSS, a następnie łączy je z drzewem DOM w jedno drzewo renderowania
-  * Żądania czcionek są wysyłane po wykryciu w drzewie renderowania, których wariantów czcionek potrzeba do zrenderowania tekstu na stronie
-5. Przeglądarka wyznacza układ strony i maluje treść na ekranie
-  * W przypadku niedostępności czcionki przeglądarka może nie zrenderować żadnych pikseli tekstu
-  * Gdy czcionka stanie się dostępna, przeglądarka wykona malowanie pikseli tekstu
+1. The browser requests the HTML document.
+2. The browser begins parsing the HTML response and constructing the DOM.
+3. The browser discovers CSS, JS, and other resources and dispatches requests.
+4. The browser constructs the CSSOM after all of the CSS content is received and combines it with the DOM tree to construct the render tree. 
+    * Font requests are dispatched after the render tree indicates which font variants are needed to render the specified text on the page.
+5. The browser performs layout and paints content to the screen. 
+    * If the font is not yet available, the browser may not render any text pixels.
+    * After the font is available, the browser paints the text pixels.
 
-Chęć jak najszybszego pierwszego odmalowania treści strony (co może nastąpić od razu po utworzeniu drzewa renderowania) i wysyłanie żądania o zasób czcionki dopiero po pewnym czasie prowadzą razem do `problemu pustego tekstu`. Objawia się on renderowaniem samego układu strony, ale nie tekstu. W rzeczywistości zachowanie zależy od rodzaju przeglądarki:
+The "race" between the first paint of page content, which can be done shortly after the render tree is built, and the request for the font resource is what creates the "blank text problem" where the browser might render page layout but omits any text.
 
-* Przeglądarka Safari wstrzymuje renderowanie tekstu, aż pobieranie czcionek się zakończy.
-* Przeglądarki Chrome i Firefox wstrzymują renderowanie czcionek na maksymalnie 3 sekundy i po tym okresie stosują czcionki zastępcze, a po zakończeniu pobierania czcionek ponownie renderują tekst z użyciem pobranych czcionek.
-* Przeglądarka IE niezwłocznie renderuje tekst z użyciem czcionek zastępczych, jeśli żądane czcionki nie są jeszcze dostępne, a następnie ponownie renderuje tekst z użyciem pobranych czcionek.
+The next section describes a number of options for customizing this default behavior.
 
-Istnieją dobre argumenty za i przeciw różnym strategiom renderowania: niektórych ludzi denerwuje ponowne renderowanie, inni wolą zobaczyć wyniki natychmiast i nie przeszkadza im zmiana układu strony po zakończeniu pobierania czcionek &ndash; o gustach się nie dyskutuje. Faktem jest, że leniwe wczytywanie prowadzi do redukcji liczby pobranych danych, ale potencjalnie prowadzi również do opóźnienia renderowania tekstu. Zaraz się zastanowimy, jak można zoptymalizować to zachowanie.
+### Preload your Webfont resources
 
-### Optymalizacja renderowania czcionek z użyciem interfejsu API Font Loading
+If there's a high probability that your page will need a specific Webfont hosted at a URL you know in advance, you can take advantage of a new web platform feature: [`<link rel="preload">`](/web/fundamentals/performance/resource-prioritization).
 
-[Interfejs API Font Loading](http://dev.w3.org/csswg/css-font-loading/){: .external } to interfejs do wczytywania skryptów umożliwiających określanie i manipulację czcionkami w kodzie CSS, śledzenie postępu ich pobierania i zastępowanie domyślnego sposobu leniwego wczytywania. Na przykład, jeśli mamy pewność, że pewien wariant czcionki będzie wymagany, możemy określić ten wariant i polecić przeglądarce niezwłoczne pobranie zasobu czcionki:
+It allows you to include an element in your HTML, usually as part of the `<head>`, that will trigger a request for the Webfont early in the critical rendering path, without having to wait for the CSSOM to be created.
 
+`<link rel="preload">` serves as a "hint" to the browser that a given resource is going to be needed soon, but it doesn't tell the browser *how* to use it. You need to use preload in conjunction with an appropriate CSS `@font-face` definition in order to instruct the browser what do to with a given Webfont URL.
+
+```html
+<head>
+  <!-- Other tags... -->
+  <link rel="preload" href="/fonts/awesome-l.woff2" as="font">
+</head>
+```
+
+```css
+@font-face {
+  font-family: 'Awesome Font';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Awesome Font'),
+       url('/fonts/awesome-l.woff2') format('woff2'), /* will be preloaded */ 
+       url('/fonts/awesome-l.woff') format('woff'),
+       url('/fonts/awesome-l.ttf') format('truetype'),
+       url('/fonts/awesome-l.eot') format('embedded-opentype');
+  unicode-range: U+000-5FF; /* Latin glyphs */
+}
+```
+
+Not all browsers [support `<link rel="preload">`](https://caniuse.com/#feat=link-rel-preload), and in those browsers, `<link rel="preload">` will just be ignored. But every browser that supports preloading also supports WOFF2, so that's always the format that you should preload.
+
+Caution: Using `<link rel="preload">` will make an unconditional, high-priority request for the Webfont's URL, regardless of whether it actually ends up being needed on the page. If there's a reasonable chance that the remote copy of the Webfont won't be needed—for instance, because the `@font-face` definition includes a `local()` entry for a common font like Roboto—then using `<link rel="preload">` will result in a wasted request. Some browsers will display a warning in their Developer Tools Console when a resource is preloaded but not actually used.
+
+### Customize the text rendering delay
+
+While preloading makes it more likely that a Webfont will be available when a page's content is rendered, it offers no guarantees. You still need to consider how browsers behave when rendering text that uses a `font-family` which is not yet available.
+
+#### Browser behaviors
+
+The "race" between the first paint of page content, which can be done shortly after the render tree is built, and the request for the font resource is what creates the "blank text problem" where the browser might render page layout but omits any text. Most browsers implement a maximum timeout that they'll wait for a Webfont to download, after which a fallback font will be used. Unfortunately, browsers differ on implementation:
+
+<table>
+  <thead>
+    <tr>
+      <th data-th="Browser">Browser</th>
+      <th data-th="Timeout">Timeout</th>
+      <th data-th="Fallback">Fallback</th>
+      <th data-th="Swap">Swap</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td data-th="Browser">
+        <strong>Chrome 35+</strong>
+      </td>
+      <td data-th="Timeout">
+        3 seconds
+      </td>
+      <td data-th="Fallback">
+        Yes
+      </td>
+      <td data-th="Swap">
+        Yes
+      </td>
+    </tr>
+    <tr>
+      <td data-th="Browser">
+        <strong>Opera</strong>
+      </td>
+      <td data-th="Timeout">
+        3 seconds
+      </td>
+      <td data-th="Fallback">
+        Yes
+      </td>
+      <td data-th="Swap">
+        Yes
+      </td>
+    </tr>
+    <tr>
+      <td data-th="Browser">
+        <strong>Firefox</strong>
+      </td>
+      <td data-th="Timeout">
+        3 seconds
+      </td>
+      <td data-th="Fallback">
+        Yes
+      </td>
+      <td data-th="Swap">
+        Yes
+      </td>
+    </tr>
+    <tr>
+      <td data-th="Browser">
+        <strong>Internet Explorer</strong>
+      </td>
+      <td data-th="Timeout">
+        0 seconds
+      </td>
+      <td data-th="Fallback">
+        Yes
+      </td>
+      <td data-th="Swap">
+        Yes
+      </td>
+    </tr>
+    <tr>
+      <td data-th="Browser">
+        <strong>Safari</strong>
+      </td>
+      <td data-th="Timeout">
+        No timeout
+      </td>
+      <td data-th="Fallback">
+        N/A
+      </td>
+      <td data-th="Swap">
+        N/A
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+* Chrome and Firefox have a three second timeout after which the text is shown with the fallback font. If the font manages to download, then eventually a swap occurs and the text is re-rendered with the intended font.
+* Internet Explorer has a zero second timeout which results in immediate text rendering. If the requested font is not yet available, a fallback is used, and text is re-rendered later once the requested font becomes available.
+* Safari has no timeout behavior (or at least nothing beyond a baseline network timeout).
+
+To ensure consistency moving forward, the CSS Working Group has proposed a new `@font-face` descriptor, [`font-display`](https://drafts.csswg.org/css-fonts-4/#font-display-desc), and a corresponding property for controlling how a downloadable font renders before it is loaded.
+
+#### The font display timeline
+
+Similar to the existing font timeout behaviors that some browsers implement today, `font-display` segments the lifetime of a font download into three major periods:
+
+1. The first period is the **font block period**. During this period, if the font face is not loaded, any element attempting to use it must instead render with an invisible fallback font face. If the font face successfully loads during the block period, the font face is then used normally.
+2. The **font swap period** occurs immediately after the font block period. During this period, if the font face is not loaded, any element attempting to use it must instead render with a fallback font face. If the font face successfully loads during the swap period, the font face is then used normally.
+3. The **font failure period** occurs immediately after the font swap period. If the font face is not yet loaded when this period starts, it’s marked as a failed load, causing normal font fallback. Otherwise, the font face is used normally.
+
+Understanding these periods means you can use `font-display` to decide how your font should render depending on whether or when it was downloaded.
+
+#### Using font-display
+
+To work with the `font-display` property, add it your `@font-face` rules:
+
+```css
+@font-face {
+  font-family: 'Awesome Font';
+  font-style: normal;
+  font-weight: 400;
+  font-display: auto; /* or block, swap, fallback, optional */
+  src: local('Awesome Font'),
+       url('/fonts/awesome-l.woff2') format('woff2'), /* will be preloaded */ 
+       url('/fonts/awesome-l.woff') format('woff'),
+       url('/fonts/awesome-l.ttf') format('truetype'),
+       url('/fonts/awesome-l.eot') format('embedded-opentype');
+  unicode-range: U+000-5FF; /* Latin glyphs */
+}
+```
+
+`font-display` currently supports the following range of values: `auto | block | swap | fallback | optional`.
+
+* **`auto`** uses whatever font display strategy the user-agent uses. Most browsers currently have a default strategy similar to `block`.
+
+* **`block`** gives the font face a short block period (3s is recommended in most cases) and an infinite swap period. In other words, the browser draws "invisible" text at first if the font is not loaded, but swaps the font face in as soon as it loads. To do this the browser creates an anonymous font face with metrics similar to the selected font but with all glyphs containing no "ink." This value should only be used if rendering text in a particular typeface is required for the page to be usable.
+
+* **`swap`** gives the font face a zero second block period and an infinite swap period. This means the browser draws text immediately with a fallback if the font face isn’t loaded, but swaps the font face in as soon as it loads. Similar to `block`, this value should only be used when rendering text in a particular font is important for the page, but rendering in any font will still get a correct message across. Logo text is a good candidate for **swap** since displaying a company’s name using a reasonable fallback will get the message across but you’d eventually use the official typeface.
+
+* **`fallback`** gives the font face an extremely small block period (100ms or less is recommended in most cases) and a short swap period (three seconds is recommended in most cases). In other words, the font face is rendered with a fallback at first if it’s not loaded, but the font is swapped as soon as it loads. However, if too much time passes, the fallback will be used for the rest of the page’s lifetime. `fallback` is a good candidate for things like body text where you’d like the user to start reading as soon as possible and don’t want to disturb their experience by shifting text around as a new font loads in.
+
+* **`optional`** gives the font face an extremely small block period (100ms or less is recommended in most cases) and a zero second swap period. Similar to `fallback`, this is a good choice for when the downloading font is more of a "nice to have" but not critical to the experience. The `optional` value leaves it up to the browser to decide whether to initiate the font download, which it may choose not to do or it may do it as a low priority depending on what it thinks would be best for the user. This can be beneficial in situations where the user is on a weak connection and pulling down a font may not be the best use of resources.
+
+`font-display` is [gaining adoption](https://caniuse.com/#feat=css-font-rendering-controls) in many modern browsers. You can look forward to consistency in browser behavior as it becomes widely implemented.
+
+### The Font Loading API
+
+Used together, `<link rel="preload">` and the CSS `font-display` give developers a great deal of control over font loading and rendering, without adding in much overhead. But if you need additional customizations, and are willing to incur with the overhead introduced by running JavaScript, there is another option.
+
+The [Font Loading API](https://www.w3.org/TR/css-font-loading/) provides a scripting interface to define and manipulate CSS font faces, track their download progress, and override their default lazyload behavior. For example, if you're sure that a particular font variant is required, you can define it and tell the browser to initiate an immediate fetch of the font resource:
 
     var font = new FontFace("Awesome Font", "url(/fonts/awesome.woff2)", {
       style: 'normal', unicodeRange: 'U+000-5FF', weight: '400'
     });
     
-    font.load(); // don't wait for render tree, initiate immediate fetch!
-    
-    font.ready().then(function() {
-      // apply the font (which may rerender text and cause a page reflow)
-      // once the font has finished downloading
+    // don't wait for the render tree, initiate an immediate fetch!
+    font.load().then(function() {
+      // apply the font (which may re-render text and cause a page reflow)
+      // after the font has finished downloading
       document.fonts.add(font);
       document.body.style.fontFamily = "Awesome Font, serif";
     
-      // OR... by default content is hidden, and rendered once font is available
+      // OR... by default the content is hidden, 
+      // and it's rendered after the font is available
       var content = document.getElementById("content");
       content.style.visibility = "visible";
     
-      // OR... apply own render strategy here... 
+      // OR... apply your own render strategy here... 
     });
     
 
-Ponadto (dzięki metodzie [check()](http://dev.w3.org/csswg/css-font-loading/#font-face-set-check)) możemy zweryfikować stan czcionki i śledzić postęp jej pobierania, możemy również określić własną strategię renderowania tekstu na stronach: 
+Further, because you can check the font status (via the [check()](https://www.w3.org/TR/css-font-loading/#font-face-set-check)) method and track its download progress, you can also define a custom strategy for rendering text on your pages:
 
-* Możemy całkowicie wstrzymać renderowanie tekstu, aż czcionka stanie się dostępna.
-* Możemy określić własny czas oczekiwania dla każdej czcionki.
-* Możemy użyć czcionki zastępczej w celu odblokowania renderowania, a następnie wprowadzić nowy styl korzystający z preferowanej czcionki, gdy ta stanie się dostępna.
+* You can hold all text rendering until the font is available.
+* You can implement a custom timeout for each font.
+* You can use the fallback font to unblock rendering and inject a new style that uses the desired font after the font is available.
 
-Najlepsze jest jednak to, że dla różnych typów treści na stronie można łączyć powyższe strategie &ndash; np. wstrzymanie renderowania tekstu w niektórych sekcjach, aż czcionka stanie się dostępna; użycie czcionki zastępczej i ponowne renderowanie po zakończeniu pobierania czcionek; określenie różnych limitów czasu oczekiwania i tak dalej. 
+Best of all, you can also mix and match the above strategies for different content on the page. For example, you can delay text rendering on some sections until the font is available, use a fallback font, and then re-render after the font download has finished, specify different timeouts, and so on.
 
-Note: W przypadku niektórych przeglądarek interfejs API Font Loading jest wciąż w fazie <a href='http://caniuse.com/#feat=font-loading'>prac rozwojowych</a>. Rozważ użycie biblioteki <a href='https://github.com/bramstein/fontloader'>FontLoader polyfill</a> lub <a href='https://github.com/typekit/webfontloader'>webfontloader</a>, by zapewnić podobną funkcjonalność, chociaż za cenę dołączenia dodatkowego zasobu JavaScript.
+Note: The Font Loading API is still [under development in some browsers](http://caniuse.com/#feat=font-loading). Consider using the [FontLoader polyfill](https://github.com/bramstein/fontloader) or the [webfontloader library](https://github.com/typekit/webfontloader) to deliver similar functionality, albeit with even more overhead from an additional JavaScript dependency.
 
-### Optymalizacja renderowania czcionek przez zamieszczanie czcionek w kodzie
+### Proper caching is a must
 
-Jeśli nie można skorzystać z interfejsu API Font Loading, `problem pustego tekstu` da się w prosty sposób wyeliminować: zamieścić zawartość czcionki w arkuszu stylów CSS.
+Font resources are, typically, static resources that don't see frequent updates. As a result, they are ideally suited for a long max-age expiry - ensure that you specify both a [conditional ETag header](/web/fundamentals/performance/optimizing-content-efficiency/http-caching#validating-cached-responses-with-etags), and an [optimal Cache-Control policy](/web/fundamentals/performance/optimizing-content-efficiency/http-caching#cache-control) for all font resources.
 
-* Arkusze stylów CSS z pasującymi zapytaniami o media są automatycznie pobierane przez przeglądarkę z wysokim priorytetem, ponieważ są potrzebne do utworzenia modelu CSSOM.
-* Zamieszczanie danych czcionek w arkuszu stylów CSS wymusza na przeglądarce pobieranie czcionek z wysokim priorytetem i bez oczekiwania na drzewo renderowania &ndash; umożliwia to ręczne zastąpienie domyślnego zachowania polegającego na leniwym wczytywaniu.
+If your web application uses a [service worker](/web/fundamentals/primers/service-workers/), serving font resources with a [cache-first strategy](/web/fundamentals/instant-and-offline/offline-cookbook/#cache-then-network) is appropriate for most use cases.
 
-Strategia zamieszczania w kodzie nie jest aż tak elastyczna i nie umożliwia określania niestandardowych czasów oczekiwania oraz strategii renderowania dla różnych typów treści, ale jest to proste i wszechstronne rozwiązanie, działające we wszystkich przeglądarkach. Najlepsze wyniki daje umieszczenie czcionek zamieszczonych w kodzie w osobnych arkuszach stylów i określenie ich długiego okresu ważności max-age &ndash; dzięki temu w przypadku aktualizacji arkusza CSS użytkownicy nie będą musieli ponownie pobierać czcionek. 
+You should not store fonts using [`localStorage`](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage) or [IndexedDB](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API); each of those has its own set of performance issues. The browser's HTTP cache provides the best and most robust mechanism to deliver font resources to the browser.
 
-Note: Z umiarem zamieszczaj czcionki w kodzie strony. Pamiętaj, że przyczyną leniwego wczytywania czcionek określonych dyrektywą @font-face jest chęć uniknięcia pobierania zbędnych wariantów i podzbiorów czcionek. Ponadto zwiększenie rozmiaru kodu CSS przez agresywne stosowanie zasady umieszczania czcionek w kodzie negatywnie wpływa na <a href='/web/fundamentals/performance/critical-rendering-path/'>krytyczną ścieżkę renderowania</a> &ndash; przeglądarka musi pobrać cały kod CSS przed utworzeniem modelu CSSOM, zbudowaniem drzewa renderowania i zrenderowaniem treści strony na ekranie.
+## Optimization checklist
 
-### Optymalizacja ponownego użycia czcionek dzięki buforowaniu HTTP
+Contrary to popular belief, the use of webfonts doesn't need to delay page rendering or have a negative impact on other performance metrics. The well-optimized use of fonts can deliver a much better overall user experience: great branding, improved readability, usability, and searchability, all while delivering a scalable multi-resolution solution that adapts well to all screen formats and resolutions. Don't be afraid to use webfonts.
 
-Zasoby czcionek są zazwyczaj zasobami statycznymi, niezbyt często aktualizowanymi. Dzięki temu zastosowanie długiego okresu upływu ważności max-age nie stanowi żadnego problemu. Pamiętaj, by określić zarówno [warunkowy nagłówek ETag](/web/fundamentals/performance/optimizing-content-efficiency/http-caching#validating-cached-responses-with-etags), jak i [optymalną politykę Cache-Control](/web/fundamentals/performance/optimizing-content-efficiency/http-caching#cache-control) dla wszystkich zasobów czcionek.   
-    
-Przechowywanie czcionek w magazynie lokalnym lub z użyciem innych mechanizmów jest niewskazane &ndash; każdy z nich powoduje różne specyficzne problemy z wydajnością. Pamięć podręczna HTTP przeglądarki w połączeniu z interfejsem API Font Loading lub biblioteką webfontloader to najlepszy i najbardziej wszechstronny sposób dostarczania zasobów czcionek do przeglądarki.
+That said, a naive implementation may incur large downloads and unnecessary delays. You need to help the browser by optimizing the font assets themselves and how they are fetched and used on your pages.
 
+* **Audit and monitor your font use:** don't use too many fonts on your pages, and, for each font, minimize the number of used variants. This helps produce a more consistent and a faster experience for your users.
+* **Subset your font resources:** many fonts can be subset, or split into multiple unicode-ranges to deliver just the glyphs that a particular page requires. This reduces the file size and improves the download speed of the resource. However, when defining the subsets, be careful to optimize for font re-use. For example, don't download a different but overlapping set of characters on each page. A good practice is to subset based on script: for example, Latin, Cyrillic, and so on.
+* **Deliver optimized font formats to each browser:** provide each font in WOFF2, WOFF, EOT, and TTF formats. Make sure to apply GZIP compression to the EOT and TTF formats, because they are not compressed by default.
+* **Give precedence to `local()` in your `src` list:** listing `local('Font Name')` first in your `src` list ensures that HTTP requests aren't made for fonts that are already installed.
+* **Customize font loading and rendering using `<link rel="preload">`, `font-display`, or the Font Loading API:** default lazyloading behavior may result in delayed text rendering. These web platform features allow you to override this behavior for particular fonts, and to specify custom rendering and timeout strategies for different content on the page.
+* **Specify revalidation and optimal caching policies:** fonts are static resources that are infrequently updated. Make sure that your servers provide a long-lived max-age timestamp and a revalidation token to allow for efficient font reuse between different pages. If using a service worker, a cache-first strategy is appropriate.
 
-## Optymalizacja &ndash; lista czynności
+## Automated testing for web font optimization with Lighthouse {: #lighthouse }
 
-Wbrew powszechnemu mniemaniu użycie czcionek sieci web nie musi prowadzić do opóźnienia renderowania stron ani mieć negatywnego wpływu na wydajność. Zoptymalizowane użycie czcionek pozwala zwiększyć wygodę użytkowników: rozszerzyć rozpoznawalność marki, polepszyć czytelność, funkcjonalność i sprawność wyszukiwania, zapewniając przy tym możliwość zmiany skali i pracę przy wielu różnych rozdzielczościach i formatach ekranu. Nie obawiaj się używania czcionek sieci web! 
+[Lighthouse](/web/tools/lighthouse) can help automate the process of making sure that you're following web font optimization best practices. Lighthouse is an auditing tool built by the Chrome DevTools team. You can run it as a Node module, from the command line, or from the Audits panel of Chrome DevTools. You tell Lighthouse what URL to audit, and then it runs a bunch of tests on the page, and gives you a report of what the page is doing well, and how it can improve.
 
-Pamiętaj jednak, że zbyt prosta implementacja może skutkować pobieraniem dużej ilości danych i niepotrzebnymi opóźnieniami. Właśnie w tej chwili należy przypomnieć sobie o naszym przewodniku optymalizacji i wspomóc przeglądarkę, optymalizując same zasoby czcionek i sposób ich pobierania na stronach. 
+The following audits can help you make sure that your pages are continuing to follow web font optimization best practices over time:
 
-1. **Audytuj i monitoruj użycie czcionek:** nie używaj zbyt wielu czcionek na stronach, a dla każdej czcionki ograniczaj liczbę obecnych wariantów. Pozwoli to skrócić czasy oczekiwania użytkowników na wyświetlenie treści.
-2. **Używaj podzbiorów czcionek:** w przypadku wielu czcionek można wydzielić podzbiory, rozdzielić je na wiele zakresów Unicode i dostarczyć tylko glify konkretnie wymagane na danej stronie &ndash; pozwala to ograniczyć rozmiar pliku i zwiększyć prędkość pobierania zasobów. Przy określaniu podzbiorów pamiętaj o optymalizacji czcionek pod kątem ponownego użycia &ndash; np. niewskazane jest pobieranie różnych, ale zachodzących na siebie zbiorów znaków na różnych stronach. Dobrą praktyką jest wydzielanie podzbiorów w oparciu o transkrypcję &ndash; np. łacińską, cyrylicę i tak dalej.
-3. **Przesyłaj czcionki w formatach dostosowanych do każdej z przeglądarek:** każda czcionka powinna być dostarczana w formatach WOFF2, WOFF, EOT i TTF. Upewnij się, że do formatów EOT i TTF stosowana będzie kompresja GZIP, ponieważ formaty te nie są domyślnie kompresowane.
-4. **Określ zasady ponownej walidacji i optymalnego buforowania:** czcionki to zasoby statyczne, które są rzadko aktualizowane. Upewnij się, że Twoje serwery zapewniają długi okres ważności max-age i wysyłają tokeny walidacji, co umożliwi efektywne ponowne używanie czcionek na różnych stronach w witrynie.
-5. **Używaj interfejsu API Font Loading do optymalizacji krytycznej ścieżki renderowania:** domyślny sposób leniwego wczytywania może się wiązać z opóźnieniem renderowania tekstu. Interfejs API Font Loading umożliwia zastępowanie tego zachowania dla poszczególnych czcionek i określanie własnych strategii renderowania i czasów oczekiwania dla różnych typów treści na stronie. W przypadku starszych, nieobsługujących tego interfejsu API, przeglądarek możesz skorzystać z biblioteki webfontloader dla języka JavaScript lub zastosować strategię umieszczania czcionek w kodzie CSS.
+* [Enable text compression](/web/tools/lighthouse/audits/text-compression)
+* [Preload key requests](/web/tools/lighthouse/audits/preload)
+* [Uses inefficient cache policy on static assets](/web/tools/lighthouse/audits/cache-policy)
+* [All text remains visible during webfont loads](/web/updates/2016/02/font-display)
 
+## Feedback {: #feedback }
 
+{% include "web/_shared/helpful.html" %}
