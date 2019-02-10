@@ -1,11 +1,8 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Trabalhando com tela cheia.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Going fullscreen.
 
-{# wf_updated_on: 2017-10-06 #}
-{# wf_published_on: 2016-10-01 #}
+{# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2016-10-01 #} {# wf_blink_components: Blink>Fullscreen #}
 
-# Como criar experiências em tela cheia {: .page-title }
+# Making Fullscreen Experiences {: .page-title }
 
 <div class="video-wrapper">
   <iframe class="devsite-embedded-youtube-video" data-video-id="ZRqr5x73-ng"
@@ -13,47 +10,29 @@ description: Trabalhando com tela cheia.
   </iframe>
 </div>
 
-Temos a capacidade de criar sites e aplicativos de tela cheia imersivos
-com facilidade, mas como tudo na web, tem algumas formas de fazer isso.
-Isso é muito importante agora que os navegadores estão oferecendo suporte a uma
-experiência de "aplicativo web instalado" que faz uso da tela cheia.
+We have the ability to easily make immersive fullscreen websites and applications, but like anything on the web there are a couple of ways to do it. This is especially important now that more browsers are supporting an "installed web app" experience which launch fullscreen.
 
 <div class="clearfix"></div>
 
-## Leve o seu aplicativo ou site à tela cheia
+## Getting your app or site fullscreen
 
-Há diversas formas com que um usuário ou desenvolvedor pode colocar um aplicativo web em tela cheia:
+There are several ways that a user or developer can get a web app fullscreen.
 
-* Solicitar ao navegador a exibição em tela cheia em resposta a um gesto do usuário;
-* Instalar o aplicativo na tela inicial;
-* Simular uma, escondendo a barra de endereço automaticamente.
+* Request the browser go fullscreen in response to a user gesture.
+* Install the app to the home screen.
+* Fake it: auto-hide the address bar.
 
-### Solicitar ao navegador a exibição em tela cheia em resposta a um gesto do usuário
+### Request the browser go fullscreen in response to a user gesture
 
-<a href="http://caniuse.com/#feat=fullscreen">Nem todas as plataformas são iguais</a>.
-O Safari para iOS não tem uma API de tela cheia, mas temos uma para o Chrome para Android,
-o Firefox e o IE 11+. A maioria dos aplicativos que você cria usará uma combinação de
-JS API e seletores CSS fornecidos pela especificação de tela cheia. Os principais recursos da
-JS API para você na construção de uma experiência em tela cheia são:
+<a href="http://caniuse.com/#feat=fullscreen">Not all platforms are equal</a>. iOS Safari doesn't have a fullscreen API, but we do on Chrome on Android, Firefox, and IE 11+. Most applications you build will use a combination of the JS API and the CSS selectors provided by the fullscreen specification. The main JS API's that you need to care about when building a fullscreen experience are:
 
-* `element.requestFullscreen()` (atualmente prefixado no Chrome, no Firefox e no IE)
-    que exibe o elemento em modo de tela cheia.
-* `document.exitFullscreen()` (atualmente prefixado no Chrome, no Firefox e no IE.
-  O Firefox usa `cancelFullScreen()` no lugar dele), que cancela o modo de tela cheia.
-* `document.fullscreenElement` (atualmente prefixado no Chrome, no Firefox e no IE),
-    que retorna "true" se algum dos elementos estiver em modo de tela cheia.
+* `element.requestFullscreen()` (currently prefixed in Chrome, Firefox, and IE) displays the element in fullscreen mode.
+* `document.exitFullscreen()` (currently prefixed in Chrome, Firefox and IE. Firefox uses `cancelFullScreen()` instead) cancels fullscreen mode.
+* `document.fullscreenElement` (currently prefixed in Chrome, Firefox, and IE) returns true if any of the elements are in fullscreen mode.
 
-Observação: você notará que, nas versões prefixadas, há muita
-      inconsistência no contorno do "S" na tela. Isso é esquisito, mas
-      é o problema com especificações embutidas.
+Note: You will notice that in the prefixed versions there is a lot of inconsistency between the casing of the 'S' in screen. This is awkward, but this is the problem with specs that are in flight.
 
-Quando o aplicativo está em tela cheia, você não tem mais acesso aos controles
-da IU do navegador. Isso altera a forma com que os usuário interagem com a sua
-experiência. Eles não têm acesso aos controles de navegação padrão, como "Voltar"
-e "Avançar", nem o botão de atualizar.  É
-importante atender a esse cenário.  Você pode usar alguns seletores CSS para ajudar
-a mudar o estilo e a apresentação do seu site quando o navegador entrar
-em modo de tela cheia.
+When your app is fullscreen you no longer have the browser's UI controls available to you. This changes the way that users interact with your experience. They don't have the standard navigation controls such as Forwards and Backwards; they don't have their escape hatch that is the Refresh button. It's important to cater for this scenario. You can use some CSS selectors to help you change the style and presentation of your site when the browser enters fullscreen mode.
 
     <button id="goFS">Go fullscreen</button>
     <script>
@@ -62,26 +41,21 @@ em modo de tela cheia.
           document.body.requestFullscreen();
       }, false);
     </script>
+    
 
-O exemplo acima é um pouco irreal, porque eu escondi toda a complexidade que envolve
-o uso dos prefixos do fornecedor.
+The above example is a little contrived; I've hidden all the complexity around the use of vendor prefixes.
 
-Observação: vão para o inferno, prefixos do fornecedor!
+Note: Damn you, vendor prefixes!
 
-O código real e muito mais complexo. <a
-href="https://developer.mozilla.org/en-US/docs/Web/Guide/API/DOM/Using_full_screen_mode">O Mozilla
-criou</a> um script muito útil que você pode usar para alternar para tela cheia.  Como
-você pode ver, a situação do prefixo do fornecedor é complexa e
-difícil de lidar se comparada à API especificada. Mesmo com o código um pouco mais simples
-abaixo, continua complexa.
+The actual code is a lot more complex. [Mozilla has created](https://developer.mozilla.org/en-US/docs/Web/Guide/API/DOM/Using_full_screen_mode) a very useful script that you can use to toggle fullscreen. As you can see, the vendor prefix situation it is complex and cumbersome compared to the specified API. Even with the slightly simplified code below, it is still complex.
 
     function toggleFullScreen() {
       var doc = window.document;
       var docEl = doc.documentElement;
-
+    
       var requestFullScreen = docEl.requestFullscreen || docEl.mozRequestFullScreen || docEl.webkitRequestFullScreen || docEl.msRequestFullscreen;
       var cancelFullScreen = doc.exitFullscreen || doc.mozCancelFullScreen || doc.webkitExitFullscreen || doc.msExitFullscreen;
-
+    
       if(!doc.fullscreenElement && !doc.mozFullScreenElement && !doc.webkitFullscreenElement && !doc.msFullscreenElement) {
         requestFullScreen.call(docEl);
       }
@@ -89,49 +63,39 @@ abaixo, continua complexa.
         cancelFullScreen.call(doc);
       }
     }
+    
 
-Nós, desenvolvedores web, odiamos complexidade.  Uma boa API abstrata de alto nível que você pode usar
-é o módulo <a href="https://github.com/sindresorhus/screenfull.js">Screenfull.js</a>
-do <a href="http://sindresorhus.com/screenfull.js"/>Sindre Sorhus</a>,
-que unifica os dois prefixos ligeiramente diferentes da JS API e do fornecedor em uma
-API consistente.
+We web developers hate complexity. A nice high-level abstract API you can use is Sindre Sorhus'</a> [Screenfull.js](https://github.com/sindresorhus/screenfull.js) module which unifies the two slightly different JS API's and vendor prefixes into one consistent API.
 
-#### Dicas para a Fullscreen API
+#### Fullscreen API Tips
 
-##### Levando o documento à tela cheia
+##### Making the document fullscreen
 
 <figure class="attempt-right" style="max-width: 320px;">
   <img src="images/body.png">
-  <figcaption>Figura 1: Tela cheia no elemento "body".</figcaption>
+  <figcaption>Figure 1: Fullscreen on the body element.</figcaption>
 </figure>
 
-
-É natural pensar em colocar o elemento "body" em tela cheia, mas se você trabalha
-com um motor de renderização baseado no WebKit ou no Blink, verá que isso produz um efeito estranho de
-comprimir a largura do corpo ao menor tamanho possível que comporta todo o
-conteúdo (o Mozilla Gecko funciona bem).
+It is natural to think that you take the body element fullscreen, but if you are on a WebKit or Blink based rendering engine you will see it has an odd effect of shrinking the body width to the smallest possible size that will contain all the content. (Mozilla Gecko is fine.)
 
 <div class="clearfix"></div>
 
-<figure class="attempt-right" style="max-width: 320px;">
-<img src="images/document.png" >
-<figcaption>Figura 2: Tela cheia no elemento "document".</figcaption>
-</figure>
+<figure class="attempt-right" style="max-width: 320px;"> 
 
-Para consertar isso, use o elemento "document" no lugar de "body":
+<img src="images/document.png" />
+<figcaption>Figure 2: Fullscreen on the document element.</figcaption>
+</figure> 
+
+To fix this, use the document element instead of the body element:
 
     document.documentElement.requestFullscreen();
-
-
+    
 
 <div class="clearfix"></div>
 
+##### Making a video element fullscreen
 
-##### Levando um elemento "video" para a tela cheia
-
-Levar um elemento "video" para tela cheia é exatamente igual para todos os outros
-elementos. Você chama o método `requestFullscreen` no elemento
-"video".
+To make a video element fullscreen is exactly the same as making any other element fullscreen. You call the `requestFullscreen` method on the video element.
 
     <video id=videoElement></video>
     <button id="goFS">Go Fullscreen</button>
@@ -142,11 +106,9 @@ elementos. Você chama o método `requestFullscreen` no elemento
           videoElement.requestFullscreen();
       }, false);
     </script>
+    
 
-Se o seu elemento `<video>` não tiver o atributo "controls" definido,
-o usuário não poderá controlar o vídeo quando ele estiver em tela cheia. A
-forma recomendada de fazer isso é ter um contêiner básico que encapsule o vídeo e
-os controles aos quais você quer que o usuário tenha acesso.
+If your `<video>` element doesn't have the controls attribute defined, there's no way for the user to control the video once they are fullscreen. The recommended way to do this is to have a basic container that wraps the video and the controls that you want the user to see.
 
     <div id="container">
       <video></video>
@@ -163,9 +125,9 @@ os controles aos quais você quer que o usuário tenha acesso.
           container.requestFullscreen();
       }, false);
     </script>
+    
 
-Isso dá muita flexibilidade, porque você consegue combinar o objeto
-"container" com o pseudo-seletor CSS (por exemplo, para esconder o botão "goFS").
+This gives you a lot more flexibility because you can combine the container object with the CSS pseudo selector (for example to hide the "goFS" button.)
 
     <style>
       #goFS:-webkit-full-screen #goFS {
@@ -181,80 +143,54 @@ Isso dá muita flexibilidade, porque você consegue combinar o objeto
         display: none;
       }
     </style>
+    
 
-Com esses padrões, é possível detectar quando a tela cheia está ativa e adaptar a
-interface do usuário a ela, por exemplo:
+Using these patterns, you can detect when fullscreen is running and adapt your user interface appropriately, for example:
 
-* Fornecendo um link para voltar à página inicial
-* Fornecendo um mecanismo para fechar caixas de diálogo ou navegar retornando
+* By providing a link back to the start page
+* By Providing a mechanism to close dialogs or travel backwards
 
+### Launching a page fullscreen from home screen
 
-### Inicializando uma página em tela cheia pela tela inicial
+Launching a fullscreen web page when the user navigates to it is not possible. Browser vendors are very aware that a fullscreen experience on every page load is a huge annoyance, therefore a user gesture is required to enter fullscreen. Vendors do allow users to "install" apps though, and the act of installing is a signal to the operating system that the user wants to launch as an app on the platform.
 
-Não é possível inicializar uma página da web em tela cheia quando o usuário está navegando nela.
-Os fornecedores de navegador sabem muito bem que uma experiência de tela cheia em todo carregamento de página
-é extremamente irritante, por isso, exigem um gesto do usuário para entrar em tela cheia.
-Porém, os fornecedores permitem que os usuários "instalem" aplicativos, e, para o sistema operacional, o ato de instalar é um
-sinal de que o usuário quer inicializá-lo como um autêntico aplicativo de
-plataforma.
-
-Nas principais plataformas móveis, é bem fácil implementar usando
-metatags ou arquivos de manifesto como mostrado abaixo.
+Across the major mobile platforms it is pretty easy to implement using either meta tags, or manifest files as follows.
 
 #### iOS
 
-Desde o lançamento do iPhone, os usuários podem instalar aplicativos web
-na tela inicial e inicializá-los em modo de tela cheia.
+Since the launch of the iPhone, users have been able to install Web Apps to the home screen and have them launch as full-screen web apps.
 
     <meta name="apple-mobile-web-app-capable" content="yes">
+    
 
-> Se "content" for definido como "yes", o aplicativo web será executado em modo de tela cheia,
-> ao contrário do que faria se "content" fosse definido como "no". O comportamento padrão é usar o Safari para exibir
-> conteúdo web. Você pode determinar se uma página da web deve ser exibida em tela cheia
-> usando a propriedade somente leitura booleana JavaScript window.navigator.standalone.
-> Clique <a href="https://developer.apple.com/library/safari/documentation/AppleApplications/Reference/SafariHTMLRef/Articles/MetaTags.html">aqui</a> para saber mais.
+> If content is set to yes, the web application runs in full-screen mode; otherwise, it does not. The default behavior is to use Safari to display web content. You can determine whether a webpage is displayed in full-screen mode using the window.navigator.standalone read-only Boolean JavaScript property. [Apple](https://developer.apple.com/library/safari/documentation/AppleApplications/Reference/SafariHTMLRef/Articles/MetaTags.html)
 
 #### Chrome for Android
 
-A equipe do Chrome recentemente implementou um recurso que instrui o navegador a
-inicializar a página em tela cheia quando o usuário a tiver adicionado na tela inicial.  Essa função
-é parecida com a do modelo do Safari para iOS.
+The Chrome team has recently implemented a feature that tells the browser to launch the page fullscreen when the user has added it to the home screen. It is similar to the iOS Safari model.
 
     <meta name="mobile-web-app-capable" content="yes">
+    
 
-> Você pode configurar seu aplicativo web para adicionar um ícone de atalho à
-> tela inicial de um dispositivo e para ser aberto em modo de tela cheia usando
-> o item de menu "Add to Home Screen" do Chrome for Android.
-> Clique <a href="https://developers.chrome.com/multidevice/android/installtohomescreen">aqui</a> para saber mais.
+> You can set up your web app to have an application shortcut icon added to a device's home screen, and have the app launch in full-screen "app mode" using Chrome for Android's "Add to Home screen" menu item. [Google Chrome](https://developers.chrome.com/multidevice/android/installtohomescreen)
 
-Uma melhor opção é usar o manifesto dos aplicativos web.
+A better option is to use the Web App Manifest.
 
-#### Manifesto dos aplicativos web (Chrome, Opera, Firefox, Samsung)
+#### Web App Manifest (Chrome, Opera, Firefox, Samsung)
 
-O [manifesto para aplicativos web](/web/fundamentals/web-app-manifest)
-é um arquivo JSON simples que dá a você, o
-desenvolvedor, a capacidade de controlar a exibição do aplicativo ao usuário nas áreas
-em que normalmente eles esperariam ver aplicativos (por exemplo, a tela inicial de um dispositivo móvel), determinar
-o que o usuário pode inicializar e, mais importante ainda, como eles podem inicializar. No futuro,
-o manifesto dará ainda mais controle sobre seu aplicativo mas, no momento, estamos
-concentrados em como o seu aplicativo pode ser inicializado. Especificamente:
+The [Manifest for Web applications](/web/fundamentals/web-app-manifest) is a simple JSON file that gives you, the developer, the ability to control how your app appears to the user in the areas that they would expect to see apps (for example the mobile home screen), direct what the user can launch and, more importantly, how they can launch it. In the future the manifest will give you even more control over your app, but right now we are just focusing on how your app can be launched. Specifically:
 
-1. Informando o navegador sobre o manifesto
-2. Descrevendo como inicializar
+1. Telling the browser about your manifest
+2. Describing how to launch
 
-Depois que criar o manifesto e hospedá-lo no seu site, tudo o que
-precisará fazer é adicionar uma tag "link" para cada página que envolve o seu aplicativo. Veja como a seguir:
+Once you have the manifest created and it is hosted on your site, all you need to do is add a link tag from all your pages that encompass your app, as follows:
 
     <link rel="manifest" href="/manifest.json">
+    
 
-O Chrome oferece suporte a manifestos desde a versão 38 do Chrome for Android (outubro de 2014)
-e dá a você controle sobre como o aplicativo web é exibido quando é instalado
-na tela inicial (pelas propriedades `short_name`, `name` e `icons`) e como
-ele deve ser inicializado quando o usuário clica no ícone de inicialização (via `start_url`,
-`display` e `orientation`).
+Chrome has supported Manifests since version 38 for Android (October 2014) and it gives you the control over how your web app appears when it is installed to the home screen (via the `short_name`, `name` and `icons` properties) and how it should be launched when the user clicks on the launch icon (via `start_url`, `display` and `orientation`).
 
-Veja um exemplo de manifesto abaixo. Ele não contempla tudo que pode compor um
-manifesto.
+An example manifest is shown below. It doesn't show everything that can be in a manifest.
 
     {
       "short_name": "Kinlan's Amaze App",
@@ -270,238 +206,192 @@ manifesto.
       "display": "standalone",
       "orientation": "landscape"
     }
+    
 
-Esse recurso é totalmente progressivo e permite criar experiências melhores
-e mais integradas para os usuários de um navegador compatível com o recurso.
+This feature is entirely progressive and allows you create better, more integrated experiences for users of a browser that supports the feature.
 
-Quando o usuário adiciona o seu site ou aplicativo à tela inicial, há uma intenção do
-usuário de tratá-lo como um aplicativo. Isso significa que você deve buscar direcionar o usuário
-para a operação do seu aplicativo, não para uma página de produtos. Por exemplo,
-se o usuário precisa fazer login no aplicativo, uma página de login é uma boa pedida
-para a inicialização.
+When a user adds your site or app to the home screen, there is an intent by the user to treat it like an app. This means you should aim to direct the user to the functionality of your app rather than a product landing page. For example, if the user is required to sign-in to your app, then that is a good page to launch.
 
-##### Aplicativos utilitários
+##### Utility apps
 
-A maioria dos aplicativos utilitários se beneficiará disso de maneira imediata. Para esses
-aplicativos, você provavelmente quer que eles sejam inicializados na forma autônoma, assim como todo aplicativo
-de uma plataforma móvel. Para instruir um aplicativo a inicializar na forma autônoma, adicione o seguinte ao manifesto
-do aplicativo web:
+The majority of utility apps will benefit from this immediately. For those apps you'll likely want them launched standalone just alike every other app on a mobile platform. To tell an app to launch standalone, add this the Web App Manifest:
 
     "display": "standalone"
+    
 
-##### Jogos
+##### Games
 
-A maioria dos jogos se beneficiará do manifesto de maneira imediata. A grande
-maioria dos jogos deve querer a inicialização em tela cheia e uma orientação
-específica forçada.
+The majority of games will benefit from a manifest immediately. The vast majority of games will want to launch full-screen and forced a specific orientation.
 
-Se você esta desenvolvendo um jogo de vista aérea ou um como o Flappy Birds, é
-em provável que você queira que o jogo sempre fique em modo retrato.
+If you are developing a vertical scroller or a game like Flappy Birds then you will most likely want your game to always be in portrait mode.
 
     "display": "fullscreen",
     "orientation": "portrait"
+    
 
-Por outro lado, se estiver criando um jogo de quebra cabeças ou um como o X-Com, provavelmente
-você vai querer que o jogo sempre use a orientação de paisagem.
+If on the other hand you are building a puzzler or a game like X-Com, then you will probably want the game to always use the landscape orientation.
 
     "display": "fullscreen",
     "orientation": "landscape"
+    
 
-##### Sites de notícia
+##### News sites
 
-Na maioria dos casos, os sites de notícia oferecem experiência puramente baseada em conteúdo. A maioria dos
-desenvolvedores, naturalmente, pensaria em adicionar um manifesto a um site de notícias.  O manifesto
-permite definir o que inicializar (a página principal do site de notícias) e
-como inicializá-la (em tela cheia ou como uma guia de navegador comum).
+News sites in most cases are pure content-based experiences. Most developers naturally wouldn't think of adding a manifest to a news site. The manifest will let you define what to launch (the front page of your news site) and how to launch it (fullscreen or as a normal browser tab).
 
-A escolha depende de você e de como você acha que os usuários gostariam de acessar a sua
-experiência. Se quiser que o site tenha todo o aparato dos navegadores que se espera
-que um site tenha, você pode definir a exibição como `browser`.
+The choice is up to you and how you think your users will like to access your experience. If you want your site to have all the browser chrome that you would expect a site to have, you can set the display to `browser`.
 
     "display": "browser"
+    
 
-Se quiser que o site de notícias pareça com a maioria dos aplicativos centrados em notícias na forma
-com que apresentam suas experiências como aplicativos e removem da IU todos os recursos que remetem à web, você pode
-configurar a exibição como `standalone`.
+If you want your news site to feel like the majority of news-centric apps treat their experiences as apps and remove all web-like chrome from the UI, you can do this by setting display to `standalone`.
 
     "display": "standalone"
+    
 
-### Simular uma tela cheia, escondendo a barra de endereço automaticamente.
+### Fake it: auto-hide the address bar
 
-Você pode "simular uma tela cheia" escondendo a barra de endereço automaticamente da seguinte forma:
+You can "fake fullscreen" by auto-hiding the address bar as follows:
 
     window.scrollTo(0,1);
+    
 
-Warning: digo isso como amigo. Isso existe. É bem maneiro, mas é
-        enganar. Não use. &mdash; Paul
+Caution: I am telling you this as a friend. It exists. It is a thing, but it is a hack. Please don't use it. &mdash; Paul
 
-Esse é um método bem simples: a página carrega e a barra do navegador é instruída a
-desaparecer. Infelizmente não está padronizado e não tem
-compatibilidade de forma geral. Além disso, você tem que encontrar alternativas para um monte de peculiaridades.
+This is a pretty simple method, the page loads and the browser bar is told to get out of the way. Unfortunately it is not standardized and not well supported. You also have to work around a bunch of quirks.
 
-Por exemplo, muitas vezes os navegadores restauram a posição na página quando o usuário
-volta a ela. Usar `window.scrollTo` anula isso, o que irrita
-os usuários. Para encontrar uma alternativa para esse comportamento, você tem que armazenar a última posição em
-localStorage e lidar com os casos extremos (por exemplo, se o usuário tiver a
-página aberta em diversas janelas).
+For example browsers often restore the position on the page when the user navigates back to it. Using `window.scrollTo` overrides this, which annoys the user. To work around this you have to store the last position in localStorage, and deal with the edge cases (for example, if the user has the page open in multiple windows).
 
-## Orientações para a experiência do usuário
+## UX guidelines
 
-Ao criar um site que tira vantagem da tela cheia, há diversas
-possíveis mudanças na experiência do usuário que você precisa conhecer para
-poder criar um serviço que encante os usuários.
+When you are building a site that takes advantage of full screen there are a number of potential user experience changes that you need to be aware of to be able to build a service your users will love.
 
-### Não dependa dos controles de navegação
+### Don't rely on navigation controls
 
-O iOS não tem um botão de voltar nem gesto de atualizar. Portanto, você deve
-garantir que os usuários possam navegar por todo o aplicativo sem ficarem presos.
+iOS does not have a hardware back button or refresh gesture. Therefore you must ensure that users can navigate throughout the app without getting locked in.
 
-Você pode detectar se está executando em modo de tela cheia ou em um modo instalado
-facilmente em todas as grandes plataformas.
+You can detect if you are running in a fullscreen mode or an installed mode easily on all the major platforms.
 
 #### iOS
 
-No iOS, você pode usar o booleano `navigator.standalone` para ver se o usuário inicializou
-pela tela inicial ou não.
+On iOS you can use the `navigator.standalone` boolean to see if the user has launched from the home screen or not.
 
     if(navigator.standalone == true) {
       // My app is installed and therefore fullscreen
     }
+    
 
-#### Manifesto dos aplicativos web (Chrome, Opera, Samsung)
+#### Web App Manifest (Chrome, Opera, Samsung)
 
-Ao inicializar como um aplicativo instalado, o Chrome não é executado em tela cheia
-de verdade, então `document.fullscreenElement` retorna "null" e os seletores CSS
-não funcionam.
+When launching as an installed app, Chrome is not running in true fullscreen experience so `document.fullscreenElement` returns null and the CSS selectors don't work.
 
-Quando o usuário solicita a tela cheia por um gesto no site, os recursos da API de tela cheia
-padrão ficam disponíveis, incluindo o pseudo-seletor CSS que permite
-adaptar a IU para reagir ao estado de tela cheia da seguinte forma:
+When the user requests fullscreen via a gesture on your site, the standard fullscreen API's are available including the CSS pseudo selector that lets you adapt your UI to react to the fullscreen state like the following
 
     selector:-webkit-full-screen {
       display: block; // displays the element only when in fullscreen
     }
-
+    
     selector {
       display: none; // hides the element when not in fullscreen mode
     }
+    
 
-Se o usuário inicializar o site pela tela inicial, a consulta de mídia `display-mode`
-será definida como definida no manifesto do aplicativo web. No caso de
-tela cheia pura, isso seria:
+If the users launches your site from the home screen the `display-mode` media query will be set to what was defined in the Web App Manifest. In the case of pure fullscreen it will be:
 
     @media (display-mode: fullscreen) {
-
+    
     }
+    
 
-Se o usuário inicializar o aplicativo em modo autônomo, a consulta de mídia `display-mode`
-será `standalone`:
+If the user launches the application in standalone mode, the `display-mode` media query will be `standalone`:
 
     @media (display-mode: standalone) {
-
+    
     }
-
+    
 
 #### Firefox
 
-Quando o usuário solicita a tela cheia pelo seu site ou inicializa o aplicativo em
-modo de tela cheia, todos os recursos da API de tela cheia padrão ficam disponíveis, incluindo o
-pseudo-seletor CSS, que permite adaptar a IU para reagir ao estado de tela cheia
-da seguinte forma:
+When the user requests fullscreen via your site or the user launches the app in fullscreen mode all the standard fullscreen API's are available, including the CSS pseudo selector, which lets you adapt your UI to react to the fullscreen state like the following:
 
     selector:-moz-full-screen {
       display: block; // hides the element when not in fullscreen mode
     }
-
+    
     selector {
       display: none; // hides the element when not in fullscreen mode
     }
+    
 
 #### Internet Explorer
 
-No IE, a pseudo-classe CSS não tem hífen, mas mesmo assim funciona de forma parecida no
-Chrome e no Firefox.
+In IE the CSS pseudo class lacks a hyphen, but otherwise works similarly to Chrome and Firefox.
 
     selector:-ms-fullscreen {
       display: block;
     }
-
+    
     selector {
       display: none; // hides the element when not in fullscreen mode
     }
+    
 
-#### Especificação
+#### Specification
 
-A grafia da especificação corresponde à sintaxe usada pelo IE.
+The spelling in the specification matches the syntax used by IE.
 
     selector:fullscreen {
       display: block;
     }
-
+    
     selector {
       display: none; // hides the element when not in fullscreen mode
     }
+    
 
-### Manter o usuário na experiência de tela cheia
+### Keep the user in the fullscreen experience
 
-A API de tela cheia pode ter algumas frescuras às vezes. Os fornecedores de navegador não querem
-prender os usuários em uma página de tela cheia, por isso, desenvolveram mecanismos para
-sair da tela cheia assim que possível.  Isso significa que você não tem como
-criar um site em tela cheia que abra muitas páginas porque:
+The fullscreen API can be a little finicky sometimes. Browser vendors don't want to lock users in a fullscreen page so they have developed mechanisms to break out of fullscreen as soon as they possibly can. This means you can't build a fullscreen website that spans multiple pages because:
 
-* Alterar o URL programaticamente usando `window.location =
-  "http://example.com"` sai da tela cheia.
-* O clique de um usuário em um link externo da sua página fará com que a tela cheia seja abandonada.
-* Alterar o URL por `navigator.pushState` da API também sairá da
-  experiência de tela cheia.
+* Changing the URL programmatically by using `window.location =
+"http://example.com"` breaks out of fullscreen.
+* A user clicking on an external link inside your page will exit fullscreen.
+* Changing the URL via the `navigator.pushState` API will also break out of the fullscreen experience.
 
-Você tem duas opções se quiser manter o usuário em uma experiência de tela cheia:
+You have two options if you want to keep the user in a fullscreen experience:
 
-1. Use os mecanismos instaláveis dos aplicativos web para ir para a tela cheia.
-2. Gerencie sua IU e o estado do aplicativo usando o fragmento # .
+1. Use the installable web app mechanisms to go fullscreen.
+2. Manage your UI and app state using the # fragment.
 
-Usando a sintaxe # para atualizar o URL (window.location = "#somestate") e
-detectando o evento `window.onhashchange`, você pode usar a própria pilha histórica
-do navegador para gerenciar mudanças no estado do aplicativo, permitir que o usuário use
-os botões de voltar ou oferecer um botão de voltar programático simples
-usando a API de histórico, como demonstrado abaixo:
+By using the #syntax to update the url (window.location = "#somestate"), and listening to the `window.onhashchange` event you can use the browser's own history stack to manage changes in the application state, allow the user to use their hardware back buttons, or offer a simple programmatic back button experience by using the history API as follows:
 
     window.history.go(-1);
+    
 
-### Deixe o usuário escolher quando ativar a tela cheia
+### Let the user choose when to go fullscreen
 
-Não existe nada mais irritante para o usuário do que um site que faz algo
-inesperado. Quando o usuário navega para o site, não tente fazê-lo ir para o modo
-de tela cheia.
+There is nothing more annoying to the user than a website doing something unexpected. When a user navigates to your site don't try and trick them into fullscreen.
 
-Não intercepte o primeiro evento de toque e chame `requestFullscreen()`.
+Don't intercept the first touch event and call `requestFullscreen()`.
 
-1. É irritante.
-2. Os navegadores podem decidir perguntar ao usuário em algum momento se
-   ele deseja que o aplicativo seja aberto em tela cheia.
+1. It is annoying.
+2. Browsers may decided to prompt the user at some point in the future about allowing the app to take up the fullscreen.
 
-Se quiser inicializar aplicativos em tela cheia, pense em usar as experiências
-de instalação de cada plataforma.
+If you want to launch apps fullscreen think about using the install experiences for each platform.
 
-### Não fique insistindo que o usuário instale o seu aplicativo na tela de início.
+### Don't spam the user to install your app to a home screen
 
-Se planeja oferecer uma experiência de tela cheia pelos mecanismos instalados do aplicativo,
-pense no usuário.
+If you plan on offering a fullscreen experience via the installed app mechanisms be considerate to the user.
 
-* Aja com discrição. Use um banner ou rodapé para informá-los de que podem instalar o
-  aplicativo.
-* Se eles descartarem a proposta, não a mostre novamente.
-* No primeiro acesso dos usuários, é bem provável que eles não queiram instalar o aplicativo, a menos
-  que estejam muito satisfeitos com o seu serviço. Pense em convidá-los a instalar depois
-  de uma interação positiva no site.
-* Se o usuário acessa o site regularmente e não instala o aplicativo, provavelmente
-  não instalará o aplicativo no futuro. Não insista.
+* Be discreet. Use a banner or footer to let them know they can install the app.
+* If they dismiss the prompt, don't show it again.
+* On a users first visit they are unlikely to want to install the app unless they are happy with your service. Consider prompting them to install after a positive interaction on your site.
+* If a user visits your site regularly and they don't install the app, they are unlikely to install your app in the future. Don't keep spamming them.
 
-## Conclusão
+## Conclusion
 
-Apesar de não termos uma API totalmente padronizada e implementada, usando algumas das
-dicas apresentadas neste artigo fica fácil criar experiências que tiram
-vantagem de toda a tela do usuário, independentemente do dispositivo em questão.
+While we don't have a fully standardized and implemented API, using some of the guidance presented in this article you can easily build experiences that take advantage of the user's entire screen, irrespective of the client.
 
+## Feedback {: #feedback }
 
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
