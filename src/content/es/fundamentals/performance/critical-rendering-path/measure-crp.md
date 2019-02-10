@@ -1,85 +1,53 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Aprende a medir la ruta de representación crítica.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Learn to measure the critical rendering path.
 
-{# wf_updated_on: 2014-09-17 #}
-{# wf_published_on: 2014-03-31 #}
+{# wf_updated_on: 2018-08-17 #} {# wf_published_on: 2014-03-31 #} {# wf_blink_components: Blink>PerformanceAPIs>NavigationTiming #}
 
-# Medir la ruta de representación crítica {: .page-title }
+# Measuring the Critical Rendering Path {: .page-title }
 
 {% include "web/_shared/contributors/ilyagrigorik.html" %}
 
-La base de toda estrategia de rendimiento sólida es una buena medición e
-instrumentación. No se puede optimizar lo que no se puede medir. En este documento,
-se explican distintos métodos para medir el rendimiento de CRP.
+The foundation of every solid performance strategy is good measurement and instrumentation. You can't optimize what you can't measure. This doc explains different approaches for measuring CRP performance.
 
-* El método Lighthouse realiza una serie de pruebas automatizadas en una página y, a continuación,
-  genera un informe sobre el rendimiento de CRP en la página. Este método
-  proporciona una descripción general, rápida y de alto nivel sobre el rendimiento de CRP de una
-  página cargada en el navegador. De esta forma, te permite probar,
-  iterar y mejorar su rendimiento rápidamente.
-* El método Navigation Timing API captura mediciones de [monitoreo de
-  usuario real (RUM)](https://en.wikipedia.org/wiki/Real_user_monitoring).
- Como su nombre insinúa, estas mediciones se capturan de las interacciones
-que los usuarios reales tienen con tu sitio y proporcionan un panorama preciso
-  del rendimiento de CRP en el mundo real, tal como lo experimentan los usuarios de varios
-  dispositivos y diferentes condiciones de red.
+* The Lighthouse approach runs a series of automated tests against a page, and then generates a report on the page's CRP performance. This approach provides a quick and easy high-level overview of CRP performance of a particular page loaded in your browser, allowing you to rapidly test, iterate, and improve its performance.
+* The Navigation Timing API approach captures [Real User Monitoring (RUM)](https://en.wikipedia.org/wiki/Real_user_monitoring) metrics. As the name implies, these metrics are captured from real user interactions with your site and provide an accurate view into real-world CRP performance, as experienced by your users across a variety of devices and network conditions.
 
-En general, es buena idea usar Lighthouse para identificar oportunidades obvias
-que permitan optimizar CRP y equipar tu código con
-Navigation Timing API para monitorear el desempeño de tu app en el mundo real.
+In general, a good approach is to use Lighthouse to identify obvious CRP optimization opportunities, and then to instrument your code with the Navigation Timing API to monitor how your app performs out in the wild.
 
-## Realizar auditorías de tu página con Lighthouse {: #lighthouse }
+## Auditing a page with Lighthouse {: #lighthouse }
 
-Lighthouse es una herramienta de auditoría de apps web que realiza una serie de pruebas en una
-página determinada y, a continuación, muestra los resultados de la página en un informe consolidado. Puedes
-ejecutar Lighthouse como una extensión de Chrome o un módulo de NPM, que es
-útil para integrar Lighthouse con sistemas de integración continua.
+Lighthouse is a web app auditing tool that runs a series of tests against a given page, and then displays the page's results in a consolidated report. You can run Lighthouse as a Chrome Extension or NPM module, which is useful for integrating Lighthouse with continuous integration systems.
 
-Para empezar, consulta [Auditorías de apps web con Lighthouse](/web/tools/lighthouse/).
+See [Auditing Web Apps With Lighthouse](/web/tools/lighthouse/) to get started.
 
-Cuando ejecutas Lighthouse como una extensión de Chrome, la CRP de tu página luce
-similar a la siguiente captura de pantalla.
+When you run Lighthouse as a Chrome Extension, your page's CRP results look like the screenshot below.
 
-![Auditorías de CRP con Lighthouse](images/lighthouse-crp.png)
+![Lighthouse's CRP audits](images/lighthouse-crp.png)
 
-Consulta [Cadenas de solicitudes críticas][crc] para obtener más información sobre los resultados de esta
-auditoría.
+See [Critical Request Chains](/web/tools/lighthouse/audits/critical-request-chains) for more information on this audit's results.
 
-[crc]: /web/tools/lighthouse/audits/critical-request-chains
+## Instrumenting your code with the Navigation Timing API {: #navigation-timing }
 
-## Equipar tu código con Navigation Timing API {: #navigation-timing }
+The combination of the Navigation Timing API and other browser events emitted as the page loads allows you to capture and record the real-world CRP performance of any page.
 
-La combinación de Navigation Timing API y otros eventos del navegador emitidos
-cuando se carga la página te permite capturar y grabar el rendimiento real de CRP
-de cualquier página.
+<img src="images/dom-navtiming.png"  alt="Navigation Timing" />
 
-<img src="images/dom-navtiming.png"  alt="Navigation Timing">
+Each of the labels in the above diagram corresponds to a high resolution timestamp that the browser tracks for each and every page it loads. In fact, in this specific case we're only showing a fraction of all the different timestamps &mdash; for now we're skipping all network related timestamps, but we'll come back to them in a future lesson.
 
-Cada una de las etiquetas del diagrama anterior corresponde a una marca de tiempo de alta resolución que el navegador rastrea para cada una de las páginas que carga. De hecho, en este caso específico solo mostraremos una fracción de todas las marcas de tiempo diferentes; por ahora, omitiremos todas las marcas de tiempo relacionadas con la red, pero regresaremos a ellas en una de las próximas lecciones.
+So, what do these timestamps mean?
 
-¿Qué son las marcas de tiempo?
+* `domLoading`: this is the starting timestamp of the entire process, the browser is about to start parsing the first received bytes of the HTML document.
+* `domInteractive`: marks the point when the browser has finished parsing all of the HTML and DOM construction is complete.
+* `domContentLoaded`: marks the point when both the DOM is ready and there are no stylesheets that are blocking JavaScript execution - meaning we can now (potentially) construct the render tree. 
+    * Many JavaScript frameworks wait for this event before they start executing their own logic. For this reason the browser captures the `EventStart` and `EventEnd` timestamps to allow us to track how long this execution took.
+* `domComplete`: as the name implies, all of the processing is complete and all of the resources on the page (images, etc.) have finished downloading - in other words, the loading spinner has stopped spinning.
+* `loadEvent`: as a final step in every page load the browser fires an `onload` event which can trigger additional application logic.
 
-* `domLoading`: esta es la marca de tiempo inicial de todo el proceso; el
-  navegador está por comenzar a analizar los primeros bytes recibidos del documento
-  HTML.
-* `domInteractive`: marca el punto en el cual el navegador termina de analizar todo
-  el HTML y finaliza la construcción del DOM.
-* `domContentLoaded`: marca el punto en el cual el DOM está listo y no hay hojas de estilo que bloqueen la ejecución de JavaScript; esto significa que ahora (posiblemente) podemos construir el árbol de representación.
-    * Muchos frameworks de JavaScript esperan este evento antes de comenzar a ejecutar su propia lógica. Por este motivo, el navegador captura las marcas de tiempo `EventStart` y `EventEnd` para permitirnos realizar un seguimiento del tiempo que llevó esta ejecución.
-* `domComplete`: como el nombre lo indica, se completó la totalidad del procesamiento y
-  se terminaron de descargar todos los recursos de la página (imágenes, etc.);
-  es decir, el indicador de carga dejó de girar.
-* `loadEvent`: como paso final en toda carga de una página, el navegador activa un evento
-  `onload` que puede desencadenar lógica de aplicación adicional.
+The HTML specification dictates specific conditions for each and every event: when it should be fired, which conditions should be met, and so on. For our purposes, we'll focus on a few key milestones related to the critical rendering path:
 
-La especificación HTML dicta condiciones específicas para cada evento: cuándo se debe activar, qué condiciones debe cumplir, etc. Para nuestros fines, nos concentraremos en algunos elementos claves relacionados con la ruta de acceso de representación crítica:
-
-* `domInteractive` marca el momento en que el DOM está listo.
-* `domContentLoaded` generalmente marca el momento en que [el DOM y el CSSOM están listos](http://calendar.perfplanet.com/2012/deciphering-the-critical-rendering-path/).
-    * Si no hay analizadores que bloqueen JavaScript, `DOMContentLoaded` se activará de inmediato después de `domInteractive`.
-* `domComplete` marca el momento en que la página y todos sus recursos secundarios están listos.
-
+* `domInteractive` marks when DOM is ready.
+* `domContentLoaded` typically marks when [both the DOM and CSSOM are ready](http://calendar.perfplanet.com/2012/deciphering-the-critical-rendering-path/). 
+    * If there is no parser blocking JavaScript then `DOMContentLoaded` will fire immediately after `domInteractive`.
+* `domComplete` marks when the page and all of its subresources are ready.
 
 <div style="clear:both;"></div>
 
@@ -87,26 +55,18 @@ La especificación HTML dicta condiciones específicas para cada evento: cuándo
 {% includecode content_path="web/fundamentals/performance/critical-rendering-path/_code/measure_crp.html" region_tag="full" adjust_indentation="auto" %}
 </pre>
 
-[Pruébalo](https://googlesamples.github.io/web-fundamentals/fundamentals/performance/critical-rendering-path/measure_crp.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/performance/critical-rendering-path/measure_crp.html){: target="_blank" .external }
 
-El ejemplo anterior puede parecer intimidante a primera vista, pero en realidad es bastante simple. La Navigation Timing API captura todas las marcas de tiempo correspondientes y nuestro código simplemente espera que se active el evento `onload`; recuerda que el evento `onload` se activa después de `domInteractive`, `domContentLoaded` y `domComplete`, y computa la diferencia entre las diversas marcas de tiempo.
+The above example may seem a little daunting on first sight, but in reality it is actually pretty simple. The Navigation Timing API captures all the relevant timestamps and our code simply waits for the `onload` event to fire &mdash; recall that `onload` event fires after `domInteractive`, `domContentLoaded` and `domComplete` &mdash; and computes the difference between the various timestamps.
 
-<img src="images/device-navtiming-small.png"  alt="Demostración de NavTiming">
+<img src="images/device-navtiming-small.png"  alt="NavTiming demo" />
 
-En resumen, ahora tenemos algunos elementos claves específicos por delante y una función simple para obtener esas mediciones. Ten en cuenta que en lugar de imprimir esas mediciones en la página también puedes modificar el código para enviar esas métricas a un servidor de análisis ([Google Analytics lo hace automáticamente](https://support.google.com/analytics/answer/1205784)). Esta es una excelente manera de mantenerte informado sobre el rendimiento de tus páginas y te permite identificar las páginas que podrían beneficiarse con algunas tareas de optimización.
+All said and done, we now have some specific milestones to track and a simple function to output these measurements. Note that instead of printing these metrics on the page you can also modify the code to send these metrics to an analytics server ([Google Analytics does this automatically](https://support.google.com/analytics/answer/1205784)), which is a great way to keep tabs on performance of your pages and identify candidate pages that can benefit from some optimization work.
 
-## ¿Qué sucede con DevTools? {: #devtools }
+## What about DevTools? {: #devtools }
 
-Si bien estos documentos a veces usan el panel Network de Chrome DevTools para
-ilustrar conceptos de CRP, DevTools no es ideal para realizar mediciones de
-CRP porque no cuenta con un mecanismo incorporado para aislar
-recursos críticos. Realiza una auditoría de [Lighthouse](#lighthouse) para que te sea más fácil
-identificar estos recursos.
+Although these docs sometimes use the Chrome DevTools Network panel to illustrate CRP concepts, DevTools is currently not well-suited for CRP measurements because it does not have a built-in mechanism for isolating critical resources. Run a [Lighthouse](#lighthouse) audit to help identify such resources.
 
-<a href="analyzing-crp" class="gc-analytics-event"
-    data-category="CRP" data-label="Next / Analyzing CRP">
-  <button>A continuación: Analizar el rendimiento de la ruta de representación crítica</button>
-</a>
+## Feedback {: #feedback }
 
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
