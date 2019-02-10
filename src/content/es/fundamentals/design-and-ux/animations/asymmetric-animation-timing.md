@@ -1,31 +1,29 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Romper la simetría proporciona contraste a tus proyectos y los hace atractivos. Aprende cuándo y cómo aplicar esto en sus proyectos.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Breaking symmetry provides contrast and appeal to your projects. Learn when and how to apply this to your projects.
 
-{# wf_updated_on: 2014-10-21 #}
-{# wf_published_on: 2014-08-08 #}
+{# wf_blink_components: Blink>Animation #} {# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2014-08-08 #}
 
-# Sincronización asimétrica de animaciones {: .page-title }
+# Asymmetric animation timing {: .page-title }
 
 {% include "web/_shared/contributors/paullewis.html" %}
 
-La sincronización asimétrica de animaciones mejora la experiencia del usuario ya que te permite expresar personalidad y, al mismo tiempo, responder rápidamente a las interacciones del usuario. Además, se genera un contraste en la experiencia. Esto hace más atractiva la interfaz.
+Asymmetric animation timing improves the user experience by allowing you to express personality while at the same time respond quickly to user interactions. It also provides contrast to the feel, which makes the interface more visually appealing.
 
 ### TL;DR {: .hide-from-toc }
-* Usa la sincronización asimétrica de animaciones para agregar personalidad y contraste a tus trabajos.
-* Siempre debes priorizar la interacción del usuario. Para ello, usa duraciones más cortas para los casos en que respondas a toques o clics, y reserva las más prolongadas para casos contrarios.
 
+* Use asymmetric animation timing to add personality and contrast to your work.
+* Always favor the user's interaction; use shorter durations when responding to taps or clicks, and reserve longer durations for times when you aren't.
 
-Al igual que la mayoría de las “reglas” de animación, deberías experimentar para determinar qué se adapta mejor a tu app; pero cuando se trata de la experiencia de los usuarios, está a la vista que estos son impacientes. La regla de oro es que **siempre brindar una respuesta rápida a la interacción del usuario**. Dicho esto, en la mayoría de los casos, la acción del usuario es asimétrica y, por lo tanto, lo mismo puede suceder con la animación.
+Like most "rules" of animation, you should experiment to find out what works for your application, but when it comes to the user experience, users are notoriously impatient. The rule of thumb is to **always respond to a user interaction quickly**. That said, most of the time the user's action is asymmetric, and therefore the animation can be, too.
 
-Por ejemplo, cuando un usuario pulsa para mostrar una barra lateral, deberías mostrarla lo más rápido posible, con una duración aproximada de 100 ms. No obstante, cuando el usuario descarta el menú, puedes permitirte animar la vista un poco más lentamente; por ejemplo, al rededor de 300 ms.
+For example, when a user taps to display a sidebar navigation, you should display it as quickly as possible, with a duration of around 100ms. When the user dismisses the menu, however, you can afford to animate the view out a little more slowly, say, around the 300ms mark.
 
-Por el contrario, al mostrarse una vista modal, normalmente esta usará para mostrar un error o algún otro mensaje importante. En estos casos, es mejor que muestres la vista con un poco más de lentitud; una vez más, aproximadamente 300 ms, pero el descarte, activado por el usuario, debe producirse muy rápido.
+By contrast, when you bring on a modal view, this is normally to display an error or some other critical message. In such cases, you will want to bring on the view a little more slowly, again around the 300ms mark, but dismissal, which the user triggers, should happen very quickly.
 
-Por lo tanto, la regla de oro general es la siguiente:
+The general rule of thumb, then, is the following:
 
-* En el caso de las animaciones de la IU activadas a partir de la interacción del usuario, como las transiciones de vistas o la visualización de un elemento, realiza una introducción rápida (duración corta) y un cierre lento (duración más larga).
-* En el caso de las animaciones de la IU que se activen a partir de tu código, como los errores o las vistas modales, realiza introducción más lenta (duración más larga) y un cierre rápido (duración corta).
+* For UI animations triggered by a user’s interaction, such as view transitions or showing an element, have a fast intro (short duration), but a slow outro (longer duration).
+* For UI animations triggered by your code, such as errors or modal views, have a slower intro (longer duration), but a fast outro (short duration).
 
+## Feedback {: #feedback }
 
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
