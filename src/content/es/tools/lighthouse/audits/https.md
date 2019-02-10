@@ -1,52 +1,33 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Documentación de referencia para la auditoría de Lighthouse "El sitio está en HTTPS".
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Reference documentation for the "Uses HTTPS" Lighthouse audit.
 
-{# wf_updated_on: 2016-09-19 #}
-{# wf_published_on: 2016-09-19 #}
+{# wf_updated_on: 2018-07-23 #} {# wf_published_on: 2016-09-19 #} {# wf_blink_components: N/A #}
 
-# El sitio está en HTTPS  {: .page-title }
+# Uses HTTPS {: .page-title }
 
-## Por qué es importante la auditoría {: #why }
+## Overview {: #overview }
 
-Todos los sitios web se deben proteger con HTTPS, incluso los que no manejan
-datos confidenciales. HTTPS evita que los intrusos manipulen o escuchen pasivamente
-las comunicaciones entre tu sitio y el de tus usuarios.
+All websites should be protected with HTTPS, even ones that don't handle sensitive data. HTTPS prevents intruders from tampering with or passively listening in on the communications between your site and your users.
 
-HTTPS también es un requisito previo para muchas funciones nuevas y potentes de las plataformas web, como
-tomar fotografías o grabar audio.
+HTTPS is also a prerequisite for many new, powerful web platform features, such as taking pictures or recording audio.
 
-Por definición, una app no puede calificar como una app web progresiva si no se ejecuta
-en HTTPS. Esto se debe a que muchas tecnologías de apps web progresivas centrales, como
-service worker, requieren HTTPS.
+By definition, an app cannot qualify as a progressive web app if it does not run on HTTPS. This is because many core progressive web app technologies, such as service workers, require HTTPS.
 
-Para obtener más información sobre cómo se deben proteger todos los sitios con HTTPS, consulta
-[Por qué usar siempre HTTPS](/web/fundamentals/security/encrypt-in-transit/why-https).
+For more information on why all sites should be protected with HTTPS, see [Why You Should Always Use HTTPS](/web/fundamentals/security/encrypt-in-transit/why-https).
 
-## Cómo aprobar la auditoría {: #how }
+## Recommendations {: #recommendations }
 
-Migra tu sitio a HTTPS.
+Migrate your site to HTTPS.
 
-Muchas plataformas de hosting, como
-[Firebase](https://firebase.google.com/docs/hosting/){: .external } o [GitHub
-Pages](https://pages.github.com/){: .external }, son seguras de manera predeterminada.
+Many hosting platforms, such as [Firebase](https://firebase.google.com/docs/hosting/){: .external } or [GitHub Pages](https://pages.github.com/){: .external }, are secure by default.
 
-Si ejecutas tus propios servidores y necesitas una manera económica y sencilla de generar
-certificados, consulta [Encriptemos](https://letsencrypt.org/){: .external }. Para obtener más ayuda
-con la habilitación de HTTPS en tus servidores, consulta el siguiente conjunto de documentos: [Encriptar
-datos en tránsito](/web/fundamentals/security/encrypt-in-transit/enable-https).
+If you're running your own servers and need a cheap and easy way to generate certificates, check out [Let's Encrypt](https://letsencrypt.org/){: .external }. For more help on enabling HTTPS on your servers, see the following set of docs: [Encrypting data in transit](/web/fundamentals/security/encrypt-in-transit/enable-https).
 
-Si tu página ya se ejecuta en HTTPS, pero no apruebas esta auditoría,
-es posible que tengas problemas con contenido mezclado. El término “contenido mezclado” se refiere a cuando un sitio
-seguro solicita un recurso no protegido (HTTP). Consulta el siguiente documento sobre el
-panel Security de Chrome DevTools para obtener información sobre cómo depurar estas situaciones.
-[Comprende los problemas de seguridad](/web/tools/chrome-devtools/debug/security).
+If your page is already running on HTTPS but you're failing this audit, then you may have problems with mixed content. Mixed content is when a secure site requests an unprotected (HTTP) resource. Check out the following doc on the Chrome DevTools Security panel to learn how to debug these situations: [Understand security issues](/web/tools/chrome-devtools/debug/security).
 
-{% include "web/tools/lighthouse/audits/implementation-heading.html" %}
+## More information {: #more-info }
 
-Lighthouse espera que se produzca un evento del protocolo del depurador de Chrome que indique que
-la página se ejecuta en una conexión segura. Si el evento no se produce dentro de los 10
-segundos, la auditoría falla.
+Lighthouse waits for an event from the Chrome Debugger Protocol indicating that the page is running on a secure connection. If the event is not heard within 10 seconds, the audit fails.
 
+## Feedback {: #feedback }
 
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
