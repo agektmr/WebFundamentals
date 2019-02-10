@@ -1,35 +1,28 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Documentação de referência para a auditoria do Lighthouse "Site redireciona tráfego HTTP para HTTPS".
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Reference documentation for the "Redirects HTTP Traffic To HTTPS" Lighthouse audit.
 
-{# wf_updated_on: 2016-09-20 #}
-{# wf_published_on: 2016-09-20 #}
+{# wf_updated_on: 2018-07-23 #} {# wf_published_on: 2016-09-20 #} {# wf_blink_components: N/A #}
 
-# Site redireciona tráfego HTTP para HTTPS  {: .page-title }
+# Redirects HTTP Traffic To HTTPS {: .page-title }
 
-## Por que a auditoria é importante {: #why }
+## Overview {: #overview }
 
-Todos os sites devem ser protegidos com HTTPS. Veja este documento do Lighthouse para
-saber porque: [Site está em HTTPS](https).
+All sites should be protected with HTTPS. See the following Lighthouse doc to learn why: [Site is on HTTPS](https).
 
-Depois de configurar o HTTPS, você precisa assegurar que todo o tráfego HTTP
-não seguro seja redirecionado ao HTTPS.
+Once you've got HTTPS set up, you need to make sure that all unsecure HTTP traffic to your site is redirected to HTTPS.
 
-## Como ser aprovado na auditoria {: #how }
+## Recommendations {: #recommendations }
 
-1. Use links canônicos no `head` do HTML para ajudar os mecanismos de pesquisa a descobrir
-   a melhor forma de chegar à página.
+1. Use canonical links in the `head` of your HTML to help search engines figure out the best way to get to the page.
+    
+    <link rel="canonical" href="https://example.com" />
+    
 
-       <link rel="canonical" href="https://example.com"/>
+2. Configure your server to redirect HTTP traffic to HTTPS. See your server's documentation to figure out the best way to do this.
 
-2. Configure o servidor para redirecionar tráfego HTTP ao HTTPS. Consulte a documentação
-   do servidor para descobrir a melhor maneira de fazer isso.
+## More information {: #more-info }
 
-{% include "web/tools/lighthouse/audits/implementation-heading.html" %}
+Lighthouse changes the page's URL to `http`, loads the page, and then waits for the event from the Chrome Debugger that indicates that the page is secure. If Lighthouse does not receive the event within 10 seconds then the audit fails.
 
-O Lighthouse altera o URL da página para `http`, carrega a página e aguarda o
-evento do Chrome Debugger que indica que a página é segura. Se o
-Lighthouse não receber o evento em 10 segundos, a auditoria será reprovada.
+## Feedback {: #feedback }
 
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
