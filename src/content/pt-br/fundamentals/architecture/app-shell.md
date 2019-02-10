@@ -1,148 +1,73 @@
-project_path: /web/_project.yaml 
-book_path: /web/fundamentals/_book.yaml
-description: A arquitetura de shell dos aplicativos mantém sua IU local e carrega conteúdo dinamicamente, sem sacrificar o potencial da web de oferecer links e de descobrir e encontrar. 
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Application shell architecture keeps your UI local and loads content dynamically without sacrificing the linkability and discoverability of the web.
 
-{# wf_updated_on: 2017-07-12 #} 
-{# wf_published_on: 2016-09-27 #}
+{# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2016-09-27 #} {# wf_blink_components: N/A #}
 
-# O modelo de shell dos aplicativos {: .page-title }
+# The App Shell Model {: .page-title }
 
 {% include "web/_shared/contributors/addyosmani.html" %}
 
-Uma arquitetura de **shell de aplicativo** (ou app shell) é uma forma de se criar um
-Progressive Web App que carrega de forma confiável e instantânea na tela do usuário,
-muito parecido com o que se vê em aplicativos nativos.
+An **application shell** (or app shell) architecture is one way to build a Progressive Web App that reliably and instantly loads on your users' screens, similar to what you see in native applications.
 
-O "shell" de um aplicativo é o HTML, o CSS e o JavaScript mínimos necessários para se gerar a
-interface do usuário e, quando armazenados em cache off-line, podem oferecer **desempenho instantâneo
-e confiável** a usuários quando voltam a acessar. Isso significa que o shell dos aplicativos
-não é carregado pela rede sempre que o usuário acessa. Apenas o conteúdo
-estritamente necessário é buscado na rede.
+The app "shell" is the minimal HTML, CSS and JavaScript required to power the user interface and when cached offline can ensure **instant, reliably good performance** to users on repeat visits. This means the application shell is not loaded from the network every time the user visits. Only the necessary content is needed from the network.
 
-Para [aplicativos
-de uma única página](https://en.wikipedia.org/wiki/Single-page_application) com
-arquiteturas pesadas em JavaScript, um shell de aplicativo é uma abordagem certeira. Essa
-abordagem se baseia no armazenamento agressivo do shell em cache (usando um [service
-worker](/web/fundamentals/primers/service-worker/)) para fazer o aplicativo
-funcionar. Depois, o conteúdo dinâmico é carregado em cada página que usa JavaScript. Um shell
-de aplicativo é útil para se obter HTML inicial na tela rapidamente, sem usar
-uma rede.
+For [single-page applications](https://en.wikipedia.org/wiki/Single-page_application) with JavaScript-heavy architectures, an application shell is a go-to approach. This approach relies on aggressively caching the shell (using a [service worker](/web/fundamentals/primers/service-worker/)) to get the application running. Next, the dynamic content loads for each page using JavaScript. An app shell is useful for getting some initial HTML to the screen fast without a network.
 
-<img src="images/appshell.png" alt="Arquitetura de shell dos aplicativos" />
+![Application Shell architecture](images/appshell.png)
 
-Em outras palavras, o shell dos aplicativos é semelhante a um pacote de código que se
-publicaria em uma loja de aplicativos ao compilar um aplicativo nativo. Ele é composto pelo esqueleto da sua
-IU e pelos principais componentes necessários para fazer o aplicativo funcionar, mas, na maioria dos casos,
-não contém os dados.
+Put another way, the app shell is similar to the bundle of code that you’d publish to an app store when building a native app. It is the skeleton of your UI and the core components necessary to get your app off the ground, but likely does not contain the data.
 
-Observação: Experimente o codelab do [Primeiro Progressive Web
-App](https://codelabs.developers.google.com/codelabs/your-first-pwapp/#0)
-para saber como arquitetar e
-implementar seu primeiro shell de aplicativo em um aplicativo de meteorologia. O vídeo [Instant
-Loading with the App Shell model](https://www.youtube.com/watch?v=QhUzmR8eZAo)
-também oferece um passo a passo desse padrão.
+Note: Try the [First Progressive Web App](https://codelabs.developers.google.com/codelabs/your-first-pwapp/#0) codelab to learn how to architectect and implement your first application shell for a weather app. The [Instant Loading with the App Shell model](https://www.youtube.com/watch?v=QhUzmR8eZAo) video also walks through this pattern.
 
-### Quando usar o modelo de shell de aplicativo
+### When to use the app shell model
 
-Criar um PWA não significa ter que começar do zero. Se você está criando um aplicativo
-moderno de uma única página, provavelmente já está usando algo parecido com um shell de aplicativo,
-mas talvez não o chame de shell. Os detalhes podem variar um pouco, dependendo
-de que bibliotecas ou estruturas você usa, mas o conceito em si
-se aplica a qualquer estrutura.
+Building a PWA does not mean starting from scratch. If you are building a modern single-page app, then you are probably using something similar to an app shell already whether you call it that or not. The details might vary a bit depending upon which libraries or frameworks you are using, but the concept itself is framework agnostic.
 
-Uma arquitetura de shell de aplicativo é a melhor abordagem para aplicativos e sites que
-têm navegação relativamente rígida, mas que têm conteúdo mudando constantemente. Diversas estruturas e bibliotecas
-JavaScript modernas já indicam separar a lógica do aplicativo
-de seu conteúdo para simplificar a aplicação da arquitetura.
-Para uma classe de sites que só tem conteúdo estático, você ainda pode
-aplicar o mesmo modelo, mas o site será 100% composto de shell de aplicativo.
+An application shell architecture makes the most sense for apps and sites with relatively unchanging navigation but changing content. A number of modern JavaScript frameworks and libraries already encourage splitting your application logic from its content, making this architecture more straightforward to apply. For a certain class of websites that only have static content you can still follow the same model but the site is 100% app shell.
 
-Para ver como o Google criou uma arquitetura de shell de aplicativo, dê uma olhada em
-[Criando o Progressive Web App da Google I/O 2016](/web/showcase/2016/iowa2016).
-Esse aplicativo real começou com um SPA para criar um PWA que armazena conteúdo em cache com antecedência
-usando um service worker, carrega novas páginas dinamicamente, faz transição de
-vistas de forma suave e reutiliza o conteúdo depois do primeiro carregamento.
+To see how Google built an app shell architecture, take a look at [Building the Google I/O 2016 Progressive Web App](/web/showcase/2016/iowa2016). This real-world app started with a SPA to create a PWA that precaches content using a service worker, dynamically loads new pages, gracefully transitions between views, and reuses content after the first load.
 
+### Benefits {: #app-shell-benefits }
 
-### Benefícios {: #app-shell-benefits }
+The benefits of an app shell architecture with a service worker include:
 
-Os benefícios de uma arquitetura de shell de aplicativo com um service worker incluem:
+* **Reliable performance that is consistently fast**. Repeat visits are extremely quick. Static assets and the UI (e.g. HTML, JavaScript, images and CSS) are cached on the first visit so that they load instantly on repeat visits. Content *may* be cached on the first visit, but is typically loaded when it is needed.
 
-* **Desempenho confiável e consistentemente rápido**. Os acessos repetidos
-são extremamente rápidos.  Os ativos estáticos e a IU (por exemplo, HTML, JavaScript, imagens
-e CSS) são armazenados em cache no primeiro acesso, assim, em um segundo acesso, eles são
-carregados instantaneamente. O conteúdo _pode_ ser armazenado em cache no primeiro acesso, mas
-normalmente é carregado só quando necessário.
+* **Native-like interactions**. By adopting the app shell model, you can create experiences with instant, native-application-like navigation and interactions, complete with offline support.
 
-* **Interações como as de um nativo**. Ao adotar o modelo de shell de aplicativo, você
-pode criar experiências com navegação e interações instantâneas, como as de um
-aplicativo nativo, complementadas pela capacidade de funcionamento off-line.
+* **Economical use of data**. Design for minimal data usage and be judicious in what you cache because listing files that are non-essential (large images that are not shown on every page, for instance) result in browsers downloading more data than is strictly necessary. Even though data is relatively cheap in western countries, this is not the case in emerging markets where connectivity is expensive and data is costly.
 
-* **Uso econômico de dados**. Projete visando ao mínimo de uso de dados e pense bem no
-que será armazenado em cache, porque aplicar isso a arquivos não essenciais (imagens grandes que
-não são exibidas em todas as páginas, por exemplo) faz com que os navegadores baixem
-mais dados do que o estritamente necessário. Embora o uso de dados seja relativamente barato em países
-do ocidente, esse não é o caso em mercados
-emergentes.
+## Requirements {: #app-shell-requirements }
 
-## Requisitos {: #app-shell-requirements }
+The app shell should ideally:
 
-O ideal é que o shell do aplicativo:
+* Load fast
+* Use as little data as possible
+* Use static assets from a local cache
+* Separate content from navigation
+* Retrieve and display page-specific content (HTML, JSON, etc.)
+* Optionally, cache dynamic content
 
-* Carregue rapidamente
-* Use a menor quantidade de dados possível
-* Use ativos estáticos a partir de um cache local
-* Separe conteúdo de navegação
-* Recupere e exiba conteúdo específico da página (HTML, JSON etc.)
-* Como opção, armazene conteúdo dinâmico em cache
+The app shell keeps your UI local and pulls in content dynamically through an API but does not sacrifice the linkability and discoverability of the web. The next time the user accesses your app, the latest version displays automatically. There is no need to download new versions before using it.
 
-O shell de aplicativo mantém sua IU local e insere conteúdo dinamicamente por meio de uma
-API, mas sem prejudicar o potencial da web de oferecer links e de descobrir e encontrar. Na
-próxima vez que o usuário acessar o aplicativo, a versão mais recente será exibida automaticamente.
-Não é preciso baixar novas versões antes de usá-lo.
+Note: The [Lighthouse](https://github.com/googlechrome/lighthouse) auditing extension can be used to verify if your PWA using an app shell hits a high-bar for performance. [To the Lighthouse](https://www.youtube.com/watch?v=LZjQ25NRV-E) is a talk that walks through optimizing a PWA using this tool.
 
-Observação: A [Lighthouse](https://github.com/googlechrome/lighthouse), extensão de monitoramento,
-pode ser usada para verificar se o PWA que usa um shell de aplicativo atinge um alto padrão
-de desempenho. [To the Lighthouse](https://www.youtube.com/watch?v=LZjQ25NRV-E)
-é uma palestra que dá um passo a passo sobre como otimizar um PWA usando essa ferramenta.
+## Building your app shell {: #building-your-app-shell }
 
-## Criar shell para o seu aplicativo {: #building-your-app-shell }
+Structure your app for a clear distinction between the page shell and the dynamic content. In general, your app should load the simplest shell possible but include enough meaningful page content with the initial download. Determine the right balance between speed and data freshness for each of your data sources.<figure> 
 
-Estrutura o aplicativo com uma clara distinção entre o shell da página e o
-conteúdo dinâmico. Em geral, o aplicativo deve carregar o shell mais simples possível,
-mas incluir conteúdo importante da página suficiente com o download inicial. Determine
-o ponto de equilíbrio entre velocidade e o nível de atualização dos dados de cada uma das suas fontes
-de dados.
+![Offline Wikipedia app using an application shell with content caching](images/wikipedia.jpg) <figcaption>Jake Archibald’s [offline Wikipedia application](https://wiki-offline.jakearchibald.com/wiki/Rick_and_Morty) is a good example of a PWA that uses an app shell model. It loads instantly on repeat visits, but dynamically fetches content using JS. This content is then cached offline for future visits. </figcaption> </figure> 
 
-<figure>
-  <img src="images/wikipedia.jpg"
-    alt="Aplicativo off-line do Wikipédia usando um shell de aplicativo com conteúdo armazenado em cache">
-  <figcaption>O <a href="https://wiki-offline.jakearchibald.com/wiki/Rick_and_Morty">aplicativo off-line do Wikipédia</a> de Jake Archibald é um bom exemplo de PWA que usa um modelo de shell de aplicativo. Ele carrega instantaneamente em acessos repetidos, mas busca conteúdo dinamicamente usando JS. Em seguida, esse conteúdo é armazenado em cache off-line para acessos futuros.
-</figcaption>
-</figure>
+### Example HTML for an app shell {: #example-html-for-appshell }
 
-### Exemplo de HTML para um shell de aplicativo {: #example-html-for-appshell }
+This example separates the core application infrastructure and UI from the data. It is important to keep the initial load as simple as possible to display just the page’s layout as soon as the web app is opened. Some of it comes from your application’s index file (inline DOM, styles) and the rest is loaded from external scripts and stylesheets.
 
-Esse exemplo separa a infraestrutura e a IU principais do aplicativo dos dados.
-É importante manter o carregamento inicial o mais simples possível para exibir somente
-o layout da página assim que o aplicativo web for aberto. Parte desse conteúdo vem do
-arquivo de índice do seu aplicativo (DOM embutido, estilos) e o resto é carregado por
-scripts e folhas de estilo externos.
+All of the UI and infrastructure is cached locally using a service worker so that on subsequent loads, only new or changed data is retrieved, instead of having to load everything.
 
-Toda a IU e a infraestrutura é armazenada em cache localmente usando um service worker para que,
-nos próximos carregamentos, se recupere somente dados novos ou alterados, em vez de
-carregar tudo de novo.
+Your `index.html` file in your work directory should look something like the following code. This is a subset of the actual contents and is not a complete index file. Let's look at what it contains.
 
-O arquivo `index.html` do seu diretório de trabalho devem ser parecido com
-o código a seguir. Esse é um subconjunto do conteúdo real e não é um arquivo
-de índice completo. Vejamos o que ele contém.
-
-* HTML e CSS para o "esqueleto" da interface do usuário, complementados por marcadores
-  de navegação e conteúdo.
-* Um arquivo JavaScript externo (app.js) para lidar com a lógica da navegação e da IU,
-  além do código para exibir postagens recuperadas do servidor e armazená-las
-  localmente usando um mecanismo de armazenamento como IndexedDB.
-* Um manifesto do aplicativo web e o carregador do service worker para ativar os recursos off-line.
+* HTML and CSS for the "skeleton" of your user interface complete with navigation and content placeholders.
+* An external JavaScript file (app.js) for handling navigation and UI logic as well as the code to display posts retrieved from the server and store them locally using a storage mechanism like IndexedDB.
+* A web app manifest and service worker loader to enable off-line capabilities.
 
 <div class="clearfix"></div>
 
@@ -154,31 +79,30 @@ de índice completo. Vejamos o que ele contém.
       <link rel="manifest" href="/manifest.json">
       <meta http-equiv="X-UA-Compatible" content="IE=edge">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>App Shell</title>
       <link rel="stylesheet" type="text/css" href="styles/inline.css">
     </head>
-
+    
     <body>
       <header class="header">
         <h1 class="header__title">App Shell</h1>
       </header>
-      
+    
       <nav class="nav">
       ...
       </nav>
-      
+    
       <main class="main">
       ...
       </main>
-
+    
       <div class="dialog-container">
       ...
       </div>
-
+    
       <div class="loader">
         <!-- Show a spinner or placeholders for content -->
       </div>
-
+    
       <script src="app.js" async></script>
       <script>
       if ('serviceWorker' in navigator) {
@@ -193,49 +117,35 @@ de índice completo. Vejamos o que ele contém.
       </script>
     </body>
     </html>
+    
 
 <div class="clearfix"></div>
 
-
-Observação: Acesse [https://app-shell.appspot.com/](https://app-shell.appspot.com/)
-para ver um PWA real muito simples que usa um shell de aplicativo e renderização
-no servidor para o conteúdo. Pode-se implementar um shell de aplicativo usando qualquer biblioteca
-ou estrutura, conforme explicado na nossa palestra <a
-href="https://www.youtube.com/watch?v=srdKq0DckXQ">Progressive Web Apps em
-todas as estruturas</a>. Você pode obter exemplos usando o Polymer (<a
-href="https://shop.polymer-project.org">Shop</a>) e o React (<a
-href="https://github.com/insin/react-hn">ReactHN</a>,
+Note: See <https://app-shell.appspot.com/> for a real-life look at a very simple PWA using an application shell and server-side rendering for content. An app shell can be implemented using any library or framework as covered in our [Progressive Web Apps across all frameworks](https://www.youtube.com/watch?v=srdKq0DckXQ) talk. Samples are available using Polymer ([Shop](https://shop.polymer-project.org)) and React ([ReactHN](https://github.com/insin/react-hn),
 <a
 href="https://github.com/GoogleChrome/sw-precache/tree/master/app-shell-demo">iFixit</a>).
- 
 
-### Armazenar o shell do aplicativo em cache {: #app-shell-caching }
+### Caching the application shell {: #app-shell-caching }
 
-Um shell de aplicativo pode ser armazenado em cache por meio de um service worker gravado manualmente ou um
-gerado por uma ferramenta de pré-armazenamento em cache de ativos estáticos, como
-a [sw-precache](https://github.com/googlechrome/sw-precache).
+An app shell can be cached using a manually written service worker or a generated service worker using a static asset precaching tool like [sw-precache](https://github.com/googlechrome/sw-precache).
 
-Observação: Os exemplos são somente para fins ilustrativos
-e referência geral. Os recursos usados provavelmente serão diferentes para o seu
-aplicativo.
+Note: The examples are provided for general information and illustrative purposes only. The actual resources used will likely be different for your application.
 
-#### Armazenar o shell do aplicativo manualmente
+#### Caching the app shell manually
 
-Veja abaixo um exemplo de código de service worker que armazena recursos estáticos do
-shell do aplicativo na [Cache API](https://developer.mozilla.org/en-US/docs/Web/API/Cache)
-usando o evento `install` do service worker:
+Below is example service worker code that caches static resources from the app shell into the [Cache API](https://developer.mozilla.org/en-US/docs/Web/API/Cache) using service worker's `install` event:
 
     var cacheName = 'shell-content';
     var filesToCache = [
       '/css/styles.css',
       '/js/scripts.js',
       '/images/logo.svg',
-
-      '/offline.html’,
-
-      '/’,
+    
+      '/offline.html',
+    
+      '/',
     ];
-
+    
     self.addEventListener('install', function(e) {
       console.log('[ServiceWorker] Install');
       e.waitUntil(
@@ -245,46 +155,36 @@ usando o evento `install` do service worker:
         })
       );
     });
+    
 
-#### Como usar sw-precache para armazenar o shell do aplicativo em cache
+#### Using sw-precache to cache the app shell
 
-O service worker gerado pelo sw-precache armazenará em cache e entregará os recursos
-que você definir como parte do processo de compilação. Você pode aplicar o pré-armazenamento em cache a qualquer arquivo
-HTML, JavaScript e CSS que faça parte do shell do aplicativo. Tudo vai
-funcionar off-line e carregar rapidamente em acessos repetidos sem você precisar fazer mais nada.
+The service worker generated by sw-precache will cache and serve the resources that you configure as part of your build process. You can have it precache every HTML, JavaScript, and CSS file that makes up your app shell. Everything will both work offline, and load fast on subsequent visits without any extra effort.
 
-Veja um exemplo básico de como usar o sw-precache como parte de um
-processo de compilação do [gulp](http://gulpjs.com):
+Here is a basic example of using sw-precache as part of a [gulp](http://gulpjs.com) build process:
 
     gulp.task('generate-service-worker', function(callback) {
       var path = require('path');
       var swPrecache = require('sw-precache');
       var rootDir = 'app';
-
+    
       swPrecache.write(path.join(rootDir, 'service-worker.js'), {
         staticFileGlobs: [rootDir + '/**/*.{js,html,css,png,jpg,gif}'],
         stripPrefix: rootDir
       }, callback);
     });
+    
 
-Para saber mais sobre armazenamento de ativos estáticos em cache, acesse o codelab
-[Como adicionar um service worker com
-o sw-precache](https://codelabs.developers.google.com/codelabs/sw-precache/index.html?index=..%2F..%2Findex#0).
+To learn more about static asset caching, see the [Adding a Service Worker with sw-precache](https://codelabs.developers.google.com/codelabs/sw-precache/index.html?index=..%2F..%2Findex#0) codelab.
 
-Note: o sw-precache é útil para armazenamento off-line de recursos estáticos em cache. Para
-recursos de tempo de execução/dinâmicos, recomendamos usar nossa biblioteca de cortesia:
-[sw-toolbox](https://github.com/googlechrome/sw-toolbox).
+Note: sw-precache is useful for offline caching your static resources. For runtime/dynamic resources, we recommend using our complimentary library [sw-toolbox](https://github.com/googlechrome/sw-toolbox).
 
-## Conclusão {: #conclusion }
+## Conclusion {: #conclusion }
 
-Shell de aplicativo usando service worker é um padrão poderoso para armazenamento em cache off-line,
-mas também oferece bons ganhos de desempenho na forma de carregamento instantâneo para
-acessos repetidos ao PWA. É possível armazenar o shell do seu aplicativo em cache, para que ele
-funcione off-line, e inserir o conteúdo usando JavaScript.
+An app shell using Service worker is powerful pattern for offline caching but it also offers significant performance wins in the form of instant loading for repeat visits to your PWA. You can cache your application shell so it works offline and populate its content using JavaScript.
 
-Em acessos repetidos, isso permite exibir pixels importantes na tela
-sem precisar da rede, mesmo que o conteúdo eventualmente venha dela.
+On repeat visits, this allows you to get meaningful pixels on the screen without the network, even if your content eventually comes from there.
 
+## Feedback {: #feedback }
 
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
