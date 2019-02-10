@@ -1,65 +1,56 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Los eventos de movimiento y orientación del dispositivo proporcionan acceso al acelerómetro, el giroscopio y la brújula incorporados en los dispositivos móviles.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Device motion and orientation events provide access to the built-in accelerometer, gyroscope, and compass in mobile devices.
 
-{# wf_updated_on: 2017-07-12 #}
-{# wf_published_on: 2014-06-17 #}
+{# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2014-06-17 #} {# wf_blink_components: Blink>Sensor>DeviceOrientation #}
 
-# Movimiento y orientación del dispositivo {: .page-title }
+# Device Orientation & Motion {: .page-title }
 
 {% include "web/_shared/contributors/petelepage.html" %}
 
-Los eventos de movimiento y orientación del dispositivo proporcionan acceso al acelerómetro, el giroscopio y la brújula incorporados
-en los dispositivos móviles.
+Device motion and orientation events provide access to the built-in accelerometer, gyroscope, and compass in mobile devices.
 
-Estos eventos se pueden utilizar para diferentes fines; por ejemplo, en los juegos, para controlar
-la dirección o acción del personaje. Si se los usa junto con la ubicación geográfica, se puede
-crear una navegación paso a paso más precisa o proporcionar información sobre
-una ubicación específica.
+These events can be used for many purposes; in gaming, for example, to control the direction or action of a character. When used with geolocation, they can help create more accurate turn-by-turn navigation or provide information about a specific location.
 
-Warning: No todos los navegadores usan el mismo sistema de coordenadas, y podrían informar diferentes valores en situaciones idénticas. Esto ha mejorado con el tiempo, pero asegúrate de probar tu situación.
+Caution: Not all browsers use the same coordinate system, and they may report different values under identical situations. This has improved over time, but be sure to test your situation.
 
-### TL;DR {: .hide-from-toc }
+## TL;DR
 
-* Detecta qué lado del dispositivo se encuentra orientado hacia arriba y cómo rota el mismo.
-* Obtén más información sobre cómo y cuándo responder a los eventos de movimiento y orientación.
+* Detect which side of the device is up and how the device is rotating.
+* Learn when and how to respond to motion and orientation events.
 
+## Which end is up?
 
-## ¿Qué extremo está orientado hacia arriba?
+To use the data that the device orientation and motion events return, it is important to understand the values provided.
 
-Para poder utilizar los datos generados a través de los eventos de movimiento y de orientación del dispositivo,
-es importante comprender los valores proporcionados.  
+### Earth coordinate frame
 
-### Marco de coordenadas de la Tierra
-
-El marco de coordenadas de la Tierra, que se describe mediante los valores `X`, `Y` y `Z`, se alinea
-según la gravedad y la orientación magnética estándar.
+The Earth coordinate frame, described by the values `X`, `Y`, and `Z`, is aligned based on gravity and standard magnetic orientation.
 
 <table class="responsive">
-<tr><th colspan="2">Sistema de coordenadas</th></tr>
+  
+<tr><th colspan="2">Coordinate system</th></tr>
 <tr>
   <td><code>X</code></td>
-  <td>Representa la dirección de este a oeste (donde el este es positivo).</td>
+  <td>Represents the east-west direction (where east is positive).</td>
 </tr>
 <tr>
   <td><code>Y</code></td>
-  <td>Representa la dirección de norte a sur (donde el norte es positivo).</td>
+  <td>Represents the north-south direction (where north is positive).</td>
 </tr>
 <tr>
   <td><code>Z</code></td>
-  <td>Z: representa la dirección de arriba hacia abajo, en posición perpendicular al suelo
-      (donde la dirección hacia arriba es positiva).
+  <td>Represents the up-down direction, perpendicular to the ground
+      (where up is positive).
   </td>
 </tr>
 </table>
 
-### Marco de coordenadas del dispositivo
+### Device coordinate frame
 
 <div class="attempt-right">
   <figure id="fig1">
-    <img src="images/axes.png" alt="Ilustración del marco de coordenadas del dispositivo">
+    <img src="images/axes.png" alt="illustration of device coordinate frame">
     <figcaption>
-       Ilustración del marco de coordenadas del dispositivo
+      Illustration of device coordinate frame
     </figcaption>
   </figure>
 </div>
@@ -67,52 +58,45 @@ según la gravedad y la orientación magnética estándar.
 <!-- Special thanks to Sheppy (https://developer.mozilla.org/en-US/profiles/Sheppy)
   for his images which are in the public domain. -->
 
-El marco de coordenadas del dispositivo, que se describe mediante los valores `x`, `y` y `z`, se alinea
-teniendo en cuenta el centro del dispositivo.
+The device coordinate frame, described by the values `x`, `y`, and `z`, is aligned based on the center of the device.
 
 <table class="responsive">
-<tr><th colspan="2">Sistema de coordenadas</th></tr>
+  
+<tr><th colspan="2">Coordinate system</th></tr>
 <tr>
   <td><code>X</code></td>
-  <td>En el plano de la pantalla, positivo hacia la derecha.</td>
+  <td>In the plane of the screen, positive to the right.</td>
 </tr>
 <tr>
   <td><code>Y</code></td>
-  <td>En el plano de la pantalla, positivo hacia arriba.</td>
+  <td>In the plane of the screen, positive towards the top.</td>
 </tr>
 <tr>
   <td><code>Z</code></td>
-  <td>Perpendicular a la pantalla o al teclado, positivo al
-    alejarse.
+  <td>Perpendicular to the screen or keyboard, positive extending
+    away.
   </td>
 </tr>
 </table>
 
-En un teléfono o una tablet, la orientación del dispositivo se basa en la orientación
-típica de la pantalla. Para teléfonos y tablets, se basa en el posicionamiento del dispositivo
-en el modo vertical. En el caso de las computadoras de escritorio o las laptops, la orientación se
-considera en relación con el teclado.
+On a phone or tablet, the orientation of the device is based on the typical orientation of the screen. For phones and tablets, it is based on the device being in portrait mode. For desktop or laptop computers, the orientation is considered in relation to the keyboard.
 
-### Datos de rotación
+### Rotation data
 
-Los datos de rotación se proporcionan como [ángulos de Euler](https://en.wikipedia.org/wiki/Euler_angles),
-que representan la cantidad de grados de diferencia entre el marco de coordenadas del dispositivo
-y el marco de coordenadas de la Tierra.
+Rotation data is returned as a [Euler angle](https://en.wikipedia.org/wiki/Euler_angles), representing the number of degrees of difference between the device coordinate frame and the Earth coordinate frame.
 
 #### Alpha
 
 <div class="attempt-right">
   <figure id="fig1">
-    <img src="images/alpha.png" alt="Ilustración del marco de coordenadas del dispositivo">
+    <img src="images/alpha.png" alt="illustration of device coordinate frame">
     <figcaption>
-      Ilustración de alfa en el marco de coordenadas del dispositivo
+      Illustration of alpha in the device coordinate frame
     </figcaption>
   </figure>
 </div>
 
-La rotación alrededor del eje z. El valor de `alpha` es de 0&deg; cuando la parte superior del dispositivo
-apunta directamente hacia el norte. A medida que el dispositivo se rota en sentido contrario a las agujas del reloj,
-el valor `alpha` aumenta.
+The rotation around the z axis. The `alpha` value is 0&deg; when the top of the device is pointed directly north. As the device is rotated counter-clockwise, the `alpha` value increases.
 
 <div style="clear:both;"></div>
 
@@ -120,16 +104,14 @@ el valor `alpha` aumenta.
 
 <div class="attempt-right">
   <figure id="fig1">
-    <img src="images/beta.png" alt="Ilustración del marco de coordenadas del dispositivo">
+    <img src="images/beta.png" alt="illustration of device coordinate frame">
     <figcaption>
-      Ilustración de beta en el marco de coordenadas del dispositivo
+      Illustration of beta in the device coordinate frame
     </figcaption>
   </figure>
 </div>
 
-La rotación alrededor del eje x. El valor de `beta` es de 0&deg; cuando la partes superior e
-inferior del dispositivo se encuentran a la misma distancia de la superficie de la Tierra. El valor
-aumenta a medida que la parte superior del dispositivo se apunta hacia la superficie de la Tierra.
+The rotation around the x axis. The `beta` value is 0&deg; when the top and bottom of the device are equidistant from the surface of the earth. The value increases as the top of the device is tipped toward the surface of the earth.
 
 <div style="clear:both;"></div>
 
@@ -137,186 +119,158 @@ aumenta a medida que la parte superior del dispositivo se apunta hacia la superf
 
 <div class="attempt-right">
   <figure id="fig1">
-    <img src="images/gamma.png" alt="Ilustración del marco de coordenadas del dispositivo">
+    <img src="images/gamma.png" alt="illustration of device coordinate frame">
     <figcaption>
-      Ilustración de gamma en el marco de coordenadas del dispositivo
+      Illustration of gamma in the device coordinate frame
     </figcaption>
   </figure>
 </div>
 
-La rotación alrededor del eje y. El valor de `gamma` es de 0&deg; cuando los bordes izquierdos y
-derechos del dispositivo se encuentran a la misma distancia de la superficie de la Tierra.  El valor
-aumenta a medida que la parte derecha del dispositivo se apunta hacia la superficie de la Tierra.
+The rotation around the y axis. The `gamma` value is 0&deg; when the left and right edges of the device are equidistant from the surface of the earth. The value increases as the right side is tipped towards the surface of the earth.
 
 <div style="clear:both;"></div>
 
-## Orientación del dispositivo
+## Device orientation
 
-En el evento de orientación del dispositivo, se proporcionan datos de la rotación, que incluyen cuánto
-se está inclinando el dispositivo de la parte frontal a la parte trasera y de lado a lado y, si el teléfono o la computadora portátil
-poseen una brújula, la dirección hacia la que está orientado el dispositivo.
+The device orientation event returns rotation data, which includes how much the device is leaning front-to-back, side-to-side, and, if the phone or laptop has a compass, the direction the device is facing.
 
-Úsalo con moderación.
-Pruébalo para ver si es compatible.
-No actualice la IU en cada evento de orientación; en su lugar, realice la sincronización con `requestAnimationFrame`.
+Use sparingly. Test for support. Don't update the UI on every orientation event; instead, sync to `requestAnimationFrame`.
 
-### Cuándo usar eventos de orientación del dispositivo
+### When to use device orientation events
 
-Los eventos de orientación del dispositivo se pueden utilizar de varias maneras. Algunos ejemplos son los siguientes:
+There are several uses for device orientation events. Examples include the following:
 
-* Actualización de un mapa mientras el usuario se desplaza.
-* Realizar pequeños ajustes en la IU; por ejemplo, agregar efectos de paralaje.
-* Combinado con la ubicación geográfica, se puede usar para la navegación paso a paso.
+* Update a map as the user moves.
+* Subtle UI tweaks, for example, adding parallax effects.
+* Combined with geolocation, can be used for turn-by-turn navigation.
 
-### Verifica la compatibilidad y detecta eventos
+### Check for support and listen for events
 
-Para escuchar un `DeviceOrientationEvent`, primero, verifica si el navegador es compatible con los eventos. Luego, adjunta un receptor de eventos al objeto `window` que recibe eventos `deviceorientation`. 
+To listen for `DeviceOrientationEvent`, first check to see if the browser supports the events. Then, attach an event listener to the `window` object listening for `deviceorientation` events.
 
     if (window.DeviceOrientationEvent) {
       window.addEventListener('deviceorientation', deviceOrientationHandler, false);
       document.getElementById("doeSupported").innerText = "Supported!";
     }
+    
 
-### Controla los eventos de orientación del dispositivo
+### Handle the device orientation events
 
-El evento de orientación del dispositivo se activa cuando se mueve el dispositivo o cuando se cambia su 
-orientación. Muestra datos sobre la diferencia entre el dispositivo en 
-la posición actual en relación con el 
-[Marco de coordenadas de la Tierra](#earth-coordinate-frame).
+The device orientation event fires when the device moves or changes orientation. It returns data about the difference between the device in its current position in relation to the [Earth coordinate frame](#earth-coordinate-frame).
 
-El evento generalmente muestra tres propiedades: [`alpha`](#alpha), 
-[`beta`](#beta) y [`gamma`](#gamma). En Mobile Safari, se muestra un parámetro adicional
-[`webkitCompassHeading`](https://developer.apple.com/library/ios/documentation/SafariDOMAdditions/Reference/DeviceOrientationEventClassRef/){: .external }
-con la orientación según la brújula.
+The event typically returns three properties: [`alpha`](#alpha), [`beta`](#beta), and [`gamma`](#gamma). On Mobile Safari, an additional parameter [`webkitCompassHeading`](https://developer.apple.com/library/ios/documentation/SafariDOMAdditions/Reference/DeviceOrientationEventClassRef/){: .external } is returned with the compass heading.
 
-## Movimiento del dispositivo 
+## Device motion
 
-En el evento de orientación del dispositivo, se proporcionan datos de la rotación, que incluyen cuánto
-se está inclinando el dispositivo de la parte frontal a la parte trasera y de lado a lado y, si el teléfono o la computadora portátil
-poseen una brújula, la dirección hacia la que está orientado el dispositivo.
+The device orientation event returns rotation data, which includes how much the device is leaning front-to-back, side-to-side, and, if the phone or laptop has a compass, the direction the device is facing.
 
-Usa la función movimiento del dispositivo cuando necesite conocer el movimiento actual del dispositivo.
-`rotationRate` se proporciona en &deg;/seg.
-`acceleration` y `accelerationWithGravity` se proporcionan en m/seg<sup>2</sup>.
-Ten en cuenta las diferencias entre las implementaciones del navegador.
+Use device motion for when the current motion of the device is needed. `rotationRate` is provided in &deg;/sec. `acceleration` and `accelerationWithGravity` are provided in m/sec<sup>2</sup>. Be aware of differences between browser implementations.
 
-### Cuándo usar eventos de movimiento del dispositivo
+### When to use device motion events
 
-Los eventos de movimiento del dispositivo se pueden usar de diferentes maneras. Algunos ejemplos son los siguientes:
+There are several uses for device motion events. Examples include the following:
 
-* Para actualizar los datos con gestos de sacudida.
-* En los juegos, para hacer que los personajes salten o se muevan.
-* En apps relacionadas con la salud y el estado físico.
+* Shake gesture to refresh data.
+* In games, to cause characters to jump or move.
+* For health and fitness apps.
 
+### Check for support and listen for events
 
-### Verifica la compatibilidad y detecta eventos
-
-Para escuchar un `DeviceMotionEvent`, primero, verifica si los eventos
-son compatibles con el navegador.  Luego, coloca un agente de escucha en el objeto de `window` 
-que escucha los eventos de `devicemotion`. 
+To listen for `DeviceMotionEvent`, first check to see if the events are supported in the browser. Then attach an event listener to the `window` object listening for `devicemotion` events.
 
     if (window.DeviceMotionEvent) {
       window.addEventListener('devicemotion', deviceMotionHandler);
       setTimeout(stopJump, 3*1000);
     }
+    
 
-### Controla los eventos de movimiento del dispositivo
+### Handle the device motion events
 
-El evento de movimiento del dispositivo se activa a intervalos regulares y proporciona datos sobre la
-rotación (en &deg; por segundo) y la aceleración (en m por segundo<sup>2</sup>)
-del dispositivo, en ese momento específico. Algunos dispositivos no cuentan con el hardware necesario
-para excluir el efecto de la gravedad.
+The device motion event fires on a regular interval and returns data about the rotation (in &deg;/second) and acceleration (in m/second<sup>2</sup>) of the device, at that moment in time. Some devices do not have the hardware to exclude the effect of gravity.
 
-El evento muestra cuatro propiedades, 
-[`accelerationIncludingGravity`](#device-coordinate-frame), 
-[`acceleration`](#device-coordinate-frame), que excluye los efectos de la
-gravedad, [`rotationRate`](#rotation-data) y `interval`.
+The event returns four properties, [`accelerationIncludingGravity`](#device-coordinate-frame), [`acceleration`](#device-coordinate-frame), which excludes the effects of gravity, [`rotationRate`](#rotation-data), and `interval`.
 
-Por ejemplo, miremos el teléfono apoyado sobre una mesa plana, con la
-pantalla hacia arriba.
+For example, let's take a look at a phone, lying on a flat table, with its screen facing up.
 
 <table>
   <thead>
     <tr>
-      <th data-th="State">Estado</th>
-      <th data-th="Rotation">Rotación</th>
-      <th data-th="Acceleration (m/s<sup>2</sup>)">Aceleración (m/s<sup>2</sup>)</th>
-      <th data-th="Acceleration with gravity (m/s<sup>2</sup>)">Aceleración con gravedad (m/s<sup>2</sup>)</th>
+      <th data-th="State">State</th>
+      <th data-th="Rotation">Rotation</th>
+      <th data-th="Acceleration (m/s<sup>2</sup>)">Acceleration (m/s<sup>2</sup>)</th>
+      <th data-th="Acceleration with gravity (m/s<sup>2</sup>)">Acceleration with gravity (m/s<sup>2</sup>)</th>
     </tr>
   </thead>
   <tbody>
     <tr>
-      <td data-th="State">Sin movimiento</td>
+      <td data-th="State">Not moving</td>
       <td data-th="Rotation">[0, 0, 0]</td>
       <td data-th="Acceleration">[0, 0, 0]</td>
-      <td data-th="Acceleration with gravity">[0, 0, 9,8]</td>
+      <td data-th="Acceleration with gravity">[0, 0, 9.8]</td>
     </tr>
     <tr>
-      <td data-th="State">Con movimiento hacia arriba, en dirección al cielo</td>
+      <td data-th="State">Moving up towards the sky</td>
       <td data-th="Rotation">[0, 0, 0]</td>
       <td data-th="Acceleration">[0, 0, 5]</td>
-      <td data-th="Acceleration with gravity">[0, 0, 14,81]</td>
+      <td data-th="Acceleration with gravity">[0, 0, 14.81]</td>
     </tr>
     <tr>
-      <td data-th="State">Con movimiento únicamente hacia la derecha</td>
+      <td data-th="State">Moving only to the right</td>
       <td data-th="Rotation">[0, 0, 0]</td>
       <td data-th="Acceleration">[3, 0, 0]</td>
-      <td data-th="Acceleration with gravity">[3, 0, 9,81]</td>
+      <td data-th="Acceleration with gravity">[3, 0, 9.81]</td>
     </tr>
     <tr>
-      <td data-th="State">Con movimiento hacia arriba y hacia la derecha</td>
+      <td data-th="State">Moving up and to the right</td>
       <td data-th="Rotation">[0, 0, 0]</td>
       <td data-th="Acceleration">[5, 0, 5]</td>
-      <td data-th="Acceleration with gravity">[5, 0, 14,81]</td>
+      <td data-th="Acceleration with gravity">[5, 0, 14.81]</td>
     </tr>
   </tbody>
 </table>
 
-Por el contrario, si el teléfono se coloca con la pantalla en posición perpendicular respecto del
-suelo y el observador puede visualizarlo directamente:
+Conversely, if the phone were held so the screen was perpendicular to the ground, and was directly visible to the viewer:
 
 <table>
   <thead>
     <tr>
-      <th data-th="State">Estado</th>
-      <th data-th="Rotation">Rotación</th>
-      <th data-th="Acceleration (m/s<sup>2</sup>)">Aceleración (m/s<sup>2</sup>)</th>
-      <th data-th="Acceleration with gravity (m/s<sup>2</sup>)">Aceleración con gravedad (m/s<sup>2</sup>)</th>
+      <th data-th="State">State</th>
+      <th data-th="Rotation">Rotation</th>
+      <th data-th="Acceleration (m/s<sup>2</sup>)">Acceleration (m/s<sup>2</sup>)</th>
+      <th data-th="Acceleration with gravity (m/s<sup>2</sup>)">Acceleration with gravity (m/s<sup>2</sup>)</th>
     </tr>
   </thead>
   <tbody>
     <tr>
-      <td data-th="State">Sin movimiento</td>
+      <td data-th="State">Not moving</td>
       <td data-th="Rotation">[0, 0, 0]</td>
       <td data-th="Acceleration">[0, 0, 0]</td>
-      <td data-th="Acceleration with gravity">[0, 9,81, 0]</td>
+      <td data-th="Acceleration with gravity">[0, 9.81, 0]</td>
     </tr>
     <tr>
-      <td data-th="State">Con movimiento hacia arriba, en dirección al cielo</td>
+      <td data-th="State">Moving up towards the sky</td>
       <td data-th="Rotation">[0, 0, 0]</td>
       <td data-th="Acceleration">[0, 5, 0]</td>
-      <td data-th="Acceleration with gravity">[0, 14,81, 0]</td>
+      <td data-th="Acceleration with gravity">[0, 14.81, 0]</td>
     </tr>
     <tr>
-      <td data-th="State">Con movimiento únicamente hacia la derecha</td>
+      <td data-th="State">Moving only to the right</td>
       <td data-th="Rotation">[0, 0, 0]</td>
       <td data-th="Acceleration">[3, 0, 0]</td>
-      <td data-th="Acceleration with gravity">[3, 9,81, 0]</td>
+      <td data-th="Acceleration with gravity">[3, 9.81, 0]</td>
     </tr>
     <tr>
-      <td data-th="State">Con movimiento hacia arriba y hacia la derecha</td>
+      <td data-th="State">Moving up and to the right</td>
       <td data-th="Rotation">[0, 0, 0]</td>
       <td data-th="Acceleration">[5, 5, 0]</td>
-      <td data-th="Acceleration with gravity">[5, 14,81, 0]</td>
+      <td data-th="Acceleration with gravity">[5, 14.81, 0]</td>
     </tr>
   </tbody>
 </table>
 
-### Ejemplo: cómo calcular la aceleración máxima de un objeto
+### Sample: Calculating the maximum acceleration of an object
 
-Una forma de usar los eventos de movimiento del dispositivo consiste en calcular la aceleración máxima
-de un objeto. Por ejemplo, cuál es la aceleración máxima de una persona 
-que está saltando.
+One way to use device motion events is to calculate the maximum acceleration of an object. For example, what's the maximum acceleration of a person jumping?
 
     if (evt.acceleration.x > jumpMax.x) {
       jumpMax.x = evt.acceleration.x;
@@ -327,11 +281,10 @@ que está saltando.
     if (evt.acceleration.z > jumpMax.z) {
       jumpMax.z = evt.acceleration.z;
     }
+    
 
+After tapping the Go! button, the user is told to jump. During that time, the page stores the maximum (and minimum) acceleration values, and after the jump, tells the user their maximum acceleration.
 
-Luego de presionar el botón Go!, se le indica al usuario que salte. Durante ese tiempo,
-en la página se almacenan los valores de aceleración máximos (y mínimos) y, luego del
-salto, se informa al usuario su aceleración máxima.
+## Feedback {: #feedback }
 
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
