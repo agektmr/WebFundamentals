@@ -1,39 +1,23 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Documentación de referencia para la auditoría de Lighthouse "El sitio no usa document.write()".
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Reference documentation for the "Avoids document.write()" Lighthouse audit.
 
-{# wf_updated_on: 2016-12-01 #}
-{# wf_published_on: 2016-12-01 #}
+{# wf_updated_on: 2018-07-23 #} {# wf_published_on: 2016-12-01 #} {# wf_blink_components: N/A #}
 
-# El sitio no usa document.write() {: .page-title }
+# Avoids document.write() {: .page-title }
 
-## Por qué es importante la auditoría {: #why }
+## Overview {: #overview }
 
-Para los usuarios con conexiones lentas como 2G, 3G o Wi-Fi lento, las secuencias de comandos
-externas inyectadas dinámicamente a través de `document.write()` pueden demorar la exhibición del
-contenido de la página principal en decenas de segundos.
+For users on slow connections, such as 2G, 3G, or slow Wi-Fi, external scripts dynamically injected via `document.write()` can delay the display of main page content by tens of seconds.
 
-Para más información, consulta [Intervenir contra `document.write()`][blog].
+See [Intervening against `document.write()`](/web/updates/2016/08/removing-document-write) to learn more.
 
-[blog]: /web/updates/2016/08/removing-document-write
+## Recommendations {: #recommendations }
 
-## Cómo aprobar la auditoría {: #how }
+In your report, Lighthouse lists out every call to `document.write()`. Review this list, and note any call that dynamically injects a script. If the script meets the criteria outlined in the introduction to [Intervening against `document.write()`](/web/updates/2016/08/removing-document-write), Chrome won't execute the injected script. These are the calls to `document.write()` that you want to change. See [How do I fix this?](/web/updates/2016/08/removing-document-write#how_do_i_fix_this) for possible solutions.
 
-En tu informe, Lighthouse enumera cada llamada a `document.write()`.
-Revisa esta lista y observa todas las llamadas que inyectan una secuencia de comandos de forma dinámica.
-Si la secuencia de comandos cumple con los criterios establecidos en la introducción de
-[Intervenir contra `document.write()`][blog], Chrome no ejecutará la
-secuencia de comandos inyectada. Estas son las llamadas a `document.write()` que deseas
-cambiar. Consulta [¿Cómo lo soluciono?][fix] para conocer las posibles soluciones. 
+## More information {: #more-info }
 
-[fix]: /web/updates/2016/08/removing-document-write#how_do_i_fix_this
+Lighthouse reports every instance of `document.write()` that it encounters. Note that Chrome's intervention against `document.write()` only applies to render-blocking, dynamically-injected scripts. Other uses of `document.write()` may be acceptable.
 
-{% include "web/tools/lighthouse/audits/implementation-heading.html" %}
+## Feedback {: #feedback }
 
-Lighthouse informa cada instancia de `document.write()` que se encuentra.
-Ten en cuenta que la intervención de Chrome contra `document.write()` solo se aplica a
-secuencias de comandos inyectadas dinámicamente y que bloquean la representación. Se pueden aceptar otros usos de `document.write()`.
-
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
