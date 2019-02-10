@@ -1,38 +1,35 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Entenda melhor as animações e sua utilização em aplicativos e sites modernos.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Get a better understanding of animations and their use in modern apps and sites.
 
-{# wf_updated_on: 2016-08-23 #}
-{# wf_published_on: 2014-08-08 #}
+{# wf_blink_components: Blink>Animation #} {# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2014-08-08 #}
 
-# Animações {: .page-title }
+# Animations {: .page-title }
 
 {% include "web/_shared/contributors/paullewis.html" %}
 
-As animações são uma parte significativa do que torna aplicativos da Web e sites atraentes. O usuário espera interfaces altamente responsivas e interativas. No entanto, animar sua interface não é necessariamente simples. O que deve ser animado, quando e qual tipo de efeito a animação deve produzir?
-
+Animations are a huge part of making compelling web applications and sites. Users have come to expect highly responsive and interactive user interfaces. Animating your interface, however, is not necessarily straightforward. What should be animated, when, and what kind of feel should the animation have?
 
 ### TL;DR {: .hide-from-toc }
-* Use animações como uma forma de dar vida aos seus projetos.
-* As animações devem auxiliar na interação do usuário.
-* Tenha cuidado com quais propriedades animar; algumas são mais caras do que outras.
 
+* Use animations as a way to add life to your projects.
+* Animations should be in support of user interaction.
+* Be careful which properties you animate; some are more expensive than others.
 
-## Selecione os elementos certos para animar
+## Choose the right things to animate
 
-Ótimas animações dão um toque de diversão e envolvimento aos usuários dos seus projetos. Você pode animar praticamente tudo que quiser: seja larguras, alturas, posições, cores ou planos de fundo. No entanto, precisará conhecer os possíveis estrangulamentos de desempenho e como as animações afetarão a personalidade do seu aplicativo. Animações oscilantes ou mal escolhidas podem afetar negativamente a experiência do usuário. Portanto, elas precisam ter bom desempenho e serem adequadas.
+Great animations add a layer of enjoyment and engagement to your projects for your users. You can animate pretty much anything you like, whether that’s widths, heights, positions, colors, or backgrounds, but you need to be aware of potential performance bottlenecks and how animations affect the personality of your application. Stuttering or poorly chosen animations can negatively affect user experience, so animations need to be both performant and appropriate.
 
-## Use animações para apoiar interações
+## Use animations to support interactions
 
-Não crie uma animação desnecessária; isso incomoda os usuários e é obstrutivo. Em vez disso, use animações estrategicamente para _reforçar_ as interações do usuário. Se ele tocar no ícone de menu, deslizar para revelar uma gaveta de navegação ou tocar em um botão, você pode usar um brilho ou bounce sutil para confirmar a interação. Evite animações que interrompam ou obstruam desnecessariamente a atividade do usuário.
+Don’t just animate something because you can; it just annoys users and feels obstructive. Instead, use strategically placed animations to *reinforce* the user interactions. If they tap the menu icon, swipe to reveal a navigation drawer, or tap a button, use perhaps a subtle glow or bounce to acknowledge the interaction. Avoid animations that interrupt or obstruct the user's activity unnecessarily.
 
-## Evite animar propriedades caras
+## Avoid animating expensive properties
 
-Pior do que animações que são mal posicionadas são aquelas que causam oscilação na página. Esse tipo de animação frustra os usuários e faz com que eles desejem que elas não existissem.
+The only thing worse than animations that are poorly placed are those that cause the page to stutter. This type of animation leaves users feeling frustrated and unhappy, and likely wishing you didn't animate things at all.
 
-Algumas propriedades são mais caras para mudar do que outras e, portanto, provavelmente causarão mais oscilações. Por exemplo, mudar o `box-shadow` de um elemento exigirá uma operação de pintura muito mais cara do que mudar, por exemplo, a cor de texto. Da mesma forma, mudar o atributo `width` de um elemento talvez seja mais caro do que mudar seu `transform`.
+Some properties are more expensive to change than others, and are therefore more likely to make things stutter. So, for example, changing the `box-shadow` of an element requires a much more expensive paint operation than changing, say, its text color. Similarly, changing the `width` of an element is likely to be more expensive than changing its `transform`.
 
-Saiba mais sobre o desempenho das animações no guia [Animações e desempenho](animations-and-performance), mas, caso queira que o TL;DR permaneça para mudanças de transformações e opacidades, utilize `will-change`. Para saber exatamente qual trabalho é acionado com a animação de uma determinada propriedade, consulte [Acionadores CSS](http://csstriggers.com).
+You can read more about the performance considerations of animations in the [Animations and Performance](animations-and-performance) guide, but if you want the TL;DR, stick to transforms and opacity changes, and use `will-change`. If you want to know exactly which work is triggered by animating a given property, see [CSS Triggers](http://csstriggers.com).
 
+## Feedback {: #feedback }
 
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
