@@ -1,43 +1,29 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Documentación de referencia para la auditoría de Lighthouse "URL responde con un mensaje HTTP 200 cuando está sin conexión".
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Reference documentation for the "Responds With A 200 When Offline" Lighthouse audit.
 
-{# wf_updated_on: 2016-09-15 #}
-{# wf_published_on: 2016-09-15 #}
+{# wf_updated_on: 2018-07-23 #} {# wf_published_on: 2016-09-15 #} {# wf_blink_components: N/A #}
 
-# URL responde con un mensaje HTTP 200 cuando está sin conexión {: .page-title }
+# Responds With A 200 When Offline {: .page-title }
 
-## Por qué es importante la auditoría {: #why }
+## Overview {: #overview }
 
-Progressive Web Apps trabajan sin conexión. Si Lighthouse no recibe una respuesta HTTP 200
-cuando accede a una página mientras está sin conexión, esto significa que no se puede acceder a la página
-sin conexión.
+Progressive web apps work offline. If Lighthouse does not receive an HTTP 200 response when accessing a page while offline, then the page is not accessible offline.
 
-## Cómo aprobar la auditoría {: #how }
+## Recommendations {: #recommendations }
 
-1. Agrega un service worker a tu app.
-2. Usa el service worker para almacenar en caché los archivos localmente.
-3. Cuando estés sin conexión, usa el service worker como un proxy de red para mostrar la
-   versión almacenada en caché del archivo.
+1. Add a service worker to your app.
+2. Use the service worker to cache files locally.
+3. When offline, use the service worker as a network proxy to return the locally cached version of the file.
 
-Para obtener más información sobre cómo agregar un service worker a una app existente, consulta [Agregar un service
-worker a la app web
-y trabajar sin conexión](https://codelabs.developers.google.com/codelabs/offline). Aplica lo que
-aprendiste en este codelab práctico y paso a paso para agregar un service
-worker a tu propia app. Esto abarca los pasos 1 y 3 precedentes.
+To learn how to add a service worker into an existing app, see [Adding a Service Worker and Offline Into Your Web App](https://codelabs.developers.google.com/codelabs/offline). Use what you learn in this step-by-step, hands-on codelab to learn how to add a service worker into your own app. This covers steps 1 and 3 above.
 
-El codelab anterior brinda información básica sobre cómo depurar tu service
-worker con Chrome DevTools. Para obtener más información, consulta el codelab dedicado a
-este tema, [Depurar los service
-worker](https://codelabs.developers.google.com/codelabs/debugging-service-workers).
+The codelab above shows you some basics on how to debug your service worker using Chrome DevTools. For more detailed help, see the codelab dedicated to this topic, [Debugging Service Workers](https://codelabs.developers.google.com/codelabs/debugging-service-workers).
 
-Usa la [guía sin conexión](https://jakearchibald.com/2014/offline-cookbook/) para
-determinar qué estrategias de almacenamiento en caché son más apropiadas para tu app. Esto abarca el paso 2 precedente.
+Use the [Offline Cookbook](/web/fundamentals/instant-and-offline/offline-cookbook/) to determine which caching strategy fits your app best. This covers step 2 above.
 
-{% include "web/tools/lighthouse/audits/implementation-heading.html" %}
+## More information {: #more-info }
 
-Lighthouse emula el uso sin conexión con el protocolo de depuración de Chrome
-y luego intenta recuperar la página con `XMLHttpRequest`.
+Lighthouse emulates an offline connection using the Chrome Debugging Protocol, and then attempts to retrieve the page using `XMLHttpRequest`.
 
+## Feedback {: #feedback }
 
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
