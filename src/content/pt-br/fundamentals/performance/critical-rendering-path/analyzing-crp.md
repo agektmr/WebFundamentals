@@ -1,221 +1,209 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Saiba como identificar e resolver gargalos de desempenho do caminho crítico de renderização.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Learn to identify and resolve critical rendering path performance bottlenecks.
 
-{# wf_updated_on: 2014-04-27 #}
-{# wf_published_on: 2014-03-31 #}
+{# wf_updated_on: 2018-08-17 #} {# wf_published_on: 2014-03-31 #} {# wf_blink_components: N/A #}
 
-# Análise do desempenho do caminho crítico de renderização {: .page-title }
+# Analyzing Critical Rendering Path Performance {: .page-title }
 
 {% include "web/_shared/contributors/ilyagrigorik.html" %}
 
-Para identificar e resolver gargalos de desempenho no caminho crítico da renderização, é preciso ter bom nível de conhecimento sobre os obstáculos mais comuns. Vamos dar uma pincelada sobre o assunto e extrair padrões de desempenho comuns que ajudarão a otimizar suas páginas.
+Identifying and resolving critical rendering path performance bottlenecks requires good knowledge of the common pitfalls. Let's take a hands-on tour and extract common performance patterns that will help you optimize your pages.
 
+Optimizing the critical rendering path allows the browser to paint the page as quickly as possible: faster pages translate into higher engagement, more pages viewed, and [improved conversion](https://www.google.com/think/multiscreen/success.html). To minimize the amount of time a visitor spends viewing a blank screen, we need to optimize which resources are loaded and in which order.
 
-Ao otimizar o caminho crítico de renderização, o navegador pode colorir a página com a maior velocidade possível: páginas mais rápidas geram maior envolvimento, mais visualizações de páginas e [maior taxa de conversão](https://www.google.com/think/multiscreen/success.html). Para minimizar o tempo que um visitante perde olhando para uma tela em branco, precisamos definir os recursos a serem carregados e a ordem deles da maneira mais eficaz possível.
+To help illustrate this process, let's start with the simplest possible case and incrementally build up our page to include additional resources, styles, and application logic. In the process, we'll optimize each case; we'll also see where things can go wrong.
 
-Para ajudar a ilustrar esse processo, vamos começar com o caso mais simples e ir montando a nossa página gradualmente para incluir outros recursos, estilos e lógica de aplicativo. No processo, otimizaremos todos os casos, e também vamos destacar os pontos em que podem acontecer erros.
+So far we've focused exclusively on what happens in the browser after the resource (CSS, JS, or HTML file) is available to process. We've ignored the time it takes to fetch the resource either from cache or from the network. We'll assume the following:
 
-Até aqui, trabalhamos exclusivamente com o que acontece no navegador depois que o recurso (arquivo CSS, JS ou HTML) fica disponível para processamento. Ignoramos o tempo necessário para buscar o recurso, esteja ele armazenado em cache ou na rede. Presumimos o seguinte:
+* A network roundtrip (propagation latency) to the server costs 100ms.
+* Server response time is 100ms for the HTML document and 10ms for all other files.
 
-* Uma ida e volta na rede (latência da propagação) até o servidor leva 100 ms.
-* O tempo de resposta do servidor é 100 ms para documentos HTML e 10 ms para outros arquivos.
-
-## A experiência do Hello World
+## The hello world experience
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/performance/critical-rendering-path/_code/basic_dom_nostyle.html" region_tag="full" adjust_indentation="auto" %}
 </pre>
 
-[Experimente](https://googlesamples.github.io/web-fundamentals/fundamentals/performance/critical-rendering-path/basic_dom_nostyle.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/performance/critical-rendering-path/basic_dom_nostyle.html){: target="_blank" .external }
 
-Vamos começar com uma marcação HTML básica e uma única imagem, sem CSS e JavaScript. Vamos abrir a linha do tempo de "Network" no Chrome DevTools e dar uma olhada na cascata de recursos gerada:
+We'll start with basic HTML markup and a single image; no CSS or JavaScript. Let's open up our Network timeline in Chrome DevTools and inspect the resulting resource waterfall:
 
-<img src="images/waterfall-dom.png" alt="CRP">
+<img src="images/waterfall-dom.png" alt="CRP" />
 
-Observação: Embora esse documento use o DevTools para ilustrar conceitos do caminho crítico de renderização, hoje o DevTools
-não é a ferramenta mais indicada para análise de caminho crítico. Leia [O que o
-DevTools oferece?](measure-crp#devtools) para saber mais.
+Note: Although this doc uses DevTools to illustrate CRP concepts, DevTools is currently not well-suited for CRP analysis. See [What about DevTools?](measure-crp#devtools) for more information.
 
-Como esperado, o download do arquivo HTML levou cerca de 200 ms. Note que a parte transparente da linha azul representa o tempo que o navegador espera na rede sem receber nenhum byte de resposta, onde a parte sólida mostra o tempo decorrido para a finalização do download depois do recebimento do primeiro byte de resposta. O download do HTML é bem pequeno (menos de 4 kb), então, só precisamos de uma única ida e volta para termos o arquivo inteiro. Como resultado, o documento HTML é obtido em cerca de 200 ms, com metade do tempo gasto ficando a cargo da espera da rede e a outra metade, à espera da resposta do servidor.
+As expected, the HTML file took approximately 200ms to download. Note that the transparent portion of the blue line represents the length of time that the browser waits on the network without receiving any response bytes whereas the solid portion shows the time to finish the download after the first response bytes have been received. The HTML download is tiny (<4K), so all we need is a single roundtrip to fetch the full file. As a result, the HTML document takes approximately 200ms to fetch, with half the time spent waiting on the network and the other half waiting on the server response.
 
-Quando o conteúdo HTML é disponibilizado, o navegador analisa os bytes, converte-os em tokens e cria a árvore DOM. Observe que o DevTools informa o tempo do evento DOMContentLoaded na parte inferior (216 ms), que também corresponde à linha vertical azul. O intervalo entre a conclusão do download do HTML e a linha vertical azul (DOMContentLoaded) é o tempo de que o navegador precisa para criar a árvore DOM &mdash; nesse caso, apenas alguns milissegundos.
+When the HTML content becomes available, the browser parses the bytes, converts them into tokens, and builds the DOM tree. Notice that DevTools conveniently reports the time for the DOMContentLoaded event at the bottom (216ms), which also corresponds to the blue vertical line. The gap between the end of the HTML download and the blue vertical line (DOMContentLoaded) is the time it takes the browser to build the DOM tree&mdash;in this case, just a few milliseconds.
 
-Observe que a nossa "awesome photo" não bloqueou o evento `domContentLoaded`. O fato é que podemos criar a árvore de renderização e até aplicar cor à página sem ter que esperar todos os ativos serem carregados: **nem todos os recursos são essenciais para se fornecer a primeira gravação rapidamente**. Na verdade, quando falamos do caminho crítico de renderização, normalmente estamos falando da marcação HTML, CSS e JavaScript. As imagens não bloqueiam a renderização inicial da página &mdash; apesar de podermos tentar colorir as imagens o quanto antes.
+Notice that our "awesome photo" did not block the `domContentLoaded` event. Turns out, we can construct the render tree and even paint the page without waiting for each asset on the page: **not all resources are critical to deliver the fast first paint**. In fact, when we talk about the critical rendering path we are typically talking about the HTML markup, CSS, and JavaScript. Images do not block the initial render of the page&mdash;although we should also try to get the images painted as soon as possible.
 
-Nesse cenário, o evento `load` (também chamado de `onload`) é bloqueado na imagem: o DevTools relata o evento `onload` aos 335 ms. Não se esqueça de que o evento `onload` marca o ponto em que **todos os recursos** que a página requer foram baixados e processados. Nesse momento, o ícone de carregamento do navegador pode parar de girar (a linha vertical vermelha da cascata).
+That said, the `load` event (also known as `onload`), is blocked on the image: DevTools reports the `onload` event at 335ms. Recall that the `onload` event marks the point at which **all resources** that the page requires have been downloaded and processed; at this point, the loading spinner can stop spinning in the browser (the red vertical line in the waterfall).
 
+## Adding JavaScript and CSS into the mix
 
-## Adicionar JavaScript e CSS à página
-
-Nossa página "Hello World" parece simples, mas, por trás dos panos, não é bem assim. Na prática, precisamos de mais do que um simples HTML: provavelmente usaremos uma folha de estilo CSS e um ou mais scripts para acrescentar interatividade à página. Vamos adicionar ambos à nossa página e ver o que acontece:
+Our "Hello World experience" page seems simple but a lot goes on under the hood. In practice we'll need more than just the HTML: chances are, we'll have a CSS stylesheet and one or more scripts to add some interactivity to our page. Let's add both to the mix and see what happens:
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/performance/critical-rendering-path/_code/measure_crp_timing.html" region_tag="full" adjust_indentation="auto" %}
 </pre>
 
-[Experimente](https://googlesamples.github.io/web-fundamentals/fundamentals/performance/critical-rendering-path/measure_crp_timing.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/performance/critical-rendering-path/measure_crp_timing.html){: target="_blank" .external }
 
-_Antes de adicionar JavaScript e CSS:_
+*Before adding JavaScript and CSS:*
 
-<img src="images/waterfall-dom.png" alt="CRP do DOM" >
+<img src="images/waterfall-dom.png" alt="DOM CRP" />
 
-_Com JavaScript e CSS:_
+*With JavaScript and CSS:*
 
-<img src="images/waterfall-dom-css-js.png" alt="DOM, CSSOM, JS" >
+<img src="images/waterfall-dom-css-js.png" alt="DOM, CSSOM, JS" />
 
-Ao adicionarmos arquivos CSS e JavaScript externos, estamos acrescentando duas solicitações à cascata, que são enviadas pelo navegador praticamente juntas. No entanto, **observe que agora há um intervalo muito menor entre os eventos `domContentLoaded` e `onload`.**
+Adding external CSS and JavaScript files adds two extra requests to our waterfall, all of which the browser dispatches at about the same time. However, **note that there is now a much smaller timing difference between the `domContentLoaded` and `onload` events.**
 
-O que aconteceu?
+What happened?
 
-* Ao contrário do exemplo com HTML simples, agora também foi preciso buscar e analisar o arquivo CSS para criar o CSSOM, e sabemos que precisamos do DOM e do CSSOM para criar a árvore de renderização.
-* Como a página também contém um arquivo JavaScript que bloqueia o analisador, o evento `domContentLoaded` fica bloqueado até o arquivo CSS ser baixado e analisado: já que o JavaScript pode consultar o CSSOM, precisamos bloquear o arquivo CSS até que o download dele seja concluído antes de podermos executar o JavaScript.
+* Unlike our plain HTML example, we also need to fetch and parse the CSS file to construct the CSSOM, and we need both the DOM and CSSOM to build the render tree.
+* Because the page also contains a parser blocking JavaScript file, the `domContentLoaded` event is blocked until the CSS file is downloaded and parsed: because the JavaScript might query the CSSOM, we must block the CSS file until it downloads before we can execute JavaScript.
 
-**E se substituirmos o script externo com um script em linha?** Mesmo que o script esteja embutido diretamente na página, o navegador não consegue executá-lo antes de o CSSOM ser criado. Resumindo, o JavaScript em linha também bloqueia o analisador.
+**What if we replace our external script with an inline script?** Even if the script is inlined directly into the page, the browser can't execute it until the CSSOM is constructed. In short, inlined JavaScript is also parser blocking.
 
-Pensando nisso, apesar do bloqueio do CSS, será que embutir o script acelera a renderização da página? Vamos experimentar e ver o que acontece.
+That said, despite blocking on CSS, does inlining the script make the page render faster? Let's try it and see what happens.
 
-_JavaScript externo:_
+*External JavaScript:*
 
-<img src="images/waterfall-dom-css-js.png" alt="DOM, CSSOM, JS" >
+<img src="images/waterfall-dom-css-js.png" alt="DOM, CSSOM, JS" />
 
-_JavaScript em linha:_
+*Inlined JavaScript:*
 
-<img src="images/waterfall-dom-css-js-inline.png" alt="DOM, CSSOM e JS embutido" >
+<img src="images/waterfall-dom-css-js-inline.png" alt="DOM, CSSOM, and inlined JS" />
 
-Estamos fazendo uma solicitação a menos, mas os tempos de `onload` e `domContentLoaded` são praticamente os mesmos. Por quê? Bem, sabemos que não importa se o JavaScript está embutido ou é externo porque assim que o navegador chegar à tag "script", ele para e aguarda a criação do CSSOM. Além disso, no nosso primeiro exemplo, o navegador baixa CSS e JavaScript em paralelo, e o download leva mais ou menos o mesmo tempo. Nessa instância, embutir o código JavaScript não ajuda muito. Mas existem várias outras estratégias que podem fazer a página renderizar mais rápido.
+We are making one less request, but both our `onload` and `domContentLoaded` times are effectively the same. Why? Well, we know that it doesn't matter if the JavaScript is inlined or external, because as soon as the browser hits the script tag it blocks and waits until the CSSOM is constructed. Further, in our first example, the browser downloads both CSS and JavaScript in parallel and they finish downloading at about the same time. In this instance, inlining the JavaScript code doesn't help us much. But there are several strategies that can make our page render faster.
 
-Primeiro, lembre-se de que todos os scripts em linha bloqueiam o analisador, mas podemos adicionar a palavra-chave "async" aos scripts externos para desbloqueá-lo. Vamos desfazer o JavaScript em linha e tentar o externo:
+First, recall that all inline scripts are parser blocking, but for external scripts we can add the "async" keyword to unblock the parser. Let's undo our inlining and give that a try:
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/performance/critical-rendering-path/_code/measure_crp_async.html" region_tag="full" adjust_indentation="auto" %}
 </pre>
 
-[Experimente](https://googlesamples.github.io/web-fundamentals/fundamentals/performance/critical-rendering-path/measure_crp_async.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/performance/critical-rendering-path/measure_crp_async.html){: target="_blank" .external }
 
-_JavaScript com bloqueio do analisador (externo):_
+*Parser-blocking (external) JavaScript:*
 
-<img src="images/waterfall-dom-css-js.png" alt="DOM, CSSOM, JS" >
+<img src="images/waterfall-dom-css-js.png" alt="DOM, CSSOM, JS" />
 
-_JavaScript assíncrono (externo):_
+*Async (external) JavaScript:*
 
-<img src="images/waterfall-dom-css-js-async.png" alt="DOM, CSSOM, JS assíncrono" >
+<img src="images/waterfall-dom-css-js-async.png" alt="DOM, CSSOM, async JS" />
 
-Muito melhor! O evento `domContentLoaded` é acionado logo depois que o HTML é analisado. O navegador sabe que não deve parar no JavaScript e, já que não há outros scripts de bloqueio de analisador, a criação do CSSOM pode continuar em paralelo.
+Much better! The `domContentLoaded` event fires shortly after the HTML is parsed; the browser knows not to block on JavaScript and since there are no other parser blocking scripts the CSSOM construction can also proceed in parallel.
 
-Ainda podemos embutir o CSS e o JavaScript no código:
+Alternatively, we could have inlined both the CSS and JavaScript:
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/performance/critical-rendering-path/_code/measure_crp_inlined.html" region_tag="full" adjust_indentation="auto" %}
 </pre>
 
-[Experimente](https://googlesamples.github.io/web-fundamentals/fundamentals/performance/critical-rendering-path/measure_crp_inlined.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/performance/critical-rendering-path/measure_crp_inlined.html){: target="_blank" .external }
 
-<img src="images/waterfall-dom-css-inline-js-inline.png" alt="DOM, CSS embutido, JS embutido" >
+<img src="images/waterfall-dom-css-inline-js-inline.png" alt="DOM, inline CSS, inline JS" />
 
-Veja que o tempo de `domContentLoaded` é igual ao do exemplo anterior. Em vez de marcar o JavaScript como assíncrono, embutimos o CSS e o JS na própria página. Isso aumentou muito o tamanho da nossa página HTML, mas trouxe um ponto positivo: o navegador não precisa esperar para buscar recursos externos porque já está tudo na página.
+Notice that the `domContentLoaded` time is effectively the same as in the previous example; instead of marking our JavaScript as async, we've inlined both the CSS and JS into the page itself. This makes our HTML page much larger, but the upside is that the browser doesn't have to wait to fetch any external resources; everything is right there in the page.
 
-Como podemos ver, mesmo com uma página muito simples, a otimização do caminho crítico de renderização não é um exercício simples. Precisamos compreender o gráfico de dependências entre recursos diferentes, identificar quais recursos são "críticos" e optar entre estratégias diferentes para a forma de incluir esses recursos na página. Não há uma solução padrão para esse problema, cada página tem suas particularidades. Você deve aplicar um processo parecido por conta própria para chegar à estratégia ideal.
+As you can see, even with a very simple page, optimizing the critical rendering path is a non-trivial exercise: we need to understand the dependency graph between different resources, we need to identify which resources are "critical," and we must choose among different strategies for how to include those resources on the page. There is no one solution to this problem; each page is different. You need to follow a similar process on your own to figure out the optimal strategy.
 
-Considerando tudo isso, vamos tentar voltar um pouco e identificar alguns padrões gerais de desempenho.
+That said, let's see if we can step back and identify some general performance patterns.
 
-## Padrões de desempenho
+## Performance patterns
 
-A página mais simples possível é composta apenas de marcação HTML: não tem CSS, JavaScript nem outro tipo de recurso. Para renderizar essa página, o navegador deve inicializar a solicitação, aguardar a chegada do documento HTML, analisá-lo, criar o DOM e finalmente renderizar o documento na tela:
+The simplest possible page consists of just the HTML markup; no CSS, no JavaScript, or other types of resources. To render this page the browser has to initiate the request, wait for the HTML document to arrive, parse it, build the DOM, and then finally render it on the screen:
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/performance/critical-rendering-path/_code/basic_dom_nostyle.html" region_tag="full" adjust_indentation="auto" %}
 </pre>
 
-[Experimente](https://googlesamples.github.io/web-fundamentals/fundamentals/performance/critical-rendering-path/basic_dom_nostyle.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/performance/critical-rendering-path/basic_dom_nostyle.html){: target="_blank" .external }
 
-<img src="images/analysis-dom.png" alt="CRP do Hello World" >
+<img src="images/analysis-dom.png" alt="Hello world CRP" />
 
-**O tempo entre T<sub>0</sub> e T<sub>1</sub> captura os tempos de processamento da rede e do servidor.** No melhor cenário (se o arquivo HTML for pequeno), basta uma ida e volta na rede para se obter o documento inteiro. Pela forma com que os protocolos de transporte TCP funcionam, é possível que arquivos maiores exijam mais idas e voltas. **Sendo assim, no melhor cenário, a página acima tem caminho crítico de renderização com uma ida e volta (no mínimo).**
+**The time between T<sub>0</sub> and T<sub>1</sub> captures the network and server processing times.** In the best case (if the HTML file is small), just one network roundtrip fetches the entire document. Due to how the TCP transports protocols work, larger files may require more roundtrips. **As a result, in the best case the above page has a one roundtrip (minimum) critical rendering path.**
 
-Agora, vamos considerar a mesma página, mas com um arquivo CSS externo:
+Now, let's consider the same page but with an external CSS file:
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/performance/critical-rendering-path/_code/analysis_with_css.html" region_tag="full" adjust_indentation="auto" %}
 </pre>
 
-[Experimente](https://googlesamples.github.io/web-fundamentals/fundamentals/performance/critical-rendering-path/analysis_with_css.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/performance/critical-rendering-path/analysis_with_css.html){: target="_blank" .external }
 
-<img src="images/analysis-dom-css.png" alt="CRP de DOM + CSSOM" >
+<img src="images/analysis-dom-css.png" alt="DOM + CSSOM CRP" />
 
-Novamente, precisamos de uma ida e volta na rede para obter o documento HTML. A marcação obtida nos diz que precisaremos também do arquivo CSS. Isso significa que o navegador tem que voltar ao servidor e buscar o CSS antes de poder renderizar a página na tela. **Como consequência, essa página precisa de, pelo menos, duas idas e voltas antes de ser exibida.** Mais uma vez, o arquivo CSS pode exigir várias idas e voltas, por isso a ênfase em "no mínimo".
+Once again, we incur a network roundtrip to fetch the HTML document, and then the retrieved markup tells us that we also need the CSS file; this means that the browser has to go back to the server and get the CSS before it can render the page on the screen. **As a result, this page incurs a minimum of two roundtrips before it can be displayed.** Once again, the CSS file may take multiple roundtrips, hence the emphasis on "minimum".
 
-Vamos definir o vocabulário que usamos para descrever o caminho crítico de renderização:
+Let's define the vocabulary we use to describe the critical rendering path:
 
-* **Recurso crítico:** recurso que pode parar a renderização inicial da página.
-* **Tamanho do caminho crítico:** quantidade de idas e voltas ou o tempo total necessário para buscar todos os recursos críticos.
-* **Bytes críticos:** total de bytes necessário para a primeira renderização da página, representados pela soma dos tamanhos dos arquivos de todos os recursos críticos transferidos.
-Nosso primeiro exemplo, em uma única página HTML, continha só um recurso crítico (o documento HTML). O tamanho do caminho crítico era igual a uma ida e volta na rede (considerando que o arquivo era pequeno) e o total de bytes críticos era simplesmente o tamanho do documento HTML transferido.
+* **Critical Resource:** Resource that could block initial rendering of the page.
+* **Critical Path Length:** Number of roundtrips, or the total time required to fetch all of the critical resources.
+* **Critical Bytes:** Total number of bytes required to get to first render of the page, which is the sum of the transfer filesizes of all critical resources. Our first example, with a single HTML page, contained a single critical resource (the HTML document); the critical path length was also equal to one network roundtrip (assuming file was small), and the total critical bytes was just the transfer size of the HTML document itself.
 
-Agora, vamos comparar isso com as características de caminho crítico do exemplo HTML + CSS acima:
+Now let's compare that to the critical path characteristics of the HTML + CSS example above:
 
-<img src="images/analysis-dom-css.png" alt="CRP de DOM + CSSOM" >
+<img src="images/analysis-dom-css.png" alt="DOM + CSSOM CRP" />
 
-* **2** recursos críticos
-* **2** idas e voltas ou mais como comprimento mínimo do caminho crítico
-* **9** KB de bytes críticos
+* **2** critical resources
+* **2** or more roundtrips for the minimum critical path length
+* **9** KB of critical bytes
 
-Precisamos tanto do HTML quanto do CSS para criar a árvore de renderização. Por isso, ambos são recursos críticos: o CSS é buscado somente depois que o navegador obtém o documento HTML. Sendo assim, o tamanho do caminho crítico é, no mínimo, duas idas e voltas. Ambos os recursos representam um total de 9 KB de bytes críticos.
+We need both the HTML and CSS to construct the render tree. As a result, both HTML and CSS are critical resources: the CSS is fetched only after the browser gets the HTML document, hence the critical path length is at minimum two roundtrips. Both resources add up to a total of 9KB of critical bytes.
 
-Agora vamos adicionar um arquivo JavaScript à receita.
+Now let's add an extra JavaScript file into the mix.
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/performance/critical-rendering-path/_code/analysis_with_css_js.html" region_tag="full" adjust_indentation="auto" %}
 </pre>
 
-[Experimente](https://googlesamples.github.io/web-fundamentals/fundamentals/performance/critical-rendering-path/analysis_with_css_js.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/performance/critical-rendering-path/analysis_with_css_js.html){: target="_blank" .external }
 
-Adicionamos `app.js`, que é um ativo JavaScript externo da página e um recurso que bloqueia o analisador (ou seja, crítico) ao mesmo tempo. E, para piorar, para executar o arquivo JavaScript, temos que parar e esperar o CSSOM. Lembre-se de que o JavaScript pode consultar o CSSOM e, por isso, o navegador para até que `style.css` seja baixado e o CSSOM seja criado.
+We added `app.js`, which is both an external JavaScript asset on the page and a parser blocking (that is, critical) resource. Worse, in order to execute the JavaScript file we have to block and wait for CSSOM; recall that JavaScript can query the CSSOM and hence the browser pauses until `style.css` is downloaded and CSSOM is constructed.
 
-<img src="images/analysis-dom-css-js.png" alt="CRP de DOM, CSSOM e JavaScript" >
+<img src="images/analysis-dom-css-js.png" alt="DOM, CSSOM, JavaScript CRP" />
 
-Considerando tudo isso, na prática, se formos analisar a "cascata de rede" dessa página, veríamos que as solicitações CSS e JavaScript são iniciadas mais ou menos ao mesmo tempo, o navegador obtém o HTML, encontra os dois recursos e inicia as duas solicitações. Como resultado, a página acima tem as seguintes características de caminho crítico:
+That said, in practice if we look at this page's "network waterfall," you'll see that both the CSS and JavaScript requests are initiated at about the same time; the browser gets the HTML, discovers both resources, and initiates both requests. As a result, the above page has the following critical path characteristics:
 
-* **3** recursos críticos
-* **2** idas e voltas ou mais como comprimento mínimo do caminho crítico
-* **11** KB de bytes críticos
+* **3** critical resources
+* **2** or more roundtrips for the minimum critical path length
+* **11** KB of critical bytes
 
-Agora, temos três recursos críticos que totalizam 11 KB de bytes críticos. No entanto, o tamanho do nosso caminho crítico continua sendo duas idas e voltas, já que podemos transferir o CSS e o JavaScript em paralelo. **Conhecer as características do seu caminho crítico de renderização significa poder identificar os recursos vitais e também entender como o navegador agenda a busca deles.** Vamos continuar com o exemplo.
+We now have three critical resources that add up to 11KB of critical bytes, but our critical path length is still two roundtrips because we can transfer the CSS and JavaScript in parallel. **Figuring out the characteristics of your critical rendering path means being able to identify the critical resources and also understanding how the browser will schedule their fetches.** Let's continue with our example.
 
-Depois de conversar com os desenvolvedores do nosso site, percebemos que o JavaScript que incluímos na página não precisa bloquear o processo. Temos algumas análises e código que dispensam a necessidade de bloquear a renderização da página. Sabendo isso, podemos adicionar o atributo "async" à tag "script" para desbloquear o analisador:
+After chatting with our site developers, we realize that the JavaScript we included on our page doesn't need to be blocking; we have some analytics and other code in there that doesn't need to block the rendering of our page. With that knowledge, we can add the "async" attribute to the script tag to unblock the parser:
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/performance/critical-rendering-path/_code/analysis_with_css_js_async.html" region_tag="full" adjust_indentation="auto" %}
 </pre>
 
-[Experimente](https://googlesamples.github.io/web-fundamentals/fundamentals/performance/critical-rendering-path/analysis_with_css_js_async.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/performance/critical-rendering-path/analysis_with_css_js_async.html){: target="_blank" .external }
 
-<img src="images/analysis-dom-css-js-async.png" alt="CRP de DOM, CSSOM e JavaScript assíncrono" >
+<img src="images/analysis-dom-css-js-async.png" alt="DOM, CSSOM, async JavaScript CRP" />
 
-Um script assíncrono tem diversas vantagens:
+An asynchronous script has several advantages:
 
-* O script para de bloquear o analisador e não faz parte do caminho crítico de renderização.
-* Como não há outros scripts críticos, o CSS não precisa parar o evento `domContentLoaded`.
-* Quanto mais cedo o evento `domContentLoaded` for acionado, mais cedo será possível executar outra lógica do aplicativo.
+* The script is no longer parser blocking and is not part of the critical rendering path.
+* Because there are no other critical scripts, the CSS doesn't need to block the `domContentLoaded` event.
+* The sooner the `domContentLoaded` event fires, the sooner other application logic can begin executing.
 
-Como resultado, nossa página otimizada agora voltou a ter dois recursos críticos (HTML e CSS), com um comprimento mínimo de caminho crítico de duas idas e voltas e um total de 9 KB de bytes críticos.
+As a result, our optimized page is now back to two critical resources (HTML and CSS), with a minimum critical path length of two roundtrips, and a total of 9KB of critical bytes.
 
-Por fim, se a folha de estilo CSS só for necessária para a impressão, como ficaria tudo isso?
+Finally, if the CSS stylesheet were only needed for print, how would that look?
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/performance/critical-rendering-path/_code/analysis_with_css_nb_js_async.html" region_tag="full" adjust_indentation="auto" %}
 </pre>
 
-[Experimente](https://googlesamples.github.io/web-fundamentals/fundamentals/performance/critical-rendering-path/analysis_with_css_nb_js_async.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/performance/critical-rendering-path/analysis_with_css_nb_js_async.html){: target="_blank" .external }
 
-<img src="images/analysis-dom-css-nb-js-async.png" alt="CRP de DOM, CSS que não bloqueia e JavaScript assíncrono" >
+<img src="images/analysis-dom-css-nb-js-async.png" alt="DOM, non-blocking CSS, and async JavaScript CRP" />
 
-Como o recurso style.css só é usado para impressão, o navegador não precisa parar nele para renderizar a página. Portanto, assim que a criação do DOM for concluída, o navegador terá as informações de que precisa para renderizar a página. Como resultado, essa página tem apenas um único recurso crítico (o documento HTML) e o comprimento mínimo do caminho crítico de renderização é uma ida e volta.
+Because the style.css resource is only used for print, the browser doesn't need to block on it to render the page. Hence, as soon as DOM construction is complete, the browser has enough information to render the page. As a result, this page has only a single critical resource (the HTML document), and the minimum critical rendering path length is one roundtrip.
 
-<a href="optimizing-critical-rendering-path" class="gc-analytics-event"
-    data-category="CRP" data-label="Next / Optimizing CRP">
-  <button>A seguir: Otimização do caminho crítico de renderização</button>
-</a>
+## Feedback {: #feedback }
 
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
