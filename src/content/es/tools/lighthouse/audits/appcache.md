@@ -1,38 +1,25 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Documentación de referencia para la auditoría de Lighthouse "El sitio no usa Application Cache".
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Reference documentation for the "Avoids Application Cache" Lighthouse audit.
 
-{# wf_updated_on: 2017-01-04 #}
-{# wf_published_on: 2017-01-04 #}
+{# wf_updated_on: 2018-07-23 #} {# wf_published_on: 2017-01-04 #} {# wf_blink_components: N/A #}
 
-# El sitio no usa Application Cache  {: .page-title }
+# Avoids Application Cache {: .page-title }
 
-## Por qué es importante la auditoría {: #why }
+## Overview {: #overview }
 
-Application Cache, también conocido como AppCache, es [obsoleto][deprecated].
+Application Cache, also known as AppCache, is [deprecated](https://html.spec.whatwg.org/multipage/browsers.html#offline).
 
-[deprecated]: https://html.spec.whatwg.org/multipage/browsers.html#offline
+## Recommendations {: #recommendations }
 
-## Cómo aprobar la auditoría {: #how }
+Consider using the service worker [Cache API](https://developer.mozilla.org/en-US/docs/Web/API/Cache) instead.
 
-En su lugar considera usar el service worker [API de caché][API].
+To help migrate from AppCache to service workers, consider the [sw-appcache-behavior](https://github.com/GoogleChrome/sw-appcache-behavior) library. This library generates a service-worker-based implementation of the behavior defined in an AppCache manifest.
 
-Para ayudar a migrar desde AppCache a service workers, considera usar la biblioteca
-[sw-appcache-behavior][sw-appcache-behavior]. Esta biblioteca genera una
-implementación basada en service worker del comportamiento definido en un manifiesto de
-AppCache.
+See the [URL Responds With a 200 When Offline](http-200-when-offline) audit reference for more resources on using service workers to make your site work offline.
 
-Consulta la referencia de auditoría [La URL responde con un 200 cuando está sin conexión](http-200-when-offline) 
-para obtener más recursos sobre cómo usar service workers para que tu sitio funcione
-sin conexión.
+## More information {: #more-info }
 
-[API]: https://developer.mozilla.org/en-US/docs/Web/API/Cache
+The audit passes if no AppCache manifest is detected.
 
-[sw-appcache-behavior]: https://github.com/GoogleChrome/sw-appcache-behavior
+## Feedback {: #feedback }
 
-{% include "web/tools/lighthouse/audits/implementation-heading.html" %}
-
-La auditoría se aprueba si no se detecta ningún manifiesto de AppCache.
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
