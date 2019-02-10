@@ -1,44 +1,34 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Documentación de referencia para la auditoría de Lighthouse "Tiene un service worker registrado".
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Reference documentation for the "Registers A Service Worker" Lighthouse audit.
 
-{# wf_updated_on: 2016-07-25 #}
-{# wf_published_on: 2016-07-25 #}
+{# wf_updated_on: 2018-07-23 #} {# wf_published_on: 2016-07-25 #} {# wf_blink_components: N/A #}
 
-# Tiene un service worker registrado {: .page-title }
+# Registers A Service Worker {: .page-title }
 
-## Por qué es importante la auditoría {: #why }
+## Overview {: #overview }
 
-Registrar un service worker es el primer paso para habilitar las siguientes
-funciones de la app web progresiva:
+Registering a service worker is the first step towards enabling the following progressive web app features:
 
-* Sin conexión
-* Notificaciones push
+* Offline
+* Push notifications
 * Add to homescreen
 
-## Cómo aprobar la auditoría {: #how }
+See [Service Workers: an Introduction](/web/fundamentals/getting-started/primers/service-workers) to learn more.
 
-Registrar un service worker requiere solo unas pocas líneas de código, pero el único
-motivo por el que usarías un service worker sería para implementar una de las funciones de app web progresiva
-mencionadas más arriba. Para implementar estas funciones, se necesita más
-trabajo.
+## Recommendations {: #recommendations }
 
-Para obtener más ayuda sobre cómo almacenar en caché archivos para uso sin conexión, consulta la sección "Cómo aprobar
-la auditoría" del siguiente documento de Lighthouse: [La URL responde con un 200 cuando está
-sin conexión](http-200-when-offline#how).
+Registering a service worker involves only a few lines of code, but the only reason you'd use a service worker is to implement one of the progressive web app features outlined above. Implementing those features requires more work.
 
-Para habilitar las notificaciones push o "add to homescreen", completa los
-siguientes instructivos paso a paso y luego usa lo que aprendiste para implementar
-las funciones en tu propia app:
+For more help on caching files for offline use, see the "How to pass the audit" section of the following Lighthouse doc: [URL responds with a 200 when offline](http-200-when-offline#recommendations).
 
-* [Habilitar las notificaciones push para tu app
-  web](https://codelabs.developers.google.com/codelabs/push-notifications).
-* [Agrega tu app web a la pantalla de inicio
-  de un usuario](https://codelabs.developers.google.com/codelabs/add-to-home-screen).
+For enabling push notifications or "add to homescreen", complete the following step-by-step tutorials and then use what you learn to implement the features in your own app:
 
-{% include "web/tools/lighthouse/audits/implementation-heading.html" %}
+* [Enable push notifications for your web app](https://codelabs.developers.google.com/codelabs/push-notifications).
+* [Add your web app to a user's home screen](https://codelabs.developers.google.com/codelabs/add-to-home-screen).
 
-Verifica si el Depurador de Chrome devuelve una versión del service worker.
+## More information {: #more-info }
 
+Checks if the Chrome Debugger returns a service worker version.
 
-{# wf_devsite_translation #}
+## Feedback {: #feedback }
+
+{% include "web/_shared/helpful.html" %}
