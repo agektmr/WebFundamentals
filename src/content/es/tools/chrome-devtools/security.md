@@ -1,89 +1,58 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Usa el panel Security para asegurarte de que todos los recursos de tu sitio estén protegidos con HTTPS.
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Use the Security Panel to ensure that all resources on your site are protected with HTTPS.
 
-{# wf_updated_on: 2016-03-09 #}
-{# wf_published_on: 2015-12-21 #}
+{# wf_updated_on: 2018-07-27 #} {# wf_published_on: 2015-12-21 #} {# wf_blink_components: Security #}
 
-# Conoce los problemas de seguridad {: .page-title }
+# Understand Security Issues {: .page-title }
 
 {% include "web/_shared/contributors/kaycebasques.html" %}
 
-HTTPS proporciona [seguridad crítica e integridad de datos][why-https]
-para tus sitios web y las personas que confían a estos 
-su información personal. Usa el panel Security de Chrome DevTools 
-para depurar los problemas de seguridad y verificar que 
-HTTPS esté bien implementado en tus sitios web.
-
+HTTPS provides [critical security and data integrity](/web/fundamentals/security/encrypt-in-transit/why-https) both for your websites and for the people that entrust your websites with their personal information. Use the Security Panel in Chrome DevTools to debug security issues and ensure that you have properly implemented HTTPS on your websites.
 
 ### TL;DR {: .hide-from-toc }
-- Usa Security Overview para determinar al instante si la página actual es segura o no.
-- Inspecciona orígenes individuales para ver información sobre la conexión y el certificado (para orígenes seguros), o para conocer exactamente las solicitudes desprotegidas (para orígenes no seguros).
 
+- Use the Security Overview to instantly find out whether the current page is secure or non-secure.
+- Inspect individual origins to view connection and certificate details (for secure origins) or to find out exactly which requests are unprotected (for non-secure origins).
 
 ## Security Overview
 
-Para ver la seguridad general de una página, abre DevTools y visita el panel 
-Security. 
+To view the overall security of a page, open DevTools and go to the Security Panel.
 
-Lo primero que verás será Security Overview. A simple vista, 
-Security Overview te informa si la página es segura. Si la página es segura, se indicará 
-con el mensaje `This page is secure (valid HTTPS).`
+The first thing you see is the Security Overview. At a glance, the Security Overview tells you whether the page is secure. A secure page is indicated with the message `This page is secure (valid HTTPS).`
 
-![Security Overview, página segura](images/overview-secure.png)
+![security overview, secure page](images/overview-secure.png)
 
-Haz clic en **View certificate** para ver el certificado del servidor relacionado con el 
-[origen principal][same-origin-policy]. 
+Click **View certificate** to view the server certificate for the [main origin](https://en.wikipedia.org/wiki/Same-origin_policy).
 
 ![view certificate](images/view-certificate.png)
 
-Si la página no es segura, se indicará con el mensaje `This page is not secure.`
+A non-secure page is indicated with the message `This page is not secure.`
 
-En el panel Security, se distinguen dos tipos de páginas no seguras.
-Si la página solicitada se proporciona a través de HTTP, el origen principal se marcará como 
-no seguro. 
+The Security Panel distinguishes between two types of non-secure pages. If the requested page is served over HTTP, then the main origin is flagged as not secure.
 
-![Security Overview, origen principal no seguro](images/overview-non-secure.png)
+![security overview, non-secure main origin](images/overview-non-secure.png)
 
-Si la página solicitada se proporciona a través de HTTPS, pero luego 
-obtiene contenido desde otros orígenes a través de HTTP, se 
-marcará como no segura. Esto se conoce como una página de [contenido mixto][mixed-content].
- Las páginas de contenido mixto están parcialmente protegidas porque los rastreadores pueden tener acceso al contenido 
-HTTP y este tipo de contenido es vulnerable a ataques de intermediarios. 
+If the requested page is retrieved over HTTPS, but the page then goes on to retrieve content from other origins using HTTP, then the page is still flagged as not secure. This is known as a [mixed content](/web/fundamentals/security/prevent-mixed-content/what-is-mixed-content) page. Mixed content pages are only partially protected because the HTTP content is accessible to sniffers and vulnerable to man-in-the-middle attacks.
 
-![Security Overview, contenido mixto](images/overview-mixed.png)
+![security overview, mixed content](images/overview-mixed.png)
 
-Haz clic en **View request in Network Panel** para abrir una vista filtrada del 
-panel Network y ver con exactitud las solicitudes proporcionadas a través de HTTP. Aquí se mostrarán 
-todas las solicitudes desprotegidas de todos los orígenes. 
+Click **View request in Network Panel** to open up a filtered view of the Network Panel and see exactly which requests were served over HTTP. This shows all unprotected requests from all origins.
 
-![Panel Network, recursos no seguros, todos los orígenes](images/network-all.png)
+## Inspect origins
 
-## Inspecciona los orígenes
+Use the left panel to inspect an individual secure or non-secure origin.
 
-Usa el panel izquierdo para inspeccionar un origen individual, seguro o no seguro. 
+Click on a secure origin to view the connection and certificate details for that origin.
 
-Haz clic en un origen seguro para ver información detallada de la conexión y del certificado de 
-dicho origen.
+![origin details, secure](images/origin-detail-secure.png)
 
-![Información del origen, seguro](images/origin-detail-secure.png)
+If you click on a non-secure origin, the Security Panel provides a link to a filtered view of the Network Panel.
 
-Si haces clic en un origen no seguro, en el panel Security se proporcionará un vínculo a una vista filtrada del panel Network. 
+![origin details, non-secure](images/origin-detail-non-secure.png)
 
-![Información del origen, no seguro](images/origin-detail-non-secure.png)
+Click on the link to see exactly which requests from that origin were served over HTTP.
 
-Haz clic en el vínculo para ver con exactitud las solicitudes de dicho origen 
-proporcionadas a través de HTTP. 
+![network panel, non-secure resources, one origin](images/network-one.png)
 
-![Panel Network, recursos no seguros, un origen](images/network-one.png)
+## Feedback {: #feedback }
 
-
-
-
-
-[mixed-content]: /web/fundamentals/security/prevent-mixed-content/what-is-mixed-content
-[same-origin-policy]: https://en.wikipedia.org/wiki/Same-origin_policy
-[why-https]: /web/fundamentals/security/encrypt-in-transit/why-https
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
