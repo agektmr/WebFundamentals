@@ -1,32 +1,28 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Documentación de referencia para la auditoría de Lighthouse "El sitio no usa SQL Web".
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Reference documentation for the "Avoids Web SQL" Lighthouse audit.
 
-{# wf_updated_on: 2016-12-05 #}
-{# wf_published_on: 2016-12-05 #}
+{# wf_updated_on: 2018-11-30 #} {# wf_published_on: 2016-12-05 #} {# wf_blink_components: N/A #}
 
-# El sitio no usa SQL Web  {: .page-title }
+# Avoids Web SQL {: .page-title }
 
-## Por qué es importante la auditoría {: #why }
+<aside class="warning">
+  This audit is deprecated. See <a href="https://github.com/googlechrome/lighthouse/pull/6293"
+  class="external" rel="noopener">PR #6293</a>.
+</aside>
 
-SQL Web dejó de estar disponible. Consulta la [Base de datos de SQL Web][spec] para obtener más información.
+## Overview {: #overview }
 
-[spec]: https://www.w3.org/TR/webdatabase/
+The W3C stopped actively maintaining the Web SQL spec in 2010 and has no plans to maintain it any further. See [Web SQL Database](https://www.w3.org/TR/webdatabase/){: .external rel="noopener" target="_blank" }.
 
-## Cómo aprobar la auditoría {: #how }
+## Recommendations {: #recommendations }
 
-Considera reemplazar tu base de datos SQL Web por una alternativa moderna, como
-[IndexedDB][indexeddb].
+Consider replacing your Web SQL database with a modern alternative, such as [IndexedDB](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API).
 
-Consulta [Información general del almacenamiento web][overview] para obtener información sobre otras opciones de almacenamiento
-disponibles.
+See [Web Storage Overview](/web/fundamentals/instant-and-offline/web-storage/) for a discussion of other available storage options.
 
-[indexeddb]: https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API
-[overview]: /web/fundamentals/instant-and-offline/web-storage/
+## More information {: #more-info }
 
-{% include "web/tools/lighthouse/audits/implementation-heading.html" %}
+Lighthouse checks if the page has a Web SQL database instance.
 
-Lighthouse comprueba si la página tiene una instancia de base de datos de SQL Web.
+## Feedback {: #feedback }
 
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
