@@ -1,39 +1,34 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Documentación de referencia para la auditoría de Lighthouse "El sitio no usa el antiguo Flexbox de CSS".
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Reference documentation for the "Avoids Old CSS Flexbox" Lighthouse audit.
 
-{# wf_updated_on: 2016-12-05 #}
-{# wf_published_on: 2016-12-05 #}
+{# wf_updated_on: 2018-07-23 #} {# wf_published_on: 2016-12-05 #} {# wf_blink_components: N/A #}
 
-# El sitio no usa el antiguo Flexbox de CSS  {: .page-title }
+# Avoids Old CSS Flexbox {: .page-title }
 
-## Por qué es importante la auditoría {: #why }
+## Overview {: #overview }
 
-La especificación de 2009 para Flexbox es obsoleta y es 2,3 veces más lenta
-que la última especificación. Consulta [El diseño de Flexbox no es lento][slow] para obtener más
-información.
+The old, 2009 specification for Flexbox is deprecated and is 2.3x slower than the latest specification. See [Flexbox Layout Isn't Slow](/web/updates/2013/10/Flexbox-layout-isn-t-slow) to learn more.
 
-[slow]: /web/updates/2013/10/Flexbox-layout-isn-t-slow
+Caution: Consider ignoring this audit if a large portion of your users use UCBrowser. See [googlechrome/lighthouse#1710](https://github.com/GoogleChrome/lighthouse/issues/1710#issuecomment-294470505).
 
-## Cómo aprobar la auditoría {: #how }
+## Recommendations {: #recommendations }
 
-En **URLs**, Lighthouse enumera cada instancia de `display: box` que encontró
-en las hojas de estilo de tu página. Reemplaza cada instancia con la sintaxis nueva,
-`display: flex`.
+Under **URLs**, Lighthouse lists every instance of `display: box` that it found on your page's stylesheets. Replace every instance with the new syntax, `display: flex`.
 
-Si una hoja de estilo usa `display: box`, puede estar empleando otras propiedades obsoletas de
-Flexbox. En resumen, cada propiedad que comienza con `box`,
-como `box-flex`, es obsoleta y se la debe reemplazar. Consulta
-[Asignación de propiedades en la sintaxis de la especificación de Flexbox 2009/2011 de CSS][map] para conocer con exactitud cómo
-se asignan las propiedades anteriores a las nuevas.
+If a stylesheet is using `display: box`, then it may be using other deprecated Flexbox properties. In short, every property that begins with `box`, such as `box-flex`, is deprecated and should be replaced. See [CSS Flexbox 2009/2011 Spec Syntax Property Mapping](https://wiki.csswg.org/spec/flexbox-2009-2011-spec-property-mapping) to see exactly how the old properties map to the new ones.
 
-[map]: https://wiki.csswg.org/spec/flexbox-2009-2011-spec-property-mapping
+Lighthouse also flags vendor prefix values, such as `display: -ms-flexbox`. Lighthouse flags these so that you know that you're sending more bytes in your CSS than needed. If you're using Autoprefixer, you can prevent it from printing out vendor prefixes by adding the following rule to your `package.json` config:
 
-{% include "web/tools/lighthouse/audits/implementation-heading.html" %}
+    "browserslist": [
+      "last 2 versions",
+      "not ie <= 10",
+      "not ie_mob <= 10"
+    ]
+    
 
-Lighthouse recopila todas las hojas de estilo que se usan en la página y controla si alguna
-usa `display: box`. Lighthouse no controla si las hojas de estilo usan alguna otra
-propiedad obsoleta.
+## More information {: #more-info }
 
+Lighthouse collects all of the stylesheets used on the page and checks if any of them uses `display: box`. Lighthouse does not check if the stylesheets use any other deprecated properties.
 
-{# wf_devsite_translation #}
+## Feedback {: #feedback }
+
+{% include "web/_shared/helpful.html" %}
