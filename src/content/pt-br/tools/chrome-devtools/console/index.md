@@ -1,209 +1,173 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Saiba como navegar pelo Console JavaScript do Chrome DevTools.
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Learn how to navigate the Chrome DevTools JavaScript Console.
 
-{# wf_updated_on: 2019-02-06 #}
-{# wf_published_on: 2015-05-10 #}
-{# wf_blink_components: Platform>DevTools #}
+{# wf_updated_on: 2018-07-27 #} {# wf_published_on: 2015-05-10 #} {# wf_blink_components: Platform>DevTools #}
 
-# Usar o Console {: .page-title }
+# Using the Console {: .page-title }
 
-{% include "web/_shared/contributors/kaycebasques.html" %}
-{% include "web/_shared/contributors/andismith.html" %}
-{% include "web/_shared/contributors/megginkearney.html" %}
-{% include "web/_shared/contributors/pbakaus.html" %}
+{% include "web/_shared/contributors/kaycebasques.html" %} {% include "web/_shared/contributors/andismith.html" %} {% include "web/_shared/contributors/megginkearney.html" %} {% include "web/_shared/contributors/pbakaus.html" %}
 
-Aprenda a: abrir o DevTools Console, empilhar mensagens 
-redundantes ou exibi-las nas próprias linhas, apagar ou forçar 
-uma saída ou salvá-la em um arquivo, filtrar a saída e acessar configurações
-adicionais do Console.
+Learn how to: open the DevTools Console, stack redundant messages or display them on their own lines, clear or persist output or save it to a file, filter output, and access additional Console settings.
 
 ### TL;DR {: .hide-from-toc }
-- Abra o Console como um painel dedicado ou como uma gaveta próxima a outro painel.
-- Empilhe mensagens redundantes ou exiba-as nas suas próprias linhas.
-- Apague ou force a saída entre páginas, ou salve-a em um arquivo.
-- Filtre a saída por nível de gravidade ocultando mensagens de rede ou por padrões de expressão regular.
 
-## Abrir o Console
+* Open the Console as a dedicated panel or as a drawer next to any other panel.
+* Stack redundant messages, or display them on their own lines.
+* Clear or persist output between pages, or save it to a file.
+* Filter output by severity level, by hiding network messages, or by regular expression patterns.
 
-Acesse o Console como um painel dedicado em tela inteira:
+## Opening the Console
 
-![O painel do Console](images/console-panel.png)
+Access the Console as a full-screen, dedicated panel:
 
-Ou como uma gaveta que é aberta ao lado de qualquer painel:
+![The Console panel](images/console-panel.png)
 
-![A gaveta do Console](images/console-drawer.png)
+Or as a drawer that opens next to any other panel:
 
-### Abrir como um painel
+![The Console drawer](images/console-drawer.png)
 
-Para abrir o painel dedicado **Console**:
+### Open as panel
 
-* Pressione <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>J</kbd> (Windows/Linux) ou
-  <kbd>Cmd</kbd>+<kbd>Opt</kbd>+<kbd class="kbd">J</kbd> (Mac).
-* Se o DevTools já estiver aberto, pressione o botão do **Console**.
+To open the dedicated **Console** panel, either:
 
-Quando abrir o painel do Console, a gaveta do Console será recolhida automaticamente.
+* Press <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>J</kbd> (Windows / Linux) or <kbd>Cmd</kbd>+<kbd>Opt</kbd>+<kbd class="kbd">J</kbd> (Mac).
+* If DevTools is already open, press the **Console** button.
 
-### Abrir como uma gaveta
+When you open the Console panel, the Console drawer collapses automatically.
 
-Para abrir o Console como uma gaveta próxima a qualquer outro painel:
+### Open as drawer
 
-* Pressione <kbd>Esc</kbd> com o DevTools em foco.
-* Pressione o botão **Customize and control DevTools** e 
-  **Show console**.
+To open the Console as a drawer next to any other panel, either:
 
-![Mostrar console](images/show-console.png)
+* Press <kbd>Esc</kbd> while DevTools is in focus.
+* Press the **Customize and control DevTools** button and then press **Show console**.
 
-## Empilhamento de mensagens
+![Show console](images/show-console.png)
 
-Se uma mensagem for repetida consecutivamente, em vez de gerar cada
-instância da mensagem em uma nova linha, o Console "empilha" as mensagens
-e exibe um número na margem esquerda. O número indica quantas vezes
-a mensagem foi repetida.
+## Message stacking
 
-![Empilhamento de mensagens](images/message-stacking.png)
+If a message is consecutively repeated, rather than printing out each instance of the message on a new line, the Console "stacks" the messages and shows a number in the left margin instead. The number indicates how many times the message has repeated.
 
-Caso prefira uma entrada de linha exclusiva para cada registro, ative **Show timestamps**
-nas configurações do DevTools.
+![Message stacking](images/message-stacking.png)
 
-![Mostrar carimbos de data/hora](images/show-timestamps.png)
+If you prefer a unique line entry for every log, enable **Show timestamps** from the DevTools settings.
 
-Como o carimbo de data/hora de cada mensagem é diferente, cada uma delas é exibida
-na própria linha.
+![Show timestamps](images/show-timestamps.png)
 
-![Console com carimbo de data/hora](images/timestamped-console.png)
+Since the timestamp of each message is different, each message is displayed on its own line.
 
-## Trabalhar com o histórico do Console
+![Timestamped console](images/timestamped-console.png)
 
-### Apagar o histórico {: #clearing}
+## Working with the Console history
 
-Você pode apagar o histórico do console seguindo qualquer um destes procedimentos:
+### Clearing the history {: #clearing}
 
-* Clique com o botão direito no Console e pressione **Clear console**.
-* Digite `clear()` no Console.
-* Chame `console.clear()` a partir do código JavaScript.
-* Digite <kbd class="kbd">Ctrl</kbd>+<kbd class="kbd">L</kbd> 
- (Mac, Windows, Linux).
+You can clear the console history by doing any of the following:
 
-### Manter o histórico {: #preserve-log}
+* Right-click in the Console and press **Clear console**.
+* Type `clear()` in the Console.
+* Call `console.clear()` from within your JavaScript code.
+* Type <kbd class="kbd">Ctrl</kbd>+<kbd class="kbd">L</kbd> (Mac, Windows, Linux).
 
-Marque a caixa de seleção **Preserve log** na parte superior do console para manter
-o histórico ao fazer atualizações ou mudanças na página. As mensagens serão armazenadas
-até que você apague o Console ou feche a guia.
+### Persisting the history {: #preserve-log}
 
-### Salvar o histórico
+Enable the **Preserve log** checkbox at the top of the console to persist the console history between page refreshes or changes. Messages will be stored until you clear the Console or close the tab.
 
-Clique com o botão direito no Console e selecione **Save as** para salvar a saída
-do console em um arquivo de registros.
+### Saving the history
 
-![Salvar Console em um arquivo de registros](images/console-save-as.png)
+Right-click in the Console and select **Save as** to save the output of the console to a log file.
 
-## Selecionar contexto de execução {: #execution-context }
+![Save Console to log file](images/console-save-as.png)
 
-O menu suspenso destacado em azul na captura de tela abaixo é chamado de
-**Execution Context Selector**.
+## Selecting execution context {: #execution-context }
+
+The dropdown menu highlighted in blue in the screenshot below is called the **Execution Context Selector**.
 
 ![Execution Context Selector](images/execution-context-selector.png)
 
-Geralmente, o contexto é definido como `top` (o frame superior da página).
+You'll usually see the context set to `top` (the top frame of the page).
 
-Outros frames e extensões são operados nos próprios contextos. Para trabalhar com esses
-outros contextos, você precisa selecioná-los no menu suspenso. Por exemplo,
-se quiser ver a saída de registro de um elemento `<iframe>` e modificar
-uma variável que existe nesse contexto, você deve selecioná-lo no menu suspenso
-Execution Context Selector.
+Other frames and extensions operate in their own context. To work with these other contexts you need to select them from the dropdown menu. For example, if you wanted to see the logging output of an `<iframe>` element and modify a variable that exists within that context, you'd need to select it from the Execution Context Selector dropdown menu.
 
-O contexto padrão do Console é `top`, a não ser que você acesse o DevTools
-inspecionando um elemento em outro contexto. Por exemplo, se você inspecionar
-um elemento `<p>` em um `<iframe>`, o DevTools definirá o Execution Context
-Selector para o contexto desse `<iframe>`.
+The Console defaults to the `top` context, unless you access DevTools by inspecting an element within another context. For example, if you inspect a `<p>` element within an `<iframe>`, then DevTools sets the Execution Context Selector to the context of that `<iframe>`.
 
-Ao trabalhar em um contexto diferente de `top`, o DevTools destaca o
-Execution Context Selector em vermelho, como na captura de tela abaixo. Isso ocorre porque
-os desenvolvedores raramente precisam trabalhar em contextos diferentes de `top`. Pode ser
-bastante confuso digitar uma variável, esperando um valor, apenas para ver que
-esse valor é `undefined` (porque ele foi definido para um contexto diferente).
+When you're working in a context other than `top`, DevTools highlights the Execution Context Selector red, as in the screenshot below. This is because developers rarely need to work in any context other than `top`. It can be pretty confusing to type in a variable, expecting a value, only to see that it's `undefined` (because it's defined in a different context).
 
-![Execution Context Selector destacado em vermelho](images/non-top-context.png)
+![Execution Context Selector highlighted red](images/non-top-context.png)
 
-## Filtrar a saída do Console
+## Filtering the Console output
 
-Clique no botão **Filter** 
-(![botão filtrar](images/filter-button.png){:.inline})
-para filtrar a saída do console. Você pode filtrar por nível de gravidade, por uma expressão 
-regular ou ocultando mensagens de rede.
+Click the **Filter** button (![filter button](images/filter-button.png){:.inline}) to filter console output. You can filter by severity level, by a regular expression, or by hiding network messages.
 
-![Saída do Console filtrada](images/filtered-console.png)
+![Filtered Console output](images/filtered-console.png)
 
-Filtrar por nível de gravidade é equivalente ao seguinte:
+Filtering by severity level is equivalent to the following:
 
 <table class="responsive">
   <thead>
      <tr>
-      <th colspan="2">Opção &amp; O que ela mostra</th>
+      <th colspan="2">Option &amp; Shows</th>
     </tr>   
   </thead>
   <tbody>
   <tr>
     <td>All</td>
-    <td>Mostra toda a saída do console</td>
+    <td>Shows all console output</td>
   </tr>
   <tr>
     <td>Errors</td>
-    <td>Mostra apenas a saída de <a href="/web/tools/chrome-devtools/debug/console/console-reference#consoleerrorobject--object-">console.error()</a>.</td>
+    <td>Only show output from <a href="/web/tools/chrome-devtools/debug/console/console-reference#consoleerrorobject--object-">console.error()</a>.</td>
   </tr>
   <tr>
     <td>Warnings</td>
-    <td>Mostra apenas a saída de <a href="/web/tools/chrome-devtools/debug/console/console-reference#consolewarnobject--object-">console.warn()</a>.</td>
+    <td>Only show output from <a href="/web/tools/chrome-devtools/debug/console/console-reference#consolewarnobject--object-">console.warn()</a>.</td>
   </tr>
   <tr>
     <td>Info</td>
-    <td>Mostra apenas a saída de <a href="/web/tools/chrome-devtools/debug/console/console-reference#consoleinfoobject--object-">console.info()</a>.</td>
+    <td>Only show output from <a href="/web/tools/chrome-devtools/debug/console/console-reference#consoleinfoobject--object-">console.info()</a>.</td>
   </tr>
   <tr>
     <td>Logs</td>
-    <td>Mostra apenas a saída de <a href="/web/tools/chrome-devtools/debug/console/console-reference#consolelogobject--object-">console.log()</a>.</td>
+    <td>Only show output from <a href="/web/tools/chrome-devtools/debug/console/console-reference#consolelogobject--object-">console.log()</a>.</td>
   </tr>
   <tr>
-    <td>Depurar</td>
-    <td>Mostra apenas a saída de <a href="/web/tools/chrome-devtools/debug/console/console-reference#consoletimeendlabel">console.timeEnd()</a> e <a href="/web/tools/chrome-devtools/debug/console/console-reference#consoledebugobject--object-">console.debug()</a>.</td>
+    <td>Debug</td>
+    <td>Only show output from <a href="/web/tools/chrome-devtools/debug/console/console-reference#consoletimeendlabel">console.timeEnd()</a> and <a href="/web/tools/chrome-devtools/debug/console/console-reference#consoledebugobject--object-">console.debug()</a>.</td>
   </tr>
   </tbody>
 </table>
 
-## Configurações adicionais
+## Additional settings
 
-Abra as configurações do DevTools, acesse a guia General e role a página até
-a seção **Console** para definir configurações adicionais do Console.
+Open the DevTools settings, go to the **General** tab, and scroll down to the **Console** section for further Console settings.
 
-![Configurações do Console](images/console-settings.png)
+![Console settings](images/console-settings.png)
 
 <table class="responsive">
   <thead>
      <tr>
-      <th colspan="2">Configuração &amp; Descrição</th>
+      <th colspan="2">Setting &amp; Description</th>
     </tr>   
   </thead>
   <tbody>
   <tr>
     <td>Hide network messages</td>
-    <td>Por padrão, o console reporta problemas na rede. Ativar essa opção instrui o console a não exibir registros para esses erros. Por exemplo, erros das séries 404 e 500 não serão registrados.</td>
+    <td>By default, the console reports network issues. Turning this on instructs the console to not show logs for these errors. For example, 404 and 500 series errors will not be logged.</td>
   </tr>
   <tr>
     <td>Log XMLHttpRequests</td>
-    <td>Determina se o console registra cada XMLHttpRequest.</td>
+    <td>Determines if the console logs each XMLHttpRequest.</td>
   </tr>
   <tr>
     <td>Preserve log upon navigation</td>
-    <td>Mantém o histórico do console durante atualizações de página ou navegação.</td>
+    <td>Persists the console history during page refreshes or navigation.</td>
   </tr>
   <tr>
     <td>Show timestamps</td>
-    <td>Adiciona um carimbo de data/hora ao início de cada mensagem do console exibida quando a chamada é feita. Útil para depurar quando determinado evento ocorre. Isso desativará o empilhamento de mensagens.</td>
+    <td>Prepends a timestamp to each console message showing when the call was made. Useful for debugging when a certain event occurred. This will disable message stacking.</td>
   </tr>
   <tr>
     <td>Enable custom formatters</td>
-    <td>Controla a <a href="https://docs.google.com/document/d/1FTascZXT9cxfetuPRT2eXPQKXui4nWFivUnS_335T3U/preview">formatação</a> de objetos JavaScript.</td>
+    <td>Control the <a href="https://docs.google.com/document/d/1FTascZXT9cxfetuPRT2eXPQKXui4nWFivUnS_335T3U/preview">formatting</a> of JavaScript objects.</td>
   </tr>
   </tbody>
 </table>
