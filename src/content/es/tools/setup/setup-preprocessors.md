@@ -1,52 +1,48 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Aprende a configurar preprocesadores de CSS y JS para escribir código con mayor eficiencia.
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Learn how to set up CSS & JS preprocessors to help you code more efficiently.
 
-{# wf_updated_on: 2015-08-03 #}
-{# wf_published_on: 2015-08-03 #}
+{# wf_updated_on: 2017-07-24 #} {# wf_published_on: 2015-08-03 #}
 
-# Configurar preprocesadores de CSS y JS {: .page-title }
+# Set Up CSS and JS Preprocessors {: .page-title }
 
-{% include "web/_shared/contributors/pbakaus.html" %}
-{% include "web/_shared/contributors/megginkearney.html" %}
+{% include "web/_shared/contributors/pbakaus.html" %} {% include "web/_shared/contributors/megginkearney.html" %}
 
-Los preprocesadores de CSS (como Sass), los preprocesadores y los transpiladores de JS pueden acelerar enormemente la programación cuando se usan de manera correcta. Aprende a configurarlos.
-
+CSS preprocessors such as Sass, as well as JS preprocessors and transpilers can greatly accelerate your development when used correctly. Learn how to set them up.
 
 ### TL;DR {: .hide-from-toc }
-- Los preprocesadores te permiten usar funcionalidades en CSS y JavaScript que tu navegador no admite de forma nativa; por ejemplo, variables de CSS.
-- Si usas preprocesadores, utiliza los mapas de origen para asignar tus archivos de origen iniciales a la salida representada.
-- Asegúrate de que tu servidor web pueda funcionar con mapas de origen.
-- Usa un preprocesador compatible para generar mapas de origen automáticamente.
 
+- Preprocessors let you use features in CSS and JavaScript that your browser doesn't support natively, for example, CSS variables.
+- If you're using preprocessors, map your original source files to the rendered output using Source Maps.
+- Make sure your web server can serve Source Maps.
+- Use a supported preprocessor to automatically generate Source Maps.
 
-## ¿Qué es un preprocesador?
+## What's a preprocessor?
 
-Un preprocesador toma un archivo de origen arbitrario y lo convierte en algo que el navegador comprende. 
+A preprocessor takes an arbitrary source file and converts it into something that the browser understands.
 
-Con una CSS como salida, el preprocesador está acostumbrado a agregar características que de otro modo no existirían (aún): variables de CSS, anidación, y mucho más. Algunos ejemplos destacados de esta categoría son [Sass](http://sass-lang.com/), [Less](http://lesscss.org/){: .external } y [Stylus](https://learnboost.github.io/stylus/).
+With CSS as output, they are used to add features that otherwise wouldn't exist (yet): CSS Variables, Nesting and much more. Notable examples in this category are [Sass](http://sass-lang.com/), [Less](http://lesscss.org/){: .external } and [Stylus](https://learnboost.github.io/stylus/).
 
-Con JavaScript como salida, realizan conversiones (compilaciones) desde un lenguaje completamente diferente o convierten (transpilan) un superconjunto o un estándar de un lenguaje nuevo al estándar actual. Algunos ejemplos destacados de esta categoría son [CoffeeScript](http://coffeescript.org/){: .external } y ES6 (a través de [Babel](https://babeljs.io/)).
+With JavaScript as output, they either convert (compile) from a completely different language, or convert (transpile) a superset or new language standard down to today's standard. Notable examples in this category are [CoffeeScript](http://coffeescript.org/){: .external } and ES6 (via [Babel](https://babeljs.io/)).
 
-## Depuración y edición de contenido preprocesado
+## Debugging and editing preprocessed content
 
-Cuando abres el navegador y usas DevTools para [editar tu CSS](/web/tools/chrome-devtools/inspect-styles/edit-styles) o depurar el código JavaScript, un inconveniente se vuelve notorio: lo que ves no refleja el origen y no ayuda realmente a solucionar el problema.
+As soon as you are in the browser and use DevTools to [edit your CSS](/web/tools/chrome-devtools/inspect-styles/edit-styles) or debug your JavaScript, one issue becomes very apparent: what you are looking at does not reflect your source, and doesn't really help you fix your problem.
 
-Para corregir esto, la mayoría de los preprocesadores modernos admiten una característica denominada <b>mapas de origen</b>.
+In order to work around, most modern preprocessors support a feature called **Source Maps**.
 
-### ¿Qué son los mapas de origen?
+### What are Source Maps?
 
-Un mapa de origen es un formato de asignación basado en JSON que crea una relación entre un archivo minificado y sus orígenes. Al realizar compilaciones para producción, además de minificar y combinar los archivos JavaScript se genera un mapa de origen que tiene información sobre los archivos originales.
+A source map is a JSON-based mapping format that creates a relationship between a minified file and its sources. When you build for production, along with minifying and combining your JavaScript files, you generate a source map that holds information about your original files.
 
-### ¿Cómo funcionan los mapas de origen?
+### How Source Maps work
 
-Por cada archivo CSS que produce, un preprocesador de CSS genera un archivo de mapa de origen (.map), además de la CSS compilada. El archivo de mapa de origen es un archivo JSON que define una asignación entre cada declaración de CSS y la línea correspondiente del archivo de origen.
+For each CSS file it produces, a CSS preprocessor generates a source map file (.map) in addition to the compiled CSS. The source map file is a JSON file that defines a mapping between each generated CSS declaration and the corresponding line of the source file.
 
-Cada archivo CSS contiene una anotación que especifica la URL del archivo de mapa de origen, incorporado en un comentario especial en la última línea del archivo:
+Each CSS file contains an annotation that specifies the URL of its source map file, embedded in a special comment on the last line of the file:
 
     /*# sourceMappingURL=<url> */
+    
 
-Por ejemplo, en un archivo de origen Sass denominado **styles.scss**:
+For instance, given an Sass source file named **styles.scss**:
 
     %$textSize: 26px;
     $fontColor: red;
@@ -56,8 +52,9 @@ Por ejemplo, en un archivo de origen Sass denominado **styles.scss**:
         color: $fontColor;
         background: $bgColor;
     }
+    
 
-Sass genera un archivo CSS, **styles.css**, con la anotación sourceMappingURL:
+Sass generates a CSS file, **styles.css**, with the sourceMappingURL annotation:
 
     h2 {
       font-size: 26px;
@@ -65,8 +62,9 @@ Sass genera un archivo CSS, **styles.css**, con la anotación sourceMappingURL:
       background-color: whitesmoke;
     }
     /*# sourceMappingURL=styles.css.map */
+    
 
-A continuación, se ofrece un ejemplo de un archivo de mapa de origen:
+Below is an example source map file:
 
     {
       "version": "3",
@@ -74,58 +72,60 @@ A continuación, se ofrece un ejemplo de un archivo de mapa de origen:
       "sources": ["sass/styles.scss"],
       "file": "styles.css"
     }
+    
 
-## Verificar que tu servidor web pueda funcionar con mapas de origen
+## Verify web server can serve Source Maps
 
-Algunos servidores web, como Google App Engine, requieren una configuración explícita para cada tipo de archivo proporcionado. En este caso, los mapas de origen deben proporcionarse con un tipo MIME de `application/json`, pero Chrome, en realidad, [aceptará cualquier tipo de contenido](https://stackoverflow.com/questions/19911929/what-mime-type-should-i-use-for-source-map-files), por ejemplo `application/octet-stream`.
+Some web servers, like Google App Engine for example, require explicit configuration for each file type served. In this case, your Source Maps should be served with a MIME type of `application/json`, but Chrome will actually [accept any content-type](https://stackoverflow.com/questions/19911929/what-mime-type-should-i-use-for-source-map-files), for example `application/octet-stream`.
 
-### Extra: Uso de mapas de origen mediante un encabezado personalizado 
+### Bonus: Source mapping via custom header
 
-Si no deseas agregar un comentario adicional al archivo, usa un campo de encabezado HTTP en el archivo JavaScript minificado para indicar a DevTools dónde encontrar el mapa de origen. Para esto se debe configurar o personalizar del servidor web, y el tema no se abarca en este documento.
+If you don't want an extra comment in your file, use an HTTP header field on the minified JavaScript file to tell DevTools where to find the source map. This requires configuration or customization of your web server and is beyond the scope of this document.
 
     X-SourceMap: /path/to/file.js.map
+    
 
-Al igual que el comentario, esto indica a DevTools y otras herramientas dónde buscar el mapa de origen asociado con un archivo JavaScript. Este encabezado también soluciona el problema de hacer referencia a mapas de origen en lenguajes que no admiten comentarios en una sola línea.
+Like the comment, this tells DevTools and other tools where to look for the source map associated with a JavaScript file. This header also gets around the issue of referencing Source Maps in languages that don't support single-line comments.
 
-## Preprocesadores compatibles
+## Supported preprocessors
 
-En la actualidad, prácticamente cualquier compilación al lenguaje JavaScript tiene una opción para generar mapas de origen, como Coffeescript, TypeScript, JSX, etc. Además, puedes usar mapas de origen en el lado del servidor dentro del nodo, en nuestra CSS mediante Sass, Less y otras opciones, con browserify, que brinda capacidades de estilo de nodo, y mediante herramientas de minificación, como uglify-js, que también agrega la estupenda capacidad de generar mapas de origen con varios niveles.
+Just about any compiled to JavaScript language has an option to generate Source Maps today – including Coffeescript, TypeScript, JSX and many more. You can additionally use Source Maps on the server side within Node, in our CSS with via Sass, Less and more, using browserify which gives you node-style require abilities, and through minification tools like uglify-js which also adds the neat ability to generate multi-level Source Maps.
 
 ### JavaScript
 
 <table>
   <thead>
     <tr>
-      <th width="20%" data-th="Compiler">Compilador</th>
-      <th width="40%" data-th="Command">Comando</th>
-      <th data-th="Instructions">Instrucciones</th>
+      <th width="20%" data-th="Compiler">Compiler</th>
+      <th width="40%" data-th="Command">Command</th>
+      <th data-th="Instructions">Instructions</th>
     </tr>
   </thead>
   <tbody>
     <tr>
       <td data-th="Compiler"><a href="http://coffeescript.org/#source-maps">CoffeeScript</a></td>
       <td data-th="Command"><code>$ coffee -c square.coffee -m</code></td>
-      <td data-th="Instructions">La marca -m (--map) es lo único que necesita el compilador para generar un mapa de origen; también administra la adición de la directiva pragma del comentario sourceMapURL al archivo de salida.</td>
+      <td data-th="Instructions">The -m (--map) flag is all it takes for the compiler to output a source map, it will also handle adding the sourceMapURL comment pragma for you to the outputted file.</td>
     </tr>
     <tr>
       <td data-th="Compiler"><a href="http://www.typescriptlang.org/">TypeScript</a></td>
       <td data-th="Command"><code>$ tsc -sourcemap square.ts</code></td>
-      <td data-th="Instructions">La marca -sourcemap generará el mapa y agregará la directiva pragma de comentario.</td>
+      <td data-th="Instructions">The -sourcemap flag will generate the map and add the comment pragma.</td>
     </tr>
     <tr>
       <td data-th="Compiler"><a href="https://github.com/google/traceur-compiler/wiki/SourceMaps">Traceur</a></td>
       <td data-th="Command"><code>$ traceur --source-maps=[file|inline]</code></td>
-      <td data-th="Instructions">Con <code>--source-maps=file</code>, cada archivo de salida que termine en <code>.js</code> tendrá un archivo de mapa de origen que termine en <code>.map</code>; con <code>source-maps='inline'</code>, cada archivo de salida que termine en <code>.js</code> tendrá al final un comentario que contendrá el mapa de origen codificado en una <code>data:</code> URL.</td>
+      <td data-th="Instructions">With <code>--source-maps=file</code>, every output file ending in <code>.js</code> will have a sourcemap file ending in <code>.map</code>; with <code>source-maps='inline'</code>, every output file ending in <code>.js</code> will end with a comment containing the sourcemap encoded in a <code>data:</code> URL.</td>
     </tr>
     <tr>
       <td data-th="Compiler"><a href="https://babeljs.io/docs/usage/cli/#compile-with-source-maps">Babel</a></td>
       <td data-th="Command"><code>$ babel script.js --out-file script-compiled.js --source-maps</code></td>
-      <td data-th="Instructions">Usa --source-maps o -s para generar mapas de origen. Usa <code>--source-maps inline</code> para los mapas de origen insertados.</td>
+      <td data-th="Instructions">Use --source-maps or -s to generate Source Maps. Use <code>--source-maps inline</code> for inline Source Maps.</td>
     </tr>
     <tr>
       <td data-th="Compiler"><a href="https://github.com/mishoo/UglifyJS2">UglifyJS</a></td>
       <td data-th="Command"><code>$ uglifyjs file.js -o file.min.js --source-map file.min.js.map</code></td>
-      <td data-th="Instructions">Este es el comando más básico que se necesita para generar un mapa de origen para “file.js”. Esto agregará la directiva pragma de comentario al archivo de salida.</td>
+      <td data-th="Instructions">That is the very basic command needed to generate a source map for 'file.js'. This will also add the comment pragma to output file.</td>
     </tr>
   </tbody>
 </table>
@@ -135,51 +135,48 @@ En la actualidad, prácticamente cualquier compilación al lenguaje JavaScript t
 <table>
   <thead>
     <tr>
-      <th width="20%" data-th="Compiler">Compilador</th>
-      <th width="40%" data-th="Command">Comando</th>
-      <th data-th="Instructions">Instrucciones</th>
+      <th width="20%" data-th="Compiler">Compiler</th>
+      <th width="40%" data-th="Command">Command</th>
+      <th data-th="Instructions">Instructions</th>
     </tr>
   </thead>
   <tbody>
     <tr>
       <td data-th="Compiler"><a href="http://sass-lang.com">Sass</a></td>
       <td data-th="Command"><code>$ scss --sourcemap styles.scss styles.css</code></td>
-      <td data-th="Instructions">Sass admite los mapas de origen desde la versión 3.3.</td>
+      <td data-th="Instructions">Source Maps in Sass are supported since Sass 3.3.</td>
     </tr>
     <tr>
       <td data-th="Compiler"><a href="http://lesscss.org/">Less</a></td>
       <td data-th="Command"><code>$ lessc styles.less > styles.css --source-map styles.css.map</code></td>
-      <td data-th="Instructions">Se implementa en la versión 1.5.0. Consulta el <a href="https://github.com/less/less.js/issues/1050#issuecomment-25566463">problema n.º 1050</a> para conocer los detalles y los patrones de uso.</td>
+      <td data-th="Instructions">Implemented in 1.5.0. See <a href="https://github.com/less/less.js/issues/1050#issuecomment-25566463">issue #1050</a> for details and usage patterns.</td>
     </tr>
     <tr>
       <td data-th="Compiler"><a href="https://learnboost.github.io/stylus/">Stylus</a></td>
       <td data-th="Command"><code>$ stylus --sourcemaps styles.style styles.css</code></td>
-      <td data-th="Instructions">Esto incorporará el mapa de origen como una string base64 codificada directamente en el archivo de salida.</td>
+      <td data-th="Instructions">This will embed the sourcemap as a base64 encoded string directly in the out file.</td>
     </tr>
     <tr>
       <td data-th="Compiler"><a href="http://compass-style.org/">Compass</a></td>
       <td data-th="Command"><code>$ sass --compass --sourcemap --watch scss:css</code></td>
-      <td data-th="Instructions">También puedes agregar `sourcemap: true` a tu archivo config.rb.</td>
+      <td data-th="Instructions">Alternatively you can add `sourcemap: true` to your config.rb file.</td>
     </tr>
     <tr>
       <td data-th="Compiler"><a href="https://github.com/postcss/autoprefixer">Autoprefixer</a></td>
       <td data-th="Command"><code></code></td>
-      <td data-th="Instructions">Sigue el vínculo para aprender a usarlo e integrar un mapa de origen de entrada.</td>
+      <td data-th="Instructions">Follow the link to see how to use it and absorb an input sourcemap.</td>
     </tr>
   </tbody>
 </table>
 
-## Mapas de origen y DevTools
+## Source Maps and DevTools
 
-Ahora que tienes los mapas de origen configurados correctamente, probablemente te resulte muy positivo saber que DevTools tiene compatibilidad integrada para mapas de origen basados en CSS y JS.
+Now that you've got Source Maps properly set up, you might be happy to learn that DevTools has built-in support for both CSS and JS based Source Maps.
 
-### Edición de CSS preprocesadas
+### Editing preprocessed CSS
 
-Consulta [Editar en Sass, Less o Stylus](/web/tools/chrome-devtools/inspect-styles/edit-styles) para obtener más información sobre cómo editar y actualizar estilos vinculados con un mapa de origen directamente desde DevTools.
+Head over to [Edit Sass, Less or Stylus](/web/tools/chrome-devtools/inspect-styles/edit-styles) to learn more about how to edit and refresh styles linked to a source map directly within DevTools.
 
-### Edición y depuración de JavaScript preprocesado
+### Editing and debugging preprocessed JavaScript
 
-Obtén más información sobre cómo depurar JavaScript minificado, compilado o transpilado en el panel Sources en [Asigna código previamente procesado al código fuente](/web/tools/chrome-devtools/debug/readability/source-maps).
-
-
-{# wf_devsite_translation #}
+Learn more about how to debug minified, compiled or transpiled JavaScript in the Sources Panel in [Map Preprocessed Code to Source Code](/web/tools/chrome-devtools/debug/readability/source-maps).
