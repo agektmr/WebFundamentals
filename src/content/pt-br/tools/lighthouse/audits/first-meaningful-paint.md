@@ -1,34 +1,31 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Documentação de referência para a auditoria do Lighthouse "Primeira pintura significativa".
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Reference documentation for the "First Meaningful Paint" Lighthouse audit.
 
-{# wf_updated_on: 2016-10-05 #}
-{# wf_published_on: 2016-10-05 #}
+{# wf_updated_on: 2018-11-30 #} {# wf_published_on: 2016-10-05 #} {# wf_blink_components: N/A #}
 
-# Primeira pintura significativa {: .page-title }
+# First Meaningful Paint {: .page-title }
 
-## Por que a auditoria é importante {: #why }
+## Overview {: #overview }
 
-O carregamento da página é um aspecto fundamental de como o usuário observa o desempenho da sua
-página. Consulte [Medição de desempenho com o método RAIL](/web/fundamentals/performance/rail) para obter mais informações.
+Page load is a key aspect of how a user perceives the performance of your page. See [Measure Performance with the RAIL Method](/web/fundamentals/performance/rail) for more information.
 
-Esta auditoria identifica o momento em que o usuário sente que o conteúdo
-principal da página está visível.
+This audit identifies the time at which the user feels that the primary content of the page is visible.
 
-## Como ser aprovado na auditoria {: #how }
+## Recommendations {: #recommendations }
 
-Quanto menor for a pontuação de primeira pintura significativa, maior será a rapidez percebida
-da exibição do conteúdo principal pela página.
+The lower your First Meaningful Paint score, the faster that the page appears to display its primary content.
 
-A [otimização do caminho crítico de renderização](/web/fundamentals/performance/critical-rendering-path/)
-é particularmente útil para acelerar a primeira pintura significativa.
+[Optimizing the Critical Rendering Path](/web/fundamentals/performance/critical-rendering-path/) is particularly helpful towards achieving a faster First Meaningful Paint.
 
-{% include "web/tools/lighthouse/audits/implementation-heading.html" %}
+### Tracking FMP in the real world {: #RUM }
 
-A primeira pintura significativa é essencialmente a pintura efetuada após a maior
-alteração de layout da parte inicialmente visível da página inicial e o carregamento das fontes da Web. Consulte a
-especificação para saber mais:
-[Primeira pintura significativa: uma abordagem baseada em layout](https://docs.google.com/document/d/1BR94tJdZLsin5poeet0XoTW60M0SjvOJQttKT-JK8HI/view).
+To measure when FMP actually occurs on your users' devices, see [Tracking FMP using hero elements](/web/fundamentals/performance/user-centric-performance-metrics#tracking_fmp_using_hero_elements).
 
+See [Assessing Loading Performance in Real Life with Navigation and Resource Timing](/web/fundamentals/performance/navigation-and-resource-timing/) for more on collecting real-user metrics with the User Timing API. The [User Timing Marks and Measures](/web/tools/lighthouse/audits/user-timing) Lighthouse audit enables you to see User Timing data in your report.
 
-{# wf_devsite_translation #}
+## More information {: #more-info }
+
+First Meaningful Paint is essentially the paint after which the biggest above-the-fold layout change has happened, and web fonts have loaded. See the documentation to learn more: [First Meaningful Paint: A Layout-Based Approach](https://docs.google.com/document/d/1BR94tJdZLsin5poeet0XoTW60M0SjvOJQttKT-JK8HI/view).
+
+## Feedback {: #feedback }
+
+{% include "web/_shared/helpful.html" %}
