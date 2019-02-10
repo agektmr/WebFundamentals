@@ -1,33 +1,30 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: JavaScript often triggers visual changes. Sometimes that's directly through style manipulations, and sometimes it's calculations that result in visual changes, like searching or sorting data. Badly-timed or long-running JavaScript is a common cause of performance issues. You should look to minimize its impact where you can.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: JavaScript often triggers visual changes. Sometimes that's directly through style manipulations, and sometimes it's calculations that result in visual changes, like searching or sorting data. Badly-timed or long-running JavaScript is a common cause of performance issues. You should look to minimize its impact where you can.
 
-{# wf_updated_on: 2015-03-19 #}
-{# wf_published_on: 2000-01-01 #}
+{# wf_updated_on: 2018-08-17 #} {# wf_published_on: 2015-03-20 #} {# wf_blink_components: Blink>JavaScript #}
 
-# Оптимизация выполнения JavaScript {: .page-title }
+# Optimize JavaScript Execution {: .page-title }
 
 {% include "web/_shared/contributors/paullewis.html" %}
 
-JavaScript часто используется для внесения визуальных изменений. Иногда это делается непосредственно путем переработки стилей, в других же случаях визуальные изменения являются результатом определенных вычислений, например поиска или сортировки тех или иных данных. Неправильно выбранные параметры времени и продолжительности выполнения JavaScript часто являются причиной проблем с производительностью, поэтому при любой возможности следует стараться свести влияние этого кода к минимуму
+JavaScript often triggers visual changes. Sometimes that's directly through style manipulations, and sometimes it's calculations that result in visual changes, like searching or sorting data. Badly-timed or long-running JavaScript is a common cause of performance issues. You should look to minimize its impact where you can.
+
+JavaScript performance profiling can be something of an art, because the JavaScript you write is nothing like the code that is actually executed. Modern browsers use JIT compilers and all manner of optimizations and tricks to try and give you the fastest possible execution, and this substantially changes the dynamics of the code.
+
+Note: If you really want to see JIT in action you should check out
+<a href='http://mrale.ph/irhydra/2/'>IRHydra<sup>2</sup> by Vyacheslav Egorov</a>. It shows the intermediate state of JavaScript code when Chrome’s JavaScript engine, V8, is optimizing it.
+
+With all that said, however, there are some things you can definitely do to help your apps execute JavaScript well.
 
 ### TL;DR {: .hide-from-toc }
-- Не используйте функции setTimeout или setInterval для внесения визуальных изменений; вместо этого всегда пользуйтесь функцией <code>requestAnimationFrame</code>.
-- Перемещайте скрипты JavaScript, которые выполняются долго, за пределы основного потока в рабочие веб-процессы Web Worker.
-- Для внесения изменений в DOM-элементы за несколько кадров используйте микрозадачи.
-- Для оценки влияния JavaScript используйте шкалу времени и средство профилирования JavaScript из Chrome DevTools.
 
+* Avoid setTimeout or setInterval for visual updates; always use requestAnimationFrame instead.
+* Move long-running JavaScript off the main thread to Web Workers.
+* Use micro-tasks to make DOM changes over several frames.
+* Use Chrome DevTools’ Timeline and JavaScript Profiler to assess the impact of JavaScript.
 
-Профилирование производительности JavaScript иногда является своего рода искусством, поскольку код JavaScript, который вы пишете, не имеет ничего общего с кодом, который фактически выполняется. Современные браузеры используют компиляторы JIT и всевозможные варианты оптимизации с целью добиться наиболее быстрого выполнения, а это коренным образом меняет динамику кода.
+## Use `requestAnimationFrame` for visual changes
 
-Note: Если вы хотите посмотреть JIT в работе, рекомендуем инструмент <a href='http://mrale.ph/irhydra/2/'>IRHydra<sup>2</sup> разработки Вячеслава Егорова</a>. Этот образец демонстрирует промежуточное состояние кода JavaScript, когда его оптимизирует движок JavaScript браузера Chrome (V8).
-
-Однако, даже с учетом всего вышесказанного, несомненно можно кое-что сделать, чтобы помочь приложениям хорошо выполнять код JavaScript.
-
-## Используйте функцию requestAnimationFrame для внесения визуальных изменений
-
-Когда на экране происходят визуальные изменения, свою работу нужно выполнять в подходящее время для браузера, а именно – в самом начале кадра. Единственным способом гарантировать выполнение кода JavaScript в начале кадра является использование функции `requestAnimationFrame`.
-
+When visual changes are happening on screen you want to do your work at the right time for the browser, which is right at the start of the frame. The only way to guarantee that your JavaScript will run at the start of a frame is to use `requestAnimationFrame`.
 
     /**
      * If run as a requestAnimationFrame callback, this
@@ -40,20 +37,19 @@ Note: Если вы хотите посмотреть JIT в работе, ре�
     requestAnimationFrame(updateScreen);
     
 
-Платформы или образцы могут использовать функции `setTimeout` или `setInterval` для реализации таких визуальных изменений, как анимация, однако проблема заключается в том, что обратный вызов будет выполняться _где-то_ в течение кадра, возможно даже в самом его конце, а это может вызвать пропуск кадра, результатом чего будет подвисание.
+Frameworks or samples may use `setTimeout` or `setInterval` to do visual changes like animations, but the problem with this is that the callback will run at *some point* in the frame, possibly right at the end, and that can often have the effect of causing us to miss a frame, resulting in jank.
 
-<img src="images/optimize-javascript-execution/settimeout.jpg"  alt="Функция setTimeout, из-за которой браузер пропускает кадр.">
+<img src="images/optimize-javascript-execution/settimeout.jpg" alt="setTimeout causing the browser to miss a frame." />
 
-Скажу больше, на сегодня для `animate` jQuery по умолчанию использует `setTimeout`! Можно [установить исправление, чтобы использовалась функция `requestAnimationFrame`](https://github.com/gnarf/jquery-requestAnimationFrame), что настоятельно рекомендуется сделать.
+In fact, jQuery used to use `setTimeout` for its `animate` behavior. It was changed to use `requestAnimationFrame` in version 3. If you are using older version of jQuery, you can [patch it to use `requestAnimationFrame`](https://github.com/gnarf/jquery-requestAnimationFrame), which is strongly advised.
 
-## Снижайте сложность или используйте рабочие веб-процессы Web Worker
+## Reduce complexity or use Web Workers
 
-JavaScript выполняется в основном потоке браузера вместе с вычислением стилей, макета и, во многих случаях, прорисовкой. Если ваш код JavaScript выполняется в течение длительного времени, он заблокирует все эти задачи, что может привести к пропуску кадров.
+JavaScript runs on the browser’s main thread, right alongside style calculations, layout, and, in many cases, paint. If your JavaScript runs for a long time, it will block these other tasks, potentially causing frames to be missed.
 
-Следует тактически грамотно выбирать время и продолжительность выполнения JavaScript. Например, если выполняется такая анимация, как прокрутка, идеальным будет выполнение JavaScript в течение первых **3–4 мс**. Чуть дольше – и вы рискуете занять слишком много времени. Если же в данный момент никаких действий не выполняется, то за временем работы можно позволить себе следить не так строго.
+You should be tactical about when JavaScript runs, and for how long. For example, if you’re in an animation like scrolling, you should ideally be looking to keep your JavaScript to something in the region of **3-4ms**. Any longer than that and you risk taking up too much time. If you’re in an idle period, you can afford to be more relaxed about the time taken.
 
-Во многих случаях чисто вычислительную работу можно переместить в [рабочие веб-процессы (Web Worker)](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/basic_usage), если, например, для нее не требуется доступ к DOM. Обработка данных или такие промежуточные состояния, как сортировка или поиск, нередко хорошо подходят для этой модели, как и загрузка или формирование моделей.
-
+In many cases you can move pure computational work to [Web Workers](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/basic_usage), if, for example, it doesn’t require DOM access. Data manipulation or traversal, like sorting or searching, are often good fits for this model, as are loading and model generation.
 
     var dataSortWorker = new Worker("sort-worker.js");
     dataSortWorker.postMesssage(dataToSort);
@@ -61,14 +57,12 @@ JavaScript выполняется в основном потоке браузе�
     // The main thread is now free to continue working on other things...
     
     dataSortWorker.addEventListener('message', function(evt) {
-       var sortedData = e.data;
+       var sortedData = evt.data;
        // Update data on screen...
     });
     
-    
 
-Не вся работа годится для этой модели: у рабочих веб-процессов Web Worker нет доступа к DOM. Когда работу необходимо выполнять в основном потоке, подумайте об использовании пакетов, когда крупные задачи разбиваются на несколько микрозадач, каждая из которых занимает лишь несколько миллисекунд и выполняется внутри обработчиков `requestAnimationFrame` в каждом кадре.
-
+Not all work can fit this model: Web Workers do not have DOM access. Where your work must be on the main thread, consider a batching approach, where you segment the larger task into micro-tasks, each taking no longer than a few milliseconds, and run inside of `requestAnimationFrame` handlers across each frame.
 
     var taskList = breakBigTaskIntoMicroTasks(monsterTaskList);
     requestAnimationFrame(processTaskList);
@@ -93,32 +87,31 @@ JavaScript выполняется в основном потоке браузе�
     }
     
 
-Такой подход несет с собой последствия для восприятия пользователей и пользовательского интерфейса, поэтому с помощью [индикатора хода выполнения или действия](http://www.google.com/design/spec/components/progress-activity.html) пользователя необходимо будет проинформировать о том, что в данный момент выполняется некая задача. В любом случае такой подход позволяет освободить основной поток вашего приложения, что дает ему возможность лучше реагировать на действия пользователей.
+There are UX and UI consequences to this approach, and you will need to ensure that the user knows that a task is being processed, either by [using a progress or activity indicator](https://www.google.com/design/spec/components/progress-activity.html). In any case this approach will keep your app's main thread free, helping it to stay responsive to user interactions.
 
-## Знайте, как ваш код JavaScript влияет на кадры
+## Know your JavaScript’s “frame tax”
 
-При оценке платформы, библиотеки или собственного кода важно определить, во что обойдется выполнение кода JavaScript в каждом кадре. Это особенно важно при создании анимации, которая обязательно должна работать без подвисаний, например, переходов или прокрутки.
+When assessing a framework, library, or your own code, it’s important to assess how much it costs to run the JavaScript code on a frame-by-frame basis. This is especially important when doing performance-critical animation work like transitioning or scrolling.
 
-Лучше всего определять затраты на выполнение кода JavaScript и его профиль производительности с помощью Chrome DevTools. Обычно программа выдает не очень подробные записи следующего вида:
+The Performance panel of Chrome DevTools is the best way to measure your JavaScript's cost. Typically you get low-level records like this:
 
-<img src="images/optimize-javascript-execution/low-js-detail.jpg"  alt="Шкала времени Chrome DevTools с малоинформативными сведениями о выполнении JS.">
+<img src="images/optimize-javascript-execution/low-js-detail.png"
+     alt="A performance recording in Chrome DevTools" />
 
-Если оказалось, что код JavaScript выполняется долго, в верхней части пользовательского интерфейса DevTools можно будет включить средство профилирования JavaScript:
+The **Main** section provides a flame chart of JavaScript calls so you can analyze exactly which functions were called and how long each took.
 
-<img src="images/optimize-javascript-execution/js-profiler-toggle.jpg"  alt="Включение средства профилирования JS в DevTools.">
+Armed with this information you can assess the performance impact of the JavaScript on your application, and begin to find and fix any hotspots where functions are taking too long to execute. As mentioned earlier you should seek to either remove long-running JavaScript, or, if that’s not possible, move it to a Web Worker freeing up the main thread to continue on with other tasks.
 
-Для определения профиля работы кода JavaScript этим способом требуется больше ресурсов, поэтому его следует включать, только когда требуются дополнительные сведения о характеристиках времени выполнения JavaScript. Установив этот флажок, можно выполнить те же действия и получить намного больше информации о том, какие функции вызывались в JavaScript:
+See [Get Started With Analyzing Runtime Performance](/web/tools/chrome-devtools/evaluate-performance/) to learn how to use the Performance panel.
 
-<img src="images/optimize-javascript-execution/high-js-detail.jpg"  alt="Шкала времени Chrome DevTools с большим объемом информации о выполнении JS.">
+## Avoid micro-optimizing your JavaScript
 
-Вооружившись этими сведениями, можно оценить воздействие, которое JavaScript окажет на производительность приложения, и начать выявлять и исправлять те места, в которых функции выполняются слишком долго. Как уже говорилось ранее, код JavaScript, который выполняется долго, необходимо либо убрать совсем, либо, если это невозможно, переместить его в рабочий веб-процесс (Web Worker), высвободив основной поток для продолжения обработки других задач.
+It may be cool to know that the browser can execute one version of a thing 100 times faster than another thing, like that requesting an element’s `offsetTop` is faster than computing `getBoundingClientRect()`, but it’s almost always true that you’ll only be calling functions like these a small number of times per frame, so it’s normally wasted effort to focus on this aspect of JavaScript’s performance. You'll typically only save fractions of milliseconds.
 
-## Избегайте микрооптимизации кода JavaScript
+If you’re making a game, or a computationally expensive application, then you’re likely an exception to this guidance, as you’ll be typically fitting a lot of computation into a single frame, and in that case everything helps.
 
-Возможно, это круто ― знать, что браузер может выполнить одну версию кода в 100 раз быстрее, чем другую, например, что запросы или `offsetTop` элемента быстрее, чем вычисление `getBoundingClientRect()`. Однако почти всегда верно, что такие функции вызываются лишь несколько раз за кадр, поэтому уделять этой стороне работы JavaScript основное внимание – это просто пустая трата времени. Сэкономить удастся лишь доли миллисекунды.
+In short, you should be very wary of micro-optimizations because they won’t typically map to the kind of application you’re building.
 
-Если вы пишете игру или приложение с большим объемом вычислений, то можно сделать исключение из этого правила, поскольку, скорее всего, нужно будет умещать в отдельные кадры множество вычислений, а в этом случае нужно искать любые возможные варианты.
+## Feedback {: #feedback }
 
-Короче говоря, следует быть очень осторожным с микрооптимизацией, поскольку, как правило, она не дает возможности создать такое приложение, какое вы пытаетесь создать.
-
-
+{% include "web/_shared/helpful.html" %}
