@@ -1,150 +1,139 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: En esta sección se describen términos comunes que se usan en el análisis de memoria y que se pueden aplicar a una variedad de herramientas de generación de perfiles de memoria para diferentes idiomas.
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: This section describes common terms used in memory analysis, and is applicable to a variety of memory profiling tools for different languages.
 
-{# wf_updated_on: 2017-07-12 #}
-{# wf_published_on: 2015-05-18 #}
+{# wf_updated_on: 2018-07-27 #} {# wf_published_on: 2015-05-18 #} {# wf_blink_components: Platform>DevTools #}
 
-# Terminología de memoria {: .page-title }
+# Memory Terminology {: .page-title }
 
 {% include "web/_shared/contributors/megginkearney.html" %}
 
-En esta sección se describen términos comunes que se usan en el análisis de memoria y que se pueden aplicar a una variedad de herramientas de generación de perfiles de memoria para diferentes idiomas.
+This section describes common terms used in memory analysis, and is applicable to a variety of memory profiling tools for different languages.
 
-Los términos y las nociones que se describen aquí se refieren al
-[generador de perfiles de montón de Chrome DevTools](/web/tools/chrome-devtools/profile/memory-problems/heap-snapshots).
-Si ya has trabajado con el generador de perfiles de memoria de Java, .NET o algún otro, esto puede ser un repaso.
+The terms and notions described here refer to the [Chrome DevTools Heap Profiler](/web/tools/chrome-devtools/profile/memory-problems/heap-snapshots). If you have ever worked with either the Java, .NET, or some other memory profiler, then this may be a refresher.
 
+## Object sizes
 
-## Tamaños de los objetos
+Think of memory as a graph with primitive types (like numbers and strings) and objects (associative arrays). It might visually be represented as a graph with a number of interconnected points as follows:
 
-Piensa en la memoria como un gráfico con tipos primitivos (como números y cadenas) y objetos (matrices asociativas). Se la puede presentar como un gráfico con diversos puntos interconectados, como se muestra aquí:
+![Visual representation of memory](imgs/thinkgraph.png)
 
-![Representación visual de una memoria](imgs/thinkgraph.png)
+An object can hold memory in two ways:
 
-Un objeto puede retener memoria de dos maneras:
+* Directly by the object itself.
 
-* Directamente, por el objeto en sí mismo.
+* Implicitly by holding references to other objects, and therefore preventing those objects from being automatically disposed by a garbage collector (**GC** for short).
 
-* Implícitamente reteniendo referencias a otros objetos, lo que evita que el recolector de elementos no utilizados (**GC**) elimine estos objetos automáticamente.
+When working with the Heap Profiler in DevTools (a tool for investigating memory issues found under "Profiles"), you will likely find yourself looking at a few different columns of information. Two that stand out are **Shallow Size** and **Retained Size**, but what do these represent?
 
-Cuando trabajes con el generador de perfiles en DevTools (una herramienta para investigar problemas de memoria que se encuentra en "Profiles"), seguramente verás unas cuantas columnas con información. Dos que sobresalen son <strong>Shallow Size</strong> y <strong>Retained Size</strong>, ¿pero qué representan?
+![Shallow and Retained Size](imgs/shallow-retained.png)
 
-![Shallow Size y Retained Size](imgs/shallow-retained.png)
+### Shallow size
 
-### Shallow Size
+This is the size of memory that is held by the object itself.
 
-Este es el tamaño de la memoria que retiene el objeto en sí mismo.
+Typical JavaScript objects have some memory reserved for their description and for storing immediate values. Usually, only arrays and strings can have a significant shallow size. However, strings and external arrays often have their main storage in renderer memory, exposing only a small wrapper object on the JavaScript heap.
 
-Los objetos típicos de JavaScript tienen determinada cantidad de memoria reservada para su descripción y para almacenar valores inmediatos. Por lo general, solo las matrices y las cadenas pueden tener un tamaño superficial considerable. Sin embargo, las cadenas y las matrices externas tienen el almacenamiento principal en la memoria del representador y solo exponen un objeto contenedor pequeño en el montón de JavaScript.
+Renderer memory is all memory of the process where an inspected page is rendered: native memory + JS heap memory of the page + JS heap memory of all dedicated workers started by the page. Nevertheless, even a small object can hold a large amount of memory indirectly, by preventing other objects from being disposed of by the automatic garbage collection process.
 
-La memoria del representador es en su totalidad memoria del proceso donde se representa una página inspeccionada: la memoria nativa más la memoria del montón de JavaScript de la página más la memoria del montón de JavaScript de todos los trabajadores dedicados iniciados por esta página. No obstante, incluso un objeto pequeño puede retener una gran cantidad de memoria indirectamente, lo que evita que el proceso automático de recolección de elementos no utilizados elimine otros objetos.
+### Retained size
 
-### Retained Size
+This is the size of memory that is freed once the object itself is deleted along with its dependent objects that were made unreachable from **GC roots**.
 
-Este es el tamaño de la memoria que queda libre después de la eliminación de un objeto y los objetos que dependen de él a los que no se podía llegar desde las **raíces del GC**.
+**GC roots** are made up of *handles* that are created (either local or global) when making a reference from native code to a JavaScript object outside of V8. All such handles can be found within a heap snapshot under **GC roots** > **Handle scope** and **GC roots** > **Global handles**. Describing the handles in this documentation without diving into details of the browser implementation may be confusing. Both GC roots and the handles are not something you need to worry about.
 
-Las **raíces del GC** constan de *controladores* (locales o globales) que se crean cuando se hace referencia desde el código nativo a un objeto de JavaScript fuera de V8. Todos estos controladores se pueden encontrar en una captura de pantalla del montón en **GC roots** > **Handle scope** y **GC roots** > **Global handles**. Describir los controladores en esta documentación sin entrar en detalles de la implementación del navegador puede ser confuso. No tienes que preocuparte por las raíces del GC ni los controladores.
+There are lots of internal GC roots most of which are not interesting for the users. From the applications standpoint there are following kinds of roots:
 
-Existen muchas raíces internas del GC, la mayoría de las cuales no son interesantes para los usuarios. Desde el punto de vista de las aplicaciones, se pueden encontrar los siguientes tipos de raíces:
+* Window global object (in each iframe). There is a distance field in the heap snapshots which is the number of property references on the shortest retaining path from the window.
 
-* Objeto global de la ventana (en cada iframe). Las capturas de pantalla del montón cuentan con un campo de distancia, que es la cantidad de referencias a propiedades en la ruta de acceso de retención más corta desde la ventana.
+* Document DOM tree consisting of all native DOM nodes reachable by traversing the document. Not all of them may have JS wrappers but if they have the wrappers will be alive while the document is alive.
 
-* Árbol del DOM del documento que consiste en todos los nodos del DOM nativos que se pueden alcanzar recorriendo el documento. Es posible que no todos tengan contenedores JS, pero si los tienen existirán mientras el documento exista.
+* Sometimes objects may be retained by debugger context and DevTools console (e.g. after console evaluation). Create heap snapshots with clear console and no active breakpoints in the debugger.
 
-* A veces, el contexto del depurador y la consola de DevTools pueden retener los objetos (p. ej., después de la evaluación de la consola). Crea capturas de pantalla con una consola vacía y sin puntos de interrupción activos en el depurador.
+The memory graph starts with a root, which may be the `window` object of the browser or the `Global` object of a Node.js module. You don't control how this root object is GC'd.
 
-El gráfico de la memoria comienza con una raíz, que puede ser el objeto `window` del navegador o el objeto `Global` de un módulo de Node.js. No controlas la manera en que el GC elimina este objeto raíz.
+![Root object can't be controlled](imgs/dontcontrol.png)
 
-![El objeto raíz no se puede controlar.](imgs/dontcontrol.png)
+Whatever is not reachable from the root gets GC.
 
-El GC elimina todo aquello que la raíz no puede alcanzar.
+Note: Both the Shallow and Retained size columns represent data in bytes.
 
-Note: Las columnas Shallow Size y Retained Size representan datos en bytes.
+## Objects retaining tree
 
-## Árbol de retención de objetos
+The heap is a network of interconnected objects. In the mathematical world, this structure is called a *graph* or memory graph. A graph is constructed from *nodes* connected by means of *edges*, both of which are given labels.
 
-El montón es una red de objetos interconectados. En el mundo matemático, esta estructura se denomina *gráfico* o “gráfico de memoria”. Un gráfico se construye a partir de *nodos* conectados por medio de *bordes*. A ambos se les asignan etiquetas.
+* **Nodes** (*or objects*) are labelled using the name of the *constructor* function that was used to build them.
+* **Edges** are labelled using the names of *properties*.
 
-* Los **nodos** (*u objetos*) se etiquetan con el nombre de la función *constructor* empleada para compilarlos.
-* Los **bordes** se etiquetan con el nombre de *propiedades*.
+Learn [how to record a profile using the Heap Profiler](/web/tools/chrome-devtools/profile/memory-problems/heap-snapshots). Some of the eye-catching things we can see in the Heap Profiler recording below include distance: the distance from the GC root. If almost all the objects of the same type are at the same distance, and a few are at a bigger distance, that's something worth investigating.
 
-Aprende [cómo registrar un perfil con el generador de perfiles de montón](/web/tools/chrome-devtools/profile/memory-problems/heap-snapshots).
-Entre algunas cosas que llaman la atención
-en el generador de perfiles del siguiente registro, se incluye la distancia:
-la distancia desde la raíz del GC.
-Si casi todos los objetos del mismo tipo están a la misma distancia,
-pero unos pocos están a una distancia mayor, eso es algo que vale la pena investigar.
+![Distance from root](imgs/root.png)
 
-![Distancia desde la raíz](imgs/root.png)
+## Dominators
 
-## Dominadores
+Dominator objects are comprised of a tree structure because each object has exactly one dominator. A dominator of an object may lack direct references to an object it dominates; that is, the dominator's tree is not a spanning tree of the graph.
 
-Los objetos dominadores constan de una estructura de árbol porque cada objeto tiene exactamente un denominador. Un denominador de un objeto puede no tener referencias directas a un objeto que domina; es decir, el árbol del dominador no es un árbol de expansión del gráfico.
+In the diagram below:
 
-En el siguiente diagrama:
+* Node 1 dominates node 2
+* Node 2 dominates nodes 3, 4 and 6
+* Node 3 dominates node 5
+* Node 5 dominates node 8
+* Node 6 dominates node 7
 
-* El nodo 1 domina al 2.
-* El nodo 2 domina al 3, al 4 y al 6.
-* El nodo 3 domina al 5.
-* El nodo 5 domina al 8.
-* El nodo 6 domina al 7.
+![Dominator tree structure](imgs/dominatorsspanning.png)
 
-![Estructura del árbol del dominador](imgs/dominatorsspanning.png)
+In the example below, node `#3` is the dominator of `#10`, but `#7` also exists in every simple path from GC to `#10`. Therefore, an object B is a dominator of an object A if B exists in every simple path from the root to the object A.
 
-En el siguiente ejemplo, el nodo `#3` es el dominador del nodo `#10`, pero el nodo `#7` aparece en todas las rutas de acceso desde el GC al nodo `#10`. Por lo tanto, un objeto B es un dominador de un objeto A si B aparece en todas las rutas de acceso desde la raíz al objeto A.
+![Animated dominator illustration](imgs/dominators.gif)
 
-![Ilustración animada del dominador](imgs/dominators.gif)
+## V8 specifics
 
-## Información específica de V8
+When profiling memory, it is helpful to understand why heap snapshots look a certain way. This section describes some memory-related topics specifically corresponding to the **V8 JavaScript virtual machine** (V8 VM or VM).
 
-Cuando se realiza un perfil de una memoria, es útil comprender por qué las capturas de pantalla del montón se ven de determinada manera. Esta sección describe algunos temas sobre la memoria relacionados específicamente con la **máquina virtual de JavaScript V8** (VM de V8 o VM).
+### JavaScript object representation
 
-### Representación de los objetos de JavaScript
+There are three primitive types:
 
-Existen tres tipos primitivos:
+* Numbers (e.g., 3.14159..)
+* Booleans (true or false)
+* Strings (e.g., 'Werner Heisenberg')
 
-* números (p. ej., 3.14159...);
-* booleanos (true o false);
-* cadenas (p. ej., “Werner Heisenberg”)
+They cannot reference other values and are always leafs or terminating nodes.
 
-No pueden hacer referencia a otros valores y siempre son hojas o nodos finales.
+**Numbers** can be stored as either:
 
-Los **números** se pueden almacenar de las siguientes maneras:
+* an immediate 31-bit integer values called **small integers** (*SMIs*), or
+* heap objects, referred to as **heap numbers**. Heap numbers are used for storing values that do not fit into the SMI form, such as *doubles*, or when a value needs to be *boxed*, such as setting properties on it.
 
-* Un valor entero inmediato de 31 bits denominado **valor entero pequeño** (*SMI*).
-* Objetos del montón, a los que se hace referencia como **números del montón**. Los números del montón se usan para guardar valores que no se adecúan a la forma del SMI, como *valores dobles*, o cuando un valor necesita que se lo *encuadre*, por ejemplo, asignándole propiedades.
+**Strings** can be stored in either:
 
-Las **cadenas** se pueden almacenar de las siguientes maneras:
+* the **VM heap**, or
+* externally in the **renderer’s memory**. A *wrapper object* is created and used for accessing external storage where, for example, script sources and other content that is received from the Web is stored, rather than copied onto the VM heap.
 
-* En el **montón de VM**.
-* Externamente, en la **memoria del representador**. Un *objeto contenedor* se crea y usa para acceder a almacenamiento externo donde, por ejemplo, se guardan códigos de secuencias de comandos y otro contenido que se recibe desde la Web, en lugar de copiar el contenido en el montón de la VM.
+Memory for new JavaScript objects is allocated from a dedicated JavaScript heap (or **VM heap**). These objects are managed by V8's garbage collector and therefore, will stay alive as long as there is at least one strong reference to them.
 
-La memoria para los objetos de JavaScript nuevos se asigna de un montón de JavaScript dedicado (o **montón de VM**). Estos objetos son controlados por el GC de V8 y, por lo tanto, permanecerán activos mientras haya, por lo menos, una referencia fuerte a ellos.
+**Native objects** are everything else which is not in the JavaScript heap. Native object, in contrast to heap object, is not managed by the V8 garbage collector throughout its lifetime, and can only be accessed from JavaScript using its JavaScript wrapper object.
 
-Los **objetos nativos** son todo lo demás que no está en el montón de JavaScript. Un objeto nativo, a diferencia de un objeto del montón, no es controlado por el GC de V8 durante su tiempo de vigencia, y solo se puede acceder a él desde JavaScript con el objeto contenedor de JavaScript.
+**Cons string** is an object that consists of pairs of strings stored then joined, and is a result of concatenation. The joining of the *cons string* contents occurs only as needed. An example would be when a substring of a joined string needs to be constructed.
 
-**Cons string** es un objeto que consiste de pares de cadenas almacenadas y posteriormente unidas, cuyo resultado es una concatenación. La unión del contenido del objeto *cons string* solo se produce cuando es necesario. Un ejemplo sería cuando se debe construir una subcadena de una cadena unida.
+For example, if you concatenate **a** and **b**, you get a string (a, b) which represents the result of concatenation. If you later concatenated **d** with that result, you get another cons string ((a, b), d).
 
-Por ejemplo, si concatenas **a** y **b**, obtienes la cadena (a, b) que representa el resultado de la concatenación. Si posteriormente concatenas **d** con el resultado, obtienes otra cons string ((a, b), d).
+**Arrays** - An Array is an Object with numeric keys. They are used extensively in the V8 VM for storing large amounts of data. Sets of key-value pairs used like dictionaries are backed up by arrays.
 
-**Matrices**: una matriz es un objeto con claves numéricas. Estos se usan ampliamente en el VM de V8 para almacenar grandes cantidades de datos. Las matrices realizan copias de seguridad de conjuntos de pares de clave-valor que se usan como diccionarios.
+A typical JavaScript object can be one of two array types used for storing:
 
-Un objeto típico de JavaScript puede ser uno de dos tipos de matrices que se usan para almacenamiento:
+* named properties, and
+* numeric elements
 
-* propiedades con nombre; y
-* elementos numéricos
+In cases where there is a very small number of properties, they can be stored internally in the JavaScript object itself.
 
-Cuando hay una cantidad muy pequeña de propiedades, se la puede almacenar internamente en el objeto de JavaScript.
+**Map** - an object that describes the kind of object and its layout. For example, maps are used to describe implicit object hierarchies for [fast property access](/v8/design.html#prop_access).
 
-**Map**: un objeto que describe el tipo de objeto y su diseño. Por ejemplo, los objetos map se usan para describir jerarquías de objetos implícitas para [acceso rápido a las propiedades](/v8/design.html#prop_access).
+### Object groups
 
-### Grupos de objetos
+Each native objects group is made up of objects that hold mutual references to each other. Consider, for example, a DOM subtree where every node has a link to its parent and links to the next child and next sibling, thus forming a connected graph. Note that native objects are not represented in the JavaScript heap — that's why they have zero size. Instead, wrapper objects are created.
 
-Cada grupo de objetos nativos consta de objetos que tienen referencias manuales entre sí. Considera, por ejemplo, un árbol del DOM en el cual cada nodo tiene un vínculo a su nodo primario y vínculos al siguiente nodo secundario y al siguiente nodo del mismo nivel. De esta manera, se forma un gráfico conectado. Ten en cuenta que los objetos nativos no se representan en el montón JavaScript; por ello, no tienen tamaño. En cambio, se crean objetos contenedores.
+Each wrapper object holds a reference to the corresponding native object, for redirecting commands to it. In its own turn, an object group holds wrapper objects. However, this doesn't create an uncollectable cycle, as GC is smart enough to release object groups whose wrappers are no longer referenced. But forgetting to release a single wrapper will hold the whole group and associated wrappers.
 
-Cada objeto contenedor tiene una referencia al objeto nativo correspondiente para redireccionarle comandos. A su vez, un grupo de objetos tiene objetos contenedores. Sin embargo, esto no crea un ciclo que no se pueda recolectar, ya que el GC es suficientemente inteligente para liberar grupos de objetos a cuyos contenedores ya no se hace referencia. Sin embargo, si se olvida liberar un contenedor se mantendrán todo el grupo y los contenedores asociados.
+## Feedback {: #feedback }
 
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
