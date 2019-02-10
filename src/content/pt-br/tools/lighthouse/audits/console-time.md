@@ -1,47 +1,29 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Documentação de referência para a auditoria do Lighthouse "Site não usa console.time() em seus próprios scripts".
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Reference documentation for the "Avoids console.time() In Its Own Scripts" Lighthouse audit.
 
-{# wf_updated_on: 2016-12-01 #}
-{# wf_published_on: 2016-12-01 #}
+{# wf_updated_on: 2018-07-23 #} {# wf_published_on: 2016-12-01 #} {# wf_blink_components: N/A #}
 
-# Site não usa console.time() em seus próprios scripts  {: .page-title }
+# Avoids console.time() In Its Own Scripts {: .page-title }
 
-## Por que a auditoria é importante {: #why }
+## Overview {: #overview }
 
-Se você usar `console.time()` para medir o desempenho de uma página, em vez disso, considere
-usar a User Timing API. Os benefícios incluem:
+If you're using `console.time()` to measure your page's performance, consider using the User Timing API instead. Benefits include:
 
-* Timestamps de alta resolução.
-* Dados cronológicos exportáveis.
-* Integração com o Timeline do Chrome DevTools. Quando a função
-  `performance.measure()` da User Timing for chamada durante uma gravação do Timeline, o DevTools
-  adicionará automaticamente a medição aos resultados do Timeline, como mostrado no
-  rótulo `my custom measurement` na captura de tela a seguir.
+* High-resolution timestamps.
+* Exportable timing data.
+* Integration with the Chrome DevTools Timeline. When the User Timing function `performance.measure()` is called during a Timeline recording, DevTools automatically adds the measurement to the Timeline's results, as shown in the `my custom measurement` label in the screenshot below.
 
-![Medição da User Timing no Timeline do Chrome DevTools][timeline]
+![User Timing measurement in Chrome DevTools Timeline](/web/tools/lighthouse/images/user-timing-measurement-in-devtools.png)
 
-[timeline]: /web/tools/lighthouse/images/user-timing-measurement-in-devtools.png
+## Recommendations {: #recommendations }
 
-## Como ser aprovado na auditoria {: #how }
+In your report, Lighthouse lists every instance of `console.time()` that it finds under **URLs**. Replace each of these calls with `performance.mark()`. If you want to measure the time that has elapsed between two marks, use `performance.measure()`.
 
-No seu relatório, o Lighthouse lista todas as instâncias de `console.time()`
-que encontrou em **URLs**. Substituta cada uma dessas chamadas por `performance.mark()`.
-Se você quiser medir o tempo decorrido entre duas marcas, use
-`performance.measure()`.
+See [User Timing API: Understanding Your Web App](https://www.html5rocks.com/en/tutorials/webperformance/usertiming/) to learn how to use the API.
 
-Consulte [User Timing API: como entender seu aplicativo Web][html5rocks]
-para saber como usar a API.
+## More information {: #more-info }
 
-[html5rocks]: https://www.html5rocks.com/en/tutorials/webperformance/usertiming/
+Lighthouse reports every instance of `console.time()` that it finds from scripts that are on the same host as the page. Scripts from other hosts are excluded, because Lighthouse assumes that you don't have control over these scripts. So, there may be other scripts using `console.time()` on your page, but these won't show up in your Lighthouse report.
 
-{% include "web/tools/lighthouse/audits/implementation-heading.html" %}
+## Feedback {: #feedback }
 
-O Lighthouse relata todas as instâncias de `console.time()` encontradas em
-scripts no mesmo host da página. Os scripts de outros hosts são
-excluídos, pois o Lighthouse assume que você não tem controle sobre
-eles. Portanto, podem existir outros scripts que usam `console.time()` na página,
-mas eles não serão exibidos no relatório do Lighthouse.
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
